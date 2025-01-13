@@ -1,5 +1,5 @@
-name: Build PDF
-run-name: Build PDF
+name: On Comment
+run-name: On Comment
 
 on:
   pull_request_comment
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  build-pdf:
+  Format:
     name: Format
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request != '' && github.event.comment.body == 'format!' && (github.event.comment.author_association == 'COLLABORATOR' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
