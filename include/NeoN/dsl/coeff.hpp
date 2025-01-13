@@ -58,9 +58,9 @@ private:
 
 [[nodiscard]] inline Coeff operator*(const Coeff& lhs, const Coeff& rhs)
 {
-    Coeff result = lhs;
-    result *= rhs;
-    return result;
+    Coeff Result = lhs;
+    Result *= rhs;
+    return Result;
 }
 
 namespace detail
