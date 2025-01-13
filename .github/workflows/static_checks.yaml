@@ -23,9 +23,10 @@ jobs:
         pip install identify --upgrade
         pre-commit install
     - name: Run pre-commit on all files
+      id: pre-commit
       run: pre-commit run --all --color always --verbose
     - name: Commit pre-commit fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure()}}
+      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure'}}
       run: |
          git config user.name github-actions
          git config user.email github-actions@github.com
@@ -142,6 +143,7 @@ jobs:
          git commit -m 'fix format'
          git push origin ${{ github.ref }}
     - name: Check for fixes
+      id: tidy-fixes
       run: |
         if [[ $(git ls-files -m | wc -l) -eq 0 ]]; then
           exit 0
@@ -151,7 +153,7 @@ jobs:
         git diff -p
         exit 1
     - name: Commit clang-tidy-fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure()}}
+      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.tidy-fixes.conclusion == 'failure'}}
       run: |
          rm pattern files
          git config user.name github-actions
