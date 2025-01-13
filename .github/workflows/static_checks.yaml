@@ -3,7 +3,8 @@ run-name: Static checks
 on:
     pull_request:
       types: [opened,synchronize,labeled]
-
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 permissions:
   contents: write
 jobs:
@@ -12,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: ${{env.BRANCH_NAME}}
     - name: Install dependencies
       run: |
         sudo apt update
@@ -21,14 +24,14 @@ jobs:
         pre-commit install
     - name: Run pre-commit on all files
       run: pre-commit run --all --color always --verbose
-    - name: Commit clang-tidy-fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix' && failure() )}}
+    - name: Commit pre-commit fixes
+      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure()}}
       run: |
          git config user.name github-actions
          git config user.email github-actions@github.com
          git add .
          git commit -m 'fix format'
-         git push origin ${{ github.ref }}
+         git push origin ${{env.BRANCH_NAME}}
     - name: check for todo fixme note
       run: |
         NTODOS="$(grep -r 'TODO DONT MERGE' --exclude-dir=.github | wc -l)"
