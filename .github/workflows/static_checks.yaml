@@ -98,6 +98,8 @@ jobs:
     needs: [build-compilation-db]
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: ${{env.BRANCH_NAME}}
 
     - name: Add clang repo
       run: |
@@ -155,7 +157,7 @@ jobs:
          git config user.email github-actions@github.com
          git add .
          git commit -m 'fix format'
-         git push origin ${{ github.ref }}
+         git push origin ${{ github.BRANCH_NAME }}
   changelog:
     if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-Changelog')}}
     name: Changelog check
