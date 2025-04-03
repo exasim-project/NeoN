@@ -44,7 +44,7 @@ public:
     /**
      * @brief Retrieves the singleton instance of StaticIOComponents
      */
-    StaticIOComponents* instance();
+    static StaticIOComponents* instance();
 
     /**
      * @brief Deletes the singleton instance of StaticIOComponents

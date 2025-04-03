@@ -8,6 +8,9 @@
 namespace NeoFOAM::io
 {
 
+// forward declare
+class Config;
+
 /*
  * @class Core
  * @brief Type-erased interface to store the IO core like adios2::ADIOS.
@@ -29,6 +32,10 @@ public:
     Core(CoreType core) : pimpl_(std::make_unique<CoreModel<CoreType>>(std::move(core)))
     {}
 
+    std::shared_ptr<Config> createConfig() { return pimpl_->createConfig(); }
+
+    void voidConfig() { pimpl_->voidConfig(); }
+
 private:
 
     /*
@@ -37,6 +44,8 @@ private:
     struct CoreConcept
     {
         virtual ~CoreConcept() = default;
+        virtual std::shared_ptr<Config> createConfig() = 0;
+        virtual void voidConfig() = 0;
     };
 
     /*
@@ -46,6 +55,10 @@ private:
     struct CoreModel : CoreConcept
     {
         CoreModel(CoreType core) : core_(std::move(core)) {}
+
+        std::shared_ptr<Config> createConfig() { return core_->createConfig(); }
+        void voidConfig() { core_->voidConfig(); }
+
         CoreType core_;
     };
 

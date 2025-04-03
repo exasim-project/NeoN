@@ -19,6 +19,7 @@ target_sources(
           "core/database/oldTimeCollection.cpp"
           "core/dictionary.cpp"
           "core/demangle.cpp"
+          "core/io/adiosCore.cpp"
           "core/io/dataOutput.cpp"
           "core/io/staticIOComponents.cpp"
           "core/tokenList.cpp"
