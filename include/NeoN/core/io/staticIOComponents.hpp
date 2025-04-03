@@ -7,6 +7,10 @@
 #include <string>
 #include <memory>
 
+#include "core.hpp"
+#include "config.hpp"
+#include "engine.hpp"
+
 namespace NeoFOAM::io
 {
 
@@ -21,6 +25,14 @@ namespace NeoFOAM::io
 class StaticIOComponents
 {
     static std::unique_ptr<StaticIOComponents> ioComponents_;
+
+    using core_component = Core;
+    using config_map = std::unordered_map<std::string, std::shared_ptr<Config>>;
+    using engine_map = std::unordered_map<std::string, std::shared_ptr<Engine>>;
+
+    std::unique_ptr<core_component> core_;
+    std::unique_ptr<config_map> configMap_;
+    std::unique_ptr<engine_map> engineMap_;
 
     /**
      * @brief Private constructor of the singleton instance ioComponents_
