@@ -13,13 +13,18 @@ namespace NeoFOAM::io
 
 std::unique_ptr<adios2::ADIOS> AdiosCore::adiosPtr_;
 
-std::shared_ptr<Config> AdiosCore::createConfig()
+std::shared_ptr<Config> AdiosCore::createConfig(const std::string& name) const
 {
     StaticIOComponents* components = StaticIOComponents::instance();
     std::shared_ptr<Config> adiosConfig;
 
-    // TODO implement AdiosConfig, its construction and declaration
-    // std::shared_ptr<AdiosConfig> adiosConfig;
+    adiosConfig = components->at(name, adiosConfig);
+
+    if (!adiosConfig)
+    {
+        adiosConfig = std::make_shared<Config>(new Config(AdiosConfig(adiosPtr_->DeclareIO(name))));
+        components->insert(name, adiosConfig);
+    }
 
     return adiosConfig;
 }

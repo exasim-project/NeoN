@@ -29,8 +29,7 @@ public:
 
     AdiosCore() { init(); }
 
-    std::shared_ptr<Config> createConfig();
-    void voidConfig();
+    std::shared_ptr<Config> createConfig(const std::string& key) const;
 
 private:
 

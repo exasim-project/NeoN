@@ -32,9 +32,10 @@ public:
     Core(CoreType core) : pimpl_(std::make_unique<CoreModel<CoreType>>(std::move(core)))
     {}
 
-    std::shared_ptr<Config> createConfig() { return pimpl_->createConfig(); }
-
-    void voidConfig() { pimpl_->voidConfig(); }
+    std::shared_ptr<Config> createConfig(const std::string& name) const
+    {
+        return pimpl_->createConfig(name);
+    }
 
 private:
 
@@ -44,8 +45,7 @@ private:
     struct CoreConcept
     {
         virtual ~CoreConcept() = default;
-        virtual std::shared_ptr<Config> createConfig() = 0;
-        virtual void voidConfig() = 0;
+        virtual std::shared_ptr<Config> createConfig(const std::string& name) const = 0;
     };
 
     /*
@@ -56,8 +56,10 @@ private:
     {
         CoreModel(CoreType core) : core_(std::move(core)) {}
 
-        std::shared_ptr<Config> createConfig() { return core_->createConfig(); }
-        void voidConfig() { core_->voidConfig(); }
+        std::shared_ptr<Config> createConfig(const std::string& name) const
+        {
+            return core_->createConfig(name);
+        }
 
         CoreType core_;
     };
