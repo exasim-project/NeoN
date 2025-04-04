@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <type_traits>
 
 #include "core.hpp"
 #include "config.hpp"
@@ -39,6 +40,19 @@ class StaticIOComponents
      */
     StaticIOComponents();
 
+    template<typename ComponentType>
+    auto getMap(ComponentType const* const component) const
+    {
+        if constexpr (std::is_same<ComponentType, Config>::value)
+        {
+            return configMap_.get();
+        }
+        else
+        {
+            return engineMap_.get();
+        }
+    }
+
 public:
 
     /**
@@ -65,6 +79,33 @@ public:
      * @brief Destructor to finalize all remaining components
      */
     ~StaticIOComponents() = default;
+
+    /*
+     * @brief Retrieve an IO component with specific key from the respective map.
+     */
+    template<typename ComponentType>
+    auto at(const std::string& key, std::shared_ptr<ComponentType>& componentPtr)
+    {
+        auto componentMap = getMap(componentPtr.get());
+        if (componentMap->count(key))
+        {
+            componentPtr = componentMap->at(key);
+        }
+        return componentPtr;
+    }
+
+    /*
+     * @brief Add an IO component with specific key to the respective map.
+     */
+    template<typename ComponentType>
+    void insert(const std::string& key, std::shared_ptr<ComponentType>& componentPtr)
+    {
+        auto componentMap = getMap(componentPtr.get());
+        if (!componentMap->count(key))
+        {
+            componentMap->insert({key, componentPtr});
+        }
+    }
 };
 
 } // namespace NeoFOAM::io
