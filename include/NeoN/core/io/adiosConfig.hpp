@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include "engine.hpp"
+
 // forward declaration
 namespace adios2
 {
@@ -33,6 +35,8 @@ struct AdiosConfig
      * @param io The rvalue reference of an adios2:IO instance.
      */
     AdiosConfig(adios2::IO&& io) : configPtr_ {std::make_shared<adios2::IO>(io)} {};
+
+    std::shared_ptr<Engine> createEngine(const std::string& path) const;
 
 private:
 

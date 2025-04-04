@@ -20,6 +20,7 @@ target_sources(
           "core/dictionary.cpp"
           "core/demangle.cpp"
           "core/io/adiosCore.cpp"
+          "core/io/adiosConfig.cpp"
           "core/io/dataOutput.cpp"
           "core/io/staticIOComponents.cpp"
           "core/tokenList.cpp"
