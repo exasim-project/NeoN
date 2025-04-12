@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "NeoN/core/database/database.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/Domain.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 
 namespace NeoN::finiteVolume::cellCentred

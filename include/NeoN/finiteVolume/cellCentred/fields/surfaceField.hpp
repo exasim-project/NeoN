@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "NeoN/finiteVolume/cellCentred/fields/Domain.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -65,8 +65,7 @@ public:
         const DomainField<ValueType>& domainField,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, domainField),
-          boundaryConditions_(boundaryConditions)
+        : DomainMixin<ValueType>(exec, mesh, domainField), boundaryConditions_(boundaryConditions)
     {}
 
     /* @brief Constructor for a surfaceField with a given internal field
