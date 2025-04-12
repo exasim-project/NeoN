@@ -50,7 +50,7 @@ IndexType segmentsFromIntervals(const Field<IndexType>& intervals, Field<IndexTy
  * @tparam IndexType The type of the indices.
  */
 template<typename ValueType, typename IndexType = NeoN::localIdx>
-class SegmentedFieldView
+class SegmentedVectorView
 {
 public:
 
@@ -114,13 +114,13 @@ public:
 };
 
 /**
- * @class SegmentedField
+ * @class SegmentedVector
  * @brief Data structure that stores a segmented fields or a vector of vectors
  *
  * @ingroup Fields
  */
 template<typename ValueType, typename IndexType>
-class SegmentedField
+class SegmentedVector
 {
 public:
 
@@ -131,7 +131,7 @@ public:
      * @param size  size of the matrix
      * @param numSegments  number of segments
      */
-    SegmentedField(const Executor& exec, size_t size, size_t numSegments)
+    SegmentedVector(const Executor& exec, size_t size, size_t numSegments)
         : values_(exec, size), segments_(exec, numSegments + 1)
     {}
 
@@ -140,7 +140,7 @@ public:
      * @param intervals The intervals to create the segmented field from.
      * @note The intervals are the lengths of each segment
      */
-    SegmentedField(const Field<IndexType>& intervals)
+    SegmentedVector(const Field<IndexType>& intervals)
         : values_(intervals.exec(), 0),
           segments_(intervals.exec(), intervals.size() + 1, IndexType(0))
     {
@@ -154,7 +154,7 @@ public:
      * @param values The values of the segmented field.
      * @param segments The segments of the segmented field.
      */
-    SegmentedField(const Field<ValueType>& values, const Field<IndexType>& segments)
+    SegmentedVector(const Field<ValueType>& values, const Field<IndexType>& segments)
         : values_(values), segments_(segments)
     {
         NF_ASSERT(values.exec() == segments.exec(), "Executors are not the same.");
@@ -184,13 +184,13 @@ public:
      * @brief get a view of the segmented field
      * @return View of the fields
      */
-    [[nodiscard]] SegmentedFieldView<ValueType, IndexType> view() &
+    [[nodiscard]] SegmentedVectorView<ValueType, IndexType> view() &
     {
-        return SegmentedFieldView<ValueType, IndexType> {values_.view(), segments_.view()};
+        return SegmentedVectorView<ValueType, IndexType> {values_.view(), segments_.view()};
     }
 
     // ensures no return a span of a temporary object --> invalid memory access
-    [[nodiscard]] SegmentedFieldView<ValueType, IndexType> view() && = delete;
+    [[nodiscard]] SegmentedVectorView<ValueType, IndexType> view() && = delete;
 
     /**
      * @brief get the combined value and range spans of the segmented field

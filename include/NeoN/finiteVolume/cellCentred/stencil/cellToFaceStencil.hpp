@@ -4,7 +4,7 @@
 #pragma once
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/fields/segmentedField.hpp"
+#include "NeoN/fields/segmentedVector.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -16,7 +16,7 @@ public:
 
     CellToFaceStencil(const UnstructuredMesh& mesh);
 
-    SegmentedField<localIdx, localIdx> computeStencil() const;
+    SegmentedVector<localIdx, localIdx> computeStencil() const;
 
 private:
 

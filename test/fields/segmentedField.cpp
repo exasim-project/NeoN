@@ -15,7 +15,7 @@ TEST_CASE("segmentedField")
 
     SECTION("Constructor from sizes " + execName)
     {
-        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(exec, 10, 5);
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(exec, 10, 5);
         auto [values, segments] = segField.spans();
 
         REQUIRE(values.size() == 10);
@@ -30,7 +30,7 @@ TEST_CASE("segmentedField")
         NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(values, segments);
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(values, segments);
 
         REQUIRE(segField.values().size() == 10);
         REQUIRE(segField.segments().size() == 6);
@@ -94,7 +94,7 @@ TEST_CASE("segmentedField")
     SECTION("Constructor from list with offsets " + execName)
     {
         NeoN::Field<NeoN::localIdx> offsets(exec, {1, 2, 3, 4, 5});
-        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(offsets);
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(offsets);
 
         auto hostSegments = segField.segments().copyToHost();
         REQUIRE(hostSegments.view()[0] == 0);
