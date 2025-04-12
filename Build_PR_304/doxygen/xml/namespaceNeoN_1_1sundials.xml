@@ -1,0 +1,452 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1sundials" kind="namespace" language="C++">
+    <compoundname>NeoN::sundials</compoundname>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVector" prot="public">NeoN::sundials::SKVector</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorDefault" prot="public">NeoN::sundials::SKVectorDefault</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" prot="public">NeoN::sundials::SKVectorHostDefault</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorSerial" prot="public">NeoN::sundials::SKVectorSerial</innerclass>
+    <innernamespace refid="namespaceNeoN_1_1sundials_1_1detail">NeoN::sundials::detail</innernamespace>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceNeoN_1_1sundials_1a3cba60c69c27f51e31d139dde5107d4a" prot="public" static="no" mutable="no">
+        <type>auto</type>
+        <definition>auto NeoN::sundials::SUN_CONTEXT_DELETER</definition>
+        <argsstring></argsstring>
+        <name>SUN_CONTEXT_DELETER</name>
+        <qualifiedname>NeoN::sundials::SUN_CONTEXT_DELETER</qualifiedname>
+        <initializer>= [](SUNContext* ctx)
+{
+    if (ctx != nullptr)
+    {
+        SUNContext_Free(ctx);
+    }
+}</initializer>
+        <briefdescription>
+<para>Custom deleter for SUNContext shared pointers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the SUNContext to be freed, can be nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Safely frees the context if it&apos;s the last reference. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="29" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="29" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" prot="public" static="no" mutable="no">
+        <type>auto</type>
+        <definition>auto NeoN::sundials::SUN_ARK_DELETER</definition>
+        <argsstring></argsstring>
+        <name>SUN_ARK_DELETER</name>
+        <qualifiedname>NeoN::sundials::SUN_ARK_DELETER</qualifiedname>
+        <initializer>= [](char* ark)
+{
+    if (ark != nullptr)
+    {
+        void* arkodMem = reinterpret_cast&lt;void*&gt;(ark);
+        ARKodeFree(&amp;arkodMem);
+    }
+}</initializer>
+        <briefdescription>
+<para>Custom deleter for explicit type RK solvers (ERK, ARK, etc) for the unique pointers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ark</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the ark memory to be freed, can be nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Safely frees the ark memory. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="42" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="42" bodyend="49"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1a68a91418f8a8d589cfaccb8141c272dd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ARKODE_ERKTableID</type>
+        <definition>ARKODE_ERKTableID NeoN::sundials::stringToERKTable</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>stringToERKTable</name>
+        <qualifiedname>NeoN::sundials::stringToERKTable</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the explicit Runge-Kutta method. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>ARKODE_ERKTableID for the corresponding Butcher tableau. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Runtime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error for unsupported methods. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="57" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="57" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1ae6064e0770c671d010286c938be89cb1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SKVectorType</type>
+          </param>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::sundials::fieldToSunNVectorImpl</definition>
+        <argsstring>(const NeoN::Field&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</argsstring>
+        <name>fieldToSunNVectorImpl</name>
+        <qualifiedname>NeoN::sundials::fieldToSunNVectorImpl</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>N_Vector &amp;</type>
+          <declname>vector</declname>
+        </param>
+        <briefdescription>
+<para>Converts <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> <ref refid="classNeoN_1_1Field" kindref="compound">Field</ref> data to SUNDIALS N_Vector format. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>SKVectorType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SUNDIALS Kokkos vector type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field data type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> field </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vector</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target SUNDIALS N_Vector </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="warning"><para>Assumes matching initialization and size between field and vector </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="86" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="86" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1a3a7b81e6da4e3ead854b3900b6e6fa9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::sundials::fieldToSunNVector</definition>
+        <argsstring>(const NeoN::Field&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</argsstring>
+        <name>fieldToSunNVector</name>
+        <qualifiedname>NeoN::sundials::fieldToSunNVector</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>N_Vector &amp;</type>
+          <declname>vector</declname>
+        </param>
+        <briefdescription>
+<para>Dispatcher for field to N_Vector conversion based on executor type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field data type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> field </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vector</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target SUNDIALS N_Vector </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Runtime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error for unsupported executors </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="103" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="103" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1abfbd394d4224be9ffcb0d70deee8155c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SKVectorType</type>
+          </param>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::sundials::sunNVectorToFieldImpl</definition>
+        <argsstring>(const N_Vector &amp;vector, NeoN::Field&lt; ValueType &gt; &amp;field)</argsstring>
+        <name>sunNVectorToFieldImpl</name>
+        <qualifiedname>NeoN::sundials::sunNVectorToFieldImpl</qualifiedname>
+        <param>
+          <type>const N_Vector &amp;</type>
+          <declname>vector</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Converts SUNDIALS N_Vector data back to <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> <ref refid="classNeoN_1_1Field" kindref="compound">Field</ref> format. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>SKVectorType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SUNDIALS Kokkos vector type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field data type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vector</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source SUNDIALS N_Vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> field </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="warning"><para>Assumes matching initialization and size between vector and field </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="137" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="137" bodyend="144"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1a618a4b50d83dddfdf09b78ef2b0c55cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::sundials::sunNVectorToField</definition>
+        <argsstring>(const N_Vector &amp;vector, NeoN::Field&lt; ValueType &gt; &amp;field)</argsstring>
+        <name>sunNVectorToField</name>
+        <qualifiedname>NeoN::sundials::sunNVectorToField</qualifiedname>
+        <param>
+          <type>const N_Vector &amp;</type>
+          <declname>vector</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Dispatcher for N_Vector to field conversion based on executor type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field data type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vector</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source SUNDIALS N_Vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> field </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="153" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="153" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1sundials_1a0950f80132f6aced171dd2a47c8ae5b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SolutionFieldType</type>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int NeoN::sundials::explicitRKSolve</definition>
+        <argsstring>(sunrealtype t, N_Vector y, N_Vector ydot, void *userData)</argsstring>
+        <name>explicitRKSolve</name>
+        <qualifiedname>NeoN::sundials::explicitRKSolve</qualifiedname>
+        <param>
+          <type>sunrealtype</type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type>N_Vector</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>N_Vector</type>
+          <declname>ydot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>userData</declname>
+        </param>
+        <briefdescription>
+<para>Performs a single explicit Runge-Kutta stage evaluation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>t</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current time value </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current solution vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ydot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output RHS vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>userData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to Expression object </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on success, non-zero on error</para>
+</simplesect>
+This is our implementation of the RHS of explicit spacial integration, to be integrated in time. In our case user_data is a unique_ptr to an expression. In this function a &apos;working source&apos; vector is created and parsed to the explicitOperation, which should contain the field variable at the start of the time step. Currently &apos;multi-stage RK&apos; is not supported until y can be copied to this field. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="192" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" bodystart="192" bodyend="215"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp" line="21" column="1"/>
+  </compounddef>
+</doxygen>

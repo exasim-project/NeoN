@@ -1,0 +1,106 @@
+\doxysection{domain\+Field.\+hpp}
+\hypertarget{domainField_8hpp_source}{}\label{domainField_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/domainField.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/domainField.hpp}}
+\mbox{\hyperlink{domainField_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryFields_8hpp}{NeoN/fields/boundaryFields.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1DomainField}{00031}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField}}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00033}00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1DomainField_a26827f9fac2aa9f09dc7b600b2072b0f}{00035}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_a26827f9fac2aa9f09dc7b600b2072b0f}{DomainField}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}})}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}),\ internalField\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ 0),\ boundaryFields\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ 0,\ 0)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00037}00037\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1DomainField_afe98938c64e5c25947dbd7cfff06b82f}{00039}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_afe98938c64e5c25947dbd7cfff06b82f}{DomainField}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ \textcolor{keywordtype}{size\_t}\ nCells,\ std::vector<localIdx>\ offsets)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}),\ internalField\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ nCells),\ boundaryFields\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ offsets)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00041}00041\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00043}\mbox{\hyperlink{classNeoN_1_1DomainField_a2e3e0801023f6792610dace6caa943f3}{00043}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_a2e3e0801023f6792610dace6caa943f3}{DomainField}}(}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{internalField}},}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryFields}{BoundaryFields<ValueType>}}\&\ boundaryFields}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00047}00047\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}),\ internalField\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ \mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{internalField}}),\ boundaryFields\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ boundaryFields)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00049}00049\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1DomainField_ad547d4d084dc57305bb3d8f5da9adf9a}{00051}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_ad547d4d084dc57305bb3d8f5da9adf9a}{DomainField}}(}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{internalField}},\ std::vector<localIdx>\ offsets}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00053}00053\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}),\ internalField\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ \mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{internalField}}),\ boundaryFields\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ offsets)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00055}00055\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1DomainField_ab9e0c7f49c67ff0637593f88b43f2a60}{00057}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_ab9e0c7f49c67ff0637593f88b43f2a60}{DomainField}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}),\ internalField\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ mesh.nCells()),}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ boundaryFields\_(\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}},\ mesh.boundaryMesh().offset())}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00060}00060\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1DomainField_a4cdfdce5d355a4f5386a8e38a4b4ff26}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_a4cdfdce5d355a4f5386a8e38a4b4ff26}{DomainField}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ :\ exec\_(rhs.exec\_),\ internalField\_(rhs.internalField\_),\ boundaryFields\_(rhs.boundaryFields\_)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00065}00065\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1DomainField_a13bfec05eb766a1b93a0cec2deed89d8}{00068}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField_a13bfec05eb766a1b93a0cec2deed89d8}{DomainField}}(\mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ :\ exec\_(std::move(rhs.exec\_)),\ internalField\_(std::move(rhs.internalField\_)),}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ boundaryFields\_(std::move(rhs.boundaryFields\_))}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00071}00071\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1DomainField_ac1e8b81853952c0511195d444ada7b5e}{00074}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_ac1e8b81853952c0511195d444ada7b5e}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00075}00075\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ internalField\_\ =\ rhs.internalField\_;}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ boundaryFields\_\ =\ rhs.boundaryFields\_;}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00079}00079\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1DomainField_ab272eb211bcbf3d965383827d442aa3f}{00082}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_ab272eb211bcbf3d965383827d442aa3f}{operator=}}(\mbox{\hyperlink{classNeoN_1_1DomainField}{DomainField<ValueType>}}\&\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00083}00083\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ internalField\_\ =\ std::move(rhs.internalField\_);}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ boundaryFields\_\ =\ std::move(rhs.boundaryFields\_);}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00087}00087\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{00090}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_aa99d652bf9b9ca9d8dca18f250d75dbe}{internalField}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ internalField\_;\ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1DomainField_a348e25e3c7d1209b5beb70d5a35b270b}{00093}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a348e25e3c7d1209b5beb70d5a35b270b}{internalField}}()\ \{\ \textcolor{keywordflow}{return}\ internalField\_;\ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1DomainField_a00ab7992272ff3230a5a780b76453eff}{00096}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryFields}{BoundaryFields<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a00ab7992272ff3230a5a780b76453eff}{boundaryField}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryFields\_;\ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1DomainField_a47510ae245cc0667dc92f069c9e87b55}{00099}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryFields}{BoundaryFields<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a47510ae245cc0667dc92f069c9e87b55}{boundaryField}}()\ \{\ \textcolor{keywordflow}{return}\ boundaryFields\_;\ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00101}\mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{00101}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1DomainField_a7258f7e765be647ff2f3cce7e39f1d4a}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ exec\_;\ \}}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00103}00103\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00105}00105\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00106}00106\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\ internalField\_;}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00107}00107\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryFields}{BoundaryFields<ValueType>}}\ boundaryFields\_;}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00108}00108\ \};}
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{domainField_8hpp_source_l00111}00111\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}

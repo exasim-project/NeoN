@@ -1,0 +1,639 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="sundials_8hpp" kind="file" language="C++">
+    <compoundname>sundials.hpp</compoundname>
+    <includes local="no">concepts</includes>
+    <includes local="no">functional</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">sundials/sundials_nvector.h</includes>
+    <includes local="no">sundials/sundials_core.hpp</includes>
+    <includes local="no">nvector/nvector_serial.h</includes>
+    <includes local="no">nvector/nvector_kokkos.hpp</includes>
+    <includes local="no">arkode/arkode_arkstep.h</includes>
+    <includes local="no">arkode/arkode_erkstep.h</includes>
+    <includes refid="error_8hpp" local="yes">NeoN/core/error.hpp</includes>
+    <includes refid="parallelAlgorithms_8hpp" local="yes">NeoN/core/parallelAlgorithms.hpp</includes>
+    <includes refid="field_8hpp" local="yes">NeoN/fields/field.hpp</includes>
+    <includedby refid="rungeKutta_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/rungeKutta.hpp</includedby>
+    <incdepgraph>
+      <node id="11">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>NeoN/core/executor/CPUExecutor.hpp</label>
+        <link refid="CPUExecutor_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>NeoN/core/executor/GPUExecutor.hpp</label>
+        <link refid="GPUExecutor_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>NeoN/core/executor/executor.hpp</label>
+        <link refid="executor_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>NeoN/core/executor/serialExecutor.hpp</label>
+        <link refid="serialExecutor_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
+      </node>
+      <node id="18">
+        <label>NeoN/core/parallelAlgorithms.hpp</label>
+        <link refid="parallelAlgorithms_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>NeoN/core/primitives/label.hpp</label>
+        <link refid="label_8hpp"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>NeoN/core/primitives/scalar.hpp</label>
+        <link refid="scalar_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>NeoN/core/primitives/traits.hpp</label>
+        <link refid="traits_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>NeoN/core/primitives/vector.hpp</label>
+        <link refid="vector_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>NeoN/core/view.hpp</label>
+        <link refid="view_8hpp"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>NeoN/fields/field.hpp</label>
+        <link refid="field_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>NeoN/fields/fieldFreeFunctions.hpp</label>
+        <link refid="fieldFreeFunctions_8hpp"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>NeoN/fields/fieldTypeDefs.hpp</label>
+        <link refid="fieldTypeDefs_8hpp"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>NeoN/helpers/exceptions.hpp</label>
+        <link refid="exceptions_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp</label>
+        <link refid="sundials_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="9">
+        <label>arkode/arkode_arkstep.h</label>
+      </node>
+      <node id="10">
+        <label>arkode/arkode_erkstep.h</label>
+      </node>
+      <node id="2">
+        <label>concepts</label>
+      </node>
+      <node id="35">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>cstdlib</label>
+      </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
+      <node id="3">
+        <label>functional</label>
+      </node>
+      <node id="14">
+        <label>iostream</label>
+      </node>
+      <node id="30">
+        <label>limits</label>
+      </node>
+      <node id="4">
+        <label>memory</label>
+      </node>
+      <node id="8">
+        <label>nvector/nvector_kokkos.hpp</label>
+      </node>
+      <node id="7">
+        <label>nvector/nvector_serial.h</label>
+      </node>
+      <node id="31">
+        <label>span</label>
+      </node>
+      <node id="16">
+        <label>sstream</label>
+      </node>
+      <node id="15">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>sundials/sundials_core.hpp</label>
+      </node>
+      <node id="5">
+        <label>sundials/sundials_nvector.h</label>
+      </node>
+      <node id="33">
+        <label>tuple</label>
+      </node>
+      <node id="20">
+        <label>type_traits</label>
+      </node>
+      <node id="22">
+        <label>variant</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/rungeKutta.hpp</label>
+        <link refid="rungeKutta_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp</label>
+        <link refid="sundials_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorSerial" prot="public">NeoN::sundials::SKVectorSerial</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" prot="public">NeoN::sundials::SKVectorHostDefault</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVectorDefault" prot="public">NeoN::sundials::SKVectorDefault</innerclass>
+    <innerclass refid="classNeoN_1_1sundials_1_1SKVector" prot="public">NeoN::sundials::SKVector</innerclass>
+    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1sundials">NeoN::sundials</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1sundials_1_1detail">NeoN::sundials::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;concepts&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sundials/sundials_nvector.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sundials/sundials_core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;nvector/nvector_serial.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;nvector/nvector_kokkos.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;arkode/arkode_arkstep.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;arkode/arkode_erkstep.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="error_8hpp" kindref="compound">NeoN/core/error.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="parallelAlgorithms_8hpp" kindref="compound">NeoN/core/parallelAlgorithms.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="field_8hpp" kindref="compound">NeoN/fields/field.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="namespaceNeoN_1_1sundials" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1sundials" kindref="compound">NeoN::sundials</ref></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="namespaceNeoN_1_1sundials_1a3cba60c69c27f51e31d139dde5107d4a" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1a3cba60c69c27f51e31d139dde5107d4a" kindref="member">SUN_CONTEXT_DELETER</ref><sp/>=<sp/>[](SUNContext*<sp/>ctx)</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ctx<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SUNContext_Free(ctx);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" kindref="member">SUN_ARK_DELETER</ref><sp/>=<sp/>[](</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ark)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ark<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>arkodMem<sp/>=<sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(ark);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ARKodeFree(&amp;arkodMem);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="namespaceNeoN_1_1sundials_1a68a91418f8a8d589cfaccb8141c272dd" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>ARKODE_ERKTableID<sp/><ref refid="namespaceNeoN_1_1sundials_1a68a91418f8a8d589cfaccb8141c272dd" kindref="member">stringToERKTable</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>key)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;Forward-Euler&quot;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ARKODE_FORWARD_EULER_1_1;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;Heun&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Currently<sp/>unsupported<sp/>until<sp/>field<sp/>time<sp/>step-stage<sp/>indexing<sp/>resolved.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ARKODE_HEUN_EULER_2_1_2;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;Midpoint&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Currently<sp/>unsupported<sp/>until<sp/>field<sp/>time<sp/>step-stage<sp/>indexing<sp/>resolved.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ARKODE_EXPLICIT_MIDPOINT_EULER_2_1_2;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Unsupported<sp/>Runge-Kutta<sp/>time<sp/>integration<sp/>method<sp/>selectied:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>key<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.\n&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;Supported<sp/>methods<sp/>are:<sp/>Forward-Euler,<sp/>Heun,<sp/>Midpoint.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ARKODE_ERK_NONE;<sp/></highlight><highlight class="comment">//<sp/>avoids<sp/>compiler<sp/>warnings.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SKVectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="86" refid="namespaceNeoN_1_1sundials_1ae6064e0770c671d010286c938be89cb1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1ae6064e0770c671d010286c938be89cb1" kindref="member">fieldToSunNVectorImpl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field&lt;ValueType&gt;</ref>&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>view<sp/>=<sp/>::sundials::kokkos::GetVec&lt;SKVectorType&gt;(vector)-&gt;View();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fieldView<sp/>=<sp/>field.<ref refid="classNeoN_1_1Field_1aecca8888c63929dd3bd03e1af44c455a" kindref="member">view</ref>();</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a8eb6aca3b312b43897d752f061c55a25" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),<sp/>field.<ref refid="classNeoN_1_1Field_1a01ef1e3eb36707eb7f04770c185fa368" kindref="member">range</ref>(),<sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/>{<sp/>view(i)<sp/>=<sp/>fieldView[i];<sp/>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="103" refid="namespaceNeoN_1_1sundials_1a3a7b81e6da4e3ead854b3900b6e6fa9c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1a3a7b81e6da4e3ead854b3900b6e6fa9c" kindref="member">fieldToSunNVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field&lt;ValueType&gt;</ref>&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>CHECK<sp/>FOR<sp/>N_Vector<sp/>on<sp/>correct<sp/>space<sp/>in<sp/>DEBUG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fieldToSunNVectorImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::DefaultExecutionSpace&gt;&gt;(</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>field,<sp/>vector</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::CPUExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fieldToSunNVectorImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::DefaultHostExecutionSpace&gt;&gt;(</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>field,<sp/>vector</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::SerialExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fieldToSunNVectorImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::Serial&gt;&gt;(field,<sp/>vector);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Unsupported<sp/>NeoN<sp/>executor<sp/>for<sp/>field.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SKVectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="137" refid="namespaceNeoN_1_1sundials_1abfbd394d4224be9ffcb0d70deee8155c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1abfbd394d4224be9ffcb0d70deee8155c" kindref="member">sunNVectorToFieldImpl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field&lt;ValueType&gt;</ref>&amp;<sp/>field)</highlight></codeline>
+<codeline lineno="138"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>view<sp/>=<sp/>::sundials::kokkos::GetVec&lt;SKVectorType&gt;(vector)-&gt;View();</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType*<sp/>fieldData<sp/>=<sp/>field.<ref refid="classNeoN_1_1Field_1aa201922d18563a3dbc561c41f9409a73" kindref="member">data</ref>();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a8eb6aca3b312b43897d752f061c55a25" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),<sp/>field.<ref refid="classNeoN_1_1Field_1a01ef1e3eb36707eb7f04770c185fa368" kindref="member">range</ref>(),<sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/>{<sp/>fieldData[i]<sp/>=<sp/>view(i);<sp/>}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="153" refid="namespaceNeoN_1_1sundials_1a618a4b50d83dddfdf09b78ef2b0c55cd" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1a618a4b50d83dddfdf09b78ef2b0c55cd" kindref="member">sunNVectorToField</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field&lt;ValueType&gt;</ref>&amp;<sp/>field)</highlight></codeline>
+<codeline lineno="154"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sunNVectorToFieldImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::DefaultExecutionSpace&gt;&gt;(</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector,<sp/>field</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::CPUExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sunNVectorToFieldImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::DefaultHostExecutionSpace&gt;&gt;(</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector,<sp/>field</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::SerialExecutor&gt;(field.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sunNVectorToFieldImpl&lt;::sundials::kokkos::Vector&lt;Kokkos::Serial&gt;&gt;(vector,<sp/>field);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Unsupported<sp/>NeoN<sp/>executor<sp/>for<sp/>field.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="175"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionFieldType&gt;</highlight></codeline>
+<codeline lineno="192" refid="namespaceNeoN_1_1sundials_1a0950f80132f6aced171dd2a47c8ae5b8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1a0950f80132f6aced171dd2a47c8ae5b8" kindref="member">explicitRKSolve</ref>([[maybe_unused]]<sp/>sunrealtype<sp/>t,<sp/>N_Vector<sp/>y,<sp/>N_Vector<sp/>ydot,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>userData)</highlight></codeline>
+<codeline lineno="193"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pointer<sp/>wrangling</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionFieldType::FieldValueType;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">NeoN::dsl::Expression&lt;ValueType&gt;</ref>*<sp/>pdeExpre<sp/>=</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">NeoN::dsl::Expression&lt;ValueType&gt;</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(userData);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>sunrealtype*<sp/>yDotArray<sp/>=<sp/>N_VGetArrayPointer(ydot);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/>sunrealtype*<sp/>yArray<sp/>=<sp/>N_VGetArrayPointer(y);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>yDotArray<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/>yArray<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/>pdeExpre<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>dereference<sp/>pointers<sp/>in<sp/>sundails.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(N_VGetLength(y));</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Copy<sp/>initial<sp/>value<sp/>from<sp/>y<sp/>to<sp/>source.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">NeoN::Field&lt;NeoN::scalar&gt;</ref><sp/>source<sp/>=<sp/>pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1aee43e04f4d34af1e1eed3e7f3723b9c6" kindref="member">explicitOperation</ref>(size)<sp/>*<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>compute<sp/>spatial</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" kindref="member">exec</ref>()))</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::fence();</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1sundials_1a3a7b81e6da4e3ead854b3900b6e6fa9c" kindref="member">NeoN::sundials::fieldToSunNVector</ref>(source,<sp/>ydot);<sp/></highlight><highlight class="comment">//<sp/>assign<sp/>rhs<sp/>to<sp/>ydot.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217" refid="namespaceNeoN_1_1sundials_1_1detail" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail</highlight></codeline>
+<codeline lineno="218"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Vector&gt;</highlight></codeline>
+<codeline lineno="228" refid="namespaceNeoN_1_1sundials_1_1detail_1a52acc68c0e3f68ab978ecd84d90a33e8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a52acc68c0e3f68ab978ecd84d90a33e8" kindref="member">initNVector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="229"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>vec.initNVector(size,<sp/>context);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Vector&gt;</highlight></codeline>
+<codeline lineno="240" refid="namespaceNeoN_1_1sundials_1_1detail_1a0a28e9139d1ccea532882e167a02ff6b" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a0a28e9139d1ccea532882e167a02ff6b" kindref="member">sunNVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="241"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vec.sunNVector();</highlight></codeline>
+<codeline lineno="243"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Vector&gt;</highlight></codeline>
+<codeline lineno="252" refid="namespaceNeoN_1_1sundials_1_1detail_1a48ef81013e482acd9a9591aa01ad3903" refkind="member"><highlight class="normal">N_Vector&amp;<sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a0a28e9139d1ccea532882e167a02ff6b" kindref="member">sunNVector</ref>(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="253"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vec.sunNVector();</highlight></codeline>
+<codeline lineno="255"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="256"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="264" refid="classNeoN_1_1sundials_1_1SKVectorSerial" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref></highlight></codeline>
+<codeline lineno="265"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a7a45c767b2d0658e09dd2730fd6f88e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a7a45c767b2d0658e09dd2730fd6f88e1" kindref="member">SKVectorSerial</ref>()<sp/>{};</highlight></codeline>
+<codeline lineno="269" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1aa6f025e599967776ac03c72a71e648b5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1aa6f025e599967776ac03c72a71e648b5" kindref="member">~SKVectorSerial</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="270" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1adc56ce2614cc53e7ec45b89f9fe456c7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1adc56ce2614cc53e7ec45b89f9fe456c7" kindref="member">SKVectorSerial</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(other.kvector_),<sp/>svector_(other.kvector_)<sp/>{};</highlight></codeline>
+<codeline lineno="272" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1af3200d881b83790d51c4b54e63fc5e4e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1af3200d881b83790d51c4b54e63fc5e4e" kindref="member">SKVectorSerial</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;&amp;<sp/>other)<sp/>noexcept</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(std::move(other.kvector_)),<sp/>svector_(std::move(other.svector_))<sp/>{};</highlight></codeline>
+<codeline lineno="274" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1aae0122869c7cc1fbcaab56391223e773" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1aae0122869c7cc1fbcaab56391223e773" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="275" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a675ca4463ca7cb74982690b8864cfc48" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a675ca4463ca7cb74982690b8864cfc48" kindref="member">operator=</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial</ref>&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="278" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ab521117638773d83b83f6ef73465bb37" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ab521117638773d83b83f6ef73465bb37" kindref="member">KVector</ref><sp/>=<sp/>::sundials::kokkos::Vector&lt;Kokkos::Serial&gt;;</highlight></codeline>
+<codeline lineno="279" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ac96e232ae69c2da0142be47323fbb4ce" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ac96e232ae69c2da0142be47323fbb4ce" kindref="member">initNVector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ab521117638773d83b83f6ef73465bb37" kindref="member">KVector</ref>(size,<sp/>*context);</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="284" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ae0168a616064b096e3ca499d220bcda7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ae0168a616064b096e3ca499d220bcda7" kindref="member">sunNVector</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="285" refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a48ead40d22a84f6102f89d9bb175d5f9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1a48ead40d22a84f6102f89d9bb175d5f9" kindref="member">sunNVector</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial_1ab521117638773d83b83f6ef73465bb37" kindref="member">KVector</ref><sp/>kvector_<sp/>{};<sp/></highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector<sp/>svector_<sp/>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="291"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="299" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref></highlight></codeline>
+<codeline lineno="300"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="303" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af67061fb545b5437d51cf0cc41d1df2f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af67061fb545b5437d51cf0cc41d1df2f" kindref="member">KVector</ref><sp/>=<sp/>::sundials::kokkos::Vector&lt;Kokkos::DefaultHostExecutionSpace&gt;;</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"></highlight></codeline>
+<codeline lineno="305" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1acef70f361536f455884d83e75fb51e36" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1acef70f361536f455884d83e75fb51e36" kindref="member">SKVectorHostDefault</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="306" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa86cfe4f2c9170e4049ee797e9210000" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa86cfe4f2c9170e4049ee797e9210000" kindref="member">~SKVectorHostDefault</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="307" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a6f187d571b89a35fd3bfd7de71042814" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a6f187d571b89a35fd3bfd7de71042814" kindref="member">SKVectorHostDefault</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(other.kvector_),<sp/>svector_(other.kvector_)<sp/>{};</highlight></codeline>
+<codeline lineno="309" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a671bc567a100ecd8c174b6d86eab4d1b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a671bc567a100ecd8c174b6d86eab4d1b" kindref="member">SKVectorHostDefault</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;&amp;<sp/>other)<sp/>noexcept</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(std::move(other.kvector_)),<sp/>svector_(std::move(other.svector_))<sp/>{};</highlight></codeline>
+<codeline lineno="311" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af7daf01d27d8cfbe51a74a7c252655f2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af7daf01d27d8cfbe51a74a7c252655f2" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="312" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa83c672c014efdd042b716ca6e274b6e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa83c672c014efdd042b716ca6e274b6e" kindref="member">operator=</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault</ref>&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a10f9fb15b4079fcfc5137b673b0b67a4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a10f9fb15b4079fcfc5137b673b0b67a4" kindref="member">initNVector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af67061fb545b5437d51cf0cc41d1df2f" kindref="member">KVector</ref>(size,<sp/>*context);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="319" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa1a18aabe941eea31441ffbc8dcd4e19" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1aa1a18aabe941eea31441ffbc8dcd4e19" kindref="member">sunNVector</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="320" refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a27a9b2f7158f467ce5226428e720b08e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1a27a9b2f7158f467ce5226428e720b08e" kindref="member">sunNVector</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault_1af67061fb545b5437d51cf0cc41d1df2f" kindref="member">KVector</ref><sp/>kvector_<sp/>{};<sp/></highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector<sp/>svector_<sp/>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="326"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"></highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="334" refid="classNeoN_1_1sundials_1_1SKVectorDefault" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref></highlight></codeline>
+<codeline lineno="335"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"></highlight></codeline>
+<codeline lineno="338" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a0d4dc1c9b766d3214b8af9093b31bf91" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a0d4dc1c9b766d3214b8af9093b31bf91" kindref="member">KVector</ref><sp/>=<sp/>::sundials::kokkos::Vector&lt;Kokkos::DefaultExecutionSpace&gt;;</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"></highlight></codeline>
+<codeline lineno="340" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a8a834821d8e59d609c60a652bcf2ed72" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a8a834821d8e59d609c60a652bcf2ed72" kindref="member">SKVectorDefault</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="341" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a04d67906a1df5cc9ffa70bb3353a1b5a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a04d67906a1df5cc9ffa70bb3353a1b5a" kindref="member">~SKVectorDefault</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="342" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a839346ae8a03e4ee26255ff73a7a653c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a839346ae8a03e4ee26255ff73a7a653c" kindref="member">SKVectorDefault</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(other.kvector_),<sp/>svector_(other.kvector_)<sp/>{};</highlight></codeline>
+<codeline lineno="344" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a2015ef19a47b979b1bb2937e972ac886" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a2015ef19a47b979b1bb2937e972ac886" kindref="member">SKVectorDefault</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;&amp;<sp/>other)<sp/>noexcept</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>kvector_(std::move(other.kvector_)),<sp/>svector_(std::move(other.svector_))<sp/>{};</highlight></codeline>
+<codeline lineno="346" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a5e4ea2f9d84a4049fd2c7e5442acd2e8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a5e4ea2f9d84a4049fd2c7e5442acd2e8" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="347" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1aedeb29f398aff7975e6301ffb73e7892" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1aedeb29f398aff7975e6301ffb73e7892" kindref="member">operator=</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault</ref>&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"></highlight></codeline>
+<codeline lineno="349" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a31aee791ddd4dfb1ab1ca7514eafcb5a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a31aee791ddd4dfb1ab1ca7514eafcb5a" kindref="member">initNVector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a0d4dc1c9b766d3214b8af9093b31bf91" kindref="member">KVector</ref>(size,<sp/>*context);</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight></codeline>
+<codeline lineno="355" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a8418d9d5599f895a932bc3be0b9e01cb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a8418d9d5599f895a932bc3be0b9e01cb" kindref="member">sunNVector</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight></codeline>
+<codeline lineno="357" refid="classNeoN_1_1sundials_1_1SKVectorDefault_1aa1a3ad0c0c4b5f96f876ea9b9340d097" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1aa1a3ad0c0c4b5f96f876ea9b9340d097" kindref="member">sunNVector</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>svector_;<sp/>};</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"></highlight></codeline>
+<codeline lineno="359"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"></highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault_1a0d4dc1c9b766d3214b8af9093b31bf91" kindref="member">KVector</ref><sp/>kvector_<sp/>{};<sp/></highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector<sp/>svector_<sp/>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="363"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight></codeline>
+<codeline lineno="371"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="372" refid="classNeoN_1_1sundials_1_1SKVector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref></highlight></codeline>
+<codeline lineno="373"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"></highlight></codeline>
+<codeline lineno="376" refid="classNeoN_1_1sundials_1_1SKVector_1a6f44a918379395ebcb47572213e7ef20" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerialV</ref><sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorSerial" kindref="compound">SKVectorSerial&lt;ValueType&gt;</ref>;</highlight></codeline>
+<codeline lineno="377" refid="classNeoN_1_1sundials_1_1SKVector_1a8bf00f10e8ac0094fa7289f3ef88f0fc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefaultV</ref><sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorHostDefault" kindref="compound">SKVectorHostDefault&lt;ValueType&gt;</ref>;</highlight></codeline>
+<codeline lineno="378" refid="classNeoN_1_1sundials_1_1SKVector_1ae86efaf7da383d97231f1fdeed3598d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKDefaultVectorV</ref><sp/>=<sp/><ref refid="classNeoN_1_1sundials_1_1SKVectorDefault" kindref="compound">SKVectorDefault&lt;ValueType&gt;</ref>;</highlight></codeline>
+<codeline lineno="379" refid="classNeoN_1_1sundials_1_1SKVector_1ad31adb2bd937b354f20430e5ed0c4fd0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1sundials_1_1SKVector_1ad31adb2bd937b354f20430e5ed0c4fd0" kindref="member">SKVectorVariant</ref><sp/>=<sp/>std::variant&lt;SKVectorSerialV,<sp/>SKVectorHostDefaultV,<sp/>SKDefaultVectorV&gt;;</highlight></codeline>
+<codeline lineno="380"><highlight class="normal"></highlight></codeline>
+<codeline lineno="384" refid="classNeoN_1_1sundials_1_1SKVector_1a55efd18a8ac8a7f87439b1c58cc30a7d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a55efd18a8ac8a7f87439b1c58cc30a7d" kindref="member">SKVector</ref>()<sp/>{<sp/>vector_.template<sp/>emplace&lt;SKVectorHostDefaultV&gt;();<sp/>};</highlight></codeline>
+<codeline lineno="385"><highlight class="normal"></highlight></codeline>
+<codeline lineno="389" refid="classNeoN_1_1sundials_1_1SKVector_1a9dd70282bf6718a25e8ad810a4f707e7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a9dd70282bf6718a25e8ad810a4f707e7" kindref="member">~SKVector</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="390"><highlight class="normal"></highlight></codeline>
+<codeline lineno="395" refid="classNeoN_1_1sundials_1_1SKVector_1a913b7a91de436ab615affd6f507fc578" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a913b7a91de436ab615affd6f507fc578" kindref="member">SKVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="396"><highlight class="normal"></highlight></codeline>
+<codeline lineno="400" refid="classNeoN_1_1sundials_1_1SKVector_1a7826492b421fe6765099271e2b872623" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a7826492b421fe6765099271e2b872623" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"></highlight></codeline>
+<codeline lineno="406" refid="classNeoN_1_1sundials_1_1SKVector_1a90f0b55a7a83e627495a5698b3a379c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a90f0b55a7a83e627495a5698b3a379c2" kindref="member">SKVector</ref>(<ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;&amp;)<sp/>noexcept<sp/>=<sp/>default;</highlight></codeline>
+<codeline lineno="407"><highlight class="normal"></highlight></codeline>
+<codeline lineno="411" refid="classNeoN_1_1sundials_1_1SKVector_1a842b6445b72ad55903ec61f21b05c2cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;<sp/>operator=(<ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">SKVector</ref>&amp;&amp;)<sp/>noexcept<sp/>=<sp/>delete;</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"></highlight></codeline>
+<codeline lineno="417" refid="classNeoN_1_1sundials_1_1SKVector_1a7dc25bd6dec0981fad907c94c66da645" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a7dc25bd6dec0981fad907c94c66da645" kindref="member">setExecutor</ref>(const<sp/><ref refid="namespaceNeoN" kindref="compound">NeoN</ref>::<ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/>exec)</highlight></codeline>
+<codeline lineno="418"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="419"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(exec))</highlight></codeline>
+<codeline lineno="420"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="421"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector_.template<sp/>emplace&lt;SKDefaultVectorV&gt;();</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::CPUExecutor&gt;(exec))</highlight></codeline>
+<codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector_.template<sp/>emplace&lt;SKVectorHostDefaultV&gt;();</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="428"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::SerialExecutor&gt;(exec))</highlight></codeline>
+<codeline lineno="430"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="431"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector_.template<sp/>emplace&lt;SKVectorSerialV&gt;();</highlight></codeline>
+<codeline lineno="432"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="433"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="434"><highlight class="normal"></highlight></codeline>
+<codeline lineno="435"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight></codeline>
+<codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Unsupported<sp/>NeoN<sp/>executor:<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>std::visit([](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>e)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>e.name();<sp/>},<sp/>exec)<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="440"><highlight class="normal"></highlight></codeline>
+<codeline lineno="446" refid="classNeoN_1_1sundials_1_1SKVector_1a1728457d156cf45c87eaba4bf32ea7a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a1728457d156cf45c87eaba4bf32ea7a1" kindref="member">initNVector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::visit(</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[size,<sp/>&amp;context](</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>vec)<sp/>{<sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a52acc68c0e3f68ab978ecd84d90a33e8" kindref="member">detail::initNVector</ref>(size,<sp/>context,<sp/>vec);<sp/>},<sp/>vector_</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="452"><highlight class="normal"></highlight></codeline>
+<codeline lineno="457" refid="classNeoN_1_1sundials_1_1SKVector_1a3741786c8803463c8474313439d4f62e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a3741786c8803463c8474313439d4f62e" kindref="member">sunNVector</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="458"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="459"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::visit(</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>vec)<sp/>-&gt;<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a0a28e9139d1ccea532882e167a02ff6b" kindref="member">detail::sunNVector</ref>(vec);<sp/>},<sp/>vector_</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="463"><highlight class="normal"></highlight></codeline>
+<codeline lineno="468" refid="classNeoN_1_1sundials_1_1SKVector_1a51f1a5ba7d6887820486572983a39296" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>N_Vector&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a51f1a5ba7d6887820486572983a39296" kindref="member">sunNVector</ref>()</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::visit([](</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>vec)<sp/>-&gt;<sp/>N_Vector&amp;<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1sundials_1_1detail_1a0a28e9139d1ccea532882e167a02ff6b" kindref="member">detail::sunNVector</ref>(vec);<sp/>},<sp/>vector_);</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"></highlight></codeline>
+<codeline lineno="477" refid="classNeoN_1_1sundials_1_1SKVector_1a6eabd2e44193e47f31b086d5ca43d4e3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1ad31adb2bd937b354f20430e5ed0c4fd0" kindref="member">SKVectorVariant</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a6eabd2e44193e47f31b086d5ca43d4e3" kindref="member">variant</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vector_;<sp/>}</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"></highlight></codeline>
+<codeline lineno="483" refid="classNeoN_1_1sundials_1_1SKVector_1a0f9b14c6f6d4ee27a621c9dd8089c06b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1ad31adb2bd937b354f20430e5ed0c4fd0" kindref="member">SKVectorVariant</ref>&amp;<sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1a0f9b14c6f6d4ee27a621c9dd8089c06b" kindref="member">variant</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vector_;<sp/>}</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"></highlight></codeline>
+<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector_1ad31adb2bd937b354f20430e5ed0c4fd0" kindref="member">SKVectorVariant</ref><sp/>vector_;<sp/></highlight></codeline>
+<codeline lineno="488"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="489"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp"/>
+  </compounddef>
+</doxygen>
