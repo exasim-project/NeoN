@@ -62,11 +62,11 @@ We provide a set of unit tests which can be executed via ctest or
     cmake --build . --target test
 
 
-## Integration with OpenFOAM
+## Integration with other CFD Frameworks
 
 Currently, NeoN is not a standalone CFD Framework.
-It is designed to be used within OpenFOAM.
-Examples how to integrate NeoN into OpenFOAM and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
+It is designed to be used with other CFD Frameworks.
+Examples how to integrate NeoN into Frmeworks and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
 
 ## Documentation
 
