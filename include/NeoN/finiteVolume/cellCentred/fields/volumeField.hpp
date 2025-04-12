@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "NeoN/core/database/database.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/geometricField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/Domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -17,13 +17,13 @@ namespace NeoN::finiteVolume::cellCentred
  * @brief Represents a volume field in a finite volume method.
  *
  * The VolumeField class is a template class that represents a cell-centered field in a finite
- * volume method. It inherits from the GeometricFieldMixin class and provides methods for correcting
+ * volume method. It inherits from the DomainMixin class and provides methods for correcting
  * boundary conditions.
  *
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class VolumeField : public GeometricFieldMixin<ValueType>
+class VolumeField : public DomainMixin<ValueType>
 {
 
 public:
@@ -45,7 +45,7 @@ public:
         const UnstructuredMesh& mesh,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(
+        : DomainMixin<ValueType>(
             exec,
             name,
             mesh,
@@ -72,7 +72,7 @@ public:
         const Field<ValueType>& internalField,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(
+        : DomainMixin<ValueType>(
             exec,
             name,
             mesh,
@@ -99,7 +99,7 @@ public:
         const BoundaryFields<ValueType>& boundaryFields,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(exec, name, mesh, internalField, boundaryFields), key(""),
+        : DomainMixin<ValueType>(exec, name, mesh, internalField, boundaryFields), key(""),
           fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
     {}
 
@@ -125,12 +125,12 @@ public:
         std::string dbKey,
         std::string collectionName
     )
-        : GeometricFieldMixin<ValueType>(exec, fieldName, mesh, domainField), key(dbKey),
+        : DomainMixin<ValueType>(exec, fieldName, mesh, domainField), key(dbKey),
           fieldCollectionName(collectionName), boundaryConditions_(boundaryConditions), db_(&db)
     {}
 
     VolumeField(const VolumeField& other)
-        : GeometricFieldMixin<ValueType>(other), key(other.key),
+        : DomainMixin<ValueType>(other), key(other.key),
           fieldCollectionName(other.fieldCollectionName),
           boundaryConditions_(other.boundaryConditions_), db_(other.db_)
     {}

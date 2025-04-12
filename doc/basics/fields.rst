@@ -16,8 +16,8 @@ NeoN implements several field classes:
 
 Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:
 
-- ``GeometricFieldMixin<ValueType>`` Mixin class combining a ``DomainField`` and the corresponding mesh.
-- ``VolumeField<ValueType>`` Uses the GeometricFieldMixin and implements finite volume specific members, including the notion of concrete boundary condiditons
+- ``DomainMixin<ValueType>`` Mixin class combining a ``DomainField`` and the corresponding mesh.
+- ``VolumeField<ValueType>`` Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons
 - ``SurfaceField<ValueType>`` The surface field equivalent to ``VolumeField``
 
 The Field<ValueType> class
@@ -104,7 +104,7 @@ Cell Centred Specific Fields
 
 Within in the ``finiteVolume/cellCentred`` folder and the namespace
 ``NeoN::finiteVolume::cellCentred`` two specific field types, namely the ``VolumeField`` and the ``SurfaceField`` are implemented.
-Both derive from the ``GeometricFieldMixin`` a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the ``DomainField`` data member.
+Both derive from the ``DomainMixin`` a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the ``DomainField`` data member.
 
 ``DomainField`` acts as the fundamental data container within this structure, offering both read and write to the ``internalField`` and  ``boundaryFields`` data structure holding actual boundary data.
 

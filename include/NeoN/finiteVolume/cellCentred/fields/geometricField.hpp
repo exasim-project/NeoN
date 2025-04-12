@@ -13,17 +13,17 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 /**
- * @class GeometricFieldMixin
+ * @class DomainMixin
  * @brief This class represents a mixin for a geometric field.
  *
- * The GeometricFieldMixin class provides a set of common operations and accessors for a geometric
+ * The DomainMixin class provides a set of common operations and accessors for a geometric
  * field. It is designed to be used as a mixin in other classes that require geometric field
  * functionality.
  *
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class GeometricFieldMixin
+class DomainMixin
 {
 public:
 
@@ -31,14 +31,14 @@ public:
     typedef ValueType ElementType;
 
     /**
-     * @brief Constructor for GeometricFieldMixin.
+     * @brief Constructor for DomainMixin.
      *
      * @param exec The executor object.
      * @param fieldName The name of the field.
      * @param mesh The unstructured mesh object.
      * @param domainField The domain field object.
      */
-    GeometricFieldMixin(
+    DomainMixin(
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
@@ -48,7 +48,7 @@ public:
     {}
 
     /**
-     * @brief Constructor for GeometricFieldMixin.
+     * @brief Constructor for DomainMixin.
      *
      * @param exec The executor object.
      * @param fieldName The name of the corresponding field.
@@ -56,7 +56,7 @@ public:
      * @param internalField The internal field object.
      * @param boundaryFields The boundary field object.
      */
-    GeometricFieldMixin(
+    DomainMixin(
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
