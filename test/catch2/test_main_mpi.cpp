@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include "catch2/catch_session.hpp"
 #include "catch2/catch_test_macros.hpp"
@@ -7,7 +7,7 @@
 #include "catch2/reporters/catch_reporter_registrars.hpp"
 #include "Kokkos_Core.hpp"
 
-#include "NeoFOAM/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/environment.hpp"
 
 #include "mpiReporter.hpp"
 #include "mpiSerialization.hpp"
@@ -16,7 +16,7 @@ CATCH_REGISTER_REPORTER("mpi", MpiReporter);
 
 int main(int argc, char* argv[])
 {
-    NeoFOAM::mpi::MPIInit mpi(argc, argv);
+    NeoN::mpi::MPIInit mpi(argc, argv);
 
     MPI_Comm_rank(COMM, &RANK);
     MPI_Comm_size(COMM, &COMM_SIZE);

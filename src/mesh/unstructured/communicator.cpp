@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
-#include "NeoFOAM/mesh/unstructured/communicator.hpp"
+// SPDX-FileCopyrightText: 2023 NeoN authors
+#include "NeoN/mesh/unstructured/communicator.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 bool Communicator::isComplete(std::string commName)

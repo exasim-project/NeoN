@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 
-add_library(NeoFOAM ${NeoFOAM_LIB_TYPE})
+add_library(NeoN ${NeoN_LIB_TYPE})
 
 include(GNUInstallDirs)
 
-if(NEOFOAM_ENABLE_CUDA)
-  set_source_files_properties(${NeoFOAM_SRCS} PROPERTIES LANGUAGE CUDA)
+if(NeoN_ENABLE_CUDA)
+  set_source_files_properties(${NeoN_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
 target_sources(
-  NeoFOAM
+  NeoN
   PRIVATE "core/primitives/vector.cpp"
           "core/time.cpp"
           "core/database/database.cpp"
@@ -50,30 +50,29 @@ target_sources(
           "timeIntegration/timeIntegration.cpp"
           "timeIntegration/rungeKutta.cpp")
 
-if(NEOFOAM_ENABLE_MPI_SUPPORT)
-  target_sources(NeoFOAM PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
-                                 "mesh/unstructured/communicator.cpp")
+if(NeoN_ENABLE_MPI_SUPPORT)
+  target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
+                              "mesh/unstructured/communicator.cpp")
 endif()
 
-if(NEOFOAM_WITH_GINKGO)
-  target_sources(NeoFOAM PRIVATE "linearAlgebra/ginkgo.cpp")
+if(NeoN_WITH_GINKGO)
+  target_sources(NeoN PRIVATE "linearAlgebra/ginkgo.cpp")
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)
-enable_sanitizers(
-  NeoFOAM NEOFOAM_ENABLE_SANITIZE_ADDRESS NEOFOAM_ENABLE_SANITIZE_LEAK NEOFOAM_ENABLE_SANITIZE_UB
-  NEOFOAM_ENABLE_SANITIZE_THREAD NEOFOAM_ENABLE_SANITIZE_MEMORY)
+enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
+                  NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
 
-target_link_libraries(NeoFOAM PRIVATE neofoam_warnings neofoam_options)
-target_link_libraries(NeoFOAM PUBLIC NeoFOAM_public_api Kokkos::kokkos sundials_core
-                                     sundials_arkode sundials_nvecserial cpptrace::cpptrace)
+target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
+target_link_libraries(NeoN PUBLIC NeoN_public_api Kokkos::kokkos sundials_core sundials_arkode
+                                  sundials_nvecserial cpptrace::cpptrace)
 
-if(NEOFOAM_ENABLE_MPI_SUPPORT)
-  target_link_libraries(NeoFOAM PUBLIC MPI::MPI_CXX)
+if(NeoN_ENABLE_MPI_SUPPORT)
+  target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
 endif()
 if(WIN32)
   set_target_properties(
-    NeoFOAM
+    NeoN
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<0:>
                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<0:>
                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/$<0:>)

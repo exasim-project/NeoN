@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief free standing function implementation of the divergence operator
@@ -105,7 +105,7 @@ void computeDivExp(
         exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
     );
     // TODO: remove or implement
-    // fill(phif.internalField(), NeoFOAM::zero<ValueType>::value);
+    // fill(phif.internalField(), NeoN::zero<ValueType>::value);
     surfInterp.interpolate(faceFlux, phi, phif);
 
     // TODO: currently we just copy the boundary values over

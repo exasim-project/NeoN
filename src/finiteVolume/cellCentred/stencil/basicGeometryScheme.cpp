@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 BasicGeometryScheme::BasicGeometryScheme(const UnstructuredMesh& mesh)
@@ -138,4 +138,4 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     NF_ERROR_EXIT("Not implemented");
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

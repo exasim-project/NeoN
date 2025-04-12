@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>

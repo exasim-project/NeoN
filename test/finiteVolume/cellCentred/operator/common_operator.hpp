@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 template<typename TestType>
 auto setup_operator_test(const UnstructuredMesh& mesh)
 {
-    namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
 
     auto exec = mesh.exec();
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);

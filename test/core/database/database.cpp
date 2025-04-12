@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,18 +7,18 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 #include "customTestCollection.hpp"
 
 CustomDocument createDoc(std::string name, int value)
 {
-    return CustomDocument(NeoFOAM::Document({{"name", name}, {"testValue", value}}));
+    return CustomDocument(NeoN::Document({{"name", name}, {"testValue", value}}));
 }
 
 TEST_CASE("Database")
 {
-    NeoFOAM::Database db;
+    NeoN::Database db;
 
     SECTION("insert")
     {
@@ -86,7 +86,7 @@ TEST_CASE("Database")
         {
 
             std::vector<std::string> foundKeys =
-                collection1.find([](const NeoFOAM::Document& doc)
+                collection1.find([](const NeoN::Document& doc)
                                  { return doc.get<std::string>("name") == "doc1"; });
 
             REQUIRE(foundKeys.size() == 1);
@@ -97,7 +97,7 @@ TEST_CASE("Database")
             REQUIRE_NOTHROW(collection1.doc(foundKeys[0]));
 
             std::vector<std::string> foundKeys2 =
-                collection1.find([](const NeoFOAM::Document& doc)
+                collection1.find([](const NeoN::Document& doc)
                                  { return doc.get<int>("testValue") == 42; });
 
             REQUIRE(foundKeys2.size() == 2);

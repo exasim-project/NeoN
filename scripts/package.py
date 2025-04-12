@@ -5,10 +5,10 @@
 
 from spack.package import *
 
-class Neofoam(CMakePackage):
-    """NeoFOAM is a WIP prototype of a modern CFD core."""
+class NeoN(CMakePackage):
+    """NeoN is a WIP prototype of a modern CFD core."""
 
-    homepage = "https://github.com/exasim-project/NeoFOAM"
+    homepage = "https://github.com/exasim-project/NeoN"
     git = homepage
 
     # maintainers("github_user1", "github_user2")

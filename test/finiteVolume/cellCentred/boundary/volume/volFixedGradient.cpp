@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 TEST_CASE("fixedGradient")
 {
@@ -14,22 +14,22 @@ TEST_CASE("fixedGradient")
     SECTION("TestDerivedClass" + execName)
     {
         // unit cube mesh
-        auto mesh = NeoFOAM::createSingleCellMesh(exec);
+        auto mesh = NeoN::createSingleCellMesh(exec);
         // the same as (exec, mesh.nCells(), mesh.boundaryMesh().offset())
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(exec, mesh);
-        NeoFOAM::fill(domainField.internalField(), 1.0);
-        NeoFOAM::fill(domainField.boundaryField().refGrad(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().refValue(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().valueFraction(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().value(), -1.0);
+        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
+        NeoN::fill(domainField.internalField(), 1.0);
+        NeoN::fill(domainField.boundaryField().refGrad(), -1.0);
+        NeoN::fill(domainField.boundaryField().refValue(), -1.0);
+        NeoN::fill(domainField.boundaryField().valueFraction(), -1.0);
+        NeoN::fill(domainField.boundaryField().value(), -1.0);
 
         SECTION("zeroGradient")
         {
-            NeoFOAM::scalar setValue {0};
-            NeoFOAM::Dictionary dict;
+            NeoN::scalar setValue {0};
+            NeoN::Dictionary dict;
             dict.insert("fixedGradient", setValue);
             auto boundary =
-                NeoFOAM::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoFOAM::scalar>::create(
+                NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
                     "fixedGradient", mesh, dict, 0
                 );
 
@@ -52,11 +52,11 @@ TEST_CASE("fixedGradient")
 
         SECTION("FixedGradient_10")
         {
-            NeoFOAM::scalar setValue {10};
-            NeoFOAM::Dictionary dict;
+            NeoN::scalar setValue {10};
+            NeoN::Dictionary dict;
             dict.insert("fixedGradient", setValue);
             auto boundary =
-                NeoFOAM::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoFOAM::scalar>::create(
+                NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
                     "fixedGradient", mesh, dict, 0
                 );
 

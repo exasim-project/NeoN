@@ -1,4 +1,4 @@
-name: Build NeoFOAM on MacOs
+name: Build NeoN on MacOs
 run-name: 'Build workflow'
 
 on:
@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build:
     if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-build')}}
-    name: Build NeoFOAM on MacOs
+    name: Build NeoN on MacOs
     strategy:
       fail-fast: false
       matrix:
@@ -55,17 +55,17 @@ jobs:
          ninja --version
          cmake --version
 
-     - name: Build NeoFOAM
+     - name: Build NeoN
        run: |
          CC=${{matrix.compiler.CC}} \
          CXX=${{matrix.compiler.CXX}} \
          cmake --preset ${{matrix.preset}} \
-           -DNEOFOAM_BUILD_TESTS=ON \
-           -DNEOFOAM_DEVEL_TOOLS=OFF \
+           -DNeoN_BUILD_TESTS=ON \
+           -DNeoN_DEVEL_TOOLS=OFF \
            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp/ \
-           -DNEOFOAM_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
          cmake --build  --preset ${{matrix.preset}}
 
-     - name: Execute unit tests NeoFOAM
+     - name: Execute unit tests NeoN
        run: |
          ctest --preset ${{matrix.preset}}

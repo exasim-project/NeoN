@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 # ----------------------------------
 # Options affecting listfile parsing
 # ----------------------------------

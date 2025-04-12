@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
-#include "NeoFOAM/fields/segmentedField.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/fields/segmentedField.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
@@ -115,10 +115,10 @@ void SparsityPattern::update()
 }
 
 
-const NeoFOAM::Field<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
+const NeoN::Field<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
-const NeoFOAM::Field<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
+const NeoN::Field<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
 
-const NeoFOAM::Field<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
+const NeoN::Field<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
 
-} // namespace NeoFOAM::finiteVolume::cellCentred
+} // namespace NeoN::finiteVolume::cellCentred

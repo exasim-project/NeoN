@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 #include <Kokkos_Core.hpp>
 
@@ -15,7 +15,7 @@ TEST_CASE("segmentedField")
 
     SECTION("Constructor from sizes " + execName)
     {
-        NeoFOAM::SegmentedField<NeoFOAM::label, NeoFOAM::localIdx> segField(exec, 10, 5);
+        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(exec, 10, 5);
         auto [values, segments] = segField.spans();
 
         REQUIRE(values.size() == 10);
@@ -27,10 +27,10 @@ TEST_CASE("segmentedField")
 
     SECTION("Constructor from field " + execName)
     {
-        NeoFOAM::Field<NeoFOAM::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-        NeoFOAM::Field<NeoFOAM::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
+        NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-        NeoFOAM::SegmentedField<NeoFOAM::label, NeoFOAM::localIdx> segField(values, segments);
+        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(values, segments);
 
         REQUIRE(segField.values().size() == 10);
         REQUIRE(segField.segments().size() == 6);
@@ -48,9 +48,9 @@ TEST_CASE("segmentedField")
         {
             auto [valueSpan, segment] = segField.spans();
             auto segView = segField.view();
-            NeoFOAM::Field<NeoFOAM::label> result(exec, 5);
+            NeoN::Field<NeoN::label> result(exec, 5);
 
-            NeoFOAM::fill(result, 0);
+            NeoN::fill(result, 0);
             auto resultView = result.view();
 
             parallelFor(
@@ -93,8 +93,8 @@ TEST_CASE("segmentedField")
 
     SECTION("Constructor from list with offsets " + execName)
     {
-        NeoFOAM::Field<NeoFOAM::localIdx> offsets(exec, {1, 2, 3, 4, 5});
-        NeoFOAM::SegmentedField<NeoFOAM::label, NeoFOAM::localIdx> segField(offsets);
+        NeoN::Field<NeoN::localIdx> offsets(exec, {1, 2, 3, 4, 5});
+        NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(offsets);
 
         auto hostSegments = segField.segments().copyToHost();
         REQUIRE(hostSegments.view()[0] == 0);
@@ -116,9 +116,9 @@ TEST_CASE("segmentedField")
         SECTION("update values")
         {
             auto segView = segField.view();
-            NeoFOAM::Field<NeoFOAM::label> result(exec, 5);
+            NeoN::Field<NeoN::label> result(exec, 5);
 
-            NeoFOAM::fill(result, 0);
+            NeoN::fill(result, 0);
             auto resultView = result.view();
 
 

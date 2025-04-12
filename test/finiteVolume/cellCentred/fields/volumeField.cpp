@@ -1,37 +1,37 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 template<typename T>
 using I = std::initializer_list<T>;
 
 TEST_CASE("volumeField")
 {
-    namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    NeoFOAM::UnstructuredMesh mesh = NeoFOAM::createSingleCellMesh(exec);
-    std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
+    NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
+    std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
     for (auto patchi : I<size_t> {0, 1, 2, 3})
     {
-        NeoFOAM::Dictionary dict;
+        NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
         dict.insert("fixedValue", 2.0);
-        bcs.push_back(fvcc::VolumeBoundary<NeoFOAM::scalar>(mesh, dict, patchi));
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
     }
 
     SECTION("can instantiate volumeField with fixedValues on: " + execName)
     {
-        fvcc::VolumeField<NeoFOAM::scalar> vf(exec, "vf", mesh, bcs);
-        NeoFOAM::fill(vf.internalField(), 1.0);
+        fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, bcs);
+        NeoN::fill(vf.internalField(), 1.0);
         vf.correctBoundaryConditions();
 
-        NeoFOAM::Field<NeoFOAM::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
+        NeoN::Field<NeoN::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
 
         REQUIRE(vf.exec() == exec);
         REQUIRE(vf.internalField().size() == 1);
@@ -58,9 +58,9 @@ TEST_CASE("volumeField")
 
     SECTION("can instantiate volumeField with fixedValues from internal Field on: " + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
+        NeoN::Field<NeoN::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
 
-        fvcc::VolumeField<NeoFOAM::scalar> vf(exec, "vf", mesh, internalField, bcs);
+        fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, internalField, bcs);
         vf.correctBoundaryConditions();
 
         auto internalValues = vf.internalField().copyToHost();

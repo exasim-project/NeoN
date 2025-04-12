@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 
-set(NEOFOAM_KOKKOS_CHECKOUT_VERSION
+set(NeoN_KOKKOS_CHECKOUT_VERSION
     "4.3.00"
     CACHE STRING "Use specific version of Kokkos")
-mark_as_advanced(NEOFOAM_KOKKOS_CHECKOUT_VERSION)
-if(NEOFOAM_ENABLE_MPI_SUPPORT)
+mark_as_advanced(NeoN_KOKKOS_CHECKOUT_VERSION)
+if(NeoN_ENABLE_MPI_SUPPORT)
   if(WIN32)
-    message(FATAL_ERROR "NEOFOAM_ENABLE_MPI_SUPPORT not supported on Windows")
+    message(FATAL_ERROR "NeoN_ENABLE_MPI_SUPPORT not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
 endif()
 
-if(${NEOFOAM_WITH_PETSC})
+if(${NeoN_WITH_PETSC})
   find_package(MPI) # make it REQUIRED, if you want
   message("${MPI_CXX_COMPILER}")
   message("${MPI_C_COMPILER}")
@@ -33,7 +33,7 @@ endif()
 
 set(Kokkos_ROOT_DIR ${PETSc_PREFIX})
 message("${PETSc_PREFIX}")
-find_package(Kokkos ${NEOFOAM_KOKKOS_CHECKOUT_VERSION} QUIET)
+find_package(Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION} QUIET)
 
 if(NOT ${Kokkos_FOUND})
   include(FetchContent)
@@ -44,11 +44,11 @@ if(NOT ${Kokkos_FOUND})
     SYSTEM QUITE
     GIT_SHALLOW ON
     GIT_REPOSITORY "https://github.com/kokkos/kokkos.git"
-    GIT_TAG ${NEOFOAM_KOKKOS_CHECKOUT_VERSION})
+    GIT_TAG ${NeoN_KOKKOS_CHECKOUT_VERSION})
 
   FetchContent_MakeAvailable(Kokkos)
 else()
-  message(STATUS "Found Kokkos ${NEOFOAM_KOKKOS_CHECKOUT_VERSION}")
+  message(STATUS "Found Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION}")
 endif()
 
 include(cmake/CPM.cmake)
@@ -71,7 +71,7 @@ cpmaddpackage(
   https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip
   SYSTEM)
 
-if(${NEOFOAM_WITH_ADIOS2})
+if(${NeoN_WITH_ADIOS2})
 
   set(ADIOS2_KOKKOS_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/adios2_kokkos.patch)
 
@@ -110,7 +110,7 @@ if(${NEOFOAM_WITH_ADIOS2})
     SYSTEM)
 endif()
 
-if(${NEOFOAM_WITH_SUNDIALS})
+if(${NeoN_WITH_SUNDIALS})
 
   set(SUNDIALS_OPTIONS
       "BUILD_TESTING OFF"
@@ -169,7 +169,7 @@ cpmaddpackage(
   3.2.0
   SYSTEM)
 
-if(${NEOFOAM_WITH_GINKGO})
+if(${NeoN_WITH_GINKGO})
   cpmaddpackage(
     NAME
     Ginkgo
@@ -184,13 +184,13 @@ if(${NEOFOAM_WITH_GINKGO})
     "GINKGO_BUILD_BENCHMARKS OFF"
     "GINKGO_BUILD_EXAMPLES OFF"
     "GINKGO_ENABLE_HALF OFF"
-    "GINKGO_BUILD_MPI ${NEOFOAM_ENABLE_MPI_SUPPORT}"
+    "GINKGO_BUILD_MPI ${NeoN_ENABLE_MPI_SUPPORT}"
     "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
     "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}"
     SYSTEM)
 endif()
 
-if(NEOFOAM_BUILD_TESTS OR NEOFOAM_BUILD_BENCHMARKS)
+if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
   cpmaddpackage(
     NAME
     Catch2

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2025 NeoN authors
 
-#include "NeoFOAM/dsl/temporalOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 
@@ -11,4 +11,4 @@ namespace NeoFOAM::dsl
 template class TemporalOperator<scalar>;
 
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

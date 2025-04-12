@@ -1,4 +1,4 @@
-name: Build NeoFOAM with sanitizer
+name: Build NeoN with sanitizer
 run-name: 'Build workflow'
 
 on:
@@ -14,7 +14,7 @@ on:
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
   OMPI_MCA_rmaps_base_oversubscribe: 1
-  LSAN_OPTIONS: suppressions=/home/runner/work/NeoFOAM/NeoFOAM/scripts/san_ignores.txt
+  LSAN_OPTIONS: suppressions=/home/runner/work/NeoN/NeoN/scripts/san_ignores.txt
 
 
 concurrency:
@@ -24,16 +24,16 @@ concurrency:
 jobs:
   build:
     if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
-    name: Build NeoFOAM with sanitizer
+    name: Build NeoN with sanitizer
     strategy:
       fail-fast: false
       matrix:
         compiler:
           - CC: gcc
             CXX: g++
-        preset: ["NEOFOAM_ENABLE_SANITIZE_ADDRESS=ON",
-          "NEOFOAM_ENABLE_SANITIZE_UB=ON",
-          "NEOFOAM_ENABLE_SANITIZE_MEMORY=ON"
+        preset: ["NeoN_ENABLE_SANITIZE_ADDRESS=ON",
+          "NeoN_ENABLE_SANITIZE_UB=ON",
+          "NeoN_ENABLE_SANITIZE_MEMORY=ON"
         ]
     runs-on: ubuntu-latest
     steps:
@@ -70,16 +70,16 @@ jobs:
          ninja --version
          cmake --version
 
-     - name: Build NeoFOAM
+     - name: Build NeoN
        run: |
          CC=${{matrix.compiler.CC}} \
          CXX=${{matrix.compiler.CXX}} \
          cmake --preset develop -D${{matrix.preset}} \
-           -DNEOFOAM_BUILD_TESTS=ON \
-           -DNEOFOAM_DEVEL_TOOLS=OFF \
-           -DNEOFOAM_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+           -DNeoN_BUILD_TESTS=ON \
+           -DNeoN_DEVEL_TOOLS=OFF \
+           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
          cmake --build  --preset develop
 
-     - name: Execute unit tests NeoFOAM
+     - name: Execute unit tests NeoN
        run: |
          LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/13/libasan.so ctest --preset develop

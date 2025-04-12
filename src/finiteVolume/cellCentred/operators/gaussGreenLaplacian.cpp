@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -38,7 +38,7 @@ void computeLaplacianExp(
 
     size_t nInternalFaces = mesh.nInternalFaces();
 
-    // TODO use NeoFOAM::add and sub
+    // TODO use NeoN::add and sub
     parallelFor(
         exec,
         {0, nInternalFaces},

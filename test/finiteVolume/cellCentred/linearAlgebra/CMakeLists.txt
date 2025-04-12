@@ -1,4 +1,4 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2025 NeoFOAM authors
+# SPDX-FileCopyrightText: 2025 NeoN authors
 
-neofoam_unit_test(sparsityPattern)
+neon_unit_test(sparsityPattern)

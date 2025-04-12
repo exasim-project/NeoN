@@ -1,37 +1,37 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/core/primitives/scalar.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 
 
 struct TestInput
 {
 
-    static TestInput read(const NeoFOAM::Dictionary& dict)
+    static TestInput read(const NeoN::Dictionary& dict)
     {
         TestInput ti;
-        ti.label_ = dict.get<NeoFOAM::label>("label");
-        ti.scalar_ = dict.get<NeoFOAM::scalar>("scalar");
+        ti.label_ = dict.get<NeoN::label>("label");
+        ti.scalar_ = dict.get<NeoN::scalar>("scalar");
         ti.string_ = dict.get<std::string>("string");
         return ti;
     }
 
-    static TestInput read(const NeoFOAM::TokenList& tl)
+    static TestInput read(const NeoN::TokenList& tl)
     {
         TestInput ti;
-        ti.label_ = tl.get<NeoFOAM::label>(0);
-        ti.scalar_ = tl.get<NeoFOAM::scalar>(1);
+        ti.label_ = tl.get<NeoN::label>(0);
+        ti.scalar_ = tl.get<NeoN::scalar>(1);
         ti.string_ = tl.get<std::string>(2);
         return ti;
     }
-    NeoFOAM::label label_;
-    NeoFOAM::scalar scalar_;
+    NeoN::label label_;
+    NeoN::scalar scalar_;
     std::string string_;
 };
 
@@ -39,18 +39,18 @@ TEST_CASE("Input")
 {
     SECTION("read from TokenList")
     {
-        NeoFOAM::TokenList tokenList;
+        NeoN::TokenList tokenList;
         REQUIRE(tokenList.empty());
 
-        tokenList.insert(NeoFOAM::label(1));
-        tokenList.insert(NeoFOAM::scalar(2.0));
+        tokenList.insert(NeoN::label(1));
+        tokenList.insert(NeoN::scalar(2.0));
         tokenList.insert(std::string("string"));
 
         REQUIRE(tokenList.size() == 3);
 
-        NeoFOAM::Input input = tokenList;
+        NeoN::Input input = tokenList;
 
-        TestInput ti = NeoFOAM::read<TestInput>(input);
+        TestInput ti = NeoN::read<TestInput>(input);
         REQUIRE(ti.label_ == 1);
         REQUIRE(ti.scalar_ == 2.0);
         REQUIRE(ti.string_ == "string");
@@ -58,17 +58,17 @@ TEST_CASE("Input")
 
     SECTION("read from Dictionary")
     {
-        NeoFOAM::Dictionary dict;
+        NeoN::Dictionary dict;
 
-        dict.insert("label", NeoFOAM::label(1));
-        dict.insert("scalar", NeoFOAM::scalar(2.0));
+        dict.insert("label", NeoN::label(1));
+        dict.insert("scalar", NeoN::scalar(2.0));
         dict.insert("string", std::string("string"));
 
         REQUIRE(dict.keys().size() == 3);
 
-        NeoFOAM::Input input = dict;
+        NeoN::Input input = dict;
 
-        TestInput ti = NeoFOAM::read<TestInput>(input);
+        TestInput ti = NeoN::read<TestInput>(input);
         REQUIRE(ti.label_ == 1);
         REQUIRE(ti.scalar_ == 2.0);
         REQUIRE(ti.string_ == "string");

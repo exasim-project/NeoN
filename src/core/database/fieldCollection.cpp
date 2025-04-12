@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
-#include "NeoFOAM/core/database/fieldCollection.hpp"
+#include "NeoN/core/database/fieldCollection.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 // Initialize the static member
@@ -46,8 +46,8 @@ std::int64_t FieldDocument::subCycleIndex() const
 std::int64_t& FieldDocument::subCycleIndex() { return doc_.get<std::int64_t>("subCycleIndex"); }
 
 
-FieldCollection::FieldCollection(NeoFOAM::Database& db, std::string name)
-    : NeoFOAM::CollectionMixin<FieldDocument>(db, name)
+FieldCollection::FieldCollection(NeoN::Database& db, std::string name)
+    : NeoN::CollectionMixin<FieldDocument>(db, name)
 {}
 
 bool FieldCollection::contains(const std::string& id) const { return docs_.contains(id); }
@@ -67,16 +67,16 @@ FieldDocument& FieldCollection::fieldDoc(const std::string& id) { return docs_.a
 
 const FieldDocument& FieldCollection::fieldDoc(const std::string& id) const { return docs_.at(id); }
 
-FieldCollection& FieldCollection::instance(NeoFOAM::Database& db, std::string name)
+FieldCollection& FieldCollection::instance(NeoN::Database& db, std::string name)
 {
-    NeoFOAM::Collection& col = db.insert(name, FieldCollection(db, name));
+    NeoN::Collection& col = db.insert(name, FieldCollection(db, name));
     return col.as<FieldCollection>();
 }
 
-const FieldCollection& FieldCollection::instance(const NeoFOAM::Database& db, std::string name)
+const FieldCollection& FieldCollection::instance(const NeoN::Database& db, std::string name)
 {
-    const NeoFOAM::Collection& col = db.at(name);
+    const NeoN::Collection& col = db.at(name);
     return col.as<FieldCollection>();
 }
 
-} // namespace NeoFOAM::finiteVolume::cellCentred
+} // namespace NeoN::finiteVolume::cellCentred

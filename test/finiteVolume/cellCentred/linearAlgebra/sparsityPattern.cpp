@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 using SparsityPattern = fvcc::SparsityPattern;
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 TEST_CASE("SparsityPattern")

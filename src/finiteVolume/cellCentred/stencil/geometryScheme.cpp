@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <any>
 
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 GeometrySchemeFactory::GeometrySchemeFactory([[maybe_unused]] const UnstructuredMesh& mesh) {}
@@ -129,4 +129,4 @@ const SurfaceField<Vector>& GeometryScheme::nonOrthCorrectionVectors() const
     return nonOrthCorrectionVectors_;
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

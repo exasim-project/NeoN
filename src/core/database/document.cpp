@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
-#include "NeoFOAM/core/database/document.hpp"
+#include "NeoN/core/database/document.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 bool hasId(Dictionary doc) { return doc.contains("id"); }
@@ -35,9 +35,9 @@ bool Document::validate() const
     return true;
 }
 
-const std::string& name(const NeoFOAM::Document& doc) { return doc.get<std::string>("name"); }
+const std::string& name(const NeoN::Document& doc) { return doc.get<std::string>("name"); }
 
-std::string& name(NeoFOAM::Document& doc) { return doc.get<std::string>("name"); }
+std::string& name(NeoN::Document& doc) { return doc.get<std::string>("name"); }
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

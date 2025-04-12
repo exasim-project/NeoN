@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 #include <Kokkos_Core.hpp>
 
@@ -15,26 +15,24 @@ TEST_CASE("CSRMatrix")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
-    NeoFOAM::Field<NeoFOAM::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
-    NeoFOAM::Field<NeoFOAM::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
-    NeoFOAM::Field<NeoFOAM::localIdx> rowPtrsSparse(exec, {0, 1, 3, 4});
-    NeoFOAM::la::CSRMatrix<NeoFOAM::scalar, NeoFOAM::localIdx> sparseMatrix(
+    NeoN::Field<NeoN::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
+    NeoN::Field<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
+    NeoN::Field<NeoN::localIdx> rowPtrsSparse(exec, {0, 1, 3, 4});
+    NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowPtrsSparse
     );
-    const NeoFOAM::la::CSRMatrix<NeoFOAM::scalar, NeoFOAM::localIdx> sparseMatrixConst(
+    const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrixConst(
         valuesSparse, colIdxSparse, rowPtrsSparse
     );
 
     // dense matrix
-    NeoFOAM::Field<NeoFOAM::scalar> valuesDense(
-        exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
-    );
-    NeoFOAM::Field<NeoFOAM::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-    NeoFOAM::Field<NeoFOAM::localIdx> rowPtrsDense(exec, {0, 3, 6, 9});
-    NeoFOAM::la::CSRMatrix<NeoFOAM::scalar, NeoFOAM::localIdx> denseMatrix(
+    NeoN::Field<NeoN::scalar> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    NeoN::Field<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
+    NeoN::Field<NeoN::localIdx> rowPtrsDense(exec, {0, 3, 6, 9});
+    NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrix(
         valuesDense, colIdxDense, rowPtrsDense
     );
-    const NeoFOAM::la::CSRMatrix<NeoFOAM::scalar, NeoFOAM::localIdx> denseMatrixConst(
+    const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrixConst(
         valuesDense, colIdxDense, rowPtrsDense
     );
 
@@ -65,7 +63,7 @@ TEST_CASE("CSRMatrix")
     SECTION("Read entry on " + execName)
     {
         // Sparse
-        NeoFOAM::Field<NeoFOAM::scalar> checkSparse(exec, 4);
+        NeoN::Field<NeoN::scalar> checkSparse(exec, 4);
         auto checkSparseView = checkSparse.view();
         auto csrView = sparseMatrixConst.view();
         parallelFor(
@@ -86,7 +84,7 @@ TEST_CASE("CSRMatrix")
         REQUIRE(checkHost.view()[3] == 8.0);
 
         // Dense
-        NeoFOAM::Field<NeoFOAM::scalar> checkDense(exec, 9);
+        NeoN::Field<NeoN::scalar> checkDense(exec, 9);
         auto checkDenseView = checkDense.view();
         auto denseView = denseMatrixConst.view();
         parallelFor(
@@ -172,7 +170,7 @@ TEST_CASE("CSRMatrix")
     SECTION("Read directValue on " + execName)
     {
         // Sparse
-        NeoFOAM::Field<NeoFOAM::scalar> checkSparse(exec, 4);
+        NeoN::Field<NeoN::scalar> checkSparse(exec, 4);
         auto checkSparseView = checkSparse.view();
         auto csrView = sparseMatrixConst.view();
         parallelFor(
@@ -192,7 +190,7 @@ TEST_CASE("CSRMatrix")
         REQUIRE(checkHost.view()[3] == 8.0);
 
         // Dense
-        NeoFOAM::Field<NeoFOAM::scalar> checkDense(exec, 9);
+        NeoN::Field<NeoN::scalar> checkDense(exec, 9);
         auto checkDenseView = checkDense.view();
         auto denseView = denseMatrixConst.view();
         parallelFor(

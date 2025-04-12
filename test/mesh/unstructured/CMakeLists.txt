@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
-if(NEOFOAM_ENABLE_MPI_SUPPORT)
-  neofoam_unit_test(communicator MPI_SIZE 3)
+if(NeoN_ENABLE_MPI_SUPPORT)
+  neon_unit_test(communicator MPI_SIZE 3)
 endif()
 
-neofoam_unit_test(unstructuredMesh)
+neon_unit_test(unstructuredMesh)

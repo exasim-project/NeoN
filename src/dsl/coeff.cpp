@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/dsl/coeff.hpp"
+#include "NeoN/dsl/coeff.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 Coeff::Coeff() : coeff_(1.0), view_(), hasView_(false) {}
@@ -66,4 +66,4 @@ void toField(Coeff& coeff, Field<scalar>& rhs)
 } // namespace detail
 
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

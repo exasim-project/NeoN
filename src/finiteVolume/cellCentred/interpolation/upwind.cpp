@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <memory>
 
-#include "NeoFOAM/finiteVolume/cellCentred/interpolation/upwind.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -29,7 +29,7 @@ void computeUpwindInterpolation(
     );
     size_t nInternalFaces = dst.mesh().nInternalFaces();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         exec,
         {0, dstS.size()},
         KOKKOS_LAMBDA(const size_t facei) {
@@ -62,4 +62,4 @@ void computeUpwindInterpolation(
 NF_DECLARE_COMPUTE_IMP_UPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT(Vector);
 
-} // namespace NeoFOAM
+} // namespace NeoN

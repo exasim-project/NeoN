@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
-#include "NeoFOAM/core/database/database.hpp"
-#include "NeoFOAM/core/database/collection.hpp"
+#include "NeoN/core/database/database.hpp"
+#include "NeoN/core/database/collection.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 Collection& Database::insert(const std::string& name, Collection&& col)
@@ -22,4 +22,4 @@ std::size_t Database::size() const { return collections_.size(); }
 
 bool Database::remove(const std::string& name) { return collections_.erase(name) > 0; }
 
-} // namespace NeoFOAM
+} // namespace NeoN

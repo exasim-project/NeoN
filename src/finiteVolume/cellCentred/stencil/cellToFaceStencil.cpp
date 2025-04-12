@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 CellToFaceStencil::CellToFaceStencil(const UnstructuredMesh& mesh) : mesh_(mesh) {}
@@ -80,4 +80,4 @@ SegmentedField<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     return stencil;
 }
 
-} // namespace NeoFOAM::finiteVolume::cellCentred
+} // namespace NeoN::finiteVolume::cellCentred

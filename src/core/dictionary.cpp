@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <numeric>
 #include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream
 
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/core/error.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/error.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 void logOutRange(
     const std::out_of_range& e,
@@ -15,7 +15,7 @@ void logOutRange(
     const std::unordered_map<std::string, std::any>& data
 )
 {
-    // TODO use NeoFOAM error here
+    // TODO use NeoN error here
     std::cerr << "Key not found: " << key << " \n"
               << "available keys are: \n"
               << std::accumulate(
@@ -102,4 +102,4 @@ std::unordered_map<std::string, std::any>& Dictionary::getMap() { return data_; 
 
 const std::unordered_map<std::string, std::any>& Dictionary::getMap() const { return data_; }
 
-} // namespace NeoFOAM
+} // namespace NeoN

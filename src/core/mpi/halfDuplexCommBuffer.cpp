@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/mpi/halfDuplexCommBuffer.hpp"
+#include "NeoN/core/mpi/halfDuplexCommBuffer.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 namespace mpi
@@ -82,4 +82,4 @@ void HalfDuplexCommBuffer::finaliseComm()
 
 }
 
-} // namespace NeoFoam
+} // namespace NeoN

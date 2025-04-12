@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 BoundaryMesh::BoundaryMesh(
@@ -100,4 +100,4 @@ View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

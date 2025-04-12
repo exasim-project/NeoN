@@ -1,21 +1,21 @@
 Installation
 ============
 
-You can build NeoFOAM by following these steps:
+You can build NeoN by following these steps:
 
-Clone the NeoFOAM repository:
-
-   .. code-block:: bash
-
-      git clone https://github.com/exasim-project/NeoFOAM.git
-
-Navigate to the NeoFOAM directory:
+Clone the NeoN repository:
 
    .. code-block:: bash
 
-      cd NeoFOAM
+      git clone https://github.com/exasim-project/NeoN.git
 
-NeoFOAM uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below `below <Building with CMake Presets>`_. From a build directory, you can execute:
+Navigate to the NeoN directory:
+
+   .. code-block:: bash
+
+      cd NeoN
+
+NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below `below <Building with CMake Presets>`_. From a build directory, you can execute:
 
    .. code-block:: bash
 
@@ -32,30 +32,30 @@ The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake com
 +===========================+===================================+=========+
 | CMAKE_BUILD_TYPE          | Build in debug or release mode    | Debug   |
 +---------------------------+-----------------------------------+---------+
-| NEOFOAM_BUILD_DOC         | Build NeoFOAM with documentation  | ON      |
+| NeoN_BUILD_DOC         | Build NeoN with documentation  | ON      |
 +---------------------------+-----------------------------------+---------+
-| NEOFOAM_BUILD_TESTS       | Build NeoFOAM with tests          | OFF     |
+| NeoN_BUILD_TESTS       | Build NeoN with tests          | OFF     |
 +---------------------------+-----------------------------------+---------+
 
 To browse the full list of build options it is recommended to use a build tool like ``ccmake``.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
-NeoFOAM specific build flags are prefixed by ``NEOFOAM_``.
+NeoN specific build flags are prefixed by ``NeoN_``.
 
 .. note::
 
-   NeoFOAM will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
+   NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
    the system. This can be prevented by setting both options explicitly.
 
 Building with CMake Presets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Additionally, we provide several CMake presets to set commonly required flags if you compile NeoFoam in combination with Kokkos.
+Additionally, we provide several CMake presets to set commonly required flags if you compile NeoN in combination with Kokkos.
 
    .. code-block:: bash
 
     cmake --list-presets # To list existing presets
 
-To build NeoFOAM for production use, you can use the following commands:
+To build NeoN for production use, you can use the following commands:
 
    .. code-block:: bash
 
@@ -67,8 +67,8 @@ It should be noted that the build directory changes depending on the chosen pres
 Building with Spack
 ^^^^^^^^^^^^^^^^^^^
 
-A good way to simplify the process of building NeoFOAM is by using spack.
-Here is a short tutorial on how to build NeoFOAM with spack for development.
+A good way to simplify the process of building NeoN is by using spack.
+Here is a short tutorial on how to build NeoN with spack for development.
 First clone spack from  https://github.com/spack/spack.
 
    .. code-block:: bash
@@ -76,15 +76,15 @@ First clone spack from  https://github.com/spack/spack.
     git clone  https://github.com/spack/spack
     source spack/share/spack/setup-env.sh
 
-Next we create a development environment for NeoFOAM and add NeoFOAM to it.
+Next we create a development environment for NeoN and add NeoN to it.
 
    .. code-block:: bash
 
-    mkdir neofoam-env
-    spack env create  -d neofoam-env
-    spack env activate neofoam-env
-    cd neofoam-env
-    spack develop --path /home/greole/data/code/NeoFOAM neofoam
+    mkdir NeoN-env
+    spack env create  -d NeoN-env
+    spack env activate NeoN-env
+    cd NeoN-env
+    spack develop --path /home/greole/data/code/NeoN NeoN
 
 Next we install clang 17 as a compiler into our environment
 
@@ -94,14 +94,14 @@ Next we install clang 17 as a compiler into our environment
     spack compiler add "$(spack location -i llvm)"
 
 
-Here is the current package.py. Edit spack/var/spack/repos/builtin/packages/neofoam/package.py accordingly
+Here is the current package.py. Edit spack/var/spack/repos/builtin/packages/NeoN/package.py accordingly
 
    .. code-block:: bash
-        class Neofoam(CMakePackage):
-            """NeoFOAM is a WIP prototype of a modern CFD core."""
+        class NeoN(CMakePackage):
+            """NeoN is a WIP prototype of a modern CFD core."""
 
-            homepage = "https://github.com/exasim-project/NeoFOAM"
-            git = "https://github.com/exasim-project/NeoFOAM.git"
+            homepage = "https://github.com/exasim-project/NeoN"
+            git = "https://github.com/exasim-project/NeoN.git"
 
             maintainers("greole", "HenningScheufler")
 
@@ -124,16 +124,16 @@ Here is the current package.py. Edit spack/var/spack/repos/builtin/packages/neof
 
             def cmake_args(self):
                 return [
-                    '-DNEOFOAM_BUILD_TESTS=%s' % ('+test' in self.spec),
+                    '-DNeoN_BUILD_TESTS=%s' % ('+test' in self.spec),
                     '-DKokkos_ENABLE_CUDA=%s' % ('+cuda' in self.spec),
                 ]
 
 
-Next, we add NeoFOAM with the required dependencies.
+Next, we add NeoN with the required dependencies.
 
    .. code-block:: bash
 
-     spack add neofoam+test++cuda ^kokkos cuda_arch=80 cxxstd=20  ^ginkgo cuda_arch=80   %llvm@17
+     spack add NeoN+test++cuda ^kokkos cuda_arch=80 cxxstd=20  ^ginkgo cuda_arch=80   %llvm@17
      spack install
 
 
@@ -176,7 +176,7 @@ install the following extensions:
    ms-vscode.cmake-tools
 
 
-After installation, you can open the NeoFOAM directory with vscode and configure the build with cmake presets with the cmake extension as shown below:
+After installation, you can open the NeoN directory with vscode and configure the build with cmake presets with the cmake extension as shown below:
 
 .. figure:: _static/installation/cmakePresets.gif
    :alt: configure the build with cmake presets

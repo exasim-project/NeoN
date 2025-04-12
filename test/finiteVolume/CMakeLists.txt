@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
 add_subdirectory(cellCentred/fields)
 add_subdirectory(cellCentred/boundary)

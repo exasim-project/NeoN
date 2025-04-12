@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-neofoam_unit_test(coeff)
-neofoam_unit_test(expression)
-neofoam_unit_test(spatialOperator)
-neofoam_unit_test(temporalOperator)
+neon_unit_test(coeff)
+neon_unit_test(expression)
+neon_unit_test(spatialOperator)
+neon_unit_test(temporalOperator)

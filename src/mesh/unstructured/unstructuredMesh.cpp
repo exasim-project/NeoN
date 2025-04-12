@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-#include "NeoFOAM/core/primitives/vector.hpp" // for Vector
+#include "NeoN/core/primitives/vector.hpp" // for Vector
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 UnstructuredMesh::UnstructuredMesh(
@@ -217,4 +217,4 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
         boundaryMesh
     );
 }
-} // namespace NeoFOAM
+} // namespace NeoN

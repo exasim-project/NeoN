@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Operator = NeoFOAM::dsl::Operator;
+using Operator = NeoN::dsl::Operator;
 
-namespace NeoFOAM
+namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoFOAM::scalar, NeoFOAM::Vector)
+TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vector)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 

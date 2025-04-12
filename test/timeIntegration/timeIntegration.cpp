@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,33 +7,31 @@
 
 #include "../dsl/common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 // only needed for msvc
-template class NeoFOAM::timeIntegration::ForwardEuler<VolumeField>;
+template class NeoN::timeIntegration::ForwardEuler<VolumeField>;
 
 struct CreateField
 {
     std::string name;
-    const NeoFOAM::UnstructuredMesh& mesh;
-    NeoFOAM::scalar value = 0;
+    const NeoN::UnstructuredMesh& mesh;
+    NeoN::scalar value = 0;
     std::int64_t timeIndex = 0;
     std::int64_t iterationIndex = 0;
     std::int64_t subCycleIndex = 0;
 
-    NeoFOAM::Document operator()(NeoFOAM::Database& db)
+    NeoN::Document operator()(NeoN::Database& db)
     {
-        std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
+        NeoN::DomainField<NeoN::scalar> domainField(
             mesh.exec(),
-            NeoFOAM::Field<NeoFOAM::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
             mesh.boundaryMesh().offset()
         );
-        fvcc::VolumeField<NeoFOAM::scalar> vf(
-            mesh.exec(), name, mesh, domainField, bcs, db, "", ""
-        );
-        NeoFOAM::fill(vf.internalField(), value);
-        return NeoFOAM::Document(
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        NeoN::fill(vf.internalField(), value);
+        return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
@@ -48,28 +46,28 @@ TEST_CASE("TimeIntegration")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    NeoFOAM::Database db;
-    auto mesh = NeoFOAM::createSingleCellMesh(exec);
+    NeoN::Database db;
+    auto mesh = NeoN::createSingleCellMesh(exec);
     fvcc::FieldCollection& fieldCollection = fvcc::FieldCollection::instance(db, "fieldCollection");
 
-    NeoFOAM::Dictionary fvSchemes;
-    NeoFOAM::Dictionary ddtSchemes;
+    NeoN::Dictionary fvSchemes;
+    NeoN::Dictionary ddtSchemes;
     ddtSchemes.insert("type", std::string("forwardEuler"));
     fvSchemes.insert("ddtSchemes", ddtSchemes);
-    NeoFOAM::Dictionary fvSolution;
+    NeoN::Dictionary fvSolution;
 
-    fvcc::VolumeField<NeoFOAM::scalar>& vf =
-        fieldCollection.registerField<fvcc::VolumeField<NeoFOAM::scalar>>(
+    fvcc::VolumeField<NeoN::scalar>& vf =
+        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(
             CreateField {.name = "vf", .mesh = mesh, .value = 2.0, .timeIndex = 1}
         );
 
     SECTION("Create expression and perform explicitOperation on " + execName)
     {
         auto dummy = Dummy(vf);
-        NeoFOAM::dsl::TemporalOperator<NeoFOAM::scalar> ddtOperator = NeoFOAM::dsl::imp::ddt(vf);
+        NeoN::dsl::TemporalOperator<NeoN::scalar> ddtOperator = NeoN::dsl::imp::ddt(vf);
 
         // ddt(U) = f
-        NeoFOAM::dsl::Expression<NeoFOAM::scalar> eqn = ddtOperator + dummy;
+        NeoN::dsl::Expression<NeoN::scalar> eqn = ddtOperator + dummy;
         double dt {2.0};
         double time {1.0};
 
@@ -77,7 +75,7 @@ TEST_CASE("TimeIntegration")
         // int(ddt(U)) + f = 0
         // (U^1-U^0)/dt = -f
         // U^1 = - f * dt + U^0, where dt = 2, f = 2, U^0=2.0 -> U^1=-2.0
-        NeoFOAM::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
+        NeoN::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
         REQUIRE(getField(vf.internalField()) == -2.0);
     }
 }

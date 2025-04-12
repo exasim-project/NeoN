@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoFOAM/linearAlgebra/ginkgo.hpp"
+#include "NeoN/linearAlgebra/ginkgo.hpp"
 
-gko::config::pnode NeoFOAM::la::ginkgo::parse(const Dictionary& dict)
+gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
 {
     auto parseData = [&](auto key)
     {

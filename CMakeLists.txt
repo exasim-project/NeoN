@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 
 cmake_minimum_required(VERSION 3.22.0)
 
 project(
-  NeoFOAM
+  NeoN
   LANGUAGES C CXX
   VERSION 0.1.0
   DESCRIPTION "An implementation of FOAM")
@@ -27,44 +27,44 @@ if(WIN32)
   endif()
 endif()
 
-# Eventhough we compile NeoFOAM as SHARED library we need to explicitly enable PIC for all targets
+# Eventhough we compile NeoN as SHARED library we need to explicitly enable PIC for all targets
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(NEOFOAM_DP_SCALAR "double precision scalar" ON)
-option(NEOFOAM_DP_LABEL "double precision label" OFF)
-option(NEOFOAM_DEVEL_TOOLS "Add development tools to the build system" OFF)
-option(NEOFOAM_BUILD_TESTS "Build the unit tests" OFF)
-option(NEOFOAM_BUILD_BENCHMARKS "Build benchmarks" OFF)
-option(NEOFOAM_BUILD_DOC "Build documentation" OFF)
+option(NeoN_DP_SCALAR "double precision scalar" ON)
+option(NeoN_DP_LABEL "double precision label" OFF)
+option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
+option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
+option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(NeoN_BUILD_DOC "Build documentation" OFF)
 
-option(NEOFOAM_WITH_ADIOS2 "Build NeoFOAM with ADIOS2 support" OFF)
-option(NEOFOAM_WITH_SUNDIALS "Build NeoFOAM with Sundials support [currently required]" ON)
-option(NEOFOAM_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
-option(NEOFOAM_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
+option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
+option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support [currently required]" ON)
+option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
+option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 
-option(NEOFOAM_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
-option(NEOFOAM_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
-option(NEOFOAM_ENABLE_SANITIZE_UB "Enable undefined behaviour sanitizer" OFF)
-option(NEOFOAM_ENABLE_SANITIZE_THREAD "Enable thread sanitizer" OFF)
-option(NEOFOAM_ENABLE_SANITIZE_MEMORY "Enable memory sanitizer" OFF)
-option(NEOFOAM_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
-option(NEOFOAM_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
-option(NEOFOAM_ENABLE_PCH "Enable precompiled header" OFF)
-option(NEOFOAM_ENABLE_IWYU "Enable iwyu checks" OFF)
-option(NEOFOAM_ENABLE_MPI "Enable MPI" ON)
-option(NEOFOAM_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
-option(NEOFOAM_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
-mark_as_advanced(NEOFOAM_ENABLE_WARNINGS)
-option(NEOFOAM_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
-mark_as_advanced(NEOFOAM_WARNINGS_AS_ERRORS)
+option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
+option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
+option(NeoN_ENABLE_SANITIZE_UB "Enable undefined behaviour sanitizer" OFF)
+option(NeoN_ENABLE_SANITIZE_THREAD "Enable thread sanitizer" OFF)
+option(NeoN_ENABLE_SANITIZE_MEMORY "Enable memory sanitizer" OFF)
+option(NeoN_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
+option(NeoN_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
+option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
+option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
+option(NeoN_ENABLE_MPI "Enable MPI" ON)
+option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
+option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
+mark_as_advanced(NeoN_ENABLE_WARNINGS)
+option(NeoN_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+mark_as_advanced(NeoN_WARNINGS_AS_ERRORS)
 
 if(WIN32)
-  set(NeoFOAM_LIB_TYPE "STATIC")
+  set(NeoN_LIB_TYPE "STATIC")
 else()
-  set(NeoFOAM_LIB_TYPE "SHARED")
+  set(NeoN_LIB_TYPE "SHARED")
 endif()
-set(NeoFOAM_LIB_TYPE
-    ${NeoFOAM_LIB_TYPE}
+set(NeoN_LIB_TYPE
+    ${NeoN_LIB_TYPE}
     PARENT_SCOPE)
 
 if(NOT DEFINED CPM_USE_LOCAL_PACKAGES)
@@ -91,49 +91,49 @@ include(cmake/CompilerWarnings.cmake)
 include(cmake/Sanitizer.cmake)
 include(cmake/StaticAnalyzers.cmake)
 
-add_library(neofoam_options INTERFACE)
-add_library(neofoam_warnings INTERFACE)
-if(NEOFOAM_ENABLE_WARNINGS)
-  neofoam_set_project_warnings(neofoam_warnings ${NEOFOAM_WARNINGS_AS_ERRORS} "" "" "")
+add_library(NeoN_options INTERFACE)
+add_library(NeoN_warnings INTERFACE)
+if(NeoN_ENABLE_WARNINGS)
+  neon_set_project_warnings(NeoN_warnings ${NeoN_WARNINGS_AS_ERRORS} "" "" "")
 endif()
 
-if(NEOFOAM_BUILD_PCH)
-  target_precompile_headers(neofoam_options INTERFACE <vector> <string> <utility>)
+if(NeoN_BUILD_PCH)
+  target_precompile_headers(NeoN_options INTERFACE <vector> <string> <utility>)
 endif()
 
-if(NEOFOAM_ENABLE_CPP_CHECK)
-  neofoam_enable_cppcheck(OFF "")
+if(NeoN_ENABLE_CPP_CHECK)
+  neon_enable_cppcheck(OFF "")
 endif()
 
-if(NEOFOAM_ENABLE_CLANG_TIDY)
-  neofoam_enable_clang_tidy(OFF "")
+if(NeoN_ENABLE_CLANG_TIDY)
+  neon_enable_clang_tidy(OFF "")
 endif()
 
 add_subdirectory(include)
 add_subdirectory(src)
-if(NEOFOAM_BUILD_TESTS)
+if(NeoN_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
 endif()
 
-if(NEOFOAM_BUILD_BENCHMARKS)
+if(NeoN_BUILD_BENCHMARKS)
   enable_testing()
   add_subdirectory(benchmarks)
 endif()
 
-if(NEOFOAM_BUILD_DOC)
+if(NeoN_BUILD_DOC)
   include(cmake/Docs.cmake)
-  neofoam_build_docs()
+  neon_build_docs()
 endif()
 
-if(NEOFOAM_DEVEL_TOOLS)
+if(NeoN_DEVEL_TOOLS)
   find_program(PRE_COMMIT pre-commit)
   if(NOT PRE_COMMIT)
     message(
       FATAL_ERROR
         "The pre-commit command was not found. "
-        "It is necessary if you want to commit changes to NeoFOAM. "
-        "If that is not the case, set NEOFOAM_DEVEL_TOOLS=OFF. "
+        "It is necessary if you want to commit changes to NeoN. "
+        "If that is not the case, set NeoN_DEVEL_TOOLS=OFF. "
         "Otherwise install pre-commit via pipx (or pip) using:\n"
         "    pipx install pre-commit")
   endif()
@@ -166,8 +166,8 @@ if(NEOFOAM_DEVEL_TOOLS)
     VERBATIM)
 endif()
 
-if(NEOFOAM_ENABLE_IWYU)
+if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
   set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
-  set_property(TARGET NeoFOAM PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+  set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
 endif()

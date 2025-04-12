@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/executor/GPUExecutor.hpp"
+#include "NeoN/core/executor/GPUExecutor.hpp"
 
-NeoFOAM::GPUExecutor::GPUExecutor() {};
+NeoN::GPUExecutor::GPUExecutor() {};
 
-NeoFOAM::GPUExecutor::~GPUExecutor() {};
+NeoN::GPUExecutor::~GPUExecutor() {};

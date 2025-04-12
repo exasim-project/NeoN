@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/timeIntegration/rungeKutta.hpp"
+#include "NeoN/timeIntegration/rungeKutta.hpp"
 
-namespace NeoFOAM::timeIntegration
+namespace NeoN::timeIntegration
 {
 
 template<typename SolutionFieldType>
@@ -11,7 +11,7 @@ RungeKutta<SolutionFieldType>::RungeKutta(const RungeKutta<SolutionFieldType>& o
     : Base(other), solution_(other.solution_), initialConditions_(other.initialConditions_),
       pdeExpr_(
           other.pdeExpr_
-              ? std::make_unique<NeoFOAM::dsl::Expression<ValueType>>(other.pdeExpr_->exec())
+              ? std::make_unique<NeoN::dsl::Expression<ValueType>>(other.pdeExpr_->exec())
               : nullptr
       )
 {
@@ -34,15 +34,14 @@ void RungeKutta<SolutionFieldType>::solve(
 )
 {
     // Setup sundials if required, load the current solution for temporal integration
-    SolutionFieldType& oldSolutionField =
-        NeoFOAM::finiteVolume::cellCentred::oldTime(solutionField);
+    SolutionFieldType& oldSolutionField = NeoN::finiteVolume::cellCentred::oldTime(solutionField);
     if (pdeExpr_ == nullptr) initSUNERKSolver(exp, oldSolutionField, t);
-    NeoFOAM::sundials::fieldToSunNVector(oldSolutionField.internalField(), solution_.sunNVector());
+    NeoN::sundials::fieldToSunNVector(oldSolutionField.internalField(), solution_.sunNVector());
     void* ark = reinterpret_cast<void*>(ODEMemory_.get());
 
     // Perform time integration
     ARKodeSetFixedStep(ark, dt);
-    NeoFOAM::scalar timeOut;
+    NeoN::scalar timeOut;
     auto stepReturn = ARKodeEvolve(ark, t + dt, solution_.sunNVector(), &timeOut, ARK_ONE_STEP);
 
     // Post step checks
@@ -50,7 +49,7 @@ void RungeKutta<SolutionFieldType>::solve(
     NF_ASSERT_EQUAL(t + dt, timeOut);
 
     // Copy solution out. (Fence is in sundails free)
-    NeoFOAM::sundials::sunNVectorToField(solution_.sunNVector(), solutionField.internalField());
+    NeoN::sundials::sunNVectorToField(solution_.sunNVector(), solutionField.internalField());
     oldSolutionField.internalField() = solutionField.internalField();
 }
 
@@ -111,7 +110,7 @@ template<typename SolutionFieldType>
 void RungeKutta<SolutionFieldType>::initSUNInitialConditions(const SolutionFieldType& solutionField)
 {
 
-    NeoFOAM::sundials::fieldToSunNVector(
+    NeoN::sundials::fieldToSunNVector(
         solutionField.internalField(), initialConditions_.sunNVector()
     );
 }
@@ -123,7 +122,7 @@ void RungeKutta<SolutionFieldType>::initODEMemory(const scalar t)
     NF_DEBUG_ASSERT(pdeExpr_, "PDE expression is a nullptr.");
 
     void* ark = ERKStepCreate(
-        NeoFOAM::sundials::explicitRKSolve<SolutionFieldType>,
+        NeoN::sundials::explicitRKSolve<SolutionFieldType>,
         t,
         initialConditions_.sunNVector(),
         *context_
@@ -133,7 +132,7 @@ void RungeKutta<SolutionFieldType>::initODEMemory(const scalar t)
     // Initialize ERKStep solver
     ERKStepSetTableNum(
         ark,
-        NeoFOAM::sundials::stringToERKTable(
+        NeoN::sundials::stringToERKTable(
             this->schemeDict_.template get<std::string>("Runge-Kutta-Method")
         )
     );

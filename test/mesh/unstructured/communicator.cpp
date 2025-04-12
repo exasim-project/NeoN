@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Unlicense
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
 // #include <source_location>
 
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 
-using namespace NeoFOAM;
+using namespace NeoN;
 
 TEST_CASE("Communicator Field Synchronization")
 {

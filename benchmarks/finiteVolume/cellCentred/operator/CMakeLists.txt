@@ -1,4 +1,4 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2025 NeoFOAM authors
+# SPDX-FileCopyrightText: 2025 NeoN authors
 
-neofoam_benchmark(divOperator)
+neon_benchmark(divOperator)

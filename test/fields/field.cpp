@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 TEST_CASE("Field Constructors")
 {
@@ -13,10 +13,10 @@ TEST_CASE("Field Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::fill(a, 5.0);
-        NeoFOAM::Field<NeoFOAM::scalar> b(a);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::fill(a, 5.0);
+        NeoN::Field<NeoN::scalar> b(a);
 
         REQUIRE(b.size() == size);
 
@@ -26,7 +26,7 @@ TEST_CASE("Field Constructors")
             REQUIRE(value == 5.0);
         }
 
-        NeoFOAM::Field<NeoFOAM::scalar> initWith5(exec, size, 5.0);
+        NeoN::Field<NeoN::scalar> initWith5(exec, size, 5.0);
         REQUIRE(initWith5.size() == size);
 
         auto hostInitWith5 = initWith5.copyToHost();
@@ -38,7 +38,7 @@ TEST_CASE("Field Constructors")
 
     SECTION("Initialiser List Constructor " + execName)
     {
-        NeoFOAM::Field<NeoFOAM::label> a(exec, {1, 2, 3});
+        NeoN::Field<NeoN::label> a(exec, {1, 2, 3});
         auto hostA = a.copyToHost();
         REQUIRE(hostA.data()[0] == 1);
         REQUIRE(hostA.data()[1] == 2);
@@ -48,8 +48,8 @@ TEST_CASE("Field Constructors")
     SECTION("Cross Exec Constructor " + execName)
     {
 
-        NeoFOAM::Field<NeoFOAM::label> a(exec, {1, 2, 3});
-        NeoFOAM::Field<NeoFOAM::label> b(a);
+        NeoN::Field<NeoN::label> a(exec, {1, 2, 3});
+        NeoN::Field<NeoN::label> b(a);
 
         auto hostB = b.copyToHost();
 
@@ -63,21 +63,21 @@ TEST_CASE("Field Constructors")
 TEST_CASE("Field Operator Overloads")
 {
 
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
     SECTION("Field Operator+= " + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size);
-        NeoFOAM::fill(a, 5.0);
-        NeoFOAM::fill(b, 10.0);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::Field<NeoN::scalar> b(exec, size);
+        NeoN::fill(a, 5.0);
+        NeoN::fill(b, 10.0);
 
         a += b;
 
@@ -90,11 +90,11 @@ TEST_CASE("Field Operator Overloads")
 
     SECTION("Field Operator-= " + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size);
-        NeoFOAM::fill(a, 5.0);
-        NeoFOAM::fill(b, 10.0);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::Field<NeoN::scalar> b(exec, size);
+        NeoN::fill(a, 5.0);
+        NeoN::fill(b, 10.0);
 
         a -= b;
 
@@ -107,12 +107,12 @@ TEST_CASE("Field Operator Overloads")
 
     SECTION("Field Operator+ " + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> c(exec, size);
-        NeoFOAM::fill(a, 5.0);
-        NeoFOAM::fill(b, 10.0);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::Field<NeoN::scalar> b(exec, size);
+        NeoN::Field<NeoN::scalar> c(exec, size);
+        NeoN::fill(a, 5.0);
+        NeoN::fill(b, 10.0);
 
         c = a + b;
         auto hostC = c.copyToHost();
@@ -124,12 +124,12 @@ TEST_CASE("Field Operator Overloads")
 
     SECTION("Field Operator-" + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size);
-        NeoFOAM::Field<NeoFOAM::scalar> c(exec, size);
-        NeoFOAM::fill(a, 5.0);
-        NeoFOAM::fill(b, 10.0);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::Field<NeoN::scalar> b(exec, size);
+        NeoN::Field<NeoN::scalar> c(exec, size);
+        NeoN::fill(a, 5.0);
+        NeoN::fill(b, 10.0);
 
         c = a - b;
 
@@ -143,19 +143,19 @@ TEST_CASE("Field Operator Overloads")
 
 TEST_CASE("Field Container Operations")
 {
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
     SECTION("empty, size, range" + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, 0);
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, 0);
+        NeoN::Field<NeoN::scalar> b(exec, size);
         REQUIRE(a.empty() == true);
         REQUIRE(a.size() == 0);
         REQUIRE(a.range().first == 0);
@@ -168,7 +168,7 @@ TEST_CASE("Field Container Operations")
 
     SECTION("view" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::label> a(exec, {1, 2, 3});
+        NeoN::Field<NeoN::label> a(exec, {1, 2, 3});
         auto hostA = a.copyToHost();
 
         auto view = hostA.view();
@@ -183,23 +183,23 @@ TEST_CASE("Field Container Operations")
 
     SECTION("viewVector" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::Vector> a(exec, {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
+        NeoN::Field<NeoN::Vector> a(exec, {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
         auto hostA = a.copyToHost();
 
         auto view = hostA.view();
-        REQUIRE(view[0] == NeoFOAM::Vector(1, 1, 1));
-        REQUIRE(view[1] == NeoFOAM::Vector(2, 2, 2));
-        REQUIRE(view[2] == NeoFOAM::Vector(3, 3, 3));
+        REQUIRE(view[0] == NeoN::Vector(1, 1, 1));
+        REQUIRE(view[1] == NeoN::Vector(2, 2, 2));
+        REQUIRE(view[2] == NeoN::Vector(3, 3, 3));
 
         auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == NeoFOAM::Vector(2, 2, 2));
-        REQUIRE(subView[1] == NeoFOAM::Vector(3, 3, 3));
+        REQUIRE(subView[0] == NeoN::Vector(2, 2, 2));
+        REQUIRE(subView[1] == NeoN::Vector(3, 3, 3));
     }
 
     SECTION("copyToHost " + execName)
     {
 
-        NeoFOAM::Field<NeoFOAM::label> a(exec, {1, 2, 3});
+        NeoN::Field<NeoN::label> a(exec, {1, 2, 3});
 
         auto hostA = a.copyToHost();
         auto hostB = a.copyToHost();
@@ -211,24 +211,24 @@ TEST_CASE("Field Container Operations")
 
 TEST_CASE("Field Operations")
 {
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
     SECTION("Field_" + execName)
     {
-        NeoFOAM::size_t size = 10;
-        NeoFOAM::Field<NeoFOAM::scalar> a(exec, size);
-        NeoFOAM::fill(a, 5.0);
+        NeoN::size_t size = 10;
+        NeoN::Field<NeoN::scalar> a(exec, size);
+        NeoN::fill(a, 5.0);
 
         REQUIRE(equal(a, 5.0));
 
-        NeoFOAM::Field<NeoFOAM::scalar> b(exec, size + 2);
-        NeoFOAM::fill(b, 10.0);
+        NeoN::Field<NeoN::scalar> b(exec, size + 2);
+        NeoN::fill(b, 10.0);
 
         a = b;
         REQUIRE(a.view().size() == size + 2);
@@ -251,32 +251,32 @@ TEST_CASE("Field Operations")
         REQUIRE(equal(a, 20.0));
 
         auto sB = b.view();
-        a.apply(KOKKOS_LAMBDA(const NeoFOAM::size_t i) { return 2 * sB[i]; });
+        a.apply(KOKKOS_LAMBDA(const NeoN::size_t i) { return 2 * sB[i]; });
         REQUIRE(equal(a, 20.0));
     }
 }
 
 TEST_CASE("getSpans")
 {
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
-    NeoFOAM::Field<NeoFOAM::scalar> a(exec, 3, 1.0);
-    NeoFOAM::Field<NeoFOAM::scalar> b(exec, 3, 2.0);
-    NeoFOAM::Field<NeoFOAM::scalar> c(exec, 3, 3.0);
+    NeoN::Field<NeoN::scalar> a(exec, 3, 1.0);
+    NeoN::Field<NeoN::scalar> b(exec, 3, 2.0);
+    NeoN::Field<NeoN::scalar> c(exec, 3, 3.0);
 
-    auto [hostA, hostB, hostC] = NeoFOAM::copyToHosts(a, b, c);
-    auto [viewB, viewC] = NeoFOAM::spans(b, c);
+    auto [hostA, hostB, hostC] = NeoN::copyToHosts(a, b, c);
+    auto [viewB, viewC] = NeoN::spans(b, c);
 
     REQUIRE(hostA.view()[0] == 1.0);
     REQUIRE(hostB.view()[0] == 2.0);
     REQUIRE(hostC.view()[0] == 3.0);
 
-    NeoFOAM::parallelFor(
-        a, KOKKOS_LAMBDA(const NeoFOAM::size_t i) { return viewB[i] + viewC[i]; }
+    NeoN::parallelFor(
+        a, KOKKOS_LAMBDA(const NeoN::size_t i) { return viewB[i] + viewC[i]; }
     );
 
     auto hostD = a.copyToHost();

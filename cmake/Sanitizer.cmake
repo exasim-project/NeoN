@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 Jason Turner
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 ##############################################################################
 # This function will enable sanitizers                                       #
 # from here                                                                  #
@@ -16,7 +16,7 @@ function(
   ENABLE_SANITIZE_THREAD
   ENABLE_SANITIZE_MEMORY)
 
-  # message(FATAL_ERROR "add addr ${ENABLE_NEOFOAM_SANITIZE_ADDRESS}")
+  # message(FATAL_ERROR "add addr ${ENABLE_NeoN_SANITIZE_ADDRESS}")
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     set(SANITIZERS "")

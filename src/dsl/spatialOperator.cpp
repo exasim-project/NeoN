@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2025 NeoN authors
 
-#include "NeoFOAM/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 
@@ -11,4 +11,4 @@ namespace NeoFOAM::dsl
 template class SpatialOperator<scalar>;
 
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-#include "NeoFOAM/core/mpi/operators.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 
-using namespace NeoFOAM;
-using namespace NeoFOAM::mpi;
+using namespace NeoN;
+using namespace NeoN::mpi;
 
 TEST_CASE("getOp")
 {

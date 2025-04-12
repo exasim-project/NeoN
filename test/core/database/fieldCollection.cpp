@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,53 +7,49 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-fvcc::VolumeField<NeoFOAM::scalar>
-createVolumeField(const NeoFOAM::UnstructuredMesh& mesh, std::string fieldName)
+fvcc::VolumeField<NeoN::scalar>
+createVolumeField(const NeoN::UnstructuredMesh& mesh, std::string fieldName)
 {
-    std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
+    std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
     for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
     {
-        NeoFOAM::Dictionary dict;
+        NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
         dict.insert("fixedValue", 2.0);
-        bcs.push_back(fvcc::VolumeBoundary<NeoFOAM::scalar>(mesh, dict, patchi));
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
     }
-    fvcc::VolumeField<NeoFOAM::scalar> vf(mesh.exec(), fieldName, mesh, bcs);
-    NeoFOAM::fill(vf.internalField(), 1.0);
+    fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), fieldName, mesh, bcs);
+    NeoN::fill(vf.internalField(), 1.0);
     return vf;
 }
 
 struct CreateField
 {
     std::string name;
-    const NeoFOAM::UnstructuredMesh& mesh;
+    const NeoN::UnstructuredMesh& mesh;
     std::int64_t timeIndex = 0;
     std::int64_t iterationIndex = 0;
     std::int64_t subCycleIndex = 0;
-    NeoFOAM::Document operator()(NeoFOAM::Database& db)
+    NeoN::Document operator()(NeoN::Database& db)
     {
-        std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
         for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
         {
-            NeoFOAM::Dictionary dict;
+            NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
             dict.insert("fixedValue", 2.0);
-            bcs.push_back(fvcc::VolumeBoundary<NeoFOAM::scalar>(mesh, dict, patchi));
+            bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
         }
 
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(
-            mesh.exec(),
-            NeoFOAM::Field<NeoFOAM::scalar>(mesh.exec(), mesh.nCells(), 1.0),
-            {0, 10, 20, 30}
+        NeoN::DomainField<NeoN::scalar> domainField(
+            mesh.exec(), NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0), {0, 10, 20, 30}
         );
-        fvcc::VolumeField<NeoFOAM::scalar> vf(
-            mesh.exec(), name, mesh, domainField, bcs, db, "", ""
-        );
-        return NeoFOAM::Document(
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
@@ -67,15 +63,15 @@ struct CreateField
 
 TEST_CASE("Field Document")
 {
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-    NeoFOAM::UnstructuredMesh mesh = NeoFOAM::createSingleCellMesh(exec);
+    NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
 
     SECTION("create FieldDocument: " + execName)
     {
@@ -96,7 +92,7 @@ TEST_CASE("Field Document")
             REQUIRE(fieldDoc.name() == "T");
 
 
-            NeoFOAM::Document& doc = fieldDoc.doc();
+            NeoN::Document& doc = fieldDoc.doc();
             REQUIRE(doc.validate());
             REQUIRE_NOTHROW(doc.validate());
             REQUIRE(doc.keys().size() == 6);
@@ -104,8 +100,8 @@ TEST_CASE("Field Document")
 
 
             // REQUIRE(name(doc) == "T");
-            const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
-            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
+            const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
 
             REQUIRE(volField.name == "T");
             auto volFieldHost = volField.internalField().copyToHost();
@@ -118,8 +114,8 @@ TEST_CASE("Field Document")
             fieldDoc.timeIndex() = 4;
             fieldDoc.iterationIndex() = 5;
             fieldDoc.subCycleIndex() = 6;
-            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
-            NeoFOAM::fill(volField.internalField(), 2.0);
+            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+            NeoN::fill(volField.internalField(), 2.0);
 
             auto volFieldHost = volField.internalField().copyToHost();
             REQUIRE(volFieldHost.view()[0] == 2.0);
@@ -132,16 +128,16 @@ TEST_CASE("Field Document")
 
 TEST_CASE("FieldCollection")
 {
-    NeoFOAM::Database db;
+    NeoN::Database db;
 
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-    NeoFOAM::UnstructuredMesh mesh = NeoFOAM::createSingleCellMesh(exec);
+    NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
 
     SECTION("create FieldCollection: " + execName)
     {
@@ -180,8 +176,8 @@ TEST_CASE("FieldCollection")
             REQUIRE(doc.subCycleIndex() == 3);
             REQUIRE(doc.name() == "T1");
 
-            const auto& constVolField = doc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
-            auto& volField = doc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
+            const auto& constVolField = doc.field<fvcc::VolumeField<NeoN::scalar>>();
+            auto& volField = doc.field<fvcc::VolumeField<NeoN::scalar>>();
 
             REQUIRE(volField.name == "T1");
             auto volFieldHost = volField.internalField().copyToHost();
@@ -192,18 +188,18 @@ TEST_CASE("FieldCollection")
         SECTION("query")
         {
             auto resTimeIndex =
-                fieldCollection.find([](const NeoFOAM::Document& doc)
+                fieldCollection.find([](const NeoN::Document& doc)
                                      { return doc.get<std::int64_t>("timeIndex") == 1; });
 
             REQUIRE(resTimeIndex.size() == 3);
 
             auto resSubCycleIndex =
-                fieldCollection.find([](const NeoFOAM::Document& doc)
+                fieldCollection.find([](const NeoN::Document& doc)
                                      { return doc.get<std::int64_t>("subCycleIndex") == 5; });
 
             REQUIRE(resSubCycleIndex.size() == 0);
 
-            auto resName = fieldCollection.find([](const NeoFOAM::Document& doc)
+            auto resName = fieldCollection.find([](const NeoN::Document& doc)
                                                 { return doc.get<std::string>("name") == "T3"; });
 
             REQUIRE(resName.size() == 1);
@@ -220,8 +216,8 @@ TEST_CASE("FieldCollection")
             fvcc::FieldCollection::instance(db, "newTestFieldCollection");
         REQUIRE(db.size() == 1);
 
-        fvcc::VolumeField<NeoFOAM::scalar>& t =
-            fieldCollection1.registerField<fvcc::VolumeField<NeoFOAM::scalar>>(CreateField {
+        fvcc::VolumeField<NeoN::scalar>& t =
+            fieldCollection1.registerField<fvcc::VolumeField<NeoN::scalar>>(CreateField {
                 .name = "T", .mesh = mesh, .timeIndex = 1, .iterationIndex = 1, .subCycleIndex = 1
             });
 
@@ -235,7 +231,7 @@ TEST_CASE("FieldCollection")
         {
             fvcc::FieldCollection& fieldCollection2 = fvcc::FieldCollection::instance(t);
             REQUIRE(fieldCollection2.size() == 1);
-            const fvcc::VolumeField<NeoFOAM::scalar>& constT = t;
+            const fvcc::VolumeField<NeoN::scalar>& constT = t;
             const fvcc::FieldCollection& fieldCollection3 = fvcc::FieldCollection::instance(constT);
             REQUIRE(fieldCollection3.size() == 1);
         }
@@ -244,9 +240,9 @@ TEST_CASE("FieldCollection")
         SECTION("register from existing field")
         {
             fvcc::FieldCollection& fieldCollection2 = fvcc::FieldCollection::instance(t);
-            fvcc::VolumeField<NeoFOAM::scalar>& t3 =
-                fieldCollection2.registerField<fvcc::VolumeField<NeoFOAM::scalar>>(
-                    fvcc::CreateFromExistingField<fvcc::VolumeField<NeoFOAM::scalar>> {
+            fvcc::VolumeField<NeoN::scalar>& t3 =
+                fieldCollection2.registerField<fvcc::VolumeField<NeoN::scalar>>(
+                    fvcc::CreateFromExistingField<fvcc::VolumeField<NeoN::scalar>> {
                         .name = "T3", .field = t
                     }
                 );

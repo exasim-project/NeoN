@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/core/dictionary.hpp"
+#include "NeoN/core/dictionary.hpp"
 
 TEST_CASE("Dictionary operations", "[dictionary]")
 {
-    NeoFOAM::Dictionary dict;
+    NeoN::Dictionary dict;
 
     SECTION("Insert and retrieve values")
     {
@@ -54,13 +54,13 @@ TEST_CASE("Dictionary operations", "[dictionary]")
 
     SECTION("subDict")
     {
-        NeoFOAM::Dictionary subDict;
+        NeoN::Dictionary subDict;
         subDict.insert("key1", 42);
         subDict.insert("key2", std::string("Hello"));
 
         dict.insert("subDict", subDict);
 
-        NeoFOAM::Dictionary& sDict = dict.subDict("subDict");
+        NeoN::Dictionary& sDict = dict.subDict("subDict");
         REQUIRE(sDict.get<int>("key1") == 42);
         REQUIRE(sDict.get<std::string>("key2") == "Hello");
 
@@ -68,13 +68,13 @@ TEST_CASE("Dictionary operations", "[dictionary]")
 
         // check if the value is modified
         REQUIRE(dict.isDict("subDict"));
-        NeoFOAM::Dictionary& sDict2 = dict.subDict("subDict");
+        NeoN::Dictionary& sDict2 = dict.subDict("subDict");
         REQUIRE(sDict2.get<int>("key1") == 100);
     }
 
     SECTION("initialize with map")
     {
-        NeoFOAM::Dictionary dictInit({{"key1", 42}, {"key2", std::string("Hello")}});
+        NeoN::Dictionary dictInit({{"key1", 42}, {"key2", std::string("Hello")}});
 
         REQUIRE(dictInit.get<int>("key1") == 42);
         REQUIRE(dictInit.get<std::string>("key2") == "Hello");

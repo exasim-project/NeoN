@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024-2025 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 #include "../../../catch_main.hpp"
 #include "test/catch2/executorGenerator.hpp"
 
-using Operator = NeoFOAM::dsl::Operator;
+using Operator = NeoN::dsl::Operator;
 
 
 TEST_CASE("DivOperator::grad", "[bench]")
@@ -17,20 +17,20 @@ TEST_CASE("DivOperator::grad", "[bench]")
 
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    NeoFOAM::UnstructuredMesh mesh = NeoFOAM::create1DUniformMesh(exec, size);
-    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoFOAM::scalar>>(mesh);
-    fvcc::SurfaceField<NeoFOAM::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
-    NeoFOAM::fill(faceFlux.internalField(), 1.0);
+    NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, size);
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+    fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
+    NeoN::fill(faceFlux.internalField(), 1.0);
 
-    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoFOAM::scalar>>(mesh);
-    fvcc::VolumeField<NeoFOAM::scalar> phi(exec, "vf", mesh, volumeBCs);
-    fvcc::VolumeField<NeoFOAM::scalar> divPhi(exec, "divPhi", mesh, volumeBCs);
-    NeoFOAM::fill(phi.internalField(), 1.0);
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
+    fvcc::VolumeField<NeoN::scalar> phi(exec, "vf", mesh, volumeBCs);
+    fvcc::VolumeField<NeoN::scalar> divPhi(exec, "divPhi", mesh, volumeBCs);
+    NeoN::fill(phi.internalField(), 1.0);
 
     // capture the value of size as section name
     DYNAMIC_SECTION("" << size)
     {
-        NeoFOAM::Input input = NeoFOAM::TokenList({std::string("Gauss"), std::string("linear")});
+        NeoN::Input input = NeoN::TokenList({std::string("Gauss"), std::string("linear")});
         auto op = fvcc::GradOperator(Operator::Type::Explicit, faceFlux, phi, input);
 
         BENCHMARK(std::string(execName)) { return (op.grad(divPhi)); };
