@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1timeIntegration_1_1ForwardEuler" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::timeIntegration::ForwardEuler</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">TimeIntegratorBase&lt; SolutionFieldType &gt;::template Register</basecompoundref>
+    <includes refid="forwardEuler_8hpp" local="no">forwardEuler.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename SolutionFieldType</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a4e6ed35fc31c52073800f0ae07ff8934" prot="public" static="no">
+        <type>typename SolutionFieldType::FieldValueType</type>
+        <definition>using NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::ValueType =  typename SolutionFieldType::FieldValueType</definition>
+        <argsstring></argsstring>
+        <name>ValueType</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::ValueType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="22" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1af79f8065c5dedca4d037d474ee9b8ef6" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt; SolutionFieldType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1ForwardEuler" kindref="compound">ForwardEuler</ref>&lt; SolutionFieldType &gt; &gt;</type>
+        <definition>using NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::Base =  TimeIntegratorBase&lt;SolutionFieldType&gt;::template Register&lt;ForwardEuler&lt;SolutionFieldType&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="23" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a566ed8e42093d697706cfd5b1eced720" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::ForwardEuler</definition>
+        <argsstring>(const Dictionary &amp;schemeDict, const Dictionary &amp;solutionDict)</argsstring>
+        <name>ForwardEuler</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::ForwardEuler</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>schemeDict</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>solutionDict</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="26" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a0f2a875b631461709b658b916ed87ed2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::solve</definition>
+        <argsstring>(dsl::Expression&lt; ValueType &gt; &amp;eqn, SolutionFieldType &amp;solutionField, scalar t, scalar dt) override</argsstring>
+        <name>solve</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::solve</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a4e6ed35fc31c52073800f0ae07ff8934" kindref="member">ValueType</ref> &gt; &amp;</type>
+          <declname>eqn</declname>
+        </param>
+        <param>
+          <type>SolutionFieldType &amp;</type>
+          <declname>solutionField</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="36" column="10" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="36" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1aa8dae6f56cff38758a96377925ad2059" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt; SolutionFieldType &gt; &gt;</type>
+        <definition>std::unique_ptr&lt; TimeIntegratorBase&lt; SolutionFieldType &gt; &gt; NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>clone</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::clone</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="58" column="21" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="58" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a8fe09d97820ab9df23658b423a702ad0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::name</definition>
+        <argsstring>()</argsstring>
+        <name>name</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="30" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a183fa37e348cad8591d4b951352eb5e6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::doc</definition>
+        <argsstring>()</argsstring>
+        <name>doc</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::doc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="32" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1ForwardEuler_1af8c94720637e1c7507666306defd06e3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;::schema</definition>
+        <argsstring>()</argsstring>
+        <name>schema</name>
+        <qualifiedname>NeoN::timeIntegration::ForwardEuler::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="34" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="34" bodyend="34"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1ForwardEuler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>TimeIntegratorBase::template Register&lt; ForwardEuler&lt; SolutionFieldType &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::timeIntegration::ForwardEuler&lt; SolutionFieldType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1ForwardEuler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>TimeIntegratorBase::template Register&lt; ForwardEuler&lt; SolutionFieldType &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" line="16" column="1" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/forwardEuler.hpp" bodystart="18" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1af79f8065c5dedca4d037d474ee9b8ef6" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1aa8dae6f56cff38758a96377925ad2059" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>clone</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a183fa37e348cad8591d4b951352eb5e6" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a566ed8e42093d697706cfd5b1eced720" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>ForwardEuler</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a8fe09d97820ab9df23658b423a702ad0" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>name</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1af8c94720637e1c7507666306defd06e3" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a0f2a875b631461709b658b916ed87ed2" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>solve</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a4e6ed35fc31c52073800f0ae07ff8934" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::ForwardEuler</scope><name>ValueType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Basics" href="basics/index.html" /><link rel="prev" title="Installation" href="installation.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/contributing.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/contributing.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Contributing - NeoFOAM documentation</title>
+        <title>Contributing - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -284,13 +284,13 @@
           <section id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
 <p>Contributions are highly welcome. Here is some information getting you started.</p>
-<section id="neofoam-code-style-guide">
-<h2>NeoFOAM Code Style Guide<a class="headerlink" href="#neofoam-code-style-guide" title="Link to this heading">¶</a></h2>
+<section id="neon-code-style-guide">
+<h2>NeoN Code Style Guide<a class="headerlink" href="#neon-code-style-guide" title="Link to this heading">¶</a></h2>
 <p>To simplify coding and code reviews you should adhere to the following code style. However, most
-of NeoFOAMs code style guide is checked via automated tools.
+of NeoNs code style guide is checked via automated tools.
 For example, formatting and non-format related code style is enforced via clang-format and clang-tidy.
-Corresponding configuration files are <a class="reference external" href="https://github.com/exasim-project/NeoFOAM/blob/main/.clang-format">.clang-format</a>
-and <a class="reference external" href="https://github.com/exasim-project/NeoFOAM/blob/main/.clang-format/.clang-tidy">.clang-tidy</a>.
+Corresponding configuration files are <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format">.clang-format</a>
+and <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format/.clang-tidy">.clang-tidy</a>.
 Furthermore, adequate licensing of the source code is checked via the reuse linter and typos checks for obvious spelling issues.
 Thus, this style guide doesn’t list all stylistic rules explicitly but rather gives advice for ambiguous situations and mentions the rational for some decisions.</p>
 <blockquote>
@@ -302,7 +302,7 @@ For example, prefer <code class="docutils literal notranslate"><span class="pre"
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">[[nodiscard]]</span></code> except for getters.
 To indicate that a function simply returns a value instead of performing expensive computations, <code class="docutils literal notranslate"><span class="pre">[[nodiscard]]</span></code> can be omitted.</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">final</span></code> except for abstract classes.
-NeoFOAMs aims at having a rather flat inheritance hierarchy and composition is generally preferred.
+NeoNs aims at having a rather flat inheritance hierarchy and composition is generally preferred.
 To avoid unintended inheritance, using <cite>final</cite> is advised.</p></li>
 <li><p>Avoid storing references as data members in classes.
 An exception might be a <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">Unstructured&amp;</span> <span class="pre">mesh</span></code> as it will most likely outlive any other objects.</p></li>
@@ -317,7 +317,7 @@ E.g. <code class="docutils literal notranslate"><span class="pre">foo(const</spa
 <div><ul class="simple">
 <li><p>Use <cite>camelCase</cite> for files and folder names</p></li>
 <li><p>The location of implementation and header files should be consistent.
-i.e. a file <code class="docutils literal notranslate"><span class="pre">src/model/a.cpp</span></code> should have a header file in <code class="docutils literal notranslate"><span class="pre">include/NeoFOAM/model/a.hpp</span></code> and the corresponding test implementation in <code class="docutils literal notranslate"><span class="pre">test/model/a.cpp</span></code></p></li>
+i.e. a file <code class="docutils literal notranslate"><span class="pre">src/model/a.cpp</span></code> should have a header file in <code class="docutils literal notranslate"><span class="pre">include/NeoN/model/a.hpp</span></code> and the corresponding test implementation in <code class="docutils literal notranslate"><span class="pre">test/model/a.cpp</span></code></p></li>
 <li><p>File and folder names should not be redundant. Ie. <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/geometryModel/finiteVolumecellCentredgeometryModel.hpp</span></code> should be
 <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/geometryModel/model.hpp</span></code>.</p></li>
 </ul>
@@ -357,14 +357,14 @@ The following labels and their meaning are discussed here:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">full-ci</span></code>: Run tests on AWS.</p></li>
 </ul>
 </div></blockquote>
-<p>A full list of the labels can be found <a class="reference external" href="https://github.com/exasim-project/NeoFOAM/labels">here</a>.</p>
+<p>A full list of the labels can be found <a class="reference external" href="https://github.com/exasim-project/NeoN/labels">here</a>.</p>
 </section>
 <section id="building-the-documentation">
 <h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h2>
-<p>NeoFOAM’s documentation can be found <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/index.html">main</a>  and <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/">doxygen</a> documentation can be found online. However, if you want to build the documentation locally, you can do so by executing the following steps.
+<p>NeoN’s documentation can be found <a class="reference external" href="https://exasim-project.com/NeoN/latest/index.html">main</a>  and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/">doxygen</a> documentation can be found online. However, if you want to build the documentation locally, you can do so by executing the following steps.
 First, make sure that Sphinx and Doxygen are installed on your system. Second, execute the following commands:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DNEOFOAM_BUILD_DOC<span class="o">=</span>ON<span class="w"> </span><span class="c1"># configure the build</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DNeoN_BUILD_DOC<span class="o">=</span>ON<span class="w"> </span><span class="c1"># configure the build</span>
 cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>sphinx<span class="w"> </span><span class="c1"># build the documentation</span>
 <span class="c1"># or</span>
 sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>./doc<span class="w"> </span>./docs_build
@@ -377,7 +377,7 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
 </pre></div>
 </div>
 </div></blockquote>
-<p>Alternatively, the documentation can be built by just adding the <code class="docutils literal notranslate"><span class="pre">-DNEOFOAM_BUILD_DOC=ON</span></code> to the configuration step of the build process and then building the documentation using the <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> target.</p>
+<p>Alternatively, the documentation can be built by just adding the <code class="docutils literal notranslate"><span class="pre">-DNeoN_BUILD_DOC=ON</span></code> to the configuration step of the build process and then building the documentation using the <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> target.</p>
 </section>
 </section>
 
@@ -410,7 +410,7 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -437,7 +437,7 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Contributing</a><ul>
-<li><a class="reference internal" href="#neofoam-code-style-guide">NeoFOAM Code Style Guide</a></li>
+<li><a class="reference internal" href="#neon-code-style-guide">NeoN Code Style Guide</a></li>
 <li><a class="reference internal" href="#collaboration-via-pull-requests">Collaboration via Pull Requests</a></li>
 <li><a class="reference internal" href="#github-workflows-and-labels">Github Workflows and Labels</a></li>
 <li><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>

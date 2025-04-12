@@ -1,95 +1,95 @@
 \doxysection{runge\+Kutta.\+hpp}
-\hypertarget{rungeKutta_8hpp_source}{}\label{rungeKutta_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/rungeKutta.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/rungeKutta.hpp}}
+\hypertarget{rungeKutta_8hpp_source}{}\label{rungeKutta_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp}}
 \mbox{\hyperlink{rungeKutta_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00003}00003\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00005}00005\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <functional>}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <memory>}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldCollection_8hpp}{NeoFOAM/core/database/fieldCollection.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{oldTimeCollection_8hpp}{NeoFOAM/core/database/oldTimeCollection.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoFOAM/core/parallelAlgorithms.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoFOAM/fields/field.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{timeIntegration_8hpp}{NeoFOAM/timeIntegration/timeIntegration.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sundials_8hpp}{NeoFOAM/timeIntegration/sundials.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldCollection_8hpp}{NeoN/core/database/fieldCollection.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{oldTimeCollection_8hpp}{NeoN/core/database/oldTimeCollection.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{timeIntegration_8hpp}{NeoN/timeIntegration/timeIntegration.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sundials_8hpp}{NeoN/timeIntegration/sundials.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00015}00015\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00016}00016\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1timeIntegration}{NeoFOAM::timeIntegration}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{NeoN::timeIntegration}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00018}00018\ \{}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00019}00019\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00051}00051\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionFieldType>}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00052}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{00052}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\ :}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionFieldType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<RungeKutta<SolutionFieldType>>}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{00052}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\ :}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionFieldType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<RungeKutta<SolutionFieldType>>}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00054}00054\ \{}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00055}00055\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00056}00056\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00057}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ade5df6beae5f3958aff4ac2019da0d2e}{00057}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ade5df6beae5f3958aff4ac2019da0d2e}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionFieldType::FieldValueType;}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00058}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ae97fdabc9a160c94a47523e267f0538a}{00058}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ae97fdabc9a160c94a47523e267f0538a}{Base}}\ =}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase<SolutionFieldType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<RungeKutta<SolutionFieldType>}}>;}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}{00057}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionFieldType::FieldValueType;}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428}{00058}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428}{Base}}\ =}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase<SolutionFieldType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<RungeKutta<SolutionFieldType>}}>;}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00064}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a2f32ef850e19a2ac5b84019155e13e10}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a2f32ef850e19a2ac5b84019155e13e10}{RungeKutta}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac82f51b53a19e02ecf85c2eb75c61135}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac82f51b53a19e02ecf85c2eb75c61135}{RungeKutta}}()\ =\ \textcolor{keywordflow}{default};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00069}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ae16a6ca7cfa6ae32a132f9ab86fcf49f}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ae16a6ca7cfa6ae32a132f9ab86fcf49f}{\string~RungeKutta}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a3bcf806e7531f44ec834e957d2434266}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a3bcf806e7531f44ec834e957d2434266}{\string~RungeKutta}}()\ =\ \textcolor{keywordflow}{default};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00075}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a9b41be5899708b29dac2e9a1f5a8994b}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a9b41be5899708b29dac2e9a1f5a8994b}{RungeKutta}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ae97fdabc9a160c94a47523e267f0538a}{Base}}(schemeDict,\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_abcbcc88537c122022f00bf802949f37d}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_abcbcc88537c122022f00bf802949f37d}{RungeKutta}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428}{Base}}(schemeDict,\ solutionDict)}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00077}00077\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00078}00078\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00085}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ab3e0d572158a0be7ea702ee4f1721b78}{00085}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ab3e0d572158a0be7ea702ee4f1721b78}{RungeKutta}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ other);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_add56ae16a9fa9cbaf5fa33bafbba5de5}{00085}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_add56ae16a9fa9cbaf5fa33bafbba5de5}{RungeKutta}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ other);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00086}00086\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00091}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_adb5e28a1d1e5d65e21bce0bc0a8509bb}{00091}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_adb5e28a1d1e5d65e21bce0bc0a8509bb}{RungeKutta}}(\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\&\ other);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00091}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac3a85b86ad022087031e193235569376}{00091}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac3a85b86ad022087031e193235569376}{RungeKutta}}(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\&\ other);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00092}00092\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ deleted\ because\ base\ class\ method\ deleted.}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00094}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a980222850e9c9de92a5e8f1616f3777c}{00094}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a980222850e9c9de92a5e8f1616f3777c}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ad422add2036860e2621914428034e417}{00094}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ad422add2036860e2621914428034e417}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00095}00095\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ deleted\ because\ base\ class\ method\ deleted.}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00097}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a49cbc57bd0cc1606fd42a328b7eb0511}{00097}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a49cbc57bd0cc1606fd42a328b7eb0511}{operator=}}(\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ab92950535a7c229ef04a5822bb147d76}{00097}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ab92950535a7c229ef04a5822bb147d76}{operator=}}(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{RungeKutta}}\&\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00098}00098\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00103}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a9c3200b15f98915c5616423f91749e21}{00103}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a9c3200b15f98915c5616423f91749e21}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Runge-\/Kutta"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_afab8b8f89d1678b4b42077ecf1827f60}{00103}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_afab8b8f89d1678b4b42077ecf1827f60}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Runge-\/Kutta"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00104}00104\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00109}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ad00e230394c58fc5cc30fb582fb46cb7}{00109}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_ad00e230394c58fc5cc30fb582fb46cb7}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Explicit\ time\ integration\ using\ the\ Runge-\/Kutta\ method."{}};\ \}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a2e15f280ebd141ba0bc8b27ea0a4d4f6}{00109}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a2e15f280ebd141ba0bc8b27ea0a4d4f6}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Explicit\ time\ integration\ using\ the\ Runge-\/Kutta\ method."{}};\ \}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00110}00110\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00115}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a34607b24fdd29c0ceb6c12428fdcc820}{00115}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a34607b24fdd29c0ceb6c12428fdcc820}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00115}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a9249abcd77c2d8534b83cf16998b9ee5}{00115}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a9249abcd77c2d8534b83cf16998b9ee5}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00116}00116\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00124}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_acc0d1379e8a0a09ebc53f9ab7dec3709}{00124}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_acc0d1379e8a0a09ebc53f9ab7dec3709}{solve}}(}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp,\ SolutionFieldType\&\ solutionField,\ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ t,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00124}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a219dea3b1fa78f2e1628b1ff68c7bba6}{00124}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a219dea3b1fa78f2e1628b1ff68c7bba6}{solve}}(}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp,\ SolutionFieldType\&\ solutionField,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00126}00126\ \ \ \ \ )\ \textcolor{keyword}{override};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00127}00127\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00132}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a01dd4e1c2d64032f4482f1fd84444392}{00132}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionFieldType>>\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1RungeKutta_a01dd4e1c2d64032f4482f1fd84444392}{clone}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00132}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a5fbe3d97a38bf500c90dc42dfc638dbe}{00132}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionFieldType>>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a5fbe3d97a38bf500c90dc42dfc638dbe}{clone}}()\ \textcolor{keyword}{const\ override};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00133}00133\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00134}00134\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00135}00135\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00136}00136\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00137}00137\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVector}{NeoFOAM::sundials::SKVector<ValueType>}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00137}00137\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{NeoN::sundials::SKVector<ValueType>}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ solution\_;\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00139}00139\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVector}{NeoFOAM::sundials::SKVector<ValueType>}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00139}00139\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{NeoN::sundials::SKVector<ValueType>}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ initialConditions\_;\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00141}00141\ \ \ \ \ std::shared\_ptr<SUNContext>\ context\_\ \{}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{nullptr},\ \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_adf0e6744d854e97d0972cdd17aa13bf7}{sundials::SUN\_CONTEXT\_DELETER}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{nullptr},\ \mbox{\hyperlink{namespaceNeoN_1_1sundials_a3cba60c69c27f51e31d139dde5107d4a}{sundials::SUN\_CONTEXT\_DELETER}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00143}00143\ \ \ \ \ \};\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00144}00144\ \ \ \ \ std::unique\_ptr<char,\ \textcolor{keyword}{decltype}(\mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_aa11671597bf1deb9f45b5714f1e7a547}{sundials::SUN\_ARK\_DELETER}})>\ ODEMemory\_\ \{}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keyword}{nullptr},\ \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_aa11671597bf1deb9f45b5714f1e7a547}{sundials::SUN\_ARK\_DELETER}}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00144}00144\ \ \ \ \ std::unique\_ptr<char,\ \textcolor{keyword}{decltype}(\mbox{\hyperlink{namespaceNeoN_1_1sundials_aca60627e32ac174ed4f8fac998408423}{sundials::SUN\_ARK\_DELETER}})>\ ODEMemory\_\ \{}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keyword}{nullptr},\ \mbox{\hyperlink{namespaceNeoN_1_1sundials_aca60627e32ac174ed4f8fac998408423}{sundials::SUN\_ARK\_DELETER}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00146}00146\ \ \ \ \ \};\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00147}00147\ \ \ \ \ std::unique\_ptr<NeoFOAM::dsl::Expression<ValueType>>\ pdeExpr\_\ \{\textcolor{keyword}{nullptr}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00147}00147\ \ \ \ \ std::unique\_ptr<NeoN::dsl::Expression<ValueType>>\ pdeExpr\_\ \{\textcolor{keyword}{nullptr}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00148}00148\ \ \ \ \ \};\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00158}00158\ \ \ \ \ initSUNERKSolver(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp,\ SolutionFieldType\&\ field,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ t);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00158}00158\ \ \ \ \ initSUNERKSolver(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp,\ SolutionFieldType\&\ field,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00159}00159\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keywordtype}{void}\ initExpression(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keywordtype}{void}\ initExpression(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ exp);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00165}00165\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keywordtype}{void}\ initSUNContext();}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00170}00170\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordtype}{void}\ initSUNVector(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ exec,\ \textcolor{keywordtype}{size\_t}\ size);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordtype}{void}\ initSUNVector(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keywordtype}{size\_t}\ size);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00177}00177\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00182}00182\ \ \ \ \ \textcolor{keywordtype}{void}\ initSUNInitialConditions(\textcolor{keyword}{const}\ SolutionFieldType\&\ solutionField);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00183}00183\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00188}00188\ \ \ \ \ \textcolor{keywordtype}{void}\ initODEMemory(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ t);}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00188}00188\ \ \ \ \ \textcolor{keywordtype}{void}\ initODEMemory(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t);}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00189}00189\ \};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00190}00190\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00191}00191\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00191}00191\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1Error" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::Error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::exception</basecompoundref>
+    <derivedcompoundref refid="classNeoN_1_1DimensionMismatch" prot="public" virt="non-virtual">NeoN::DimensionMismatch</derivedcompoundref>
+    <includes refid="exceptions_8hpp" local="no">exceptions.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1Error_1a60071717db5d524705e097a22cf2d18e" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string NeoN::Error::what_</definition>
+        <argsstring></argsstring>
+        <name>what_</name>
+        <qualifiedname>NeoN::Error::what_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" line="46" column="23" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1Error_1a8dfebf7b6b0b7321b725272646e09868" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::Error::Error</definition>
+        <argsstring>(const std::string &amp;file, int line, const std::string &amp;what)</argsstring>
+        <name>Error</name>
+        <qualifiedname>NeoN::Error::Error</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>line</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>what</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initializes an error.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the offending source file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>line</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The source code line number where the error occurred </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>what</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error message </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" line="34" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1Error_1af18f627eb1d4e921582dea0238b4305b" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>const char *</type>
+        <definition>virtual const char * NeoN::Error::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>NeoN::Error::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a human-readable string with a more detailed description of the error. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" line="42" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" bodystart="42" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for consistent error representation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The <ref refid="classNeoN_1_1Error" kindref="compound">Error</ref> class is used to report exceptional behaviour in library functions. <ref refid="namespaceNeoN" kindref="compound">NeoN</ref> uses C++ exception mechanism to this end, and the <ref refid="classNeoN_1_1Error" kindref="compound">Error</ref> class represents a base class for all types of errors. The exact list of errors which could occur during the execution of a certain library routine is provided in the documentation of that routine, along with a short description of the situation when that error can occur. During runtime, these errors can be detected by using standard C++ try-catch blocks, and a human-readable error description can be obtained by calling the <ref refid="classNeoN_1_1Error_1af18f627eb1d4e921582dea0238b4305b" kindref="member">Error::what()</ref> method. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>NeoN::DimensionMismatch</label>
+        <link refid="classNeoN_1_1DimensionMismatch"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>NeoN::Error</label>
+        <link refid="classNeoN_1_1Error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::Error</label>
+        <link refid="classNeoN_1_1Error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/helpers/exceptions.hpp" bodystart="24" bodyend="47"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1Error_1a8dfebf7b6b0b7321b725272646e09868" prot="public" virt="non-virtual"><scope>NeoN::Error</scope><name>Error</name></member>
+      <member refid="classNeoN_1_1Error_1af18f627eb1d4e921582dea0238b4305b" prot="public" virt="virtual"><scope>NeoN::Error</scope><name>what</name></member>
+      <member refid="classNeoN_1_1Error_1a60071717db5d524705e097a22cf2d18e" prot="private" virt="non-virtual"><scope>NeoN::Error</scope><name>what_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

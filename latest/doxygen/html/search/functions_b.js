@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['mag_0',['mag',['../namespaceNeoFOAM.html#abb63e8a2f557cc72e042ff949ea576da',1,'NeoFOAM::mag(const scalar &amp;s)'],['../namespaceNeoFOAM.html#a30753699ca02c237b4081286380cabd6',1,'NeoFOAM::mag(const Vector &amp;vec)']]],
-  ['magfaceareas_1',['magFaceAreas',['../classNeoFOAM_1_1UnstructuredMesh.html#a75051ce1557fff2fcb282f25b90cf816',1,'NeoFOAM::UnstructuredMesh']]],
-  ['magsf_2',['magsf',['../classNeoFOAM_1_1BoundaryMesh.html#a440a8c36013674d9873371d13543aa05',1,'NeoFOAM::BoundaryMesh::magSf() const'],['../classNeoFOAM_1_1BoundaryMesh.html#a506ab16e28c9cdcf5b069c22c6bca6d8',1,'NeoFOAM::BoundaryMesh::magSf(const localIdx i) const']]],
-  ['map_3',['map',['../namespaceNeoFOAM.html#a58f995a6ce3861bf1eb92ca1e6a36739',1,'NeoFOAM']]],
-  ['matrix_4',['matrix',['../classNeoFOAM_1_1la_1_1LinearSystem.html#abcd18e32cbc6b2acc80bb31209d912bf',1,'NeoFOAM::la::LinearSystem::matrix()'],['../classNeoFOAM_1_1la_1_1LinearSystem.html#ab47b9294212c8466cdb467a9dde24a25',1,'NeoFOAM::la::LinearSystem::matrix() const']]],
-  ['mesh_5',['mesh',['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin.html#a18570fe2823eff871124806028b8fe33',1,'NeoFOAM::finiteVolume::cellCentred::GeometricFieldMixin::mesh()'],['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#ac8165747c05438bb0dcdabfa3bed0061',1,'NeoFOAM::finiteVolume::cellCentred::SparsityPattern::mesh()']]],
-  ['mul_6',['mul',['../namespaceNeoFOAM.html#a335407c0e359f3a30480c61fb0aa491f',1,'NeoFOAM']]]
+  ['mag_0',['mag',['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)'],['../namespaceNeoN.html#a081802b83825d4599ba51ccefe195571',1,'NeoN::mag(const Vector &amp;vec)']]],
+  ['magfaceareas_1',['magFaceAreas',['../classNeoN_1_1UnstructuredMesh.html#a3a829de8bd15fb6280ba07d53596b289',1,'NeoN::UnstructuredMesh']]],
+  ['magsf_2',['magsf',['../classNeoN_1_1BoundaryMesh.html#af5936ee62818634f3fe52a9ab8b9d2e2',1,'NeoN::BoundaryMesh::magSf() const'],['../classNeoN_1_1BoundaryMesh.html#a034a854b39cc6ca44c678494f8314087',1,'NeoN::BoundaryMesh::magSf(const localIdx i) const']]],
+  ['map_3',['map',['../namespaceNeoN.html#a01a3143329e8c04d8801d81374001708',1,'NeoN']]],
+  ['matrix_4',['matrix',['../classNeoN_1_1la_1_1LinearSystem.html#a416fd6d5122482fcc2372590bc10b8f9',1,'NeoN::la::LinearSystem::matrix()'],['../classNeoN_1_1la_1_1LinearSystem.html#a18bd8cefa6ab9d8df2bc931fb953b633',1,'NeoN::la::LinearSystem::matrix() const']]],
+  ['mesh_5',['mesh',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin.html#a1c7d4f6d1d3f39c20177e9e205ad1ea4',1,'NeoN::finiteVolume::cellCentred::GeometricFieldMixin::mesh()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#ad7ae93344b89713b15c0919251e661e0',1,'NeoN::finiteVolume::cellCentred::SparsityPattern::mesh()']]],
+  ['mul_6',['mul',['../namespaceNeoN.html#af5bae3e6f295d28064775f2732fa8f56',1,'NeoN']]]
 ];

@@ -1,0 +1,181 @@
+\doxysection{NeoN\+::Database Class Reference}
+\hypertarget{classNeoN_1_1Database}{}\label{classNeoN_1_1Database}\index{NeoN::Database@{NeoN::Database}}
+
+
+{\ttfamily \#include $<$database.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& \mbox{\hyperlink{classNeoN_1_1Database_ac954e46fb566204c46888176edbedc3d}{insert}} (const std\+::string \&key, \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \&\&col)
+\begin{DoxyCompactList}\small\item\em Inserts a collection into the database with the specified key. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classNeoN_1_1Database_a075b97a702b6cc0c19ade5b5e9cf4227}{contains}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+\begin{DoxyCompactList}\small\item\em Checks if the database contains an collection with the specified name. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classNeoN_1_1Database_afdec27ddca364429fffb43e6d0501bac}{remove}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+\begin{DoxyCompactList}\small\item\em Removes a collection from the database. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& \mbox{\hyperlink{classNeoN_1_1Database_a1d697bcff2efaab201a1cf466f47dde4}{at}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+\begin{DoxyCompactList}\small\item\em Retrieves a collection by its name. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& \mbox{\hyperlink{classNeoN_1_1Database_a6336c243ba82906253c0b543070f7fda}{at}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+\begin{DoxyCompactList}\small\item\em Retrieves a collection by its name (const version). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type  = Collection$>$ }\\Collection\+Type \& \mbox{\hyperlink{classNeoN_1_1Database_a7404325f2e8cce0ba2369aec7beaf005}{at}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+\begin{DoxyCompactList}\small\item\em Retrieves a collection by its name and casts it to the specified type. \end{DoxyCompactList}\item 
+std\+::size\+\_\+t \mbox{\hyperlink{classNeoN_1_1Database_ad88fae3ad03e65d6de4373094ca0b6a4}{size}} () const
+\begin{DoxyCompactList}\small\item\em Returns the size of the database. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{database_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{database_8hpp_source}{database.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1Database_a1d697bcff2efaab201a1cf466f47dde4}\label{classNeoN_1_1Database_a1d697bcff2efaab201a1cf466f47dde4} 
+\index{NeoN::Database@{NeoN::Database}!at@{at}}
+\index{at@{at}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& Neo\+N\+::\+Database\+::at (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+
+
+Retrieves a collection by its name. 
+
+This function searches for and returns a reference to a collection identified by the given name. If the collection does not exist, the behavior is undefined.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the collection to retrieve. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1Collection}{Collection}\& A reference to the collection with the specified name. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Database_a7404325f2e8cce0ba2369aec7beaf005}\label{classNeoN_1_1Database_a7404325f2e8cce0ba2369aec7beaf005} 
+\index{NeoN::Database@{NeoN::Database}!at@{at}}
+\index{at@{at}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Collection\+Type  = Collection$>$ \\
+Collection\+Type \& Neo\+N\+::\+Database\+::at (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves a collection by its name and casts it to the specified type. 
+
+This function retrieves a collection by its name and attempts to cast it to the specified type. If the collection does not exist or the cast fails, an exception is thrown.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Collection\+Type} & The type to cast the collection to. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the collection to retrieve. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Collection\+Type\& A reference to the collection cast to the specified type. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{database_8hpp_source_l00082}{82}} of file \mbox{\hyperlink{database_8hpp_source}{database.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Database_a6336c243ba82906253c0b543070f7fda}\label{classNeoN_1_1Database_a6336c243ba82906253c0b543070f7fda} 
+\index{NeoN::Database@{NeoN::Database}!at@{at}}
+\index{at@{at}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& Neo\+N\+::\+Database\+::at (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+Retrieves a collection by its name (const version). 
+
+This function searches for and returns a const reference to a collection identified by the given name. If the collection does not exist, the behavior is undefined.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the collection to retrieve. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+const \doxylink{classNeoN_1_1Collection}{Collection}\& A const reference to the collection with the specified name. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Database_a075b97a702b6cc0c19ade5b5e9cf4227}\label{classNeoN_1_1Database_a075b97a702b6cc0c19ade5b5e9cf4227} 
+\index{NeoN::Database@{NeoN::Database}!contains@{contains}}
+\index{contains@{contains}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily bool Neo\+N\+::\+Database\+::contains (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+Checks if the database contains an collection with the specified name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the collection to check for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the collection exists in the database, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Database_ac954e46fb566204c46888176edbedc3d}\label{classNeoN_1_1Database_ac954e46fb566204c46888176edbedc3d} 
+\index{NeoN::Database@{NeoN::Database}!insert@{insert}}
+\index{insert@{insert}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \& Neo\+N\+::\+Database\+::insert (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key,  }\item[{\mbox{\hyperlink{classNeoN_1_1Collection}{Collection}} \&\&}]{col }\end{DoxyParamCaption})}
+
+
+
+Inserts a collection into the database with the specified key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key associated with the collection to be inserted. \\
+\hline
+{\em col} & The collection to be inserted into the database. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1Collection}{Collection}\& A reference to the inserted collection. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Database_afdec27ddca364429fffb43e6d0501bac}\label{classNeoN_1_1Database_afdec27ddca364429fffb43e6d0501bac} 
+\index{NeoN::Database@{NeoN::Database}!remove@{remove}}
+\index{remove@{remove}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily bool Neo\+N\+::\+Database\+::remove (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+
+
+Removes a collection from the database. 
+
+This function removes the collection with the specified name from the database.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the collection to be removed. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the collection was successfully removed, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Database_ad88fae3ad03e65d6de4373094ca0b6a4}\label{classNeoN_1_1Database_ad88fae3ad03e65d6de4373094ca0b6a4} 
+\index{NeoN::Database@{NeoN::Database}!size@{size}}
+\index{size@{size}!NeoN::Database@{NeoN::Database}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily std\+::size\+\_\+t Neo\+N\+::\+Database\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the size of the database. 
+
+This function provides the number of elements currently stored in the database.
+
+\begin{DoxyReturn}{Returns}
+std\+::size\+\_\+t The number of elements in the database. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/core/database/\mbox{\hyperlink{database_8hpp}{database.\+hpp}}\end{DoxyCompactItemize}

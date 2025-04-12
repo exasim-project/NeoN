@@ -1,9 +1,9 @@
 \doxysection{operators.\+hpp}
-\hypertarget{operators_8hpp_source}{}\label{operators_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/mpi/operators.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/mpi/operators.hpp}}
+\hypertarget{operators_8hpp_source}{}\label{operators_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/mpi/operators.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/mpi/operators.hpp}}
 \mbox{\hyperlink{operators_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <complex>}}
@@ -12,10 +12,10 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#endif}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoFOAM/core/error.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoFOAM/core/primitives/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/primitives/vector.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00013}00013\ }
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM}{NeoFOAM}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00015}00015\ \{}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00016}00016\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
@@ -121,7 +121,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00151}00151\ \ \ \ \ MPI\_Allreduce(}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ MPI\_IN\_PLACE,}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(vector.data()),}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoFOAM_a6340adc783ef78803a50be602055fba6}{mpi\_label\_t}}\textcolor{keyword}{>}(vector.size()),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(vector.size()),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ getType<scalar>(),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ getOp(op),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ comm}
@@ -138,7 +138,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00180}00180\ \ \ \ \ MPI\_Request*\ request}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00181}00181\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00182}00182\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00183}00183\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a6340adc783ef78803a50be602055fba6}{mpi\_label\_t}}\ err\ =}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00183}00183\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ MPI\_Isend(buffer,\ size,\ getType<valueType>(),\ rankReceive,\ tag,\ comm,\ request);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00185}00185\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Isend\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00186}00186\ \}}
@@ -153,14 +153,14 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00207}00207\ \ \ \ \ MPI\_Request*\ request}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00208}00208\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00209}00209\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00210}00210\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a6340adc783ef78803a50be602055fba6}{mpi\_label\_t}}\ err\ =\ MPI\_Irecv(buffer,\ size,\ getType<valueType>(),\ rankSend,\ tag,\ comm,\ request);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00210}00210\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Irecv(buffer,\ size,\ getType<valueType>(),\ rankSend,\ tag,\ comm,\ request);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00211}00211\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Irecv\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00212}00212\ \}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00213}00213\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00221}00221\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ test(MPI\_Request*\ request)}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00222}00222\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00223}00223\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a6340adc783ef78803a50be602055fba6}{mpi\_label\_t}}\ flag;}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00224}00224\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a6340adc783ef78803a50be602055fba6}{mpi\_label\_t}}\ err\ =\ MPI\_Test(request,\ \&flag,\ MPI\_STATUS\_IGNORE);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00223}00223\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ flag;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00224}00224\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Test(request,\ \&flag,\ MPI\_STATUS\_IGNORE);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00225}00225\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Test\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00226}00226\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{bool}\textcolor{keyword}{>}(flag);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00227}00227\ \}}

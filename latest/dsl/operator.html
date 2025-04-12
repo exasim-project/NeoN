@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Time Integration" href="../timeIntegration/index.html" /><link rel="prev" title="Expression" href="equation.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/dsl/operator.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/dsl/operator.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Operator - NeoFOAM documentation</title>
+        <title>Operator - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -287,21 +287,21 @@
 An <cite>Operator</cite> is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
 The <cite>Operator</cite> implementation uses Type Erasure (more details <a class="reference external" href="https://medium.com/&#64;gealleh/type-erasure-idiom-in-c-0d1cb4f61cf0">[1]</a> <a class="reference external" href="https://www.youtube.com/watch?v=4eeESJQk-mw">[2]</a> <a class="reference external" href="https://www.youtube.com/watch?v=qn6OqefuH08">[3]</a>) to achieve polymorphism without inheritance. Consequently, the class needs only to implement the interface which is used in the DSL and which is shown in the below example:</p>
 <dl>
-<dt>Example:</dt><dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">divTerm</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">Divergence</span><span class="p">(</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Explicit</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span>
+<dt>Example:</dt><dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">divTerm</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Divergence</span><span class="p">(</span><span class="n">NeoN</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Explicit</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span>
 
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ddtTerm</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">TimeTerm</span><span class="p">(</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Temporal</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">..);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ddtTerm</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">TimeTerm</span><span class="p">(</span><span class="n">NeoN</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Temporal</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">..);</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 <p>To fit the specification of the Expression (storage in a vector), the Operator needs to be able to be scaled:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">scalingField</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">nCells</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">scalingField</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">nCells</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">sF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scalingField</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
 
-<span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">customTerm</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">CustomTerm</span><span class="p">(</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Explicit</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">nCells</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">customTerm</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CustomTerm</span><span class="p">(</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;::</span><span class="n">Type</span><span class="o">::</span><span class="n">Explicit</span><span class="p">,</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">nCells</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 
 <span class="k">auto</span><span class="w"> </span><span class="n">constantScaledTerm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">customTerm</span><span class="p">;</span><span class="w"> </span><span class="c1">// A constant scaling factor of 2 for the term.</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">fieldScaledTerm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scalingField</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">customTerm</span><span class="p">;</span><span class="w"> </span><span class="c1">// scalingField is used to scale the term.</span>
@@ -311,7 +311,7 @@ The <cite>Operator</cite> implementation uses Type Erasure (more details <a clas
 
 <span class="c1">// Operator also supports the use of a lambda as scaling function to reduce the number of temporaries generated</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">lambdaScaledTerm</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="p">(</span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w">  </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">customTerm</span><span class="p">;</span>
+<span class="w">    </span><span class="p">(</span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w">  </span><span class="o">+</span><span class="w"> </span><span class="n">sF</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">customTerm</span><span class="p">;</span>
 </pre></div>
 </div>
 <dl>
@@ -361,7 +361,7 @@ The <cite>Operator</cite> implementation uses Type Erasure (more details <a clas
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

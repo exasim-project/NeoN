@@ -1,0 +1,207 @@
+\doxysection{NeoN\+::finite\+Volume\+::cell\+Centred\+::Expression\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+
+
+{\ttfamily \#include $<$expression.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_aab0bf4552af22f09687801782cb49ce6}{Expression}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ Value\+Type $>$ expr, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&psi, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution)
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac430a7c19eaca2d61a694b86930ebe2d}{Expression}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Expression}} \&ls)
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a229b18b0d99762553e35175e6377752b}{\texorpdfstring{$\sim$}{\string~}\+Expression}} ()=default
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linear\+System}} ()
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad7708d86c2611df217f691f28c4f1d89}{sparsity\+Pattern}} ()
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a811eaee375a4f2607cbfaf9803fdb587}{get\+Field}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a7390b20e1c79705a57bf4d55d45ddac2}{get\+Field}} () const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3f50e3180cf0efa6df4e362b8d3e1bfc}{linear\+System}} () const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a1baaff5e210051508be2e08334c37b5c}{sparsity\+Pattern}} () const
+\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3b2b4dc757790fcf661da6b47e1c1a0a}{exec}} () const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac7254fa5c400fe38615400f3e695548a}{assemble}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4b38ac1885afb4338315a6a119306ddc}{assemble}} ()
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a89e8a55787ccf27a5afce670c03a76c0}{solve}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad55183feff01e60075b59bbe828b856e}{set\+Reference}} (const Index\+Type ref\+Cell, Value\+Type ref\+Value)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Index\+Type = local\+Idx$>$\newline
+class Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression$<$ Value\+Type, Index\+Type $>$}
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_aab0bf4552af22f09687801782cb49ce6}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_aab0bf4552af22f09687801782cb49ce6} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!Expression@{Expression}}
+\index{Expression@{Expression}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{Expression()}{Expression()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::\+Expression (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ Value\+Type $>$}]{expr,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{psi,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Schemes,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Solution }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac430a7c19eaca2d61a694b86930ebe2d}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac430a7c19eaca2d61a694b86930ebe2d} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!Expression@{Expression}}
+\index{Expression@{Expression}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{Expression()}{Expression()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::\+Expression (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Expression}}$<$ Value\+Type, Index\+Type $>$ \&}]{ls }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a229b18b0d99762553e35175e6377752b}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a229b18b0d99762553e35175e6377752b} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!````~Expression@{\texorpdfstring{$\sim$}{\string~}Expression}}
+\index{````~Expression@{\texorpdfstring{$\sim$}{\string~}Expression}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Expression()}{\string~Expression()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Expression}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4b38ac1885afb4338315a6a119306ddc}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4b38ac1885afb4338315a6a119306ddc} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!assemble@{assemble}}
+\index{assemble@{assemble}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac7254fa5c400fe38615400f3e695548a}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ac7254fa5c400fe38615400f3e695548a} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!assemble@{assemble}}
+\index{assemble@{assemble}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3b2b4dc757790fcf661da6b47e1c1a0a}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3b2b4dc757790fcf661da6b47e1c1a0a} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a811eaee375a4f2607cbfaf9803fdb587}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a811eaee375a4f2607cbfaf9803fdb587} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!getField@{getField}}
+\index{getField@{getField}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{getField()}{getField()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::get\+Field (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a7390b20e1c79705a57bf4d55d45ddac2}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a7390b20e1c79705a57bf4d55d45ddac2} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!getField@{getField}}
+\index{getField@{getField}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{getField()}{getField()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::get\+Field (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00064}{64}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!linearSystem@{linearSystem}}
+\index{linearSystem@{linearSystem}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{linearSystem()}{linearSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::linear\+System (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3f50e3180cf0efa6df4e362b8d3e1bfc}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3f50e3180cf0efa6df4e362b8d3e1bfc} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!linearSystem@{linearSystem}}
+\index{linearSystem@{linearSystem}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{linearSystem()}{linearSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::linear\+System (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00066}{66}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad55183feff01e60075b59bbe828b856e}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad55183feff01e60075b59bbe828b856e} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!setReference@{setReference}}
+\index{setReference@{setReference}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{setReference()}{setReference()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::set\+Reference (\begin{DoxyParamCaption}\item[{const Index\+Type}]{ref\+Cell,  }\item[{Value\+Type}]{ref\+Value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a89e8a55787ccf27a5afce670c03a76c0}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a89e8a55787ccf27a5afce670c03a76c0} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!solve@{solve}}
+\index{solve@{solve}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00133}{133}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad7708d86c2611df217f691f28c4f1d89}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_ad7708d86c2611df217f691f28c4f1d89} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!sparsityPattern@{sparsityPattern}}
+\index{sparsityPattern@{sparsityPattern}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{sparsityPattern()}{sparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::sparsity\+Pattern (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a1baaff5e210051508be2e08334c37b5c}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a1baaff5e210051508be2e08334c37b5c} 
+\index{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}!sparsityPattern@{sparsityPattern}}
+\index{sparsityPattern@{sparsityPattern}!NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$@{NeoN::finiteVolume::cellCentred::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{sparsityPattern()}{sparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::sparsity\+Pattern (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/finite\+Volume/cell\+Centred/dsl/\mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp}{expression.\+hpp}}\end{DoxyCompactItemize}
