@@ -8,7 +8,7 @@
 [![c++ standard](https://img.shields.io/badge/c%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Gitter](https://img.shields.io/badge/Gitter-8A2BE2)](https://matrix.to/#/#NeoN:gitter.im)
 [![doxygen](https://img.shields.io/badge/Doxygen-8A2BE2)](https://exasim-project.com/NeoN/latest/doxygen/html/index.html)
 
-![image](https://github.com/exasim-projec/NeoN/assets/NeonLogo.png)
+![image](https://github.com/exasim-project/NeoN/assets/NeonLogo.png)
 
 # NeoN
 
