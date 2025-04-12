@@ -75,17 +75,17 @@ inline ARKODE_ERKTableID stringToERKTable(const std::string& key)
 }
 
 /**
- * @brief Converts NeoN Field data to SUNDIALS N_Vec3 format.
- * @tparam SKVec3Type The SUNDIALS Kokkos vector type
+ * @brief Converts NeoN Field data to SUNDIALS N_Vector format.
+ * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
  * @param field Source NeoN field
- * @param vector Target SUNDIALS N_Vec3
+ * @param vector Target SUNDIALS N_Vector
  * @warning Assumes matching initialization and size between field and vector
  */
-template<typename SKVec3Type, typename ValueType>
-void fieldToSunNVec3Impl(const NeoN::Field<ValueType>& field, N_Vec3& vector)
+template<typename SKVectorType, typename ValueType>
+void fieldToSunNVectorImpl(const NeoN::Field<ValueType>& field, N_Vector& vector)
 {
-    auto view = ::sundials::kokkos::GetVec<SKVec3Type>(vector)->View();
+    auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     auto fieldView = field.view();
     NeoN::parallelFor(
         field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { view(i) = fieldView[i]; }
@@ -93,48 +93,50 @@ void fieldToSunNVec3Impl(const NeoN::Field<ValueType>& field, N_Vec3& vector)
 };
 
 /**
- * @brief Dispatcher for field to N_Vec3 conversion based on executor type.
+ * @brief Dispatcher for field to N_Vector conversion based on executor type.
  * @tparam ValueType The field data type
  * @param field Source NeoN field
- * @param vector Target SUNDIALS N_Vec3
+ * @param vector Target SUNDIALS N_Vector
  * @throws Runtime error for unsupported executors
  */
 template<typename ValueType>
-void fieldToSunNVec3(const NeoN::Field<ValueType>& field, N_Vec3& vector)
+void fieldToSunNVector(const NeoN::Field<ValueType>& field, N_Vector& vector)
 {
-    // CHECK FOR N_Vec3 on correct space in DEBUG
+    // CHECK FOR N_Vector on correct space in DEBUG
     if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
     {
-        fieldToSunNVec3Impl<::sundials::kokkos::Vec3<Kokkos::DefaultExecutionSpace>>(field, vector);
+        fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
+            field, vector
+        );
         return;
     }
     if (std::holds_alternative<NeoN::CPUExecutor>(field.exec()))
     {
-        fieldToSunNVec3Impl<::sundials::kokkos::Vec3<Kokkos::DefaultHostExecutionSpace>>(
+        fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
             field, vector
         );
         return;
     }
     if (std::holds_alternative<NeoN::SerialExecutor>(field.exec()))
     {
-        fieldToSunNVec3Impl<::sundials::kokkos::Vec3<Kokkos::Serial>>(field, vector);
+        fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(field, vector);
         return;
     }
     NF_ERROR_EXIT("Unsupported NeoN executor for field.");
 };
 
 /**
- * @brief Converts SUNDIALS N_Vec3 data back to NeoN Field format.
- * @tparam SKVec3Type The SUNDIALS Kokkos vector type
+ * @brief Converts SUNDIALS N_Vector data back to NeoN Field format.
+ * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
- * @param vector Source SUNDIALS N_Vec3
+ * @param vector Source SUNDIALS N_Vector
  * @param field Target NeoN field
  * @warning Assumes matching initialization and size between vector and field
  */
-template<typename SKVec3Type, typename ValueType>
-void sunNVec3ToFieldImpl(const N_Vec3& vector, NeoN::Field<ValueType>& field)
+template<typename SKVectorType, typename ValueType>
+void sunNVectorToFieldImpl(const N_Vector& vector, NeoN::Field<ValueType>& field)
 {
-    auto view = ::sundials::kokkos::GetVec<SKVec3Type>(vector)->View();
+    auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     ValueType* fieldData = field.data();
     NeoN::parallelFor(
         field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { fieldData[i] = view(i); }
@@ -142,29 +144,31 @@ void sunNVec3ToFieldImpl(const N_Vec3& vector, NeoN::Field<ValueType>& field)
 };
 
 /**
- * @brief Dispatcher for N_Vec3 to field conversion based on executor type.
+ * @brief Dispatcher for N_Vector to field conversion based on executor type.
  * @tparam ValueType The field data type
- * @param vector Source SUNDIALS N_Vec3
+ * @param vector Source SUNDIALS N_Vector
  * @param field Target NeoN field
  */
 template<typename ValueType>
-void sunNVec3ToField(const N_Vec3& vector, NeoN::Field<ValueType>& field)
+void sunNVectorToField(const N_Vector& vector, NeoN::Field<ValueType>& field)
 {
     if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
     {
-        sunNVec3ToFieldImpl<::sundials::kokkos::Vec3<Kokkos::DefaultExecutionSpace>>(vector, field);
+        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
+            vector, field
+        );
         return;
     }
     if (std::holds_alternative<NeoN::CPUExecutor>(field.exec()))
     {
-        sunNVec3ToFieldImpl<::sundials::kokkos::Vec3<Kokkos::DefaultHostExecutionSpace>>(
+        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
             vector, field
         );
         return;
     }
     if (std::holds_alternative<NeoN::SerialExecutor>(field.exec()))
     {
-        sunNVec3ToFieldImpl<::sundials::kokkos::Vec3<Kokkos::Serial>>(vector, field);
+        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(vector, field);
         return;
     }
     NF_ERROR_EXIT("Unsupported NeoN executor for field.");
@@ -185,7 +189,7 @@ void sunNVec3ToField(const N_Vec3& vector, NeoN::Field<ValueType>& field)
  * can be copied to this field.
  */
 template<typename SolutionFieldType>
-int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vec3 y, N_Vec3 ydot, void* userData)
+int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, void* userData)
 {
     // Pointer wrangling
     using ValueType = typename SolutionFieldType::FieldValueType;
@@ -206,7 +210,7 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vec3 y, N_Vec3 ydot, void*
     {
         Kokkos::fence();
     }
-    NeoN::sundials::fieldToSunNVec3(source, ydot); // assign rhs to ydot.
+    NeoN::sundials::fieldToSunNVector(source, ydot); // assign rhs to ydot.
     return 0;
 }
 
@@ -215,39 +219,39 @@ namespace detail
 
 /**
  * @brief Initializes a vector wrapper with specified size and context.
- * @tparam Vec3 Vec3 wrapper type implementing initNVec3 interface
+ * @tparam Vector Vector wrapper type implementing initNVector interface
  * @param[in] size Number of elements
  * @param[in] context SUNDIALS context for vector operations
- * @param[in,out] vec Vec3 to initialize
+ * @param[in,out] vec Vector to initialize
  */
-template<typename Vec3>
-void initNVec3(size_t size, std::shared_ptr<SUNContext> context, Vec3& vec)
+template<typename Vector>
+void initNVector(size_t size, std::shared_ptr<SUNContext> context, Vector& vec)
 {
-    vec.initNVec3(size, context);
+    vec.initNVector(size, context);
 }
 
 /**
- * @brief Provides const access to underlying N_Vec3.
- * @tparam Vec3 Vec3 wrapper type implementing NVec3 interface
+ * @brief Provides const access to underlying N_Vector.
+ * @tparam Vector Vector wrapper type implementing NVector interface
  * @param vec Source vector wrapper
- * @return Const reference to wrapped N_Vec3
+ * @return Const reference to wrapped N_Vector
  */
-template<typename Vec3>
-const N_Vec3& sunNVec3(const Vec3& vec)
+template<typename Vector>
+const N_Vector& sunNVector(const Vector& vec)
 {
-    return vec.sunNVec3();
+    return vec.sunNVector();
 }
 
 /**
- * @brief Provides mutable access to underlying N_Vec3.
- * @tparam Vec3 Vec3 wrapper type implementing NVec3 interface
+ * @brief Provides mutable access to underlying N_Vector.
+ * @tparam Vector Vector wrapper type implementing NVector interface
  * @param[in,out] vec Source vector wrapper
- * @return Mutable reference to wrapped N_Vec3
+ * @return Mutable reference to wrapped N_Vector
  */
-template<typename Vec3>
-N_Vec3& sunNVec3(Vec3& vec)
+template<typename Vector>
+N_Vector& sunNVector(Vector& vec)
 {
-    return vec.sunNVec3();
+    return vec.sunNVector();
 }
 }
 
@@ -257,32 +261,33 @@ N_Vec3& sunNVec3(Vec3& vec)
  * @details Provides RAII management of SUNDIALS Kokkos vectors for serial execution.
  */
 template<typename ValueType>
-class SKVec3Serial
+class SKVectorSerial
 {
 public:
 
-    SKVec3Serial() {};
-    ~SKVec3Serial() = default;
-    SKVec3Serial(const SKVec3Serial& other) : kvector_(other.kvector_), svector_(other.kvector_) {};
-    SKVec3Serial(SKVec3Serial&& other) noexcept
+    SKVectorSerial() {};
+    ~SKVectorSerial() = default;
+    SKVectorSerial(const SKVectorSerial& other)
+        : kvector_(other.kvector_), svector_(other.kvector_) {};
+    SKVectorSerial(SKVectorSerial&& other) noexcept
         : kvector_(std::move(other.kvector_)), svector_(std::move(other.svector_)) {};
-    SKVec3Serial& operator=(const SKVec3Serial& other) = delete;
-    SKVec3Serial& operator=(SKVec3Serial&& other) = delete;
+    SKVectorSerial& operator=(const SKVectorSerial& other) = delete;
+    SKVectorSerial& operator=(SKVectorSerial&& other) = delete;
 
 
-    using KVec3 = ::sundials::kokkos::Vec3<Kokkos::Serial>;
-    void initNVec3(size_t size, std::shared_ptr<SUNContext> context)
+    using KVector = ::sundials::kokkos::Vector<Kokkos::Serial>;
+    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
     {
-        kvector_ = KVec3(size, *context);
+        kvector_ = KVector(size, *context);
         svector_ = kvector_;
     };
-    const N_Vec3& sunNVec3() const { return svector_; };
-    N_Vec3& sunNVec3() { return svector_; };
+    const N_Vector& sunNVector() const { return svector_; };
+    N_Vector& sunNVector() { return svector_; };
 
 private:
 
-    KVec3 kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
-    N_Vec3 svector_ {nullptr};
+    KVector kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
+    N_Vector svector_ {nullptr};
 };
 
 /**
@@ -291,33 +296,33 @@ private:
  * @details Provides RAII management of SUNDIALS Kokkos vectors for CPU execution.
  */
 template<typename ValueType>
-class SKVec3HostDefault
+class SKVectorHostDefault
 {
 public:
 
-    using KVec3 = ::sundials::kokkos::Vec3<Kokkos::DefaultHostExecutionSpace>;
+    using KVector = ::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>;
 
-    SKVec3HostDefault() = default;
-    ~SKVec3HostDefault() = default;
-    SKVec3HostDefault(const SKVec3HostDefault& other)
+    SKVectorHostDefault() = default;
+    ~SKVectorHostDefault() = default;
+    SKVectorHostDefault(const SKVectorHostDefault& other)
         : kvector_(other.kvector_), svector_(other.kvector_) {};
-    SKVec3HostDefault(SKVec3HostDefault&& other) noexcept
+    SKVectorHostDefault(SKVectorHostDefault&& other) noexcept
         : kvector_(std::move(other.kvector_)), svector_(std::move(other.svector_)) {};
-    SKVec3HostDefault& operator=(const SKVec3HostDefault& other) = delete;
-    SKVec3HostDefault& operator=(SKVec3HostDefault&& other) = delete;
+    SKVectorHostDefault& operator=(const SKVectorHostDefault& other) = delete;
+    SKVectorHostDefault& operator=(SKVectorHostDefault&& other) = delete;
 
-    void initNVec3(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
     {
-        kvector_ = KVec3(size, *context);
+        kvector_ = KVector(size, *context);
         svector_ = kvector_;
     };
-    const N_Vec3& sunNVec3() const { return svector_; };
-    N_Vec3& sunNVec3() { return svector_; };
+    const N_Vector& sunNVector() const { return svector_; };
+    N_Vector& sunNVector() { return svector_; };
 
 private:
 
-    KVec3 kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
-    N_Vec3 svector_ {nullptr};
+    KVector kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
+    N_Vector svector_ {nullptr};
 };
 
 /**
@@ -326,35 +331,35 @@ private:
  * @details Provides RAII management of SUNDIALS Kokkos vectors for GPU execution.
  */
 template<typename ValueType>
-class SKVec3Default
+class SKVectorDefault
 {
 public:
 
-    using KVec3 = ::sundials::kokkos::Vec3<Kokkos::DefaultExecutionSpace>;
+    using KVector = ::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>;
 
-    SKVec3Default() = default;
-    ~SKVec3Default() = default;
-    SKVec3Default(const SKVec3Default& other)
+    SKVectorDefault() = default;
+    ~SKVectorDefault() = default;
+    SKVectorDefault(const SKVectorDefault& other)
         : kvector_(other.kvector_), svector_(other.kvector_) {};
-    SKVec3Default(SKVec3Default&& other) noexcept
+    SKVectorDefault(SKVectorDefault&& other) noexcept
         : kvector_(std::move(other.kvector_)), svector_(std::move(other.svector_)) {};
-    SKVec3Default& operator=(const SKVec3Default& other) = delete;
-    SKVec3Default& operator=(SKVec3Default&& other) = delete;
+    SKVectorDefault& operator=(const SKVectorDefault& other) = delete;
+    SKVectorDefault& operator=(SKVectorDefault&& other) = delete;
 
-    void initNVec3(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
     {
-        kvector_ = KVec3(size, *context);
+        kvector_ = KVector(size, *context);
         svector_ = kvector_;
     };
 
-    const N_Vec3& sunNVec3() const { return svector_; };
+    const N_Vector& sunNVector() const { return svector_; };
 
-    N_Vec3& sunNVec3() { return svector_; };
+    N_Vector& sunNVector() { return svector_; };
 
 private:
 
-    KVec3 kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
-    N_Vec3 svector_ {nullptr};
+    KVector kvector_ {}; /**< The Sundails, kokkos initial conditions vector (do not use).*/
+    N_Vector svector_ {nullptr};
 };
 
 /**
@@ -364,46 +369,46 @@ private:
  * Provides common interface for vector initialization and access.
  */
 template<typename ValueType>
-class SKVec3
+class SKVector
 {
 public:
 
-    using SKVec3SerialV = SKVec3Serial<ValueType>;
-    using SKVec3HostDefaultV = SKVec3HostDefault<ValueType>;
-    using SKDefaultVec3V = SKVec3Default<ValueType>;
-    using SKVec3Variant = std::variant<SKVec3SerialV, SKVec3HostDefaultV, SKDefaultVec3V>;
+    using SKVectorSerialV = SKVectorSerial<ValueType>;
+    using SKVectorHostDefaultV = SKVectorHostDefault<ValueType>;
+    using SKDefaultVectorV = SKVectorDefault<ValueType>;
+    using SKVectorVariant = std::variant<SKVectorSerialV, SKVectorHostDefaultV, SKDefaultVectorV>;
 
     /**
      * @brief Default constructor. Initializes with host-default vector.
      */
-    SKVec3() { vector_.template emplace<SKVec3HostDefaultV>(); };
+    SKVector() { vector_.template emplace<SKVectorHostDefaultV>(); };
 
     /**
      * @brief Default destructor.
      */
-    ~SKVec3() = default;
+    ~SKVector() = default;
 
     /**
      * @brief Copy constructor.
-     * @param[in] other Source SKVec3 to copy from
+     * @param[in] other Source SKVector to copy from
      */
-    SKVec3(const SKVec3&) = default;
+    SKVector(const SKVector&) = default;
 
     /**
      * @brief Copy assignment operator (deleted).
      */
-    SKVec3& operator=(const SKVec3&) = delete;
+    SKVector& operator=(const SKVector&) = delete;
 
     /**
      * @brief Move constructor.
-     * @param[in] other Source SKVec3 to move from
+     * @param[in] other Source SKVector to move from
      */
-    SKVec3(SKVec3&&) noexcept = default;
+    SKVector(SKVector&&) noexcept = default;
 
     /**
      * @brief Move assignment operator (deleted).
      */
-    SKVec3& operator=(SKVec3&&) noexcept = delete;
+    SKVector& operator=(SKVector&&) noexcept = delete;
 
     /**
      * @brief Sets appropriate vector implementation based on executor type.
@@ -413,17 +418,17 @@ public:
     {
         if (std::holds_alternative<NeoN::GPUExecutor>(exec))
         {
-            vector_.template emplace<SKDefaultVec3V>();
+            vector_.template emplace<SKDefaultVectorV>();
             return;
         }
         if (std::holds_alternative<NeoN::CPUExecutor>(exec))
         {
-            vector_.template emplace<SKVec3HostDefaultV>();
+            vector_.template emplace<SKVectorHostDefaultV>();
             return;
         }
         if (std::holds_alternative<NeoN::SerialExecutor>(exec))
         {
-            vector_.template emplace<SKVec3SerialV>();
+            vector_.template emplace<SKVectorSerialV>();
             return;
         }
 
@@ -438,45 +443,47 @@ public:
      * @param size Number of vector elements
      * @param context SUNDIALS context for vector operations
      */
-    void initNVec3(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
     {
-        std::visit([size, &context](auto& vec) { detail::initNVec3(size, context, vec); }, vector_);
-    }
-
-    /**
-     * @brief Gets const reference to underlying N_Vec3.
-     * @return Const reference to wrapped SUNDIALS N_Vec3
-     */
-    const N_Vec3& sunNVec3() const
-    {
-        return std::visit(
-            [](const auto& vec) -> const N_Vec3& { return detail::sunNVec3(vec); }, vector_
+        std::visit(
+            [size, &context](auto& vec) { detail::initNVector(size, context, vec); }, vector_
         );
     }
 
     /**
-     * @brief Gets mutable reference to underlying N_Vec3.
-     * @return Mutable reference to wrapped SUNDIALS N_Vec3
+     * @brief Gets const reference to underlying N_Vector.
+     * @return Const reference to wrapped SUNDIALS N_Vector
      */
-    N_Vec3& sunNVec3()
+    const N_Vector& sunNVector() const
     {
-        return std::visit([](auto& vec) -> N_Vec3& { return detail::sunNVec3(vec); }, vector_);
+        return std::visit(
+            [](const auto& vec) -> const N_Vector& { return detail::sunNVector(vec); }, vector_
+        );
+    }
+
+    /**
+     * @brief Gets mutable reference to underlying N_Vector.
+     * @return Mutable reference to wrapped SUNDIALS N_Vector
+     */
+    N_Vector& sunNVector()
+    {
+        return std::visit([](auto& vec) -> N_Vector& { return detail::sunNVector(vec); }, vector_);
     }
 
     /**
      * @brief Gets const reference to variant storing implementation.
      * @return Const reference to vector variant
      */
-    const SKVec3Variant& variant() const { return vector_; }
+    const SKVectorVariant& variant() const { return vector_; }
 
     /**
      * @brief Gets mutable reference to variant storing implementation.
      * @return Mutable reference to vector variant
      */
-    SKVec3Variant& variant() { return vector_; }
+    SKVectorVariant& variant() { return vector_; }
 
 private:
 
-    SKVec3Variant vector_; /**< Variant storing executor-specific vector implementation */
+    SKVectorVariant vector_; /**< Variant storing executor-specific vector implementation */
 };
 }
