@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 
 TEST_CASE("Unstructured Mesh")
@@ -14,7 +14,7 @@ TEST_CASE("Unstructured Mesh")
 
     SECTION("Can create single cell mesh " + execName)
     {
-        NeoFOAM::UnstructuredMesh mesh = NeoFOAM::createSingleCellMesh(exec);
+        NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
 
         REQUIRE(mesh.nCells() == 1);
         REQUIRE(mesh.nBoundaryFaces() == 4);
@@ -25,8 +25,8 @@ TEST_CASE("Unstructured Mesh")
     SECTION("Can create domainField from mesh " + execName)
     {
 
-        NeoFOAM::UnstructuredMesh mesh = NeoFOAM::createSingleCellMesh(exec);
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(exec, mesh);
+        NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
+        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
 
         REQUIRE(domainField.boundaryField().offset().size() == 5);
     }
@@ -35,7 +35,7 @@ TEST_CASE("Unstructured Mesh")
     {
         size_t nCells = 4;
 
-        NeoFOAM::UnstructuredMesh mesh = NeoFOAM::create1DUniformMesh(exec, nCells);
+        NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, nCells);
 
         REQUIRE(mesh.nCells() == 4);
         REQUIRE(mesh.nBoundaryFaces() == 2);

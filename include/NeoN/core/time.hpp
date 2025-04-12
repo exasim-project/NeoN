@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <iostream>
@@ -9,7 +9,7 @@
 
 const std::string NL = "\n";
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 using word = std::string;
@@ -49,4 +49,4 @@ private:
     scalar time_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

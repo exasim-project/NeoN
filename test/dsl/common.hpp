@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Field = NeoFOAM::Field<NeoFOAM::scalar>;
-using Coeff = NeoFOAM::dsl::Coeff;
-using Operator = NeoFOAM::dsl::Operator;
-using Executor = NeoFOAM::Executor;
-using VolumeField = fvcc::VolumeField<NeoFOAM::scalar>;
-using OperatorMixin = NeoFOAM::dsl::OperatorMixin<VolumeField>;
-using BoundaryFields = NeoFOAM::BoundaryFields<NeoFOAM::scalar>;
+using Field = NeoN::Field<NeoN::scalar>;
+using Coeff = NeoN::dsl::Coeff;
+using Operator = NeoN::dsl::Operator;
+using Executor = NeoN::Executor;
+using VolumeField = fvcc::VolumeField<NeoN::scalar>;
+using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
+using BoundaryFields = NeoN::BoundaryFields<NeoN::scalar>;
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
 
 template<typename ValueType>
-class Dummy : public NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
+class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 {
 
 public:
@@ -28,30 +28,30 @@ public:
     using FieldValueType = ValueType;
 
     Dummy(fvcc::VolumeField<ValueType>& field)
-        : NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
+        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
             field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
         )
     {}
 
     Dummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
-        : NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
+        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
             field.exec(), dsl::Coeff(1.0), field, type
         )
     {}
 
-    void explicitOperation(NeoFOAM::Field<ValueType>& source)
+    void explicitOperation(NeoN::Field<ValueType>& source)
     {
         auto sourceView = source.view();
         auto fieldView = this->field_.internalField().view();
         auto coeff = this->getCoefficient();
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             source.exec(),
             source.range(),
             KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, NeoFOAM::localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls)
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -59,29 +59,29 @@ public:
         auto coeff = this->getCoefficient();
 
         // update diag
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
             KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
             KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
     }
 
-    la::LinearSystem<ValueType, NeoFOAM::localIdx> createEmptyLinearSystem() const
+    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
     {
-        NeoFOAM::Field<ValueType> values(this->exec(), 1, NeoFOAM::zero<ValueType>());
-        NeoFOAM::Field<NeoFOAM::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoFOAM::Field<NeoFOAM::localIdx> rowPtrs(this->exec(), {0, 1});
-        NeoFOAM::la::CSRMatrix<ValueType, NeoFOAM::localIdx> csrMatrix(values, colIdx, rowPtrs);
+        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
+        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
+        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        NeoFOAM::Field<ValueType> rhs(this->exec(), 1, NeoFOAM::zero<ValueType>());
-        NeoFOAM::la::LinearSystem<ValueType, NeoFOAM::localIdx> linearSystem(csrMatrix, rhs);
+        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
         return linearSystem;
     }
 
@@ -91,7 +91,7 @@ public:
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
 template<typename ValueType>
-class TemporalDummy : public NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
+class TemporalDummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 {
 
 public:
@@ -99,32 +99,31 @@ public:
     using FieldValueType = ValueType;
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field)
-        : NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
+        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
             field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
         )
     {}
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
-        : NeoFOAM::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
+        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
             field.exec(), dsl::Coeff(1.0), field, type
         )
     {}
 
-    void explicitOperation(NeoFOAM::Field<ValueType>& source, NeoFOAM::scalar, NeoFOAM::scalar)
+    void explicitOperation(NeoN::Field<ValueType>& source, NeoN::scalar, NeoN::scalar)
     {
         auto sourceView = source.view();
         auto fieldView = this->field_.internalField().view();
         auto coeff = this->getCoefficient();
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             source.exec(),
             source.range(),
             KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
-    void implicitOperation(
-        la::LinearSystem<ValueType, NeoFOAM::localIdx>& ls, NeoFOAM::scalar, NeoFOAM::scalar
-    )
+    void
+    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, NeoN::scalar, NeoN::scalar)
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -132,29 +131,29 @@ public:
         auto coeff = this->getCoefficient();
 
         // update diag
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
             KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
             KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
     }
 
-    la::LinearSystem<ValueType, NeoFOAM::localIdx> createEmptyLinearSystem() const
+    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
     {
-        NeoFOAM::Field<ValueType> values(this->exec(), 1, NeoFOAM::zero<ValueType>());
-        NeoFOAM::Field<NeoFOAM::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoFOAM::Field<NeoFOAM::localIdx> rowPtrs(this->exec(), {0, 1});
-        NeoFOAM::la::CSRMatrix<ValueType, NeoFOAM::localIdx> csrMatrix(values, colIdx, rowPtrs);
+        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
+        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
+        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        NeoFOAM::Field<ValueType> rhs(this->exec(), 1, NeoFOAM::zero<ValueType>());
-        NeoFOAM::la::LinearSystem<ValueType, NeoFOAM::localIdx> linearSystem(csrMatrix, rhs);
+        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
         return linearSystem;
     }
 
@@ -162,21 +161,21 @@ public:
 };
 
 template<typename ValueType>
-ValueType getField(const NeoFOAM::Field<ValueType>& source)
+ValueType getField(const NeoN::Field<ValueType>& source)
 {
     auto sourceField = source.copyToHost();
     return sourceField.view()[0];
 }
 
 template<typename ValueType>
-ValueType getDiag(const la::LinearSystem<ValueType, NeoFOAM::localIdx>& ls)
+ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.matrix().values().view()[0];
 }
 
 template<typename ValueType>
-ValueType getRhs(const la::LinearSystem<ValueType, NeoFOAM::localIdx>& ls)
+ValueType getRhs(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];

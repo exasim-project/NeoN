@@ -7,7 +7,7 @@ Parallel algorithms are a basic building block for implementing advanced kernels
 To simplify the implementation of the advanced kernels we provide a set of standard algorithms.
 These can be found in the following files:
 
-- ``include/NeoFOAM/core/parallelAlgorithms.hpp``
+- ``include/NeoN/core/parallelAlgorithms.hpp``
 - ``test/core/parallelAlgorithms.cpp``
 
 Currently, the following algorithms are provided:
@@ -50,9 +50,9 @@ Here the view holds data pointers to the device data and defines the begin and e
 Several overloads of the ``parallelFor`` functions exists to simplify running parallelFor on fields and spans with and without an explicitly defined data range.
 
 
-To learn more on how to use the algorithms it is recommended to check the corresponding `unit test <https://github.com/exasim-project/NeoFOAM/blob/main/test/core/parallelAlgorithms.cpp>`_.
+To learn more on how to use the algorithms it is recommended to check the corresponding `unit test <https://github.com/exasim-project/NeoN/blob/main/test/core/parallelAlgorithms.cpp>`_.
 
-Further details `parallelFor <https://exasim-project.com/NeoFOAM/latest/doxygen/html/parallelAlgorithms_8hpp_source.html>`_.
+Further details `parallelFor <https://exasim-project.com/NeoN/latest/doxygen/html/parallelAlgorithms_8hpp_source.html>`_.
 
 Currently, the following free functions are implemented:
 

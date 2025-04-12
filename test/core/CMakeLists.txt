@@ -1,23 +1,23 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-if(NEOFOAM_ENABLE_MPI_SUPPORT)
+if(NeoN_ENABLE_MPI_SUPPORT)
   add_subdirectory(mpi)
 endif()
 
 add_subdirectory(primitives)
 add_subdirectory(database)
 
-neofoam_unit_test(dictionary)
-neofoam_unit_test(tokenList)
-neofoam_unit_test(input)
-neofoam_unit_test(executor)
-neofoam_unit_test(parallelAlgorithms)
-neofoam_unit_test(view)
+neon_unit_test(dictionary)
+neon_unit_test(tokenList)
+neon_unit_test(input)
+neon_unit_test(executor)
+neon_unit_test(parallelAlgorithms)
+neon_unit_test(view)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace
-                                                      NeoFOAM_public_api)
+                                                      NeoN_public_api)
 if(WIN32)
   set_target_properties(
     runTimeSelectionFactory

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <vector>
 #include <string>
 #include <span>
 
-#include "NeoFOAM/core/mpi/environment.hpp"
-#include "NeoFOAM/core/mpi/halfDuplexCommBuffer.hpp"
+#include "NeoN/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/halfDuplexCommBuffer.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 #ifdef NF_WITH_MPI_SUPPORT

@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 find_package(Doxygen REQUIRED)
 find_package(Sphinx REQUIRED)
 
-# Macro: NEOFOAM_BUILD_DOCS build documentation with doxygen and sphinx
-macro(NEOFOAM_BUILD_DOCS)
+# Macro: NeoN_BUILD_DOCS build documentation with doxygen and sphinx
+macro(NeoN_BUILD_DOCS)
 
   set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/doc)
   set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs_build)

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <unordered_map>
@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "NeoFOAM/core/demangle.hpp"
+#include "NeoN/core/demangle.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 void logOutRange(
@@ -171,4 +171,4 @@ private:
     std::unordered_map<std::string, std::any> data_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

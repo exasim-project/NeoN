@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/database/fieldCollection.hpp"
-#include "NeoFOAM/core/database/oldTimeCollection.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/timeIntegration/timeIntegration.hpp"
-#include "NeoFOAM/dsl/solver.hpp"
+#include "NeoN/core/database/fieldCollection.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/dsl/solver.hpp"
 
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
 
 // TODO decouple from fvcc
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 
-namespace NeoFOAM::timeIntegration
+namespace NeoN::timeIntegration
 {
 
 template<typename SolutionFieldType>
@@ -57,7 +57,7 @@ public:
         using ValueType = typename SolutionFieldType::ElementType;
 
         // TODO decouple from fvcc specific implementation
-        auto sparsity = NeoFOAM::finiteVolume::cellCentred::SparsityPattern(solutionField.mesh());
+        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionField.mesh());
         auto ls = la::createEmptyLinearSystem<
             ValueType,
             localIdx,
@@ -68,11 +68,11 @@ public:
         auto values = ls.matrix().values();
         eqn.implicitOperation(ls, t, dt);
 
-        auto solver = NeoFOAM::la::Solver(solutionField.exec(), this->solutionDict_);
+        auto solver = NeoN::la::Solver(solutionField.exec(), this->solutionDict_);
         solver.solve(ls, solutionField.internalField());
 
         // check if executor is GPU
-        if (std::holds_alternative<NeoFOAM::GPUExecutor>(eqn.exec()))
+        if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
         {
             Kokkos::fence();
         }
@@ -86,4 +86,4 @@ public:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

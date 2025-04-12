@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 Jason Turner
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 ##############################################################################
 # This function will enable static analyzers                                 #
 # from here                                                                  #
 # https://github.com/cpp-best-practices/cmake_template                       #
 ##############################################################################
-macro(NeoFOAM_enable_cppcheck WARNINGS_AS_ERRORS CPPCHECK_OPTIONS)
+macro(NeoN_enable_cppcheck WARNINGS_AS_ERRORS CPPCHECK_OPTIONS)
   find_program(CPPCHECK cppcheck)
   if(CPPCHECK)
 
@@ -52,7 +52,7 @@ macro(NeoFOAM_enable_cppcheck WARNINGS_AS_ERRORS CPPCHECK_OPTIONS)
   endif()
 endmacro()
 
-macro(NeoFOAM_enable_clang_tidy target WARNINGS_AS_ERRORS)
+macro(NeoN_enable_clang_tidy target WARNINGS_AS_ERRORS)
   find_program(CLANGTIDY clang-tidy)
   if(CLANGTIDY)
     if(NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")

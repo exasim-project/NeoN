@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-using Field = NeoFOAM::Field<NeoFOAM::scalar>;
-using Coeff = NeoFOAM::dsl::Coeff;
-using namespace NeoFOAM::dsl;
+using Field = NeoN::Field<NeoN::scalar>;
+using Coeff = NeoN::dsl::Coeff;
+using namespace NeoN::dsl;
 
 
 TEST_CASE("Coeff")
@@ -58,7 +58,7 @@ TEST_CASE("Coeff")
         {
             Coeff coeff = fieldB; // is a view with uniform value 1.0
             {
-                NeoFOAM::parallelFor(
+                NeoN::parallelFor(
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };
@@ -73,7 +73,7 @@ TEST_CASE("Coeff")
         {
             Coeff coeff = Coeff(2.0);
             {
-                NeoFOAM::parallelFor(
+                NeoN::parallelFor(
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };
@@ -88,7 +88,7 @@ TEST_CASE("Coeff")
         {
             Coeff coeff {-5.0, fieldB};
             {
-                NeoFOAM::parallelFor(
+                NeoN::parallelFor(
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };

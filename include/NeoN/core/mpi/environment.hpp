@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
 #endif
 
-#include "NeoFOAM/core/error.hpp"
-#include "NeoFOAM/core/info.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/info.hpp"
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 #ifdef NF_WITH_MPI_SUPPORT
@@ -115,4 +115,4 @@ private:
 
 #endif
 
-} // namespace NeoFOAM
+} // namespace NeoN

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,14 +7,14 @@
 
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-using NeoFOAM::scalar;
-using NeoFOAM::localIdx;
-using NeoFOAM::Field;
-using NeoFOAM::la::LinearSystem;
-using NeoFOAM::la::CSRMatrix;
-using NeoFOAM::la::spmv;
+using NeoN::scalar;
+using NeoN::localIdx;
+using NeoN::Field;
+using NeoN::la::LinearSystem;
+using NeoN::la::CSRMatrix;
+using NeoN::la::spmv;
 
 TEST_CASE("LinearSystem")
 {
@@ -46,11 +46,11 @@ TEST_CASE("LinearSystem")
         auto mesh = create1DUniformMesh(exec, nCells);
 
         // TODO improve structure here
-        auto sp = NeoFOAM::finiteVolume::cellCentred::SparsityPattern {mesh};
-        auto linearSystem = NeoFOAM::la::createEmptyLinearSystem<
+        auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<
             scalar,
             localIdx,
-            NeoFOAM::finiteVolume::cellCentred::SparsityPattern>(sp);
+            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);

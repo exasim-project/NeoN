@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
@@ -16,7 +16,7 @@
 #include "boundary/surface/calculated.hpp"
 #include "boundary/surface/fixedValue.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief creates a vector of boundary conditions of type calculated for every boundary
@@ -49,7 +49,7 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 
 }
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 namespace fvcc = finiteVolume::cellCentred;

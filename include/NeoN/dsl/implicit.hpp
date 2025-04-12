@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/dsl/spatialOperator.hpp"
-#include "NeoFOAM/dsl/temporalOperator.hpp"
-#include "NeoFOAM/dsl/ddt.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
+#include "NeoN/dsl/ddt.hpp"
 
 // TODO: decouple from fvcc
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/ddtOperator.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/divOperator.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-namespace NeoFOAM::dsl::imp
+namespace NeoN::dsl::imp
 {
 
 
@@ -54,4 +54,4 @@ laplacian(fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<ValueType>& phi)
     );
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

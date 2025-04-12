@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
-#include "NeoFOAM/core/database/collection.hpp"
+#include "NeoN/core/database/collection.hpp"
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 Document& Collection::doc(const std::string& id) { return impl_->doc(id); }
@@ -27,4 +27,4 @@ Database& Collection::db() { return impl_->db(); }
 
 const Database& Collection::db() const { return impl_->db(); }
 
-} // namespace NeoFOAM
+} // namespace NeoN

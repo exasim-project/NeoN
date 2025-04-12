@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 Jason Turner
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 ##############################################################################
 # This function will prevent in-source builds                                #
 # from here                                                                  #
 # https://github.com/cpp-best-practices/cmake_template                       #
 ##############################################################################
 
-function(neofoam_set_project_warnings project_name WARNINGS_AS_ERRORS CLANG_WARNINGS GCC_WARNINGS
+function(NeoN_set_project_warnings project_name WARNINGS_AS_ERRORS CLANG_WARNINGS GCC_WARNINGS
          CUDA_WARNINGS)
 
   if("${CLANG_WARNINGS}" STREQUAL "")

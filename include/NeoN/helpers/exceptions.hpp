@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-namespace NeoFOAM
+namespace NeoN
 {
 /**
  * @class Error
  * @brief Base class for consistent error representation.
  *
  * The Error class is used to report exceptional behaviour in library
- * functions. NeoFOAM uses C++ exception mechanism to this end, and the
+ * functions. NeoN uses C++ exception mechanism to this end, and the
  * Error class represents a base class for all types of errors. The exact list
  * of errors which could occur during the execution of a certain library
  * routine is provided in the documentation of that routine, along with a short
@@ -93,10 +93,10 @@ public:
  * @throw DimensionMismatch  if `_op1` and `_op2` differ in the number of
  *                           rows or columns
  */
-#define NeoFOAM_ASSERT_EQUAL_LENGTH(_op1, _op2)                                                    \
+#define NeoN_ASSERT_EQUAL_LENGTH(_op1, _op2)                                                       \
     if (_op1.size() != _op2.size())                                                                \
     {                                                                                              \
-        throw ::NeoFOAM::DimensionMismatch(                                                        \
+        throw ::NeoN::DimensionMismatch(                                                           \
             __FILE__, __LINE__, __func__, _op1.size(), _op2.size(), "expected equal dimensions"    \
         );                                                                                         \
     }

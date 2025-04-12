@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/interpolation/linear.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief free standing function implementation of the explicit gradient operator
@@ -41,7 +41,7 @@ void computeGrad(
 
     size_t nInternalFaces = mesh.nInternalFaces();
 
-    // TODO use NeoFOAM::atomic_
+    // TODO use NeoN::atomic_
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -89,4 +89,4 @@ VolumeField<Vector> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
     return gradPhi;
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

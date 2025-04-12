@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
@@ -7,9 +7,9 @@
 #include <string>
 #include <memory>
 
-#include "NeoFOAM/core/database/collection.hpp"
+#include "NeoN/core/database/collection.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 
@@ -124,4 +124,4 @@ void validateRegistration(const Type& obj, const std::string errorMessage)
     }
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

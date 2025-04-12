@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023-25 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023-25 NeoN authors
 
-function(neofoam_benchmark BENCH)
+function(NeoN_benchmark BENCH)
 
   add_executable(bench_${BENCH} "${BENCH}.cpp")
-  target_link_libraries(bench_${BENCH} PRIVATE Catch2::Catch2 NeoFOAM)
+  target_link_libraries(bench_${BENCH} PRIVATE Catch2::Catch2 NeoN)
   target_include_directories(bench_${BENCH} PRIVATE "${CMAKE_SOURCE_DIR}")
 
   if(WIN32)
@@ -18,13 +18,13 @@ function(neofoam_benchmark BENCH)
                                                 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/benchmarks)
   endif()
 
-  if(NOT DEFINED "neofoam_WORKING_DIRECTORY")
-    set(neofoam_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/benchmarks)
+  if(NOT DEFINED "NeoN_WORKING_DIRECTORY")
+    set(NeoN_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/benchmarks)
   endif()
   add_test(
     NAME bench_${BENCH}
     COMMAND sh -c "./bench_${BENCH} -r xml > ${BENCH}.xml"
-    WORKING_DIRECTORY ${neofoam_WORKING_DIRECTORY})
+    WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
 endfunction()
 
 add_subdirectory(fields)

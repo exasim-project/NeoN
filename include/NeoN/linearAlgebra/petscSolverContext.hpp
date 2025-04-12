@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 // inspired by
 // https://develop.openfoam.com/modules/external-solver/-/blob/develop/src/petsc4Foam/utils/petscLinearSolverContext.H
 
@@ -12,14 +12,14 @@
 #include <petscmat.h>
 #include <petscksp.h>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/linearAlgebra/utilities.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/utilities.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace NeoFOAM::la::petscSolverContext
+namespace NeoN::la::petscSolverContext
 {
 
 template<typename ValueType>
@@ -160,7 +160,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End NeoFOAM::la::petscSolverContext
+} // End NeoN::la::petscSolverContext
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

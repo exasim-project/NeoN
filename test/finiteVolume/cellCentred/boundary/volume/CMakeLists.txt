@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-neofoam_unit_test(volFixedValue)
-neofoam_unit_test(volFixedGradient)
+neon_unit_test(volFixedValue)
+neon_unit_test(volFixedGradient)

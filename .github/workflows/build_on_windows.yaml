@@ -1,4 +1,4 @@
-name: Build NeoFOAM on Windows
+name: Build NeoN on Windows
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
     - uses: seanmiddleditch/gha-setup-ninja@master
     - name: configure
       run: |
-        cmake --preset develop  -DKokkos_DIR="D:/dev/Kokkos/lib/cmake/Kokkos" -DNEOFOAM_DEVEL_TOOLS=OFF -DNEOFOAM_WITH_GINKGO=OFF -DNEOFOAM_ENABLE_MPI_SUPPORT=OFF
+        cmake --preset develop  -DKokkos_DIR="D:/dev/Kokkos/lib/cmake/Kokkos" -DNeoN_DEVEL_TOOLS=OFF -DNeoN_WITH_GINKGO=OFF -DNeoN_ENABLE_MPI_SUPPORT=OFF
       shell: cmd
 
     - name: build

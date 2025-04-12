@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 #pragma once
 
 #include <string>
 
-#include "NeoFOAM/core/database/database.hpp"
-#include "NeoFOAM/core/database/collection.hpp"
-#include "NeoFOAM/core/database/document.hpp"
-#include "NeoFOAM/core/database/fieldCollection.hpp"
+#include "NeoN/core/database/database.hpp"
+#include "NeoN/core/database/collection.hpp"
+#include "NeoN/core/database/document.hpp"
+#include "NeoN/core/database/fieldCollection.hpp"
 
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 class OldTimeDocument
@@ -167,4 +167,4 @@ const FieldType& oldTime(const FieldType& field)
     return oldTimeCollection.get<FieldType>(field.key);
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

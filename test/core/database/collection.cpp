@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,14 +7,14 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 #include "customTestCollection.hpp"
 
 TEST_CASE("CustomCollection")
 {
-    NeoFOAM::Database db;
-    NeoFOAM::Collection collection = CustomCollection(db, "testCollection");
+    NeoN::Database db;
+    NeoN::Collection collection = CustomCollection(db, "testCollection");
     CustomCollection& customCollection = collection.as<CustomCollection>();
 
     REQUIRE(customCollection.size() == 0);
@@ -44,7 +44,7 @@ TEST_CASE("CustomDocument")
 
     REQUIRE(doc.doc().id().find("doc_") != std::string::npos);
 
-    CustomDocument doc2(NeoFOAM::Document({{"name", std::string("doc2")}, {"testValue", 42}}));
+    CustomDocument doc2(NeoN::Document({{"name", std::string("doc2")}, {"testValue", 42}}));
 
 
     REQUIRE(doc2.doc().id().find("doc_") != std::string::npos);

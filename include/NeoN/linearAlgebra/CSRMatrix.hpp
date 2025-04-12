@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <tuple>
 
-#include "NeoFOAM/fields/field.hpp"
+#include "NeoN/fields/field.hpp"
 
 
-namespace NeoFOAM::la
+namespace NeoN::la
 {
 
 /**
@@ -245,4 +245,4 @@ convert(const Executor exec, const la::CSRMatrixView<const ValueTypeIn, const In
 }
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

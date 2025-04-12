@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/dsl/spatialOperator.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @class Factory class to create divergence operators by a given name using
- * using NeoFOAMs runTimeFactory mechanism
+ * using NeoNs runTimeFactory mechanism
  */
 template<typename ValueType>
 class LaplacianOperatorFactory :
@@ -125,7 +125,7 @@ public:
     {
         NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        NeoFOAM::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
+        NeoN::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
         laplacianOperatorStrategy_->laplacian(tmpsource, gamma_, this->field_, operatorScaling);
         source += tmpsource;
     }
@@ -157,17 +157,17 @@ public:
     void build(const Input& input)
     {
         const UnstructuredMesh& mesh = this->field_.mesh();
-        if (std::holds_alternative<NeoFOAM::Dictionary>(input))
+        if (std::holds_alternative<NeoN::Dictionary>(input))
         {
-            auto dict = std::get<NeoFOAM::Dictionary>(input);
+            auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
-            auto tokens = dict.subDict("laplacianSchemes").get<NeoFOAM::TokenList>(schemeName);
+            auto tokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(schemeName);
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }
         else
         {
-            auto tokens = std::get<NeoFOAM::TokenList>(input);
+            auto tokens = std::get<NeoN::TokenList>(input);
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }
@@ -177,10 +177,10 @@ public:
 
 private:
 
-    const SurfaceField<NeoFOAM::scalar>& gamma_;
+    const SurfaceField<NeoN::scalar>& gamma_;
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> laplacianOperatorStrategy_;
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

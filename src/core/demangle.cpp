@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #ifdef __GNUC__
 #include <cxxabi.h> // for __cxa_demangle
 #endif
 #include <stdlib.h> // for free
 
-#include "NeoFOAM/core/demangle.hpp"
+#include "NeoN/core/demangle.hpp"
 
 
-std::string NeoFOAM::demangle(const char* name)
+std::string NeoN::demangle(const char* name)
 {
 #ifdef _MSC_VER
     return name; // For MSVC, return the name directly.

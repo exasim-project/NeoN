@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
-#include "NeoFOAM/dsl/explicit.hpp"
+#include "NeoN/dsl/explicit.hpp"
 
-namespace NeoFOAM::dsl::exp
+namespace NeoN::dsl::exp
 {
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 SpatialOperator<scalar>
-div(const fvcc::SurfaceField<NeoFOAM::scalar>& faceFlux, fvcc::VolumeField<NeoFOAM::scalar>& phi)
+div(const fvcc::SurfaceField<NeoN::scalar>& faceFlux, fvcc::VolumeField<NeoN::scalar>& phi)
 {
     return SpatialOperator<scalar>(fvcc::DivOperator(dsl::Operator::Type::Explicit, faceFlux, phi));
 }
 
-SpatialOperator<scalar> div(const fvcc::SurfaceField<NeoFOAM::scalar>& flux)
+SpatialOperator<scalar> div(const fvcc::SurfaceField<NeoN::scalar>& flux)
 {
     return SpatialOperator<scalar>(fvcc::SurfaceIntegrate<scalar>(flux));
 }
 
 SpatialOperator<scalar>
-source(fvcc::VolumeField<NeoFOAM::scalar>& coeff, fvcc::VolumeField<NeoFOAM::scalar>& phi)
+source(fvcc::VolumeField<NeoN::scalar>& coeff, fvcc::VolumeField<NeoN::scalar>& phi)
 {
     return SpatialOperator<scalar>(fvcc::SourceTerm(dsl::Operator::Type::Explicit, coeff, phi));
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

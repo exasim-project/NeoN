@@ -143,7 +143,7 @@ jobs:
         run: |
           sudo rm /actions-runner/externals/node20/bin/node
           sudo ln -s /root/spack/opt/spack/linux-centos7-x86_64_v3/gcc-10.5.0/node-js*/bin/node /actions-runner/externals/node20/bin/node
-      - name: Checkout NeoFOAM
+      - name: Checkout NeoN
         uses: actions/checkout@v2
       - name: Set up cache
         uses: actions/cache@v3
@@ -151,7 +151,7 @@ jobs:
         with:
           path: build
           key: aws_PR_${{ github.event.pull_request.number }}_${{matrix.preset}}_${{matrix.instance.ec2-type}}
-      - name: Build NeoFOAM
+      - name: Build NeoN
         shell: bash -i {0}
         run: |
           . /root/spack/share/spack/setup-env.sh
@@ -163,11 +163,11 @@ jobs:
           #CC=clang \
           #CXX=clang++ \
           cmake --preset ${{matrix.preset}} \
-            -DNEOFOAM_BUILD_TESTS=ON \
-            -DNEOFOAM_DEVEL_TOOLS=OFF \
-            -DNEOFOAM_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
           cmake --build --preset ${{matrix.preset}}
-      - name: Test NeoFOAM
+      - name: Test NeoN
         shell: bash -i {0}
         run: |
           . /root/spack/share/spack/setup-env.sh
@@ -184,7 +184,7 @@ jobs:
       matrix:
         instance: ${{ fromJson(needs.aggregate-labels.outputs.matrix) }}
     steps:
-      - name: Build NeoFOAM
+      - name: Build NeoN
         shell: bash -i {0}
         run: |
           . /root/spack/share/spack/setup-env.sh
@@ -226,7 +226,7 @@ jobs:
         with:
           source-directory: ${{ env.RUN_IDENTIFIER }}
           destination-github-username: 'exasim-project'
-          destination-repository-name: 'NeoFOAM-BenchmarkData'
+          destination-repository-name: 'NeoN-BenchmarkData'
           target-directory: ${{ env.RUN_IDENTIFIER }}/${{matrix.instance.ec2-type}}
           user-email: github-actions@github.com
           target-branch: main

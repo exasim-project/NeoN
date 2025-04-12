@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 #pragma once
 
 #include <limits>
 #include <string>
 #include <functional>
 
-#include "NeoFOAM/core/demangle.hpp"
-#include "NeoFOAM/core/error.hpp"
-#include "NeoFOAM/fields/domainField.hpp"
-#include "NeoFOAM/core/database/database.hpp"
-#include "NeoFOAM/core/database/collection.hpp"
-#include "NeoFOAM/core/database/document.hpp"
+#include "NeoN/core/demangle.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/fields/domainField.hpp"
+#include "NeoN/core/database/database.hpp"
+#include "NeoN/core/database/collection.hpp"
+#include "NeoN/core/database/document.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 /**
  * @brief Validates a FieldDocument.
@@ -194,7 +194,7 @@ private:
  * @param db The database to create the FieldDocument in.
  * @return The created FieldDocument.
  */
-using CreateFunction = std::function<FieldDocument(NeoFOAM::Database& db)>;
+using CreateFunction = std::function<FieldDocument(NeoN::Database& db)>;
 
 /**
  * @class FieldCollection
@@ -213,7 +213,7 @@ public:
      * @param db The database to create the collection in.
      * @param name The name of the collection.
      */
-    FieldCollection(NeoFOAM::Database& db, std::string name);
+    FieldCollection(NeoN::Database& db, std::string name);
 
     /**
      * @brief A FieldCollection is not copyable, but moveable
@@ -276,7 +276,7 @@ public:
      * @param name The name of the FieldCollection.
      * @return FieldCollection& A reference to the FieldCollection.
      */
-    static FieldCollection& instance(NeoFOAM::Database& db, std::string name);
+    static FieldCollection& instance(NeoN::Database& db, std::string name);
 
 
     /**
@@ -288,7 +288,7 @@ public:
      * @param name The name of the FieldCollection.
      * @return const FieldCollection& A const reference to the FieldCollection.
      */
-    static const FieldCollection& instance(const NeoFOAM::Database& db, std::string name);
+    static const FieldCollection& instance(const NeoN::Database& db, std::string name);
 
     /**
      * @brief Retrieves the instance of the FieldCollection from a const registered FieldType
@@ -400,7 +400,7 @@ public:
                 subCycleIndex = fieldDoc.subCycleIndex();
             }
         }
-        return NeoFOAM::Document(
+        return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
@@ -412,4 +412,4 @@ public:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
-#include "NeoFOAM/dsl/coeff.hpp"
+#include "NeoN/dsl/coeff.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 class Operator
@@ -21,7 +21,7 @@ public:
 
 /* @class OperatorMixin
  * @brief A mixin class to simplify implementations of concrete operators
- * in NeoFOAMs dsl
+ * in NeoNs dsl
  *
  * @ingroup dsl
  */
@@ -63,4 +63,4 @@ protected:
     Operator::Type type_;
 };
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

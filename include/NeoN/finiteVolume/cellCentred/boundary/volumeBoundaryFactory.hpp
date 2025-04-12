@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"
-#include "NeoFOAM/fields/domainField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/fields/domainField.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
 class VolumeBoundaryFactory :
-    public NeoFOAM::RuntimeSelectionFactory<
+    public NeoN::RuntimeSelectionFactory<
         VolumeBoundaryFactory<ValueType>,
         Parameters<const UnstructuredMesh&, const Dictionary&, size_t>>,
     public BoundaryPatchMixin
@@ -70,7 +70,7 @@ public:
 private:
 
     // NOTE needs full namespace to be not ambiguous
-    std::unique_ptr<NeoFOAM::finiteVolume::cellCentred::VolumeBoundaryFactory<ValueType>>
+    std::unique_ptr<NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<ValueType>>
         boundaryCorrectionStrategy_;
 };
 

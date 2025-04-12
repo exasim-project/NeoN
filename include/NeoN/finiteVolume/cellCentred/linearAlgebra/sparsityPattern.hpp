@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-// #include "NeoFOAM/linearAlgebra/linearSystem.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+// #include "NeoN/linearAlgebra/linearSystem.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @class SparsityPattern
@@ -61,4 +61,4 @@ private:
     Field<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
 };
 
-} // namespace NeoFOAM::finiteVolume::cellCentred
+} // namespace NeoN::finiteVolume::cellCentred

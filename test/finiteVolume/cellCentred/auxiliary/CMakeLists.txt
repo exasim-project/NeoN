@@ -1,4 +1,4 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-neofoam_unit_test(coNum)
+neon_unit_test(coNum)

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023 NeoN authors
 
 message(STATUS "Auto detecting accelerator devices")
 include(CheckLanguage)
@@ -27,7 +27,7 @@ endif()
 if(NOT DEFINED Kokkos_ENABLE_CUDA)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
-    set(NEOFOAM_ENABLE_CUDA
+    set(NeoN_ENABLE_CUDA
         ON
         CACHE INTERNAL "")
     message(STATUS "Set Kokkos_ENABLE_CUDA=ON")
@@ -38,7 +38,7 @@ if(NOT DEFINED Kokkos_ENABLE_CUDA)
         ON
         CACHE INTERNAL "")
   else()
-    set(NEOFOAM_ENABLE_CUDA
+    set(NeoN_ENABLE_CUDA
         OFF
         CACHE INTERNAL "")
 

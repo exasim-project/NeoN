@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <variant>
 
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/core/tokenList.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/tokenList.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 using Input = std::variant<Dictionary, TokenList>;

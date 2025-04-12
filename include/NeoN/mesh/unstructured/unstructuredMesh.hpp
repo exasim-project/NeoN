@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include "Kokkos_Sort.hpp"
 
-#include "NeoFOAM/fields/fieldTypeDefs.hpp"
-#include "NeoFOAM/mesh/unstructured/boundaryMesh.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
+#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
 
 #include <vector>
 #include <numeric>
 #include <algorithm>
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
  * @class UnstructuredMesh
- * @brief Represents an unstructured mesh in NeoFOAM.
+ * @brief Represents an unstructured mesh in NeoN.
  *
  * The UnstructuredMesh class stores the data and provides access to the
  * properties of an unstructured mesh. It contains information such as mesh
@@ -291,4 +291,4 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
 UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells);
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

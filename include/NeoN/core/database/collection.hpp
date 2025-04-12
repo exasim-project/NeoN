@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
@@ -8,9 +8,9 @@
 #include <memory>
 #include <algorithm> // for std::sort
 
-#include "NeoFOAM/core/database/document.hpp"
+#include "NeoN/core/database/document.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 
@@ -222,7 +222,7 @@ public:
      * @param db The database reference.
      * @param name The name of the collection.
      */
-    CollectionMixin(NeoFOAM::Database& db, std::string name) : docs_(), db_(db), name_(name) {}
+    CollectionMixin(NeoN::Database& db, std::string name) : docs_(), db_(db), name_(name) {}
 
     /**
      * @biref A CollectionMixin is not copyable, only moveable.
@@ -289,16 +289,16 @@ public:
     /**
      * @brief Gets a const reference to the database.
      *
-     * @return const NeoFOAM::Database& A const reference to the database.
+     * @return const NeoN::Database& A const reference to the database.
      */
-    const NeoFOAM::Database& db() const { return db_; }
+    const NeoN::Database& db() const { return db_; }
 
     /**
      * @brief Gets a reference to the database.
      *
-     * @return NeoFOAM::Database& A reference to the database.
+     * @return NeoN::Database& A reference to the database.
      */
-    NeoFOAM::Database& db() { return db_; }
+    NeoN::Database& db() { return db_; }
 
     /**
      * @brief Gets the name of the collection.
@@ -333,8 +333,8 @@ public:
 protected:
 
     std::unordered_map<std::string, DocumentType> docs_; ///< The map of document IDs to documents.
-    NeoFOAM::Database& db_;                              ///< The reference to the database.
+    NeoN::Database& db_;                                 ///< The reference to the database.
     std::string name_;                                   ///< The name of the collection.
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

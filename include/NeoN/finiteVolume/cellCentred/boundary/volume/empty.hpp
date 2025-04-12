@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"                            // Register
-#include "NeoFOAM/core/dictionary.hpp"                                         // Dictionary
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp" // VolumeBoundaryFactory
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"                      // UnstructuredMesh
+#include "NeoN/core/runtimeSelectionFactory.hpp"                            // Register
+#include "NeoN/core/dictionary.hpp"                                         // Dictionary
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp" // VolumeBoundaryFactory
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"                      // UnstructuredMesh
 
-namespace NeoFOAM::finiteVolume::cellCentred::volumeBoundary
+namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
 template<typename ValueType>

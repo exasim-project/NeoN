@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 class BasicGeometryScheme : public GeometrySchemeFactory
@@ -35,4 +35,4 @@ private:
     const UnstructuredMesh& mesh_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

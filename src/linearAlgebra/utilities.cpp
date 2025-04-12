@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024-2025 NeoN authors
 
-#include "NeoFOAM/linearAlgebra/utilities.hpp"
+#include "NeoN/linearAlgebra/utilities.hpp"
 
 
-namespace NeoFOAM::la
+namespace NeoN::la
 {
 
 

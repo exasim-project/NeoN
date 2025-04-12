@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/executor/serialExecutor.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
 
-NeoFOAM::SerialExecutor::SerialExecutor() {};
+NeoN::SerialExecutor::SerialExecutor() {};
 
-NeoFOAM::SerialExecutor::~SerialExecutor() {};
+NeoN::SerialExecutor::~SerialExecutor() {};

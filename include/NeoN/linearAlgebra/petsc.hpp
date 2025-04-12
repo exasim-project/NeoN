@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
@@ -10,17 +10,17 @@
 #include <petscmat.h>
 #include <petscksp.h>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/linearAlgebra/utilities.hpp"
-#include "NeoFOAM/linearAlgebra/petscSolverContext.hpp"
-#include "NeoFOAM/linearAlgebra/solver.hpp"
-// #include "NeoFOAM/core/database/petscSolverContextCollection.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/utilities.hpp"
+#include "NeoN/linearAlgebra/petscSolverContext.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
+// #include "NeoN/core/database/petscSolverContextCollection.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-namespace NeoFOAM::la::petsc
+namespace NeoN::la::petsc
 {
 
 // template<typename ValueType>
@@ -38,10 +38,10 @@ private:
 
     // Vec sol_, rhs_;
 
-    // NeoFOAM::la::petscSolverContext::petscSolverContext<scalar> petsctx_;
+    // NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx_;
 
     /*
-        NeoFOAM::Database& db_;
+        NeoN::Database& db_;
         std::string eqnName_;
     */
 
@@ -83,7 +83,7 @@ public:
 
         Vec sol, rhs;
 
-        NeoFOAM::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_);
+        NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_);
 
         std::size_t nrows = sys.rhs().size();
 
@@ -114,7 +114,7 @@ public:
         PetscScalar* x_help = static_cast<PetscScalar*>(x.data());
         VecGetArray(sol, &x_help);
 
-        NeoFOAM::Field<NeoFOAM::scalar> x2(x.exec(), static_cast<scalar*>(x_help), nrows, x.exec());
+        NeoN::Field<NeoN::scalar> x2(x.exec(), static_cast<scalar*>(x_help), nrows, x.exec());
         x = x2;
     }
 };

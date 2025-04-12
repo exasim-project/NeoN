@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <complex>
@@ -8,10 +8,10 @@
 #endif
 #include <type_traits>
 
-#include "NeoFOAM/core/error.hpp"
-#include "NeoFOAM/core/primitives/vector.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/vector.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 #ifdef NF_WITH_MPI_SUPPORT

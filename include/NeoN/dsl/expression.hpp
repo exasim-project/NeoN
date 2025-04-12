@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
 #include <memory>
 #include <vector>
 #include <utility>
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/dsl/spatialOperator.hpp"
-#include "NeoFOAM/dsl/temporalOperator.hpp"
-#include "NeoFOAM/core/error.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
+#include "NeoN/core/error.hpp"
 
 namespace la = la;
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 

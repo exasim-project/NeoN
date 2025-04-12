@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include <Kokkos_Core.hpp>
 
 #include <functional>
 
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -71,4 +71,4 @@ private:
 template class Uncorrected<scalar>;
 template class Uncorrected<Vector>;
 
-} // namespace NeoFOAM
+} // namespace NeoN

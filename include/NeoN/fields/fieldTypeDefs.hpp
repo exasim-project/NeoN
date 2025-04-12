@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/core/primitives/vector.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vector.hpp"
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
-using labelField = NeoFOAM::Field<label>;
-using scalarField = NeoFOAM::Field<scalar>;
-using vectorField = NeoFOAM::Field<Vector>;
+using labelField = NeoN::Field<label>;
+using scalarField = NeoN::Field<scalar>;
+using vectorField = NeoN::Field<Vector>;
 
-} // namespace NeoFOAM
+} // namespace NeoN

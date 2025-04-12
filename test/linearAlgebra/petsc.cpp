@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #include "catch2/catch_session.hpp"
 #include "catch2/catch_test_macros.hpp"
@@ -9,29 +9,29 @@
 
 #define KOKKOS_ENABLE_SERIAL
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 #if NF_WITH_PETSC
 
-using NeoFOAM::Executor;
-using NeoFOAM::Dictionary;
-using NeoFOAM::scalar;
-using NeoFOAM::localIdx;
-using NeoFOAM::Field;
-using NeoFOAM::la::LinearSystem;
-using NeoFOAM::la::CSRMatrix;
-using NeoFOAM::la::Solver;
+using NeoN::Executor;
+using NeoN::Dictionary;
+using NeoN::scalar;
+using NeoN::localIdx;
+using NeoN::Field;
+using NeoN::la::LinearSystem;
+using NeoN::la::CSRMatrix;
+using NeoN::la::Solver;
 
 TEST_CASE("MatrixAssembly - Petsc")
 {
 
 
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
@@ -40,24 +40,24 @@ TEST_CASE("MatrixAssembly - Petsc")
     SECTION("Solve linear system " + execName)
     {
 
-        NeoFOAM::Database db;
+        NeoN::Database db;
 
-        Field<NeoFOAM::scalar> values(exec, {10.0, 4.0, 7.0, 2.0, 10.0, 8.0, 3.0, 6.0, 10.0});
+        Field<NeoN::scalar> values(exec, {10.0, 4.0, 7.0, 2.0, 10.0, 8.0, 3.0, 6.0, 10.0});
         // TODO work on support for unsingned types
         Field<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
         Field<localIdx> rowPtrs(exec, {0, 3, 6, 9});
         CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        Field<NeoFOAM::scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Field<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-        Field<NeoFOAM::scalar> x(exec, {0.0, 0.0, 0.0});
+        Field<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
 
-        NeoFOAM::Dictionary solverDict {{
+        NeoN::Dictionary solverDict {{
             {"solver", std::string {"Petsc"}},
         }};
 
         // Create solver
-        auto solver = NeoFOAM::la::Solver(exec, solverDict);
+        auto solver = NeoN::la::Solver(exec, solverDict);
 
         // Solve system
         solver.solve(linearSystem, x);
@@ -71,8 +71,8 @@ TEST_CASE("MatrixAssembly - Petsc")
 
         SECTION("Solve linear system second time " + execName)
         {
-            // NeoFOAM::Database db;
-            NeoFOAM::Field<NeoFOAM::scalar> values(
+            // NeoN::Database db;
+            NeoN::Field<NeoN::scalar> values(
                 exec, {10.0, 2.0, 3.0, 5.0, 20.0, 2.0, 4.0, 4.0, 30.0}
             );
 
@@ -80,16 +80,16 @@ TEST_CASE("MatrixAssembly - Petsc")
             Field<localIdx> rowPtrs(exec, {0, 3, 6, 9});
             CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-            Field<NeoFOAM::scalar> rhs(exec, {1.0, 2.0, 3.0});
+            Field<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
             LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-            Field<NeoFOAM::scalar> x(exec, {0.0, 0.0, 0.0});
+            Field<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
 
-            NeoFOAM::Dictionary solverDict {{
+            NeoN::Dictionary solverDict {{
                 {"solver", std::string {"Petsc"}},
             }};
 
             // Create solver
-            auto solver = NeoFOAM::la::Solver(exec, solverDict);
+            auto solver = NeoN::la::Solver(exec, solverDict);
 
             // Solve system
             solver.solve(linearSystem, x);

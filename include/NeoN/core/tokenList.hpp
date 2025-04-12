@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <vector>
 #include <any>
 
-#include "NeoFOAM/core/demangle.hpp"
+#include "NeoN/core/demangle.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 
@@ -181,4 +181,4 @@ private:
     mutable size_t nextIndex_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

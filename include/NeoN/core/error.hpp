@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
 #include <cstdlib>
@@ -25,24 +25,24 @@
 #endif
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
- * @brief Custom exception class for NeoFOAM.
+ * @brief Custom exception class for NeoN.
  *
- * This class is derived from std::exception and provides a custom exception type for NeoFOAM. It
+ * This class is derived from std::exception and provides a custom exception type for NeoN. It
  * stores an error message and overrides the what() function to return the error message.
  */
-class NeoFOAMException : public std::exception
+class NeoNException : public std::exception
 {
 public:
 
     /**
-     * @brief Constructs a NeoFOAMException object with the given error message.
+     * @brief Constructs a NeoNException object with the given error message.
      * @param message The error message associated with the exception.
      */
-    explicit NeoFOAMException(const std::string& message) : message_(message) {}
+    explicit NeoNException(const std::string& message) : message_(message) {}
 
     /**
      * @brief Returns the error message associated with the exception.
@@ -55,7 +55,7 @@ private:
     std::string message_; /**< The error message associated with the exception. */
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN
 
 #ifdef NF_DEBUG_MESSAGING
 /**
@@ -116,18 +116,16 @@ private:
 
 /**
  * @def NF_THROW
- * @brief Macro for throwing a NeoFOAMException with the specified error message.
+ * @brief Macro for throwing a NeoNException with the specified error message.
  *
  * This macro constructs a std::stringstream to concatenate the specified error message with the
- * current file name and current line number, and then throws a NeoFOAMException with the resulting
+ * current file name and current line number, and then throws a NeoNException with the resulting
  * string as the error message.
  *
  * @param message The error message to be included in the exception.
  */
 #define NF_THROW(message)                                                                          \
-    throw NeoFOAM::NeoFOAMException(                                                               \
-        (std::stringstream() << NF_ERROR_MESSAGE(std::string(message))).str()                      \
-    )
+    throw NeoN::NeoNException((std::stringstream() << NF_ERROR_MESSAGE(std::string(message))).str())
 
 /**
  * @def NF_ASSERT
@@ -153,11 +151,11 @@ private:
 
 /**
  * @def NF_ASSERT_THROW
- * @brief Macro for asserting a condition and throwing a NeoFOAMException if the condition is false.
+ * @brief Macro for asserting a condition and throwing a NeoNException if the condition is false.
  *
  * This macro checks the specified condition and, if it evaluates to false, constructs a
  * std::stringstream to concatenate the specified error message with the current file name and
- * current line number, and then throws a NeoFOAMException with the resulting string as the error
+ * current line number, and then throws a NeoNException with the resulting string as the error
  * message.
  *
  * @param condition The condition to be checked.
@@ -189,7 +187,7 @@ private:
 
 /**
  * @def NF_DEBUG_ASSERT_THROW
- * @brief Macro for asserting a condition and throwing a NeoFOAMException if the condition is false
+ * @brief Macro for asserting a condition and throwing a NeoNException if the condition is false
  * (only in debug mode).
  *
  * This macro is equivalent to NF_ASSERT_THROW in debug mode.
@@ -214,7 +212,7 @@ private:
 
 /**
  * @def NF_DEBUG_ASSERT_THROW
- * @brief Macro for asserting a condition and throwing a NeoFOAMException if the condition is false
+ * @brief Macro for asserting a condition and throwing a NeoNException if the condition is false
  * (only in debug mode).
  *
  * This macro does nothing in release mode.
@@ -254,12 +252,12 @@ private:
 
 /**
  * @def NF_ASSERT_EQUAL_THROW
- * @brief Macro for asserting that two values are equal and throwing a NeoFOAMException if they are
+ * @brief Macro for asserting that two values are equal and throwing a NeoNException if they are
  * not.
  *
  * This macro checks that the two specified values are equal and, if they are not, constructs a
  * std::stringstream to concatenate the expected and actual values with the current file name and
- * current line number, and then throws a NeoFOAMException with the resulting string as the error
+ * current line number, and then throws a NeoNException with the resulting string as the error
  * message.
  *
  * @param a The actual value to be compared.
@@ -269,7 +267,7 @@ private:
 
 /**
  * @def NF_DEBUG_ASSERT_EQUAL_THROW
- * @brief Macro for asserting that two values are equal and throwing a NeoFOAMException if they are
+ * @brief Macro for asserting that two values are equal and throwing a NeoNException if they are
  * not (only in debug mode).
  *
  * This macro is equivalent to NF_ASSERT_EQUAL_THROW in debug mode.

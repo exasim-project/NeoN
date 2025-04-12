@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 #include "../../../catch_main.hpp"
 
 #include <catch2/catch_template_test_macros.hpp>
 
-using NeoFOAM::finiteVolume::cellCentred::SurfaceInterpolation;
-using NeoFOAM::finiteVolume::cellCentred::VolumeField;
-using NeoFOAM::finiteVolume::cellCentred::SurfaceField;
+using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
+using NeoN::finiteVolume::cellCentred::VolumeField;
+using NeoN::finiteVolume::cellCentred::SurfaceField;
 
-namespace NeoFOAM
+namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("linear", "[template]", NeoFOAM::scalar, NeoFOAM::Vector)
+TEMPLATE_TEST_CASE("linear", "[template]", NeoN::scalar, NeoN::Vector)
 {
     auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
 
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);

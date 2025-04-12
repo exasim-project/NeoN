@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoFOAM/fields/fieldTypeDefs.hpp"
-#include "NeoFOAM/fields/domainField.hpp"
+#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/fields/domainField.hpp"
 
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /**

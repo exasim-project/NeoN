@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 #pragma once
 
 #include <Kokkos_Core.hpp>
 
 #include <iostream>
 
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/boundaryFields.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/boundaryFields.hpp"
 
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -108,4 +108,4 @@ private:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

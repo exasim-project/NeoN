@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2025 NeoN authors
 #pragma once
 
 #include <memory>
 #include <concepts>
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/dsl/coeff.hpp"
-#include "NeoFOAM/dsl/operator.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/dsl/operator.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 template<typename T>
@@ -20,8 +20,8 @@ concept HasTemporalExplicitOperator = requires(T t) {
     {
         t.explicitOperation(
             std::declval<Field<typename T::FieldValueType>&>(),
-            std::declval<NeoFOAM::scalar>(),
-            std::declval<NeoFOAM::scalar>()
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
         )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
@@ -31,8 +31,8 @@ concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
             std::declval<la::LinearSystem<typename T::FieldValueType, localIdx>&>(),
-            std::declval<NeoFOAM::scalar>(),
-            std::declval<NeoFOAM::scalar>()
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
         )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
@@ -41,7 +41,7 @@ template<typename T>
 concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>;
 
 /* @class TemporalOperator
- * @brief A class to represent a TemporalOperator in NeoFOAMs DSL
+ * @brief A class to represent a TemporalOperator in NeoNs DSL
  *
  * The design here is based on the type erasure design pattern
  * see https://www.youtube.com/watch?v=4eeESJQk-mw
@@ -212,4 +212,4 @@ TemporalOperator<ValueType> operator*(const Coeff& coeff, TemporalOperator<Value
 }
 
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

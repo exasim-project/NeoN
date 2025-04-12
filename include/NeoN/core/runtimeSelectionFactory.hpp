@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 AMR Wind Authors
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 // ##############################################################################
 // # Original design taken from amr wind                                        #
 // # from here                                                                  #
@@ -19,7 +19,7 @@
 
 #include "error.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -410,4 +410,4 @@ bool RuntimeSelectionFactory<Base, Parameters<Args...>>::Register<derivedClass>:
     RuntimeSelectionFactory<Base, Parameters<Args...>>::template Register<derivedClass>::addSubType(
     );
 
-}; // namespace NeoFOAM
+}; // namespace NeoN

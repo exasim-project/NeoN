@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -7,7 +7,7 @@
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 #include <limits>
 
@@ -17,13 +17,13 @@ TEST_CASE("parallelFor")
 
     SECTION("parallelFor_" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewA = fieldA.view();
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        NeoFOAM::parallelFor(
+        NeoN::fill(fieldB, 1.0);
+        NeoN::parallelFor(
             exec, {0, 5}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + 2.0; }
         );
         auto hostA = fieldA.copyToHost();
@@ -35,32 +35,32 @@ TEST_CASE("parallelFor")
 
     SECTION("parallelFor_Vector" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::Vector> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, NeoFOAM::Vector(0.0, 0.0, 0.0));
-        NeoFOAM::Field<NeoFOAM::Vector> fieldB(exec, 5);
+        NeoN::Field<NeoN::Vector> fieldA(exec, 5);
+        NeoN::fill(fieldA, NeoN::Vector(0.0, 0.0, 0.0));
+        NeoN::Field<NeoN::Vector> fieldB(exec, 5);
         auto viewA = fieldA.view();
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, NeoFOAM::Vector(1.0, 1.0, 1.0));
-        NeoFOAM::parallelFor(
+        NeoN::fill(fieldB, NeoN::Vector(1.0, 1.0, 1.0));
+        NeoN::parallelFor(
             exec,
             {0, 5},
-            KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + NeoFOAM::Vector(2.0, 2.0, 2.0); }
+            KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + NeoN::Vector(2.0, 2.0, 2.0); }
         );
         auto hostA = fieldA.copyToHost();
         for (auto value : hostA.view())
         {
-            REQUIRE(value == NeoFOAM::Vector(3.0, 3.0, 3.0));
+            REQUIRE(value == NeoN::Vector(3.0, 3.0, 3.0));
         }
     }
 
     SECTION("parallelFor_Field_" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        NeoFOAM::parallelFor(
+        NeoN::fill(fieldB, 1.0);
+        NeoN::parallelFor(
             fieldA, KOKKOS_LAMBDA(const size_t i) { return viewB[i] + 2.0; }
         );
         auto hostA = fieldA.copyToHost();
@@ -74,22 +74,22 @@ TEST_CASE("parallelFor")
 
 TEST_CASE("parallelReduce")
 {
-    NeoFOAM::Executor exec = GENERATE(
-        NeoFOAM::Executor(NeoFOAM::SerialExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-        NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
     );
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
     SECTION("parallelReduce_" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        NeoFOAM::scalar sum = 0.0;
-        NeoFOAM::parallelReduce(
+        NeoN::fill(fieldB, 1.0);
+        NeoN::scalar sum = 0.0;
+        NeoN::parallelReduce(
             exec, {0, 5}, KOKKOS_LAMBDA(const size_t i, double& lsum) { lsum += viewB[i]; }, sum
         );
 
@@ -98,17 +98,17 @@ TEST_CASE("parallelReduce")
 
     SECTION("parallelReduce_MaxValue" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        auto max = std::numeric_limits<NeoFOAM::scalar>::lowest();
-        Kokkos::Max<NeoFOAM::scalar> reducer(max);
-        NeoFOAM::parallelReduce(
+        NeoN::fill(fieldB, 1.0);
+        auto max = std::numeric_limits<NeoN::scalar>::lowest();
+        Kokkos::Max<NeoN::scalar> reducer(max);
+        NeoN::parallelReduce(
             exec,
             {0, 5},
-            KOKKOS_LAMBDA(const size_t i, NeoFOAM::scalar& lmax) {
+            KOKKOS_LAMBDA(const size_t i, NeoN::scalar& lmax) {
                 if (lmax < viewB[i]) lmax = viewB[i];
             },
             reducer
@@ -119,13 +119,13 @@ TEST_CASE("parallelReduce")
 
     SECTION("parallelReduce_Field_" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        NeoFOAM::scalar sum = 0.0;
-        NeoFOAM::parallelReduce(
+        NeoN::fill(fieldB, 1.0);
+        NeoN::scalar sum = 0.0;
+        NeoN::parallelReduce(
             fieldA, KOKKOS_LAMBDA(const size_t i, double& lsum) { lsum += viewB[i]; }, sum
         );
 
@@ -134,16 +134,16 @@ TEST_CASE("parallelReduce")
 
     SECTION("parallelReduce_Field_MaxValue" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::scalar> fieldA(exec, 5);
-        NeoFOAM::fill(fieldA, 0.0);
-        NeoFOAM::Field<NeoFOAM::scalar> fieldB(exec, 5);
+        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::fill(fieldA, 0.0);
+        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
-        NeoFOAM::fill(fieldB, 1.0);
-        auto max = std::numeric_limits<NeoFOAM::scalar>::lowest();
-        Kokkos::Max<NeoFOAM::scalar> reducer(max);
-        NeoFOAM::parallelReduce(
+        NeoN::fill(fieldB, 1.0);
+        auto max = std::numeric_limits<NeoN::scalar>::lowest();
+        Kokkos::Max<NeoN::scalar> reducer(max);
+        NeoN::parallelReduce(
             fieldA,
-            KOKKOS_LAMBDA(const size_t i, NeoFOAM::scalar& lmax) {
+            KOKKOS_LAMBDA(const size_t i, NeoN::scalar& lmax) {
                 if (lmax < viewB[i]) lmax = viewB[i];
             },
             reducer
@@ -155,24 +155,24 @@ TEST_CASE("parallelReduce")
 
 TEST_CASE("parallelScan")
 {
-    NeoFOAM::Executor exec = GENERATE(NeoFOAM::Executor(NeoFOAM::SerialExecutor {})
-                                      // NeoFOAM::Executor(NeoFOAM::CPUExecutor {}),
-                                      // NeoFOAM::Executor(NeoFOAM::GPUExecutor {})
+    NeoN::Executor exec = GENERATE(NeoN::Executor(NeoN::SerialExecutor {})
+                                   // NeoN::Executor(NeoN::CPUExecutor {}),
+                                   // NeoN::Executor(NeoN::GPUExecutor {})
     );
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
 
     SECTION("parallelScan_withoutReturn" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::localIdx> intervals(exec, {1, 2, 3, 4, 5});
-        NeoFOAM::Field<NeoFOAM::localIdx> segments(exec, intervals.size() + 1, 0);
+        NeoN::Field<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
+        NeoN::Field<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
         auto segView = segments.view();
         const auto intView = intervals.view();
 
-        NeoFOAM::parallelScan(
+        NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoFOAM::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {
@@ -199,16 +199,16 @@ TEST_CASE("parallelScan")
 
     SECTION("parallelScan_withReturn" + execName)
     {
-        NeoFOAM::Field<NeoFOAM::localIdx> intervals(exec, {1, 2, 3, 4, 5});
-        NeoFOAM::Field<NeoFOAM::localIdx> segments(exec, intervals.size() + 1, 0);
+        NeoN::Field<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
+        NeoN::Field<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
         auto segView = segments.view();
         const auto intView = intervals.view();
-        NeoFOAM::localIdx finalValue = 0;
+        NeoN::localIdx finalValue = 0;
 
-        NeoFOAM::parallelScan(
+        NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoFOAM::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {

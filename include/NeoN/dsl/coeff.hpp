@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 /**
  * @class Coeff
- * @brief A class that represents a coefficient for the NeoFOAM dsl.
+ * @brief A class that represents a coefficient for the NeoN dsl.
  *
  * This class stores a single scalar coefficient and optionally view of values.
  * It is used to delay the evaluation of a scalar multiplication with a field to
@@ -72,4 +72,4 @@ void toField(Coeff& coeff, Field<scalar>& rhs);
 
 } // namespace detail
 
-} // namespace NeoFOAM::dsl
+} // namespace NeoN::dsl

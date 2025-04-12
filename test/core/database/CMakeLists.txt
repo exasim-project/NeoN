@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-neofoam_unit_test(collection)
-neofoam_unit_test(database)
-neofoam_unit_test(document)
-neofoam_unit_test(fieldCollection)
-neofoam_unit_test(oldTimeCollection)
+neon_unit_test(collection)
+neon_unit_test(database)
+neon_unit_test(document)
+neon_unit_test(fieldCollection)
+neon_unit_test(oldTimeCollection)

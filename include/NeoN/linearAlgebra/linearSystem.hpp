@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <string>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/CSRMatrix.hpp"
 
 
-namespace NeoFOAM::la
+namespace NeoN::la
 {
 
 /**
@@ -161,4 +161,4 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& s
 }
 
 
-} // namespace NeoFOAM::la
+} // namespace NeoN::la

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 // TODO For WIN builds, needs to be ifdef'ed out.
@@ -10,7 +10,7 @@
 #include <any>
 #include <iostream>
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 std::string demangle(const char* mangledName);

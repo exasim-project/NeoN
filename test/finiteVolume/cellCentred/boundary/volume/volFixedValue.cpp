@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 TEST_CASE("fixedValue")
 {
@@ -13,18 +13,18 @@ TEST_CASE("fixedValue")
 
     SECTION("TestDerivedClass" + execName)
     {
-        auto mesh = NeoFOAM::createSingleCellMesh(exec);
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(exec, mesh);
-        NeoFOAM::fill(domainField.internalField(), 1.0);
-        NeoFOAM::fill(domainField.boundaryField().refGrad(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().refValue(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().valueFraction(), -1.0);
-        NeoFOAM::fill(domainField.boundaryField().value(), -1.0);
-        NeoFOAM::scalar setValue {10};
-        NeoFOAM::Dictionary dict;
+        auto mesh = NeoN::createSingleCellMesh(exec);
+        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
+        NeoN::fill(domainField.internalField(), 1.0);
+        NeoN::fill(domainField.boundaryField().refGrad(), -1.0);
+        NeoN::fill(domainField.boundaryField().refValue(), -1.0);
+        NeoN::fill(domainField.boundaryField().valueFraction(), -1.0);
+        NeoN::fill(domainField.boundaryField().value(), -1.0);
+        NeoN::scalar setValue {10};
+        NeoN::Dictionary dict;
         dict.insert("fixedValue", setValue);
         auto boundary =
-            NeoFOAM::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoFOAM::scalar>::create(
+            NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
                 "fixedValue", mesh, dict, 0
             );
 
@@ -45,7 +45,7 @@ TEST_CASE("fixedValue")
         }
 
         auto otherBoundary =
-            NeoFOAM::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoFOAM::scalar>::create(
+            NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
                 "fixedValue", mesh, dict, 1
             );
 

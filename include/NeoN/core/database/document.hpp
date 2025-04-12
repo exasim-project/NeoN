@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
@@ -7,9 +7,9 @@
 #include <functional>
 #include <atomic>
 
-#include "NeoFOAM/core/dictionary.hpp"
+#include "NeoN/core/dictionary.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -106,7 +106,7 @@ private:
  * @param doc The Document to retrieve the name from.
  * @return std::string The name of the Document.
  */
-const std::string& name(const NeoFOAM::Document& doc);
+const std::string& name(const NeoN::Document& doc);
 
 /**
  * @brief Retrieves the name of a Document.
@@ -117,6 +117,6 @@ const std::string& name(const NeoFOAM::Document& doc);
  * @param doc The Document to retrieve the name from.
  * @return std::string The name of the Document.
  */
-std::string& name(NeoFOAM::Document& doc);
+std::string& name(NeoN::Document& doc);
 
-} // namespace NeoFOAM
+} // namespace NeoN

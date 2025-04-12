@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
 
-namespace NeoFOAM::la
+namespace NeoN::la
 {
 /* @class SolverFactory
 **

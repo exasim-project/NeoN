@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2025 NeoN authors
 #pragma once
 
 #include <memory>
 #include <concepts>
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/dsl/coeff.hpp"
-#include "NeoFOAM/dsl/operator.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/dsl/operator.hpp"
 
-namespace la = NeoFOAM::la;
+namespace la = NeoN::la;
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 template<typename T>
@@ -37,7 +37,7 @@ template<typename T>
 concept IsSpatialOperator = HasExplicitOperator<T> || HasImplicitOperator<T>;
 
 /* @class SpatialOperator
- * @brief A class to represent an operator in NeoFOAMs dsl
+ * @brief A class to represent an operator in NeoNs dsl
  *
  * The design here is based on the type erasure design pattern
  * see https://www.youtube.com/watch?v=4eeESJQk-mw

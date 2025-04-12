@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
@@ -7,11 +7,11 @@
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief Calculates courant number from the face fluxes.
@@ -19,6 +19,6 @@ namespace NeoFOAM::finiteVolume::cellCentred
  * @param dt Size of the time step.
  * @return Maximum courant number.
  */
-NeoFOAM::scalar computeCoNum(const SurfaceField<NeoFOAM::scalar>& faceFlux, const scalar dt);
+NeoN::scalar computeCoNum(const SurfaceField<NeoN::scalar>& faceFlux, const scalar dt);
 
-} // namespace NeoFOAM
+} // namespace NeoN

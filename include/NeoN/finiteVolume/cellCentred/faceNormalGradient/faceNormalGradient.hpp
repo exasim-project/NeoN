@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
@@ -7,20 +7,20 @@
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
 class FaceNormalGradientFactory :
-    public NeoFOAM::RuntimeSelectionFactory<
+    public NeoN::RuntimeSelectionFactory<
         FaceNormalGradientFactory<ValueType>,
         Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
 {
@@ -32,9 +32,9 @@ public:
     {
         // input is dictionary the key is "interpolation"
         std::string key =
-            (std::holds_alternative<NeoFOAM::Dictionary>(inputs))
-                ? std::get<NeoFOAM::Dictionary>(inputs).get<std::string>("faceNormalGradient")
-                : std::get<NeoFOAM::TokenList>(inputs).next<std::string>();
+            (std::holds_alternative<NeoN::Dictionary>(inputs))
+                ? std::get<NeoN::Dictionary>(inputs).get<std::string>("faceNormalGradient")
+                : std::get<NeoN::TokenList>(inputs).next<std::string>();
 
         FaceNormalGradientFactory<ValueType>::keyExistsOrError(key);
         return FaceNormalGradientFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
@@ -116,4 +116,4 @@ private:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

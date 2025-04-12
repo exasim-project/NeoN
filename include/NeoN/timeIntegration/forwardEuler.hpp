@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/database/fieldCollection.hpp"
-#include "NeoFOAM/core/database/oldTimeCollection.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/timeIntegration/timeIntegration.hpp"
+#include "NeoN/core/database/fieldCollection.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/timeIntegration/timeIntegration.hpp"
 
-namespace NeoFOAM::timeIntegration
+namespace NeoN::timeIntegration
 {
 
 template<typename SolutionFieldType>
@@ -42,13 +42,13 @@ public:
     {
         auto source = eqn.explicitOperation(solutionField.size());
         SolutionFieldType& oldSolutionField =
-            NeoFOAM::finiteVolume::cellCentred::oldTime(solutionField);
+            NeoN::finiteVolume::cellCentred::oldTime(solutionField);
 
         solutionField.internalField() = oldSolutionField.internalField() - source * dt;
         solutionField.correctBoundaryConditions();
 
         // check if executor is GPU
-        if (std::holds_alternative<NeoFOAM::GPUExecutor>(eqn.exec()))
+        if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
         {
             Kokkos::fence();
         }
@@ -62,4 +62,4 @@ public:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

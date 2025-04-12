@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
@@ -8,14 +8,14 @@
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/linearAlgebra/solver.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/linearAlgebra/utilities.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/utilities.hpp"
 
 
-namespace NeoFOAM::la::ginkgo
+namespace NeoN::la::ginkgo
 {
 
 gko::config::pnode parse(const Dictionary& dict);

@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 
-#include "NeoFOAM/core/mpi/fullDuplexCommBuffer.hpp"
-#include "NeoFOAM/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/fullDuplexCommBuffer.hpp"
+#include "NeoN/core/mpi/environment.hpp"
 #include <cstring>
 
-using namespace NeoFOAM;
-using namespace NeoFOAM::mpi;
+using namespace NeoN;
+using namespace NeoN::mpi;
 
 TEST_CASE("fullDuplexBuffer")
 {

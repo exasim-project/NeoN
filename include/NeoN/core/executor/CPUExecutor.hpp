@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -62,4 +62,4 @@ public:
     exec underlyingExec() const { return exec {}; }
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

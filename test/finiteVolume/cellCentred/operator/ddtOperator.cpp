@@ -1,47 +1,47 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Operator = NeoFOAM::dsl::Operator;
+using Operator = NeoN::dsl::Operator;
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 template<typename ValueType>
 struct CreateField
 {
     std::string name;
-    const NeoFOAM::UnstructuredMesh& mesh;
+    const NeoN::UnstructuredMesh& mesh;
     std::int64_t timeIndex = 0;
     std::int64_t iterationIndex = 0;
     std::int64_t subCycleIndex = 0;
 
-    NeoFOAM::Document operator()(NeoFOAM::Database& db)
+    NeoN::Document operator()(NeoN::Database& db)
     {
 
         std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
         for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
         {
-            NeoFOAM::Dictionary dict;
+            NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
             dict.insert("fixedValue", ValueType(2.0));
             bcs.push_back(fvcc::VolumeBoundary<ValueType>(mesh, dict, patchi));
         }
-        NeoFOAM::DomainField<ValueType> domainField(
+        NeoN::DomainField<ValueType> domainField(
             mesh.exec(),
-            NeoFOAM::Field<ValueType>(mesh.exec(), mesh.nCells(), one<ValueType>()),
+            NeoN::Field<ValueType>(mesh.exec(), mesh.nCells(), one<ValueType>()),
             mesh.boundaryMesh().offset()
         );
         fvcc::VolumeField<ValueType> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
 
-        return NeoFOAM::Document(
+        return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
@@ -52,13 +52,13 @@ struct CreateField
     }
 };
 
-TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoFOAM::scalar, NeoFOAM::Vector)
+TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vector)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    NeoFOAM::Database db;
+    NeoN::Database db;
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoFOAM::finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
     fvcc::FieldCollection& fieldCollection =
         fvcc::FieldCollection::instance(db, "testFieldCollection");
@@ -92,10 +92,10 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoFOAM::scalar, NeoFOAM::Vector
 
     SECTION("implicit DdtOperator " + execName)
     {
-        auto ls = NeoFOAM::la::createEmptyLinearSystem<
+        auto ls = NeoN::la::createEmptyLinearSystem<
             TestType,
-            NeoFOAM::localIdx,
-            NeoFOAM::finiteVolume::cellCentred::SparsityPattern>(sp);
+            NeoN::localIdx,
+            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
         fvcc::DdtOperator<TestType> ddtTerm(Operator::Type::Implicit, phi);
         ddtTerm.implicitOperation(ls, 1.0, 0.5);
 

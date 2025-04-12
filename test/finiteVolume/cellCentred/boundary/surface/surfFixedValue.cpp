@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 TEST_CASE("fixedValue")
 {
@@ -13,13 +13,13 @@ TEST_CASE("fixedValue")
 
     SECTION("TestDerivedClass" + execName)
     {
-        auto mesh = NeoFOAM::createSingleCellMesh(exec);
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(exec, mesh);
-        NeoFOAM::scalar setValue {10};
-        NeoFOAM::Dictionary dict;
+        auto mesh = NeoN::createSingleCellMesh(exec);
+        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
+        NeoN::scalar setValue {10};
+        NeoN::Dictionary dict;
         dict.insert("fixedValue", setValue);
         auto boundary =
-            NeoFOAM::finiteVolume::cellCentred::SurfaceBoundaryFactory<NeoFOAM::scalar>::create(
+            NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory<NeoN::scalar>::create(
                 "fixedValue", mesh, dict, 0
             );
 
@@ -33,7 +33,7 @@ TEST_CASE("fixedValue")
         }
 
         auto otherBoundary =
-            NeoFOAM::finiteVolume::cellCentred::SurfaceBoundaryFactory<NeoFOAM::scalar>::create(
+            NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory<NeoN::scalar>::create(
                 "fixedValue", mesh, dict, 1
             );
 

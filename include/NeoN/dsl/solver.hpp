@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
 #include <iostream>
@@ -8,21 +8,21 @@
 #include <utility>
 #include <concepts>
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/dsl/expression.hpp"
-#include "NeoFOAM/timeIntegration/timeIntegration.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/dsl/expression.hpp"
+#include "NeoN/timeIntegration/timeIntegration.hpp"
 
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/linearAlgebra/solver.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
 
 // FIXME
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 
-namespace NeoFOAM::dsl
+namespace NeoN::dsl
 {
 
 /* @brief solve an expression
@@ -63,11 +63,11 @@ void solve(
         // solve sparse matrix system
         using ValueType = typename FieldType::ElementType;
 
-        auto sparsity = NeoFOAM::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
+        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
         auto ls = la::createEmptyLinearSystem<
             ValueType,
             localIdx,
-            NeoFOAM::finiteVolume::cellCentred::SparsityPattern>(sparsity);
+            NeoN::finiteVolume::cellCentred::SparsityPattern>(sparsity);
 
         exp.implicitOperation(ls);
         auto expTmp = exp.explicitOperation(solution.mesh().nCells());
@@ -81,7 +81,7 @@ void solve(
             KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSource[i] * vol[i]; }
         );
 
-        auto solver = NeoFOAM::la::Solver(solution.exec(), fvSolution);
+        auto solver = NeoN::la::Solver(solution.exec(), fvSolution);
         solver.solve(ls, solution.internalField());
     }
 }

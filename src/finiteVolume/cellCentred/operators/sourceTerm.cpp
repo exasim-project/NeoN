@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -21,7 +21,7 @@ void SourceTerm<ValueType>::explicitOperation(Field<ValueType>& source) const
     auto operatorScaling = this->getCoefficient();
     auto [sourceSpan, fieldSpan, coeff] =
         spans(source, this->field_.internalField(), coefficients_.internalField());
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         source.exec(),
         source.range(),
         KOKKOS_LAMBDA(const size_t celli) {
@@ -39,7 +39,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
         spans(sparsityPattern_->diagOffset(), coefficients_.internalField());
     auto [matrix, rhs] = ls.view();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
         KOKKOS_LAMBDA(const size_t celli) {

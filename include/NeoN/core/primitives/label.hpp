@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <cstdint>
 
-#include "NeoFOAM/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/traits.hpp"
 
 
-namespace NeoFOAM
+namespace NeoN
 {
-#ifdef NEOFOAM_DP_LABEL
+#ifdef NeoN_DP_LABEL
 using label = int64_t;
 using localIdx = uint64_t;
 #else

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
@@ -14,11 +14,11 @@
 #include <arkode/arkode_arkstep.h>
 #include <arkode/arkode_erkstep.h>
 
-#include "NeoFOAM/core/error.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/fields/field.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/fields/field.hpp"
 
-namespace NeoFOAM::sundials
+namespace NeoN::sundials
 {
 
 /**
@@ -75,19 +75,19 @@ inline ARKODE_ERKTableID stringToERKTable(const std::string& key)
 }
 
 /**
- * @brief Converts NeoFOAM Field data to SUNDIALS N_Vector format.
+ * @brief Converts NeoN Field data to SUNDIALS N_Vector format.
  * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
- * @param field Source NeoFOAM field
+ * @param field Source NeoN field
  * @param vector Target SUNDIALS N_Vector
  * @warning Assumes matching initialization and size between field and vector
  */
 template<typename SKVectorType, typename ValueType>
-void fieldToSunNVectorImpl(const NeoFOAM::Field<ValueType>& field, N_Vector& vector)
+void fieldToSunNVectorImpl(const NeoN::Field<ValueType>& field, N_Vector& vector)
 {
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     auto fieldView = field.view();
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { view(i) = fieldView[i]; }
     );
 };
@@ -95,50 +95,50 @@ void fieldToSunNVectorImpl(const NeoFOAM::Field<ValueType>& field, N_Vector& vec
 /**
  * @brief Dispatcher for field to N_Vector conversion based on executor type.
  * @tparam ValueType The field data type
- * @param field Source NeoFOAM field
+ * @param field Source NeoN field
  * @param vector Target SUNDIALS N_Vector
  * @throws Runtime error for unsupported executors
  */
 template<typename ValueType>
-void fieldToSunNVector(const NeoFOAM::Field<ValueType>& field, N_Vector& vector)
+void fieldToSunNVector(const NeoN::Field<ValueType>& field, N_Vector& vector)
 {
     // CHECK FOR N_Vector on correct space in DEBUG
-    if (std::holds_alternative<NeoFOAM::GPUExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
     {
         fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
             field, vector
         );
         return;
     }
-    if (std::holds_alternative<NeoFOAM::CPUExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::CPUExecutor>(field.exec()))
     {
         fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
             field, vector
         );
         return;
     }
-    if (std::holds_alternative<NeoFOAM::SerialExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::SerialExecutor>(field.exec()))
     {
         fieldToSunNVectorImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(field, vector);
         return;
     }
-    NF_ERROR_EXIT("Unsupported NeoFOAM executor for field.");
+    NF_ERROR_EXIT("Unsupported NeoN executor for field.");
 };
 
 /**
- * @brief Converts SUNDIALS N_Vector data back to NeoFOAM Field format.
+ * @brief Converts SUNDIALS N_Vector data back to NeoN Field format.
  * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
  * @param vector Source SUNDIALS N_Vector
- * @param field Target NeoFOAM field
+ * @param field Target NeoN field
  * @warning Assumes matching initialization and size between vector and field
  */
 template<typename SKVectorType, typename ValueType>
-void sunNVectorToFieldImpl(const N_Vector& vector, NeoFOAM::Field<ValueType>& field)
+void sunNVectorToFieldImpl(const N_Vector& vector, NeoN::Field<ValueType>& field)
 {
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     ValueType* fieldData = field.data();
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { fieldData[i] = view(i); }
     );
 };
@@ -147,31 +147,31 @@ void sunNVectorToFieldImpl(const N_Vector& vector, NeoFOAM::Field<ValueType>& fi
  * @brief Dispatcher for N_Vector to field conversion based on executor type.
  * @tparam ValueType The field data type
  * @param vector Source SUNDIALS N_Vector
- * @param field Target NeoFOAM field
+ * @param field Target NeoN field
  */
 template<typename ValueType>
-void sunNVectorToField(const N_Vector& vector, NeoFOAM::Field<ValueType>& field)
+void sunNVectorToField(const N_Vector& vector, NeoN::Field<ValueType>& field)
 {
-    if (std::holds_alternative<NeoFOAM::GPUExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
     {
         sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
             vector, field
         );
         return;
     }
-    if (std::holds_alternative<NeoFOAM::CPUExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::CPUExecutor>(field.exec()))
     {
         sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
             vector, field
         );
         return;
     }
-    if (std::holds_alternative<NeoFOAM::SerialExecutor>(field.exec()))
+    if (std::holds_alternative<NeoN::SerialExecutor>(field.exec()))
     {
         sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(vector, field);
         return;
     }
-    NF_ERROR_EXIT("Unsupported NeoFOAM executor for field.");
+    NF_ERROR_EXIT("Unsupported NeoN executor for field.");
 };
 
 /**
@@ -193,8 +193,8 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
 {
     // Pointer wrangling
     using ValueType = typename SolutionFieldType::FieldValueType;
-    NeoFOAM::dsl::Expression<ValueType>* pdeExpre =
-        reinterpret_cast<NeoFOAM::dsl::Expression<ValueType>*>(userData);
+    NeoN::dsl::Expression<ValueType>* pdeExpre =
+        reinterpret_cast<NeoN::dsl::Expression<ValueType>*>(userData);
     sunrealtype* yDotArray = N_VGetArrayPointer(ydot);
     sunrealtype* yArray = N_VGetArrayPointer(y);
 
@@ -205,13 +205,12 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
 
     size_t size = static_cast<size_t>(N_VGetLength(y));
     // Copy initial value from y to source.
-    NeoFOAM::Field<NeoFOAM::scalar> source =
-        pdeExpre->explicitOperation(size) * -1.0; // compute spatial
-    if (std::holds_alternative<NeoFOAM::GPUExecutor>(pdeExpre->exec()))
+    NeoN::Field<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
+    if (std::holds_alternative<NeoN::GPUExecutor>(pdeExpre->exec()))
     {
         Kokkos::fence();
     }
-    NeoFOAM::sundials::fieldToSunNVector(source, ydot); // assign rhs to ydot.
+    NeoN::sundials::fieldToSunNVector(source, ydot); // assign rhs to ydot.
     return 0;
 }
 
@@ -413,28 +412,28 @@ public:
 
     /**
      * @brief Sets appropriate vector implementation based on executor type.
-     * @param[in] exec NeoFOAM executor specifying computation space
+     * @param[in] exec NeoN executor specifying computation space
      */
-    void setExecutor(const NeoFOAM::Executor& exec)
+    void setExecutor(const NeoN::Executor& exec)
     {
-        if (std::holds_alternative<NeoFOAM::GPUExecutor>(exec))
+        if (std::holds_alternative<NeoN::GPUExecutor>(exec))
         {
             vector_.template emplace<SKDefaultVectorV>();
             return;
         }
-        if (std::holds_alternative<NeoFOAM::CPUExecutor>(exec))
+        if (std::holds_alternative<NeoN::CPUExecutor>(exec))
         {
             vector_.template emplace<SKVectorHostDefaultV>();
             return;
         }
-        if (std::holds_alternative<NeoFOAM::SerialExecutor>(exec))
+        if (std::holds_alternative<NeoN::SerialExecutor>(exec))
         {
             vector_.template emplace<SKVectorSerialV>();
             return;
         }
 
         NF_ERROR_EXIT(
-            "Unsupported NeoFOAM executor: "
+            "Unsupported NeoN executor: "
             << std::visit([](const auto& e) { return e.name(); }, exec) << "."
         );
     }

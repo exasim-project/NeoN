@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 #pragma once
 
 #include <Kokkos_Core.hpp>
-#include "NeoFOAM/core/executor/executor.hpp"
+#include "NeoN/core/executor/executor.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 struct SumKernel
@@ -73,4 +73,4 @@ struct SumKernel
 /*};*/
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

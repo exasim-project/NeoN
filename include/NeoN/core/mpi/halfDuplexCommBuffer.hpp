@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <span>
@@ -7,11 +7,11 @@
 #include <typeindex>
 #include <vector>
 
-#include "NeoFOAM/core/error.hpp"
-#include "NeoFOAM/core/mpi/environment.hpp"
-#include "NeoFOAM/core/mpi/operators.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 #ifdef NF_WITH_MPI_SUPPORT

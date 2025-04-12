@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
 #include <limits>
 
 #include <span>
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /* @class Span
@@ -68,4 +68,4 @@ public:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

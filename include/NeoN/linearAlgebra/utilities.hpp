@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024-2025 NeoN authors
 
 #pragma once
 
@@ -8,12 +8,12 @@
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/dictionary.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
 
 
-namespace NeoFOAM::la
+namespace NeoN::la
 {
 
 std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);

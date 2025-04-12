@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <string>
 #include <variant>
 
-#include "NeoFOAM/core/executor/serialExecutor.hpp"
-#include "NeoFOAM/core/executor/GPUExecutor.hpp"
-#include "NeoFOAM/core/executor/CPUExecutor.hpp"
-#include "NeoFOAM/core/error.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
+#include "NeoN/core/executor/GPUExecutor.hpp"
+#include "NeoN/core/executor/CPUExecutor.hpp"
+#include "NeoN/core/error.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 using Executor = std::variant<SerialExecutor, CPUExecutor, GPUExecutor>;
@@ -53,4 +53,4 @@ using Executor = std::variant<SerialExecutor, CPUExecutor, GPUExecutor>;
     return !(lhs == rhs);
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

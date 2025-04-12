@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2023-2025 NeoFOAM authors
+# SPDX-FileCopyrightText: 2023-2025 NeoN authors
 
 import xmltodict
 import json

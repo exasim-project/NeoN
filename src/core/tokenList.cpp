@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/tokenList.hpp"
+#include "NeoN/core/tokenList.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 void logOutRange(
     const std::out_of_range& e, const std::size_t& key, const std::vector<std::any>& data
@@ -39,4 +39,4 @@ void TokenList::remove(size_t index)
 
 [[nodiscard]] std::vector<std::any>& TokenList::tokens() { return data_; }
 
-} // namespace NeoFOAM
+} // namespace NeoN

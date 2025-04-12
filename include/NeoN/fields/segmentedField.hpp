@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/fields/field.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/fields/field.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -29,7 +29,7 @@ IndexType segmentsFromIntervals(const Field<IndexType>& intervals, Field<IndexTy
     // assumed to be zero
     auto offsSpan = offsets.view().subspan(1);
     NF_ASSERT_EQUAL(inSpan.size(), offsSpan.size());
-    NeoFOAM::parallelScan(
+    NeoN::parallelScan(
         intervals.exec(),
         {0, offsSpan.size()},
         KOKKOS_LAMBDA(const std::size_t i, IndexType& update, const bool final) {
@@ -49,7 +49,7 @@ IndexType segmentsFromIntervals(const Field<IndexType>& intervals, Field<IndexTy
  *
  * @tparam IndexType The type of the indices.
  */
-template<typename ValueType, typename IndexType = NeoFOAM::localIdx>
+template<typename ValueType, typename IndexType = NeoN::localIdx>
 class SegmentedFieldView
 {
 public:
@@ -214,4 +214,4 @@ private:
     Field<IndexType> segments_; //!< stores the [start, end) of segment i at index i, i+1
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

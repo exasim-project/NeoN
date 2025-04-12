@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoFOAM authors
+# SPDX-FileCopyrightText: 2024 NeoN authors
 
-neofoam_unit_test(field)
-neofoam_unit_test(domainField)
-neofoam_unit_test(segmentedField)
+neon_unit_test(field)
+neon_unit_test(domainField)
+neon_unit_test(segmentedField)

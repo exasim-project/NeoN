@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
-using NeoFOAM::finiteVolume::cellCentred::SurfaceInterpolation;
-using NeoFOAM::finiteVolume::cellCentred::VolumeField;
-using NeoFOAM::finiteVolume::cellCentred::SurfaceField;
+using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
+using NeoN::finiteVolume::cellCentred::VolumeField;
+using NeoN::finiteVolume::cellCentred::SurfaceField;
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 template<typename T>
 using I = std::initializer_list<T>;
 
-TEMPLATE_TEST_CASE("linear", "", NeoFOAM::scalar, NeoFOAM::Vector)
+TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vector)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 

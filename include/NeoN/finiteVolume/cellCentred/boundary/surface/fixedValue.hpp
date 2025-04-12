@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred::surfaceBoundary
+namespace NeoN::finiteVolume::cellCentred::surfaceBoundary
 {
 namespace detail
 {
@@ -29,7 +29,7 @@ void setFixedValue(
     auto internalValues = domainField.internalField().view();
     auto nInternalFaces = mesh.nInternalFaces();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         domainField.exec(),
         range,
         KOKKOS_LAMBDA(const size_t i) {

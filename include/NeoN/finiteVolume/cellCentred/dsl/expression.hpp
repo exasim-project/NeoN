@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 // TODO: move to cellCenred dsl?
 
 #pragma once
 
-#include "NeoFOAM/linearAlgebra/CSRMatrix.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/linearAlgebra/solver.hpp"
-#include "NeoFOAM/dsl/expression.hpp"
-#include "NeoFOAM/dsl/solver.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
+#include "NeoN/dsl/expression.hpp"
+#include "NeoN/dsl/solver.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
-namespace dsl = NeoFOAM::dsl;
+namespace dsl = NeoN::dsl;
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /*@brief extends expression by giving access to assembled matrix
@@ -89,7 +89,7 @@ public:
         expr_.implicitOperation(ls_, t, dt);
         auto rhs = ls_.rhs().view();
         // we subtract the explicit source term from the rhs
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             exec(),
             {0, rhs.size()},
             KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceView[i] * vol[i]; }
@@ -106,7 +106,7 @@ public:
         if (expr_.temporalOperators().size() > 0)
         {
             // integrate equations in time
-            // NeoFOAM::timeIntegration::TimeIntegration<VolumeField<ValueType>> timeIntegrator(
+            // NeoN::timeIntegration::TimeIntegration<VolumeField<ValueType>> timeIntegrator(
             //     fvSchemes_.subDict("ddtSchemes"), fvSolution_
             // );
             // timeIntegrator.solve(expr_, psi_, t, dt);
@@ -121,7 +121,7 @@ public:
             ls_ = expr_.implicitOperation();
             auto rhs = ls_.rhs().view();
             // we subtract the explicit source term from the rhs
-            NeoFOAM::parallelFor(
+            NeoN::parallelFor(
                 exec(),
                 {0, rhs.size()},
                 KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceSpan[i] * vol[i]; }
@@ -141,7 +141,7 @@ public:
         {
             NF_ERROR_EXIT("Not implemented");
             //     // integrate equations in time
-            //     NeoFOAM::timeIntegration::TimeIntegration<VolumeField<ValueType>> timeIntegrator(
+            //     NeoN::timeIntegration::TimeIntegration<VolumeField<ValueType>> timeIntegrator(
             //         fvSchemes_.subDict("ddtSchemes"), fvSolution_
             //     );
             //     timeIntegrator.solve(expr_, psi_, t, dt);
@@ -149,9 +149,9 @@ public:
         else
         {
             auto exec = psi_.exec();
-            auto solver = NeoFOAM::la::Solver(exec, fvSolution_);
+            auto solver = NeoN::la::Solver(exec, fvSolution_);
             solver.solve(ls_, psi_.internalField());
-            NF_ERROR_EXIT("No linear solver is available, build with -DNEOFOAM_WITH_GINKGO=ON");
+            NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
         }
     }
 
@@ -162,7 +162,7 @@ public:
         const auto rowPtrs = ls_.matrix().rowPtrs();
         auto rhs = ls_.rhs().view();
         auto values = ls_.matrix().values().view();
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             ls_.exec(),
             {refCell, refCell + 1},
             KOKKOS_LAMBDA(const std::size_t refCelli) {
@@ -201,7 +201,7 @@ operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueTy
         spans(resultField.internalField(), expr.linearSystem().rhs(), psi.internalField());
     const auto [values, colIdxs, rowPtrs] = expr.linearSystem().view();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         resultField.exec(),
         {0, result.size()},
         KOKKOS_LAMBDA(const std::size_t rowi) {

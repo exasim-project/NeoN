@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <limits>
 
-#include "NeoFOAM/core/info.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/auxiliary/coNum.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/core/info.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
@@ -56,19 +56,19 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     phi.correctBoundaryConditions();
 
     scalar maxValue {0.0};
-    Kokkos::Max<NeoFOAM::scalar> maxReducer(maxValue);
+    Kokkos::Max<NeoN::scalar> maxReducer(maxValue);
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, NeoFOAM::scalar& lmax) {
-            NeoFOAM::scalar val = (volPhi[celli] / surfV[celli]);
+        KOKKOS_LAMBDA(const size_t celli, NeoN::scalar& lmax) {
+            NeoN::scalar val = (volPhi[celli] / surfV[celli]);
             if (val > lmax) lmax = val;
         },
         maxReducer
     );
 
     scalar totalPhi = 0.0;
-    Kokkos::Sum<NeoFOAM::scalar> sumPhi(totalPhi);
+    Kokkos::Sum<NeoN::scalar> sumPhi(totalPhi);
     parallelReduce(
         exec,
         {0, mesh.nCells()},
@@ -77,7 +77,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     );
 
     scalar totalVol = 0.0;
-    Kokkos::Sum<NeoFOAM::scalar> sumVol(totalVol);
+    Kokkos::Sum<NeoN::scalar> sumVol(totalVol);
     parallelReduce(
         exec,
         {0, mesh.nCells()},

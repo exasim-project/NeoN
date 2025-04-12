@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include <Kokkos_Core.hpp>
 
 #include <functional>
 
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief computional kernel to perform a linear interpolation
@@ -95,9 +95,9 @@ private:
     const std::shared_ptr<GeometryScheme> geometryScheme_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 namespace fvcc = finiteVolume::cellCentred;

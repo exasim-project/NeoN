@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/dsl/operator.hpp"
-#include "NeoFOAM/linearAlgebra/linearSystem.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/dsl/operator.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 
@@ -42,4 +42,4 @@ private:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

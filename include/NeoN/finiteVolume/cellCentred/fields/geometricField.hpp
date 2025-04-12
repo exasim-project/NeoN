@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/fields/domainField.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/fields/boundaryFields.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/fields/domainField.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/fields/boundaryFields.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /**
@@ -129,4 +129,4 @@ protected:
     DomainField<ValueType> field_; // The domain field object
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <vector>
 
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/fields/fieldTypeDefs.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/fields/fieldTypeDefs.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -276,4 +276,4 @@ private:
     std::vector<localIdx> offset_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <functional>
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoFOAM/dsl/expression.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/dsl/expression.hpp"
 
-namespace NeoFOAM::timeIntegration
+namespace NeoN::timeIntegration
 {
 
 /* @class Factory class to create time integration method by a given name
- * using NeoFOAMs runTimeFactory mechanism
+ * using NeoNs runTimeFactory mechanism
  */
 template<typename SolutionType>
 class TimeIntegratorBase :
@@ -26,7 +26,7 @@ class TimeIntegratorBase :
 public:
 
     using ValueType = typename SolutionType::FieldValueType;
-    using Expression = NeoFOAM::dsl::Expression<ValueType>;
+    using Expression = NeoN::dsl::Expression<ValueType>;
 
     static std::string name() { return "timeIntegrationFactory"; }
 
@@ -51,7 +51,7 @@ protected:
 
 /**
  * @class Factory class to create time integration method by a given name
- * using NeoFOAMs runTimeFactory mechanism
+ * using NeoNs runTimeFactory mechanism
  *
  * @tparam SolutionFieldType Type of the solution field eg, volumeField or just a plain Field
  */
@@ -63,7 +63,7 @@ public:
 
 
     using ValueType = typename SolutionFieldType::FieldValueType;
-    using Expression = NeoFOAM::dsl::Expression<ValueType>;
+    using Expression = NeoN::dsl::Expression<ValueType>;
 
     TimeIntegration(const TimeIntegration& timeIntegrator)
         : timeIntegratorStrategy_(timeIntegrator.timeIntegratorStrategy_->clone()) {};
@@ -87,4 +87,4 @@ private:
 };
 
 
-} // namespace NeoFOAM::timeIntegration
+} // namespace NeoN::timeIntegration

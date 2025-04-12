@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <memory>
 
-#include "NeoFOAM/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -31,7 +31,7 @@ void computeFaceNormalGrad(
 
     size_t nInternalFaces = mesh.nInternalFaces();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const size_t facei) {
@@ -39,7 +39,7 @@ void computeFaceNormalGrad(
         }
     );
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         exec,
         {nInternalFaces, phif.size()},
         KOKKOS_LAMBDA(const size_t facei) {
@@ -58,4 +58,4 @@ void computeFaceNormalGrad(
 NF_DECLARE_COMPUTE_IMP_FNG(scalar);
 NF_DECLARE_COMPUTE_IMP_FNG(Vector);
 
-} // namespace NeoFOAM
+} // namespace NeoN

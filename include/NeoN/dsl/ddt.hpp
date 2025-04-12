@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/dsl/spatialOperator.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
 
-namespace NeoFOAM::dsl::temporal
+namespace NeoN::dsl::temporal
 {
 
 template<typename FieldType>
@@ -47,4 +47,4 @@ Ddt<FieldType> ddt(FieldType& in)
     return Ddt(in);
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

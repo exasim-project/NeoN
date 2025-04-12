@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
-#include "NeoFOAM/core/database/oldTimeCollection.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 OldTimeDocument::OldTimeDocument(const Document& doc) : doc_(doc) {}
@@ -144,4 +144,4 @@ const OldTimeCollection& OldTimeCollection::instance(const FieldCollection& fiel
 }
 
 
-} // namespace NeoFOAM::finiteVolume::cellCentred
+} // namespace NeoN::finiteVolume::cellCentred

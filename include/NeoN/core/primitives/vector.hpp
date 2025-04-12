@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
 
-#include "NeoFOAM/core/primitives/scalar.hpp"
-#include "NeoFOAM/core/primitives/label.hpp"
-#include "NeoFOAM/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/traits.hpp"
 
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 
@@ -176,4 +176,4 @@ KOKKOS_INLINE_FUNCTION Vector zero<Vector>()
     return Vector(0.0, 0.0, 0.0);
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

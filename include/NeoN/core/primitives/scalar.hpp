@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
-#include "NeoFOAM/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/traits.hpp"
 
 // TODO this needs to be implemented in the corresponding cmake file
-namespace NeoFOAM
+namespace NeoN
 {
-#ifdef NEOFOAM_DP_SCALAR
+#ifdef NeoN_DP_SCALAR
 typedef double scalar;
 #else
 typedef float scalar;
@@ -32,4 +32,4 @@ KOKKOS_INLINE_FUNCTION scalar zero<scalar>()
     return 0.0;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

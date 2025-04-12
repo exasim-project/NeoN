@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/core/executor/executor.hpp"
-#include "NeoFOAM/core/input.hpp"
-#include "NeoFOAM/dsl/spatialOperator.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -47,7 +47,7 @@ public:
 
     void explicitOperation(Field<ValueType>& source) const
     {
-        NeoFOAM::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
+        NeoN::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
 
         const UnstructuredMesh& mesh = flux_.mesh();
@@ -86,4 +86,4 @@ private:
 };
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

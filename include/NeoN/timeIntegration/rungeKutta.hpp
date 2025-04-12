@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <functional>
 #include <memory>
 
-#include "NeoFOAM/core/database/fieldCollection.hpp"
-#include "NeoFOAM/core/database/oldTimeCollection.hpp"
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/fields/field.hpp"
-#include "NeoFOAM/timeIntegration/timeIntegration.hpp"
-#include "NeoFOAM/timeIntegration/sundials.hpp"
+#include "NeoN/core/database/fieldCollection.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/timeIntegration/sundials.hpp"
 
 
-namespace NeoFOAM::timeIntegration
+namespace NeoN::timeIntegration
 {
 
 /**
@@ -134,9 +134,9 @@ public:
 
 private:
 
-    NeoFOAM::sundials::SKVector<ValueType>
+    NeoN::sundials::SKVector<ValueType>
         solution_; /**< Solution vector, contains the sundails N_Vector. */
-    NeoFOAM::sundials::SKVector<ValueType>
+    NeoN::sundials::SKVector<ValueType>
         initialConditions_; /**< Initial conditions vector, contains the sundails N_Vector. */
     std::shared_ptr<SUNContext> context_ {
         nullptr, sundials::SUN_CONTEXT_DELETER
@@ -144,7 +144,7 @@ private:
     std::unique_ptr<char, decltype(sundials::SUN_ARK_DELETER)> ODEMemory_ {
         nullptr, sundials::SUN_ARK_DELETER
     }; /**< The 'memory' sundails for the RK solver. (note void* is not stl compliant). */
-    std::unique_ptr<NeoFOAM::dsl::Expression<ValueType>> pdeExpr_ {nullptr
+    std::unique_ptr<NeoN::dsl::Expression<ValueType>> pdeExpr_ {nullptr
     }; /**< Pointer to the pde system we are integrating in time. */
 
     /**
@@ -188,4 +188,4 @@ private:
     void initODEMemory(const scalar t);
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

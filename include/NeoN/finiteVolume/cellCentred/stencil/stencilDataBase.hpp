@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <unordered_map>
 #include <any>
 #include <string>
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 /**
@@ -101,4 +101,4 @@ private:
     std::unordered_map<std::string, std::any> stencilDB_;
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

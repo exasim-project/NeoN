@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <Kokkos_Core.hpp>
 #include <type_traits>
 
-#include "NeoFOAM/core/executor/executor.hpp"
+#include "NeoN/core/executor/executor.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 
@@ -53,7 +53,7 @@ void parallelFor(
 
 template<parallelForKernel Kernel>
 void parallelFor(
-    const NeoFOAM::Executor& exec,
+    const NeoN::Executor& exec,
     std::pair<size_t, size_t> range,
     Kernel kernel,
     std::string name = "parallelFor"
@@ -135,7 +135,7 @@ void parallelReduce(
 
 template<typename Kernel, typename T>
 void parallelReduce(
-    const NeoFOAM::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel, T& value
+    const NeoN::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel, T& value
 )
 {
     std::visit([&](const auto& e) { parallelReduce(e, range, kernel, value); }, exec);
@@ -188,7 +188,7 @@ void parallelScan(
 }
 
 template<typename Kernel>
-void parallelScan(const NeoFOAM::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel)
+void parallelScan(const NeoN::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel)
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel); }, exec);
 }
@@ -210,7 +210,7 @@ void parallelScan(
 
 template<typename Kernel, typename ReturnType>
 void parallelScan(
-    const NeoFOAM::Executor& exec,
+    const NeoN::Executor& exec,
     std::pair<size_t, size_t> range,
     Kernel kernel,
     ReturnType& returnValue
@@ -220,4 +220,4 @@ void parallelScan(
 }
 
 
-} // namespace NeoFOAM
+} // namespace NeoN

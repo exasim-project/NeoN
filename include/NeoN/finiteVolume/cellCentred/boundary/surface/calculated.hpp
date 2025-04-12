@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #pragma once
 
 #include <Kokkos_Core.hpp>
 
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
-#include "NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred::surfaceBoundary
+namespace NeoN::finiteVolume::cellCentred::surfaceBoundary
 {
 
 template<typename ValueType>

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoFOAM/core/primitives/vector.hpp"
+#include "NeoN/core/primitives/vector.hpp"
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 std::ostream& operator<<(std::ostream& os, const Vector& vec)
@@ -12,4 +12,4 @@ std::ostream& operator<<(std::ostream& os, const Vector& vec)
     return os;
 }
 
-} // namespace NeoFOAM
+} // namespace NeoN

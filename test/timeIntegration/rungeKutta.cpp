@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -8,30 +8,30 @@
 
 #include "../dsl/common.hpp"
 
-#include "NeoFOAM/NeoFOAM.hpp"
+#include "NeoN/NeoN.hpp"
 
 
-namespace fvcc = NeoFOAM::finiteVolume::cellCentred;
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Field = NeoFOAM::Field<NeoFOAM::scalar>;
-using Coeff = NeoFOAM::dsl::Coeff;
-using SpatialOperator = NeoFOAM::dsl::SpatialOperator<NeoFOAM::scalar>;
-using TemporalOperator = NeoFOAM::dsl::TemporalOperator<NeoFOAM::scalar>;
-using Executor = NeoFOAM::Executor;
-using VolumeField = fvcc::VolumeField<NeoFOAM::scalar>;
-using OperatorMixin = NeoFOAM::dsl::OperatorMixin<VolumeField>;
-using BoundaryFields = NeoFOAM::BoundaryFields<NeoFOAM::scalar>;
-using Ddt = NeoFOAM::dsl::temporal::Ddt<VolumeField>;
+using Field = NeoN::Field<NeoN::scalar>;
+using Coeff = NeoN::dsl::Coeff;
+using SpatialOperator = NeoN::dsl::SpatialOperator<NeoN::scalar>;
+using TemporalOperator = NeoN::dsl::TemporalOperator<NeoN::scalar>;
+using Executor = NeoN::Executor;
+using VolumeField = fvcc::VolumeField<NeoN::scalar>;
+using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
+using BoundaryFields = NeoN::BoundaryFields<NeoN::scalar>;
+using Ddt = NeoN::dsl::temporal::Ddt<VolumeField>;
 
 // only for msvc
-template class NeoFOAM::timeIntegration::RungeKutta<VolumeField>;
+template class NeoN::timeIntegration::RungeKutta<VolumeField>;
 
 class YSquared : public OperatorMixin
 {
 
 public:
 
-    using FieldValueType = NeoFOAM::scalar;
+    using FieldValueType = NeoN::scalar;
 
     YSquared(VolumeField& field)
         : OperatorMixin(field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit)
@@ -41,7 +41,7 @@ public:
     {
         auto sourceView = source.view();
         auto fieldData = field_.internalField().data();
-        NeoFOAM::parallelFor(
+        NeoN::parallelFor(
             source.exec(),
             source.range(),
             KOKKOS_LAMBDA(const size_t i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
@@ -54,23 +54,21 @@ public:
 struct CreateField
 {
     std::string name;
-    const NeoFOAM::UnstructuredMesh& mesh;
+    const NeoN::UnstructuredMesh& mesh;
     std::int64_t timeIndex = 0;
     std::int64_t iterationIndex = 0;
     std::int64_t subCycleIndex = 0;
 
-    NeoFOAM::Document operator()(NeoFOAM::Database& db)
+    NeoN::Document operator()(NeoN::Database& db)
     {
-        std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
-        NeoFOAM::DomainField<NeoFOAM::scalar> domainField(
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
+        NeoN::DomainField<NeoN::scalar> domainField(
             mesh.exec(),
-            NeoFOAM::Field<NeoFOAM::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
             mesh.boundaryMesh().offset()
         );
-        fvcc::VolumeField<NeoFOAM::scalar> vf(
-            mesh.exec(), name, mesh, domainField, bcs, db, "", ""
-        );
-        return NeoFOAM::Document(
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
@@ -84,44 +82,44 @@ struct CreateField
 TEST_CASE("TimeIntegration - Runge Kutta")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
-    NeoFOAM::scalar convergenceTolerance = 1.0e-4; // how much lower we accept that expected order.
+    NeoN::scalar convergenceTolerance = 1.0e-4; // how much lower we accept that expected order.
 
     // Set up dictionary.
-    NeoFOAM::Database db;
-    NeoFOAM::Dictionary fvSchemes;
-    NeoFOAM::Dictionary ddtSchemes;
+    NeoN::Database db;
+    NeoN::Dictionary fvSchemes;
+    NeoN::Dictionary ddtSchemes;
     ddtSchemes.insert("type", std::string("Runge-Kutta"));
     ddtSchemes.insert("Runge-Kutta-Method", std::string("Forward-Euler"));
     fvSchemes.insert("ddtSchemes", ddtSchemes);
-    NeoFOAM::Dictionary fvSolution;
+    NeoN::Dictionary fvSolution;
 
     // Set up fields.
-    auto mesh = NeoFOAM::createSingleCellMesh(exec);
+    auto mesh = NeoN::createSingleCellMesh(exec);
     fvcc::FieldCollection& fieldCollection = fvcc::FieldCollection::instance(db, "fieldCollection");
-    fvcc::VolumeField<NeoFOAM::scalar>& vf =
-        fieldCollection.registerField<fvcc::VolumeField<NeoFOAM::scalar>>(
+    fvcc::VolumeField<NeoN::scalar>& vf =
+        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(
             CreateField {.name = "vf", .mesh = mesh, .timeIndex = 1}
         );
 
     // Setup solve parameters.
-    const NeoFOAM::scalar maxTime = 0.1;
-    const NeoFOAM::scalar initialValue = 1.0;
-    std::array<NeoFOAM::scalar, 2> deltaTime = {0.01, 0.001};
+    const NeoN::scalar maxTime = 0.1;
+    const NeoN::scalar initialValue = 1.0;
+    std::array<NeoN::scalar, 2> deltaTime = {0.01, 0.001};
 
     SECTION("Solve on " + execName)
     {
         int iTest = 0;
-        std::array<NeoFOAM::scalar, 2> error;
+        std::array<NeoN::scalar, 2> error;
         for (auto dt : deltaTime)
         {
             // reset
             auto& vfOld = fvcc::oldTime(vf);
-            NeoFOAM::scalar time = 0.0;
+            NeoN::scalar time = 0.0;
             vf.internalField() = initialValue;
             vfOld.internalField() = initialValue;
 
             // Set expression
-            TemporalOperator ddtOp = NeoFOAM::dsl::imp::ddt(vfOld);
+            TemporalOperator ddtOp = NeoN::dsl::imp::ddt(vfOld);
 
             auto divOp = YSquared(vfOld);
             auto eqn = ddtOp + divOp;
@@ -129,20 +127,20 @@ TEST_CASE("TimeIntegration - Runge Kutta")
             // solve.
             while (time < maxTime)
             {
-                NeoFOAM::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
+                NeoN::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
                 time += dt;
             }
 
             // check error.
-            NeoFOAM::scalar analytical = 1.0 / (initialValue - maxTime);
+            NeoN::scalar analytical = 1.0 / (initialValue - maxTime);
             auto vfHost = vf.internalField().copyToHost();
             error[iTest] = std::abs(vfHost.view()[0] - analytical);
             iTest++;
         }
 
         // check order of convergence.
-        NeoFOAM::scalar order = (std::log(error[0]) - std::log(error[1]))
-                              / (std::log(deltaTime[0]) - std::log(deltaTime[1]));
+        NeoN::scalar order = (std::log(error[0]) - std::log(error[1]))
+                           / (std::log(deltaTime[0]) - std::log(deltaTime[1]));
         REQUIRE(order > (1.0 - convergenceTolerance));
     }
 }

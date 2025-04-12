@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
@@ -9,9 +9,9 @@
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include "NeoFOAM/core/runtimeSelectionFactory.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
 
-class BaseClass : public NeoFOAM::RuntimeSelectionFactory<BaseClass, NeoFOAM::Parameters<>>
+class BaseClass : public NeoN::RuntimeSelectionFactory<BaseClass, NeoN::Parameters<>>
 {
 
 public:
@@ -39,7 +39,7 @@ public:
 };
 
 template<typename T>
-class BaseClass2 : public NeoFOAM::RuntimeSelectionFactory<BaseClass2<T>, NeoFOAM::Parameters<>>
+class BaseClass2 : public NeoN::RuntimeSelectionFactory<BaseClass2<T>, NeoN::Parameters<>>
 {
 
 public:
@@ -73,28 +73,27 @@ template class DerivedClass2<int>;
 
 TEST_CASE("RunTimeSelectionFactory")
 {
-    std::cout << "Table size: " << NeoFOAM::BaseClassDocumentation::docTable().size() << std::endl;
+    std::cout << "Table size: " << NeoN::BaseClassDocumentation::docTable().size() << std::endl;
 
     SECTION("classes are registered")
     {
-        CHECK(NeoFOAM::BaseClassDocumentation::docTable().size() == 2);
-        for (const auto& it : NeoFOAM::BaseClassDocumentation::docTable())
+        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 2);
+        for (const auto& it : NeoN::BaseClassDocumentation::docTable())
         {
             std::string baseClassName = it.first;
             std::cout << "baseClassName " << baseClassName << std::endl;
-            auto entries = NeoFOAM::BaseClassDocumentation::entries(baseClassName);
+            auto entries = NeoN::BaseClassDocumentation::entries(baseClassName);
             for (const auto& derivedClass : entries)
             {
                 std::cout << "   - " << derivedClass << std::endl;
                 std::cout << "     doc: "
-                          << NeoFOAM::BaseClassDocumentation::doc(baseClassName, derivedClass)
+                          << NeoN::BaseClassDocumentation::doc(baseClassName, derivedClass)
                           << std::endl;
                 std::cout << "     schema: "
-                          << NeoFOAM::BaseClassDocumentation::schema(baseClassName, derivedClass)
+                          << NeoN::BaseClassDocumentation::schema(baseClassName, derivedClass)
                           << std::endl;
-                CHECK(!NeoFOAM::BaseClassDocumentation::doc(baseClassName, derivedClass).empty());
-                CHECK(!NeoFOAM::BaseClassDocumentation::schema(baseClassName, derivedClass).empty()
-                );
+                CHECK(!NeoN::BaseClassDocumentation::doc(baseClassName, derivedClass).empty());
+                CHECK(!NeoN::BaseClassDocumentation::schema(baseClassName, derivedClass).empty());
             }
         }
     }

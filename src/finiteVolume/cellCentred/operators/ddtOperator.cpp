@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 
 
-#include "NeoFOAM/core/parallelAlgorithms.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
@@ -21,7 +21,7 @@ void DdtOperator<ValueType>::explicitOperation(Field<ValueType>& source, scalar,
     auto [sourceSpan, field, oldField] =
         spans(source, this->field_.internalField(), oldTime(this->field_).internalField());
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         source.exec(),
         source.range(),
         KOKKOS_LAMBDA(const size_t celli) {
@@ -42,7 +42,7 @@ void DdtOperator<ValueType>::implicitOperation(
         spans(sparsityPattern_->diagOffset(), oldTime(this->field_).internalField());
     auto [matrix, rhs] = ls.view();
 
-    NeoFOAM::parallelFor(
+    NeoN::parallelFor(
         ls.exec(),
         {0, oldField.size()},
         KOKKOS_LAMBDA(const size_t celli) {

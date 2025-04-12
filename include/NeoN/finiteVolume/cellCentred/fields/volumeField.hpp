@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoFOAM authors
+// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 
 #include <vector>
 
-#include "NeoFOAM/core/database/database.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/fields/geometricField.hpp"
-#include "NeoFOAM/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/core/database/database.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/geometricField.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 
-namespace NeoFOAM::finiteVolume::cellCentred
+namespace NeoN::finiteVolume::cellCentred
 {
 
 /**
@@ -209,4 +209,4 @@ private:
     std::optional<Database*> db_; // The optional pointer to the database
 };
 
-} // namespace NeoFOAM
+} // namespace NeoN

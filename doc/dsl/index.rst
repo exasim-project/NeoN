@@ -34,7 +34,7 @@ This approach is readable and easy to understand for engineers familiar with Ope
     - the sparse matrix is always an LDU matrix that is not supported by external linear solvers
     - Only cell-centred discretisation is supported
 
-NeoFOAM DSL tries to address these issues by providing:
+NeoN DSL tries to address these issues by providing:
 
     - lazy evaluation of the equations terms. This allows for better optimisation of the resulting equation and can reduce the number of required temporaries.
     - a more modular design
@@ -43,11 +43,11 @@ NeoFOAM DSL tries to address these issues by providing:
 The use of standard matrix formats combined with lazy evaluation allows for the use of external libraries to integrate PDEs in time and space.
 The equation system can be passed to **sundials** and be integrated by **RK methods** and **BDF methods** on heterogeneous architectures.
 
-The NeoFOAM DSL is designed as drop in replacement for OpenFOAM DSL and the adoption should be possible with minimal effort and the same equation from above should read:
+The NeoN DSL is designed as drop in replacement for OpenFOAM DSL and the adoption should be possible with minimal effort and the same equation from above should read:
 
 .. code-block:: cpp
 
-    dsl::Equation<NeoFOAM::scalar> UEqn
+    dsl::Equation<NeoN::scalar> UEqn
     (
         dsl::imp::ddt(U)
         + dsl::imp::div(phi, U)

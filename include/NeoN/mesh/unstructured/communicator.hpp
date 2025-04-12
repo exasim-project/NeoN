@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoFOAM authors
+// SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
 #include <vector>
@@ -7,15 +7,15 @@
 #include <memory>
 
 
-#include "NeoFOAM/fields/field.hpp"
+#include "NeoN/fields/field.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
-#include "NeoFOAM/core/mpi/fullDuplexCommBuffer.hpp"
-#include "NeoFOAM/core/mpi/operators.hpp"
-#include "NeoFOAM/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/fullDuplexCommBuffer.hpp"
+#include "NeoN/core/mpi/operators.hpp"
+#include "NeoN/core/mpi/environment.hpp"
 #endif
 
-namespace NeoFOAM
+namespace NeoN
 {
 
 #ifdef NF_WITH_MPI_SUPPORT
@@ -166,4 +166,4 @@ private:
 };
 #endif
 
-} // namespace NeoFOAM
+} // namespace NeoN
