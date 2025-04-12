@@ -102,6 +102,6 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::Upwind<scalar>;
-template class fvcc::Upwind<Vector>;
+template class fvcc::Upwind<Vec3>;
 
 }

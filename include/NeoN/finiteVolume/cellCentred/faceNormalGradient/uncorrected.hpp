@@ -69,6 +69,6 @@ private:
 
 // instantiate the template class
 template class Uncorrected<scalar>;
-template class Uncorrected<Vector>;
+template class Uncorrected<Vec3>;
 
 } // namespace NeoN

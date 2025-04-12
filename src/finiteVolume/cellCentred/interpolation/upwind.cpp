@@ -60,6 +60,6 @@ void computeUpwindInterpolation(
         TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<scalar>&, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_UPW_INT(scalar);
-NF_DECLARE_COMPUTE_IMP_UPW_INT(Vector);
+NF_DECLARE_COMPUTE_IMP_UPW_INT(Vec3);
 
 } // namespace NeoN

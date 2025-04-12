@@ -89,7 +89,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face centres for the specified boundary face.
      */
-    View<const Vector> cf(const localIdx i) const;
+    View<const Vec3> cf(const localIdx i) const;
 
     /**
      * @brief Get the field of face normals.
@@ -104,7 +104,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face normals for the specified boundary face.
      */
-    View<const Vector> cn(const localIdx i) const;
+    View<const Vec3> cn(const localIdx i) const;
 
     /**
      * @brief Get the field of face areas normals.
@@ -119,7 +119,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face areas normals for the specified boundary face.
      */
-    View<const Vector> sf(const localIdx i) const;
+    View<const Vec3> sf(const localIdx i) const;
 
     /**
      * @brief Get the field of magnitudes of face areas normals.
@@ -152,7 +152,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face unit normals for the specified boundary face.
      */
-    View<const Vector> nf(const localIdx i) const;
+    View<const Vec3> nf(const localIdx i) const;
 
     /**
      * @brief Get the field of delta vectors.
@@ -167,7 +167,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of delta vectors for the specified boundary face.
      */
-    View<const Vector> delta(const localIdx i) const;
+    View<const Vec3> delta(const localIdx i) const;
 
     /**
      * @brief Get the field of weights.

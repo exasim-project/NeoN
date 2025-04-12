@@ -30,7 +30,7 @@ public:
     virtual void solve(const LinearSystem<scalar, localIdx>&, Field<scalar>&) const = 0;
 
     // virtual void
-    // solve(const LinearSystem<ValueType, int>&, Field<Vector>& ) const = 0;
+    // solve(const LinearSystem<ValueType, int>&, Field<Vec3>& ) const = 0;
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<SolverFactory> clone() const = 0;

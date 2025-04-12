@@ -103,9 +103,9 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::SurfaceInterpolationFactory<scalar>;
-template class fvcc::SurfaceInterpolationFactory<Vector>;
+template class fvcc::SurfaceInterpolationFactory<Vec3>;
 
 template class fvcc::Linear<scalar>;
-template class fvcc::Linear<Vector>;
+template class fvcc::Linear<Vec3>;
 
 }

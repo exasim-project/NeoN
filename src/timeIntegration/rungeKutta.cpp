@@ -36,20 +36,20 @@ void RungeKutta<SolutionFieldType>::solve(
     // Setup sundials if required, load the current solution for temporal integration
     SolutionFieldType& oldSolutionField = NeoN::finiteVolume::cellCentred::oldTime(solutionField);
     if (pdeExpr_ == nullptr) initSUNERKSolver(exp, oldSolutionField, t);
-    NeoN::sundials::fieldToSunNVector(oldSolutionField.internalField(), solution_.sunNVector());
+    NeoN::sundials::fieldToSunNVec3(oldSolutionField.internalField(), solution_.sunNVec3());
     void* ark = reinterpret_cast<void*>(ODEMemory_.get());
 
     // Perform time integration
     ARKodeSetFixedStep(ark, dt);
     NeoN::scalar timeOut;
-    auto stepReturn = ARKodeEvolve(ark, t + dt, solution_.sunNVector(), &timeOut, ARK_ONE_STEP);
+    auto stepReturn = ARKodeEvolve(ark, t + dt, solution_.sunNVec3(), &timeOut, ARK_ONE_STEP);
 
     // Post step checks
     NF_ASSERT_EQUAL(stepReturn, 0);
     NF_ASSERT_EQUAL(t + dt, timeOut);
 
     // Copy solution out. (Fence is in sundails free)
-    NeoN::sundials::sunNVectorToField(solution_.sunNVector(), solutionField.internalField());
+    NeoN::sundials::sunNVec3ToField(solution_.sunNVec3(), solutionField.internalField());
     oldSolutionField.internalField() = solutionField.internalField();
 }
 
@@ -68,7 +68,7 @@ void RungeKutta<SolutionFieldType>::initSUNERKSolver(
 {
     initExpression(exp);
     initSUNContext();
-    initSUNVector(field.exec(), field.internalField().size());
+    initSUNVec3(field.exec(), field.internalField().size());
     initSUNInitialConditions(field);
     initODEMemory(t);
 }
@@ -97,22 +97,20 @@ void RungeKutta<SolutionFieldType>::initSUNContext()
 }
 
 template<typename SolutionFieldType>
-void RungeKutta<SolutionFieldType>::initSUNVector(const Executor& exec, size_t size)
+void RungeKutta<SolutionFieldType>::initSUNVec3(const Executor& exec, size_t size)
 {
     NF_DEBUG_ASSERT(context_, "SUNContext is a nullptr.");
     solution_.setExecutor(exec);
-    solution_.initNVector(size, context_);
+    solution_.initNVec3(size, context_);
     initialConditions_.setExecutor(exec);
-    initialConditions_.initNVector(size, context_);
+    initialConditions_.initNVec3(size, context_);
 }
 
 template<typename SolutionFieldType>
 void RungeKutta<SolutionFieldType>::initSUNInitialConditions(const SolutionFieldType& solutionField)
 {
 
-    NeoN::sundials::fieldToSunNVector(
-        solutionField.internalField(), initialConditions_.sunNVector()
-    );
+    NeoN::sundials::fieldToSunNVec3(solutionField.internalField(), initialConditions_.sunNVec3());
 }
 
 template<typename SolutionFieldType>
@@ -124,7 +122,7 @@ void RungeKutta<SolutionFieldType>::initODEMemory(const scalar t)
     void* ark = ERKStepCreate(
         NeoN::sundials::explicitRKSolve<SolutionFieldType>,
         t,
-        initialConditions_.sunNVector(),
+        initialConditions_.sunNVec3(),
         *context_
     );
     ODEMemory_.reset(reinterpret_cast<char*>(ark));

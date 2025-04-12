@@ -20,7 +20,7 @@ using I = std::initializer_list<T>;
 
 // FIXME: Not sure if this should still be a TEST_CASE
 // TEST_CASE("laplacianOperator fixedValue")
-TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 

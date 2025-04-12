@@ -56,6 +56,6 @@ void DdtOperator<ValueType>::implicitOperation(
 
 // instantiate the template class
 template class DdtOperator<scalar>;
-template class DdtOperator<Vector>;
+template class DdtOperator<Vec3>;
 
 };

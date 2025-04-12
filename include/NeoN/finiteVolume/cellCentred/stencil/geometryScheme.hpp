@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "NeoN/core/primitives/vector.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
@@ -29,7 +29,7 @@ public:
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
     virtual void
-    updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<Vector>& nonOrthDeltaCoeffs) = 0;
+    updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<Vec3>& nonOrthDeltaCoeffs) = 0;
 };
 
 /* @class GeometryScheme
@@ -45,7 +45,7 @@ public:
         const SurfaceField<scalar>& weights,
         const SurfaceField<scalar>& deltaCoeffs,
         const SurfaceField<scalar>& nonOrthDeltaCoeffs,
-        const SurfaceField<Vector>& nonOrthCorrectionVectors
+        const SurfaceField<Vec3>& nonOrthCorrectionVec3s
     );
 
     GeometryScheme(
@@ -65,7 +65,7 @@ public:
 
     const SurfaceField<scalar>& nonOrthDeltaCoeffs() const;
 
-    const SurfaceField<Vector>& nonOrthCorrectionVectors() const;
+    const SurfaceField<Vec3>& nonOrthCorrectionVec3s() const;
 
     void update();
 
@@ -83,7 +83,7 @@ private:
     SurfaceField<scalar> weights_;
     SurfaceField<scalar> deltaCoeffs_;
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
-    SurfaceField<Vector> nonOrthCorrectionVectors_;
+    SurfaceField<Vec3> nonOrthCorrectionVec3s_;
 };
 
 } // namespace NeoN

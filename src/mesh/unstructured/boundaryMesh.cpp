@@ -43,21 +43,21 @@ View<const label> BoundaryMesh::faceCells(const localIdx i) const
 
 const vectorField& BoundaryMesh::cf() const { return Cf_; }
 
-View<const Vector> BoundaryMesh::cf(const localIdx i) const
+View<const Vec3> BoundaryMesh::cf(const localIdx i) const
 {
     return extractSubSpan(Cf_, offset_, i);
 }
 
 const vectorField& BoundaryMesh::cn() const { return Cn_; }
 
-View<const Vector> BoundaryMesh::cn(const localIdx i) const
+View<const Vec3> BoundaryMesh::cn(const localIdx i) const
 {
     return extractSubSpan(Cn_, offset_, i);
 }
 
 const vectorField& BoundaryMesh::sf() const { return Sf_; }
 
-View<const Vector> BoundaryMesh::sf(const localIdx i) const
+View<const Vec3> BoundaryMesh::sf(const localIdx i) const
 {
     return extractSubSpan(Sf_, offset_, i);
 }
@@ -71,14 +71,14 @@ View<const scalar> BoundaryMesh::magSf(const localIdx i) const
 
 const vectorField& BoundaryMesh::nf() const { return nf_; }
 
-View<const Vector> BoundaryMesh::nf(const localIdx i) const
+View<const Vec3> BoundaryMesh::nf(const localIdx i) const
 {
     return extractSubSpan(nf_, offset_, i);
 }
 
 const vectorField& BoundaryMesh::delta() const { return delta_; }
 
-View<const Vector> BoundaryMesh::delta(const localIdx i) const
+View<const Vec3> BoundaryMesh::delta(const localIdx i) const
 {
     return extractSubSpan(delta_, offset_, i);
 }

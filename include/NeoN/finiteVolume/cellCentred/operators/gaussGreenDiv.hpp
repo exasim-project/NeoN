@@ -110,6 +110,6 @@ private:
 };
 
 template class GaussGreenDiv<scalar>;
-template class GaussGreenDiv<Vector>;
+template class GaussGreenDiv<Vec3>;
 
 } // namespace NeoN

@@ -15,7 +15,7 @@ namespace NeoN
 template<typename T>
 using I = std::initializer_list<T>;
 
-TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 

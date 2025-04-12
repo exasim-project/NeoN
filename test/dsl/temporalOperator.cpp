@@ -10,7 +10,7 @@
 namespace dsl = NeoN::dsl;
 
 // TEST_CASE("TemporalOperator")
-TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 

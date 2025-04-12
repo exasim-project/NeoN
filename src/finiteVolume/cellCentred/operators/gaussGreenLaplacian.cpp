@@ -76,7 +76,7 @@ void computeLaplacianExp(
     )
 
 NF_DECLARE_COMPUTE_EXP_LAP(scalar);
-NF_DECLARE_COMPUTE_EXP_LAP(Vector);
+NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
 
 
 template<typename ValueType>
@@ -179,6 +179,6 @@ void computeLaplacianImpl(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_LAP(scalar);
-NF_DECLARE_COMPUTE_IMP_LAP(Vector);
+NF_DECLARE_COMPUTE_IMP_LAP(Vec3);
 
 };

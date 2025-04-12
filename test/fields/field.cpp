@@ -181,19 +181,19 @@ TEST_CASE("Field Container Operations")
         REQUIRE(subView[1] == 3);
     }
 
-    SECTION("viewVector" + execName)
+    SECTION("viewVec3" + execName)
     {
-        NeoN::Field<NeoN::Vector> a(exec, {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
+        NeoN::Field<NeoN::Vec3> a(exec, {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
         auto hostA = a.copyToHost();
 
         auto view = hostA.view();
-        REQUIRE(view[0] == NeoN::Vector(1, 1, 1));
-        REQUIRE(view[1] == NeoN::Vector(2, 2, 2));
-        REQUIRE(view[2] == NeoN::Vector(3, 3, 3));
+        REQUIRE(view[0] == NeoN::Vec3(1, 1, 1));
+        REQUIRE(view[1] == NeoN::Vec3(2, 2, 2));
+        REQUIRE(view[2] == NeoN::Vec3(3, 3, 3));
 
         auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == NeoN::Vector(2, 2, 2));
-        REQUIRE(subView[1] == NeoN::Vector(3, 3, 3));
+        REQUIRE(subView[0] == NeoN::Vec3(2, 2, 2));
+        REQUIRE(subView[1] == NeoN::Vec3(3, 3, 3));
     }
 
     SECTION("copyToHost " + execName)

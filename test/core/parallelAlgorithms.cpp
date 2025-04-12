@@ -33,23 +33,23 @@ TEST_CASE("parallelFor")
         }
     }
 
-    SECTION("parallelFor_Vector" + execName)
+    SECTION("parallelFor_Vec3" + execName)
     {
-        NeoN::Field<NeoN::Vector> fieldA(exec, 5);
-        NeoN::fill(fieldA, NeoN::Vector(0.0, 0.0, 0.0));
-        NeoN::Field<NeoN::Vector> fieldB(exec, 5);
+        NeoN::Field<NeoN::Vec3> fieldA(exec, 5);
+        NeoN::fill(fieldA, NeoN::Vec3(0.0, 0.0, 0.0));
+        NeoN::Field<NeoN::Vec3> fieldB(exec, 5);
         auto viewA = fieldA.view();
         auto viewB = fieldB.view();
-        NeoN::fill(fieldB, NeoN::Vector(1.0, 1.0, 1.0));
+        NeoN::fill(fieldB, NeoN::Vec3(1.0, 1.0, 1.0));
         NeoN::parallelFor(
             exec,
             {0, 5},
-            KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + NeoN::Vector(2.0, 2.0, 2.0); }
+            KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + NeoN::Vec3(2.0, 2.0, 2.0); }
         );
         auto hostA = fieldA.copyToHost();
         for (auto value : hostA.view())
         {
-            REQUIRE(value == NeoN::Vector(3.0, 3.0, 3.0));
+            REQUIRE(value == NeoN::Vec3(3.0, 3.0, 3.0));
         }
     }
 

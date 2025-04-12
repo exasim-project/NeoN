@@ -3,7 +3,7 @@
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-#include "NeoN/core/primitives/vector.hpp" // for Vector
+#include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
 
 namespace NeoN
@@ -72,8 +72,8 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     // left, top, right, bottom faces
     // and four boundaries one left, right, top, bottom
 
-    vectorField faceAreasVectors(exec, {{-1, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, -1, 0}});
-    vectorField faceCentresVectors(
+    vectorField faceAreasVec3s(exec, {{-1, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, -1, 0}});
+    vectorField faceCentresVec3s(
         exec, {{0.0, 0.5, 0.0}, {0.5, 1.0, 0.0}, {1.0, 0.5, 0.0}, {0.5, 0.0, 0.0}}
     );
     scalarField magFaceAreas(exec, {1, 1, 1, 1});
@@ -81,11 +81,11 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     BoundaryMesh boundaryMesh(
         exec,
         {exec, {0, 0, 0, 0}},                                                           // faceCells
-        faceCentresVectors,                                                             // cf
-        faceAreasVectors,                                                               // cn,
-        faceAreasVectors,                                                               // sf,
+        faceCentresVec3s,                                                               // cf
+        faceAreasVec3s,                                                                 // cn,
+        faceAreasVec3s,                                                                 // sf,
         magFaceAreas,                                                                   // magSf,
-        faceAreasVectors,                                                               // nf,
+        faceAreasVec3s,                                                                 // nf,
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
@@ -95,8 +95,8 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}}}, // points,
         {exec, 1, 1.0},                                       // cellVolumes
         {exec, {{0.5, 0.5, 0.0}}},                            // cellCentres
-        faceAreasVectors,
-        faceCentresVectors,
+        faceAreasVec3s,
+        faceCentresVec3s,
         magFaceAreas,
         {exec, {0, 0, 0, 0}}, // faceOwner
         {exec, {}},           // faceNeighbour,
@@ -111,8 +111,8 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
 
 UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
 {
-    const Vector leftBoundary = {0.0, 0.0, 0.0};
-    const Vector rightBoundary = {1.0, 0.0, 0.0};
+    const Vec3 leftBoundary = {0.0, 0.0, 0.0};
+    const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
     vectorField meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});

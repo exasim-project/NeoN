@@ -15,16 +15,16 @@ namespace NeoN
 
 
 /**
- * @class Vector
- * @brief A class for the representation of a 3D Vector
+ * @class Vec3
+ * @brief A class for the representation of a 3D Vec3
  * @ingroup primitives
  */
-class Vector
+class Vec3
 {
 public:
 
     KOKKOS_INLINE_FUNCTION
-    Vector()
+    Vec3()
     {
         cmpts_[0] = 0.0;
         cmpts_[1] = 0.0;
@@ -32,7 +32,7 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector(scalar x, scalar y, scalar z)
+    Vec3(scalar x, scalar y, scalar z)
     {
         cmpts_[0] = x;
         cmpts_[1] = y;
@@ -40,7 +40,7 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    explicit Vector(const scalar constValue)
+    explicit Vec3(const scalar constValue)
     {
         cmpts_[0] = constValue;
         cmpts_[1] = constValue;
@@ -81,19 +81,19 @@ public:
     scalar operator()(const size_t i) const { return cmpts_[i]; }
 
     KOKKOS_INLINE_FUNCTION
-    bool operator==(const Vector& rhs) const
+    bool operator==(const Vec3& rhs) const
     {
         return cmpts_[0] == rhs(0) && cmpts_[1] == rhs(1) && cmpts_[2] == rhs(2);
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector operator+(const Vector& rhs) const
+    Vec3 operator+(const Vec3& rhs) const
     {
-        return Vector(cmpts_[0] + rhs(0), cmpts_[1] + rhs(1), cmpts_[2] + rhs(2));
+        return Vec3(cmpts_[0] + rhs(0), cmpts_[1] + rhs(1), cmpts_[2] + rhs(2));
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector& operator+=(const Vector& rhs)
+    Vec3& operator+=(const Vec3& rhs)
     {
         cmpts_[0] += rhs(0);
         cmpts_[1] += rhs(1);
@@ -102,13 +102,13 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector operator-(const Vector& rhs) const
+    Vec3 operator-(const Vec3& rhs) const
     {
-        return Vector(cmpts_[0] - rhs(0), cmpts_[1] - rhs(1), cmpts_[2] - rhs(2));
+        return Vec3(cmpts_[0] - rhs(0), cmpts_[1] - rhs(1), cmpts_[2] - rhs(2));
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector& operator-=(const Vector& rhs)
+    Vec3& operator-=(const Vec3& rhs)
     {
         cmpts_[0] -= rhs(0);
         cmpts_[1] -= rhs(1);
@@ -117,21 +117,21 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    Vector operator*(const scalar& rhs) const
+    Vec3 operator*(const scalar& rhs) const
     {
-        return Vector(cmpts_[0] * rhs, cmpts_[1] * rhs, cmpts_[2] * rhs);
+        return Vec3(cmpts_[0] * rhs, cmpts_[1] * rhs, cmpts_[2] * rhs);
     }
 
 
     KOKKOS_INLINE_FUNCTION
-    Vector operator*(const label& rhs) const
+    Vec3 operator*(const label& rhs) const
     {
-        return Vector(cmpts_[0] * rhs, cmpts_[1] * rhs, cmpts_[2] * rhs);
+        return Vec3(cmpts_[0] * rhs, cmpts_[1] * rhs, cmpts_[2] * rhs);
     }
 
 
     KOKKOS_INLINE_FUNCTION
-    Vector& operator*=(const scalar& rhs)
+    Vec3& operator*=(const scalar& rhs)
     {
         cmpts_[0] *= rhs;
         cmpts_[1] *= rhs;
@@ -146,34 +146,34 @@ private:
 
 
 KOKKOS_INLINE_FUNCTION
-Vector operator*(const scalar& sclr, Vector rhs)
+Vec3 operator*(const scalar& sclr, Vec3 rhs)
 {
     rhs *= sclr;
     return rhs;
 }
 
 KOKKOS_INLINE_FUNCTION
-scalar operator&(const Vector& lhs, Vector rhs)
+scalar operator&(const Vec3& lhs, Vec3 rhs)
 {
     return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
 
 KOKKOS_INLINE_FUNCTION
-scalar mag(const Vector& vec) { return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }
+scalar mag(const Vec3& vec) { return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }
 
-std::ostream& operator<<(std::ostream& out, const Vector& vec);
+std::ostream& operator<<(std::ostream& out, const Vec3& vec);
 
 
 template<>
-KOKKOS_INLINE_FUNCTION Vector one<Vector>()
+KOKKOS_INLINE_FUNCTION Vec3 one<Vec3>()
 {
-    return Vector(1.0, 1.0, 1.0);
+    return Vec3(1.0, 1.0, 1.0);
 }
 
 template<>
-KOKKOS_INLINE_FUNCTION Vector zero<Vector>()
+KOKKOS_INLINE_FUNCTION Vec3 zero<Vec3>()
 {
-    return Vector(0.0, 0.0, 0.0);
+    return Vec3(0.0, 0.0, 0.0);
 }
 
 } // namespace NeoN

@@ -25,7 +25,7 @@ namespace NeoN::timeIntegration
  * @details
  * Implements explicit Runge-Kutta time integration using the Sundials library. The class manages
  * Sundials vectors and memory through RAII principles, handling the conversion between internal
- * field representations and Sundials' N_Vector format. Supports various (at present explicit)
+ * field representations and Sundials' N_Vec3 format. Supports various (at present explicit)
  * Runge-Kutta methods which can be specified through the dictionary configuration. The main
  * interface for a solve is through the `solve` function.
  *
@@ -35,13 +35,13 @@ namespace NeoN::timeIntegration
  * Initialization (and order thereof):
  * https://sundials.readthedocs.io/en/latest/arkode/Usage/Skeleton.html
  * Sundials-Kokkos:
- * https://sundials.readthedocs.io/en/latest/nvectors/NVector_links.html#the-nvector-kokkos-module
+ * https://sundials.readthedocs.io/en/latest/nvectors/NVec3_links.html#the-nvector-kokkos-module
  * Sundials Contexts (scroll to bottom eg, they don't like copying):
  * https://sundials.readthedocs.io/en/latest/sundials/SUNContext_link.html#c.SUNContext_Create
  *
  * @warning For developers:
  * 1. This class uses Sundials-Kokkos vectors for computation, which are immediately wrapped as
- *    Sundials N_Vectors. After initialization, only interact with the N_Vector interface as per
+ *    Sundials N_Vec3s. After initialization, only interact with the N_Vec3 interface as per
  *    Sundials guidelines.
  * 2. The Sundials context is supposed to only be created and freed once in a program, making
  *    copying less desirable, see above. However we need to copy, so the context is placed in a
@@ -79,7 +79,7 @@ public:
     /**
      * @brief Copy constructor.
      * @param other The RungeKutta instance to copy from.
-     * @note Sundials Kokkos vectors have copy constructors, N_Vectors should be constructed from
+     * @note Sundials Kokkos vectors have copy constructors, N_Vec3s should be constructed from
      * the Kokkos vectors.
      */
     RungeKutta(const RungeKutta& other);
@@ -134,10 +134,10 @@ public:
 
 private:
 
-    NeoN::sundials::SKVector<ValueType>
-        solution_; /**< Solution vector, contains the sundails N_Vector. */
-    NeoN::sundials::SKVector<ValueType>
-        initialConditions_; /**< Initial conditions vector, contains the sundails N_Vector. */
+    NeoN::sundials::SKVec3<ValueType>
+        solution_; /**< Solution vector, contains the sundails N_Vec3. */
+    NeoN::sundials::SKVec3<ValueType>
+        initialConditions_; /**< Initial conditions vector, contains the sundails N_Vec3. */
     std::shared_ptr<SUNContext> context_ {
         nullptr, sundials::SUN_CONTEXT_DELETER
     }; /**< The SUNContext for the solve. */
@@ -173,7 +173,7 @@ private:
      * @param exec The executor of the field being integrated in time.
      * @param size The size of the vectors to be initialized
      */
-    void initSUNVector(const Executor& exec, size_t size);
+    void initSUNVec3(const Executor& exec, size_t size);
 
     /**
      * @brief Initializes the initial conditions for the solver.

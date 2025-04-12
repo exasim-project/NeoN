@@ -53,5 +53,5 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
 
 // instantiate the template class
 template class SourceTerm<scalar>;
-template class SourceTerm<Vector>;
+template class SourceTerm<Vec3>;
 };

@@ -139,7 +139,7 @@ void computeDivExp(
     )
 
 NF_DECLARE_COMPUTE_EXP_DIV(scalar);
-NF_DECLARE_COMPUTE_EXP_DIV(Vector);
+NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 
 template<typename ValueType>
@@ -233,6 +233,6 @@ void computeDivImp(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
 
 NF_DECLARE_COMPUTE_IMP_DIV(scalar);
-NF_DECLARE_COMPUTE_IMP_DIV(Vector);
+NF_DECLARE_COMPUTE_IMP_DIV(Vec3);
 
 };

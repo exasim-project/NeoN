@@ -56,6 +56,6 @@ void computeFaceNormalGrad(
         TYPENAME>(const VolumeField<TYPENAME>&, const std::shared_ptr<GeometryScheme>, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_FNG(scalar);
-NF_DECLARE_COMPUTE_IMP_FNG(Vector);
+NF_DECLARE_COMPUTE_IMP_FNG(Vec3);
 
 } // namespace NeoN

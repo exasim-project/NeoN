@@ -17,7 +17,7 @@ namespace NeoN::finiteVolume::cellCentred
 void computeGrad(
     const VolumeField<scalar>& in,
     const SurfaceInterpolation<scalar>& surfInterp,
-    VolumeField<Vector>& out
+    VolumeField<Vec3>& out
 )
 {
     const UnstructuredMesh& mesh = out.mesh();
@@ -46,7 +46,7 @@ void computeGrad(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const size_t i) {
-            Vector flux = faceAreaS[i] * surfPhif[i];
+            Vec3 flux = faceAreaS[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[static_cast<size_t>(surfOwner[i])], flux);
             Kokkos::atomic_sub(&surfGradPhi[static_cast<size_t>(surfNeighbour[i])], flux);
         }
@@ -57,7 +57,7 @@ void computeGrad(
         {nInternalFaces, surfPhif.size()},
         KOKKOS_LAMBDA(const size_t i) {
             size_t own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
-            Vector valueOwn = faceAreaS[i] * surfPhif[i];
+            Vec3 valueOwn = faceAreaS[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         }
     );
@@ -75,16 +75,16 @@ GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mes
                    ) {};
 
 
-void GaussGreenGrad::grad(const VolumeField<scalar>& phi, VolumeField<Vector>& gradPhi)
+void GaussGreenGrad::grad(const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi)
 {
     computeGrad(phi, surfaceInterpolation_, gradPhi);
 };
 
-VolumeField<Vector> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
+VolumeField<Vec3> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
 {
-    auto gradBCs = createCalculatedBCs<VolumeBoundary<Vector>>(phi.mesh());
-    VolumeField<Vector> gradPhi = VolumeField<Vector>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
-    fill(gradPhi.internalField(), zero<Vector>());
+    auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
+    VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
+    fill(gradPhi.internalField(), zero<Vec3>());
     computeGrad(phi, surfaceInterpolation_, gradPhi);
     return gradPhi;
 }

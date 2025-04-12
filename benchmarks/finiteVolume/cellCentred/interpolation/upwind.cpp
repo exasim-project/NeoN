@@ -17,7 +17,7 @@ using NeoN::Input;
 namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("upwind", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("upwind", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
 

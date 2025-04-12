@@ -103,6 +103,6 @@ private:
 
 // instantiate the template class
 template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vector>;
+template class GaussGreenLaplacian<Vec3>;
 
 } // namespace NeoN

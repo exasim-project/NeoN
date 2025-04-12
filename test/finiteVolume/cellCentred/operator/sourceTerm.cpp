@@ -14,7 +14,7 @@ using Operator = NeoN::dsl::Operator;
 namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
