@@ -1,9 +1,9 @@
 .. _fvcc_segmentedFields:
 
-SegmentedField
+SegmentedVector
 ^^^^^^^^^^^^^^
 
-SegmentedField is a template class that represents a field divided into multiple segments and can represent vector of vector of a defined ValueType.
+SegmentedVector is a template class that represents a field divided into multiple segments and can represent vector of vector of a defined ValueType.
 It also allows the definition of an IndexType, so each segment of the vector can be addressed.
 It can be used to represent cell to cell stencil.
 
@@ -12,7 +12,7 @@ It can be used to represent cell to cell stencil.
     NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
     NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-    NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(values, segments);
+    NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(values, segments);
     auto [valueSpan, segment] = segField.spans();
     auto segView = segField.view();
     NeoN::Field<NeoN::label> result(exec, 5);

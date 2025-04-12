@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SegmentedField" href="segmentedField.html" /><link rel="prev" title="Executor" href="executor.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SegmentedVector" href="segmentedField.html" /><link rel="prev" title="Executor" href="executor.html" />
         <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
@@ -208,7 +208,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segmentedField.html">SegmentedField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentedField.html">SegmentedVector</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
@@ -358,7 +358,7 @@ See our <a class="reference external" href="https://exasim-project.com/NeoN/late
 Both derive from the <code class="docutils literal notranslate"><span class="pre">DomainMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> data member.</p>
 <p><code class="docutils literal notranslate"><span class="pre">DomainField</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryFields</span></code> data structure holding actual boundary data.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
-<p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">volVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorField</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorField</span></code> respectively.</p>
+<p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">volVec3Field</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorField</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVec3Field</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorField</span></code> respectively.</p>
 <p>A difference in the SurfaceField implementation is that the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
 Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> in NeoN differs from that of OpenFOAM.</p>
 <p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html">ScalarField</a>.</p>
@@ -375,7 +375,7 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">SegmentedField</div>
+                <div class="title">SegmentedVector</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

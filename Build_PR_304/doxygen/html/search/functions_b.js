@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['mag_0',['mag',['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)'],['../namespaceNeoN.html#a081802b83825d4599ba51ccefe195571',1,'NeoN::mag(const Vector &amp;vec)']]],
+  ['mag_0',['mag',['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)'],['../namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd',1,'NeoN::mag(const Vec3 &amp;vec)']]],
   ['magfaceareas_1',['magFaceAreas',['../classNeoN_1_1UnstructuredMesh.html#a3a829de8bd15fb6280ba07d53596b289',1,'NeoN::UnstructuredMesh']]],
   ['magsf_2',['magsf',['../classNeoN_1_1BoundaryMesh.html#af5936ee62818634f3fe52a9ab8b9d2e2',1,'NeoN::BoundaryMesh::magSf() const'],['../classNeoN_1_1BoundaryMesh.html#a034a854b39cc6ca44c678494f8314087',1,'NeoN::BoundaryMesh::magSf(const localIdx i) const']]],
   ['map_3',['map',['../namespaceNeoN.html#a01a3143329e8c04d8801d81374001708',1,'NeoN']]],

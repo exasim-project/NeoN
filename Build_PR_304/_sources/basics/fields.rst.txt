@@ -110,7 +110,7 @@ Both derive from the ``DomainMixin`` a mixin class which handles that all derive
 
 The ``VolumeField`` and the ``SurfaceField`` hold a vector of boundary conditions implemented in ``finiteVolume/cellCentred/boundary`` and a  ``correctBoundaryConditions`` member function that updates the field's boundary condition.
 
-Functionally, the ``VolumeField`` and the ``SurfaceField`` classes are comparable to OpenFOAM classes such as ``volScalarField``, ``volVectorField``, and ``volTensorField`` or ``surfaceScalarField``, ``surfaceVectorField``, and ``surfaceTensorField`` respectively.
+Functionally, the ``VolumeField`` and the ``SurfaceField`` classes are comparable to OpenFOAM classes such as ``volScalarField``, ``volVec3Field``, and ``volTensorField`` or ``surfaceScalarField``, ``surfaceVec3Field``, and ``surfaceTensorField`` respectively.
 
 A difference in the SurfaceField implementation is that the ``internalField`` also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
 Thus the size of the ``internalField`` in NeoN differs from that of OpenFOAM.

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['scalar_2ehpp_0',['scalar.hpp',['../scalar_8hpp.html',1,'']]],
-  ['segmentedfield_2ehpp_1',['segmentedField.hpp',['../segmentedField_8hpp.html',1,'']]],
+  ['segmentedvector_2ehpp_1',['segmentedVector.hpp',['../segmentedVector_8hpp.html',1,'']]],
   ['serialexecutor_2ehpp_2',['serialExecutor.hpp',['../serialExecutor_8hpp.html',1,'']]],
   ['solver_2ehpp_3',['solver.hpp',['../dsl_2solver_8hpp.html',1,'(Global Namespace)'],['../linearAlgebra_2solver_8hpp.html',1,'(Global Namespace)']]],
   ['sourceterm_2ehpp_4',['sourceTerm.hpp',['../sourceTerm_8hpp.html',1,'']]],

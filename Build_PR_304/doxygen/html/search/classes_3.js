@@ -11,10 +11,10 @@ var searchData=
   ['document_8',['Document',['../classNeoN_1_1Document.html',1,'NeoN']]],
   ['domainfield_9',['DomainField',['../classNeoN_1_1DomainField.html',1,'NeoN']]],
   ['domainfield_3c_20neon_3a_3ascalar_20_3e_10',['DomainField&lt; NeoN::scalar &gt;',['../classNeoN_1_1DomainField.html',1,'NeoN']]],
-  ['domainfield_3c_20neon_3a_3avector_20_3e_11',['DomainField&lt; NeoN::Vector &gt;',['../classNeoN_1_1DomainField.html',1,'NeoN']]],
+  ['domainfield_3c_20neon_3a_3avec3_20_3e_11',['DomainField&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1DomainField.html',1,'NeoN']]],
   ['domainfield_3c_20scalar_20_3e_12',['DomainField&lt; scalar &gt;',['../classNeoN_1_1DomainField.html',1,'NeoN']]],
   ['domainmixin_13',['DomainMixin',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['domainmixin_3c_20neon_3a_3ascalar_20_3e_14',['DomainMixin&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['domainmixin_3c_20neon_3a_3avector_20_3e_15',['DomainMixin&lt; NeoN::Vector &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['domainmixin_3c_20neon_3a_3avec3_20_3e_15',['DomainMixin&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['domainmixin_3c_20scalar_20_3e_16',['DomainMixin&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]]
 ];

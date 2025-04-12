@@ -62,9 +62,9 @@ class \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{Runtime\+Selection\
 \begin{DoxyCompactList}\small\item\em A factory class for runtime selection of derived classes. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4}{Runtime\+Selection\+Factory$<$ Base, Parameters$<$ Args... $>$ $>$}}
 \item 
-class \mbox{\hyperlink{classNeoN_1_1SegmentedField}{Segmented\+Field}}
+class \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}
 \begin{DoxyCompactList}\small\item\em Data structure that stores a segmented fields or a vector of vectors. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1SegmentedFieldView}{Segmented\+Field\+View}}
+class \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{Segmented\+Vector\+View}}
 \begin{DoxyCompactList}\small\item\em A class representing a segment of indices. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}
 \begin{DoxyCompactList}\small\item\em Reference executor for serial CPU execution. \end{DoxyCompactList}\item 
@@ -78,8 +78,8 @@ class \mbox{\hyperlink{classNeoN_1_1TokenList}{Token\+List}}
 \begin{DoxyCompactList}\small\item\em A class representing a list of tokens. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}
 \begin{DoxyCompactList}\small\item\em Represents an unstructured mesh in \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}
-\begin{DoxyCompactList}\small\item\em A class for the representation of a 3D \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}
+\begin{DoxyCompactList}\small\item\em A class for the representation of a 3D \doxylink{classNeoN_1_1Vec3}{Vec3}. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1View}{View}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Concepts}
@@ -116,7 +116,7 @@ using \mbox{\hyperlink{namespaceNeoN_a323d3e8a3740bc7f2ef01fd3b61ba762}{label\+F
 \item 
 using \mbox{\hyperlink{namespaceNeoN_a1f209ab4ffe931dcc4dbb62336f60b01}{scalar\+Field}} = \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$
 \item 
-using \mbox{\hyperlink{namespaceNeoN_a2f699d26262fac06c73909c9197f35b5}{vector\+Field}} = \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$
+using \mbox{\hyperlink{namespaceNeoN_a292867acd9e4d79029a4262bbab69c6c}{vector\+Field}} = \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -179,17 +179,17 @@ template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNe
 \item 
 {\footnotesize template$<$typename T $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION T \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}} ()
 \item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoN_ab03d016c24041f4cb7a3ce6a816c4ef1}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&sclr, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} rhs)
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a8482e9b18df5dd944627afdb72291479}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&sclr, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} rhs)
 \item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a6166ac86a545590bdfa5deb541e4ac0d}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&lhs, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} rhs)
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} rhs)
 \item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a081802b83825d4599ba51ccefe195571}{mag}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}{mag}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&vec)
 \item 
-std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_ac6fd691064ed81308f03fb5773dacadc}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&vec)
 \item 
-template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoN_a20c93b2a7887997cffb4926d0c5f310d}{one$<$ Vector $>$}} ()
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}{one$<$ Vec3 $>$}} ()
 \item 
-template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoN_a303868de96e1b8555f8fe57e11ee7edd}{zero$<$ Vector $>$}} ()
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{zero$<$ Vec3 $>$}} ()
 \item 
 void \mbox{\hyperlink{namespaceNeoN_a32239764f88da7b65079e346a5f3c1f8}{log\+Out\+Range}} (const std\+::out\+\_\+of\+\_\+range \&e, const std\+::size\+\_\+t \&key, const std\+::vector$<$ std\+::any $>$ \&data)
 \item 
@@ -359,11 +359,11 @@ Definition at line \mbox{\hyperlink{fieldTypeDefs_8hpp_source_l00014}{14}} of fi
 
 Definition at line \mbox{\hyperlink{label_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a2f699d26262fac06c73909c9197f35b5}\label{namespaceNeoN_a2f699d26262fac06c73909c9197f35b5} 
+\Hypertarget{namespaceNeoN_a292867acd9e4d79029a4262bbab69c6c}\label{namespaceNeoN_a292867acd9e4d79029a4262bbab69c6c} 
 \index{NeoN@{NeoN}!vectorField@{vectorField}}
 \index{vectorField@{vectorField}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{vectorField}{vectorField}}
-{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceNeoN_a2f699d26262fac06c73909c9197f35b5}{Neo\+N\+::vector\+Field}} = typedef \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$>$}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceNeoN_a292867acd9e4d79029a4262bbab69c6c}{Neo\+N\+::vector\+Field}} = typedef \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}$>$}
 
 
 
@@ -540,15 +540,15 @@ Definition at line \mbox{\hyperlink{demangle_8hpp_source_l00019}{19}} of file \m
 
 Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a081802b83825d4599ba51ccefe195571}\label{namespaceNeoN_a081802b83825d4599ba51ccefe195571} 
+\Hypertarget{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}\label{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd} 
 \index{NeoN@{NeoN}!mag@{mag}}
 \index{mag@{mag}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&}]{vec }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{vec }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{vector_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a01a3143329e8c04d8801d81374001708}\label{namespaceNeoN_a01a3143329e8c04d8801d81374001708} 
 \index{NeoN@{NeoN}!map@{map}}
@@ -654,16 +654,16 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa
 
 Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a20c93b2a7887997cffb4926d0c5f310d}\label{namespaceNeoN_a20c93b2a7887997cffb4926d0c5f310d} 
-\index{NeoN@{NeoN}!one$<$ Vector $>$@{one$<$ Vector $>$}}
-\index{one$<$ Vector $>$@{one$<$ Vector $>$}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{one$<$ Vector $>$()}{one< Vector >()}}
+\Hypertarget{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}\label{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c} 
+\index{NeoN@{NeoN}!one$<$ Vec3 $>$@{one$<$ Vec3 $>$}}
+\index{one$<$ Vec3 $>$@{one$<$ Vec3 $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{one$<$ Vec3 $>$()}{one< Vec3 >()}}
 {\footnotesize\ttfamily template$<$$>$ \\
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{Neo\+N\+::one}}$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{Neo\+N\+::one}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{vector_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}\label{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4} 
 \index{NeoN@{NeoN}!operator"!=@{operator"!=}}
@@ -689,25 +689,25 @@ True if the executors not are equal, false otherwise.
 
 Definition at line \mbox{\hyperlink{executor_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a6166ac86a545590bdfa5deb541e4ac0d}\label{namespaceNeoN_a6166ac86a545590bdfa5deb541e4ac0d} 
+\Hypertarget{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}\label{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e} 
 \index{NeoN@{NeoN}!operator\&@{operator\&}}
 \index{operator\&@{operator\&}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}}
-{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&}]{lhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}}]{rhs }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{lhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{vector_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ab03d016c24041f4cb7a3ce6a816c4ef1}\label{namespaceNeoN_ab03d016c24041f4cb7a3ce6a816c4ef1} 
+\Hypertarget{namespaceNeoN_a8482e9b18df5dd944627afdb72291479}\label{namespaceNeoN_a8482e9b18df5dd944627afdb72291479} 
 \index{NeoN@{NeoN}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
 \index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}}
-{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&}]{sclr,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}}]{rhs }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&}]{sclr,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{vector_8hpp_source_l00149}{149}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00149}{149}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4fd8566f623dacde44f46589c608efda}\label{namespaceNeoN_a4fd8566f623dacde44f46589c608efda} 
 \index{NeoN@{NeoN}!operator+@{operator+}}
@@ -759,11 +759,11 @@ The result of the subtraction.
 
 Definition at line \mbox{\hyperlink{field_8hpp_source_l00454}{454}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ac6fd691064ed81308f03fb5773dacadc}\label{namespaceNeoN_ac6fd691064ed81308f03fb5773dacadc} 
+\Hypertarget{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e}\label{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e} 
 \index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
 \index{operator$<$$<$@{operator$<$$<$}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
-{\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&}]{vec }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{vec }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}\label{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b} 
 \index{NeoN@{NeoN}!operator==@{operator==}}
@@ -965,7 +965,7 @@ The offsets are computed by a prefix sum of the input values. So, with given inp
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{segmentedField_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{segmentedField_8hpp_source}{segmented\+Field.\+hpp}}.
+Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a945da2c301c56e09c4816efc773b7931}\label{namespaceNeoN_a945da2c301c56e09c4816efc773b7931} 
 \index{NeoN@{NeoN}!setField@{setField}}
@@ -1072,16 +1072,16 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa
 
 Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a303868de96e1b8555f8fe57e11ee7edd}\label{namespaceNeoN_a303868de96e1b8555f8fe57e11ee7edd} 
-\index{NeoN@{NeoN}!zero$<$ Vector $>$@{zero$<$ Vector $>$}}
-\index{zero$<$ Vector $>$@{zero$<$ Vector $>$}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{zero$<$ Vector $>$()}{zero< Vector >()}}
+\Hypertarget{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}\label{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412} 
+\index{NeoN@{NeoN}!zero$<$ Vec3 $>$@{zero$<$ Vec3 $>$}}
+\index{zero$<$ Vec3 $>$@{zero$<$ Vec3 $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{zero$<$ Vec3 $>$()}{zero< Vec3 >()}}
 {\footnotesize\ttfamily template$<$$>$ \\
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{Neo\+N\+::zero}}$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{Neo\+N\+::zero}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{vector_8hpp_source_l00174}{174}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00174}{174}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 
 

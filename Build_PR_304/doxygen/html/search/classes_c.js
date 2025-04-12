@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['segmentedfield_0',['SegmentedField',['../classNeoN_1_1SegmentedField.html',1,'NeoN']]],
-  ['segmentedfieldview_1',['SegmentedFieldView',['../classNeoN_1_1SegmentedFieldView.html',1,'NeoN']]],
+  ['segmentedvector_0',['SegmentedVector',['../classNeoN_1_1SegmentedVector.html',1,'NeoN']]],
+  ['segmentedvectorview_1',['SegmentedVectorView',['../classNeoN_1_1SegmentedVectorView.html',1,'NeoN']]],
   ['serialexecutor_2',['SerialExecutor',['../classNeoN_1_1SerialExecutor.html',1,'NeoN']]],
   ['skvector_3',['SKVector',['../classNeoN_1_1sundials_1_1SKVector.html',1,'NeoN::sundials']]],
   ['skvectordefault_4',['SKVectorDefault',['../classNeoN_1_1sundials_1_1SKVectorDefault.html',1,'NeoN::sundials']]],
@@ -18,7 +18,7 @@ var searchData=
   ['surfaceboundaryfactory_15',['SurfaceBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfacefield_16',['SurfaceField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfacefield_3c_20neon_3a_3ascalar_20_3e_17',['SurfaceField&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['surfacefield_3c_20neon_3a_3avector_20_3e_18',['SurfaceField&lt; NeoN::Vector &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfacefield_3c_20neon_3a_3avec3_20_3e_18',['SurfaceField&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfacefield_3c_20scalar_20_3e_19',['SurfaceField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfaceintegrate_20',['SurfaceIntegrate',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfaceinterpolation_21',['SurfaceInterpolation',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
