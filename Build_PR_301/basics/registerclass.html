@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Macro Definitions" href="macros.html" /><link rel="prev" title="setField" href="freeFunctions/setField.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/registerclass.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/registerclass.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Derived class discovery at compile time - NeoN documentation</title>
+        <title>Derived class discovery at compile time - NeoFOAM documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoN  documentation</span>
+  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -295,11 +295,11 @@ Additionally, it simplifies the runtime selection of a specific class. The deriv
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">RuntimeSelectionFactory</span></code> class is a template class that manages the registration of the derived classes and stores the map of the registered classes.
 The map associates a function with a string that is used to create the derived class.</p>
-<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1RuntimeSelectionFactory.html">RuntimeSelectionFactory</a>.</p>
+<p>Further details <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1RuntimeSelectionFactory.html">RuntimeSelectionFactory</a>.</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <p>The following example shows how to use the <code class="docutils literal notranslate"><span class="pre">RuntimeSelectionFactory</span></code> and <code class="docutils literal notranslate"><span class="pre">RuntimeSelectionFactory::Register</span></code> to automatically register derived classes. (check <code class="docutils literal notranslate"><span class="pre">registerClass.cpp</span></code> for details).</p>
-<p>The static function <code class="docutils literal notranslate"><span class="pre">create</span></code> returns a <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> to its base class and takes an argument list specified inside the template class <code class="docutils literal notranslate"><span class="pre">NeoN::Parameters&lt;&gt;</span></code>.</p>
+<p>The static function <code class="docutils literal notranslate"><span class="pre">create</span></code> returns a <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> to its base class and takes an argument list specified inside the template class <code class="docutils literal notranslate"><span class="pre">NeoFOAM::Parameters&lt;&gt;</span></code>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Base</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RuntimeSelectionFactory</span><span class="o">&lt;</span><span class="n">Base</span><span class="p">,</span><span class="w"> </span><span class="n">Parameters</span><span class="o">&lt;</span><span class="n">Args</span><span class="p">...</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">RegisterDocumentation</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&gt;</span>
 <span class="p">{</span>
@@ -334,14 +334,14 @@ The derived class must implement the static functions <code class="docutils lite
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">BaseClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">testDerived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BaseClass</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;DerivedClass&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>All base classes are also registered in the <code class="docutils literal notranslate"><span class="pre">NeoN::BaseClassDocumentation</span></code> map and the documentation and the schema retrieved as followed:</p>
+<p>All base classes are also registered in the <code class="docutils literal notranslate"><span class="pre">NeoFOAM::BaseClassDocumentation</span></code> map and the documentation and the schema retrieved as followed:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">baseClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;BaseClass&quot;</span><span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">derivedClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;DerivedClass&quot;</span><span class="p">;</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">BaseClassDocumentation</span><span class="o">::</span><span class="n">doc</span><span class="p">(</span><span class="n">baseClassName</span><span class="p">,</span><span class="w"> </span><span class="n">derivedClass</span><span class="p">)</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">BaseClassDocumentation</span><span class="o">::</span><span class="n">schema</span><span class="p">(</span><span class="n">baseClassName</span><span class="p">,</span><span class="w"> </span><span class="n">derivedClass</span><span class="p">)</span>
+<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">BaseClassDocumentation</span><span class="o">::</span><span class="n">doc</span><span class="p">(</span><span class="n">baseClassName</span><span class="p">,</span><span class="w"> </span><span class="n">derivedClass</span><span class="p">)</span>
+<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">BaseClassDocumentation</span><span class="o">::</span><span class="n">schema</span><span class="p">(</span><span class="n">baseClassName</span><span class="p">,</span><span class="w"> </span><span class="n">derivedClass</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This mechanism should simplify the creation of tooling around NeoN</p>
+<p>This mechanism should simplify the creation of tooling around NeoFOAM</p>
 </section>
 </section>
 
@@ -374,7 +374,7 @@ The derived class must implement the static functions <code class="docutils lite
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoN authors
+                Copyright &#169; 2024, NeoFOAM authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

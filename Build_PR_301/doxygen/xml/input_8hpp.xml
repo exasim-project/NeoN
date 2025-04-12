@@ -3,11 +3,11 @@
   <compounddef id="input_8hpp" kind="file" language="C++">
     <compoundname>input.hpp</compoundname>
     <includes local="no">variant</includes>
-    <includes local="yes">NeoN/core/dictionary.hpp</includes>
-    <includes local="yes">NeoN/core/tokenList.hpp</includes>
+    <includes local="yes">NeoFOAM/core/dictionary.hpp</includes>
+    <includes local="yes">NeoFOAM/core/tokenList.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/input.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/input.hpp</label>
         <link refid="input_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -17,43 +17,43 @@
         </childnode>
       </node>
       <node id="3">
-        <label>NeoN/core/dictionary.hpp</label>
+        <label>NeoFOAM/core/dictionary.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/core/tokenList.hpp</label>
+        <label>NeoFOAM/core/tokenList.hpp</label>
       </node>
       <node id="2">
         <label>variant</label>
       </node>
     </incdepgraph>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;variant&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/dictionary.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/tokenList.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/dictionary.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/tokenList.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM" kindref="compound">NeoFOAM</ref></highlight></codeline>
 <codeline lineno="11"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="13" refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref><sp/>=<sp/>std::variant&lt;Dictionary,<sp/>TokenList&gt;;</highlight></codeline>
+<codeline lineno="13" refid="namespaceNeoFOAM_1a161184af07a233e2513b53451edc6b39" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1a161184af07a233e2513b53451edc6b39" kindref="member">Input</ref><sp/>=<sp/>std::variant&lt;Dictionary,<sp/>TokenList&gt;;</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>DataClass&gt;</highlight></codeline>
-<codeline lineno="16" refid="namespaceNeoN_1ae925f6aa90689fd77bdefea5cc28a5ce" refkind="member"><highlight class="normal">DataClass<sp/><ref refid="namespaceNeoN_1ae925f6aa90689fd77bdefea5cc28a5ce" kindref="member">read</ref>(<ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref><sp/>input)</highlight></codeline>
+<codeline lineno="16" refid="namespaceNeoFOAM_1a11cb8ffac85b2e8d34007c806b5edaf4" refkind="member"><highlight class="normal">DataClass<sp/><ref refid="namespaceNeoFOAM_1a11cb8ffac85b2e8d34007c806b5edaf4" kindref="member">read</ref>(<ref refid="namespaceNeoFOAM_1a161184af07a233e2513b53451edc6b39" kindref="member">Input</ref><sp/>input)</highlight></codeline>
 <codeline lineno="17"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::visit([](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>i)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>DataClass::read(i);<sp/>},<sp/>input);</highlight></codeline>
 <codeline lineno="19"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/input.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/input.hpp"/>
   </compounddef>
 </doxygen>

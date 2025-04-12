@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoFOAM_1_1SegmentedFieldView" kind="class" language="C++" prot="public">
+    <compoundname>NeoFOAM::SegmentedFieldView</compoundname>
+    <includes refid="segmentedField_8hpp" local="no">segmentedField.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ValueType</type>
+      </param>
+      <param>
+        <type>typename IndexType</type>
+        <defval><ref refid="namespaceNeoFOAM_1a95525d89d661b88aaa4548bdf2766842" kindref="member">NeoFOAM::localIdx</ref></defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classNeoFOAM_1_1SegmentedFieldView_1a3f4b90a95afb76e87a54b394bd810ab2" prot="public" static="no" mutable="no">
+        <type>std::span&lt; ValueType &gt;</type>
+        <definition>std::span&lt;ValueType&gt; NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::values</qualifiedname>
+        <briefdescription>
+<para>A span with the values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="60" column="15" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoFOAM_1_1SegmentedFieldView_1a7064033d741bfcb38cf6b3b0e87545c1" prot="public" static="no" mutable="no">
+        <type>std::span&lt; IndexType &gt;</type>
+        <definition>std::span&lt;IndexType&gt; NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::segments</definition>
+        <argsstring></argsstring>
+        <name>segments</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::segments</qualifiedname>
+        <briefdescription>
+<para>A span of indices representing the segments. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="65" column="15" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="65" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoFOAM_1_1SegmentedFieldView_1a48565c43e9695f7a480d244a4b22cc8f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt;</type>
+        <definition>KOKKOS_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt; NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::bounds</definition>
+        <argsstring>(std::size_t segI) const</argsstring>
+        <name>bounds</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::bounds</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get the bounds of a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pair of indices representing the start and end of the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="74" column="18" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="74" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoFOAM_1_1SegmentedFieldView_1ae422a43d0bd8ab10ce4f3929afc60ff9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt;</type>
+        <definition>KOKKOS_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt; NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::range</definition>
+        <argsstring>(std::size_t segI) const</argsstring>
+        <name>range</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::range</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get the range, ie. [start,end), of a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pair of indices representing the start and length of the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="86" column="18" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="86" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoFOAM_1_1SegmentedFieldView_1a5c7e9de5419a6e16860449a2e740a8f3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION std::span&lt; ValueType &gt;</type>
+        <definition>KOKKOS_INLINE_FUNCTION std::span&lt; ValueType &gt; NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::span</definition>
+        <argsstring>(std::size_t segI) const</argsstring>
+        <name>span</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::span</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get a subspan of values corresponding to a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A subspan of values corresponding to the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="100" column="38" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="100" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoFOAM_1_1SegmentedFieldView_1a0b1eb0e7b49d20aeb591481aa75a94dc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION IndexType</type>
+        <definition>KOKKOS_INLINE_FUNCTION IndexType NeoFOAM::SegmentedFieldView&lt; ValueType, IndexType &gt;::operator[]</definition>
+        <argsstring>(std::size_t i) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>NeoFOAM::SegmentedFieldView::operator[]</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>Access an element of the segments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the element. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the element at the specified index. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="113" column="15" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="113" bodyend="113"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class representing a segment of indices. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>IndexType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the indices. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" line="53" column="1" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/segmentedField.hpp" bodystart="54" bodyend="114"/>
+    <listofallmembers>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1a48565c43e9695f7a480d244a4b22cc8f" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>bounds</name></member>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1a0b1eb0e7b49d20aeb591481aa75a94dc" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>operator[]</name></member>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1ae422a43d0bd8ab10ce4f3929afc60ff9" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>range</name></member>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1a7064033d741bfcb38cf6b3b0e87545c1" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>segments</name></member>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1a5c7e9de5419a6e16860449a2e740a8f3" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>span</name></member>
+      <member refid="classNeoFOAM_1_1SegmentedFieldView_1a3f4b90a95afb76e87a54b394bd810ab2" prot="public" virt="non-virtual"><scope>NeoFOAM::SegmentedFieldView</scope><name>values</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

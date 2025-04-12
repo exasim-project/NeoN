@@ -2,12 +2,12 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="gaussGreenGrad_8hpp" kind="file" language="C++">
     <compoundname>gaussGreenGrad.hpp</compoundname>
-    <includes local="yes">NeoN/core/executor/executor.hpp</includes>
-    <includes local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</includes>
+    <includes local="yes">NeoFOAM/core/executor/executor.hpp</includes>
+    <includes local="yes">NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
         <link refid="gaussGreenGrad_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -17,56 +17,56 @@
         </childnode>
       </node>
       <node id="2">
-        <label>NeoN/core/executor/executor.hpp</label>
+        <label>NeoFOAM/core/executor/executor.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</label>
       </node>
       <node id="3">
-        <label>NeoN/mesh/unstructured/unstructuredMesh.hpp</label>
+        <label>NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</label>
       </node>
     </incdepgraph>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" prot="public">NeoN::finiteVolume::cellCentred::GaussGreenGrad</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" prot="public">NeoFOAM::finiteVolume::cellCentred::GaussGreenGrad</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume">NeoFOAM::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred">NeoFOAM::finiteVolume::cellCentred</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoFOAM::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="11"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="13" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" kindref="compound">GaussGreenGrad</ref></highlight></codeline>
+<codeline lineno="13" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad" kindref="compound">GaussGreenGrad</ref></highlight></codeline>
 <codeline lineno="14"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1aec87900934419cd1805b792dc3521dbd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1aec87900934419cd1805b792dc3521dbd" kindref="member">GaussGreenGrad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
+<codeline lineno="17" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1aee5e1fad6caad92f4c4fe9d19d237738" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1aee5e1fad6caad92f4c4fe9d19d237738" kindref="member">GaussGreenGrad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>fvcc::VolumeField&lt;Vector&gt;<sp/>grad(const<sp/>fvcc::VolumeField&lt;scalar&gt;&amp;<sp/>phi);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a99f6bfac808335eafde8f90824709582" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a99f6bfac808335eafde8f90824709582" kindref="member">grad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;scalar&gt;</ref>&amp;<sp/>phi,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vector&gt;</ref>&amp;<sp/>gradPhi);</highlight></codeline>
+<codeline lineno="21" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a7e71d1dad8c6f82b53135bb2b3c54297" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a7e71d1dad8c6f82b53135bb2b3c54297" kindref="member">grad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;scalar&gt;</ref>&amp;<sp/>phi,<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vector&gt;</ref>&amp;<sp/>gradPhi);</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
-<codeline lineno="23" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a42d17bb571f2c451c3cdebaf7ce2f34b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vector&gt;</ref><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a42d17bb571f2c451c3cdebaf7ce2f34b" kindref="member">grad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;scalar&gt;</ref>&amp;<sp/>phi);</highlight></codeline>
+<codeline lineno="23" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1adad1ebf51e53516ffb409bc77a024755" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vector&gt;</ref><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1adad1ebf51e53516ffb409bc77a024755" kindref="member">grad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;scalar&gt;</ref>&amp;<sp/>phi);</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;scalar&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;scalar&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"/>
   </compounddef>
 </doxygen>

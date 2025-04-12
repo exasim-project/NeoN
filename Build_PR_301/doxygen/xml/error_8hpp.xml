@@ -8,10 +8,10 @@
     <includes local="no">string</includes>
     <includes local="no">sstream</includes>
     <includes refid="info_8hpp" local="yes">info.hpp</includes>
-    <includedby refid="runtimeSelectionFactory_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/runtimeSelectionFactory.hpp</includedby>
+    <includedby refid="runtimeSelectionFactory_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/runtimeSelectionFactory.hpp</includedby>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp</label>
         <link refid="error_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -48,18 +48,18 @@
     </incdepgraph>
     <invincdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp</label>
         <link refid="error_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="2">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/runtimeSelectionFactory.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/runtimeSelectionFactory.hpp</label>
         <link refid="runtimeSelectionFactory_8hpp"/>
       </node>
     </invincdepgraph>
-    <innerclass refid="classNeoN_1_1NeoNException" prot="public">NeoN::NeoNException</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1NeoFOAMException" prot="public">NeoFOAM::NeoFOAMException</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
     <sectiondef kind="define">
       <memberdef kind="define" id="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" prot="public" static="no">
         <name>NF_ERROR_MESSAGE</name>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="85" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="85" bodyend="86"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="85" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="85" bodyend="86"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" prot="public" static="no">
         <name>NF_ERROR_EXIT</name>
@@ -114,17 +114,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="108" column="10" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="108" bodyend="114"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="108" column="10" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="108" bodyend="114"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" prot="public" static="no">
         <name>NF_THROW</name>
         <param><defname>message</defname></param>
-        <initializer>    throw <ref refid="classNeoN_1_1NeoNException" kindref="compound">NeoN::NeoNException</ref>((std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(std::string(message))).str())</initializer>
+        <initializer>    throw <ref refid="classNeoFOAM_1_1NeoFOAMException" kindref="compound">NeoFOAM::NeoFOAMException</ref>(                                                               \
+        (std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(std::string(message))).str()                      \
+    )</initializer>
         <briefdescription>
-<para>Macro for throwing a NeoNException with the specified error message. </para>
+<para>Macro for throwing a NeoFOAMException with the specified error message. </para>
         </briefdescription>
         <detaileddescription>
-<para>This macro constructs a std::stringstream to concatenate the specified error message with the current file name and current line number, and then throws a NeoNException with the resulting string as the error message.</para>
+<para>This macro constructs a std::stringstream to concatenate the specified error message with the current file name and current line number, and then throws a NeoFOAMException with the resulting string as the error message.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>message</parametername>
@@ -138,7 +140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="127" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="127" bodyend="128"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="127" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="127" bodyend="130"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" prot="public" static="no">
         <name>NF_ASSERT</name>
@@ -178,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="142" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="142" bodyend="150"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="144" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="144" bodyend="152"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a5c27fa1694ed5197f9ea77dd62368d32" prot="public" static="no">
         <name>NF_ASSERT_THROW</name>
@@ -193,10 +195,10 @@
     }                                                                                              \
     while (false)</initializer>
         <briefdescription>
-<para>Macro for asserting a condition and throwing a NeoNException if the condition is false. </para>
+<para>Macro for asserting a condition and throwing a NeoFOAMException if the condition is false. </para>
         </briefdescription>
         <detaileddescription>
-<para>This macro checks the specified condition and, if it evaluates to false, constructs a std::stringstream to concatenate the specified error message with the current file name and current line number, and then throws a NeoNException with the resulting string as the error message.</para>
+<para>This macro checks the specified condition and, if it evaluates to false, constructs a std::stringstream to concatenate the specified error message with the current file name and current line number, and then throws a NeoFOAMException with the resulting string as the error message.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>condition</parametername>
@@ -218,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="165" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="165" bodyend="173"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="167" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="167" bodyend="175"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1af1af39ea56903b56ed322432441511b5" prot="public" static="no">
         <name>NF_DEBUG_ASSERT</name>
@@ -251,7 +253,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="211" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="211" bodyend="-1"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="213" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="213" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1afe5d21cd87f0a611361b98328a4c0dbe" prot="public" static="no">
         <name>NF_DEBUG_ASSERT_THROW</name>
@@ -259,7 +261,7 @@
         <param><defname>message</defname></param>
         <initializer>((void)0)</initializer>
         <briefdescription>
-<para>Macro for asserting a condition and throwing a NeoNException if the condition is false (only in debug mode). </para>
+<para>Macro for asserting a condition and throwing a NeoFOAMException if the condition is false (only in debug mode). </para>
         </briefdescription>
         <detaileddescription>
 <para>This macro does nothing in release mode.</para>
@@ -284,7 +286,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="224" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="224" bodyend="-1"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="226" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="226" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a40409dec4da3178309a1b0f662496159" prot="public" static="no">
         <name>NF_ASSERT_EQUAL</name>
@@ -317,7 +319,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="239" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="239" bodyend="-1"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="241" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="241" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a0cc299c0d63efd3a404c1f33f6ead1b0" prot="public" static="no">
         <name>NF_DEBUG_ASSERT_EQUAL</name>
@@ -350,7 +352,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="251" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="251" bodyend="-1"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="253" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="253" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1ac8d1c67acd41932bbf7b7da3e3d1508d" prot="public" static="no">
         <name>NF_ASSERT_EQUAL_THROW</name>
@@ -358,10 +360,10 @@
         <param><defname>b</defname></param>
         <initializer><ref refid="error_8hpp_1a5c27fa1694ed5197f9ea77dd62368d32" kindref="member">NF_ASSERT_THROW</ref>(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</initializer>
         <briefdescription>
-<para>Macro for asserting that two values are equal and throwing a NeoNException if they are not. </para>
+<para>Macro for asserting that two values are equal and throwing a NeoFOAMException if they are not. </para>
         </briefdescription>
         <detaileddescription>
-<para>This macro checks that the two specified values are equal and, if they are not, constructs a std::stringstream to concatenate the expected and actual values with the current file name and current line number, and then throws a NeoNException with the resulting string as the error message.</para>
+<para>This macro checks that the two specified values are equal and, if they are not, constructs a std::stringstream to concatenate the expected and actual values with the current file name and current line number, and then throws a NeoFOAMException with the resulting string as the error message.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>a</parametername>
@@ -383,7 +385,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="266" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="266" bodyend="-1"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="268" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="268" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="error_8hpp_1a5de41c8310ae3406f3e2d1627f3dd0a1" prot="public" static="no">
         <name>NF_DEBUG_ASSERT_EQUAL_THROW</name>
@@ -391,7 +393,7 @@
         <param><defname>b</defname></param>
         <initializer>    <ref refid="error_8hpp_1afe5d21cd87f0a611361b98328a4c0dbe" kindref="member">NF_DEBUG_ASSERT_THROW</ref>(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</initializer>
         <briefdescription>
-<para>Macro for asserting that two values are equal and throwing a NeoNException if they are not (only in debug mode). </para>
+<para>Macro for asserting that two values are equal and throwing a NeoFOAMException if they are not (only in debug mode). </para>
         </briefdescription>
         <detaileddescription>
 <para>This macro is equivalent to NF_ASSERT_EQUAL_THROW in debug mode.</para>
@@ -416,7 +418,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" line="278" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp" bodystart="278" bodyend="279"/>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" line="280" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp" bodystart="280" bodyend="281"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -425,7 +427,7 @@
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023-2024<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023-2024<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdlib&gt;</highlight><highlight class="normal"></highlight></codeline>
@@ -451,23 +453,23 @@
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM" kindref="compound">NeoFOAM</ref></highlight></codeline>
 <codeline lineno="29"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="37" refid="classNeoN_1_1NeoNException" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1NeoNException" kindref="compound">NeoNException</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception</highlight></codeline>
+<codeline lineno="37" refid="classNeoFOAM_1_1NeoFOAMException" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1NeoFOAMException" kindref="compound">NeoFOAMException</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception</highlight></codeline>
 <codeline lineno="38"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45" refid="classNeoN_1_1NeoNException_1a0c08cb41205f0c35fcd9ee9472704049" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1NeoNException_1a0c08cb41205f0c35fcd9ee9472704049" kindref="member">NeoNException</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>message)<sp/>:<sp/>message_(message)<sp/>{}</highlight></codeline>
+<codeline lineno="45" refid="classNeoFOAM_1_1NeoFOAMException_1a97203629bd4f1e83a2ea1010094c026a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1NeoFOAMException_1a97203629bd4f1e83a2ea1010094c026a" kindref="member">NeoFOAMException</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>message)<sp/>:<sp/>message_(message)<sp/>{}</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51" refid="classNeoN_1_1NeoNException_1a0483098d1d92c18db89a2bb775cb052a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1NeoNException_1a0483098d1d92c18db89a2bb775cb052a" kindref="member">what</ref>()<sp/>const<sp/>noexcept</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>message_.c_str();<sp/>}</highlight></codeline>
+<codeline lineno="51" refid="classNeoFOAM_1_1NeoFOAMException_1a63a96bda4d9d5c27ada373b872d10a73" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="classNeoFOAM_1_1NeoFOAMException_1a63a96bda4d9d5c27ada373b872d10a73" kindref="member">what</ref>()<sp/>const<sp/>noexcept</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>message_.c_str();<sp/>}</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>message_;<sp/></highlight></codeline>
 <codeline lineno="56"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="59"><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_DEBUG_MESSAGING</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ERROR_MESSAGE(message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
@@ -497,47 +499,49 @@
 <codeline lineno="115"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight></codeline>
 <codeline lineno="127" refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_THROW(message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="128"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>throw<sp/>NeoN::NeoNException((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(std::string(message))).str())</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight></codeline>
-<codeline lineno="142" refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT(condition,<sp/>message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="143"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="144"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="145"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(condition))<sp/>[[unlikely]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="146"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="147"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NF_ERROR_EXIT(&quot;Assertion<sp/>`&quot;<sp/>#condition<sp/>&quot;`<sp/>failed.\n<sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;<sp/>&lt;&lt;<sp/>message);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="149"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight></codeline>
-<codeline lineno="165" refid="error_8hpp_1a5c27fa1694ed5197f9ea77dd62368d32" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_THROW(condition,<sp/>message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="166"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="167"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="168"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(condition))<sp/>[[unlikely]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="170"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NF_THROW(&quot;Assertion<sp/>`&quot;<sp/>#condition<sp/>&quot;`<sp/>failed.\n<sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;<sp/>&lt;&lt;<sp/>message);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="171"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="172"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="173"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_DEBUG</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT(condition,<sp/>message)<sp/>NF_ASSERT(condition,<sp/>message)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="187"><highlight class="normal"></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_THROW(condition,<sp/>message)<sp/>NF_ASSERT_THROW(condition,<sp/>message)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="200"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight></codeline>
-<codeline lineno="211" refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT(condition,<sp/>message)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="212"><highlight class="normal"></highlight></codeline>
-<codeline lineno="224" refid="error_8hpp_1afe5d21cd87f0a611361b98328a4c0dbe" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_THROW(condition,<sp/>message)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="225"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="226"><highlight class="normal"></highlight></codeline>
-<codeline lineno="239" refid="error_8hpp_1a40409dec4da3178309a1b0f662496159" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_EQUAL(a,<sp/>b)<sp/>NF_ASSERT(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="240"><highlight class="normal"></highlight></codeline>
-<codeline lineno="251" refid="error_8hpp_1a0cc299c0d63efd3a404c1f33f6ead1b0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_EQUAL(a,<sp/>b)<sp/>NF_DEBUG_ASSERT(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="252"><highlight class="normal"></highlight></codeline>
-<codeline lineno="266" refid="error_8hpp_1ac8d1c67acd41932bbf7b7da3e3d1508d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_EQUAL_THROW(a,<sp/>b)<sp/>NF_ASSERT_THROW(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="267"><highlight class="normal"></highlight></codeline>
-<codeline lineno="278" refid="error_8hpp_1a5de41c8310ae3406f3e2d1627f3dd0a1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_EQUAL_THROW(a,<sp/>b)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="279"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>NF_DEBUG_ASSERT_THROW(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight></codeline>
+<codeline lineno="128"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>throw<sp/>NeoFOAM::NeoFOAMException(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="129"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(std::string(message))).str()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="130"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT(condition,<sp/>message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="145"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="146"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="147"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(condition))<sp/>[[unlikely]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="149"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NF_ERROR_EXIT(&quot;Assertion<sp/>`&quot;<sp/>#condition<sp/>&quot;`<sp/>failed.\n<sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;<sp/>&lt;&lt;<sp/>message);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="151"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="152"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167" refid="error_8hpp_1a5c27fa1694ed5197f9ea77dd62368d32" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_THROW(condition,<sp/>message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="168"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="170"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(condition))<sp/>[[unlikely]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="171"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="172"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NF_THROW(&quot;Assertion<sp/>`&quot;<sp/>#condition<sp/>&quot;`<sp/>failed.\n<sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;<sp/>&lt;&lt;<sp/>message);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="173"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="174"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="175"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_DEBUG</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT(condition,<sp/>message)<sp/>NF_ASSERT(condition,<sp/>message)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_THROW(condition,<sp/>message)<sp/>NF_ASSERT_THROW(condition,<sp/>message)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight></codeline>
+<codeline lineno="213" refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT(condition,<sp/>message)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226" refid="error_8hpp_1afe5d21cd87f0a611361b98328a4c0dbe" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_THROW(condition,<sp/>message)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="241" refid="error_8hpp_1a40409dec4da3178309a1b0f662496159" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_EQUAL(a,<sp/>b)<sp/>NF_ASSERT(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253" refid="error_8hpp_1a0cc299c0d63efd3a404c1f33f6ead1b0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_EQUAL(a,<sp/>b)<sp/>NF_DEBUG_ASSERT(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268" refid="error_8hpp_1ac8d1c67acd41932bbf7b7da3e3d1508d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT_EQUAL_THROW(a,<sp/>b)<sp/>NF_ASSERT_THROW(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight></codeline>
+<codeline lineno="280" refid="error_8hpp_1a5de41c8310ae3406f3e2d1627f3dd0a1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_DEBUG_ASSERT_EQUAL_THROW(a,<sp/>b)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="281"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>NF_DEBUG_ASSERT_THROW(a<sp/>==<sp/>b,<sp/>&quot;Expected<sp/>&quot;<sp/>&lt;&lt;<sp/>b<sp/>&lt;&lt;<sp/>&quot;,<sp/>got<sp/>&quot;<sp/>&lt;&lt;<sp/>a)</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/error.hpp"/>
   </compounddef>
 </doxygen>

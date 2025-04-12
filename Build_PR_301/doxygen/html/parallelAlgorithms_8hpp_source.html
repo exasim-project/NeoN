@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoN: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/parallelAlgorithms.hpp Source File</title>
+<title>NeoFOAM: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/parallelAlgorithms.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">NeoN
+   <div id="projectname">NeoFOAM
    </div>
    <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
   </td>
@@ -75,7 +75,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b7d68532c5ef6a2996d1666976371b7d.html">NeoFOAM</a></li><li class="navelem"><a class="el" href="dir_87ccb8942982d396e68958a1890f62d8.html">core</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_4d3f939cb3e94ca2309d34727a08ae86.html">NeoN</a></li><li class="navelem"><a class="el" href="dir_f2adf19220ecd655c45a5e32fe91c610.html">core</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -83,15 +83,15 @@ $(document).ready(function() { init_codefold(0); });
 </div><!--header-->
 <div class="contents">
 <a href="parallelAlgorithms_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023 NeoN authors</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023 NeoFOAM authors</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;Kokkos_Core.hpp&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;NeoN/core/executor/executor.hpp&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;NeoFOAM/core/executor/executor.hpp&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoFOAM.html">NeoFOAM</a></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
@@ -102,7 +102,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// Concept to check if a callable is compatible with void(const size_t)</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel&gt;</div>
 <div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="conceptNeoN_1_1parallelForKernel.html">   20</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptNeoN_1_1parallelForKernel.html">parallelForKernel</a> = <span class="keyword">requires</span>(Kernel t, <span class="keywordtype">size_t</span> i) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="conceptNeoFOAM_1_1parallelForKernel.html">   20</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptNeoFOAM_1_1parallelForKernel.html">parallelForKernel</a> = <span class="keyword">requires</span>(Kernel t, <span class="keywordtype">size_t</span> i) {</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    {</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        t(i)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    } -&gt; std::same_as&lt;void&gt;;</div>
@@ -111,15 +111,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, parallelForKernel Kernel&gt;</div>
 <div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec,</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    std::pair&lt;size_t, size_t&gt; range,</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    Kernel kernel,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::string <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::string <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>{</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">auto</span> [start, end] = range;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoFOAM_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = start; i &lt; end; i++)</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        {</div>
@@ -130,7 +130,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">using </span>runOn = <span class="keyword">typename</span> Executor::exec;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        Kokkos::parallel_for(</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a>,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            Kokkos::RangePolicy&lt;runOn&gt;(start, end),</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <span class="keywordtype">size_t</span> i) { kernel(i); }</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        );</div>
@@ -141,21 +141,21 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">template</span>&lt;parallelForKernel Kernel&gt;</div>
 <div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a7d0064d177516a2583474f25b6c98256">   55</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a>&amp; exec,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a51404323e84e5d40f782183e04260f3b">   55</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a>&amp; exec,</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::pair&lt;size_t, size_t&gt; range,</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    Kernel kernel,</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::string <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::string <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>)</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>{</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(e, range, kernel, <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>); }, exec);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(e, range, kernel, <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a>); }, exec);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
 </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">// Concept to check if a callable is compatible with ValueType(const size_t)</span></div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> ValueType&gt;</div>
 <div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="conceptNeoN_1_1parallelForFieldKernel.html">   67</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptNeoN_1_1parallelForFieldKernel.html">parallelForFieldKernel</a> = <span class="keyword">requires</span>(Kernel t, ValueType val, <span class="keywordtype">size_t</span> i) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="conceptNeoFOAM_1_1parallelForFieldKernel.html">   67</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptNeoFOAM_1_1parallelForFieldKernel.html">parallelForFieldKernel</a> = <span class="keyword">requires</span>(Kernel t, ValueType val, <span class="keywordtype">size_t</span> i) {</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        t(i)</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    } -&gt; std::same_as&lt;ValueType&gt;;</div>
@@ -164,29 +164,29 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, <span class="keyword">typename</span> ValueType, parallelForFieldKernel&lt;ValueType&gt; Kernel&gt;</div>
 <div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a0f9a89d36b6d65b1e98bfb308dd71656">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec,</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classNeoN_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#aeeea97cb8f4ff1bcf6f5d7727582d0d0">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classNeoFOAM_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field,</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    Kernel kernel,</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::string <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::string <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span></div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>)</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>{</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">auto</span> span = field.<a class="code hl_function" href="classNeoN_1_1Field.html#aed2f40aa3c326cbc5eb0e4c1b9f602aa">span</a>();</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">auto</span> view = field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#aba166a5c31c2c70c01f05a01c18970d0">view</a>();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoFOAM_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordtype">size_t</span> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Field.html#a31520d9f7113a47aa433317f56f2645c">size</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordtype">size_t</span> fieldSize = field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a2915161f01fcce8b84e661a414bb9a2e">size</a>();</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; fieldSize; i++)</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            span[i] = kernel(i);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            view[i] = kernel(i);</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    {</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">using </span>runOn = <span class="keyword">typename</span> Executor::exec;</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        Kokkos::parallel_for(</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            Kokkos::RangePolicy&lt;runOn&gt;(0, field.<a class="code hl_function" href="classNeoN_1_1Field.html#a31520d9f7113a47aa433317f56f2645c">size</a>()),</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <span class="keywordtype">size_t</span> i) { span[i] = kernel(i); }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            Kokkos::RangePolicy&lt;runOn&gt;(0, field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a2915161f01fcce8b84e661a414bb9a2e">size</a>()),</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <span class="keywordtype">size_t</span> i) { view[i] = kernel(i); }</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        );</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
@@ -194,20 +194,20 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType, parallelForFieldKernel&lt;ValueType&gt; Kernel&gt;</div>
 <div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a15f1ba087b5f464f937d6839f95b2c08">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(<a class="code hl_class" href="classNeoN_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, std::string <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span>)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a743adc3b4e757dceeb8a8909047fdc3d">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(<a class="code hl_class" href="classNeoFOAM_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, std::string <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a> = <span class="stringliteral">&quot;parallelFor&quot;</span>)</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>{</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">parallelFor</a>(e, field, kernel, <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>); }, field.<a class="code hl_function" href="classNeoN_1_1Field.html#abd0575e5cec90d4f66844df33f5dfd90">exec</a>());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">parallelFor</a>(e, field, kernel, <a class="code hl_function" href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">name</a>); }, field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a3669f86690a09efc721a5eb902f7aa28">exec</a>());</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
 </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, <span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">  108</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel, T&amp; value</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">  108</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel, T&amp; value</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>)</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>{</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">auto</span> [start, end] = range;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoFOAM_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    {</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = start; i &lt; end; i++)</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        {</div>
@@ -233,24 +233,24 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#acceecb97572c56009d087cab275de5d8">  137</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel, T&amp; value</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#ac54afd3ca9f48982f18b894908855416">  137</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel, T&amp; value</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>)</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>{</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(e, range, kernel, value); }, exec);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(e, range, kernel, value); }, exec);</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}</div>
 </div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, <span class="keyword">typename</span> ValueType, <span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ae9966ccd211264c313457fb0e26bf906">  146</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec, <a class="code hl_class" href="classNeoN_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, T&amp; value</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a2275939b92597c0b9cf802eea67e1da5">  146</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec, <a class="code hl_class" href="classNeoFOAM_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, T&amp; value</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>)</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>{</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoFOAM_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    {</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordtype">size_t</span> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Field.html#a31520d9f7113a47aa433317f56f2645c">size</a>();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordtype">size_t</span> fieldSize = field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a2915161f01fcce8b84e661a414bb9a2e">size</a>();</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; fieldSize; i++)</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        {</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Kokkos::is_reducer&lt;T&gt;::value)</div>
@@ -267,7 +267,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    {</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keyword">using </span>runOn = <span class="keyword">typename</span> Executor::exec;</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        Kokkos::parallel_reduce(</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            <span class="stringliteral">&quot;parallelReduce&quot;</span>, Kokkos::RangePolicy&lt;runOn&gt;(0, field.<a class="code hl_function" href="classNeoN_1_1Field.html#a31520d9f7113a47aa433317f56f2645c">size</a>()), kernel, value</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            <span class="stringliteral">&quot;parallelReduce&quot;</span>, Kokkos::RangePolicy&lt;runOn&gt;(0, field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a2915161f01fcce8b84e661a414bb9a2e">size</a>()), kernel, value</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        );</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    }</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
@@ -275,16 +275,16 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType, <span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00175" data-start="{" data-end="}">
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#afbfcef3c3d47b59334d4011e64ed0f86">  175</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(<a class="code hl_class" href="classNeoN_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, T&amp; value)</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#ae3937be91de80536a70f2e020edbdab7">  175</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(<a class="code hl_class" href="classNeoFOAM_1_1Field.html">Field&lt;ValueType&gt;</a>&amp; field, Kernel kernel, T&amp; value)</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>{</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">parallelReduce</a>(e, field, kernel, value); }, field.<a class="code hl_function" href="classNeoN_1_1Field.html#abd0575e5cec90d4f66844df33f5dfd90">exec</a>());</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">parallelReduce</a>(e, field, kernel, value); }, field.<a class="code hl_function" href="classNeoFOAM_1_1Field.html#a3669f86690a09efc721a5eb902f7aa28">exec</a>());</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>}</div>
 </div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, <span class="keyword">typename</span> Kernel&gt;</div>
 <div class="foldopen" id="foldopen00181" data-start="{" data-end="}">
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">  181</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">  181</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>)</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>{</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">auto</span> [start, end] = range;</div>
@@ -295,16 +295,16 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel&gt;</div>
 <div class="foldopen" id="foldopen00191" data-start="{" data-end="}">
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a16009b3db02b4ed6d34647ed03c47c8e">  191</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel)</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a5b8d6853fc05246a8ed89db7d88badee">  191</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a>&amp; exec, std::pair&lt;size_t, size_t&gt; range, Kernel kernel)</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>{</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(e, range, kernel); }, exec);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(e, range, kernel); }, exec);</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>}</div>
 </div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Executor, <span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> ReturnType&gt;</div>
 <div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#add94c369f035aae79a50cc7c3450778d">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec,</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#afbfeb99db57b54fe06c59babef5e118c">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; exec,</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    std::pair&lt;size_t, size_t&gt; range,</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    Kernel kernel,</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    ReturnType&amp; returnValue</div>
@@ -320,32 +320,32 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> ReturnType&gt;</div>
 <div class="foldopen" id="foldopen00212" data-start="{" data-end="}">
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a5101c0a49916042a3c3231f7410c2156">  212</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a>&amp; exec,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a1fbe805af7f4710f16ec7fbf18b87741">  212</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a>&amp; exec,</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    std::pair&lt;size_t, size_t&gt; range,</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    Kernel kernel,</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    ReturnType&amp; returnValue</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>)</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>{</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">parallelScan</a>(e, range, kernel, returnValue); }, exec);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    std::visit([&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e) { <a class="code hl_function" href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">parallelScan</a>(e, range, kernel, returnValue); }, exec);</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}</div>
 </div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>} <span class="comment">// namespace NeoN</span></div>
-<div class="ttc" id="aclassNeoN_1_1Field_html"><div class="ttname"><a href="classNeoN_1_1Field.html">NeoN::Field</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00048">field.hpp:49</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Field_html_a31520d9f7113a47aa433317f56f2645c"><div class="ttname"><a href="classNeoN_1_1Field.html#a31520d9f7113a47aa433317f56f2645c">NeoN::Field::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdoc">Gets the size of the field.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00331">field.hpp:331</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Field_html_abd0575e5cec90d4f66844df33f5dfd90"><div class="ttname"><a href="classNeoN_1_1Field.html#abd0575e5cec90d4f66844df33f5dfd90">NeoN::Field::exec</a></div><div class="ttdeci">const Executor &amp; exec() const</div><div class="ttdoc">Gets the executor associated with the field.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00325">field.hpp:325</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Field_html_aed2f40aa3c326cbc5eb0e4c1b9f602aa"><div class="ttname"><a href="classNeoN_1_1Field.html#aed2f40aa3c326cbc5eb0e4c1b9f602aa">NeoN::Field::span</a></div><div class="ttdeci">std::span&lt; ValueType &gt; span() &amp;&amp;=delete</div></div>
-<div class="ttc" id="aclassNeoN_1_1SerialExecutor_html"><div class="ttname"><a href="classNeoN_1_1SerialExecutor.html">NeoN::SerialExecutor</a></div><div class="ttdoc">Reference executor for serial CPU execution.</div><div class="ttdef"><b>Definition</b> <a href="serialExecutor_8hpp_source.html#l00016">serialExecutor.hpp:17</a></div></div>
-<div class="ttc" id="aconceptNeoN_1_1parallelForFieldKernel_html"><div class="ttname"><a href="conceptNeoN_1_1parallelForFieldKernel.html">NeoN::parallelForFieldKernel</a></div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00067">parallelAlgorithms.hpp:67</a></div></div>
-<div class="ttc" id="aconceptNeoN_1_1parallelForKernel_html"><div class="ttname"><a href="conceptNeoN_1_1parallelForKernel.html">NeoN::parallelForKernel</a></div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00020">parallelAlgorithms.hpp:20</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_a84c514269c3ade9cf4103acb1210a65f"><div class="ttname"><a href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a></div><div class="ttdeci">std::variant&lt; SerialExecutor, CPUExecutor, GPUExecutor &gt; Executor</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00016">executor.hpp:16</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_a8eb6aca3b312b43897d752f061c55a25"><div class="ttname"><a href="namespaceNeoN.html#a8eb6aca3b312b43897d752f061c55a25">NeoN::parallelFor</a></div><div class="ttdeci">void parallelFor(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel, std::string name=&quot;parallelFor&quot;)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00027">parallelAlgorithms.hpp:27</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_a92c85a041962b0f27d8d16116a3a688c"><div class="ttname"><a href="namespaceNeoN.html#a92c85a041962b0f27d8d16116a3a688c">NeoN::parallelReduce</a></div><div class="ttdeci">void parallelReduce(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel, T &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00108">parallelAlgorithms.hpp:108</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_aa1b70290eb1a5a0308c8cf24a3f5a737"><div class="ttname"><a href="namespaceNeoN.html#aa1b70290eb1a5a0308c8cf24a3f5a737">NeoN::parallelScan</a></div><div class="ttdeci">void parallelScan(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00181">parallelAlgorithms.hpp:181</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_aa67294511d0c7da987259a7b1a3ba59d"><div class="ttname"><a href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">NeoN::name</a></div><div class="ttdeci">const std::string &amp; name(const NeoN::Document &amp;doc)</div><div class="ttdoc">Retrieves the name of a Document.</div></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>} <span class="comment">// namespace NeoFOAM</span></div>
+<div class="ttc" id="aclassNeoFOAM_1_1Field_html"><div class="ttname"><a href="classNeoFOAM_1_1Field.html">NeoFOAM::Field</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00048">field.hpp:49</a></div></div>
+<div class="ttc" id="aclassNeoFOAM_1_1Field_html_a2915161f01fcce8b84e661a414bb9a2e"><div class="ttname"><a href="classNeoFOAM_1_1Field.html#a2915161f01fcce8b84e661a414bb9a2e">NeoFOAM::Field::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdoc">Gets the size of the field.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00352">field.hpp:352</a></div></div>
+<div class="ttc" id="aclassNeoFOAM_1_1Field_html_a3669f86690a09efc721a5eb902f7aa28"><div class="ttname"><a href="classNeoFOAM_1_1Field.html#a3669f86690a09efc721a5eb902f7aa28">NeoFOAM::Field::exec</a></div><div class="ttdeci">const Executor &amp; exec() const</div><div class="ttdoc">Gets the executor associated with the field.</div><div class="ttdef"><b>Definition</b> <a href="field_8hpp_source.html#l00346">field.hpp:346</a></div></div>
+<div class="ttc" id="aclassNeoFOAM_1_1Field_html_aba166a5c31c2c70c01f05a01c18970d0"><div class="ttname"><a href="classNeoFOAM_1_1Field.html#aba166a5c31c2c70c01f05a01c18970d0">NeoFOAM::Field::view</a></div><div class="ttdeci">View&lt; ValueType &gt; view() &amp;&amp;=delete</div></div>
+<div class="ttc" id="aclassNeoFOAM_1_1SerialExecutor_html"><div class="ttname"><a href="classNeoFOAM_1_1SerialExecutor.html">NeoFOAM::SerialExecutor</a></div><div class="ttdoc">Reference executor for serial CPU execution.</div><div class="ttdef"><b>Definition</b> <a href="serialExecutor_8hpp_source.html#l00016">serialExecutor.hpp:17</a></div></div>
+<div class="ttc" id="aconceptNeoFOAM_1_1parallelForFieldKernel_html"><div class="ttname"><a href="conceptNeoFOAM_1_1parallelForFieldKernel.html">NeoFOAM::parallelForFieldKernel</a></div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00067">parallelAlgorithms.hpp:67</a></div></div>
+<div class="ttc" id="aconceptNeoFOAM_1_1parallelForKernel_html"><div class="ttname"><a href="conceptNeoFOAM_1_1parallelForKernel.html">NeoFOAM::parallelForKernel</a></div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00020">parallelAlgorithms.hpp:20</a></div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html"><div class="ttname"><a href="namespaceNeoFOAM.html">NeoFOAM</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html_a4a11867ae32ece24e4477ed52aacbd3c"><div class="ttname"><a href="namespaceNeoFOAM.html#a4a11867ae32ece24e4477ed52aacbd3c">NeoFOAM::name</a></div><div class="ttdeci">const std::string &amp; name(const NeoFOAM::Document &amp;doc)</div><div class="ttdoc">Retrieves the name of a Document.</div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html_a64951263f8419915d4717c4bc76005b9"><div class="ttname"><a href="namespaceNeoFOAM.html#a64951263f8419915d4717c4bc76005b9">NeoFOAM::parallelReduce</a></div><div class="ttdeci">void parallelReduce(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel, T &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00108">parallelAlgorithms.hpp:108</a></div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html_aaa4d35d275559f501cb6a1eec717c905"><div class="ttname"><a href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a></div><div class="ttdeci">std::variant&lt; SerialExecutor, CPUExecutor, GPUExecutor &gt; Executor</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00016">executor.hpp:16</a></div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html_ac261f9695ee3ef30f1aba6e5c44e67bd"><div class="ttname"><a href="namespaceNeoFOAM.html#ac261f9695ee3ef30f1aba6e5c44e67bd">NeoFOAM::parallelScan</a></div><div class="ttdeci">void parallelScan(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00181">parallelAlgorithms.hpp:181</a></div></div>
+<div class="ttc" id="anamespaceNeoFOAM_html_ae2c722dbedf8901153be15abfe9c1926"><div class="ttname"><a href="namespaceNeoFOAM.html#ae2c722dbedf8901153be15abfe9c1926">NeoFOAM::parallelFor</a></div><div class="ttdeci">void parallelFor(const Executor &amp;exec, std::pair&lt; size_t, size_t &gt; range, Kernel kernel, std::string name=&quot;parallelFor&quot;)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00027">parallelAlgorithms.hpp:27</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Database" href="datastructures/database.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoN/mpi_architecture.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/mpi_architecture.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>MPI Architecture - NeoN documentation</title>
+        <title>MPI Architecture - NeoFOAM documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">NeoN  documentation</div></a>
+      <a href="index.html"><div class="brand">NeoFOAM  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">NeoN  documentation</span>
+  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoFOAM!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -285,7 +285,7 @@
 <h1>MPI Architecture<a class="headerlink" href="#mpi-architecture" title="Link to this heading">¶</a></h1>
 <section id="background">
 <h2>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h2>
-<p>Virtually all large scientific and engineering codes are too large to be practically usable with a single ‘computing unit’. Most problems are broken down into smaller parts and distributed across several ‘computing units’. In many cases these ‘computing elements’ do not share the same memory addressing space, or distributed memory architecture. This introduces the need to communicate data and synchronize the solution procedure across these ‘computing elements’. <code class="docutils literal notranslate"><span class="pre">NeoN</span></code> uses <a class="reference external" href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> to achieve this, with each ‘computing unit’ referred to as an <code class="docutils literal notranslate"><span class="pre">MPI</span> <span class="pre">rank</span></code> (<code class="docutils literal notranslate"><span class="pre">rank</span></code>). Note: for shared memory architecture (including GPU computing), see <a class="reference external" href="https://exasim-project.com/NeoN/latest/basics/executor.html">Executor</a>. Two fundamental problems need to be solved:</p>
+<p>Virtually all large scientific and engineering codes are too large to be practically usable with a single ‘computing unit’. Most problems are broken down into smaller parts and distributed across several ‘computing units’. In many cases these ‘computing elements’ do not share the same memory addressing space, or distributed memory architecture. This introduces the need to communicate data and synchronize the solution procedure across these ‘computing elements’. <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code> uses <a class="reference external" href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> to achieve this, with each ‘computing unit’ referred to as an <code class="docutils literal notranslate"><span class="pre">MPI</span> <span class="pre">rank</span></code> (<code class="docutils literal notranslate"><span class="pre">rank</span></code>). Note: for shared memory architecture (including GPU computing), see <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/basics/executor.html">Executor</a>. Two fundamental problems need to be solved:</p>
 <ol class="arabic simple">
 <li><p>How should the global computation be partitioned and distributed across <code class="docutils literal notranslate"><span class="pre">ranks</span></code>?.</p></li>
 <li><p>What data needs to be communicated between which <code class="docutils literal notranslate"><span class="pre">ranks</span></code>?.</p></li>
@@ -296,7 +296,7 @@
 <h2>Communication<a class="headerlink" href="#communication" title="Link to this heading">¶</a></h2>
 <section id="mpi-wrapping">
 <h3>MPI Wrapping<a class="headerlink" href="#mpi-wrapping" title="Link to this heading">¶</a></h3>
-<p>The majority of <code class="docutils literal notranslate"><span class="pre">MPI</span></code> operators are brought into <code class="docutils literal notranslate"><span class="pre">NeoN</span></code> in the <code class="docutils literal notranslate"><span class="pre">operators.hpp</span></code> file. The purpose of this file is to wrap <code class="docutils literal notranslate"><span class="pre">MPI</span></code> functions such that they work more seamlessly with <code class="docutils literal notranslate"><span class="pre">NeoN</span></code> data types, and also to supply typical defaults. For example the <code class="docutils literal notranslate"><span class="pre">MPI_Allreduce</span></code> function is wrapped:</p>
+<p>The majority of <code class="docutils literal notranslate"><span class="pre">MPI</span></code> operators are brought into <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code> in the <code class="docutils literal notranslate"><span class="pre">operators.hpp</span></code> file. The purpose of this file is to wrap <code class="docutils literal notranslate"><span class="pre">MPI</span></code> functions such that they work more seamlessly with <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code> data types, and also to supply typical defaults. For example the <code class="docutils literal notranslate"><span class="pre">MPI_Allreduce</span></code> function is wrapped:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">valueType</span><span class="o">&gt;</span>
 <span class="kt">void</span><span class="w"> </span><span class="n">reduceAllScalar</span><span class="p">(</span><span class="n">valueType</span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ReduceOp</span><span class="w"> </span><span class="n">op</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span>
 <span class="p">{</span>
@@ -306,12 +306,12 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>such that scalar reduction size is handled automatically. In addition to the wrapped operators, there is the <code class="docutils literal notranslate"><span class="pre">MPI</span></code> environment which is located in the <code class="docutils literal notranslate"><span class="pre">environment.hpp</span></code> file. Contained within are two classes <code class="docutils literal notranslate"><span class="pre">MPIInit</span></code> and <code class="docutils literal notranslate"><span class="pre">MPIEnvironment</span></code>.  The former is a simple RAII class that initializes and finalizes (in the destructor) the <code class="docutils literal notranslate"><span class="pre">MPI</span></code> environment, thus a typically program using <code class="docutils literal notranslate"><span class="pre">NeoN</span></code> would start by calling the MPIInit constructor.</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/environment.hpp&quot;</span>
+<p>such that scalar reduction size is handled automatically. In addition to the wrapped operators, there is the <code class="docutils literal notranslate"><span class="pre">MPI</span></code> environment which is located in the <code class="docutils literal notranslate"><span class="pre">environment.hpp</span></code> file. Contained within are two classes <code class="docutils literal notranslate"><span class="pre">MPIInit</span></code> and <code class="docutils literal notranslate"><span class="pre">MPIEnvironment</span></code>.  The former is a simple RAII class that initializes and finalizes (in the destructor) the <code class="docutils literal notranslate"><span class="pre">MPI</span></code> environment, thus a typically program using <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code> would start by calling the MPIInit constructor.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/environment.hpp&quot;</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// main solver</span>
 
@@ -332,16 +332,16 @@
 <section id="global-communication">
 <h3>Global Communication<a class="headerlink" href="#global-communication" title="Link to this heading">¶</a></h3>
 <p>With the above in place, global communication (i.e. communication between all <code class="docutils literal notranslate"><span class="pre">ranks</span></code> on a <code class="docutils literal notranslate"><span class="pre">MPI_Communicator</span></code>) can be achieved by using the environment and operators.</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/environment.hpp&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/operators.hpp&quot;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/environment.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/operators.hpp&quot;</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIEnvironment</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIEnvironment</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">;</span>
 
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">reduceAllScalar</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">ReduceOp</span><span class="o">::</span><span class="n">SUM</span><span class="p">,</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">.</span><span class="n">comm</span><span class="p">());</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">reduceAllScalar</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">ReduceOp</span><span class="o">::</span><span class="n">SUM</span><span class="p">,</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">.</span><span class="n">comm</span><span class="p">());</span>
 
 <span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">mpiEnv</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;Value &quot;</span><span class="o">&lt;&lt;</span><span class="n">value</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"> </span><span class="c1">// result is number of ranks.</span>
@@ -371,14 +371,14 @@
 <p>The full communication between two ranks is thus given below:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/environment.hpp&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/operators.hpp&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoN/core/mpi/comm_buffer.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/environment.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/operators.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NeoFOAM/core/mpi/comm_buffer.hpp&quot;</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIEnvironment</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIInit</span><span class="w"> </span><span class="n">mpi</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">MPIEnvironment</span><span class="w"> </span><span class="n">mpiEnv</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// create the buffers</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sendSize</span><span class="p">;</span><span class="w">      </span><span class="c1">// per rank communication</span>
@@ -391,7 +391,7 @@
 <span class="w">    </span><span class="c1">// populate above data</span>
 <span class="w">    </span><span class="c1">// ...</span>
 
-<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">FullDuplexCommBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="p">(</span><span class="n">mpiEnv</span><span class="p">,</span><span class="w"> </span><span class="n">sendSize</span><span class="p">,</span><span class="w"> </span><span class="n">receiveSize</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">mpi</span><span class="o">::</span><span class="n">FullDuplexCommBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="p">(</span><span class="n">mpiEnv</span><span class="p">,</span><span class="w"> </span><span class="n">sendSize</span><span class="p">,</span><span class="w"> </span><span class="n">receiveSize</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// Obtain the buffer.</span>
 <span class="w">    </span><span class="n">buffer</span><span class="p">.</span><span class="n">initComm</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;test_communication&quot;</span><span class="p">);</span>
@@ -445,7 +445,7 @@
 <section id="partitioning">
 <h2>Partitioning<a class="headerlink" href="#partitioning" title="Link to this heading">¶</a></h2>
 <p>The purpose of partitioning is to divide the global computation into smaller parts that can be solved in parallel, and essentially to distribute the computation across the <code class="docutils literal notranslate"><span class="pre">ranks</span></code>.</p>
-<p>Currently there is no formal partitioning system in <code class="docutils literal notranslate"><span class="pre">NeoN</span></code>, however it is assumed that all communication is done on the <code class="docutils literal notranslate"><span class="pre">MPI</span> <span class="pre">World</span></code> communicator. This is to be updated in the future, together with dynamic load balancing.</p>
+<p>Currently there is no formal partitioning system in <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code>, however it is assumed that all communication is done on the <code class="docutils literal notranslate"><span class="pre">MPI</span> <span class="pre">World</span></code> communicator. This is to be updated in the future, together with dynamic load balancing.</p>
 </section>
 <section id="future-work">
 <h2>Future Work<a class="headerlink" href="#future-work" title="Link to this heading">¶</a></h2>
@@ -455,7 +455,7 @@
 <li><p>Mesh partitioning</p></li>
 <li><p>dead-lock detection.</p></li>
 <li><p>Implement dynamic load balancing.</p></li>
-<li><p>Replace, where possible, std containers with <code class="docutils literal notranslate"><span class="pre">NeoN</span></code> and/or <code class="docutils literal notranslate"><span class="pre">Kokkos</span></code> containers.</p></li>
+<li><p>Replace, where possible, std containers with <code class="docutils literal notranslate"><span class="pre">NeoFOAM</span></code> and/or <code class="docutils literal notranslate"><span class="pre">Kokkos</span></code> containers.</p></li>
 <li><p>Performance metrics</p></li>
 </ol>
 </section>
@@ -482,7 +482,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoN authors
+                Copyright &#169; 2024, NeoFOAM authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['neon_5fassert_5fequal_5flength_0',['NeoN_ASSERT_EQUAL_LENGTH',['../exceptions_8hpp.html#ad5d4e37fe86567a1b588532e3d6f94e1',1,'exceptions.hpp']]],
+  ['neofoam_5fassert_5fequal_5flength_0',['NeoFOAM_ASSERT_EQUAL_LENGTH',['../exceptions_8hpp.html#a466d6d559414b6d1198021e94e31545e',1,'exceptions.hpp']]],
   ['nf_5fassert_1',['NF_ASSERT',['../error_8hpp.html#aecc669a189db22f652ffb9788f01a99b',1,'error.hpp']]],
   ['nf_5fassert_5fequal_2',['NF_ASSERT_EQUAL',['../error_8hpp.html#a40409dec4da3178309a1b0f662496159',1,'error.hpp']]],
   ['nf_5fassert_5fequal_5fthrow_3',['NF_ASSERT_EQUAL_THROW',['../error_8hpp.html#ac8d1c67acd41932bbf7b7da3e3d1508d',1,'error.hpp']]],

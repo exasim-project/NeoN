@@ -6,7 +6,7 @@ Macro Definitions
 Overview
 ^^^^^^^^
 
-NeoN provides a set of macros for handling debug messaging, error reporting, and assertions.
+NeoFOAM provides a set of macros for handling debug messaging, error reporting, and assertions.
 These macros are defined in two header files: ``Info.hpp`` and ``Error.hpp``, and offer standardized mechanisms for logging information and handling errors across the library.
 
 ``NF_DEBUG`` is active when ``CMAKE_BUILD_TYPE`` is set to ``Debug``, and ``NF_DEBUG_INFO`` is active when ``CMAKE_BUILD_TYPE`` is set to ``RelWithDebInfo``.
@@ -33,15 +33,15 @@ Error.hpp
 The ``Error.hpp`` header defines macros for error handling and assertions:
 
 - ``NF_ERROR_EXIT(message)``: Prints an error message and aborts the program.
-- ``NF_THROW(message)``: Throws a ``NeoNException`` with the specified error message.
+- ``NF_THROW(message)``: Throws a ``NeoFOAMException`` with the specified error message.
 - ``NF_ASSERT(condition, message)``: Checks a condition and, if false, prints an error message and aborts the program.
-- ``NF_ASSERT_THROW(condition, message)``: Checks a condition and, if false, throws a ``NeoNException``.
+- ``NF_ASSERT_THROW(condition, message)``: Checks a condition and, if false, throws a ``NeoFOAMException``.
 - ``NF_DEBUG_ASSERT(condition, message)`` and ``NF_DEBUG_ASSERT_THROW(condition, message)``: Debug versions of ``NF_ASSERT`` and ``NF_ASSERT_THROW`` that are no-ops in release builds.
-- ``NF_DEBUG_ASSERT_THROW(condition, message)``: Debug version of ``NF_ASSERT_THROW`` that throws a ``NeoNException`` if the condition is false.
+- ``NF_DEBUG_ASSERT_THROW(condition, message)``: Debug version of ``NF_ASSERT_THROW`` that throws a ``NeoFOAMException`` if the condition is false.
 - ``NF_ASSERT_EQUAL(a, b)``: Asserts that two values are equal and prints an error message if they are not.
 - ``NF_DEBUG_ASSERT_EQUAL(a, b)``: Debug version of ``NF_ASSERT_EQUAL`` that is a no-op in release builds.
-- ``NF_ASSERT_EQUAL_THROW(a, b)``: Asserts that two values are equal and throws a ``NeoNException`` if they are not.
-- ``NF_DEBUG_ASSERT_EQUAL_THROW(a, b)``: Debug version of ``NF_ASSERT_EQUAL`` that throws a ``NeoNException`` if the values are not equal.
+- ``NF_ASSERT_EQUAL_THROW(a, b)``: Asserts that two values are equal and throws a ``NeoFOAMException`` if they are not.
+- ``NF_DEBUG_ASSERT_EQUAL_THROW(a, b)``: Debug version of ``NF_ASSERT_EQUAL`` that throws a ``NeoFOAMException`` if the values are not equal.
 - ``NF_PING()``: Used (in debug only) for determining where if the code reaches a certain file and line, purely for convenience.
 >>>>>>> d3ff4792 (format code)
 

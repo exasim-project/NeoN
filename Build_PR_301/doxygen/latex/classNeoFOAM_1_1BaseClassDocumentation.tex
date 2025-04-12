@@ -1,0 +1,143 @@
+\doxysection{Neo\+FOAM\+::Base\+Class\+Documentation Class Reference}
+\hypertarget{classNeoFOAM_1_1BaseClassDocumentation}{}\label{classNeoFOAM_1_1BaseClassDocumentation}\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+
+
+Provides a mechanism for registering and retrieving documentation for base and derived classes.  
+
+
+
+
+{\ttfamily \#include $<$runtime\+Selection\+Factory.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771}{Lookup\+Table}} = std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{classNeoFOAM_1_1BaseClassData}{Base\+Class\+Data}} $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_a975ffa5fa4ee3e6a5cd9db919118aa88}{register\+Class}} (std\+::string \mbox{\hyperlink{namespaceNeoFOAM_a4a11867ae32ece24e4477ed52aacbd3c}{name}}, \mbox{\hyperlink{classNeoFOAM_1_1BaseClassData}{Base\+Class\+Data}} data)
+\item 
+static std\+::string \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ade63929c5e2412bd48f54ea0ca6fced4}{doc}} (const std\+::string \&base\+Class\+Name, const std\+::string \&derived\+Class\+Name)
+\item 
+static std\+::string \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ace827a3e29c782ad216710ee9c998930}{schema}} (const std\+::string \&base\+Class\+Name, const std\+::string \&derived\+Class\+Name)
+\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_a4262355f9b9968016fec29b81e4751ca}{entries}} (const std\+::string \&base\+Class\+Name)
+\item 
+static \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771}{Lookup\+Table}} \& \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_a61601a4781d626daaaa24c0f4a462d29}{doc\+Table}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides a mechanism for registering and retrieving documentation for base and derived classes. 
+
+The \doxylink{classNeoFOAM_1_1BaseClassDocumentation}{Base\+Class\+Documentation} class allows users to register documentation for base classes and retrieve documentation for derived classes based on the registered information. It also provides methods to retrieve the schema and entries associated with a base class. 
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771}\label{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!LookupTable@{LookupTable}}
+\index{LookupTable@{LookupTable}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{LookupTable}{LookupTable}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771}{Neo\+FOAM\+::\+Base\+Class\+Documentation\+::\+Lookup\+Table}} =  std\+::unordered\+\_\+map$<$std\+::string, \mbox{\hyperlink{classNeoFOAM_1_1BaseClassData}{Base\+Class\+Data}}$>$}
+
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_ade63929c5e2412bd48f54ea0ca6fced4}\label{classNeoFOAM_1_1BaseClassDocumentation_ade63929c5e2412bd48f54ea0ca6fced4} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!doc@{doc}}
+\index{doc@{doc}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}}
+{\footnotesize\ttfamily static std\+::string Neo\+FOAM\+::\+Base\+Class\+Documentation\+::doc (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{base\+Class\+Name,  }\item[{const std\+::string \&}]{derived\+Class\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Returns the documentation for a derived class based on the base class name.
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Class\+Name} & The name of the base class. \\
+\hline
+{\em derived\+Class\+Name} & The name of the derived class. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The documentation for the derived class. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_a61601a4781d626daaaa24c0f4a462d29}\label{classNeoFOAM_1_1BaseClassDocumentation_a61601a4781d626daaaa24c0f4a462d29} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!docTable@{docTable}}
+\index{docTable@{docTable}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{docTable()}{docTable()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classNeoFOAM_1_1BaseClassDocumentation_ab75de8a1828f530b45c19e6af868b771}{Lookup\+Table}} \& Neo\+FOAM\+::\+Base\+Class\+Documentation\+::doc\+Table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_a4262355f9b9968016fec29b81e4751ca}\label{classNeoFOAM_1_1BaseClassDocumentation_a4262355f9b9968016fec29b81e4751ca} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!entries@{entries}}
+\index{entries@{entries}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{entries()}{entries()}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::string $>$ Neo\+FOAM\+::\+Base\+Class\+Documentation\+::entries (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{base\+Class\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Returns a vector of strings representing the entries for a given base class name.
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Class\+Name} & The name of the base class. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector of strings representing the entries. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_a975ffa5fa4ee3e6a5cd9db919118aa88}\label{classNeoFOAM_1_1BaseClassDocumentation_a975ffa5fa4ee3e6a5cd9db919118aa88} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!registerClass@{registerClass}}
+\index{registerClass@{registerClass}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{registerClass()}{registerClass()}}
+{\footnotesize\ttfamily static void Neo\+FOAM\+::\+Base\+Class\+Documentation\+::register\+Class (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{\mbox{\hyperlink{classNeoFOAM_1_1BaseClassData}{Base\+Class\+Data}}}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00059}{59}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1BaseClassDocumentation_ace827a3e29c782ad216710ee9c998930}\label{classNeoFOAM_1_1BaseClassDocumentation_ace827a3e29c782ad216710ee9c998930} 
+\index{NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}!schema@{schema}}
+\index{schema@{schema}!NeoFOAM::BaseClassDocumentation@{NeoFOAM::BaseClassDocumentation}}
+\doxysubsubsection{\texorpdfstring{schema()}{schema()}}
+{\footnotesize\ttfamily static std\+::string Neo\+FOAM\+::\+Base\+Class\+Documentation\+::schema (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{base\+Class\+Name,  }\item[{const std\+::string \&}]{derived\+Class\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Returns the schema of the derived class based on the base class name and derived class name.
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Class\+Name} & The name of the base class. \\
+\hline
+{\em derived\+Class\+Name} & The name of the derived class. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The schema of the derived class. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{runtimeSelectionFactory_8hpp_source}{runtime\+Selection\+Factory.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/core/\mbox{\hyperlink{runtimeSelectionFactory_8hpp}{runtime\+Selection\+Factory.\+hpp}}\end{DoxyCompactItemize}

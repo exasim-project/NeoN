@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Database" href="database.html" /><link rel="prev" title="UnstructuredMesh" href="unstructuredMesh.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoN/datastructures/dictionary.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/datastructures/dictionary.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Dictionary - NeoN documentation</title>
+        <title>Dictionary - NeoFOAM documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoN  documentation</span>
+  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -285,8 +285,8 @@
 <span id="basics-dictionary"></span><h1>Dictionary<a class="headerlink" href="#dictionary" title="Link to this heading">¶</a></h1>
 <p>The Dictionary class is data structure that can store any type of data similar to a python dictionary.</p>
 <p>This generic interface allows to deliver complex input data to the simulation code without the need to define a specific data structure.
-It can be used as followed (more details see this <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/test/core/dictionary.cpp">unit test</a>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+It can be used as followed (more details see this <a class="reference external" href="https://github.com/exasim-project/NeoFOAM/blob/main/test/core/dictionary.cpp">unit test</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;Hello&quot;</span><span class="p">));</span>
@@ -296,7 +296,7 @@ It can be used as followed (more details see this <a class="reference external" 
 </pre></div>
 </div>
 <p>If the dictionary is not passed as a const reference, the values can be modified as well:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 <span class="n">dict</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">43</span><span class="p">;</span>
 
@@ -304,18 +304,18 @@ It can be used as followed (more details see this <a class="reference external" 
 </pre></div>
 </div>
 <p>Accessing a non-existent key will throw an exception std::out_of_range:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 <span class="n">dict</span><span class="p">[</span><span class="s">&quot;non_existent_key&quot;</span><span class="p">];</span><span class="w"> </span><span class="c1">// will throw with std::out_of_range;</span>
 </pre></div>
 </div>
 <p>To check if a key exists, the found method can be used:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">found</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Dictionary provides a method to remove a key:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 <span class="n">dict</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">43</span><span class="p">;</span>
 <span class="n">dict</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">);</span>
@@ -324,21 +324,21 @@ It can be used as followed (more details see this <a class="reference external" 
 </pre></div>
 </div>
 <p>The Dictionary class also provides a method to access a sub-dictionary. This is useful to group related data together:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">subDict</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">subDict</span><span class="p">;</span>
 <span class="n">subDict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 <span class="n">subDict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;Hello&quot;</span><span class="p">));</span>
 
 <span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;subDict&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subDict</span><span class="p">);</span>
 
-<span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sDict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">subDict</span><span class="p">(</span><span class="s">&quot;subDict&quot;</span><span class="p">);</span>
+<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sDict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">subDict</span><span class="p">(</span><span class="s">&quot;subDict&quot;</span><span class="p">);</span>
 <span class="n">sDict</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
 <span class="n">sDict</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;key2&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">;</span>
 
 <span class="n">sDict</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
 
 <span class="c1">// check if the value is modified</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sDict2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">subDict</span><span class="p">(</span><span class="s">&quot;subDict&quot;</span><span class="p">);</span>
+<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sDict2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">subDict</span><span class="p">(</span><span class="s">&quot;subDict&quot;</span><span class="p">);</span>
 <span class="n">sDict2</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -373,7 +373,7 @@ It can be used as followed (more details see this <a class="reference external" 
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoN authors
+                Copyright &#169; 2024, NeoFOAM authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -4,11 +4,11 @@
     <compoundname>operators.hpp</compoundname>
     <includes local="no">complex</includes>
     <includes local="no">type_traits</includes>
-    <includes local="yes">NeoN/core/error.hpp</includes>
-    <includes local="yes">NeoN/core/primitives/vector.hpp</includes>
+    <includes local="yes">NeoFOAM/core/error.hpp</includes>
+    <includes local="yes">NeoFOAM/core/primitives/vector.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/mpi/operators.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/mpi/operators.hpp</label>
         <link refid="operators_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -20,10 +20,10 @@
         </childnode>
       </node>
       <node id="4">
-        <label>NeoN/core/error.hpp</label>
+        <label>NeoFOAM/core/error.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/core/primitives/vector.hpp</label>
+        <label>NeoFOAM/core/primitives/vector.hpp</label>
       </node>
       <node id="2">
         <label>complex</label>
@@ -32,14 +32,14 @@
         <label>type_traits</label>
       </node>
     </incdepgraph>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;complex&gt;</highlight><highlight class="normal"></highlight></codeline>
@@ -48,10 +48,10 @@
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/error.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/primitives/vector.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/error.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/primitives/vector.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM" kindref="compound">NeoFOAM</ref></highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
@@ -157,7 +157,7 @@
 <codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>MPI_Allreduce(</highlight></codeline>
 <codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_IN_PLACE,</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(vector.data()),</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1ada9015c3a9ac7ba20f5abde4670ca373" kindref="member">mpi_label_t</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(vector.size()),</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1a6340adc783ef78803a50be602055fba6" kindref="member">mpi_label_t</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(vector.size()),</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>getType&lt;scalar&gt;(),</highlight></codeline>
 <codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>getOp(op),</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comm</highlight></codeline>
@@ -174,7 +174,7 @@
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>MPI_Request*<sp/>request</highlight></codeline>
 <codeline lineno="181"><highlight class="normal">)</highlight></codeline>
 <codeline lineno="182"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1ada9015c3a9ac7ba20f5abde4670ca373" kindref="member">mpi_label_t</ref><sp/>err<sp/>=</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a6340adc783ef78803a50be602055fba6" kindref="member">mpi_label_t</ref><sp/>err<sp/>=</highlight></codeline>
 <codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_Isend(buffer,<sp/>size,<sp/>getType&lt;valueType&gt;(),<sp/>rankReceive,<sp/>tag,<sp/>comm,<sp/>request);</highlight></codeline>
 <codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(err<sp/>==<sp/>MPI_SUCCESS,<sp/></highlight><highlight class="stringliteral">&quot;MPI_Isend<sp/>failed.&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="186"><highlight class="normal">}</highlight></codeline>
@@ -189,14 +189,14 @@
 <codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/>MPI_Request*<sp/>request</highlight></codeline>
 <codeline lineno="208"><highlight class="normal">)</highlight></codeline>
 <codeline lineno="209"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1ada9015c3a9ac7ba20f5abde4670ca373" kindref="member">mpi_label_t</ref><sp/>err<sp/>=<sp/>MPI_Irecv(buffer,<sp/>size,<sp/>getType&lt;valueType&gt;(),<sp/>rankSend,<sp/>tag,<sp/>comm,<sp/>request);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a6340adc783ef78803a50be602055fba6" kindref="member">mpi_label_t</ref><sp/>err<sp/>=<sp/>MPI_Irecv(buffer,<sp/>size,<sp/>getType&lt;valueType&gt;(),<sp/>rankSend,<sp/>tag,<sp/>comm,<sp/>request);</highlight></codeline>
 <codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(err<sp/>==<sp/>MPI_SUCCESS,<sp/></highlight><highlight class="stringliteral">&quot;MPI_Irecv<sp/>failed.&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="212"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="213"><highlight class="normal"></highlight></codeline>
 <codeline lineno="221"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>test(MPI_Request*<sp/>request)</highlight></codeline>
 <codeline lineno="222"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1ada9015c3a9ac7ba20f5abde4670ca373" kindref="member">mpi_label_t</ref><sp/>flag;</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1ada9015c3a9ac7ba20f5abde4670ca373" kindref="member">mpi_label_t</ref><sp/>err<sp/>=<sp/>MPI_Test(request,<sp/>&amp;flag,<sp/>MPI_STATUS_IGNORE);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a6340adc783ef78803a50be602055fba6" kindref="member">mpi_label_t</ref><sp/>flag;</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a6340adc783ef78803a50be602055fba6" kindref="member">mpi_label_t</ref><sp/>err<sp/>=<sp/>MPI_Test(request,<sp/>&amp;flag,<sp/>MPI_STATUS_IGNORE);</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(err<sp/>==<sp/>MPI_SUCCESS,<sp/></highlight><highlight class="stringliteral">&quot;MPI_Test<sp/>failed.&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">bool</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(flag);</highlight></codeline>
 <codeline lineno="227"><highlight class="normal">}</highlight></codeline>
@@ -207,6 +207,6 @@
 <codeline lineno="232"><highlight class="normal"></highlight></codeline>
 <codeline lineno="233"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/mpi/operators.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/mpi/operators.hpp"/>
   </compounddef>
 </doxygen>

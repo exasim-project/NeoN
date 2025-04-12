@@ -1,0 +1,25 @@
+\doxysection{Neo\+FOAM\+::dsl\+::Has\+Explicit\+Operator Concept Reference}
+\hypertarget{conceptNeoFOAM_1_1dsl_1_1HasExplicitOperator}{}\label{conceptNeoFOAM_1_1dsl_1_1HasExplicitOperator}\index{NeoFOAM::dsl::HasExplicitOperator@{NeoFOAM::dsl::HasExplicitOperator}}
+
+
+{\ttfamily \#include $<$spatial\+Operator.\+hpp$>$}
+
+\doxysubsection{Concept definition}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoFOAM_1_1dsl_1_1HasExplicitOperator}{NeoFOAM::dsl::HasExplicitOperator}}\ =\ \ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.explicitOperation(std::declval<Field<typename\ T::FieldValueType>\&>())}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::same\_as<void>;\ }
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00021}{21}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+

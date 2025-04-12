@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SegmentedField" href="segmentedField.html" /><link rel="prev" title="Executor" href="executor.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/fields.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Fields - NeoN documentation</title>
+        <title>Fields - NeoFOAM documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoN  documentation</span>
+  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -289,7 +289,7 @@
 <p class="admonition-title">Warning</p>
 <p>The API of the classes probably will change in the future as currently parallelization is not supported.</p>
 </div>
-<p>NeoN implements several field classes:</p>
+<p>NeoFOAM implements several field classes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">BoundaryFields&lt;ValueType&gt;</span></code> A GPU friendly datastructure storing boundary data.</p></li>
@@ -307,18 +307,18 @@
 <p>The Field class is the basic container class and is the central component for implementing a platform portable CFD framework.
 One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Field</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
 This is to prevent accidental access to device memory from the host.
-The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Field</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">span</span></code>, as shown below:
+The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Field</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
 .. code-block:: cpp</p>
 <blockquote>
 <div><p>// Host Fields
 Field&lt;T&gt; hostField(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
-auto hostFieldSpan = hostField.span();
-hostFieldSpan[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
+auto hostFieldView = hostField.view();
+hostFieldView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
 <p>// Device Fields
 Field&lt;T&gt; deviceField(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
 auto deviceFieldOnHost = deviceField.copyToHost();
-auto deviceFieldOnHostSpan = deviceFieldOnHost.span();
-deviceFieldOnHostSpan[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
+auto deviceFieldOnHostView = deviceFieldOnHost.view();
+deviceFieldOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
 </div></blockquote>
 <p>Fields support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
 In the following, some implementation details of the field operations are detailed using the additions operator as an example.
@@ -332,7 +332,7 @@ The block of code below shows an example implementation of the addition operator
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Besides creating a temporary for the result it mainly calls the free standing <code class="docutils literal notranslate"><span class="pre">add</span></code> function which is implemented in <code class="docutils literal notranslate"><span class="pre">include/NeoN/field/fieldFreeFunctions.hpp</span></code>.
+<p>Besides creating a temporary for the result it mainly calls the free standing <code class="docutils literal notranslate"><span class="pre">add</span></code> function which is implemented in <code class="docutils literal notranslate"><span class="pre">include/NeoFOAM/field/fieldFreeFunctions.hpp</span></code>.
 This, in turn, dispatches to the <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code> function, passing the actual kernel as lambda.
 The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code>  is implemented using our parallelFor implementations which ultimately dispatch to the <code class="docutils literal notranslate"><span class="pre">Kokkos::parallel_for</span></code> function, see <a class="reference external" href="https://kokkos.org/kokkos-core-wiki/API/core/parallel-dispatch/parallel_for.html">Kokkos documentation</a> for more details.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span>
@@ -348,20 +348,20 @@ The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</
 <p>The code snippet highlights another important aspect, the executor.
 The executor defines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy</span></code>, see  <a class="reference external" href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md">Kokkos Programming Model</a>.
 Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
-See our <a class="reference external" href="https://exasim-project.com/NeoN/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
-<p>Further <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Field.html">Details</a>.</p>
+See our <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
+<p>Further <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1Field.html">Details</a>.</p>
 </section>
 <section id="cell-centred-specific-fields">
 <h2>Cell Centred Specific Fields<a class="headerlink" href="#cell-centred-specific-fields" title="Link to this heading">¶</a></h2>
 <p>Within in the <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred</span></code> folder and the namespace
-<code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> are implemented.
+<code class="docutils literal notranslate"><span class="pre">NeoFOAM::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> are implemented.
 Both derive from the <code class="docutils literal notranslate"><span class="pre">GeometricFieldMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> data member.</p>
 <p><code class="docutils literal notranslate"><span class="pre">DomainField</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryFields</span></code> data structure holding actual boundary data.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
 <p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">volVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorField</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorField</span></code> respectively.</p>
 <p>A difference in the SurfaceField implementation is that the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
-Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> in NeoN differs from that of OpenFOAM.</p>
-<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html">ScalarField</a>.</p>
+Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> in NeoFOAM differs from that of OpenFOAM.</p>
+<p>Further details <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a> and <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html">ScalarField</a>.</p>
 <span class="target" id="api-fields"></span></section>
 </section>
 
@@ -394,7 +394,7 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoN authors
+                Copyright &#169; 2024, NeoFOAM authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

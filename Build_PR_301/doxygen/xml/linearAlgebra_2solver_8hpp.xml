@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="linearAlgebra_2solver_8hpp" kind="file" language="C++">
+    <compoundname>solver.hpp</compoundname>
+    <includes local="yes">NeoFOAM/core/input.hpp</includes>
+    <includes local="yes">NeoFOAM/core/runtimeSelectionFactory.hpp</includes>
+    <includes local="yes">NeoFOAM/linearAlgebra/linearSystem.hpp</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/linearAlgebra/solver.hpp</label>
+        <link refid="linearAlgebra_2solver_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoFOAM/core/input.hpp</label>
+      </node>
+      <node id="3">
+        <label>NeoFOAM/core/runtimeSelectionFactory.hpp</label>
+      </node>
+      <node id="4">
+        <label>NeoFOAM/linearAlgebra/linearSystem.hpp</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classNeoFOAM_1_1la_1_1SolverFactory" prot="public">NeoFOAM::la::SolverFactory</innerclass>
+    <innerclass refid="classNeoFOAM_1_1la_1_1Solver" prot="public">NeoFOAM::la::Solver</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1la">NeoFOAM::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2025<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/input.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/runtimeSelectionFactory.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/linearAlgebra/linearSystem.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1la" kindref="compound">NeoFOAM::la</ref></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>SolverFactory</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">**</highlight></codeline>
+<codeline lineno="13"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="classNeoFOAM_1_1la_1_1SolverFactory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1la_1_1SolverFactory" kindref="compound">SolverFactory</ref><sp/>:</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1RuntimeSelectionFactory" kindref="compound">RuntimeSelectionFactory</ref>&lt;SolverFactory,<sp/>Parameters&lt;const<sp/>Executor&amp;,<sp/>const<sp/>Dictionary&amp;&gt;&gt;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="classNeoFOAM_1_1la_1_1SolverFactory_1a96fda5d531e58fd9adfbd5dfd70596bf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1a96fda5d531e58fd9adfbd5dfd70596bf" kindref="member">create</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>key<sp/>=<sp/>dict.<ref refid="classNeoFOAM_1_1Dictionary_1adb5a5f7b45c2a1b61b56c8a3d3718b0b" kindref="member">get</ref>&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;solver&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SolverFactory::keyExistsOrError(key);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>SolverFactory::table().at(key)(exec,<sp/>dict);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="classNeoFOAM_1_1la_1_1SolverFactory_1a286092dbfcecb47cc8ecadd550b49b44" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1a286092dbfcecb47cc8ecadd550b49b44" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;SolverFactory&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="classNeoFOAM_1_1la_1_1SolverFactory_1ac80f5cbaf7efc8eebffd914884ad7773" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1ac80f5cbaf7efc8eebffd914884ad7773" kindref="member">SolverFactory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec)<sp/>:<sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1ac73df8e15e25d43f9d28afbc7b0194c2" kindref="member">exec_</ref>(exec)<sp/>{};</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="classNeoFOAM_1_1la_1_1SolverFactory_1ad17b08b0643362c6e4e243e4daa7f0fa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1ad17b08b0643362c6e4e243e4daa7f0fa" kindref="member">solve</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1la_1_1LinearSystem" kindref="compound">LinearSystem&lt;scalar, localIdx&gt;</ref>&amp;,<sp/><ref refid="classNeoFOAM_1_1Field" kindref="compound">Field&lt;scalar&gt;</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>virtual<sp/>void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solve(const<sp/>LinearSystem&lt;ValueType,<sp/>int&gt;&amp;,<sp/>Field&lt;Vector&gt;&amp;<sp/>)<sp/>const<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pure<sp/>virtual<sp/>function<sp/>for<sp/>cloning</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classNeoFOAM_1_1la_1_1SolverFactory_1a1cb0ced5ff4c3bab637ae0639cdce77f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1a1cb0ced5ff4c3bab637ae0639cdce77f" kindref="member">clone</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="classNeoFOAM_1_1la_1_1SolverFactory_1ac73df8e15e25d43f9d28afbc7b0194c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref><sp/><ref refid="classNeoFOAM_1_1la_1_1SolverFactory_1ac73df8e15e25d43f9d28afbc7b0194c2" kindref="member">exec_</ref>;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classNeoFOAM_1_1la_1_1Solver" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1la_1_1Solver" kindref="compound">Solver</ref></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="classNeoFOAM_1_1la_1_1Solver_1a5db473ced947a7efa88d35fcf6c8b3e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver_1a5db473ced947a7efa88d35fcf6c8b3e1" kindref="member">Solver</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver" kindref="compound">Solver</ref>&amp;<sp/>solver)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(solver.exec_),<sp/>solverInstance_(solver.solverInstance_-&gt;clone())<sp/>{};</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="classNeoFOAM_1_1la_1_1Solver_1a6e0ed6e940295824fa722036e520b139" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver_1a6e0ed6e940295824fa722036e520b139" kindref="member">Solver</ref>(<ref refid="classNeoFOAM_1_1la_1_1Solver" kindref="compound">Solver</ref>&amp;&amp;<sp/>solver)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(solver.exec_),<sp/>solverInstance_(std::move(solver.solverInstance_))<sp/>{};</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="classNeoFOAM_1_1la_1_1Solver_1a6a256bcdec270c3909f22d6dce5b281a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver_1a6a256bcdec270c3909f22d6dce5b281a" kindref="member">Solver</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>solverInstance)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(exec),<sp/>solverInstance_(std::move(solverInstance))<sp/>{};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classNeoFOAM_1_1la_1_1Solver_1afc0f2165b76c265ee587977c53299d61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver_1afc0f2165b76c265ee587977c53299d61" kindref="member">Solver</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(exec),<sp/>solverInstance_(<ref refid="classNeoFOAM_1_1la_1_1SolverFactory" kindref="compound">SolverFactory</ref>::create(exec,<sp/>dict))<sp/>{};</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="classNeoFOAM_1_1la_1_1Solver_1ab6e0157a6df6034350ff38b84329c0f1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1la_1_1Solver_1ab6e0157a6df6034350ff38b84329c0f1" kindref="member">solve</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1la_1_1LinearSystem" kindref="compound">LinearSystem&lt;scalar, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="classNeoFOAM_1_1Field" kindref="compound">Field&lt;scalar&gt;</ref>&amp;<sp/>field)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="61"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solverInstance_-&gt;solve(ls,<sp/>field);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>solverInstance_;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/linearAlgebra/solver.hpp"/>
+  </compounddef>
+</doxygen>

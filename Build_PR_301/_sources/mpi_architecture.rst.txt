@@ -6,7 +6,7 @@ MPI Architecture
 Background
 ----------
 
-Virtually all large scientific and engineering codes are too large to be practically usable with a single 'computing unit'. Most problems are broken down into smaller parts and distributed across several 'computing units'. In many cases these 'computing elements' do not share the same memory addressing space, or distributed memory architecture. This introduces the need to communicate data and synchronize the solution procedure across these 'computing elements'. ``NeoN`` uses `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ to achieve this, with each 'computing unit' referred to as an ``MPI rank`` (``rank``). Note: for shared memory architecture (including GPU computing), see `Executor <https://exasim-project.com/NeoN/latest/basics/executor.html>`_. Two fundamental problems need to be solved:
+Virtually all large scientific and engineering codes are too large to be practically usable with a single 'computing unit'. Most problems are broken down into smaller parts and distributed across several 'computing units'. In many cases these 'computing elements' do not share the same memory addressing space, or distributed memory architecture. This introduces the need to communicate data and synchronize the solution procedure across these 'computing elements'. ``NeoFOAM`` uses `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ to achieve this, with each 'computing unit' referred to as an ``MPI rank`` (``rank``). Note: for shared memory architecture (including GPU computing), see `Executor <https://exasim-project.com/NeoFOAM/latest/basics/executor.html>`_. Two fundamental problems need to be solved:
 
 1. How should the global computation be partitioned and distributed across ``ranks``?.
 2. What data needs to be communicated between which ``ranks``?.
@@ -19,7 +19,7 @@ Communication
 MPI Wrapping
 ^^^^^^^^^^^^
 
-The majority of ``MPI`` operators are brought into ``NeoN`` in the ``operators.hpp`` file. The purpose of this file is to wrap ``MPI`` functions such that they work more seamlessly with ``NeoN`` data types, and also to supply typical defaults. For example the ``MPI_Allreduce`` function is wrapped:
+The majority of ``MPI`` operators are brought into ``NeoFOAM`` in the ``operators.hpp`` file. The purpose of this file is to wrap ``MPI`` functions such that they work more seamlessly with ``NeoFOAM`` data types, and also to supply typical defaults. For example the ``MPI_Allreduce`` function is wrapped:
 
 .. code-block:: c++
 
@@ -31,15 +31,15 @@ The majority of ``MPI`` operators are brought into ``NeoN`` in the ``operators.h
         );
     }
 
-such that scalar reduction size is handled automatically. In addition to the wrapped operators, there is the ``MPI`` environment which is located in the ``environment.hpp`` file. Contained within are two classes ``MPIInit`` and ``MPIEnvironment``.  The former is a simple RAII class that initializes and finalizes (in the destructor) the ``MPI`` environment, thus a typically program using ``NeoN`` would start by calling the MPIInit constructor.
+such that scalar reduction size is handled automatically. In addition to the wrapped operators, there is the ``MPI`` environment which is located in the ``environment.hpp`` file. Contained within are two classes ``MPIInit`` and ``MPIEnvironment``.  The former is a simple RAII class that initializes and finalizes (in the destructor) the ``MPI`` environment, thus a typically program using ``NeoFOAM`` would start by calling the MPIInit constructor.
 
 .. code-block:: c++
 
-    #include "NeoN/core/mpi/environment.hpp"
+    #include "NeoFOAM/core/mpi/environment.hpp"
 
     int main(int argc, char** argv)
     {
-        NeoN::mpi::MPIInit mpi(argc, argv);
+        NeoFOAM::mpi::MPIInit mpi(argc, argv);
 
         // main solver
 
@@ -61,16 +61,16 @@ With the above in place, global communication (i.e. communication between all ``
 
 .. code-block:: c++
 
-    #include "NeoN/core/mpi/environment.hpp"
-    #include "NeoN/core/mpi/operators.hpp"
+    #include "NeoFOAM/core/mpi/environment.hpp"
+    #include "NeoFOAM/core/mpi/operators.hpp"
 
     int main(int argc, char** argv)
     {
-        NeoN::mpi::MPIInit mpi(argc, argv);
-        NeoN::mpi::MPIEnvironment mpiEnv;
+        NeoFOAM::mpi::MPIInit mpi(argc, argv);
+        NeoFOAM::mpi::MPIEnvironment mpiEnv;
 
         double value = 1.0;
-        NeoN::mpi::reduceAllScalar(&value, NeoN::mpi::ReduceOp::SUM, mpiEnv.comm());
+        NeoFOAM::mpi::reduceAllScalar(&value, NeoFOAM::mpi::ReduceOp::SUM, mpiEnv.comm());
 
         if(mpiEnv.rank() == 0)
             std::cout<<"Value "<<value<<std::endl; // result is number of ranks.
@@ -104,14 +104,14 @@ The full communication between two ranks is thus given below:
 
     #include <unordered_map>
     #include <vector>
-    #include "NeoN/core/mpi/environment.hpp"
-    #include "NeoN/core/mpi/operators.hpp"
-    #include "NeoN/core/mpi/comm_buffer.hpp"
+    #include "NeoFOAM/core/mpi/environment.hpp"
+    #include "NeoFOAM/core/mpi/operators.hpp"
+    #include "NeoFOAM/core/mpi/comm_buffer.hpp"
 
     int main(int argc, char** argv)
     {
-        NeoN::mpi::MPIInit mpi(argc, argv);
-        NeoN::mpi::MPIEnvironment mpiEnv;
+        NeoFOAM::mpi::MPIInit mpi(argc, argv);
+        NeoFOAM::mpi::MPIEnvironment mpiEnv;
 
         // create the buffers
         std::vector<std::size_t> sendSize;      // per rank communication
@@ -124,7 +124,7 @@ The full communication between two ranks is thus given below:
         // populate above data
         // ...
 
-        NeoN::mpi::FullDuplexCommBuffer buffer(mpiEnv, sendSize, receiveSize);
+        NeoFOAM::mpi::FullDuplexCommBuffer buffer(mpiEnv, sendSize, receiveSize);
 
         // Obtain the buffer.
         buffer.initComm<double>("test_communication");
@@ -207,7 +207,7 @@ Partitioning
 
 The purpose of partitioning is to divide the global computation into smaller parts that can be solved in parallel, and essentially to distribute the computation across the ``ranks``.
 
-Currently there is no formal partitioning system in ``NeoN``, however it is assumed that all communication is done on the ``MPI World`` communicator. This is to be updated in the future, together with dynamic load balancing.
+Currently there is no formal partitioning system in ``NeoFOAM``, however it is assumed that all communication is done on the ``MPI World`` communicator. This is to be updated in the future, together with dynamic load balancing.
 
 
 Future Work
@@ -218,5 +218,5 @@ Future Work
 3. Mesh partitioning
 4. dead-lock detection.
 5. Implement dynamic load balancing.
-6. Replace, where possible, std containers with ``NeoN`` and/or ``Kokkos`` containers.
+6. Replace, where possible, std containers with ``NeoFOAM`` and/or ``Kokkos`` containers.
 7. Performance metrics

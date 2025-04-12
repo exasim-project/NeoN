@@ -1,0 +1,96 @@
+\doxysection{extrapolated.\+hpp}
+\hypertarget{extrapolated_8hpp_source}{}\label{extrapolated_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp}}
+\mbox{\hyperlink{extrapolated_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/mesh/unstructured/unstructuredMesh.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoFOAM::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00014}00014\ \textcolor{comment}{//\ TODO\ move\ to\ source\ file}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00015}\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{00015}}\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00017}00017\ \textcolor{comment}{//\ Without\ this\ function\ the\ compiler\ warns\ that\ calling\ a\ \_\_host\_\_\ function}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00018}00018\ \textcolor{comment}{//\ from\ a\ \_\_device\_\_\ function\ is\ not\ allowed}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00019}00019\ \textcolor{comment}{//\ NOTE:\ patchID\ was\ removed\ since\ it\ was\ unused}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00020}00020\ \textcolor{comment}{//\ I\ guess\ it\ was\ replaced\ by\ range}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00021}00021\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00022}\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa70f8d7d1b3cc80d699137a806c682bf}{00022}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa70f8d7d1b3cc80d699137a806c682bf}{extrapolateValue}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00023}00023\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1DomainField}{DomainField<ValueType>}}\&\ domainField,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00025}00025\ \ \ \ \ std::pair<size\_t,\ size\_t>\ range}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00026}00026\ )}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iField\ =\ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_af05959974fceab7c39565f3a3314be9f}{internalField}}().view();}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells]\ =\ \mbox{\hyperlink{namespaceNeoFOAM_ae31c35461ab0f69ee4c8309b18cd1143}{spans}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_aac8ed3340a7bb5fa7e1572bdbf8d463d}{boundaryField}}().\mbox{\hyperlink{classNeoFOAM_1_1BoundaryFields_a476f9a5e97b451bbeebb99e049ca9d4b}{refGrad}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_aac8ed3340a7bb5fa7e1572bdbf8d463d}{boundaryField}}().\mbox{\hyperlink{classNeoFOAM_1_1BoundaryFields_a6d685a47e4be1adbc89b84f261c9d786}{value}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_aac8ed3340a7bb5fa7e1572bdbf8d463d}{boundaryField}}().\mbox{\hyperlink{classNeoFOAM_1_1BoundaryFields_ae212c4300459da0d612c2340744b5e38}{valueFraction}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_aac8ed3340a7bb5fa7e1572bdbf8d463d}{boundaryField}}().\mbox{\hyperlink{classNeoFOAM_1_1BoundaryFields_a8c3799df523d2f18598a0090d25600c8}{refValue}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh_a0d183643d0aa687b3daca9eee9a7fc3b}{boundaryMesh}}().\mbox{\hyperlink{classNeoFOAM_1_1BoundaryMesh_ae988fda8cddb5ad7ea5c430627cb0554}{faceCells}}()}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00036}00036\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00039}00039\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_ae2c722dbedf8901153be15abfe9c1926}{NeoFOAM::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ domainField.\mbox{\hyperlink{classNeoFOAM_1_1DomainField_a155439d3bfa1906bfa64e5e1852cecf0}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ operator\ /\ is\ not\ defined\ for\ all\ ValueTypes}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ internalCellValue\ =\ iField[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(faceCells[i])];}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ internalCellValue;}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 1.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refValue}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ internalCellValue;\ \textcolor{comment}{//\ not\ used}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ zero<ValueType>();}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}extrapolateValue"{}}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00051}00051\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00052}00052\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00053}00053\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00055}00055\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00056}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{00056}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated}}\ :}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Extrapolated<ValueType>>}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Extrapolated<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00061}00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00063}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_aef289b836df0a4abe70289b25cad60dd}{00063}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{ExtrapolatedType}}\ =\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00065}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a0fbd84049281e434f2bee709eb38cd52}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a0fbd84049281e434f2bee709eb38cd52}{Extrapolated}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{Dictionary}}\&\ dict,\ std::size\_t\ patchID)}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID),\ mesh\_(mesh)}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00067}00067\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00069}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a67d359fbeeb1ecda41063953b4cb6d2b}{00069}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a67d359fbeeb1ecda41063953b4cb6d2b}{correctBoundaryCondition}}([[maybe\_unused]]\ \mbox{\hyperlink{classNeoFOAM_1_1DomainField}{DomainField<ValueType>}}\&\ domainField}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00070}00070\ \ \ \ \ )\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00071}00071\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa70f8d7d1b3cc80d699137a806c682bf}{detail::extrapolateValue}}(domainField,\ mesh\_,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00075}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_aa04eb4a4d3dd73a1b037598ed22c8f54}{00075}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_aa04eb4a4d3dd73a1b037598ed22c8f54}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}extrapolated"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00077}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a6a7d396f0959a61262c61f8f847d2663}{00077}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a6a7d396f0959a61262c61f8f847d2663}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00079}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a566efed3f1df66090f3de7b72a7bd8b0}{00079}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a566efed3f1df66090f3de7b72a7bd8b0}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00081}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a0c0523b6814bddc33de7bf470e07504c}{00081}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a0c0523b6814bddc33de7bf470e07504c}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00082}00082\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Extrapolated>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00084}00084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00086}00086\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00089}00089\ \};}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00090}00090\ \}}
+
+\end{DoxyCode}

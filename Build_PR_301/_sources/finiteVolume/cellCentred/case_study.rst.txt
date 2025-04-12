@@ -6,7 +6,7 @@ Case Study: The Gauss Green Div Kernel
 This section explains discusses how the Gauss Green Div Kernel is implemented.
 The class is implemented in the following files:
 
-- ``include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp``
+- ``include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp``
 - ``src/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp``
 - ``test/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp``
 
@@ -15,7 +15,7 @@ Hence, in order to make the implementation selectable at runtime we let the ``Ga
 
 The actual implementation of the operator can be found in the ``gaussGreenDiv.cpp`` file.
 The ``GaussGreenDiv::div`` member calls a free standing function ``computeDiv`` with the correct arguments.
-In NeoN it is a common pattern to use free standing functions since they are easier to test and communicate all dependencies explicitly via the function arguments.
+In NeoFOAM it is a common pattern to use free standing functions since they are easier to test and communicate all dependencies explicitly via the function arguments.
 
 
 The discretized version of the divergence term can be written as
@@ -38,7 +38,7 @@ and the internal field part is implemented in OpenFOAM as
     }
 
 
-the corresponding NeoN version is implemented as
+the corresponding NeoFOAM version is implemented as
 
 .. code-block:: cpp
 
@@ -55,5 +55,5 @@ the corresponding NeoN version is implemented as
 
 Here, the following changes have been applied
 
-- replace the ``forAll`` macro with the ``NeoN::parallelFor`` (see `parallelFor <https://exasim-project.com/NeoN/Build_PR_221/basics/algorithms.html>`_.) function which takes the executor, the range, and the loop body as arguments.
+- replace the ``forAll`` macro with the ``NeoFOAM::parallelFor`` (see `parallelFor <https://exasim-project.com/NeoFOAM/Build_PR_221/basics/algorithms.html>`_.) function which takes the executor, the range, and the loop body as arguments.
 - calls to ``+=`` and ``-=`` are replaced by the ``threadsafe_add`` and ``threadsafe_sub`` function which takes the lhs and rhs as arguments.

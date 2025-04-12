@@ -1,44 +1,44 @@
-\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+FOAM/fields/field\+Free\+Functions.hpp File Reference}
-\hypertarget{fieldFreeFunctions_8hpp}{}\label{fieldFreeFunctions_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/fieldFreeFunctions.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/fieldFreeFunctions.hpp}}
+\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/fields/field\+Free\+Functions.hpp File Reference}
+\hypertarget{fieldFreeFunctions_8hpp}{}\label{fieldFreeFunctions_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/fieldFreeFunctions.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/fields/fieldFreeFunctions.hpp}}
 {\ttfamily \#include $<$tuple$>$}\newline
-{\ttfamily \#include $<$span$>$}\newline
 {\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
-{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/helpers/exceptions.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/helpers/exceptions.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/view.\+hpp"{}}\newline
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+namespace \mbox{\hyperlink{namespaceNeoFOAM}{Neo\+FOAM}}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoN_1_1detail}{Neo\+N\+::detail}}
+namespace \mbox{\hyperlink{namespaceNeoFOAM_1_1detail}{Neo\+FOAM\+::detail}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename T , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a01a3143329e8c04d8801d81374001708}{Neo\+N\+::map}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ T $>$ \&a, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ range=\{0, 0\})
+{\footnotesize template$<$typename T , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a58f995a6ce3861bf1eb92ca1e6a36739}{Neo\+FOAM\+::map}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&a, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range=\{0, 0\})
 \begin{DoxyCompactList}\small\item\em Map a field using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ab35528923df990a8afe750779c7b1f29}{Neo\+N\+::fill}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ range=\{0, 0\})
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_af46b35c634f08c04bccff09bd6a3af66}{Neo\+FOAM\+::fill}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range=\{0, 0\})
 \begin{DoxyCompactList}\small\item\em Fill the field with a scalar value using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ac60151b434c0543d0e0162ebcae56ca7}{Neo\+N\+::set\+Field}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const std\+::span$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ b, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ range=\{0, 0\})
-\begin{DoxyCompactList}\small\item\em Set the field with a span of values using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a857346b306529af9fee051919f764a23}{Neo\+N\+::scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value)
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a7021769b4076914223a9f32dd61033cf}{Neo\+FOAM\+::set\+Field}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ b, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range=\{0, 0\})
+\begin{DoxyCompactList}\small\item\em Set the field with a view of values using a specific executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_ac01b20b250317d645c4136a73fc4effb}{Neo\+FOAM\+::scalar\+Mul}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}} value)
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Binary\+Op $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1detail_abd3998d6b5f676640b4863ab496b88e7}{Neo\+N\+::detail\+::field\+Binary\+Op}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b, Binary\+Op op)
+{\footnotesize template$<$typename Value\+Type , typename Binary\+Op $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1detail_a56ee4648092e5f74747d3ae550b0857b}{Neo\+FOAM\+::detail\+::field\+Binary\+Op}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b, Binary\+Op op)
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae64f7cb2c1cada77381848dd23bf444b}{Neo\+N\+::add}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a44787ff1266d4f5ebd1660b821eee43e}{Neo\+FOAM\+::add}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ad6968e6110a232c047734a1f28ed6802}{Neo\+N\+::sub}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a9f396f6dfb0e34f0d24af75126fa8389}{Neo\+FOAM\+::sub}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_af5bae3e6f295d28064775f2732fa8f56}{Neo\+N\+::mul}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a335407c0e359f3a30480c61fb0aa491f}{Neo\+FOAM\+::mul}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
 \item 
-{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{Neo\+N\+::spans}} (Args \&... fields)
+{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoFOAM_ae31c35461ab0f69ee4c8309b18cd1143}{Neo\+FOAM\+::spans}} (Args \&... fields)
 \item 
-{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{Neo\+N\+::copy\+To\+Hosts}} (Args \&... fields)
+{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoFOAM_a374c57db6afb96ab76b48e6868082c81}{Neo\+FOAM\+::copy\+To\+Hosts}} (Args \&... fields)
 \item 
-{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a07985ef9b5b670418d7735ccfd7a7850}{Neo\+N\+::equal}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ T $>$ \&field, T value)
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoFOAM_a9cb7eae57c041b049ff2dcd222cc9573}{Neo\+FOAM\+::equal}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&field, T value)
 \item 
-{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a2b59559e653130a111784bd9ffbf8117}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ T $>$ \&field, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ T $>$ \&field2)
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoFOAM_a80e6bdcbd3aa2c4474cb7d96cd96e35e}{Neo\+FOAM\+::equal}} (const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&field, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&field2)
 \item 
-{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a9a4f1706a5775d84d1657cd5babf6f0f}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ T $>$ \&field, std\+::span$<$ T $>$ span2)
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoFOAM_a13428e067d6acc5adb7c2d4bb5d46882}{Neo\+FOAM\+::equal}} (const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&field, \mbox{\hyperlink{classNeoFOAM_1_1View}{View}}$<$ T $>$ span2)
 \end{DoxyCompactItemize}

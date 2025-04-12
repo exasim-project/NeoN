@@ -11,7 +11,7 @@ While the ``objectRegistry`` of OpenFOAM offers convenience and simple approach 
 - Making the codebase less flexible for testing, refactoring, or adopting new architectural patterns.
 - Introducing potential performance bottlenecks and debugging challenges.
 
-In contrast, NeoN adopts a document-based database approach, where data is stored as a collection of documents.
+In contrast, NeoFOAM adopts a document-based database approach, where data is stored as a collection of documents.
 Each document consists of a pair of strings and values, validated using a custom validator function to ensure data integrity.
 The validation ensures that the data stored in the documents adheres to predefined rules and formats, preventing errors and inconsistencies in the database.
 The database is not tightly coupled to the ``fvMesh`` or ``Time`` classes, making it more flexible and easier to test.
@@ -102,22 +102,22 @@ The following code snippet shows how to create a document and access its values:
 
 .. sourcecode:: cpp
 
-    NeoN::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}});
+    NeoFOAM::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}});
         REQUIRE(doc.keys().size() == 3);
         REQUIRE(doc.id().substr(0, 4) == "doc_");
         REQUIRE(doc.get<std::string>("key1") == "value1");
         REQUIRE(doc.get<double>("key2") == 2.0);
     };
 
-``NeoN::Document`` mainly extends the ``Dictionary`` class and offers the possibility to validate the data stored in the document.
+``NeoFOAM::Document`` mainly extends the ``Dictionary`` class and offers the possibility to validate the data stored in the document.
 The following code snippet shows how to create a document with a custom validator function:
 
 .. sourcecode:: cpp
 
-    auto validator = [](const NeoN::Dictionary& dict)
+    auto validator = [](const NeoFOAM::Dictionary& dict)
     { return dict.contains("key1") && dict.contains("key2"); };
 
-    NeoN::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}}, validator);
+    NeoFOAM::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}}, validator);
     REQUIRE_NOTHROW(doc.validate());
 
 As stated earlier, the Documents are stored as part of a Collection which itself is stored in the central database as shown in the class diagram above.
@@ -162,8 +162,8 @@ The user will most likely not directly create FieldDocument but use the ``FieldC
     fvcc::FieldCollection& fieldCollection =
         fvcc::FieldCollection::instance(db, "newTestFieldCollection");
 
-    fvcc::VolumeField<NeoN::scalar>& T =
-        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(CreateField {
+    fvcc::VolumeField<NeoFOAM::scalar>& T =
+        fieldCollection.registerField<fvcc::VolumeField<NeoFOAM::scalar>>(CreateField {
             .name = "T", .mesh = mesh, .timeIndex = 1, .iterationIndex = 1, .subCycleIndex = 1
         });
 
@@ -176,26 +176,26 @@ The createFunction could look as followed:
     struct CreateField
     {
         std::string name;
-        NeoN::UnstructuredMesh mesh;
+        NeoFOAM::UnstructuredMesh mesh;
         std::size_t timeIndex = 0;
         std::size_t iterationIndex = 0;
         std::int64_t subCycleIndex = 0;
-        NeoN::Document operator()(NeoN::Database& db)
+        NeoFOAM::Document operator()(NeoFOAM::Database& db)
         {
-            std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
+            std::vector<fvcc::VolumeBoundary<NeoFOAM::scalar>> bcs {};
             for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
             {
-                NeoN::Dictionary dict;
+                NeoFOAM::Dictionary dict;
                 dict.insert("type", std::string("fixedValue"));
                 dict.insert("fixedValue", 2.0);
-                bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
+                bcs.push_back(fvcc::VolumeBoundary<NeoFOAM::scalar>(mesh, dict, patchi));
             }
-            NeoN::Field internalField =
-                NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0);
-            fvcc::VolumeField<NeoN::scalar> vf(
+            NeoFOAM::Field internalField =
+                NeoFOAM::Field<NeoFOAM::scalar>(mesh.exec(), mesh.nCells(), 1.0);
+            fvcc::VolumeField<NeoFOAM::scalar> vf(
                 mesh.exec(), name, mesh, internalField, bcs, db, "", ""
             );
-            return NeoN::Document(
+            return NeoFOAM::Document(
                 {{"name", vf.name},
                 {"timeIndex", timeIndex},
                 {"iterationIndex", iterationIndex},
@@ -214,12 +214,12 @@ The ``FieldCollection`` allows us to access and find fields by their name, time 
     fvcc::FieldCollection& fieldCollection =
         fvcc::FieldCollection::instance(db, "newTestFieldCollection");
 
-    auto resName = fieldCollection.find([](const NeoN::Document& doc)
+    auto resName = fieldCollection.find([](const NeoFOAM::Document& doc)
                                     { return doc.get<std::string>("name") == "T"; });
 
     REQUIRE(resName.size() == 1);
     const auto& fieldDoc = fieldCollection.fieldDoc(resName[0]);
-    const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+    const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoFOAM::scalar>>();
 
 Query of document in a collection
 ---------------------------------
@@ -263,7 +263,7 @@ Custom documents extend the Document class and add domain-specific functionality
             const double& testValue
         )
             : doc_(
-                NeoN::Document(
+                NeoFOAM::Document(
                     {
                         {"name", name},
                         {"testValue", testValue}
@@ -282,9 +282,9 @@ Custom documents extend the Document class and add domain-specific functionality
         double& testValue() { return doc_.get<double>("testValue"); }
 
 
-        NeoN::Document& doc() { return doc_; }
+        NeoFOAM::Document& doc() { return doc_; }
 
-        const NeoN::Document& doc() const { return doc_; }
+        const NeoFOAM::Document& doc() const { return doc_; }
 
         std::string id() const { return doc_.id(); }
 
@@ -292,7 +292,7 @@ Custom documents extend the Document class and add domain-specific functionality
 
     private:
 
-        NeoN::Document doc_;
+        NeoFOAM::Document doc_;
     };
 
 Here, the CustomDocument class:
@@ -311,12 +311,12 @@ The CollectionMixin template simplifies creating custom collections for user-def
 
 .. sourcecode:: cpp
 
-    class CustomCollection : public NeoN::CollectionMixin<CustomDocument>
+    class CustomCollection : public NeoFOAM::CollectionMixin<CustomDocument>
     {
     public:
 
-        CustomCollection(NeoN::Database& db, std::string name)
-            : NeoN::CollectionMixin<CustomDocument>(db, name)
+        CustomCollection(NeoFOAM::Database& db, std::string name)
+            : NeoFOAM::CollectionMixin<CustomDocument>(db, name)
         {}
 
         bool contains(const std::string& id) const { return docs_.contains(id); }
@@ -332,9 +332,9 @@ The CollectionMixin template simplifies creating custom collections for user-def
             return true;
         }
 
-        static CustomCollection& instance(NeoN::Database& db, std::string name)
+        static CustomCollection& instance(NeoFOAM::Database& db, std::string name)
         {
-            NeoN::Collection& col = db.insert(name, CustomCollection(db, name));
+            NeoFOAM::Collection& col = db.insert(name, CustomCollection(db, name));
             return col.as<CustomCollection>();
         }
     };

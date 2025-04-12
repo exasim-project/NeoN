@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dsl_2solver_8hpp" kind="file" language="C++">
+    <compoundname>solver.hpp</compoundname>
+    <includes local="no">iostream</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">type_traits</includes>
+    <includes local="no">utility</includes>
+    <includes local="no">concepts</includes>
+    <includes local="yes">NeoFOAM/core/primitives/scalar.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/field.hpp</includes>
+    <includes local="yes">NeoFOAM/core/input.hpp</includes>
+    <includes local="yes">NeoFOAM/core/primitives/label.hpp</includes>
+    <includes local="yes">NeoFOAM/dsl/expression.hpp</includes>
+    <includes local="yes">NeoFOAM/timeIntegration/timeIntegration.hpp</includes>
+    <includes local="yes">NeoFOAM/linearAlgebra/linearSystem.hpp</includes>
+    <includes local="yes">NeoFOAM/linearAlgebra/solver.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/dsl/solver.hpp</label>
+        <link refid="dsl_2solver_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>NeoFOAM/core/input.hpp</label>
+      </node>
+      <node id="10">
+        <label>NeoFOAM/core/primitives/label.hpp</label>
+      </node>
+      <node id="7">
+        <label>NeoFOAM/core/primitives/scalar.hpp</label>
+      </node>
+      <node id="11">
+        <label>NeoFOAM/dsl/expression.hpp</label>
+      </node>
+      <node id="8">
+        <label>NeoFOAM/fields/field.hpp</label>
+      </node>
+      <node id="15">
+        <label>NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</label>
+      </node>
+      <node id="13">
+        <label>NeoFOAM/linearAlgebra/linearSystem.hpp</label>
+      </node>
+      <node id="14">
+        <label>NeoFOAM/linearAlgebra/solver.hpp</label>
+      </node>
+      <node id="12">
+        <label>NeoFOAM/timeIntegration/timeIntegration.hpp</label>
+      </node>
+      <node id="6">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>iostream</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>type_traits</label>
+      </node>
+      <node id="5">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1dsl">NeoFOAM::dsl</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023-2024<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;concepts&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/primitives/scalar.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/input.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/primitives/label.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/dsl/expression.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/timeIntegration/timeIntegration.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/linearAlgebra/linearSystem.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/linearAlgebra/solver.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/>FIXME</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1dsl" kindref="compound">NeoFOAM::dsl</ref></highlight></codeline>
+<codeline lineno="26"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>solve<sp/>an<sp/>expression</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/>@param<sp/>exp<sp/>-<sp/>Expression<sp/>which<sp/>is<sp/>to<sp/>be<sp/>solved/updated.</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/>@param<sp/>solution<sp/>-<sp/>Solution<sp/>field,<sp/>where<sp/>the<sp/>solution<sp/>will<sp/>be<sp/>&apos;written<sp/>to&apos;.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>@param<sp/>t<sp/>-<sp/>the<sp/>time<sp/>at<sp/>the<sp/>start<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>-<sp/>time<sp/>step<sp/>for<sp/>the<sp/>temporal<sp/>integration</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSchemes<sp/>-<sp/>Dictionary<sp/>containing<sp/>spatial<sp/>operator<sp/>and<sp/>time<sp/><sp/>integration<sp/>properties</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSolution<sp/>-<sp/>Dictionary<sp/>containing<sp/>linear<sp/>solver<sp/>properties</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>FieldType&gt;</highlight></codeline>
+<codeline lineno="38" refid="namespaceNeoFOAM_1_1dsl_1a1467d00fc38873e99ff95a8214022c79" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1_1dsl_1a1467d00fc38873e99ff95a8214022c79" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename FieldType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>FieldType&amp;<sp/>solution,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>t,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1a48dc9c08e40c34da5b0b292486078a28" kindref="member">temporalOperators</ref>().size()<sp/>==<sp/>0<sp/>&amp;&amp;<sp/>exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1a5b9c35d474e5d952d1a75c0855d4c41d" kindref="member">spatialOperators</ref>().size()<sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>temporal<sp/>or<sp/>implicit<sp/>terms<sp/>to<sp/>solve.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1ac62b7d07af1ae6cde2edbd65cd0dbf58" kindref="member">build</ref>(fvSchemes);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1a48dc9c08e40c34da5b0b292486078a28" kindref="member">temporalOperators</ref>().size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>integrate<sp/>equations<sp/>in<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1TimeIntegration" kindref="compound">timeIntegration::TimeIntegration&lt;FieldType&gt;</ref><sp/>timeIntegrator(</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fvSchemes.subDict(</highlight><highlight class="stringliteral">&quot;ddtSchemes&quot;</highlight><highlight class="normal">),<sp/>fvSchemes</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timeIntegrator.<ref refid="classNeoFOAM_1_1timeIntegration_1_1TimeIntegration_1ac59bd31b41b21b3665f80121b4f9b591" kindref="member">solve</ref>(exp,<sp/>solution,<sp/>t,<sp/>dt);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solve<sp/>sparse<sp/>matrix<sp/>system</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>FieldType::ElementType;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>sparsity<sp/>=<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">NeoFOAM::finiteVolume::cellCentred::SparsityPattern</ref>(solution.mesh());</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ls<sp/>=<sp/><ref refid="namespaceNeoFOAM_1_1la_1a6aad8cc3be3c00507a018149a38cd17b" kindref="member">la::createEmptyLinearSystem</ref>&lt;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ValueType,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1a95525d89d661b88aaa4548bdf2766842" kindref="member">localIdx</ref>,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">NeoFOAM::finiteVolume::cellCentred::SparsityPattern</ref>&gt;(sparsity);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1a641733a07f714d0748d09f7ae0b96725" kindref="member">implicitOperation</ref>(ls);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>expTmp<sp/>=<sp/>exp.<ref refid="classNeoFOAM_1_1dsl_1_1Expression_1aaafab32b855fada13b28497d08359428" kindref="member">explicitOperation</ref>(solution.mesh().nCells());</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[vol,<sp/>expSource,<sp/>rhs]<sp/>=<sp/><ref refid="namespaceNeoFOAM_1ae31c35461ab0f69ee4c8309b18cd1143" kindref="member">spans</ref>(solution.mesh().cellVolumes(),<sp/>expTmp,<sp/>ls.rhs());</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>subtract<sp/>the<sp/>explicit<sp/>source<sp/>term<sp/>from<sp/>the<sp/>rhs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1ae2c722dbedf8901153be15abfe9c1926" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSource[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>solver<sp/>=<sp/><ref refid="classNeoFOAM_1_1la_1_1Solver" kindref="compound">NeoFOAM::la::Solver</ref>(solution.exec(),<sp/>fvSolution);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solver.solve(ls,<sp/>solution.internalField());</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/dsl/solver.hpp"/>
+  </compounddef>
+</doxygen>

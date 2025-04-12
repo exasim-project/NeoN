@@ -19,7 +19,7 @@ Additionally, it simplifies the runtime selection of a specific class. The deriv
 The ``RuntimeSelectionFactory`` class is a template class that manages the registration of the derived classes and stores the map of the registered classes.
 The map associates a function with a string that is used to create the derived class.
 
-Further details `RuntimeSelectionFactory  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1RuntimeSelectionFactory.html>`_.
+Further details `RuntimeSelectionFactory  <https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1RuntimeSelectionFactory.html>`_.
 
 
 Usage
@@ -27,7 +27,7 @@ Usage
 
 The following example shows how to use the ``RuntimeSelectionFactory`` and ``RuntimeSelectionFactory::Register`` to automatically register derived classes. (check ``registerClass.cpp`` for details).
 
-The static function ``create`` returns a ``std::unique_ptr`` to its base class and takes an argument list specified inside the template class ``NeoN::Parameters<>``.
+The static function ``create`` returns a ``std::unique_ptr`` to its base class and takes an argument list specified inside the template class ``NeoFOAM::Parameters<>``.
 
 .. code-block:: cpp
 
@@ -69,13 +69,13 @@ After the classes have been defined, the ``create`` function can be used to inst
 
     std::unique_ptr<BaseClass> testDerived = BaseClass::create("DerivedClass");
 
-All base classes are also registered in the ``NeoN::BaseClassDocumentation`` map and the documentation and the schema retrieved as followed:
+All base classes are also registered in the ``NeoFOAM::BaseClassDocumentation`` map and the documentation and the schema retrieved as followed:
 
 .. code-block:: cpp
 
     std::string baseClassName = "BaseClass";
     std::string derivedClass = "DerivedClass";
-    NeoN::BaseClassDocumentation::doc(baseClassName, derivedClass)
-    NeoN::BaseClassDocumentation::schema(baseClassName, derivedClass)
+    NeoFOAM::BaseClassDocumentation::doc(baseClassName, derivedClass)
+    NeoFOAM::BaseClassDocumentation::schema(baseClassName, derivedClass)
 
-This mechanism should simplify the creation of tooling around NeoN
+This mechanism should simplify the creation of tooling around NeoFOAM

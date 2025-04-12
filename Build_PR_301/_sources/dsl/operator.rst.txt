@@ -9,22 +9,22 @@ The `Operator` implementation uses Type Erasure (more details `[1] <https://medi
 Example:
     .. code-block:: cpp
 
-        NeoN::dsl::Operator<NeoN::scalar> divTerm =
-            Divergence(NeoN::dsl::Operator<NeoN::scalar>::Type::Explicit, exec, ...);
+        NeoFOAM::dsl::Operator<NeoFOAM::scalar> divTerm =
+            Divergence(NeoFOAM::dsl::Operator<NeoFOAM::scalar>::Type::Explicit, exec, ...);
 
-        NeoN::dsl::Operator<NeoN::scalar> ddtTerm =
-            TimeTerm(NeoN::dsl::Operator<NeoN::scalar>::Type::Temporal, exec, ..);
+        NeoFOAM::dsl::Operator<NeoFOAM::scalar> ddtTerm =
+            TimeTerm(NeoFOAM::dsl::Operator<NeoFOAM::scalar>::Type::Temporal, exec, ..);
 
 
 To fit the specification of the Expression (storage in a vector), the Operator needs to be able to be scaled:
 
 .. code-block:: cpp
 
-        NeoN::Field<NeoN::scalar> scalingField(exec, nCells, 2.0);
-        auto sF = scalingField.span();
+        NeoFOAM::Field<NeoFOAM::scalar> scalingField(exec, nCells, 2.0);
+        auto sF = scalingField.view();
 
-        dsl::Operator<NeoN::scalar> customTerm =
-            CustomTerm(dsl::Operator<NeoN::scalar>::Type::Explicit, exec, nCells, 1.0);
+        dsl::Operator<NeoFOAM::scalar> customTerm =
+            CustomTerm(dsl::Operator<NeoFOAM::scalar>::Type::Explicit, exec, nCells, 1.0);
 
         auto constantScaledTerm = 2.0 * customTerm; // A constant scaling factor of 2 for the term.
         auto fieldScaledTerm = scalingField * customTerm; // scalingField is used to scale the term.
@@ -34,7 +34,7 @@ To fit the specification of the Expression (storage in a vector), the Operator n
 
         // Operator also supports the use of a lambda as scaling function to reduce the number of temporaries generated
         auto lambdaScaledTerm =
-            (KOKKOS_LAMBDA(const NeoN::size_t i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
+            (KOKKOS_LAMBDA(const NeoFOAM::size_t i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
 
 To add a user-defined `Operator`, a new derived class must be created, inheriting from `OperatorMixin`,
  and provide the definitions of the below virtual functions that are required for the `Operator` interface:

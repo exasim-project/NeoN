@@ -3,12 +3,12 @@
   <compounddef id="scalar_8hpp" kind="file" language="C++">
     <compoundname>scalar.hpp</compoundname>
     <includes local="no">Kokkos_Core.hpp</includes>
-    <includes local="yes">NeoN/core/primitives/traits.hpp</includes>
-    <includedby refid="tensor_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/tensor.hpp</includedby>
-    <includedby refid="time_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/time.hpp</includedby>
+    <includes local="yes">NeoFOAM/core/primitives/traits.hpp</includes>
+    <includedby refid="tensor_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/primitives/tensor.hpp</includedby>
+    <includedby refid="time_8hpp" local="yes">/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/time.hpp</includedby>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/scalar.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/primitives/scalar.hpp</label>
         <link refid="scalar_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -19,12 +19,12 @@
         <label>Kokkos_Core.hpp</label>
       </node>
       <node id="3">
-        <label>NeoN/core/primitives/traits.hpp</label>
+        <label>NeoFOAM/core/primitives/traits.hpp</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/scalar.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/primitives/scalar.hpp</label>
         <link refid="scalar_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -32,56 +32,56 @@
         </childnode>
       </node>
       <node id="2">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/tensor.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/primitives/tensor.hpp</label>
         <link refid="tensor_8hpp"/>
       </node>
       <node id="3">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/time.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/time.hpp</label>
         <link refid="time_8hpp"/>
       </node>
     </invincdepgraph>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"><sp/></highlight><highlight class="comment">//<sp/>IWYU<sp/>pragma:<sp/>keep</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/primitives/traits.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/primitives/traits.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO<sp/>this<sp/>needs<sp/>to<sp/>be<sp/>implemented<sp/>in<sp/>the<sp/>corresponding<sp/>cmake<sp/>file</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM" kindref="compound">NeoFOAM</ref></highlight></codeline>
 <codeline lineno="10"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NeoN_DP_SCALAR</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NEOFOAM_DP_SCALAR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref>;</highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14" refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>;</highlight></codeline>
+<codeline lineno="14" refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref>;</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="namespaceNeoN_1aa2d88a1b21583ca5c103bd0c416947d0" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1aa2d88a1b21583ca5c103bd0c416947d0" kindref="member">ROOTVSMALL</ref><sp/>=<sp/>1e-18;</highlight></codeline>
+<codeline lineno="17" refid="namespaceNeoFOAM_1a381b6aacc63a05d1c0aa0774afff68f1" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoFOAM_1a381b6aacc63a05d1c0aa0774afff68f1" kindref="member">ROOTVSMALL</ref><sp/>=<sp/>1e-18;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal">KOKKOS_INLINE_FUNCTION</highlight></codeline>
-<codeline lineno="20" refid="namespaceNeoN_1a5a92d3d1550bcfb32325f9f4112a5626" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1a5a92d3d1550bcfb32325f9f4112a5626" kindref="member">mag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>&amp;<sp/>s)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::abs(s);<sp/>}</highlight></codeline>
+<codeline lineno="20" refid="namespaceNeoFOAM_1abb63e8a2f557cc72e042ff949ea576da" refkind="member"><highlight class="normal"><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoFOAM_1abb63e8a2f557cc72e042ff949ea576da" kindref="member">mag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref>&amp;<sp/>s)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::abs(s);<sp/>}</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>traits<sp/>for<sp/>scalar</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="24" refid="namespaceNeoN_1a1592e9faca78ef0d226965d8e42d4868" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1a1592e9faca78ef0d226965d8e42d4868" kindref="member">one&lt;scalar&gt;</ref>()</highlight></codeline>
+<codeline lineno="24" refid="namespaceNeoFOAM_1a61e64ff318800115e2a634dec8deeaf6" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoFOAM_1a61e64ff318800115e2a634dec8deeaf6" kindref="member">one&lt;scalar&gt;</ref>()</highlight></codeline>
 <codeline lineno="25"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1.0;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="30" refid="namespaceNeoN_1aa4eeb8f2fe783ee706a28d1eb29df79e" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1aa4eeb8f2fe783ee706a28d1eb29df79e" kindref="member">zero&lt;scalar&gt;</ref>()</highlight></codeline>
+<codeline lineno="30" refid="namespaceNeoFOAM_1a80a080c3cd54b64a0e62c8c0bfa92003" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoFOAM_1a80a080c3cd54b64a0e62c8c0bfa92003" kindref="member">zero&lt;scalar&gt;</ref>()</highlight></codeline>
 <codeline lineno="31"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/scalar.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/primitives/scalar.hpp"/>
   </compounddef>
 </doxygen>

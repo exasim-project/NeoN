@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['globalidx_0',['globalIdx',['../namespaceNeoN.html#a6a7f5ddf0fda0ea15fd94d7bf6eed9b6',1,'NeoN']]]
+  ['globalidx_0',['globalIdx',['../namespaceNeoFOAM.html#a73c71713ed444647b0229233de51650c',1,'NeoFOAM']]]
 ];

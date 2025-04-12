@@ -6,11 +6,11 @@ Dictionary
 The Dictionary class is data structure that can store any type of data similar to a python dictionary.
 
 This generic interface allows to deliver complex input data to the simulation code without the need to define a specific data structure.
-It can be used as followed (more details see this `unit test  <https://github.com/exasim-project/NeoN/blob/main/test/core/dictionary.cpp>`_.
+It can be used as followed (more details see this `unit test  <https://github.com/exasim-project/NeoFOAM/blob/main/test/core/dictionary.cpp>`_.
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
+    NeoFOAM::Dictionary dict;
 
     dict.insert("key1", 42);
     dict.insert("key2", std::string("Hello"));
@@ -22,7 +22,7 @@ If the dictionary is not passed as a const reference, the values can be modified
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
+    NeoFOAM::Dictionary dict;
     dict.insert("key", 42);
     dict["key"] = 43;
 
@@ -32,14 +32,14 @@ Accessing a non-existent key will throw an exception std::out_of_range:
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
+    NeoFOAM::Dictionary dict;
     dict["non_existent_key"]; // will throw with std::out_of_range;
 
 To check if a key exists, the found method can be used:
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
+    NeoFOAM::Dictionary dict;
     dict.insert("key", 42);
     dict.found("key") == true;
 
@@ -47,7 +47,7 @@ Dictionary provides a method to remove a key:
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
+    NeoFOAM::Dictionary dict;
     dict.insert("key", 42);
     dict["key"] = 43;
     dict.remove("key");
@@ -58,19 +58,19 @@ The Dictionary class also provides a method to access a sub-dictionary. This is 
 
 .. code-block:: cpp
 
-    NeoN::Dictionary dict;
-    NeoN::Dictionary subDict;
+    NeoFOAM::Dictionary dict;
+    NeoFOAM::Dictionary subDict;
     subDict.insert("key1", 42);
     subDict.insert("key2", std::string("Hello"));
 
     dict.insert("subDict", subDict);
 
-    NeoN::Dictionary& sDict = dict.subDict("subDict");
+    NeoFOAM::Dictionary& sDict = dict.subDict("subDict");
     sDict.get<int>("key1") == 42;
     sDict.get<std::string>("key2") == "Hello";
 
     sDict.get<int>("key1") = 100;
 
     // check if the value is modified
-    NeoN::Dictionary& sDict2 = dict.subDict("subDict");
+    NeoFOAM::Dictionary& sDict2 = dict.subDict("subDict");
     sDict2.get<int>("key1") == 100;

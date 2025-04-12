@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Domain Specific Language (DSL)" href="../dsl/index.html" /><link rel="prev" title="Derived class discovery at compile time" href="registerclass.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/macros.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/macros.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Macro Definitions - NeoN documentation</title>
+        <title>Macro Definitions - NeoFOAM documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoN  documentation</span>
+  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -285,7 +285,7 @@
 <span id="id1"></span><h1>Macro Definitions<a class="headerlink" href="#macro-definitions" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>NeoN provides a set of macros for handling debug messaging, error reporting, and assertions.
+<p>NeoFOAM provides a set of macros for handling debug messaging, error reporting, and assertions.
 These macros are defined in two header files: <code class="docutils literal notranslate"><span class="pre">Info.hpp</span></code> and <code class="docutils literal notranslate"><span class="pre">Error.hpp</span></code>, and offer standardized mechanisms for logging information and handling errors across the library.</p>
 <p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG</span></code> is active when <code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code> is set to <code class="docutils literal notranslate"><span class="pre">Debug</span></code>, and <code class="docutils literal notranslate"><span class="pre">NF_DEBUG_INFO</span></code> is active when <code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code> is set to <code class="docutils literal notranslate"><span class="pre">RelWithDebInfo</span></code>.</p>
 </section>
@@ -308,15 +308,15 @@ These macros are defined in two header files: <code class="docutils literal notr
 <p>The <code class="docutils literal notranslate"><span class="pre">Error.hpp</span></code> header defines macros for error handling and assertions:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_ERROR_EXIT(message)</span></code>: Prints an error message and aborts the program.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NF_THROW(message)</span></code>: Throws a <code class="docutils literal notranslate"><span class="pre">NeoNException</span></code> with the specified error message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NF_THROW(message)</span></code>: Throws a <code class="docutils literal notranslate"><span class="pre">NeoFOAMException</span></code> with the specified error message.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT(condition,</span> <span class="pre">message)</span></code>: Checks a condition and, if false, prints an error message and aborts the program.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT_THROW(condition,</span> <span class="pre">message)</span></code>: Checks a condition and, if false, throws a <code class="docutils literal notranslate"><span class="pre">NeoNException</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT_THROW(condition,</span> <span class="pre">message)</span></code>: Checks a condition and, if false, throws a <code class="docutils literal notranslate"><span class="pre">NeoFOAMException</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT(condition,</span> <span class="pre">message)</span></code> and <code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_THROW(condition,</span> <span class="pre">message)</span></code>: Debug versions of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT</span></code> and <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_THROW</span></code> that are no-ops in release builds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_THROW(condition,</span> <span class="pre">message)</span></code>: Debug version of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_THROW</span></code> that throws a <code class="docutils literal notranslate"><span class="pre">NeoNException</span></code> if the condition is false.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_THROW(condition,</span> <span class="pre">message)</span></code>: Debug version of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_THROW</span></code> that throws a <code class="docutils literal notranslate"><span class="pre">NeoFOAMException</span></code> if the condition is false.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL(a,</span> <span class="pre">b)</span></code>: Asserts that two values are equal and prints an error message if they are not.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_EQUAL(a,</span> <span class="pre">b)</span></code>: Debug version of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL</span></code> that is a no-op in release builds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL_THROW(a,</span> <span class="pre">b)</span></code>: Asserts that two values are equal and throws a <code class="docutils literal notranslate"><span class="pre">NeoNException</span></code> if they are not.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_EQUAL_THROW(a,</span> <span class="pre">b)</span></code>: Debug version of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL</span></code> that throws a <code class="docutils literal notranslate"><span class="pre">NeoNException</span></code> if the values are not equal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL_THROW(a,</span> <span class="pre">b)</span></code>: Asserts that two values are equal and throws a <code class="docutils literal notranslate"><span class="pre">NeoFOAMException</span></code> if they are not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NF_DEBUG_ASSERT_EQUAL_THROW(a,</span> <span class="pre">b)</span></code>: Debug version of <code class="docutils literal notranslate"><span class="pre">NF_ASSERT_EQUAL</span></code> that throws a <code class="docutils literal notranslate"><span class="pre">NeoFOAMException</span></code> if the values are not equal.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NF_PING()</span></code>: Used (in debug only) for determining where if the code reaches a certain file and line, purely for convenience.</p></li>
 </ul>
 <p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; d3ff4792 (format code)</p>
@@ -367,7 +367,7 @@ These macros are defined in two header files: <code class="docutils literal notr
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoN authors
+                Copyright &#169; 2024, NeoFOAM authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

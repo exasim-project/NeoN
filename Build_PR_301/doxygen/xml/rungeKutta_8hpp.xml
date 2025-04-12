@@ -4,15 +4,15 @@
     <compoundname>rungeKutta.hpp</compoundname>
     <includes local="no">functional</includes>
     <includes local="no">memory</includes>
-    <includes local="yes">NeoN/core/database/fieldCollection.hpp</includes>
-    <includes local="yes">NeoN/core/database/oldTimeCollection.hpp</includes>
-    <includes local="yes">NeoN/core/parallelAlgorithms.hpp</includes>
-    <includes local="yes">NeoN/fields/field.hpp</includes>
-    <includes local="yes">NeoN/timeIntegration/timeIntegration.hpp</includes>
-    <includes local="yes">NeoN/timeIntegration/sundials.hpp</includes>
+    <includes local="yes">NeoFOAM/core/database/fieldCollection.hpp</includes>
+    <includes local="yes">NeoFOAM/core/database/oldTimeCollection.hpp</includes>
+    <includes local="yes">NeoFOAM/core/parallelAlgorithms.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/field.hpp</includes>
+    <includes local="yes">NeoFOAM/timeIntegration/timeIntegration.hpp</includes>
+    <includes local="yes">NeoFOAM/timeIntegration/sundials.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/rungeKutta.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp</label>
         <link refid="rungeKutta_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -32,22 +32,22 @@
         </childnode>
       </node>
       <node id="4">
-        <label>NeoN/core/database/fieldCollection.hpp</label>
+        <label>NeoFOAM/core/database/fieldCollection.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/core/database/oldTimeCollection.hpp</label>
+        <label>NeoFOAM/core/database/oldTimeCollection.hpp</label>
       </node>
       <node id="6">
-        <label>NeoN/core/parallelAlgorithms.hpp</label>
+        <label>NeoFOAM/core/parallelAlgorithms.hpp</label>
       </node>
       <node id="7">
-        <label>NeoN/fields/field.hpp</label>
+        <label>NeoFOAM/fields/field.hpp</label>
       </node>
       <node id="9">
-        <label>NeoN/timeIntegration/sundials.hpp</label>
+        <label>NeoFOAM/timeIntegration/sundials.hpp</label>
       </node>
       <node id="8">
-        <label>NeoN/timeIntegration/timeIntegration.hpp</label>
+        <label>NeoFOAM/timeIntegration/timeIntegration.hpp</label>
       </node>
       <node id="2">
         <label>functional</label>
@@ -56,104 +56,104 @@
         <label>memory</label>
       </node>
     </incdepgraph>
-    <innerclass refid="classNeoN_1_1timeIntegration_1_1RungeKutta" prot="public">NeoN::timeIntegration::RungeKutta</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1timeIntegration">NeoN::timeIntegration</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" prot="public">NeoFOAM::timeIntegration::RungeKutta</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1timeIntegration">NeoFOAM::timeIntegration</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/database/fieldCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/database/oldTimeCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/parallelAlgorithms.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/timeIntegration/timeIntegration.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/timeIntegration/sundials.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/database/fieldCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/database/oldTimeCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/parallelAlgorithms.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/timeIntegration/timeIntegration.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/timeIntegration/sundials.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1timeIntegration" kindref="compound">NeoN::timeIntegration</ref></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1timeIntegration" kindref="compound">NeoFOAM::timeIntegration</ref></highlight></codeline>
 <codeline lineno="18"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionFieldType&gt;</highlight></codeline>
-<codeline lineno="52" refid="classNeoN_1_1timeIntegration_1_1RungeKutta" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref><sp/>:</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt;SolutionFieldType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;RungeKutta&lt;SolutionFieldType&gt;&gt;</highlight></codeline>
+<codeline lineno="52" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref><sp/>:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt;SolutionFieldType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;RungeKutta&lt;SolutionFieldType&gt;&gt;</highlight></codeline>
 <codeline lineno="54"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"></highlight></codeline>
-<codeline lineno="57" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref><sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionFieldType::FieldValueType;</highlight></codeline>
-<codeline lineno="58" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1aaecf3d427f1f2f05fd93872c6e803428" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1aaecf3d427f1f2f05fd93872c6e803428" kindref="member">Base</ref><sp/>=</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase&lt;SolutionFieldType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;RungeKutta&lt;SolutionFieldType&gt;</ref>&gt;;</highlight></codeline>
+<codeline lineno="57" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ade5df6beae5f3958aff4ac2019da0d2e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ade5df6beae5f3958aff4ac2019da0d2e" kindref="member">ValueType</ref><sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionFieldType::FieldValueType;</highlight></codeline>
+<codeline lineno="58" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ae97fdabc9a160c94a47523e267f0538a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ae97fdabc9a160c94a47523e267f0538a" kindref="member">Base</ref><sp/>=</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase&lt;SolutionFieldType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;RungeKutta&lt;SolutionFieldType&gt;</ref>&gt;;</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="64" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac82f51b53a19e02ecf85c2eb75c61135" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac82f51b53a19e02ecf85c2eb75c61135" kindref="member">RungeKutta</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a2f32ef850e19a2ac5b84019155e13e10" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a2f32ef850e19a2ac5b84019155e13e10" kindref="member">RungeKutta</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a3bcf806e7531f44ec834e957d2434266" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a3bcf806e7531f44ec834e957d2434266" kindref="member">~RungeKutta</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ae16a6ca7cfa6ae32a132f9ab86fcf49f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ae16a6ca7cfa6ae32a132f9ab86fcf49f" kindref="member">~RungeKutta</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1abcbcc88537c122022f00bf802949f37d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1abcbcc88537c122022f00bf802949f37d" kindref="member">RungeKutta</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>schemeDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1aaecf3d427f1f2f05fd93872c6e803428" kindref="member">Base</ref>(schemeDict,<sp/>solutionDict)</highlight></codeline>
+<codeline lineno="75" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a9b41be5899708b29dac2e9a1f5a8994b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a9b41be5899708b29dac2e9a1f5a8994b" kindref="member">RungeKutta</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>schemeDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ae97fdabc9a160c94a47523e267f0538a" kindref="member">Base</ref>(schemeDict,<sp/>solutionDict)</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="85" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1add56ae16a9fa9cbaf5fa33bafbba5de5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1add56ae16a9fa9cbaf5fa33bafbba5de5" kindref="member">RungeKutta</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="85" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ab3e0d572158a0be7ea702ee4f1721b78" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ab3e0d572158a0be7ea702ee4f1721b78" kindref="member">RungeKutta</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/>other);</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
-<codeline lineno="91" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac3a85b86ad022087031e193235569376" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac3a85b86ad022087031e193235569376" kindref="member">RungeKutta</ref>(<ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="91" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1adb5e28a1d1e5d65e21bce0bc0a8509bb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1adb5e28a1d1e5d65e21bce0bc0a8509bb" kindref="member">RungeKutta</ref>(<ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;&amp;<sp/>other);</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>deleted<sp/>because<sp/>base<sp/>class<sp/>method<sp/>deleted.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="94" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ad422add2036860e2621914428034e417" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ad422add2036860e2621914428034e417" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a980222850e9c9de92a5e8f1616f3777c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a980222850e9c9de92a5e8f1616f3777c" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"></highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>deleted<sp/>because<sp/>base<sp/>class<sp/>method<sp/>deleted.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="97" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ab92950535a7c229ef04a5822bb147d76" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ab92950535a7c229ef04a5822bb147d76" kindref="member">operator=</ref>(<ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="97" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a49cbc57bd0cc1606fd42a328b7eb0511" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a49cbc57bd0cc1606fd42a328b7eb0511" kindref="member">operator=</ref>(<ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
-<codeline lineno="103" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1afab8b8f89d1678b4b42077ecf1827f60" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1afab8b8f89d1678b4b42077ecf1827f60" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Runge-Kutta&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="103" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a9c3200b15f98915c5616423f91749e21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a9c3200b15f98915c5616423f91749e21" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Runge-Kutta&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="109" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a2e15f280ebd141ba0bc8b27ea0a4d4f6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a2e15f280ebd141ba0bc8b27ea0a4d4f6" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Explicit<sp/>time<sp/>integration<sp/>using<sp/>the<sp/>Runge-Kutta<sp/>method.&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="109" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ad00e230394c58fc5cc30fb582fb46cb7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1ad00e230394c58fc5cc30fb582fb46cb7" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Explicit<sp/>time<sp/>integration<sp/>using<sp/>the<sp/>Runge-Kutta<sp/>method.&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9249abcd77c2d8534b83cf16998b9ee5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9249abcd77c2d8534b83cf16998b9ee5" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="115" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a34607b24fdd29c0ceb6c12428fdcc820" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a34607b24fdd29c0ceb6c12428fdcc820" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight></codeline>
-<codeline lineno="124" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a219dea3b1fa78f2e1628b1ff68c7bba6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a219dea3b1fa78f2e1628b1ff68c7bba6" kindref="member">solve</ref>(</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp,<sp/>SolutionFieldType&amp;<sp/>solutionField,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt</highlight></codeline>
+<codeline lineno="124" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1acc0d1379e8a0a09ebc53f9ab7dec3709" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1acc0d1379e8a0a09ebc53f9ab7dec3709" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp,<sp/>SolutionFieldType&amp;<sp/>solutionField,<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>t,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>dt</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"></highlight></codeline>
-<codeline lineno="132" refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a5fbe3d97a38bf500c90dc42dfc638dbe" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;TimeIntegratorBase&lt;SolutionFieldType&gt;&gt;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a5fbe3d97a38bf500c90dc42dfc638dbe" kindref="member">clone</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132" refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a01dd4e1c2d64032f4482f1fd84444392" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;TimeIntegratorBase&lt;SolutionFieldType&gt;&gt;<sp/><ref refid="classNeoFOAM_1_1timeIntegration_1_1RungeKutta_1a01dd4e1c2d64032f4482f1fd84444392" kindref="member">clone</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"></highlight></codeline>
 <codeline lineno="134"><highlight class="normal"></highlight></codeline>
 <codeline lineno="135"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"></highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">NeoN::sundials::SKVector&lt;ValueType&gt;</ref></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1sundials_1_1SKVector" kindref="compound">NeoFOAM::sundials::SKVector&lt;ValueType&gt;</ref></highlight></codeline>
 <codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution_;<sp/></highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">NeoN::sundials::SKVector&lt;ValueType&gt;</ref></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1sundials_1_1SKVector" kindref="compound">NeoFOAM::sundials::SKVector&lt;ValueType&gt;</ref></highlight></codeline>
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initialConditions_;<sp/></highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context_<sp/>{</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoN_1_1sundials_1a3cba60c69c27f51e31d139dde5107d4a" kindref="member">sundials::SUN_CONTEXT_DELETER</ref></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoFOAM_1_1sundials_1adf0e6744d854e97d0972cdd17aa13bf7" kindref="member">sundials::SUN_CONTEXT_DELETER</ref></highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>};<sp/></highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;char,<sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" kindref="member">sundials::SUN_ARK_DELETER</ref>)&gt;<sp/>ODEMemory_<sp/>{</highlight></codeline>
-<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" kindref="member">sundials::SUN_ARK_DELETER</ref></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;char,<sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="namespaceNeoFOAM_1_1sundials_1aa11671597bf1deb9f45b5714f1e7a547" kindref="member">sundials::SUN_ARK_DELETER</ref>)&gt;<sp/>ODEMemory_<sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoFOAM_1_1sundials_1aa11671597bf1deb9f45b5714f1e7a547" kindref="member">sundials::SUN_ARK_DELETER</ref></highlight></codeline>
 <codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>};<sp/></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;NeoN::dsl::Expression&lt;ValueType&gt;&gt;<sp/>pdeExpr_<sp/>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;NeoFOAM::dsl::Expression&lt;ValueType&gt;&gt;<sp/>pdeExpr_<sp/>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>};<sp/></highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>initSUNERKSolver(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp,<sp/>SolutionFieldType&amp;<sp/>field,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>initSUNERKSolver(<ref refid="classNeoFOAM_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp,<sp/>SolutionFieldType&amp;<sp/>field,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>t);</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initExpression(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initExpression(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref>&amp;<sp/>exp);</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"></highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initSUNContext();</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initSUNVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initSUNVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
 <codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initSUNInitialConditions(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SolutionFieldType&amp;<sp/>solutionField);</highlight></codeline>
 <codeline lineno="183"><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initODEMemory(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initODEMemory(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>t);</highlight></codeline>
 <codeline lineno="189"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="190"><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/rungeKutta.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp"/>
   </compounddef>
 </doxygen>

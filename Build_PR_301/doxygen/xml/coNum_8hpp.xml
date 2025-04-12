@@ -4,12 +4,12 @@
     <compoundname>coNum.hpp</compoundname>
     <includes local="no">functional</includes>
     <includes local="no">Kokkos_Core.hpp</includes>
-    <includes local="yes">NeoN/fields/field.hpp</includes>
-    <includes local="yes">NeoN/core/executor/executor.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/field.hpp</includes>
+    <includes local="yes">NeoFOAM/core/executor/executor.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/auxiliary/coNum.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp</label>
         <link refid="coNum_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -26,28 +26,28 @@
         <label>Kokkos_Core.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/core/executor/executor.hpp</label>
+        <label>NeoFOAM/core/executor/executor.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/fields/field.hpp</label>
+        <label>NeoFOAM/fields/field.hpp</label>
       </node>
       <node id="6">
-        <label>NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp</label>
       </node>
       <node id="2">
         <label>functional</label>
       </node>
     </incdepgraph>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume">NeoFOAM::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred">NeoFOAM::finiteVolume::cellCentred</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
@@ -55,11 +55,11 @@
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/fields/surfaceField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoFOAM::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Calculates<sp/>courant<sp/>number<sp/>from<sp/>the<sp/>face<sp/>fluxes.</highlight></codeline>
@@ -67,10 +67,10 @@
 <codeline lineno="19"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>Size<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
 <codeline lineno="20"><highlight class="comment"><sp/>*<sp/>@return<sp/>Maximum<sp/>courant<sp/>number.</highlight></codeline>
 <codeline lineno="21"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="22" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab44133b0ea6f88a630870f2574ec7813" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab44133b0ea6f88a630870f2574ec7813" kindref="member">computeCoNum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;NeoN::scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
+<codeline lineno="22" refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a5913b0485b62a7b197ff4e0a2cfeb8b1" refkind="member"><highlight class="normal"><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">NeoFOAM::scalar</ref><sp/><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a5913b0485b62a7b197ff4e0a2cfeb8b1" kindref="member">computeCoNum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;NeoFOAM::scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/auxiliary/coNum.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"/>
   </compounddef>
 </doxygen>

@@ -2,14 +2,14 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="surfaceBoundaryFactory_8hpp" kind="file" language="C++">
     <compoundname>surfaceBoundaryFactory.hpp</compoundname>
-    <includes local="yes">NeoN/core/dictionary.hpp</includes>
-    <includes local="yes">NeoN/core/runtimeSelectionFactory.hpp</includes>
-    <includes local="yes">NeoN/fields/domainField.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</includes>
-    <includes local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
+    <includes local="yes">NeoFOAM/core/dictionary.hpp</includes>
+    <includes local="yes">NeoFOAM/core/runtimeSelectionFactory.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/domainField.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</includes>
+    <includes local="yes">NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp</label>
         <link refid="surfaceBoundaryFactory_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -23,89 +23,89 @@
         </childnode>
       </node>
       <node id="2">
-        <label>NeoN/core/dictionary.hpp</label>
+        <label>NeoFOAM/core/dictionary.hpp</label>
       </node>
       <node id="3">
-        <label>NeoN/core/runtimeSelectionFactory.hpp</label>
+        <label>NeoFOAM/core/runtimeSelectionFactory.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/fields/domainField.hpp</label>
+        <label>NeoFOAM/fields/domainField.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</label>
       </node>
       <node id="6">
-        <label>NeoN/mesh/unstructured/unstructuredMesh.hpp</label>
+        <label>NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</label>
       </node>
     </incdepgraph>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" prot="public">NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory</innerclass>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" prot="public">NeoN::finiteVolume::cellCentred::SurfaceBoundary</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" prot="public">NeoFOAM::finiteVolume::cellCentred::SurfaceBoundaryFactory</innerclass>
+    <innerclass refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" prot="public">NeoFOAM::finiteVolume::cellCentred::SurfaceBoundary</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume">NeoFOAM::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred">NeoFOAM::finiteVolume::cellCentred</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/dictionary.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/runtimeSelectionFactory.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/fields/domainField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/dictionary.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/runtimeSelectionFactory.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/domainField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoFOAM::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="13"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="16" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref><sp/>:</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1RuntimeSelectionFactory" kindref="compound">NeoN::RuntimeSelectionFactory</ref>&lt;</highlight></codeline>
+<codeline lineno="16" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref><sp/>:</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1RuntimeSelectionFactory" kindref="compound">NeoFOAM::RuntimeSelectionFactory</ref>&lt;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SurfaceBoundaryFactory&lt;ValueType&gt;,</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Parameters&lt;const<sp/>UnstructuredMesh&amp;,<sp/>const<sp/>Dictionary&amp;,<sp/>size_t&gt;&gt;,</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref></highlight></codeline>
 <codeline lineno="21"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a49f97638c687788d6e6b1939254baa65" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a49f97638c687788d6e6b1939254baa65" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;SurfaceBoundaryFactory&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="24" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a011b988c6fef5d82e3315730c8067f45" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a011b988c6fef5d82e3315730c8067f45" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;SurfaceBoundaryFactory&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1ad0f72d0b33ec7b3f0ec0182770365062" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1ad0f72d0b33ec7b3f0ec0182770365062" kindref="member">SurfaceBoundaryFactory</ref>(</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref></highlight></codeline>
+<codeline lineno="26" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a9c6a276bcdc661009f9eca39b4516314" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a9c6a276bcdc661009f9eca39b4516314" kindref="member">SurfaceBoundaryFactory</ref>(</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(mesh,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref>)<sp/>{};</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(mesh,<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref>)<sp/>{};</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a4101ce1b6fecc8316ef9369e8b49fa3e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a4101ce1b6fecc8316ef9369e8b49fa3e" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1DomainField" kindref="compound">DomainField&lt;ValueType&gt;</ref>&amp;<sp/>domainField)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="31" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1ae76a2312820d838bf8b830770e53b987" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1ae76a2312820d838bf8b830770e53b987" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoFOAM_1_1DomainField" kindref="compound">DomainField&lt;ValueType&gt;</ref>&amp;<sp/>domainField)<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a33c858a6c846aa18e6b1f8a2f49f799c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SurfaceBoundaryFactory&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a33c858a6c846aa18e6b1f8a2f49f799c" kindref="member">clone</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="33" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a91206911b1f8fa420ca85e61f901e63c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SurfaceBoundaryFactory&gt;<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a91206911b1f8fa420ca85e61f901e63c" kindref="member">clone</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="34"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="43" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref></highlight></codeline>
+<codeline lineno="43" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref></highlight></codeline>
 <codeline lineno="44"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a2b2f796f8c495c6dfc722dcb9de72111" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a2b2f796f8c495c6dfc722dcb9de72111" kindref="member">SurfaceBoundary</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref>)</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_cast&lt;<ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref>&gt;(mesh.boundaryMesh().offset()[<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref>]),</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_cast&lt;<ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref>&gt;(mesh.boundaryMesh().offset()[<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref><sp/>+<sp/>1]),</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref></highlight></codeline>
+<codeline lineno="47" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1aedaa4b3751cbcdb68c214812421aac90" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1aedaa4b3751cbcdb68c214812421aac90" kindref="member">SurfaceBoundary</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref>)</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_cast&lt;<ref refid="namespaceNeoFOAM_1a7c2c6a7a7bda94e9fb289fd81b96f745" kindref="member">label</ref>&gt;(mesh.boundaryMesh().offset()[<ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref>]),</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_cast&lt;<ref refid="namespaceNeoFOAM_1a7c2c6a7a7bda94e9fb289fd81b96f745" kindref="member">label</ref>&gt;(mesh.boundaryMesh().offset()[<ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref><sp/>+<sp/>1]),</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryCorrectionStrategy_(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref>&lt;ValueType&gt;::create(</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">),<sp/>mesh,<sp/>dict,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ae021dd8c6af04bb3c340ad9517fb079d" kindref="member">patchID</ref></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryCorrectionStrategy_(<ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref>&lt;ValueType&gt;::create(</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">),<sp/>mesh,<sp/>dict,<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a16766fb7e7ee4aa89a5a6e6b03eb1e06" kindref="member">patchID</ref></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>))</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1aff2946737c68fe5689d8c3e299e44f7b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1aff2946737c68fe5689d8c3e299e44f7b" kindref="member">SurfaceBoundary</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref>&amp;<sp/>other)</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(other),</highlight></codeline>
+<codeline lineno="58" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a5275dc551089e4877ab3a95560e91b0e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a5275dc551089e4877ab3a95560e91b0e" kindref="member">SurfaceBoundary</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kindref="compound">BoundaryPatchMixin</ref>(other),</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryCorrectionStrategy_(other.boundaryCorrectionStrategy_-&gt;clone())</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a292cba31e0eb42e058c920a3e397c1eb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a292cba31e0eb42e058c920a3e397c1eb" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1DomainField" kindref="compound">DomainField&lt;ValueType&gt;</ref>&amp;<sp/>domainField)</highlight></codeline>
+<codeline lineno="63" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a335710fbe68348940a0b45822ab1a36c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_1a335710fbe68348940a0b45822ab1a36c" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoFOAM_1_1DomainField" kindref="compound">DomainField&lt;ValueType&gt;</ref>&amp;<sp/>domainField)</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryCorrectionStrategy_-&gt;correctBoundaryCondition(domainField);</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -114,13 +114,13 @@
 <codeline lineno="69"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>needs<sp/>full<sp/>namespace<sp/>to<sp/>be<sp/>not<sp/>ambiguous</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory&lt;ValueType&gt;&gt;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;NeoFOAM::finiteVolume::cellCentred::SurfaceBoundaryFactory&lt;ValueType&gt;&gt;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryCorrectionStrategy_;</highlight></codeline>
 <codeline lineno="74"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
 <codeline lineno="77"><highlight class="normal">}</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"/>
   </compounddef>
 </doxygen>

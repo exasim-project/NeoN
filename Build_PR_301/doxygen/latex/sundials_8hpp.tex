@@ -1,5 +1,5 @@
-\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+FOAM/time\+Integration/sundials.hpp File Reference}
-\hypertarget{sundials_8hpp}{}\label{sundials_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/sundials.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/sundials.hpp}}
+\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/time\+Integration/sundials.hpp File Reference}
+\hypertarget{sundials_8hpp}{}\label{sundials_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/sundials.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/sundials.hpp}}
 {\ttfamily \#include $<$concepts$>$}\newline
 {\ttfamily \#include $<$functional$>$}\newline
 {\ttfamily \#include $<$memory$>$}\newline
@@ -9,54 +9,54 @@
 {\ttfamily \#include $<$nvector/nvector\+\_\+kokkos.\+hpp$>$}\newline
 {\ttfamily \#include $<$arkode/arkode\+\_\+arkstep.\+h$>$}\newline
 {\ttfamily \#include $<$arkode/arkode\+\_\+erkstep.\+h$>$}\newline
-{\ttfamily \#include "{}Neo\+N/core/error.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/error.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+FOAM/fields/field.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorSerial}{Neo\+N\+::sundials\+::\+SKVector\+Serial$<$ Value\+Type $>$}}
+class \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVectorSerial}{Neo\+FOAM\+::sundials\+::\+SKVector\+Serial$<$ Value\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em Serial executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorHostDefault}{Neo\+N\+::sundials\+::\+SKVector\+Host\+Default$<$ Value\+Type $>$}}
+class \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVectorHostDefault}{Neo\+FOAM\+::sundials\+::\+SKVector\+Host\+Default$<$ Value\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em Host default executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorDefault}{Neo\+N\+::sundials\+::\+SKVector\+Default$<$ Value\+Type $>$}}
+class \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVectorDefault}{Neo\+FOAM\+::sundials\+::\+SKVector\+Default$<$ Value\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em Default executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector$<$ Value\+Type $>$}}
+class \mbox{\hyperlink{classNeoFOAM_1_1sundials_1_1SKVector}{Neo\+FOAM\+::sundials\+::\+SKVector$<$ Value\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em Unified interface for SUNDIALS Kokkos vector management. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+namespace \mbox{\hyperlink{namespaceNeoFOAM}{Neo\+FOAM}}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoN_1_1sundials}{Neo\+N\+::sundials}}
+namespace \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials}{Neo\+FOAM\+::sundials}}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail}{Neo\+N\+::sundials\+::detail}}
+namespace \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_1_1detail}{Neo\+FOAM\+::sundials\+::detail}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-ARKODE\+\_\+\+ERKTable\+ID \mbox{\hyperlink{namespaceNeoN_1_1sundials_a68a91418f8a8d589cfaccb8141c272dd}{Neo\+N\+::sundials\+::string\+To\+ERKTable}} (const std\+::string \&key)
+ARKODE\+\_\+\+ERKTable\+ID \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_af26930dad82f552ea4b35cbea9a08dcb}{Neo\+FOAM\+::sundials\+::string\+To\+ERKTable}} (const std\+::string \&key)
 \begin{DoxyCompactList}\small\item\em Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_ae6064e0770c671d010286c938be89cb1}{Neo\+N\+::sundials\+::field\+To\+Sun\+NVector\+Impl}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
-\begin{DoxyCompactList}\small\item\em Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} data to SUNDIALS N\+\_\+\+Vector format. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a3a7b81e6da4e3ead854b3900b6e6fa9c}{Neo\+N\+::sundials\+::field\+To\+Sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_ab47f1ccabb77326bedfdc3632a5e9990}{Neo\+FOAM\+::sundials\+::field\+To\+Sun\+NVector\+Impl}} (const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Neo\+FOAM\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+\begin{DoxyCompactList}\small\item\em Converts \doxylink{namespaceNeoFOAM}{Neo\+FOAM} \doxylink{classNeoFOAM_1_1Field}{Field} data to SUNDIALS N\+\_\+\+Vector format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_a9703c266d77ecd315070edc5715da65f}{Neo\+FOAM\+::sundials\+::field\+To\+Sun\+NVector}} (const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Neo\+FOAM\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
 \begin{DoxyCompactList}\small\item\em Dispatcher for field to N\+\_\+\+Vector conversion based on executor type. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_abfbd394d4224be9ffcb0d70deee8155c}{Neo\+N\+::sundials\+::sun\+NVector\+To\+Field\+Impl}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field)
-\begin{DoxyCompactList}\small\item\em Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} format. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a618a4b50d83dddfdf09b78ef2b0c55cd}{Neo\+N\+::sundials\+::sun\+NVector\+To\+Field}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field)
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_aa31219f1529a2ad5b859dccfbcbf1ce9}{Neo\+FOAM\+::sundials\+::sun\+NVector\+To\+Field\+Impl}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoFOAM_1_1Field}{Neo\+FOAM\+::\+Field}}$<$ Value\+Type $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoFOAM}{Neo\+FOAM} \doxylink{classNeoFOAM_1_1Field}{Field} format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_a24cc64a2024e6b4ac7cb816cfd54050d}{Neo\+FOAM\+::sundials\+::sun\+NVector\+To\+Field}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoFOAM_1_1Field}{Neo\+FOAM\+::\+Field}}$<$ Value\+Type $>$ \&field)
 \begin{DoxyCompactList}\small\item\em Dispatcher for N\+\_\+\+Vector to field conversion based on executor type. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Solution\+Field\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoN_1_1sundials_a0950f80132f6aced171dd2a47c8ae5b8}{Neo\+N\+::sundials\+::explicit\+RKSolve}} (sunrealtype t, N\+\_\+\+Vector y, N\+\_\+\+Vector ydot, void \texorpdfstring{$\ast$}{*}user\+Data)
+{\footnotesize template$<$typename Solution\+Field\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_ae96a2418673b302afba9e29356d29f86}{Neo\+FOAM\+::sundials\+::explicit\+RKSolve}} (sunrealtype t, N\+\_\+\+Vector y, N\+\_\+\+Vector ydot, void \texorpdfstring{$\ast$}{*}user\+Data)
 \begin{DoxyCompactList}\small\item\em Performs a single explicit Runge-\/\+Kutta stage evaluation. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a52acc68c0e3f68ab978ecd84d90a33e8}{Neo\+N\+::sundials\+::detail\+::init\+NVector}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size, std\+::shared\+\_\+ptr$<$ SUNContext $>$ context, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_1_1detail_a4a4b279838134e2116b0112768ab5a68}{Neo\+FOAM\+::sundials\+::detail\+::init\+NVector}} (\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size, std\+::shared\+\_\+ptr$<$ SUNContext $>$ context, \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&vec)
 \begin{DoxyCompactList}\small\item\em Initializes a vector wrapper with specified size and context. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\const N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a0a28e9139d1ccea532882e167a02ff6b}{Neo\+N\+::sundials\+::detail\+::sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} $>$ }\\const N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_1_1detail_a68463a221b6ac58324eb5d8f1028fbdd}{Neo\+FOAM\+::sundials\+::detail\+::sun\+NVector}} (const \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&vec)
 \begin{DoxyCompactList}\small\item\em Provides const access to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a48ef81013e482acd9a9591aa01ad3903}{Neo\+N\+::sundials\+::detail\+::sun\+NVector}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} $>$ }\\N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_1_1detail_afa48890cd0db6b0c9b0c6db199c7f96c}{Neo\+FOAM\+::sundials\+::detail\+::sun\+NVector}} (\mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&vec)
 \begin{DoxyCompactList}\small\item\em Provides mutable access to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-auto \mbox{\hyperlink{namespaceNeoN_1_1sundials_a3cba60c69c27f51e31d139dde5107d4a}{Neo\+N\+::sundials\+::\+SUN\+\_\+\+CONTEXT\+\_\+\+DELETER}}
+auto \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_adf0e6744d854e97d0972cdd17aa13bf7}{Neo\+FOAM\+::sundials\+::\+SUN\+\_\+\+CONTEXT\+\_\+\+DELETER}}
 \begin{DoxyCompactList}\small\item\em Custom deleter for SUNContext shared pointers. \end{DoxyCompactList}\item 
-auto \mbox{\hyperlink{namespaceNeoN_1_1sundials_aca60627e32ac174ed4f8fac998408423}{Neo\+N\+::sundials\+::\+SUN\+\_\+\+ARK\+\_\+\+DELETER}}
+auto \mbox{\hyperlink{namespaceNeoFOAM_1_1sundials_aa11671597bf1deb9f45b5714f1e7a547}{Neo\+FOAM\+::sundials\+::\+SUN\+\_\+\+ARK\+\_\+\+DELETER}}
 \begin{DoxyCompactList}\small\item\em Custom deleter for explicit type RK solvers (ERK, ARK, etc) for the unique pointers. \end{DoxyCompactList}\end{DoxyCompactItemize}

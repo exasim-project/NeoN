@@ -2,16 +2,16 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="gaussGreenLaplacian_8hpp" kind="file" language="C++">
     <compoundname>gaussGreenLaplacian.hpp</compoundname>
-    <includes local="yes">NeoN/fields/field.hpp</includes>
-    <includes local="yes">NeoN/core/executor/executor.hpp</includes>
-    <includes local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/field.hpp</includes>
+    <includes local="yes">NeoFOAM/core/executor/executor.hpp</includes>
+    <includes local="yes">NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/operators/laplacianOperator.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
         <link refid="gaussGreenLaplacian_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -29,135 +29,135 @@
         </childnode>
       </node>
       <node id="3">
-        <label>NeoN/core/executor/executor.hpp</label>
+        <label>NeoFOAM/core/executor/executor.hpp</label>
       </node>
       <node id="2">
-        <label>NeoN/fields/field.hpp</label>
+        <label>NeoFOAM/fields/field.hpp</label>
       </node>
       <node id="7">
-        <label>NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</label>
       </node>
       <node id="6">
-        <label>NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</label>
       </node>
       <node id="8">
-        <label>NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/operators/laplacianOperator.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/mesh/unstructured/unstructuredMesh.hpp</label>
+        <label>NeoFOAM/mesh/unstructured/unstructuredMesh.hpp</label>
       </node>
     </incdepgraph>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" prot="public">NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" prot="public">NeoFOAM::finiteVolume::cellCentred::GaussGreenLaplacian</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume">NeoFOAM::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred">NeoFOAM::finiteVolume::cellCentred</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/mesh/unstructured/unstructuredMesh.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/operators/laplacianOperator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoFOAM::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="18" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a93779b3e2e5c0a8e46582bd319627a37" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a93779b3e2e5c0a8e46582bd319627a37" kindref="member">computeLaplacianExp</ref>(</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></highlight></codeline>
+<codeline lineno="18" refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a9519c00b43fa6c365c2efc61a15543b3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a9519c00b43fa6c365c2efc61a15543b3" kindref="member">computeLaplacianExp</ref>(</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></highlight></codeline>
 <codeline lineno="24"><highlight class="normal">);</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="27" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1afc86f464f7d3c93f86ff78d55658a7be" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1afc86f464f7d3c93f86ff78d55658a7be" kindref="member">computeLaplacianImpl</ref>(</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling,</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&amp;<sp/>sparsityPattern,</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref>&amp;<sp/>faceNormalGradient</highlight></codeline>
+<codeline lineno="27" refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a0a7f18f94382bc902cae32ee122d2030" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a0a7f18f94382bc902cae32ee122d2030" kindref="member">computeLaplacianImpl</ref>(</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling,</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&amp;<sp/>sparsityPattern,</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref>&amp;<sp/>faceNormalGradient</highlight></codeline>
 <codeline lineno="34"><highlight class="normal">);</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="37" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" kindref="compound">GaussGreenLaplacian</ref><sp/>:</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt;ValueType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;GaussGreenLaplacian&lt;ValueType&gt;&gt;</highlight></codeline>
+<codeline lineno="37" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" kindref="compound">GaussGreenLaplacian</ref><sp/>:</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt;ValueType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;GaussGreenLaplacian&lt;ValueType&gt;&gt;</highlight></codeline>
 <codeline lineno="39"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base<sp/>=</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory&lt;ValueType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;GaussGreenLaplacian&lt;ValueType&gt;</ref>&gt;;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory&lt;ValueType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;GaussGreenLaplacian&lt;ValueType&gt;</ref>&gt;;</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a04b245c69176747085b8ee3de51ef8cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a04b245c69176747085b8ee3de51ef8cf" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Gauss&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="45" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1af4acbb53ecc7fad0c26185f4eadea2f5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1af4acbb53ecc7fad0c26185f4eadea2f5" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Gauss&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3df2fc8fe09b83caf31e194b25fd6ef5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3df2fc8fe09b83caf31e194b25fd6ef5" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Gauss-Green<sp/>Laplacian&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="47" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ae49ba47f6d08ebde2aff8e516b0da018" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ae49ba47f6d08ebde2aff8e516b0da018" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Gauss-Green<sp/>Laplacian&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="49" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3800d518eff874206466d12c1e5ae0de" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3800d518eff874206466d12c1e5ae0de" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="49" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a01263e198aee9c22a7cb52effa2c8c02" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a01263e198aee9c22a7cb52effa2c8c02" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a146c4e28d4b0e3db2a300caf6037f64b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a146c4e28d4b0e3db2a300caf6037f64b" kindref="member">GaussGreenLaplacian</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref>&amp;<sp/>inputs)</highlight></codeline>
+<codeline lineno="51" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ac2f6c822c13cf7b813dab7aa3d611f1f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ac2f6c822c13cf7b813dab7aa3d611f1f" kindref="member">GaussGreenLaplacian</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1aaa4d35d275559f501cb6a1eec717c905" kindref="member">Executor</ref>&amp;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a161184af07a233e2513b53451edc6b39" kindref="member">Input</ref>&amp;<sp/>inputs)</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(exec,<sp/>mesh),<sp/>surfaceInterpolation_(exec,<sp/>mesh,<sp/>inputs),</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceNormalGradient_(exec,<sp/>mesh,<sp/>inputs),</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sparsityPattern_(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>::readOrCreate(mesh))<sp/>{};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sparsityPattern_(<ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>::readOrCreate(mesh))<sp/>{};</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight></codeline>
-<codeline lineno="56" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad8735c448283ac444bf036c41658eedc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad8735c448283ac444bf036c41658eedc" kindref="member">laplacian</ref>(</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>lapPhi,</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
+<codeline lineno="56" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3717c36099d6c33ff5170650d2538bd9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3717c36099d6c33ff5170650d2538bd9" kindref="member">laplacian</ref>(</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>lapPhi,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>override</highlight></codeline>
 <codeline lineno="62"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeLaplacianExp&lt;ValueType&gt;(</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceNormalGradient_,<sp/>gamma,<sp/>phi,<sp/>lapPhi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_1a40e9290a4bdcc06a030bafdd1018f0ce" kindref="member">internalField</ref>(),<sp/>operatorScaling</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceNormalGradient_,<sp/>gamma,<sp/>phi,<sp/>lapPhi.<ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_1a59f7de118d3b27ec7e23474f0395ea4e" kindref="member">internalField</ref>(),<sp/>operatorScaling</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aa11bb04ce7e3eedfcfb89ed8446d869b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aa11bb04ce7e3eedfcfb89ed8446d869b" kindref="member">laplacian</ref>(</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>lapPhi,</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
+<codeline lineno="68" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad51c0671c6553c30efe36b475a642b21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad51c0671c6553c30efe36b475a642b21" kindref="member">laplacian</ref>(</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>lapPhi,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>override</highlight></codeline>
 <codeline lineno="74"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeLaplacianExp&lt;ValueType&gt;(faceNormalGradient_,<sp/>gamma,<sp/>phi,<sp/>lapPhi,<sp/>operatorScaling);</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight></codeline>
-<codeline lineno="78" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad7d7d1695a0d32921a87ec863f7c600c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ad7d7d1695a0d32921a87ec863f7c600c" kindref="member">laplacian</ref>(</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
+<codeline lineno="78" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a676a396bd1a04ea5946df20b2d19070f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a676a396bd1a04ea5946df20b2d19070f" kindref="member">laplacian</ref>(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>override</highlight></codeline>
 <codeline lineno="84"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1afc86f464f7d3c93f86ff78d55658a7be" kindref="member">computeLaplacianImpl</ref>(</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_1a0a7f18f94382bc902cae32ee122d2030" kindref="member">computeLaplacianImpl</ref>(</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls,<sp/>gamma,<sp/>phi,<sp/>operatorScaling,<sp/>*sparsityPattern_.get(),<sp/>faceNormalGradient_</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aedfa71700b5856c9c969f7d3a6a30809" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;LaplacianOperatorFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aedfa71700b5856c9c969f7d3a6a30809" kindref="member">clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
+<codeline lineno="90" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a5d82e5c0d19719331487773e61ba3e76" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;LaplacianOperatorFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a5d82e5c0d19719331487773e61ba3e76" kindref="member">clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
 <codeline lineno="91"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;GaussGreenLaplacian&lt;ValueType&gt;&gt;(*this);</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
 <codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"></highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;ValueType&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;ValueType&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref><sp/>faceNormalGradient_;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient&lt;ValueType&gt;</ref><sp/>faceNormalGradient_;</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight></codeline>
 <codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;SparsityPattern&gt;<sp/>sparsityPattern_;</highlight></codeline>
 <codeline lineno="102"><highlight class="normal">};</highlight></codeline>
@@ -166,8 +166,8 @@
 <codeline lineno="105"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenLaplacian&lt;scalar&gt;;</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenLaplacian&lt;Vector&gt;;</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"/>
   </compounddef>
 </doxygen>

@@ -2,16 +2,16 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="ddtOperator_8hpp" kind="file" language="C++">
     <compoundname>ddtOperator.hpp</compoundname>
-    <includes local="yes">NeoN/fields/field.hpp</includes>
-    <includes local="yes">NeoN/core/executor/executor.hpp</includes>
-    <includes local="yes">NeoN/core/input.hpp</includes>
-    <includes local="yes">NeoN/dsl/spatialOperator.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</includes>
-    <includes local="yes">NeoN/core/database/oldTimeCollection.hpp</includes>
-    <includes local="yes">NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</includes>
+    <includes local="yes">NeoFOAM/fields/field.hpp</includes>
+    <includes local="yes">NeoFOAM/core/executor/executor.hpp</includes>
+    <includes local="yes">NeoFOAM/core/input.hpp</includes>
+    <includes local="yes">NeoFOAM/dsl/spatialOperator.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp</includes>
+    <includes local="yes">NeoFOAM/core/database/oldTimeCollection.hpp</includes>
+    <includes local="yes">NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</includes>
     <incdepgraph>
       <node id="1">
-        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
+        <label>/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
         <link refid="ddtOperator_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -29,70 +29,70 @@
         </childnode>
       </node>
       <node id="7">
-        <label>NeoN/core/database/oldTimeCollection.hpp</label>
+        <label>NeoFOAM/core/database/oldTimeCollection.hpp</label>
       </node>
       <node id="3">
-        <label>NeoN/core/executor/executor.hpp</label>
+        <label>NeoFOAM/core/executor/executor.hpp</label>
       </node>
       <node id="4">
-        <label>NeoN/core/input.hpp</label>
+        <label>NeoFOAM/core/input.hpp</label>
       </node>
       <node id="5">
-        <label>NeoN/dsl/spatialOperator.hpp</label>
+        <label>NeoFOAM/dsl/spatialOperator.hpp</label>
       </node>
       <node id="2">
-        <label>NeoN/fields/field.hpp</label>
+        <label>NeoFOAM/fields/field.hpp</label>
       </node>
       <node id="6">
-        <label>NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp</label>
       </node>
       <node id="8">
-        <label>NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</label>
+        <label>NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp</label>
       </node>
     </incdepgraph>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" prot="public">NeoN::finiteVolume::cellCentred::DdtOperator</innerclass>
-    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innerclass refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" prot="public">NeoFOAM::finiteVolume::cellCentred::DdtOperator</innerclass>
+    <innernamespace refid="namespaceNeoFOAM">NeoFOAM</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume">NeoFOAM::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred">NeoFOAM::finiteVolume::cellCentred</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>NeoFOAM<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/input.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/dsl/spatialOperator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/fields/volumeField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/database/oldTimeCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/fields/field.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/executor/executor.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/input.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/dsl/spatialOperator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/core/database/oldTimeCollection.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoFOAM/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoFOAM::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="19" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kindref="compound">DdtOperator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1OperatorMixin" kindref="compound">dsl::OperatorMixin</ref>&lt;VolumeField&lt;ValueType&gt;&gt;</highlight></codeline>
+<codeline lineno="19" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kindref="compound">DdtOperator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1dsl_1_1OperatorMixin" kindref="compound">dsl::OperatorMixin</ref>&lt;VolumeField&lt;ValueType&gt;&gt;</highlight></codeline>
 <codeline lineno="20"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a440320cb0b2f6f404ae189f7cc2e6cd4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a440320cb0b2f6f404ae189f7cc2e6cd4" kindref="member">FieldValueType</ref><sp/>=<sp/>ValueType;</highlight></codeline>
+<codeline lineno="24" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ad3337271b75ec9380c08e7c6f70effb8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ad3337271b75ec9380c08e7c6f70effb8" kindref="member">FieldValueType</ref><sp/>=<sp/>ValueType;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" kindref="member">DdtOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3" kindref="member">dsl::Operator::Type</ref><sp/>termType,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>field);</highlight></codeline>
+<codeline lineno="26" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a703a615173af66759884ef7ae37e86f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a703a615173af66759884ef7ae37e86f4" kindref="member">DdtOperator</ref>(<ref refid="classNeoFOAM_1_1dsl_1_1Operator_1a0744dad1cdfa671a15278a71f3557f18" kindref="member">dsl::Operator::Type</ref><sp/>termType,<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>field);</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a7b7d40cd5c8a54d75dda0fc805f842e6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a7b7d40cd5c8a54d75dda0fc805f842e6" kindref="member">explicitOperation</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>source,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a9c86ef0a044e985f9b49c3b2316ab8dd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a9c86ef0a044e985f9b49c3b2316ab8dd" kindref="member">explicitOperation</ref>(<ref refid="classNeoFOAM_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>source,<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a6ba3fedc02fabbe6e079959bed90d7c0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a6ba3fedc02fabbe6e079959bed90d7c0" kindref="member">implicitOperation</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
+<codeline lineno="30" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ad520094be733009f63ef1f5d00644b61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ad520094be733009f63ef1f5d00644b61" kindref="member">implicitOperation</ref>(<ref refid="classNeoFOAM_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoFOAM_1a03eba15c79160376393af407daa0fd7b" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
-<codeline lineno="32" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a59dcca853ab5cc075f34cb156eeee0a8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a59dcca853ab5cc075f34cb156eeee0a8" kindref="member">build</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref>&amp;)<sp/>{}</highlight></codeline>
+<codeline lineno="32" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a179821e3f29a38308f9617a42491fc35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a179821e3f29a38308f9617a42491fc35" kindref="member">build</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoFOAM_1a161184af07a233e2513b53451edc6b39" kindref="member">Input</ref>&amp;)<sp/>{}</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;DdtOperator&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="34" refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a70c342d3f9d3636b9897deeaad1c3f9e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a70c342d3f9d3636b9897deeaad1c3f9e" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;DdtOperator&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
@@ -100,8 +100,8 @@
 <codeline lineno="39"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoFOAM</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/ddtOperator.hpp"/>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"/>
   </compounddef>
 </doxygen>

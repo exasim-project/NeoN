@@ -1,0 +1,181 @@
+\doxysection{Neo\+FOAM\+::Serial\+Executor Class Reference}
+\hypertarget{classNeoFOAM_1_1SerialExecutor}{}\label{classNeoFOAM_1_1SerialExecutor}\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+
+
+Reference executor for serial CPU execution.  
+
+
+
+
+{\ttfamily \#include $<$serial\+Executor.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}{exec}} = Kokkos\+::\+Serial
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_ac0443a196441dea6e38535eed076e3f1}{Serial\+Executor}} ()
+\item 
+\mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a5528a63f2a630f51f794c894f16565bb}{\texorpdfstring{$\sim$}{\string~}\+Serial\+Executor}} ()
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_ac81e518adfac37daf5c1609df000731a}{alloc}} (\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_aac8513f4fbffcc09a9cc279698b3b610}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} new\+Size) const
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\decltype(auto) \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a69c9eeb3edbfc1c3184c8401804ccaca}{create\+Kokkos\+View}} (Value\+Type \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size) const
+\begin{DoxyCompactList}\small\item\em create a Kokkos view for a given ptr \end{DoxyCompactList}\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_ad700272ac722d7560f95791b0bb19185}{alloc}} (\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size) const
+\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_adcf233a0c77f3715058bfa822f2e5ad6}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} new\+Size) const
+\item 
+void \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a41babf287d2b38b85e2f9274afa346bb}{free}} (void \texorpdfstring{$\ast$}{*}ptr) const noexcept
+\item 
+std\+::string \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a2c898b2cf614ff29bb11076e5e4fdf8c}{name}} () const
+\item 
+\mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}{exec}} \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a35341c04747aeffdc54af4d3e42ce1e2}{underlying\+Exec}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Reference executor for serial CPU execution. 
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}\label{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!exec@{exec}}
+\index{exec@{exec}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{exec}{exec}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}{Neo\+FOAM\+::\+Serial\+Executor\+::exec}} =  Kokkos\+::\+Serial}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_ac0443a196441dea6e38535eed076e3f1}\label{classNeoFOAM_1_1SerialExecutor_ac0443a196441dea6e38535eed076e3f1} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!SerialExecutor@{SerialExecutor}}
+\index{SerialExecutor@{SerialExecutor}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{SerialExecutor()}{SerialExecutor()}}
+{\footnotesize\ttfamily Neo\+FOAM\+::\+Serial\+Executor\+::\+Serial\+Executor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a5528a63f2a630f51f794c894f16565bb}\label{classNeoFOAM_1_1SerialExecutor_a5528a63f2a630f51f794c894f16565bb} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!````~SerialExecutor@{\texorpdfstring{$\sim$}{\string~}SerialExecutor}}
+\index{````~SerialExecutor@{\texorpdfstring{$\sim$}{\string~}SerialExecutor}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}SerialExecutor()}{\string~SerialExecutor()}}
+{\footnotesize\ttfamily Neo\+FOAM\+::\+Serial\+Executor\+::\texorpdfstring{$\sim$}{\string~}\+Serial\+Executor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_ac81e518adfac37daf5c1609df000731a}\label{classNeoFOAM_1_1SerialExecutor_ac81e518adfac37daf5c1609df000731a} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!alloc@{alloc}}
+\index{alloc@{alloc}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \texorpdfstring{$\ast$}{*} Neo\+FOAM\+::\+Serial\+Executor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_ad700272ac722d7560f95791b0bb19185}\label{classNeoFOAM_1_1SerialExecutor_ad700272ac722d7560f95791b0bb19185} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!alloc@{alloc}}
+\index{alloc@{alloc}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} Neo\+FOAM\+::\+Serial\+Executor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a69c9eeb3edbfc1c3184c8401804ccaca}\label{classNeoFOAM_1_1SerialExecutor_a69c9eeb3edbfc1c3184c8401804ccaca} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!createKokkosView@{createKokkosView}}
+\index{createKokkosView@{createKokkosView}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{createKokkosView()}{createKokkosView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+decltype(auto) Neo\+FOAM\+::\+Serial\+Executor\+::create\+Kokkos\+View (\begin{DoxyParamCaption}\item[{Value\+Type \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+create a Kokkos view for a given ptr 
+
+Based on the executor this function creates a Kokkos view into the data managed by ptr 
+\begin{DoxyParams}{Parameters}
+{\em ptr} & Pointer to data for which a view should be created \\
+\hline
+{\em size} & Number of elements this view contains \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The value type the underlying memory holds \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00045}{45}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a41babf287d2b38b85e2f9274afa346bb}\label{classNeoFOAM_1_1SerialExecutor_a41babf287d2b38b85e2f9274afa346bb} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!free@{free}}
+\index{free@{free}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{free()}{free()}}
+{\footnotesize\ttfamily void Neo\+FOAM\+::\+Serial\+Executor\+::free (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a2c898b2cf614ff29bb11076e5e4fdf8c}\label{classNeoFOAM_1_1SerialExecutor_a2c898b2cf614ff29bb11076e5e4fdf8c} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!name@{name}}
+\index{name@{name}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily std\+::string Neo\+FOAM\+::\+Serial\+Executor\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00059}{59}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_aac8513f4fbffcc09a9cc279698b3b610}\label{classNeoFOAM_1_1SerialExecutor_aac8513f4fbffcc09a9cc279698b3b610} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!realloc@{realloc}}
+\index{realloc@{realloc}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{realloc()}{realloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \texorpdfstring{$\ast$}{*} Neo\+FOAM\+::\+Serial\+Executor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{new\+Size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_adcf233a0c77f3715058bfa822f2e5ad6}\label{classNeoFOAM_1_1SerialExecutor_adcf233a0c77f3715058bfa822f2e5ad6} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!realloc@{realloc}}
+\index{realloc@{realloc}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{realloc()}{realloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} Neo\+FOAM\+::\+Serial\+Executor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{new\+Size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+\Hypertarget{classNeoFOAM_1_1SerialExecutor_a35341c04747aeffdc54af4d3e42ce1e2}\label{classNeoFOAM_1_1SerialExecutor_a35341c04747aeffdc54af4d3e42ce1e2} 
+\index{NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}!underlyingExec@{underlyingExec}}
+\index{underlyingExec@{underlyingExec}!NeoFOAM::SerialExecutor@{NeoFOAM::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{underlyingExec()}{underlyingExec()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}{exec}} Neo\+FOAM\+::\+Serial\+Executor\+::underlying\+Exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/core/executor/\mbox{\hyperlink{serialExecutor_8hpp}{serial\+Executor.\+hpp}}\end{DoxyCompactItemize}
