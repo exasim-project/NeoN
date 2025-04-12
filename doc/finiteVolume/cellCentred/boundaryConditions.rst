@@ -30,7 +30,7 @@ The function ``correctBoundaryConditions`` is responsible for modifying the data
 .. code-block:: c++
 
     void fvccScalarFixedValueBoundaryField::correctBoundaryConditions(
-        BoundaryFields<scalar>& bfield, const Field<scalar>& internalField
+        BoundaryData<scalar>& bfield, const Field<scalar>& internalField
     )
     {
         fixedValueBCKernel kernel_(mesh_, patchID_, start_, end_, uniformValue_);
@@ -42,7 +42,7 @@ The logic is implemented in the kernel classes:
 .. code-block:: c++
 
     void fixedValueBCKernel::operator()(
-        const GPUExecutor& exec, BoundaryFields<scalar>& bField, const Field<scalar>& internalField
+        const GPUExecutor& exec, BoundaryData<scalar>& bField, const Field<scalar>& internalField
     )
     {
         using executor = typename GPUExecutor::exec;
@@ -59,7 +59,7 @@ The logic is implemented in the kernel classes:
         );
     }
 
-As the ``BoundaryFields`` class stores all data in a contiguous array, the boundary condition must only update the data in the range of the boundary specified by the `start_` and `end_` index. In the above simple boundary condition, the kernel only sets the values to a uniform/fixed value. The ``value`` field stores the current value of the boundary condition that is used by the explicit operators and the ``refValue`` stores the value of the boundary condition that is used by the implicit operators.
+As the ``BoundaryData`` class stores all data in a contiguous array, the boundary condition must only update the data in the range of the boundary specified by the `start_` and `end_` index. In the above simple boundary condition, the kernel only sets the values to a uniform/fixed value. The ``value`` field stores the current value of the boundary condition that is used by the explicit operators and the ``refValue`` stores the value of the boundary condition that is used by the implicit operators.
 
 Currently, the following boundary conditions are implemented for volField for scalar:
 - fixedValue

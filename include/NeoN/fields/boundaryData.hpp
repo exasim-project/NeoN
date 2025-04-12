@@ -16,10 +16,10 @@ namespace NeoN
 
 
 /**
- * @class BoundaryFields
+ * @class BoundaryData
  * @brief Represents the boundary fields for a computational domain.
  *
- * The BoundaryFields class stores the boundary conditions and related
+ * The BoundaryData class stores the boundary conditions and related
  * information for a computational domain. It provides access to the computed
  * values, reference values, value fractions, reference gradients, boundary
  * types, offsets, and the number of boundaries and boundary faces.
@@ -27,7 +27,7 @@ namespace NeoN
  * @tparam ValueType The type of the underlying field values
  */
 template<typename T>
-class BoundaryFields
+class BoundaryData
 {
 
 public:
@@ -36,7 +36,7 @@ public:
      * @brief Copy constructor.
      * @param rhs The boundaryFields object to be copied.
      */
-    BoundaryFields(const BoundaryFields<T>& rhs)
+    BoundaryData(const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(rhs.value_), refValue_(rhs.refValue_),
           valueFraction_(rhs.valueFraction_), refGrad_(rhs.refGrad_),
           boundaryTypes_(rhs.boundaryTypes_), offset_(rhs.offset_), nBoundaries_(rhs.nBoundaries_),
@@ -48,7 +48,7 @@ public:
      * @brief Copy constructor.
      * @param rhs The boundaryFields object to be copied.
      */
-    BoundaryFields(const Executor& exec, const BoundaryFields<T>& rhs)
+    BoundaryData(const Executor& exec, const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(exec, rhs.value_), refValue_(exec, rhs.refValue_),
           valueFraction_(exec, rhs.valueFraction_), refGrad_(exec, rhs.refGrad_),
           boundaryTypes_(exec, rhs.boundaryTypes_), offset_(exec, rhs.offset_),
@@ -56,7 +56,7 @@ public:
     {}
 
 
-    BoundaryFields(const Executor& exec, const std::vector<localIdx>& offsets)
+    BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
         : exec_(exec), value_(exec, offsets.back()), refValue_(exec, offsets.back()),
           valueFraction_(exec, offsets.back()), refGrad_(exec, offsets.back()),
           boundaryTypes_(exec, offsets.size() - 1), offset_(exec, offsets),
@@ -64,7 +64,7 @@ public:
     {}
 
 
-    /** @copydoc BoundaryFields::value()*/
+    /** @copydoc BoundaryData::value()*/
     const NeoN::Field<T>& value() const { return value_; }
 
     /**
@@ -74,7 +74,7 @@ public:
      */
     NeoN::Field<T>& value() { return value_; }
 
-    /** @copydoc BoundaryFields::refValue()*/
+    /** @copydoc BoundaryData::refValue()*/
     const NeoN::Field<T>& refValue() const { return refValue_; }
 
     /**
@@ -83,7 +83,7 @@ public:
      */
     NeoN::Field<T>& refValue() { return refValue_; }
 
-    /** @copydoc BoundaryFields::valueFraction()*/
+    /** @copydoc BoundaryData::valueFraction()*/
     const NeoN::Field<scalar>& valueFraction() const { return valueFraction_; }
 
     /**
@@ -92,7 +92,7 @@ public:
      */
     NeoN::Field<scalar>& valueFraction() { return valueFraction_; }
 
-    /** @copydoc BoundaryFields::refGrad()*/
+    /** @copydoc BoundaryData::refGrad()*/
     const NeoN::Field<T>& refGrad() const { return refGrad_; }
 
     /**

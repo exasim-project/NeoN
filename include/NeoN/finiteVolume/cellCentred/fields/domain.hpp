@@ -7,7 +7,7 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/fields/domainField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/fields/boundaryFields.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -61,7 +61,7 @@ public:
         std::string fieldName,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields
+        const BoundaryData<ValueType>& boundaryFields
     )
         : name(fieldName), exec_(exec), mesh_(mesh), field_({exec, internalField, boundaryFields})
     {
@@ -97,14 +97,14 @@ public:
      *
      * @return The const reference to the boundary field.
      */
-    const BoundaryFields<ValueType>& boundaryField() const { return field_.boundaryField(); }
+    const BoundaryData<ValueType>& boundaryField() const { return field_.boundaryField(); }
 
     /**
      * @brief Returns a reference to the boundary field.
      *
      * @return The reference to the boundary field.
      */
-    BoundaryFields<ValueType>& boundaryField() { return field_.boundaryField(); }
+    BoundaryData<ValueType>& boundaryField() { return field_.boundaryField(); }
 
     /**
      * @brief Returns a const reference to the executor object.

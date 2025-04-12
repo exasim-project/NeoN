@@ -20,7 +20,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
     SECTION("Operator creation on " + execName)
     {
         NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
@@ -38,7 +38,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
 
         NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
         NeoN::Field<NeoN::scalar> scaleField(exec, 1, 2.0);
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
 
         dsl::TemporalOperator<TestType> c =
@@ -73,7 +73,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
     SECTION("Implicit Operations " + execName)
     {
         NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
@@ -96,7 +96,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
 
         NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
         NeoN::Field<NeoN::scalar> scaleField(exec, 1, 2.0);
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
 
         auto c = 2 * dsl::TemporalOperator<TestType>(TemporalDummy(vf, Operator::Type::Implicit));

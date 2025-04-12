@@ -96,7 +96,7 @@ public:
         std::string name,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields,
+        const BoundaryData<ValueType>& boundaryFields,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(exec, name, mesh, internalField, boundaryFields), key(""),

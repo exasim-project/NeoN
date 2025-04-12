@@ -19,7 +19,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
     auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
     const size_t size {1};
-    NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+    NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
     std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
     NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());

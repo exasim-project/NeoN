@@ -14,7 +14,7 @@ using Operator = NeoN::dsl::Operator;
 using Executor = NeoN::Executor;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
-using BoundaryFields = NeoN::BoundaryFields<NeoN::scalar>;
+using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */

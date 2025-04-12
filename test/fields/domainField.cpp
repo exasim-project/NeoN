@@ -22,7 +22,7 @@ TEST_CASE("Boundaries")
     SECTION("boundaryFields_" + execName)
     {
 
-        NeoN::BoundaryFields<double> bCs(exec, {0, 10, 20, 30});
+        NeoN::BoundaryData<double> bCs(exec, {0, 10, 20, 30});
 
         NeoN::fill(bCs.value(), 2.0);
         REQUIRE(equal(bCs.value(), 2.0));

@@ -18,7 +18,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vector)
     auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
     auto fA = NeoN::Field<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
-    auto bf = NeoN::BoundaryFields<TestType>(exec, mesh.boundaryMesh().offset());
+    auto bf = NeoN::BoundaryData<TestType>(exec, mesh.boundaryMesh().offset());
     auto bcs = std::vector<fvcc::VolumeBoundary<TestType>> {};
     auto scaleField = NeoN::Field<NeoN::scalar>(exec, 1, 2.0);
 

@@ -79,7 +79,7 @@ public:
         const Executor& exec,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields,
+        const BoundaryData<ValueType>& boundaryFields,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalField, boundaryFields}),

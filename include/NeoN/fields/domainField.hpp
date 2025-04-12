@@ -9,7 +9,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/boundaryFields.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -43,7 +43,7 @@ public:
     DomainField(
         const Executor& exec,
         const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields
+        const BoundaryData<ValueType>& boundaryFields
     )
         : exec_(exec), internalField_(exec, internalField), boundaryFields_(exec, boundaryFields)
     {}
@@ -93,10 +93,10 @@ public:
     Field<ValueType>& internalField() { return internalField_; }
 
 
-    const BoundaryFields<ValueType>& boundaryField() const { return boundaryFields_; }
+    const BoundaryData<ValueType>& boundaryField() const { return boundaryFields_; }
 
 
-    BoundaryFields<ValueType>& boundaryField() { return boundaryFields_; }
+    BoundaryData<ValueType>& boundaryField() { return boundaryFields_; }
 
     const Executor& exec() const { return exec_; }
 
@@ -104,7 +104,7 @@ private:
 
     Executor exec_; ///< The executor on which the field is stored
     Field<ValueType> internalField_;
-    BoundaryFields<ValueType> boundaryFields_;
+    BoundaryData<ValueType> boundaryFields_;
 };
 
 

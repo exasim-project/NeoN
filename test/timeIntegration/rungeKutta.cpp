@@ -20,7 +20,7 @@ using TemporalOperator = NeoN::dsl::TemporalOperator<NeoN::scalar>;
 using Executor = NeoN::Executor;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
-using BoundaryFields = NeoN::BoundaryFields<NeoN::scalar>;
+using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
 using Ddt = NeoN::dsl::temporal::Ddt<VolumeField>;
 
 // only for msvc
