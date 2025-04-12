@@ -11,7 +11,7 @@ Overview
 NeoN implements several field classes:
 
 - ``Field<ValueType>`` the basic GPU capable container class supporting algebraic operations
-- ``BoundaryFields<ValueType>`` A GPU friendly datastructure storing boundary data.
+- ``BoundaryData<ValueType>`` A GPU friendly datastructure storing boundary data.
 - ``DomainField<ValueType>`` The combination of an internal field and its corresponding boundary data.
 
 Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:
