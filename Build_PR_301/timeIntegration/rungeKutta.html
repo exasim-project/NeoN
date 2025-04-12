@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FiniteVolume" href="../finiteVolume/cellCentred/index.html" /><link rel="prev" title="Forward Euler" href="forwardEuler.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/timeIntegration/rungeKutta.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/timeIntegration/rungeKutta.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Runge Kutta - NeoFOAM documentation</title>
+        <title>Runge Kutta - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,7 +202,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -283,12 +283,12 @@
         <article role="main" id="furo-main-content">
           <section id="runge-kutta">
 <span id="timeintegration-rungekutta"></span><h1>Runge Kutta<a class="headerlink" href="#runge-kutta" title="Link to this heading">¶</a></h1>
-<p>The Runge-Kutta implementation in NeoFOAM leverages the Sundials library to provide high-order explicit time integration methods.
-This integration combines the robustness of Sundials with NeoFOAM’s field operations and Kokkos-based parallel execution capabilities.</p>
+<p>The Runge-Kutta implementation in NeoN leverages the Sundials library to provide high-order explicit time integration methods.
+This integration combines the robustness of Sundials with NeoN’s field operations and Kokkos-based parallel execution capabilities.</p>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">RungeKutta</span></code> class template provides a RAII-based wrapper around Sundials’ ERKStep module, managing all necessary resources for time integration.
-The implementation handles the conversion between NeoFOAM’s Kokkos-based fields and Sundials’ vector representations:</p>
+The implementation handles the conversion between NeoN’s Kokkos-based fields and Sundials’ vector representations:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">SolutionFieldType</span><span class="o">&gt;</span>
 <span class="kt">void</span><span class="w"> </span><span class="n">solve</span><span class="p">(</span><span class="n">Expression</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exp</span><span class="p">,</span><span class="w"> </span><span class="n">SolutionFieldType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">solutionField</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="n">dt</span><span class="p">)</span>
 <span class="p">{</span>
@@ -299,7 +299,7 @@ The implementation handles the conversion between NeoFOAM’s Kokkos-based field
 </div>
 <p>The class manages several key components:
 - Sundials context and memory management through RAII
-- Conversion between NeoFOAM fields and Sundials vectors
+- Conversion between NeoN fields and Sundials vectors
 - Integration with Kokkos execution spaces
 - Configuration of specific Runge-Kutta methods</p>
 </section>
@@ -347,7 +347,7 @@ The implementation handles the conversion between NeoFOAM’s Kokkos-based field
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoFOAM: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/executor/executor.hpp Source File</title>
+<title>NeoN: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/core/executor/executor.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">NeoFOAM
+   <div id="projectname">NeoN
    </div>
    <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
   </td>
@@ -83,24 +83,24 @@ $(document).ready(function() { init_codefold(0); });
 </div><!--header-->
 <div class="contents">
 <a href="executor_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023 NeoFOAM authors</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023 NeoN authors</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;NeoFOAM/core/executor/serialExecutor.hpp&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;NeoFOAM/core/executor/GPUExecutor.hpp&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;NeoFOAM/core/executor/CPUExecutor.hpp&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;NeoFOAM/core/error.hpp&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="serialExecutor_8hpp.html">NeoN/core/executor/serialExecutor.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="GPUExecutor_8hpp.html">NeoN/core/executor/GPUExecutor.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="CPUExecutor_8hpp.html">NeoN/core/executor/CPUExecutor.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="error_8hpp.html">NeoN/core/error.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoFOAM.html">NeoFOAM</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">   16</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a> = std::variant&lt;SerialExecutor, CPUExecutor, GPUExecutor&gt;;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">   16</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> = std::variant&lt;SerialExecutor, CPUExecutor, GPUExecutor&gt;;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#ace895d0abfec1573f663b84e098f7a03">   24</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceNeoFOAM.html#ace895d0abfec1573f663b84e098f7a03">operator==</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; lhs, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; rhs)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ac649c09e3045b009af8c9a60459e823b">   24</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceNeoN.html#ac649c09e3045b009af8c9a60459e823b">operator==</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; lhs, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; rhs)</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> std::visit(</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        []&lt;<span class="keyword">typename</span> ExecLhs,</div>
@@ -122,17 +122,21 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceNeoFOAM.html#a4354d14390c6cd1d3a813869a7aff63b">   51</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceNeoFOAM.html#a4354d14390c6cd1d3a813869a7aff63b">operator!=</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; lhs, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">Executor</a>&amp; rhs)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#acac5cd47c1ca0f8520e0938d101cb3b4">   51</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceNeoN.html#acac5cd47c1ca0f8520e0938d101cb3b4">operator!=</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; lhs, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; rhs)</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>{</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> !(lhs == rhs);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
 </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace NeoFOAM</span></div>
-<div class="ttc" id="anamespaceNeoFOAM_html"><div class="ttname"><a href="namespaceNeoFOAM.html">NeoFOAM</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
-<div class="ttc" id="anamespaceNeoFOAM_html_a4354d14390c6cd1d3a813869a7aff63b"><div class="ttname"><a href="namespaceNeoFOAM.html#a4354d14390c6cd1d3a813869a7aff63b">NeoFOAM::operator!=</a></div><div class="ttdeci">bool operator!=(const Executor &amp;lhs, const Executor &amp;rhs)</div><div class="ttdoc">Checks if two executors are not equal, i.e. they are not of the same type.</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00051">executor.hpp:51</a></div></div>
-<div class="ttc" id="anamespaceNeoFOAM_html_aaa4d35d275559f501cb6a1eec717c905"><div class="ttname"><a href="namespaceNeoFOAM.html#aaa4d35d275559f501cb6a1eec717c905">NeoFOAM::Executor</a></div><div class="ttdeci">std::variant&lt; SerialExecutor, CPUExecutor, GPUExecutor &gt; Executor</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00016">executor.hpp:16</a></div></div>
-<div class="ttc" id="anamespaceNeoFOAM_html_ace895d0abfec1573f663b84e098f7a03"><div class="ttname"><a href="namespaceNeoFOAM.html#ace895d0abfec1573f663b84e098f7a03">NeoFOAM::operator==</a></div><div class="ttdeci">bool operator==(const Executor &amp;lhs, const Executor &amp;rhs)</div><div class="ttdoc">Checks if two executors are equal, i.e. they are of the same type.</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00024">executor.hpp:24</a></div></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="ttc" id="aCPUExecutor_8hpp_html"><div class="ttname"><a href="CPUExecutor_8hpp.html">CPUExecutor.hpp</a></div></div>
+<div class="ttc" id="aGPUExecutor_8hpp_html"><div class="ttname"><a href="GPUExecutor_8hpp.html">GPUExecutor.hpp</a></div></div>
+<div class="ttc" id="aerror_8hpp_html"><div class="ttname"><a href="error_8hpp.html">error.hpp</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_a84c514269c3ade9cf4103acb1210a65f"><div class="ttname"><a href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a></div><div class="ttdeci">std::variant&lt; SerialExecutor, CPUExecutor, GPUExecutor &gt; Executor</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00016">executor.hpp:16</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_ac649c09e3045b009af8c9a60459e823b"><div class="ttname"><a href="namespaceNeoN.html#ac649c09e3045b009af8c9a60459e823b">NeoN::operator==</a></div><div class="ttdeci">bool operator==(const Executor &amp;lhs, const Executor &amp;rhs)</div><div class="ttdoc">Checks if two executors are equal, i.e. they are of the same type.</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00024">executor.hpp:24</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_acac5cd47c1ca0f8520e0938d101cb3b4"><div class="ttname"><a href="namespaceNeoN.html#acac5cd47c1ca0f8520e0938d101cb3b4">NeoN::operator!=</a></div><div class="ttdeci">bool operator!=(const Executor &amp;lhs, const Executor &amp;rhs)</div><div class="ttdoc">Checks if two executors are not equal, i.e. they are not of the same type.</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00051">executor.hpp:51</a></div></div>
+<div class="ttc" id="aserialExecutor_8hpp_html"><div class="ttname"><a href="serialExecutor_8hpp.html">serialExecutor.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

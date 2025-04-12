@@ -4,7 +4,7 @@
 ``fill``
 --------
 
-Header: ``"NeoFOAM/fields/fieldFreeFunctions.hpp"``
+Header: ``"NeoN/fields/fieldFreeFunctions.hpp"``
 
 
 Description
@@ -16,7 +16,7 @@ The function ``fill`` fills the entire field with a given value or a subfield wi
 Definition
 ^^^^^^^^^^
 
-.. doxygenfunction:: NeoFOAM::fill
+.. doxygenfunction:: NeoN::fill
 
 Example
 ^^^^^^^
@@ -24,11 +24,11 @@ Example
 .. code-block:: cpp
 
     // or any other executor CPUExecutor, SerialExecutor
-    NeoFOAM::Executor = NeoFOAM::GPUExecutor{};
+    NeoN::Executor = NeoN::GPUExecutor{};
 
-    NeoFOAM::Field<NeoFOAM::scalar> field(exec, 2);
-    NeoFOAM::fill(field, 1.0);
-    NeoFOAM::fill(field, 2.0, {1, 2}); // fill a subfield with a value
+    NeoN::Field<NeoN::scalar> field(exec, 2);
+    NeoN::fill(field, 1.0);
+    NeoN::fill(field, 2.0, {1, 2}); // fill a subfield with a value
     // copy to host
     auto hostField = field.copyToHost();
     for (auto i = 0; i < field.size(); ++i)

@@ -3,7 +3,7 @@
 FiniteVolume
 ============
 
-NeoFOAM currently provides finite volume specific implementations.
+NeoN currently provides finite volume specific implementations.
 All finite volume specific algorithms and datastructures can be found
 `include/finiteVolume/cellCentred` and the corresponding namespace.
 

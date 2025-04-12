@@ -9,15 +9,15 @@ It can be used to represent cell to cell stencil.
 
 .. code-block:: cpp
 
-    NeoFOAM::Field<NeoFOAM::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-    NeoFOAM::Field<NeoFOAM::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
+    NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-    NeoFOAM::SegmentedField<NeoFOAM::label, NeoFOAM::localIdx> segField(values, segments);
+    NeoN::SegmentedField<NeoN::label, NeoN::localIdx> segField(values, segments);
     auto [valueSpan, segment] = segField.spans();
     auto segView = segField.view();
-    NeoFOAM::Field<NeoFOAM::label> result(exec, 5);
+    NeoN::Field<NeoN::label> result(exec, 5);
 
-    NeoFOAM::fill(result, 0);
+    NeoN::fill(result, 0);
     auto resultSpan = result.view();
 
     parallelFor(

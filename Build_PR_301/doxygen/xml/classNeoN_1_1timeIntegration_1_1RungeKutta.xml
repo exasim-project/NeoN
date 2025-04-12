@@ -1,0 +1,708 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1timeIntegration_1_1RungeKutta" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::timeIntegration::RungeKutta</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">TimeIntegratorBase&lt; SolutionFieldType &gt;::template Register</basecompoundref>
+    <includes refid="rungeKutta_8hpp" local="no">rungeKutta.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename SolutionFieldType</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" prot="public" static="no">
+        <type>typename SolutionFieldType::FieldValueType</type>
+        <definition>using NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::ValueType =  typename SolutionFieldType::FieldValueType</definition>
+        <argsstring></argsstring>
+        <name>ValueType</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::ValueType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="57" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1aaecf3d427f1f2f05fd93872c6e803428" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt; SolutionFieldType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref>&lt; SolutionFieldType &gt; &gt;</type>
+        <definition>using NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::Base =  TimeIntegratorBase&lt;SolutionFieldType&gt;::template Register&lt;RungeKutta&lt;SolutionFieldType&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="58" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9629c6a5bf916049477857c3f3975a6e" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">NeoN::sundials::SKVector</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt;</type>
+        <definition>NeoN::sundials::SKVector&lt;ValueType&gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::solution_</definition>
+        <argsstring></argsstring>
+        <name>solution_</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::solution_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Solution vector, contains the sundails N_Vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="138" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a829db7b9aab270727b660aa18be6de8b" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1sundials_1_1SKVector" kindref="compound">NeoN::sundials::SKVector</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt;</type>
+        <definition>NeoN::sundials::SKVector&lt;ValueType&gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initialConditions_</definition>
+        <argsstring></argsstring>
+        <name>initialConditions_</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initialConditions_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initial conditions vector, contains the sundails N_Vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="140" column="9" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a8c68149b39d0af5f91f1b84a61c6662e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; SUNContext &gt;</type>
+        <definition>std::shared_ptr&lt;SUNContext&gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::context_</qualifiedname>
+        <initializer>{
+        nullptr, <ref refid="namespaceNeoN_1_1sundials_1a3cba60c69c27f51e31d139dde5107d4a" kindref="member">sundials::SUN_CONTEXT_DELETER</ref>
+    }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The SUNContext for the solve. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="141" column="21" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="141" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a06b8e4b11b9bf45d35980137996c4ad2" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; char, decltype(<ref refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" kindref="member">sundials::SUN_ARK_DELETER</ref>)&gt;</type>
+        <definition>std::unique_ptr&lt;char, decltype(sundials::SUN_ARK_DELETER)&gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::ODEMemory_</definition>
+        <argsstring></argsstring>
+        <name>ODEMemory_</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::ODEMemory_</qualifiedname>
+        <initializer>{
+        nullptr, <ref refid="namespaceNeoN_1_1sundials_1aca60627e32ac174ed4f8fac998408423" kindref="member">sundials::SUN_ARK_DELETER</ref>
+    }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The &apos;memory&apos; sundails for the RK solver. (note void* is not stl compliant). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="144" column="21" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="144" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a6abf8bfdaa2fddeb6415374700819fc8" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">NeoN::dsl::Expression</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt; &gt;</type>
+        <definition>std::unique_ptr&lt;NeoN::dsl::Expression&lt;ValueType&gt; &gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::pdeExpr_</definition>
+        <argsstring></argsstring>
+        <name>pdeExpr_</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::pdeExpr_</qualifiedname>
+        <initializer>{nullptr
+    }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pointer to the pde system we are integrating in time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="147" column="21" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="147" bodyend="148"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac82f51b53a19e02ecf85c2eb75c61135" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::RungeKutta</definition>
+        <argsstring>()=default</argsstring>
+        <name>RungeKutta</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::RungeKutta</qualifiedname>
+        <briefdescription>
+<para>Default constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="64" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a3bcf806e7531f44ec834e957d2434266" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::~RungeKutta</definition>
+        <argsstring>()=default</argsstring>
+        <name>~RungeKutta</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::~RungeKutta</qualifiedname>
+        <briefdescription>
+<para>Default destructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="69" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1abcbcc88537c122022f00bf802949f37d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::RungeKutta</definition>
+        <argsstring>(const Dictionary &amp;schemeDict, const Dictionary &amp;solutionDict)</argsstring>
+        <name>RungeKutta</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::RungeKutta</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>schemeDict</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>solutionDict</declname>
+        </param>
+        <briefdescription>
+<para>Constructor that initializes the <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> solver with a dictionary configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dict</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The dictionary containing configuration parameters. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="75" column="5" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1add56ae16a9fa9cbaf5fa33bafbba5de5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::RungeKutta</definition>
+        <argsstring>(const RungeKutta &amp;other)</argsstring>
+        <name>RungeKutta</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::RungeKutta</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Copy constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> instance to copy from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>Sundials Kokkos vectors have copy constructors, N_Vectors should be constructed from the Kokkos vectors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="85" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac3a85b86ad022087031e193235569376" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::RungeKutta</definition>
+        <argsstring>(RungeKutta &amp;&amp;other)</argsstring>
+        <name>RungeKutta</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::RungeKutta</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Move Constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> instance to move from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="91" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1ad422add2036860e2621914428034e417" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;</type>
+        <definition>RungeKutta &amp; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::operator=</definition>
+        <argsstring>(const RungeKutta &amp;other)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="94" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1ab92950535a7c229ef04a5822bb147d76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;</type>
+        <definition>RungeKutta &amp; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::operator=</definition>
+        <argsstring>(RungeKutta &amp;&amp;other)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta" kindref="compound">RungeKutta</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="97" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a219dea3b1fa78f2e1628b1ff68c7bba6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::solve</definition>
+        <argsstring>(dsl::Expression&lt; ValueType &gt; &amp;exp, SolutionFieldType &amp;solutionField, scalar t, const scalar dt) override</argsstring>
+        <name>solve</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::solve</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt; &amp;</type>
+          <declname>exp</declname>
+        </param>
+        <param>
+          <type>SolutionFieldType &amp;</type>
+          <declname>solutionField</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+<para>Solves one (explicit) time step, from n to n+1. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to be solved </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>solutionField</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field containing the solution. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>t</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The current time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time step size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="124" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a5fbe3d97a38bf500c90dc42dfc638dbe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt; SolutionFieldType &gt; &gt;</type>
+        <definition>std::unique_ptr&lt; TimeIntegratorBase&lt; SolutionFieldType &gt; &gt; NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>clone</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::clone</qualifiedname>
+        <briefdescription>
+<para>Return a copy of this instantiated class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>std::unique_ptr to the new copy. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="132" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1afab8b8f89d1678b4b42077ecf1827f60" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::name</definition>
+        <argsstring>()</argsstring>
+        <name>name</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::name</qualifiedname>
+        <briefdescription>
+<para>Returns the name of the class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>std::string(&quot;Runge-Kutta&quot;). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="103" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="103" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a2e15f280ebd141ba0bc8b27ea0a4d4f6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::doc</definition>
+        <argsstring>()</argsstring>
+        <name>doc</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::doc</qualifiedname>
+        <briefdescription>
+<para>Returns the documentation for the class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>std::string containing class documentation. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="109" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="109" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9249abcd77c2d8534b83cf16998b9ee5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::schema</definition>
+        <argsstring>()</argsstring>
+        <name>schema</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::schema</qualifiedname>
+        <briefdescription>
+<para>Returns the schema for the class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>std::string containing the schema definition. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="115" column="24" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="115" bodyend="115"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1abf1f52f4db6722eeb619fb091bdddf04" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initSUNERKSolver</definition>
+        <argsstring>(dsl::Expression&lt; ValueType &gt; &amp;exp, SolutionFieldType &amp;field, const scalar t)</argsstring>
+        <name>initSUNERKSolver</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initSUNERKSolver</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt; &amp;</type>
+          <declname>exp</declname>
+        </param>
+        <param>
+          <type>SolutionFieldType &amp;</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the complete Sundials solver setup. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The (DSL) expression being integrated in time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The solution field </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>t</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The current time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time step size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="158" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1acb559270ceb861d33b3624eca91973ee" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initExpression</definition>
+        <argsstring>(const dsl::Expression&lt; ValueType &gt; &amp;exp)</argsstring>
+        <name>initExpression</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initExpression</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression</ref>&lt; <ref refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" kindref="member">ValueType</ref> &gt; &amp;</type>
+          <declname>exp</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the PDE expression to be solved. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to be initialized </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="164" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a360b8461a93acac2955fced03368553d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initSUNContext</definition>
+        <argsstring>()</argsstring>
+        <name>initSUNContext</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initSUNContext</qualifiedname>
+        <briefdescription>
+<para>Initializes the Sundials context for the solver. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="169" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a59f14a66d7de9ce9c7eacf39fedc592c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initSUNVector</definition>
+        <argsstring>(const Executor &amp;exec, size_t size)</argsstring>
+        <name>initSUNVector</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initSUNVector</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the Sundials vectors for solution storage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The executor of the field being integrated in time. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The size of the vectors to be initialized </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="176" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a0c0bf023a99f5d35e972b380b1cfd75b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initSUNInitialConditions</definition>
+        <argsstring>(const SolutionFieldType &amp;solutionField)</argsstring>
+        <name>initSUNInitialConditions</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initSUNInitialConditions</qualifiedname>
+        <param>
+          <type>const SolutionFieldType &amp;</type>
+          <declname>solutionField</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the initial conditions for the solver. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>solutionField</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field containing the initial conditions </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="182" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1RungeKutta_1a049c42fec6f8caa842b337515298a52b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;::initODEMemory</definition>
+        <argsstring>(const scalar t)</argsstring>
+        <name>initODEMemory</name>
+        <qualifiedname>NeoN::timeIntegration::RungeKutta::initODEMemory</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the ODE memory and solver parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>t</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial time for the solver </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="188" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Integrates in time, using Sundials, a PDE expression using the Runge-Kutta method. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>SolutionFieldType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Solution field type, should be a volume or surface field.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Implements explicit Runge-Kutta time integration using the Sundials library. The class manages Sundials vectors and memory through RAII principles, handling the conversion between internal field representations and Sundials&apos; N_Vector format. Supports various (at present explicit) Runge-Kutta methods which can be specified through the dictionary configuration. The main interface for a solve is through the <computeroutput>solve</computeroutput> function.</para>
+<para><simplesect kind="note"><para>Useful Sundials documentation below, currently we have implemented only an explicit Runge-Kutta interface, this simplifies things considerably as compared to some of the examples: Initialization (and order thereof): <ulink url="https://sundials.readthedocs.io/en/latest/arkode/Usage/Skeleton.html">https://sundials.readthedocs.io/en/latest/arkode/Usage/Skeleton.html</ulink> Sundials-Kokkos: <ulink url="https://sundials.readthedocs.io/en/latest/nvectors/NVector_links.html#the-nvector-kokkos-module">https://sundials.readthedocs.io/en/latest/nvectors/NVector_links.html#the-nvector-kokkos-module</ulink> Sundials Contexts (scroll to bottom eg, they don&apos;t like copying): <ulink url="https://sundials.readthedocs.io/en/latest/sundials/SUNContext_link.html#c.SUNContext_Create">https://sundials.readthedocs.io/en/latest/sundials/SUNContext_link.html#c.SUNContext_Create</ulink></para>
+</simplesect>
+<simplesect kind="warning"><para>For developers:<orderedlist>
+<listitem><para>This class uses Sundials-Kokkos vectors for computation, which are immediately wrapped as Sundials N_Vectors. After initialization, only interact with the N_Vector interface as per Sundials guidelines.</para>
+</listitem><listitem><para>The Sundials context is supposed to only be created and freed once in a program, making copying less desirable, see above. However we need to copy, so the context is placed in a shared_ptr to prevent early freeing. Please read the documentation about multiple, concurrent solves (you must not do them). You have been warned. </para>
+</listitem></orderedlist>
+</para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1RungeKutta"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>TimeIntegratorBase::template Register&lt; RungeKutta&lt; SolutionFieldType &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::timeIntegration::RungeKutta&lt; SolutionFieldType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1RungeKutta"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>TimeIntegratorBase::template Register&lt; RungeKutta&lt; SolutionFieldType &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" line="52" column="1" bodyfile="/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/timeIntegration/rungeKutta.hpp" bodystart="54" bodyend="189"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1aaecf3d427f1f2f05fd93872c6e803428" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a5fbe3d97a38bf500c90dc42dfc638dbe" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>clone</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a8c68149b39d0af5f91f1b84a61c6662e" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>context_</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a2e15f280ebd141ba0bc8b27ea0a4d4f6" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1acb559270ceb861d33b3624eca91973ee" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initExpression</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a829db7b9aab270727b660aa18be6de8b" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initialConditions_</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a049c42fec6f8caa842b337515298a52b" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initODEMemory</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a360b8461a93acac2955fced03368553d" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initSUNContext</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1abf1f52f4db6722eeb619fb091bdddf04" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initSUNERKSolver</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a0c0bf023a99f5d35e972b380b1cfd75b" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initSUNInitialConditions</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a59f14a66d7de9ce9c7eacf39fedc592c" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>initSUNVector</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1afab8b8f89d1678b4b42077ecf1827f60" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>name</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a06b8e4b11b9bf45d35980137996c4ad2" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>ODEMemory_</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ad422add2036860e2621914428034e417" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>operator=</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ab92950535a7c229ef04a5822bb147d76" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>operator=</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a6abf8bfdaa2fddeb6415374700819fc8" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>pdeExpr_</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac82f51b53a19e02ecf85c2eb75c61135" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>RungeKutta</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1abcbcc88537c122022f00bf802949f37d" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>RungeKutta</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1add56ae16a9fa9cbaf5fa33bafbba5de5" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>RungeKutta</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1ac3a85b86ad022087031e193235569376" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>RungeKutta</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9249abcd77c2d8534b83cf16998b9ee5" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a9629c6a5bf916049477857c3f3975a6e" prot="private" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>solution_</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a219dea3b1fa78f2e1628b1ff68c7bba6" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>solve</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1af8eeee2250f387753bc83fd01a43e1dc" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>ValueType</name></member>
+      <member refid="classNeoN_1_1timeIntegration_1_1RungeKutta_1a3bcf806e7531f44ec834e957d2434266" prot="public" virt="non-virtual"><scope>NeoN::timeIntegration::RungeKutta</scope><name>~RungeKutta</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

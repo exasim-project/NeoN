@@ -1,0 +1,317 @@
+\doxysection{NeoN\+::sundials\+::SKVector\texorpdfstring{$<$}{<} Value\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1sundials_1_1SKVector}{}\label{classNeoN_1_1sundials_1_1SKVector}\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+
+
+Unified interface for SUNDIALS Kokkos vector management.  
+
+
+
+
+{\ttfamily \#include $<$sundials.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a6f44a918379395ebcb47572213e7ef20}{SKVector\+SerialV}} = \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorSerial}{SKVector\+Serial}}$<$ Value\+Type $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a8bf00f10e8ac0094fa7289f3ef88f0fc}{SKVector\+Host\+DefaultV}} = \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorHostDefault}{SKVector\+Host\+Default}}$<$ Value\+Type $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ae86efaf7da383d97231f1fdeed3598d8}{SKDefault\+VectorV}} = \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorDefault}{SKVector\+Default}}$<$ Value\+Type $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}{SKVector\+Variant}} = std\+::variant$<$ \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a6f44a918379395ebcb47572213e7ef20}{SKVector\+SerialV}}, \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a8bf00f10e8ac0094fa7289f3ef88f0fc}{SKVector\+Host\+DefaultV}}, \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ae86efaf7da383d97231f1fdeed3598d8}{SKDefault\+VectorV}} $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a55efd18a8ac8a7f87439b1c58cc30a7d}{SKVector}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. Initializes with host-\/default vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a9dd70282bf6718a25e8ad810a4f707e7}{\texorpdfstring{$\sim$}{\string~}\+SKVector}} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a913b7a91de436ab615affd6f507fc578}{SKVector}} (const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \&)=default
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a7826492b421fe6765099271e2b872623}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \&)=delete
+\begin{DoxyCompactList}\small\item\em Copy assignment operator (deleted). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a90f0b55a7a83e627495a5698b3a379c2}{SKVector}} (\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \&\&) noexcept=default
+\begin{DoxyCompactList}\small\item\em Move constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a842b6445b72ad55903ec61f21b05c2cc}{operator=}} (\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \&\&) noexcept=delete
+\begin{DoxyCompactList}\small\item\em Move assignment operator (deleted). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a7dc25bd6dec0981fad907c94c66da645}{set\+Executor}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec)
+\begin{DoxyCompactList}\small\item\em Sets appropriate vector implementation based on executor type. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a1728457d156cf45c87eaba4bf32ea7a1}{init\+NVector}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size, std\+::shared\+\_\+ptr$<$ SUNContext $>$ context)
+\begin{DoxyCompactList}\small\item\em Initializes underlying vector with given size and context. \end{DoxyCompactList}\item 
+const N\+\_\+\+Vector \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a3741786c8803463c8474313439d4f62e}{sun\+NVector}} () const
+\begin{DoxyCompactList}\small\item\em Gets const reference to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\item 
+N\+\_\+\+Vector \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a51f1a5ba7d6887820486572983a39296}{sun\+NVector}} ()
+\begin{DoxyCompactList}\small\item\em Gets mutable reference to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}{SKVector\+Variant}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a6eabd2e44193e47f31b086d5ca43d4e3}{variant}} () const
+\begin{DoxyCompactList}\small\item\em Gets const reference to variant storing implementation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}{SKVector\+Variant}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a0f9b14c6f6d4ee27a621c9dd8089c06b}{variant}} ()
+\begin{DoxyCompactList}\small\item\em Gets mutable reference to variant storing implementation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type$>$\newline
+class Neo\+N\+::sundials\+::\+SKVector$<$ Value\+Type $>$}
+Unified interface for SUNDIALS Kokkos vector management. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The vector data type\\
+\hline
+\end{DoxyTemplParams}
+Manages executor-\/specific vector implementations through variant storage. Provides common interface for vector initialization and access. 
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00372}{372}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_ae86efaf7da383d97231f1fdeed3598d8}\label{classNeoN_1_1sundials_1_1SKVector_ae86efaf7da383d97231f1fdeed3598d8} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKDefaultVectorV@{SKDefaultVectorV}}
+\index{SKDefaultVectorV@{SKDefaultVectorV}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKDefaultVectorV}{SKDefaultVectorV}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKDefault\+VectorV =  \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorDefault}{SKVector\+Default}}$<$Value\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00378}{378}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a8bf00f10e8ac0094fa7289f3ef88f0fc}\label{classNeoN_1_1sundials_1_1SKVector_a8bf00f10e8ac0094fa7289f3ef88f0fc} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVectorHostDefaultV@{SKVectorHostDefaultV}}
+\index{SKVectorHostDefaultV@{SKVectorHostDefaultV}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVectorHostDefaultV}{SKVectorHostDefaultV}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector\+Host\+DefaultV =  \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorHostDefault}{SKVector\+Host\+Default}}$<$Value\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00377}{377}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a6f44a918379395ebcb47572213e7ef20}\label{classNeoN_1_1sundials_1_1SKVector_a6f44a918379395ebcb47572213e7ef20} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVectorSerialV@{SKVectorSerialV}}
+\index{SKVectorSerialV@{SKVectorSerialV}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVectorSerialV}{SKVectorSerialV}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector\+SerialV =  \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorSerial}{SKVector\+Serial}}$<$Value\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00376}{376}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}\label{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVectorVariant@{SKVectorVariant}}
+\index{SKVectorVariant@{SKVectorVariant}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVectorVariant}{SKVectorVariant}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector\+Variant =  std\+::variant$<$\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a6f44a918379395ebcb47572213e7ef20}{SKVector\+SerialV}}, \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_a8bf00f10e8ac0094fa7289f3ef88f0fc}{SKVector\+Host\+DefaultV}}, \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ae86efaf7da383d97231f1fdeed3598d8}{SKDefault\+VectorV}}$>$}
+
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00379}{379}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a55efd18a8ac8a7f87439b1c58cc30a7d}\label{classNeoN_1_1sundials_1_1SKVector_a55efd18a8ac8a7f87439b1c58cc30a7d} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVector@{SKVector}}
+\index{SKVector@{SKVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVector()}{SKVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor. Initializes with host-\/default vector. 
+
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00384}{384}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a9dd70282bf6718a25e8ad810a4f707e7}\label{classNeoN_1_1sundials_1_1SKVector_a9dd70282bf6718a25e8ad810a4f707e7} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!````~SKVector@{\texorpdfstring{$\sim$}{\string~}SKVector}}
+\index{````~SKVector@{\texorpdfstring{$\sim$}{\string~}SKVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}SKVector()}{\string~SKVector()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default destructor. 
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a913b7a91de436ab615affd6f507fc578}\label{classNeoN_1_1sundials_1_1SKVector_a913b7a91de436ab615affd6f507fc578} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVector@{SKVector}}
+\index{SKVector@{SKVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVector()}{SKVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}}$<$ Value\+Type $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Copy constructor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em other} & Source \doxylink{classNeoN_1_1sundials_1_1SKVector}{SKVector} to copy from \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a90f0b55a7a83e627495a5698b3a379c2}\label{classNeoN_1_1sundials_1_1SKVector_a90f0b55a7a83e627495a5698b3a379c2} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!SKVector@{SKVector}}
+\index{SKVector@{SKVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SKVector()}{SKVector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::\+SKVector (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}}$<$ Value\+Type $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+
+
+Move constructor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em other} & Source \doxylink{classNeoN_1_1sundials_1_1SKVector}{SKVector} to move from \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a1728457d156cf45c87eaba4bf32ea7a1}\label{classNeoN_1_1sundials_1_1SKVector_a1728457d156cf45c87eaba4bf32ea7a1} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!initNVector@{initNVector}}
+\index{initNVector@{initNVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{initNVector()}{initNVector()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::init\+NVector (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size,  }\item[{std\+::shared\+\_\+ptr$<$ SUNContext $>$}]{context }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Initializes underlying vector with given size and context. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & Number of vector elements \\
+\hline
+{\em context} & SUNDIALS context for vector operations \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00446}{446}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a7826492b421fe6765099271e2b872623}\label{classNeoN_1_1sundials_1_1SKVector_a7826492b421fe6765099271e2b872623} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}}$<$ Value\+Type $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Copy assignment operator (deleted). 
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a842b6445b72ad55903ec61f21b05c2cc}\label{classNeoN_1_1sundials_1_1SKVector_a842b6445b72ad55903ec61f21b05c2cc} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{SKVector}}$<$ Value\+Type $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}, {\ttfamily [noexcept]}}
+
+
+
+Move assignment operator (deleted). 
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a7dc25bd6dec0981fad907c94c66da645}\label{classNeoN_1_1sundials_1_1SKVector_a7dc25bd6dec0981fad907c94c66da645} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!setExecutor@{setExecutor}}
+\index{setExecutor@{setExecutor}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{setExecutor()}{setExecutor()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::set\+Executor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets appropriate vector implementation based on executor type. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em exec} & \doxylink{namespaceNeoN}{NeoN} executor specifying computation space \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00417}{417}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a51f1a5ba7d6887820486572983a39296}\label{classNeoN_1_1sundials_1_1SKVector_a51f1a5ba7d6887820486572983a39296} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!sunNVector@{sunNVector}}
+\index{sunNVector@{sunNVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{sunNVector()}{sunNVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+N\+\_\+\+Vector \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::sun\+NVector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets mutable reference to underlying N\+\_\+\+Vector. 
+
+\begin{DoxyReturn}{Returns}
+Mutable reference to wrapped SUNDIALS N\+\_\+\+Vector 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00468}{468}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a3741786c8803463c8474313439d4f62e}\label{classNeoN_1_1sundials_1_1SKVector_a3741786c8803463c8474313439d4f62e} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!sunNVector@{sunNVector}}
+\index{sunNVector@{sunNVector}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{sunNVector()}{sunNVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const N\+\_\+\+Vector \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::sun\+NVector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets const reference to underlying N\+\_\+\+Vector. 
+
+\begin{DoxyReturn}{Returns}
+Const reference to wrapped SUNDIALS N\+\_\+\+Vector 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00457}{457}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a0f9b14c6f6d4ee27a621c9dd8089c06b}\label{classNeoN_1_1sundials_1_1SKVector_a0f9b14c6f6d4ee27a621c9dd8089c06b} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!variant@{variant}}
+\index{variant@{variant}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{variant()}{variant()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}{SKVector\+Variant}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::variant (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets mutable reference to variant storing implementation. 
+
+\begin{DoxyReturn}{Returns}
+Mutable reference to vector variant 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00483}{483}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1sundials_1_1SKVector_a6eabd2e44193e47f31b086d5ca43d4e3}\label{classNeoN_1_1sundials_1_1SKVector_a6eabd2e44193e47f31b086d5ca43d4e3} 
+\index{NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}!variant@{variant}}
+\index{variant@{variant}!NeoN::sundials::SKVector$<$ ValueType $>$@{NeoN::sundials::SKVector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{variant()}{variant()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector_ad31adb2bd937b354f20430e5ed0c4fd0}{SKVector\+Variant}} \& \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector}}$<$ Value\+Type $>$\+::variant (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets const reference to variant storing implementation. 
+
+\begin{DoxyReturn}{Returns}
+Const reference to vector variant 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00477}{477}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/time\+Integration/\mbox{\hyperlink{sundials_8hpp}{sundials.\+hpp}}\end{DoxyCompactItemize}

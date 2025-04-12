@@ -1,0 +1,299 @@
+\doxysection{NeoN\+::time\+Integration\+::Runge\+Kutta\texorpdfstring{$<$}{<} Solution\+Field\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta}{}\label{classNeoN_1_1timeIntegration_1_1RungeKutta}\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+
+
+Integrates in time, using Sundials, a PDE expression using the Runge-\/\+Kutta method.  
+
+
+
+
+{\ttfamily \#include $<$runge\+Kutta.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::time\+Integration\+::Runge\+Kutta\texorpdfstring{$<$}{<} Solution\+Field\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1timeIntegration_1_1RungeKutta}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}{Value\+Type}} = typename Solution\+Field\+Type\+::\+Field\+Value\+Type
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428}{Base}} = \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Field\+Type $>$\+::template \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$ Solution\+Field\+Type $>$ $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac82f51b53a19e02ecf85c2eb75c61135}{Runge\+Kutta}} ()=default
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a3bcf806e7531f44ec834e957d2434266}{\texorpdfstring{$\sim$}{\string~}\+Runge\+Kutta}} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_abcbcc88537c122022f00bf802949f37d}{Runge\+Kutta}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&scheme\+Dict, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&solution\+Dict)
+\begin{DoxyCompactList}\small\item\em Constructor that initializes the \doxylink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta} solver with a dictionary configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_add56ae16a9fa9cbaf5fa33bafbba5de5}{Runge\+Kutta}} (const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ac3a85b86ad022087031e193235569376}{Runge\+Kutta}} (\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \&\&other)
+\begin{DoxyCompactList}\small\item\em Move Constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ad422add2036860e2621914428034e417}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \&other)=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_ab92950535a7c229ef04a5822bb147d76}{operator=}} (\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \&\&other)=delete
+\item 
+void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a219dea3b1fa78f2e1628b1ff68c7bba6}{solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}{Value\+Type}} $>$ \&exp, Solution\+Field\+Type \&solution\+Field, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) override
+\begin{DoxyCompactList}\small\item\em Solves one (explicit) time step, from n to n+1. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Field\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a5fbe3d97a38bf500c90dc42dfc638dbe}{clone}} () const override
+\begin{DoxyCompactList}\small\item\em Return a copy of this instantiated class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_afab8b8f89d1678b4b42077ecf1827f60}{name}} ()
+\begin{DoxyCompactList}\small\item\em Returns the name of the class. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a2e15f280ebd141ba0bc8b27ea0a4d4f6}{doc}} ()
+\begin{DoxyCompactList}\small\item\em Returns the documentation for the class. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_a9249abcd77c2d8534b83cf16998b9ee5}{schema}} ()
+\begin{DoxyCompactList}\small\item\em Returns the schema for the class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Solution\+Field\+Type$>$\newline
+class Neo\+N\+::time\+Integration\+::\+Runge\+Kutta$<$ Solution\+Field\+Type $>$}
+Integrates in time, using Sundials, a PDE expression using the Runge-\/\+Kutta method. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Solution\+Field\+Type} & The Solution field type, should be a volume or surface field.\\
+\hline
+\end{DoxyTemplParams}
+Implements explicit Runge-\/\+Kutta time integration using the Sundials library. The class manages Sundials vectors and memory through RAII principles, handling the conversion between internal field representations and Sundials\textquotesingle{} N\+\_\+\+Vector format. Supports various (at present explicit) Runge-\/\+Kutta methods which can be specified through the dictionary configuration. The main interface for a solve is through the {\ttfamily solve} function.
+
+\begin{DoxyNote}{Note}
+Useful Sundials documentation below, currently we have implemented only an explicit Runge-\/\+Kutta interface, this simplifies things considerably as compared to some of the examples\+: Initialization (and order thereof)\+: \href{https://sundials.readthedocs.io/en/latest/arkode/Usage/Skeleton.html}{\texttt{ https\+://sundials.\+readthedocs.\+io/en/latest/arkode/\+Usage/\+Skeleton.\+html}} Sundials-\/\+Kokkos\+: \href{https://sundials.readthedocs.io/en/latest/nvectors/NVector_links.html\#the-nvector-kokkos-module}{\texttt{ https\+://sundials.\+readthedocs.\+io/en/latest/nvectors/\+NVector\+\_\+links.\+html\#the-\/nvector-\/kokkos-\/module}} Sundials Contexts (scroll to bottom eg, they don\textquotesingle{}t like copying)\+: \href{https://sundials.readthedocs.io/en/latest/sundials/SUNContext_link.html\#c.SUNContext_Create}{\texttt{ https\+://sundials.\+readthedocs.\+io/en/latest/sundials/\+SUNContext\+\_\+link.\+html\#c.\+SUNContext\+\_\+\+Create}}
+\end{DoxyNote}
+\begin{DoxyWarning}{Warning}
+For developers\+:
+\begin{DoxyEnumerate}
+\item This class uses Sundials-\/\+Kokkos vectors for computation, which are immediately wrapped as Sundials N\+\_\+\+Vectors. After initialization, only interact with the N\+\_\+\+Vector interface as per Sundials guidelines.
+\item The Sundials context is supposed to only be created and freed once in a program, making copying less desirable, see above. However we need to copy, so the context is placed in a shared\+\_\+ptr to prevent early freeing. Please read the documentation about multiple, concurrent solves (you must not do them). You have been warned. 
+\end{DoxyEnumerate}
+\end{DoxyWarning}
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_aaecf3d427f1f2f05fd93872c6e803428} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!Base@{Base}}
+\index{Base@{Base}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{Base}{Base}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Base =  \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$Solution\+Field\+Type$>$\+::template \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}$<$\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$Solution\+Field\+Type$>$ $>$}
+
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!ValueType@{ValueType}}
+\index{ValueType@{ValueType}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{ValueType}{ValueType}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Value\+Type =  typename Solution\+Field\+Type\+::\+Field\+Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_ac82f51b53a19e02ecf85c2eb75c61135}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_ac82f51b53a19e02ecf85c2eb75c61135} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!RungeKutta@{RungeKutta}}
+\index{RungeKutta@{RungeKutta}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{RungeKutta()}{RungeKutta()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Runge\+Kutta (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default constructor. 
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_a3bcf806e7531f44ec834e957d2434266}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_a3bcf806e7531f44ec834e957d2434266} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!````~RungeKutta@{\texorpdfstring{$\sim$}{\string~}RungeKutta}}
+\index{````~RungeKutta@{\texorpdfstring{$\sim$}{\string~}RungeKutta}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}RungeKutta()}{\string~RungeKutta()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default destructor. 
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_abcbcc88537c122022f00bf802949f37d}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_abcbcc88537c122022f00bf802949f37d} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!RungeKutta@{RungeKutta}}
+\index{RungeKutta@{RungeKutta}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{RungeKutta()}{RungeKutta()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Runge\+Kutta (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{scheme\+Dict,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{solution\+Dict }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor that initializes the \doxylink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta} solver with a dictionary configuration. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dict} & The dictionary containing configuration parameters. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_add56ae16a9fa9cbaf5fa33bafbba5de5}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_add56ae16a9fa9cbaf5fa33bafbba5de5} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!RungeKutta@{RungeKutta}}
+\index{RungeKutta@{RungeKutta}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{RungeKutta()}{RungeKutta()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Runge\+Kutta (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$ Solution\+Field\+Type $>$ \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copy constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The \doxylink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta} instance to copy from. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Sundials Kokkos vectors have copy constructors, N\+\_\+\+Vectors should be constructed from the Kokkos vectors. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_ac3a85b86ad022087031e193235569376}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_ac3a85b86ad022087031e193235569376} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!RungeKutta@{RungeKutta}}
+\index{RungeKutta@{RungeKutta}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{RungeKutta()}{RungeKutta()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::\+Runge\+Kutta (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$ Solution\+Field\+Type $>$ \&\&}]{other }\end{DoxyParamCaption})}
+
+
+
+Move Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The \doxylink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta} instance to move from. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_a5fbe3d97a38bf500c90dc42dfc638dbe}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_a5fbe3d97a38bf500c90dc42dfc638dbe} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!clone@{clone}}
+\index{clone@{clone}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Field\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Return a copy of this instantiated class. 
+
+\begin{DoxyReturn}{Returns}
+std\+::unique\+\_\+ptr to the new copy. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_a2e15f280ebd141ba0bc8b27ea0a4d4f6}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_a2e15f280ebd141ba0bc8b27ea0a4d4f6} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!doc@{doc}}
+\index{doc@{doc}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::doc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the documentation for the class. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string containing class documentation. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00109}{109}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_afab8b8f89d1678b4b42077ecf1827f60}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_afab8b8f89d1678b4b42077ecf1827f60} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!name@{name}}
+\index{name@{name}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the name of the class. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string("{}\+Runge-\/\+Kutta"{}). 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_ad422add2036860e2621914428034e417}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_ad422add2036860e2621914428034e417} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$ Solution\+Field\+Type $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_ab92950535a7c229ef04a5822bb147d76}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_ab92950535a7c229ef04a5822bb147d76} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Runge\+Kutta}}$<$ Solution\+Field\+Type $>$ \&\&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_a9249abcd77c2d8534b83cf16998b9ee5}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_a9249abcd77c2d8534b83cf16998b9ee5} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!schema@{schema}}
+\index{schema@{schema}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{schema()}{schema()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::schema (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the schema for the class. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string containing the schema definition. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{rungeKutta_8hpp_source_l00115}{115}} of file \mbox{\hyperlink{rungeKutta_8hpp_source}{runge\+Kutta.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1RungeKutta_a219dea3b1fa78f2e1628b1ff68c7bba6}\label{classNeoN_1_1timeIntegration_1_1RungeKutta_a219dea3b1fa78f2e1628b1ff68c7bba6} 
+\index{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}!solve@{solve}}
+\index{solve@{solve}!NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$@{NeoN::timeIntegration::RungeKutta$<$ SolutionFieldType $>$}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta}{Neo\+N\+::time\+Integration\+::\+Runge\+Kutta}}$<$ Solution\+Field\+Type $>$\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1RungeKutta_af8eeee2250f387753bc83fd01a43e1dc}{Value\+Type}} $>$ \&}]{exp,  }\item[{Solution\+Field\+Type \&}]{solution\+Field,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Solves one (explicit) time step, from n to n+1. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exp} & The expression to be solved \\
+\hline
+{\em solution\+Field} & The field containing the solution. \\
+\hline
+{\em t} & The current time \\
+\hline
+{\em dt} & The time step size \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+N/time\+Integration/\mbox{\hyperlink{rungeKutta_8hpp}{runge\+Kutta.\+hpp}}\end{DoxyCompactItemize}

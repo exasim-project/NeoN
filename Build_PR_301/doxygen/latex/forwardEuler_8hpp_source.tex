@@ -4,68 +4,68 @@
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00006}00006\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/core/database/fieldCollection.hpp"{}}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/core/database/oldTimeCollection.hpp"{}}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/fields/field.hpp"{}}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}NeoFOAM/timeIntegration/timeIntegration.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldCollection_8hpp}{NeoN/core/database/fieldCollection.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{oldTimeCollection_8hpp}{NeoN/core/database/oldTimeCollection.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{timeIntegration_8hpp}{NeoN/timeIntegration/timeIntegration.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00011}00011\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1timeIntegration}{NeoFOAM::timeIntegration}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{NeoN::timeIntegration}}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00013}00013\ \{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00014}00014\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00015}00015\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionFieldType>}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00016}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler}{00016}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler}{ForwardEuler}}\ :}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00017}00017\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionFieldType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<ForwardEuler<SolutionFieldType>>}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00016}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{00016}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{ForwardEuler}}\ :}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00017}00017\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionFieldType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<ForwardEuler<SolutionFieldType>>}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00018}00018\ \{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00019}00019\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00020}00020\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00021}00021\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00022}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_afb843e543d3fc8b994944424912dba6a}{00022}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_afb843e543d3fc8b994944424912dba6a}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionFieldType::FieldValueType;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00023}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a5e24c11f36184dc47a48a5aea55e9769}{00023}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a5e24c11f36184dc47a48a5aea55e9769}{Base}}\ =}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase<SolutionFieldType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<ForwardEuler<SolutionFieldType>}}>;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00022}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a4e6ed35fc31c52073800f0ae07ff8934}{00022}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a4e6ed35fc31c52073800f0ae07ff8934}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionFieldType::FieldValueType;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af79f8065c5dedca4d037d474ee9b8ef6}{00023}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af79f8065c5dedca4d037d474ee9b8ef6}{Base}}\ =}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase<SolutionFieldType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<ForwardEuler<SolutionFieldType>}}>;}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00026}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a63f9f8cd76abd482270c9387e4764916}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a63f9f8cd76abd482270c9387e4764916}{ForwardEuler}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a5e24c11f36184dc47a48a5aea55e9769}{Base}}(schemeDict,\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a566ed8e42093d697706cfd5b1eced720}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a566ed8e42093d697706cfd5b1eced720}{ForwardEuler}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af79f8065c5dedca4d037d474ee9b8ef6}{Base}}(schemeDict,\ solutionDict)}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00028}00028\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00030}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_ae514363eee582a408417e521ba538ae1}{00030}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_ae514363eee582a408417e521ba538ae1}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}forwardEuler"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a8fe09d97820ab9df23658b423a702ad0}{00030}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a8fe09d97820ab9df23658b423a702ad0}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}forwardEuler"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00031}00031\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00032}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a1d54cc37a3d318e11b5ab71ca6a8c3f8}{00032}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a1d54cc37a3d318e11b5ab71ca6a8c3f8}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}first\ order\ time\ integration\ method"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a183fa37e348cad8591d4b951352eb5e6}{00032}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a183fa37e348cad8591d4b951352eb5e6}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}first\ order\ time\ integration\ method"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00033}00033\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00034}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a4b6bc8b98f0ee1761129832b22db432f}{00034}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a4b6bc8b98f0ee1761129832b22db432f}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af8c94720637e1c7507666306defd06e3}{00034}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af8c94720637e1c7507666306defd06e3}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00036}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a5edfb6bfa8155ddc0d90d396921ab5a3}{00036}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a5edfb6bfa8155ddc0d90d396921ab5a3}{solve}}(}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ eqn,}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00036}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a0f2a875b631461709b658b916ed87ed2}{00036}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a0f2a875b631461709b658b916ed87ed2}{solve}}(}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\&\ eqn,}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ SolutionFieldType\&\ solutionField,}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ t,}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00041}00041\ \ \ \ \ )\textcolor{keyword}{\ override}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00042}00042\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ source\ =\ eqn.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_aaafab32b855fada13b28497d08359428}{explicitOperation}}(solutionField.size());}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ source\ =\ eqn.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_aee43e04f4d34af1e1eed3e7f3723b9c6}{explicitOperation}}(solutionField.size());}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ SolutionFieldType\&\ oldSolutionField\ =}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred_a4400b455f0b411d00432715774a8381c}{NeoFOAM::finiteVolume::cellCentred::oldTime}}(solutionField);}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a50930809b12b4cfd9bd30386e600d82b}{NeoN::finiteVolume::cellCentred::oldTime}}(solutionField);}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00046}00046\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ solutionField.internalField()\ =\ oldSolutionField.internalField()\ -\/\ source\ *\ dt;}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ solutionField.correctBoundaryConditions();}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00049}00049\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ executor\ is\ GPU}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoFOAM::GPUExecutor>(eqn.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a5d340fdd02be696d5a773e7b96c8902d}{exec}}()))}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::GPUExecutor>(eqn.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}()))}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::fence();}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ oldSolutionField.internalField()\ =\ solutionField.internalField();}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00056}00056\ \ \ \ \ \};}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00058}\mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a855260cfdbb6a4a5ec1cc2241fd166f7}{00058}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionFieldType>>\ \mbox{\hyperlink{classNeoFOAM_1_1timeIntegration_1_1ForwardEuler_a855260cfdbb6a4a5ec1cc2241fd166f7}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_aa8dae6f56cff38758a96377925ad2059}{00058}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionFieldType>>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_aa8dae6f56cff38758a96377925ad2059}{clone}}()\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00059}00059\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<ForwardEuler>(*\textcolor{keyword}{this});}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00061}00061\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00062}00062\ \};}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00063}00063\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00064}00064\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

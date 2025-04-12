@@ -3,7 +3,7 @@
 Forward Euler
 =============
 
-The Forward Euler implementation in NeoFOAM provides a dependency-free first-order explicit time integration method.
+The Forward Euler implementation in NeoN provides a dependency-free first-order explicit time integration method.
 It advances the solution from time step n to n+1 using:
 
 .. math::
@@ -13,7 +13,7 @@ It advances the solution from time step n to n+1 using:
 Implementation
 -------------
 
-The implementation is entirely self-contained within NeoFOAM, requiring no external libraries.
+The implementation is entirely self-contained within NeoN, requiring no external libraries.
 The ``ForwardEuler`` class template inherits from ``TimeIntegratorBase`` and implements straightforward time-stepping functionality through its ``solve`` method:
 
 .. code-block:: cpp
@@ -26,7 +26,7 @@ The ``ForwardEuler`` class template inherits from ``TimeIntegratorBase`` and imp
         sol.correctBoundaryConditions();
     }
 
-This lightweight implementation operates directly on NeoFOAM fields and expressions, providing a guaranteed time integration option regardless of build environment constraints.
+This lightweight implementation operates directly on NeoN fields and expressions, providing a guaranteed time integration option regardless of build environment constraints.
 
 Usage
 -----
