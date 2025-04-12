@@ -1,22 +1,24 @@
 **[Requirements](#requirements)** |
 **[Compilation](#Compilation)** |
 **[Integration](#integration-with-openfoam)** |
-**[Documentation](https://exasim-project.com/NeoFOAM/latest)** |
+**[Documentation](https://exasim-project.com/NeoN/latest)** |
 **[Roadmap](https://github.com/orgs/exasim-project/projects/1/views/8)** |
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14608521.svg)](https://doi.org/10.5281/zenodo.14608521)
-[![c++ standard](https://img.shields.io/badge/c%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Gitter](https://img.shields.io/badge/Gitter-8A2BE2)](https://matrix.to/#/#NeoFOAM:gitter.im)
-[![doxygen](https://img.shields.io/badge/Doxygen-8A2BE2)](https://exasim-project.com/NeoFOAM/latest/doxygen/html/index.html)
+[![c++ standard](https://img.shields.io/badge/c%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Gitter](https://img.shields.io/badge/Gitter-8A2BE2)](https://matrix.to/#/#NeoN:gitter.im)
+[![doxygen](https://img.shields.io/badge/Doxygen-8A2BE2)](https://exasim-project.com/NeoN/latest/doxygen/html/index.html)
 
-# NeoFOAM
+![image](https://github.com/exasim-projec/NeoN/assets/NeonLogo.png)
+
+# NeoN
 
 > [!IMPORTANT]
-> The NeoFOAM project needs you!
-> If you're interested in contributing to NeoFOAM please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoFOAM:gitter.im).
+> The NeoN project needs you!
+> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
 
 ## Requirements
 
-NeoFOAM has the following requirements
+NeoN has the following requirements
 
 *  _cmake > 3.22_
 *  _gcc >= 10_ or  _clang >= 16_
@@ -35,18 +37,18 @@ If you prefer to clone, configure and build dependencies your self consider sett
 
 ## Compilation
 
-[![workflows/Build on linux](https://github.com/exasim-project/neofoam/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/neofoam/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
-[![workflows/Build on OSX](https://github.com/exasim-project/neofoam/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/neofoam/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
-[![workflows/Build on windows](https://github.com/exasim-project/neofoam/actions/workflows/build_on_windows.yaml/badge.svg?branch=main)](https://github.com/exasim-project/neofoam/actions/workflows/build_on_windows.yaml?query=branch%3Amain)
+[![workflows/Build on linux](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
+[![workflows/Build on OSX](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
+[![workflows/Build on windows](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml?query=branch%3Amain)
 
-NeoFOAM uses cmake to build, thus the standard cmake procedure should work.
+NeoN uses cmake to build, thus the standard cmake procedure should work.
 From a build directory you can execute
 
     cmake <DesiredBuildFlags> ..
     cmake --build .
     cmake --install .
 
-Additionally, we provide several Cmake presets to set commmonly required flags if you compile NeoFoam in combination with Kokkos.
+Additionally, we provide several Cmake presets to set commmonly required flags if you compile NeoN in combination with Kokkos.
 
     cmake --list-presets # To list existing presets
     cmake --preset production # To configure for production use
@@ -62,12 +64,12 @@ We provide a set of unit tests which can be executed via ctest or
 
 ## Integration with OpenFOAM
 
-Currently, NeoFOAM is not a standalone CFD Framework.
+Currently, NeoN is not a standalone CFD Framework.
 It is designed to be used within OpenFOAM.
-Examples how to integrate NeoFOAM into OpenFOAM and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
+Examples how to integrate NeoN into OpenFOAM and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
 
 ## Documentation
 
-An online documentation can be found [here](https://exasim-project.com/NeoFOAM/latest), be cautious since this repository is currently evolving the documentation might not always reflect the latest stage.
+An online documentation can be found [here](https://exasim-project.com/NeoN/latest), be cautious since this repository is currently evolving the documentation might not always reflect the latest stage.
 For building the documentation further dependencies like doxygen and sphinx are requirement.
-The list of requirements can be found [here](https://github.com/exasim-project/NeoFOAM/actions/workflows/build_doc.yaml)
+The list of requirements can be found [here](https://github.com/exasim-project/NeoN/actions/workflows/build_doc.yaml)
