@@ -111,13 +111,16 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         auto solver = NeoN::la::Solver(exec, solverDict);
 
         // Solve system
-        solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm] = solver.solve(linearSystem, x);
 
         auto hostX = x.copyToHost();
         auto hostXS = hostX.view();
         REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
         REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
         REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+        REQUIRE(numIter == 3);
+        REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
+        REQUIRE(finalResNorm < 1.0e-04);
     }
 }
 #endif
