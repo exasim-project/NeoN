@@ -4,7 +4,7 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
-#include "NeoN/fields/vector.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"

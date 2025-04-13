@@ -9,8 +9,8 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/vector.hpp"
 
-#include "NeoN/fields/vector.hpp"
 #include "NeoN/fields/boundaryData.hpp"
 
 #include <vector>

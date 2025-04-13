@@ -3,7 +3,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/fields/vector.hpp"
+#include "NeoN/core/vector.hpp"
 
 namespace NeoN
 {
