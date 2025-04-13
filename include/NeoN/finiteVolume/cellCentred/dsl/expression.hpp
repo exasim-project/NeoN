@@ -159,7 +159,7 @@ public:
     {
         // TODO currently assumes that matrix is already assembled
         const auto diagOffset = sparsityPattern_->diagOffset().view();
-        const auto rowPtrs = ls_.matrix().rowPtrs();
+        const auto rowPtrs = ls_.matrix().rowPtrs().view();
         auto rhs = ls_.rhs().view();
         auto values = ls_.matrix().values().view();
         NeoN::parallelFor(
