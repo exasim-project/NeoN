@@ -21,15 +21,15 @@ class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorSerial}{SKVector\+Serial
 \item 
 ARKODE\+\_\+\+ERKTable\+ID \mbox{\hyperlink{namespaceNeoN_1_1sundials_a68a91418f8a8d589cfaccb8141c272dd}{string\+To\+ERKTable}} (const std\+::string \&key)
 \begin{DoxyCompactList}\small\item\em Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_ae6064e0770c671d010286c938be89cb1}{field\+To\+Sun\+NVector\+Impl}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
-\begin{DoxyCompactList}\small\item\em Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} data to SUNDIALS N\+\_\+\+Vector format. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a3a7b81e6da4e3ead854b3900b6e6fa9c}{field\+To\+Sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aeb4f42580c2e37db7197299d3644f459}{field\+To\+Sun\+NVector\+Impl}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+\begin{DoxyCompactList}\small\item\em Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} data to SUNDIALS N\+\_\+\+Vector format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aebaf5a75822a0239066fdbacc105af1c}{field\+To\+Sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
 \begin{DoxyCompactList}\small\item\em Dispatcher for field to N\+\_\+\+Vector conversion based on executor type. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_abfbd394d4224be9ffcb0d70deee8155c}{sun\+NVector\+To\+Field\+Impl}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field)
-\begin{DoxyCompactList}\small\item\em Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} format. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a618a4b50d83dddfdf09b78ef2b0c55cd}{sun\+NVector\+To\+Field}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&field)
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a901ada90162f5694cb57621353053d5c}{sun\+NVector\+To\+Vector\+Impl}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aaabadce9081c9f8f4d8c231fdc7fd0c9}{sun\+NVector\+To\+Vector}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field)
 \begin{DoxyCompactList}\small\item\em Dispatcher for N\+\_\+\+Vector to field conversion based on executor type. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Solution\+Field\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoN_1_1sundials_a0950f80132f6aced171dd2a47c8ae5b8}{explicit\+RKSolve}} (sunrealtype t, N\+\_\+\+Vector y, N\+\_\+\+Vector ydot, void \texorpdfstring{$\ast$}{*}user\+Data)
+{\footnotesize template$<$typename Solution\+Vector\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoN_1_1sundials_a0950f80132f6aced171dd2a47c8ae5b8}{explicit\+RKSolve}} (sunrealtype t, N\+\_\+\+Vector y, N\+\_\+\+Vector ydot, void \texorpdfstring{$\ast$}{*}user\+Data)
 \begin{DoxyCompactList}\small\item\em Performs a single explicit Runge-\/\+Kutta stage evaluation. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
 \begin{DoxyCompactItemize}
@@ -45,7 +45,7 @@ auto \mbox{\hyperlink{namespaceNeoN_1_1sundials_aca60627e32ac174ed4f8fac99840842
 \index{NeoN::sundials@{NeoN::sundials}!explicitRKSolve@{explicitRKSolve}}
 \index{explicitRKSolve@{explicitRKSolve}!NeoN::sundials@{NeoN::sundials}}
 \doxysubsubsection{\texorpdfstring{explicitRKSolve()}{explicitRKSolve()}}
-{\footnotesize\ttfamily template$<$typename Solution\+Field\+Type $>$ \\
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
 int Neo\+N\+::sundials\+::explicit\+RKSolve (\begin{DoxyParamCaption}\item[{sunrealtype}]{t,  }\item[{N\+\_\+\+Vector}]{y,  }\item[{N\+\_\+\+Vector}]{ydot,  }\item[{void \texorpdfstring{$\ast$}{*}}]{user\+Data }\end{DoxyParamCaption})}
 
 
@@ -70,12 +70,12 @@ This is our implementation of the RHS of explicit spacial integration, to be int
 
 Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00192}{192}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1sundials_a3a7b81e6da4e3ead854b3900b6e6fa9c}\label{namespaceNeoN_1_1sundials_a3a7b81e6da4e3ead854b3900b6e6fa9c} 
+\Hypertarget{namespaceNeoN_1_1sundials_aebaf5a75822a0239066fdbacc105af1c}\label{namespaceNeoN_1_1sundials_aebaf5a75822a0239066fdbacc105af1c} 
 \index{NeoN::sundials@{NeoN::sundials}!fieldToSunNVector@{fieldToSunNVector}}
 \index{fieldToSunNVector@{fieldToSunNVector}!NeoN::sundials@{NeoN::sundials}}
 \doxysubsubsection{\texorpdfstring{fieldToSunNVector()}{fieldToSunNVector()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void Neo\+N\+::sundials\+::field\+To\+Sun\+NVector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&}]{field,  }\item[{N\+\_\+\+Vector \&}]{vector }\end{DoxyParamCaption})}
+void Neo\+N\+::sundials\+::field\+To\+Sun\+NVector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{N\+\_\+\+Vector \&}]{vector }\end{DoxyParamCaption})}
 
 
 
@@ -102,16 +102,16 @@ Dispatcher for field to N\+\_\+\+Vector conversion based on executor type.
 
 Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1sundials_ae6064e0770c671d010286c938be89cb1}\label{namespaceNeoN_1_1sundials_ae6064e0770c671d010286c938be89cb1} 
+\Hypertarget{namespaceNeoN_1_1sundials_aeb4f42580c2e37db7197299d3644f459}\label{namespaceNeoN_1_1sundials_aeb4f42580c2e37db7197299d3644f459} 
 \index{NeoN::sundials@{NeoN::sundials}!fieldToSunNVectorImpl@{fieldToSunNVectorImpl}}
 \index{fieldToSunNVectorImpl@{fieldToSunNVectorImpl}!NeoN::sundials@{NeoN::sundials}}
 \doxysubsubsection{\texorpdfstring{fieldToSunNVectorImpl()}{fieldToSunNVectorImpl()}}
 {\footnotesize\ttfamily template$<$typename SKVector\+Type , typename Value\+Type $>$ \\
-void Neo\+N\+::sundials\+::field\+To\+Sun\+NVector\+Impl (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&}]{field,  }\item[{N\+\_\+\+Vector \&}]{vector }\end{DoxyParamCaption})}
+void Neo\+N\+::sundials\+::field\+To\+Sun\+NVector\+Impl (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{N\+\_\+\+Vector \&}]{vector }\end{DoxyParamCaption})}
 
 
 
-Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} data to SUNDIALS N\+\_\+\+Vector format. 
+Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} data to SUNDIALS N\+\_\+\+Vector format. 
 
 
 \begin{DoxyTemplParams}{Template Parameters}
@@ -161,12 +161,12 @@ ARKODE\+\_\+\+ERKTable\+ID for the corresponding Butcher tableau.
 
 Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1sundials_a618a4b50d83dddfdf09b78ef2b0c55cd}\label{namespaceNeoN_1_1sundials_a618a4b50d83dddfdf09b78ef2b0c55cd} 
-\index{NeoN::sundials@{NeoN::sundials}!sunNVectorToField@{sunNVectorToField}}
-\index{sunNVectorToField@{sunNVectorToField}!NeoN::sundials@{NeoN::sundials}}
-\doxysubsubsection{\texorpdfstring{sunNVectorToField()}{sunNVectorToField()}}
+\Hypertarget{namespaceNeoN_1_1sundials_aaabadce9081c9f8f4d8c231fdc7fd0c9}\label{namespaceNeoN_1_1sundials_aaabadce9081c9f8f4d8c231fdc7fd0c9} 
+\index{NeoN::sundials@{NeoN::sundials}!sunNVectorToVector@{sunNVectorToVector}}
+\index{sunNVectorToVector@{sunNVectorToVector}!NeoN::sundials@{NeoN::sundials}}
+\doxysubsubsection{\texorpdfstring{sunNVectorToVector()}{sunNVectorToVector()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void Neo\+N\+::sundials\+::sun\+NVector\+To\+Field (\begin{DoxyParamCaption}\item[{const N\+\_\+\+Vector \&}]{vector,  }\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&}]{field }\end{DoxyParamCaption})}
+void Neo\+N\+::sundials\+::sun\+NVector\+To\+Vector (\begin{DoxyParamCaption}\item[{const N\+\_\+\+Vector \&}]{vector,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&}]{field }\end{DoxyParamCaption})}
 
 
 
@@ -188,16 +188,16 @@ Dispatcher for N\+\_\+\+Vector to field conversion based on executor type.
 
 Definition at line \mbox{\hyperlink{sundials_8hpp_source_l00153}{153}} of file \mbox{\hyperlink{sundials_8hpp_source}{sundials.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1sundials_abfbd394d4224be9ffcb0d70deee8155c}\label{namespaceNeoN_1_1sundials_abfbd394d4224be9ffcb0d70deee8155c} 
-\index{NeoN::sundials@{NeoN::sundials}!sunNVectorToFieldImpl@{sunNVectorToFieldImpl}}
-\index{sunNVectorToFieldImpl@{sunNVectorToFieldImpl}!NeoN::sundials@{NeoN::sundials}}
-\doxysubsubsection{\texorpdfstring{sunNVectorToFieldImpl()}{sunNVectorToFieldImpl()}}
+\Hypertarget{namespaceNeoN_1_1sundials_a901ada90162f5694cb57621353053d5c}\label{namespaceNeoN_1_1sundials_a901ada90162f5694cb57621353053d5c} 
+\index{NeoN::sundials@{NeoN::sundials}!sunNVectorToVectorImpl@{sunNVectorToVectorImpl}}
+\index{sunNVectorToVectorImpl@{sunNVectorToVectorImpl}!NeoN::sundials@{NeoN::sundials}}
+\doxysubsubsection{\texorpdfstring{sunNVectorToVectorImpl()}{sunNVectorToVectorImpl()}}
 {\footnotesize\ttfamily template$<$typename SKVector\+Type , typename Value\+Type $>$ \\
-void Neo\+N\+::sundials\+::sun\+NVector\+To\+Field\+Impl (\begin{DoxyParamCaption}\item[{const N\+\_\+\+Vector \&}]{vector,  }\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$ \&}]{field }\end{DoxyParamCaption})}
+void Neo\+N\+::sundials\+::sun\+NVector\+To\+Vector\+Impl (\begin{DoxyParamCaption}\item[{const N\+\_\+\+Vector \&}]{vector,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&}]{field }\end{DoxyParamCaption})}
 
 
 
-Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Field}{Field} format. 
+Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} format. 
 
 
 \begin{DoxyTemplParams}{Template Parameters}

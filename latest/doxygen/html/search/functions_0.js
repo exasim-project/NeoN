@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['add_0',['add',['../namespaceNeoN.html#ae64f7cb2c1cada77381848dd23bf444b',1,'NeoN']]],
+  ['add_0',['add',['../namespaceNeoN.html#a490d5b5f574236c480c0afd38a2dc1c9',1,'NeoN']]],
   ['addexpression_1',['addExpression',['../classNeoN_1_1dsl_1_1Expression.html#a77198421f4c3765700d158f9d675264c',1,'NeoN::dsl::Expression']]],
   ['addoperator_2',['addoperator',['../classNeoN_1_1dsl_1_1Expression.html#a962146977092abb074c409b5d09a16e1',1,'NeoN::dsl::Expression::addOperator(const SpatialOperator&lt; ValueType &gt; &amp;oper)'],['../classNeoN_1_1dsl_1_1Expression.html#a769ee099e363146dbff60666b62c2a6e',1,'NeoN::dsl::Expression::addOperator(const TemporalOperator&lt; ValueType &gt; &amp;oper)']]],
   ['addsubtype_3',['addSubType',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#ab43f4c8e2a1cc46d673d2942c1a50cfb',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['alloc_4',['alloc',['../classNeoN_1_1CPUExecutor.html#ad046e5b1e58b2160850fb579afddea5b',1,'NeoN::CPUExecutor::alloc()'],['../classNeoN_1_1SerialExecutor.html#abf25ae5c3a9dd7d4488b4b027ac805d8',1,'NeoN::SerialExecutor::alloc(size_t size) const'],['../classNeoN_1_1SerialExecutor.html#a9b5d9f6c6a4dfe9e4dbeca0e242a30d3',1,'NeoN::SerialExecutor::alloc(size_t size) const'],['../classNeoN_1_1GPUExecutor.html#a34d6f31697a447e425603b0dbfa66b88',1,'NeoN::GPUExecutor::alloc(size_t size) const'],['../classNeoN_1_1GPUExecutor.html#a4e8b672e789aa3c8cae8d56ceefaf5ec',1,'NeoN::GPUExecutor::alloc(size_t size) const'],['../classNeoN_1_1CPUExecutor.html#af9449358bae9318681beb6fb9ee91391',1,'NeoN::CPUExecutor::alloc()']]],
-  ['apply_5',['apply',['../classNeoN_1_1Field.html#aa6daaf16f60c99fddb0043adf9e465ef',1,'NeoN::Field']]],
+  ['apply_5',['apply',['../classNeoN_1_1Vector.html#aa6ac22b4e8d8aabbe6d6a100d67cc69c',1,'NeoN::Vector']]],
   ['arglist_6',['ArgList',['../classNeoN_1_1ArgList.html#a52295e5d9babe998dc855c211541fe4a',1,'NeoN::ArgList']]],
   ['as_7',['as',['../classNeoN_1_1Collection.html#a74b792c7a4988b27274a3de3181f545b',1,'NeoN::Collection::as()'],['../classNeoN_1_1Collection.html#a9e4a0ac8530f3a0cfc058ca380591b4b',1,'NeoN::Collection::as() const']]],
   ['assemble_8',['assemble',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#ac7254fa5c400fe38615400f3e695548a',1,'NeoN::finiteVolume::cellCentred::Expression::assemble(scalar t, scalar dt)'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a4b38ac1885afb4338315a6a119306ddc',1,'NeoN::finiteVolume::cellCentred::Expression::assemble()']]],

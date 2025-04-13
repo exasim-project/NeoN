@@ -21,7 +21,7 @@ NOTE: Native Forward Euler is WIP.
 
     Dictionary timeDict;
     timeDict.set("type", "forwardEuler");  // or "Runge-Kutta"
-    TimeIntegration<VolumeField<scalar>> integrator(time
+    TimeIntegration<VolumeVector<scalar>> integrator(time
 The following sections provide detailed information about each implementation:
 
 .. toctree::

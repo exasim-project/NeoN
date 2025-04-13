@@ -81,15 +81,14 @@ $(function() {
   <div class="headertitle"><div class="title">expression.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="error_8hpp_source.html">NeoN/core/error.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="scalar_8hpp_source.html">NeoN/core/primitives/scalar.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="field_8hpp_source.html">NeoN/fields/field.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="linearSystem_8hpp_source.html">NeoN/linearAlgebra/linearSystem.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="spatialOperator_8hpp_source.html">NeoN/dsl/spatialOperator.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="temporalOperator_8hpp_source.html">NeoN/dsl/temporalOperator.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="error_8hpp_source.html">NeoN/core/error.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="volumeField_8hpp_source.html">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</a>&quot;</code><br />
 </div>
 <p><a href="dsl_2expression_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -113,9 +112,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a03a2b36294837ab1965156992fe10ccd" id="r_a03a2b36294837ab1965156992fe10ccd"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a03a2b36294837ab1965156992fe10ccd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#a03a2b36294837ab1965156992fe10ccd">NeoN::dsl::operator+</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt; lhs, const <a class="el" href="classNeoN_1_1dsl_1_1SpatialOperator.html">SpatialOperator</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
 <tr class="separator:a03a2b36294837ab1965156992fe10ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3f865549cdb60f52a250c3e50fc3f32" id="r_ae3f865549cdb60f52a250c3e50fc3f32"><td class="memTemplParams" colspan="2">template&lt;typename leftOperator , typename rightOperator &gt; </td></tr>
-<tr class="memitem:ae3f865549cdb60f52a250c3e50fc3f32"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename leftOperator::FieldValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#ae3f865549cdb60f52a250c3e50fc3f32">NeoN::dsl::operator+</a> (leftOperator lhs, rightOperator rhs)</td></tr>
-<tr class="separator:ae3f865549cdb60f52a250c3e50fc3f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a191f28ba2eb12e6ca3fdc7c25929048f" id="r_a191f28ba2eb12e6ca3fdc7c25929048f"><td class="memTemplParams" colspan="2">template&lt;typename leftOperator , typename rightOperator &gt; </td></tr>
+<tr class="memitem:a191f28ba2eb12e6ca3fdc7c25929048f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename leftOperator::VectorValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#a191f28ba2eb12e6ca3fdc7c25929048f">NeoN::dsl::operator+</a> (leftOperator lhs, rightOperator rhs)</td></tr>
+<tr class="separator:a191f28ba2eb12e6ca3fdc7c25929048f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a619c9712731a205faddf7f7b88457909" id="r_a619c9712731a205faddf7f7b88457909"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a619c9712731a205faddf7f7b88457909"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#a619c9712731a205faddf7f7b88457909">NeoN::dsl::operator*</a> (<a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> scale, const <a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt; &amp;es)</td></tr>
 <tr class="separator:a619c9712731a205faddf7f7b88457909"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,9 +124,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ac6ecc9a0fd680f9e8504a39a5a0ca629" id="r_ac6ecc9a0fd680f9e8504a39a5a0ca629"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ac6ecc9a0fd680f9e8504a39a5a0ca629"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#ac6ecc9a0fd680f9e8504a39a5a0ca629">NeoN::dsl::operator-</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; ValueType &gt; lhs, const <a class="el" href="classNeoN_1_1dsl_1_1SpatialOperator.html">SpatialOperator</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
 <tr class="separator:ac6ecc9a0fd680f9e8504a39a5a0ca629"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3372d14e9e3e0398d74a766e70d2c51d" id="r_a3372d14e9e3e0398d74a766e70d2c51d"><td class="memTemplParams" colspan="2">template&lt;typename leftOperator , typename rightOperator &gt; </td></tr>
-<tr class="memitem:a3372d14e9e3e0398d74a766e70d2c51d"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename leftOperator::FieldValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#a3372d14e9e3e0398d74a766e70d2c51d">NeoN::dsl::operator-</a> (leftOperator lhs, rightOperator rhs)</td></tr>
-<tr class="separator:a3372d14e9e3e0398d74a766e70d2c51d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a590fbdffc01dc7fad7632c70e36a42a8" id="r_a590fbdffc01dc7fad7632c70e36a42a8"><td class="memTemplParams" colspan="2">template&lt;typename leftOperator , typename rightOperator &gt; </td></tr>
+<tr class="memitem:a590fbdffc01dc7fad7632c70e36a42a8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename leftOperator::VectorValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#a590fbdffc01dc7fad7632c70e36a42a8">NeoN::dsl::operator-</a> (leftOperator lhs, rightOperator rhs)</td></tr>
+<tr class="separator:a590fbdffc01dc7fad7632c70e36a42a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

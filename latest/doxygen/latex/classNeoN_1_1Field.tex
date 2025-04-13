@@ -2,238 +2,119 @@
 \hypertarget{classNeoN_1_1Field}{}\label{classNeoN_1_1Field}\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 
 
-A class to contain the data and executors for a field and define some basic operations.  
+Represents the domain fields for a computational domain.  
 
 
 
 
 {\ttfamily \#include $<$field.\+hpp$>$}
 
-\doxysubsubsection*{Public Types}
-\begin{DoxyCompactItemize}
-\item 
-using \mbox{\hyperlink{classNeoN_1_1Field_ab2e145b5175e2704ea3e591c50c6c080}{Field\+Value\+Type}} = Value\+Type
-\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classNeoN_1_1Field_a7c28120ccf66b74b5a25b68642ff24e6}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size}})
-\begin{DoxyCompactList}\small\item\em Create an uninitialized \doxylink{classNeoN_1_1Field}{Field} with a given size on an executor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_ae238be0c8e7775f96ccc261ade78c7e7}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, const Value\+Type \texorpdfstring{$\ast$}{*}in, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size}}, \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} host\+Exec=\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}())
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Field}{Field} with a given size from existing memory on an executor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_a5667757f225d35a5ee7599ff940b104f}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size}}, Value\+Type value)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Field}{Field} with a given size on an executor and uniform value. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_ab6bfd78ef993eaf6e1b581b5892ac1f3}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, std\+::vector$<$ Value\+Type $>$ in)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Field}{Field} from a given vector of values on an executor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_af2ab06f66259793f1159a420b29b08e6}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&in)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Field}{Field} as a copy of a \doxylink{classNeoN_1_1Field}{Field} on a specified executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Field_a3bb608304e07a85682d20ee28e1abc5e}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1Field_a99410c131b6630954587d267c99fa458}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} n\+Cells, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \&offsets)
+\item 
+\mbox{\hyperlink{classNeoN_1_1Field_a858ccf9a420f5496813b957ec342124e}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internal\+Vector}}, const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&boundary\+Data)
+\item 
+\mbox{\hyperlink{classNeoN_1_1Field_a96bb6d7affd958ddb90c8b5b9e577c39}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internal\+Vector}}, std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ offsets)
+\item 
+\mbox{\hyperlink{classNeoN_1_1Field_ae619c883ecbab934376a7ca59aea715d}{Field}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}, int internal\+Size, int boundary\+Size)
+\item 
 \mbox{\hyperlink{classNeoN_1_1Field_aa6c497ad1df119d4790c1f8c9fb1ce1a}{Field}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Copy constructor, creates a new field with the same size and data as the parsed field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_a284fe3df2fd78b59c9b566d1c6d1d257}{Field}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&rhs) noexcept
-\begin{DoxyCompactList}\small\item\em Move constructor, moves the data from the parsed field to the new field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field_aecc5525565aa7fa1ac797b31b2f35f21}{\texorpdfstring{$\sim$}{\string~}\+Field}} ()
-\begin{DoxyCompactList}\small\item\em Destroy the \doxylink{classNeoN_1_1Field}{Field} object. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename func $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Field_aa6daaf16f60c99fddb0043adf9e465ef}{apply}} (func f)
-\begin{DoxyCompactList}\small\item\em applies a functor, transformation, to the field \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_aa7ce196b5c516a6a922df9e1c42cfc17}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
-\begin{DoxyCompactList}\small\item\em Copies the data to a new field on a specific executor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a22f7f1470881b09258e3555147001a45}{copy\+To\+Host}} () const
-\begin{DoxyCompactList}\small\item\em Returns a copy of the field back to the host. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classNeoN_1_1Field_a03d4a236bc9e7403a5db584a0df204fd}{copy\+To\+Host}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&result)
-\begin{DoxyCompactList}\small\item\em Copies the data (from anywhere) to a parsed host field. \end{DoxyCompactList}\item 
-Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Field_a08fadda2d3e40413b6f05ac389f8bbb0}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} i)=delete
 \item 
-const Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Field_a5505215318304d16df709f7f67b75345}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} i) const =delete
+\mbox{\hyperlink{classNeoN_1_1Field_a29847474e9fe0767f33ab1176d524eed}{Field}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&rhs)
 \item 
-void \mbox{\hyperlink{classNeoN_1_1Field_a0d12d0036963745d002440a49eb2f08b}{operator=}} (const Value\+Type \&rhs)
-\begin{DoxyCompactList}\small\item\em Assignment operator, Sets the field values to that of the passed value. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classNeoN_1_1Field_a5e04587ceae6b2f6279f97ded6d1b0f8}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Assignment operator, Sets the field values to that of the parsed field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_acb5f13fa3089b115f0181cd0566346f5}{operator+=}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic add operator, addition of a second field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_af9cf2de9ce188e24c15c36d4a3349dba}{operator-\/=}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic subtraction operator, subtraction by a second field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a12c0e7ee4f793bcbe31a078b28388186}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic multiply operator, multiply by a second field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a9daef24028615af74239098853172024}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic multiply operator, multiplies every cell in the field by a scalar. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_a11e385c579b8b6a9ecb5974962651499}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic multiply operator, multiplies this field by another field element-\/wise. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_a682a914a4820ba076d57212fd9a9727e}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic multiply-\/assignment operator, multiplies every cell in the field by a scalar and updates the field in place. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classNeoN_1_1Field_a81cf1a0dadaead971854aef16f7a695e}{resize}} (const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size}})
-\begin{DoxyCompactList}\small\item\em Resizes the field to a new size. \end{DoxyCompactList}\item 
-Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Field_aa201922d18563a3dbc561c41f9409a73}{data}} ()
-\begin{DoxyCompactList}\small\item\em Direct access to the underlying field data. \end{DoxyCompactList}\item 
-const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Field_ad877d31d06fa1a89213f519f3ff6a0bc}{data}} () const
-\begin{DoxyCompactList}\small\item\em Direct access to the underlying field data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_a5b89bacad43bbcac66c75a7583beb745}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&rhs)
+\item 
+\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_a1a744d8fce154f90f6310dac8f19db5a}{operator=}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&rhs)
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internal\+Vector}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_af20b0aa1af0c2611fed2417f7e853ea5}{internal\+Vector}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}{boundary\+Vector}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field_a2c8e257663a213c76476e2d19455a3de}{boundary\+Vector}} ()
+\item 
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}} () const
-\begin{DoxyCompactList}\small\item\em Gets the executor associated with the field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size}} () const
-\begin{DoxyCompactList}\small\item\em Gets the size of the field. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Field_ad804357f953a5678b57453c6bbb94d53}{ssize}} () const
-\begin{DoxyCompactList}\small\item\em Gets the size of the field. \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{classNeoN_1_1Field_a2c37b938861d6fe80f1157e8636ff28f}{empty}} () const
-\begin{DoxyCompactList}\small\item\em Checks if the field is empty. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_aecca8888c63929dd3bd03e1af44c455a}{view}} () \&\&=delete
-\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a991771cb929c1ef39813934cc4403f66}{view}} () const \&\&=delete
-\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a5ef9c4016e3f9b90c8012789cbbe0311}{view}} () \&
-\begin{DoxyCompactList}\small\item\em Gets the field as a view. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a811039556aa49e7e2f2d49e4429e869c}{view}} () const \&
-\begin{DoxyCompactList}\small\item\em Gets the field as a view. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a5009dd483df9956e7430f2a845398d1d}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}{range}}) \&\&=delete
-\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a49c7f6f42e94491a833d1d39797686ee}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}{range}}) const \&\&=delete
-\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_a88e5d7484019023422cd01b904e17d1e}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}{range}}) \&
-\begin{DoxyCompactList}\small\item\em Gets a sub view of the field as a view. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field_af23d62e47270a76431608be5984b3332}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}{range}}) const \&
-\begin{DoxyCompactList}\small\item\em Gets a sub view of the field as a view. \end{DoxyCompactList}\item 
-std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}{range}} () const
-\begin{DoxyCompactList}\small\item\em Gets the range of the field. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
 \subsubsection*{template$<$typename Value\+Type$>$\newline
 class Neo\+N\+::\+Field$<$ Value\+Type $>$}
-A class to contain the data and executors for a field and define some basic operations. 
+Represents the domain fields for a computational domain. 
 
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00048}{48}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-
-
-\doxysubsection{Member Typedef Documentation}
-\Hypertarget{classNeoN_1_1Field_ab2e145b5175e2704ea3e591c50c6c080}\label{classNeoN_1_1Field_ab2e145b5175e2704ea3e591c50c6c080} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!FieldValueType@{FieldValueType}}
-\index{FieldValueType@{FieldValueType}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{FieldValueType}{FieldValueType}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-using \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field\+Value\+Type =  Value\+Type}
+The \doxylink{classNeoN_1_1Field}{Field} class stores the internal fields and boundary information for a computational domain. It provides access to the computed values, reference values, value fractions, reference gradients, boundary types, offsets, and the number of boundaries and boundary faces.
 
 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The type of the underlying field values \\
+\hline
+\end{DoxyTemplParams}
 
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
+
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\Hypertarget{classNeoN_1_1Field_a7c28120ccf66b74b5a25b68642ff24e6}\label{classNeoN_1_1Field_a7c28120ccf66b74b5a25b68642ff24e6} 
+\Hypertarget{classNeoN_1_1Field_a3bb608304e07a85682d20ee28e1abc5e}\label{classNeoN_1_1Field_a3bb608304e07a85682d20ee28e1abc5e} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Create an uninitialized \doxylink{classNeoN_1_1Field}{Field} with a given size on an executor. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em exec} & Executor associated to the field \\
-\hline
-{\em size} & size of the field \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_ae238be0c8e7775f96ccc261ade78c7e7}\label{classNeoN_1_1Field_ae238be0c8e7775f96ccc261ade78c7e7} 
+\Hypertarget{classNeoN_1_1Field_a99410c131b6630954587d267c99fa458}\label{classNeoN_1_1Field_a99410c131b6630954587d267c99fa458} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const Value\+Type \texorpdfstring{$\ast$}{*}}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size,  }\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{host\+Exec = {\ttfamily \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{n\+Cells,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \&}]{offsets }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Create a \doxylink{classNeoN_1_1Field}{Field} with a given size from existing memory on an executor. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00040}{40}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em exec} & Executor associated to the field \\
-\hline
-{\em in} & Pointer to existing data \\
-\hline
-{\em size} & size of the field \\
-\hline
-{\em host\+Exec} & Executor where the original data is located \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00078}{78}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a5667757f225d35a5ee7599ff940b104f}\label{classNeoN_1_1Field_a5667757f225d35a5ee7599ff940b104f} 
+\Hypertarget{classNeoN_1_1Field_a858ccf9a420f5496813b957ec342124e}\label{classNeoN_1_1Field_a858ccf9a420f5496813b957ec342124e} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size,  }\item[{Value\+Type}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{internal\+Vector,  }\item[{const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Create a \doxylink{classNeoN_1_1Field}{Field} with a given size on an executor and uniform value. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em exec} & Executor associated to the field \\
-\hline
-{\em size} & size of the field \\
-\hline
-{\em value} & the default value \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_ab6bfd78ef993eaf6e1b581b5892ac1f3}\label{classNeoN_1_1Field_ab6bfd78ef993eaf6e1b581b5892ac1f3} 
+\Hypertarget{classNeoN_1_1Field_a96bb6d7affd958ddb90c8b5b9e577c39}\label{classNeoN_1_1Field_a96bb6d7affd958ddb90c8b5b9e577c39} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::vector$<$ Value\+Type $>$}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{internal\+Vector,  }\item[{std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$}]{offsets }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Create a \doxylink{classNeoN_1_1Field}{Field} from a given vector of values on an executor. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em exec} & Executor associated to the field \\
-\hline
-{\em in} & a vector of elements to copy over \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00115}{115}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_af2ab06f66259793f1159a420b29b08e6}\label{classNeoN_1_1Field_af2ab06f66259793f1159a420b29b08e6} 
+\Hypertarget{classNeoN_1_1Field_ae619c883ecbab934376a7ca59aea715d}\label{classNeoN_1_1Field_ae619c883ecbab934376a7ca59aea715d} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{int}]{internal\+Size,  }\item[{int}]{boundary\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Create a \doxylink{classNeoN_1_1Field}{Field} as a copy of a \doxylink{classNeoN_1_1Field}{Field} on a specified executor. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em exec} & Executor associated to the field \\
-\hline
-{\em in} & a \doxylink{classNeoN_1_1Field}{Field} of elements to copy over \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Field_aa6c497ad1df119d4790c1f8c9fb1ce1a}\label{classNeoN_1_1Field_aa6c497ad1df119d4790c1f8c9fb1ce1a} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
@@ -244,196 +125,43 @@ Definition at line \mbox{\hyperlink{field_8hpp_source_l00122}{122}} of file \mbo
 
 
 
-Copy constructor, creates a new field with the same size and data as the parsed field. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to copy from. \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00130}{130}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a284fe3df2fd78b59c9b566d1c6d1d257}\label{classNeoN_1_1Field_a284fe3df2fd78b59c9b566d1c6d1d257} 
+\Hypertarget{classNeoN_1_1Field_a29847474e9fe0767f33ab1176d524eed}\label{classNeoN_1_1Field_a29847474e9fe0767f33ab1176d524eed} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!Field@{Field}}
 \index{Field@{Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{Field()}{Field()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\+Field (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Move constructor, moves the data from the parsed field to the new field. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to move from. \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00136}{136}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_aecc5525565aa7fa1ac797b31b2f35f21}\label{classNeoN_1_1Field_aecc5525565aa7fa1ac797b31b2f35f21} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!````~Field@{\texorpdfstring{$\sim$}{\string~}Field}}
-\index{````~Field@{\texorpdfstring{$\sim$}{\string~}Field}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Field()}{\string~Field()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1Field}{Field}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Destroy the \doxylink{classNeoN_1_1Field}{Field} object. 
-
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00145}{145}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00068}{68}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
 
 
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classNeoN_1_1Field_aa6daaf16f60c99fddb0043adf9e465ef}\label{classNeoN_1_1Field_aa6daaf16f60c99fddb0043adf9e465ef} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!apply@{apply}}
-\index{apply@{apply}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{apply()}{apply()}}
+\Hypertarget{classNeoN_1_1Field_a2c8e257663a213c76476e2d19455a3de}\label{classNeoN_1_1Field_a2c8e257663a213c76476e2d19455a3de} 
+\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!boundaryVector@{boundaryVector}}
+\index{boundaryVector@{boundaryVector}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryVector()}{boundaryVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-template$<$typename func $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::apply (\begin{DoxyParamCaption}\item[{func}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::boundary\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-applies a functor, transformation, to the field 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em f} & The functor to map over the field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyNote}{Note}
-Ideally the f should be a KOKKOS\+\_\+\+LAMBA 
-\end{DoxyNote}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00157}{157}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_aa7ce196b5c516a6a922df9e1c42cfc17}\label{classNeoN_1_1Field_aa7ce196b5c516a6a922df9e1c42cfc17} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!copyToExecutor@{copyToExecutor}}
-\index{copyToExecutor@{copyToExecutor}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+\Hypertarget{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}\label{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359} 
+\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!boundaryVector@{boundaryVector}}
+\index{boundaryVector@{boundaryVector}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryVector()}{boundaryVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::boundary\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Copies the data to a new field on a specific executor. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em dst\+Exec} & The executor on which the data should be copied. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-A copy of the field on the host. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a22f7f1470881b09258e3555147001a45}\label{classNeoN_1_1Field_a22f7f1470881b09258e3555147001a45} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!copyToHost@{copyToHost}}
-\index{copyToHost@{copyToHost}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Returns a copy of the field back to the host. 
-
-\begin{DoxyReturn}{Returns}
-A copy of the field on the host. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00181}{181}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a03d4a236bc9e7403a5db584a0df204fd}\label{classNeoN_1_1Field_a03d4a236bc9e7403a5db584a0df204fd} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!copyToHost@{copyToHost}}
-\index{copyToHost@{copyToHost}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{result }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Copies the data (from anywhere) to a parsed host field. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em result} & The field into which the data must be copied. Must be sized.\\
-\hline
-\end{DoxyParams}
-\begin{DoxyWarning}{Warning}
-exits if the size of the result field is not the same as the source field. 
-\end{DoxyWarning}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00191}{191}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_aa201922d18563a3dbc561c41f9409a73}\label{classNeoN_1_1Field_aa201922d18563a3dbc561c41f9409a73} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!data@{data}}
-\index{data@{data}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Direct access to the underlying field data. 
-
-\begin{DoxyReturn}{Returns}
-Pointer to the first cell data in the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00334}{334}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_ad877d31d06fa1a89213f519f3ff6a0bc}\label{classNeoN_1_1Field_ad877d31d06fa1a89213f519f3ff6a0bc} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!data@{data}}
-\index{data@{data}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Direct access to the underlying field data. 
-
-\begin{DoxyReturn}{Returns}
-Pointer to the first cell data in the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00340}{340}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a2c37b938861d6fe80f1157e8636ff28f}\label{classNeoN_1_1Field_a2c37b938861d6fe80f1157e8636ff28f} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!empty@{empty}}
-\index{empty@{empty}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-bool \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Checks if the field is empty. 
-
-\begin{DoxyReturn}{Returns}
-True if the field is empty, false otherwise. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00364}{364}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}\label{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!exec@{exec}}
@@ -444,384 +172,54 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Gets the executor associated with the field. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-\begin{DoxyReturn}{Returns}
-Reference to the executor. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00346}{346}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a12c0e7ee4f793bcbe31a078b28388186}\label{classNeoN_1_1Field_a12c0e7ee4f793bcbe31a078b28388186} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
-\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\Hypertarget{classNeoN_1_1Field_af20b0aa1af0c2611fed2417f7e853ea5}\label{classNeoN_1_1Field_af20b0aa1af0c2611fed2417f7e853ea5} 
+\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!internalVector@{internalVector}}
+\index{internalVector@{internalVector}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{internalVector()}{internalVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::internal\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Arithmetic multiply operator, multiply by a second field. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to subtract from this field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The result of the multiply. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00256}{256}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a9daef24028615af74239098853172024}\label{classNeoN_1_1Field_a9daef24028615af74239098853172024} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
-\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\Hypertarget{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}\label{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e} 
+\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!internalVector@{internalVector}}
+\index{internalVector@{internalVector}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{internalVector()}{internalVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::internal\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Arithmetic multiply operator, multiplies every cell in the field by a scalar. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The scalar to multiply with the field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The result of the multiplication. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a11e385c579b8b6a9ecb5974962651499}\label{classNeoN_1_1Field_a11e385c579b8b6a9ecb5974962651499} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
-\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Arithmetic multiply operator, multiplies this field by another field element-\/wise. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to multiply with this field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The result of the element-\/wise multiplication. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00284}{284}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a682a914a4820ba076d57212fd9a9727e}\label{classNeoN_1_1Field_a682a914a4820ba076d57212fd9a9727e} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
-\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Arithmetic multiply-\/assignment operator, multiplies every cell in the field by a scalar and updates the field in place. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The scalar to multiply with the field. \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00297}{297}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_acb5f13fa3089b115f0181cd0566346f5}\label{classNeoN_1_1Field_acb5f13fa3089b115f0181cd0566346f5} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator+=@{operator+=}}
-\index{operator+=@{operator+=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Arithmetic add operator, addition of a second field. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to add with this field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The result of the addition. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00232}{232}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_af9cf2de9ce188e24c15c36d4a3349dba}\label{classNeoN_1_1Field_af9cf2de9ce188e24c15c36d4a3349dba} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator-\/=@{operator-\/=}}
-\index{operator-\/=@{operator-\/=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Arithmetic subtraction operator, subtraction by a second field. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to subtract from this field. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The result of the subtraction. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00244}{244}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a5e04587ceae6b2f6279f97ded6d1b0f8}\label{classNeoN_1_1Field_a5e04587ceae6b2f6279f97ded6d1b0f8} 
+\Hypertarget{classNeoN_1_1Field_a5b89bacad43bbcac66c75a7583beb745}\label{classNeoN_1_1Field_a5b89bacad43bbcac66c75a7583beb745} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Assignment operator, Sets the field values to that of the parsed field. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
-
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The field to copy from.\\
-\hline
-\end{DoxyParams}
-\begin{DoxyWarning}{Warning}
-This field will be sized to the size of the parsed field. 
-\end{DoxyWarning}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00217}{217}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a0d12d0036963745d002440a49eb2f08b}\label{classNeoN_1_1Field_a0d12d0036963745d002440a49eb2f08b} 
+\Hypertarget{classNeoN_1_1Field_a1a744d8fce154f90f6310dac8f19db5a}\label{classNeoN_1_1Field_a1a744d8fce154f90f6310dac8f19db5a} 
 \index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Assignment operator, Sets the field values to that of the passed value. 
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00082}{82}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
 
 
-\begin{DoxyParams}{Parameters}
-{\em rhs} & The value to set the field to. \\
-\hline
-\end{DoxyParams}
 
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00209}{209}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a5505215318304d16df709f7f67b75345}\label{classNeoN_1_1Field_a5505215318304d16df709f7f67b75345} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
-\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-const Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [delete]}}
-
-\Hypertarget{classNeoN_1_1Field_a08fadda2d3e40413b6f05ac389f8bbb0}\label{classNeoN_1_1Field_a08fadda2d3e40413b6f05ac389f8bbb0} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
-\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
-
-\Hypertarget{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368}\label{classNeoN_1_1Field_a01ef1e3eb36707eb7f04770c185fa368} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!range@{range}}
-\index{range@{range}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{range()}{range()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::range (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets the range of the field. 
-
-\begin{DoxyReturn}{Returns}
-The range of the field \{0, \doxylink{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}{size()}\}. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00415}{415}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a81cf1a0dadaead971854aef16f7a695e}\label{classNeoN_1_1Field_a81cf1a0dadaead971854aef16f7a695e} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!resize@{resize}}
-\index{resize@{resize}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{resize()}{resize()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::resize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Resizes the field to a new size. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em size} & The new size to set the field to. \\
-\hline
-\end{DoxyParams}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00308}{308}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c}\label{classNeoN_1_1Field_a31520d9f7113a47aa433317f56f2645c} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!size@{size}}
-\index{size@{size}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{size()}{size()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets the size of the field. 
-
-\begin{DoxyReturn}{Returns}
-The size of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00352}{352}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_ad804357f953a5678b57453c6bbb94d53}\label{classNeoN_1_1Field_ad804357f953a5678b57453c6bbb94d53} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!ssize@{ssize}}
-\index{ssize@{ssize}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{ssize()}{ssize()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::ssize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets the size of the field. 
-
-\begin{DoxyReturn}{Returns}
-The size of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00358}{358}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a5ef9c4016e3f9b90c8012789cbbe0311}\label{classNeoN_1_1Field_a5ef9c4016e3f9b90c8012789cbbe0311} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets the field as a view. 
-
-\begin{DoxyReturn}{Returns}
-\doxylink{classNeoN_1_1View}{View} of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00376}{376}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_aecca8888c63929dd3bd03e1af44c455a}\label{classNeoN_1_1Field_aecca8888c63929dd3bd03e1af44c455a} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
-
-\Hypertarget{classNeoN_1_1Field_a811039556aa49e7e2f2d49e4429e869c}\label{classNeoN_1_1Field_a811039556aa49e7e2f2d49e4429e869c} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets the field as a view. 
-
-\begin{DoxyReturn}{Returns}
-\doxylink{classNeoN_1_1View}{View} of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00382}{382}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a991771cb929c1ef39813934cc4403f66}\label{classNeoN_1_1Field_a991771cb929c1ef39813934cc4403f66} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
-
-\Hypertarget{classNeoN_1_1Field_a88e5d7484019023422cd01b904e17d1e}\label{classNeoN_1_1Field_a88e5d7484019023422cd01b904e17d1e} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$}]{range }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets a sub view of the field as a view. 
-
-\begin{DoxyReturn}{Returns}
-\doxylink{classNeoN_1_1View}{View} of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00397}{397}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a5009dd483df9956e7430f2a845398d1d}\label{classNeoN_1_1Field_a5009dd483df9956e7430f2a845398d1d} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$}]{range }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
-
-\Hypertarget{classNeoN_1_1Field_af23d62e47270a76431608be5984b3332}\label{classNeoN_1_1Field_af23d62e47270a76431608be5984b3332} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$}]{range }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Gets a sub view of the field as a view. 
-
-\begin{DoxyReturn}{Returns}
-\doxylink{classNeoN_1_1View}{View} of the field. 
-\end{DoxyReturn}
-
-
-Definition at line \mbox{\hyperlink{field_8hpp_source_l00406}{406}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1Field_a49c7f6f42e94491a833d1d39797686ee}\label{classNeoN_1_1Field_a49c7f6f42e94491a833d1d39797686ee} 
-\index{NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}!view@{view}}
-\index{view@{view}!NeoN::Field$<$ ValueType $>$@{NeoN::Field$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$}]{range }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
-
-
-
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/\mbox{\hyperlink{parallelAlgorithms_8hpp}{parallel\+Algorithms.\+hpp}}\item 
 /home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/fields/\mbox{\hyperlink{field_8hpp}{field.\+hpp}}\end{DoxyCompactItemize}
