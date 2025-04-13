@@ -77,7 +77,7 @@ public:
 
         scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
 
-        auto numIter = logger->get_num_iterations();
+        auto numIter = label(logger->get_num_iterations());
 
         return {numIter, initResNorm, finalResNorm};
     }
