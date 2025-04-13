@@ -19,13 +19,13 @@ TEST_CASE("DivOperator::grad", "[bench]")
 
     NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, size);
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
-    fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
-    NeoN::fill(faceFlux.internalField(), 1.0);
+    fvcc::SurfaceVector<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
+    NeoN::fill(faceFlux.internalVector(), 1.0);
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
-    fvcc::VolumeField<NeoN::scalar> phi(exec, "vf", mesh, volumeBCs);
-    fvcc::VolumeField<NeoN::scalar> divPhi(exec, "divPhi", mesh, volumeBCs);
-    NeoN::fill(phi.internalField(), 1.0);
+    fvcc::VolumeVector<NeoN::scalar> phi(exec, "vf", mesh, volumeBCs);
+    fvcc::VolumeVector<NeoN::scalar> divPhi(exec, "divPhi", mesh, volumeBCs);
+    NeoN::fill(phi.internalVector(), 1.0);
 
     // capture the value of size as section name
     DYNAMIC_SECTION("" << size)

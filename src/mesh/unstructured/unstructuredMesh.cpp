@@ -10,14 +10,14 @@ namespace NeoN
 {
 
 UnstructuredMesh::UnstructuredMesh(
-    vectorField points,
-    scalarField cellVolumes,
-    vectorField cellCentres,
-    vectorField faceAreas,
-    vectorField faceCentres,
-    scalarField magFaceAreas,
-    labelField faceOwner,
-    labelField faceNeighbour,
+    vectorVector points,
+    scalarVector cellVolumes,
+    vectorVector cellCentres,
+    vectorVector faceAreas,
+    vectorVector faceCentres,
+    scalarVector magFaceAreas,
+    labelVector faceOwner,
+    labelVector faceNeighbour,
     size_t nCells,
     size_t nInternalFaces,
     size_t nBoundaryFaces,
@@ -33,21 +33,21 @@ UnstructuredMesh::UnstructuredMesh(
 {}
 
 
-const vectorField& UnstructuredMesh::points() const { return points_; }
+const vectorVector& UnstructuredMesh::points() const { return points_; }
 
-const scalarField& UnstructuredMesh::cellVolumes() const { return cellVolumes_; }
+const scalarVector& UnstructuredMesh::cellVolumes() const { return cellVolumes_; }
 
-const vectorField& UnstructuredMesh::cellCentres() const { return cellCentres_; }
+const vectorVector& UnstructuredMesh::cellCentres() const { return cellCentres_; }
 
-const vectorField& UnstructuredMesh::faceCentres() const { return faceCentres_; }
+const vectorVector& UnstructuredMesh::faceCentres() const { return faceCentres_; }
 
-const vectorField& UnstructuredMesh::faceAreas() const { return faceAreas_; }
+const vectorVector& UnstructuredMesh::faceAreas() const { return faceAreas_; }
 
-const scalarField& UnstructuredMesh::magFaceAreas() const { return magFaceAreas_; }
+const scalarVector& UnstructuredMesh::magFaceAreas() const { return magFaceAreas_; }
 
-const labelField& UnstructuredMesh::faceOwner() const { return faceOwner_; }
+const labelVector& UnstructuredMesh::faceOwner() const { return faceOwner_; }
 
-const labelField& UnstructuredMesh::faceNeighbour() const { return faceNeighbour_; }
+const labelVector& UnstructuredMesh::faceNeighbour() const { return faceNeighbour_; }
 
 size_t UnstructuredMesh::nCells() const { return nCells_; }
 
@@ -72,11 +72,11 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     // left, top, right, bottom faces
     // and four boundaries one left, right, top, bottom
 
-    vectorField faceAreasVec3s(exec, {{-1, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, -1, 0}});
-    vectorField faceCentresVec3s(
+    vectorVector faceAreasVec3s(exec, {{-1, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, -1, 0}});
+    vectorVector faceCentresVec3s(
         exec, {{0.0, 0.5, 0.0}, {0.5, 1.0, 0.0}, {1.0, 0.5, 0.0}, {0.5, 0.0, 0.0}}
     );
-    scalarField magFaceAreas(exec, {1, 1, 1, 1});
+    scalarVector magFaceAreas(exec, {1, 1, 1, 1});
 
     BoundaryMesh boundaryMesh(
         exec,
@@ -115,7 +115,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
-    vectorField meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
+    vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
     auto meshPointsHostSpan = meshPointsHost.view();
     meshPointsHostSpan[nCells - 1] = leftBoundary;
     meshPointsHostSpan[nCells] = rightBoundary;
@@ -132,9 +132,9 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
         }
     );
 
-    scalarField cellVolumes(exec, nCells, meshSpacing);
+    scalarVector cellVolumes(exec, nCells, meshSpacing);
 
-    vectorField cellCenters(exec, nCells, {0.0, 0.0, 0.0});
+    vectorVector cellCenters(exec, nCells, {0.0, 0.0, 0.0});
     auto cellCentersSpan = cellCenters.view();
     parallelFor(
         exec,
@@ -145,16 +145,16 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     );
 
 
-    vectorField faceAreasHost(hostExec, nCells + 1, {1.0, 0.0, 0.0});
+    vectorVector faceAreasHost(hostExec, nCells + 1, {1.0, 0.0, 0.0});
     auto faceAreasHostView = faceAreasHost.view();
     faceAreasHostView[nCells - 1] = {-1.0, 0.0, 0.0}; // left boundary face
     auto faceAreas = faceAreasHost.copyToExecutor(exec);
 
-    vectorField faceCenters(exec, meshPoints);
-    scalarField magFaceAreas(exec, nCells + 1, 1.0);
+    vectorVector faceCenters(exec, meshPoints);
+    scalarVector magFaceAreas(exec, nCells + 1, 1.0);
 
-    labelField faceOwnerHost(hostExec, nCells + 1);
-    labelField faceNeighbor(exec, nCells - 1);
+    labelVector faceOwnerHost(hostExec, nCells + 1);
+    labelVector faceNeighbor(exec, nCells - 1);
     auto faceOwnerHostSpan = faceOwnerHost.view();
     faceOwnerHostSpan[nCells - 1] = 0;                          // left boundary face
     faceOwnerHostSpan[nCells] = static_cast<label>(nCells) - 1; // right boundary face
@@ -172,7 +172,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
         }
     );
 
-    vectorField deltaHost(hostExec, 2);
+    vectorVector deltaHost(hostExec, 2);
     auto deltaHostSpan = deltaHost.view();
     auto cellCentersHost = cellCenters.copyToHost();
     auto cellCentersHostSpan = cellCentersHost.view();
@@ -180,7 +180,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     deltaHostSpan[1] = {rightBoundary[0] - cellCentersHostSpan[nCells - 1][0], 0.0, 0.0};
     auto delta = deltaHost.copyToExecutor(exec);
 
-    scalarField deltaCoeffsHost(hostExec, 2);
+    scalarVector deltaCoeffsHost(hostExec, 2);
     auto deltaCoeffsHostSpan = deltaCoeffsHost.view();
     deltaCoeffsHostSpan[0] = 1 / mag(deltaHostSpan[0]);
     deltaCoeffsHostSpan[1] = 1 / mag(deltaHostSpan[1]);

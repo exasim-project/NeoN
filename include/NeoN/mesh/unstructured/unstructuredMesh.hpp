@@ -9,10 +9,6 @@
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
 
-#include <vector>
-#include <numeric>
-#include <algorithm>
-
 namespace NeoN
 {
 
@@ -52,14 +48,14 @@ public:
      * @param boundaryMesh The boundary mesh.
      */
     UnstructuredMesh(
-        vectorField points,
-        scalarField cellVolumes,
-        vectorField cellCentres,
-        vectorField faceAreas,
-        vectorField faceCentres,
-        scalarField magFaceAreas,
-        labelField faceOwner,
-        labelField faceNeighbour,
+        vectorVector points,
+        scalarVector cellVolumes,
+        vectorVector cellCentres,
+        vectorVector faceAreas,
+        vectorVector faceCentres,
+        scalarVector magFaceAreas,
+        labelVector faceOwner,
+        labelVector faceNeighbour,
         size_t nCells,
         size_t nInternalFaces,
         size_t nBoundaryFaces,
@@ -73,56 +69,56 @@ public:
      *
      * @return The field of mesh points.
      */
-    const vectorField& points() const;
+    const vectorVector& points() const;
 
     /**
      * @brief Get the field of cell volumes in the mesh.
      *
      * @return The field of cell volumes in the mesh.
      */
-    const scalarField& cellVolumes() const;
+    const scalarVector& cellVolumes() const;
 
     /**
      * @brief Get the field of cell centres in the mesh.
      *
      * @return The field of cell centres in the mesh.
      */
-    const vectorField& cellCentres() const;
+    const vectorVector& cellCentres() const;
 
     /**
      * @brief Get the field of face centres.
      *
      * @return The field of face centres.
      */
-    const vectorField& faceCentres() const;
+    const vectorVector& faceCentres() const;
 
     /**
      * @brief Get the field of area face normals.
      *
      * @return The field of area face normals.
      */
-    const vectorField& faceAreas() const;
+    const vectorVector& faceAreas() const;
 
     /**
      * @brief Get the field of magnitudes of face areas.
      *
      * @return The field of magnitudes of face areas.
      */
-    const scalarField& magFaceAreas() const;
+    const scalarVector& magFaceAreas() const;
 
     /**
      * @brief Get the field of face owner cells.
      *
      * @return The field of face owner cells.
      */
-    const labelField& faceOwner() const;
+    const labelVector& faceOwner() const;
 
     /**
      * @brief Get the field of face neighbour cells.
      *
      * @return The field of face neighbour cells.
      */
-    const labelField& faceNeighbour() const;
+    const labelVector& faceNeighbour() const;
 
     /**
      * @brief Get the number of cells in the mesh.
@@ -190,47 +186,47 @@ private:
     const Executor exec_;
 
     /**
-     * @brief Field of mesh points.
+     * @brief Vector of mesh points.
      */
-    vectorField points_;
+    vectorVector points_;
 
     /**
-     * @brief Field of cell volumes in the mesh.
+     * @brief Vector of cell volumes in the mesh.
      */
-    scalarField cellVolumes_;
+    scalarVector cellVolumes_;
 
     /**
-     * @brief Field of cell centres in the mesh.
+     * @brief Vector of cell centres in the mesh.
      */
-    vectorField cellCentres_;
+    vectorVector cellCentres_;
 
     /**
-     * @brief Field of area face normals.
+     * @brief Vector of area face normals.
      *
      * The area face normals are defined as the normal vector to the face
      * with magnitude equal to the face area.
      */
-    vectorField faceAreas_;
+    vectorVector faceAreas_;
 
     /**
-     * @brief Field of face centres.
+     * @brief Vector of face centres.
      */
-    vectorField faceCentres_;
+    vectorVector faceCentres_;
 
     /**
-     * @brief Field of magnitudes of face areas.
+     * @brief Vector of magnitudes of face areas.
      */
-    scalarField magFaceAreas_;
+    scalarVector magFaceAreas_;
 
     /**
-     * @brief Field of face owner cells.
+     * @brief Vector of face owner cells.
      */
-    labelField faceOwner_;
+    labelVector faceOwner_;
 
     /**
-     * @brief Field of face neighbour cells.
+     * @brief Vector of face neighbour cells.
      */
-    labelField faceNeighbour_;
+    labelVector faceNeighbour_;
 
     /**
      * @brief Number of cells in the mesh.

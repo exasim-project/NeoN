@@ -24,8 +24,8 @@ To solve the continuity equation in OpenFOAM with the PISO or SIMPLE algorithm, 
 
 .. code-block:: cpp
 
-    volScalarField rAU(1.0/UEqn.A());
-    volVec3Field HbyA(constrainHbyA(rAU*UEqn.H(), U, p));
+    volScalarVector rAU(1.0/UEqn.A());
+    volVec3Vector HbyA(constrainHbyA(rAU*UEqn.H(), U, p));
 
 This approach is readable and easy to understand for engineers familiar with OpenFOAM. However, it has several limitations due to its implementation in OpenFOAM:
 

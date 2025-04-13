@@ -23,7 +23,7 @@ function(NeoN_unit_test TEST)
     set(NeoN_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
   endif()
   if(NOT DEFINED "NeoN_COMMAND")
-    set(NeoN_COMMAND nf_${TEST})
+    set(NeoN_COMMAND nn_${TEST})
   endif()
 
   add_executable(${NeoN_COMMAND} "${TEST}.cpp")

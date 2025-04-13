@@ -26,14 +26,14 @@ Example
     // or any other executor CPUExecutor, SerialExecutor
     NeoN::Executor = NeoN::GPUExecutor{};
 
-    NeoN::Field<NeoN::scalar> field(exec, 2);
+    NeoN::Vector<NeoN::scalar> field(exec, 2);
     NeoN::map(field, KOKKOS_LAMBDA(const std::size_t i) { return 1.0; });
     NeoN::map(field, KOKKOS_LAMBDA(const std::size_t i) { return 2.0; }, {1, 2}); // apply a function to a subfield
     // copy to host
-    auto hostField = field.copyToHost();
+    auto hostVector = field.copyToHost();
     for (auto i = 0; i < field.size(); ++i)
     {
-        std::cout << hostField[i] << std::endl;
+        std::cout << hostVector[i] << std::endl;
     }
     // prints:
     // 1.0

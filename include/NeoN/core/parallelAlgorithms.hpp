@@ -12,7 +12,7 @@ namespace NeoN
 
 
 template<typename ValueType>
-class Field;
+class Vector;
 
 
 // Concept to check if a callable is compatible with void(const size_t)
@@ -64,16 +64,16 @@ void parallelFor(
 
 // Concept to check if a callable is compatible with ValueType(const size_t)
 template<typename Kernel, typename ValueType>
-concept parallelForFieldKernel = requires(Kernel t, ValueType val, size_t i) {
+concept parallelForVectorKernel = requires(Kernel t, ValueType val, size_t i) {
     {
         t(i)
     } -> std::same_as<ValueType>;
 };
 
-template<typename Executor, typename ValueType, parallelForFieldKernel<ValueType> Kernel>
+template<typename Executor, typename ValueType, parallelForVectorKernel<ValueType> Kernel>
 void parallelFor(
     [[maybe_unused]] const Executor& exec,
-    Field<ValueType>& field,
+    Vector<ValueType>& field,
     Kernel kernel,
     std::string name = "parallelFor"
 )
@@ -98,8 +98,8 @@ void parallelFor(
     }
 }
 
-template<typename ValueType, parallelForFieldKernel<ValueType> Kernel>
-void parallelFor(Field<ValueType>& field, Kernel kernel, std::string name = "parallelFor")
+template<typename ValueType, parallelForVectorKernel<ValueType> Kernel>
+void parallelFor(Vector<ValueType>& field, Kernel kernel, std::string name = "parallelFor")
 {
     std::visit([&](const auto& e) { parallelFor(e, field, kernel, name); }, field.exec());
 }
@@ -144,7 +144,7 @@ void parallelReduce(
 
 template<typename Executor, typename ValueType, typename Kernel, typename T>
 void parallelReduce(
-    [[maybe_unused]] const Executor& exec, Field<ValueType>& field, Kernel kernel, T& value
+    [[maybe_unused]] const Executor& exec, Vector<ValueType>& field, Kernel kernel, T& value
 )
 {
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
@@ -172,7 +172,7 @@ void parallelReduce(
 }
 
 template<typename ValueType, typename Kernel, typename T>
-void parallelReduce(Field<ValueType>& field, Kernel kernel, T& value)
+void parallelReduce(Vector<ValueType>& field, Kernel kernel, T& value)
 {
     std::visit([&](const auto& e) { parallelReduce(e, field, kernel, value); }, field.exec());
 }

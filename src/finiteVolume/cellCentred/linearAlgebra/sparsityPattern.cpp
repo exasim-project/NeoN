@@ -37,7 +37,7 @@ void SparsityPattern::update()
     const auto nInternalFaces = mesh_.nInternalFaces();
 
     // start with one to include the diagonal
-    Field<localIdx> nFacesPerCell(exec, nCells, 1);
+    Vector<localIdx> nFacesPerCell(exec, nCells, 1);
     auto [nFacesPerCellSpan, neighbourOffsetSpan, ownerOffsetSpan, diagOffsetSpan] =
         spans(nFacesPerCell, neighbourOffset_, ownerOffset_, diagOffset_);
 
@@ -115,10 +115,10 @@ void SparsityPattern::update()
 }
 
 
-const NeoN::Field<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
+const NeoN::Vector<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
-const NeoN::Field<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
+const NeoN::Vector<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
 
-const NeoN::Field<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
+const NeoN::Vector<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
 
 } // namespace NeoN::finiteVolume::cellCentred

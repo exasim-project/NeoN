@@ -20,7 +20,7 @@ namespace NeoN::timeIntegration
 /**
  * @class RungeKutta
  * @brief Integrates in time, using Sundials, a PDE expression using the Runge-Kutta method.
- * @tparam SolutionFieldType The Solution field type, should be a volume or surface field.
+ * @tparam SolutionVectorType The Solution field type, should be a volume or surface field.
  *
  * @details
  * Implements explicit Runge-Kutta time integration using the Sundials library. The class manages
@@ -48,15 +48,15 @@ namespace NeoN::timeIntegration
  *    shared_ptr to prevent early freeing. Please read the documentation about multiple, concurrent
  *    solves (you must not do them). You have been warned.
  */
-template<typename SolutionFieldType>
+template<typename SolutionVectorType>
 class RungeKutta :
-    public TimeIntegratorBase<SolutionFieldType>::template Register<RungeKutta<SolutionFieldType>>
+    public TimeIntegratorBase<SolutionVectorType>::template Register<RungeKutta<SolutionVectorType>>
 {
 public:
 
-    using ValueType = typename SolutionFieldType::FieldValueType;
+    using ValueType = typename SolutionVectorType::VectorValueType;
     using Base =
-        TimeIntegratorBase<SolutionFieldType>::template Register<RungeKutta<SolutionFieldType>>;
+        TimeIntegratorBase<SolutionVectorType>::template Register<RungeKutta<SolutionVectorType>>;
 
     /**
      * @brief Default constructor.
@@ -117,19 +117,22 @@ public:
     /**
      * @brief Solves one (explicit) time step, from n to n+1
      * @param exp The expression to be solved
-     * @param solutionField The field containing the solution.
+     * @param solutionVector The field containing the solution.
      * @param t The current time
      * @param dt The time step size
      */
     void solve(
-        dsl::Expression<ValueType>& exp, SolutionFieldType& solutionField, scalar t, const scalar dt
+        dsl::Expression<ValueType>& exp,
+        SolutionVectorType& solutionVector,
+        scalar t,
+        const scalar dt
     ) override;
 
     /**
      * @brief Return a copy of this instantiated class.
      * @return std::unique_ptr to the new copy.
      */
-    std::unique_ptr<TimeIntegratorBase<SolutionFieldType>> clone() const override;
+    std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override;
 
 
 private:
@@ -155,7 +158,7 @@ private:
      * @param dt The time step size
      */
     void
-    initSUNERKSolver(dsl::Expression<ValueType>& exp, SolutionFieldType& field, const scalar t);
+    initSUNERKSolver(dsl::Expression<ValueType>& exp, SolutionVectorType& field, const scalar t);
 
     /**
      * @brief Initializes the PDE expression to be solved.
@@ -177,9 +180,9 @@ private:
 
     /**
      * @brief Initializes the initial conditions for the solver.
-     * @param solutionField The field containing the initial conditions
+     * @param solutionVector The field containing the initial conditions
      */
-    void initSUNInitialConditions(const SolutionFieldType& solutionField);
+    void initSUNInitialConditions(const SolutionVectorType& solutionVector);
 
     /**
      * @brief Initializes the ODE memory and solver parameters.

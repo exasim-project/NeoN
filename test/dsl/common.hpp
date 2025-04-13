@@ -8,7 +8,7 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Field = NeoN::Field<NeoN::scalar>;
+using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
 using Operator = NeoN::dsl::Operator;
 using Executor = NeoN::Executor;
@@ -25,7 +25,7 @@ class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     Dummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
@@ -39,10 +39,10 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Field<ValueType>& source)
+    void explicitOperation(NeoN::Vector<ValueType>& source)
     {
         auto sourceView = source.view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
         NeoN::parallelFor(
             source.exec(),
@@ -55,7 +55,7 @@ public:
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
 
         // update diag
@@ -75,12 +75,12 @@ public:
 
     la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
     {
-        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
+        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
+        NeoN::Vector<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
         NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
         NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
         return linearSystem;
     }
@@ -96,7 +96,7 @@ class TemporalDummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueTyp
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
@@ -110,10 +110,10 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Field<ValueType>& source, NeoN::scalar, NeoN::scalar)
+    void explicitOperation(NeoN::Vector<ValueType>& source, NeoN::scalar, NeoN::scalar)
     {
         auto sourceView = source.view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
         NeoN::parallelFor(
             source.exec(),
@@ -127,7 +127,7 @@ public:
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
 
         // update diag
@@ -147,12 +147,12 @@ public:
 
     la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
     {
-        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
+        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
+        NeoN::Vector<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
         NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
         NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
         return linearSystem;
     }
@@ -161,10 +161,10 @@ public:
 };
 
 template<typename ValueType>
-ValueType getField(const NeoN::Field<ValueType>& source)
+ValueType getVector(const NeoN::Vector<ValueType>& source)
 {
-    auto sourceField = source.copyToHost();
-    return sourceField.view()[0];
+    auto sourceVector = source.copyToHost();
+    return sourceVector.view()[0];
 }
 
 template<typename ValueType>

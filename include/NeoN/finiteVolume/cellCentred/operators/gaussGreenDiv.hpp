@@ -18,7 +18,7 @@ void computeDivExp(
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
-    Field<ValueType>& divPhi,
+    Vector<ValueType>& divPhi,
     const dsl::Coeff operatorScaling
 );
 
@@ -56,7 +56,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         computeDivExp<ValueType>(
-            faceFlux, phi, surfaceInterpolation_, divPhi.internalField(), operatorScaling
+            faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
         );
     }
 
@@ -70,7 +70,7 @@ public:
     };
 
     virtual void
-    div(Field<ValueType>& divPhi,
+    div(Vector<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
@@ -91,7 +91,7 @@ public:
             createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
         );
         computeDivExp<ValueType>(
-            faceFlux, phi, surfaceInterpolation_, divPhi.internalField(), operatorScaling
+            faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
         );
         return divPhi;
     };

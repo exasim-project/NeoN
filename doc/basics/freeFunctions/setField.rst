@@ -1,7 +1,7 @@
-.. _basic_functions_setField:
+.. _basic_functions_setVector:
 
 
-``setField``
+``setVector``
 ------------
 
 Header: ``"NeoN/fields/fieldFreeFunctions.hpp"``
@@ -10,13 +10,13 @@ Header: ``"NeoN/fields/fieldFreeFunctions.hpp"``
 Description
 ^^^^^^^^^^^
 
-The function ``setField`` sets the entire field with a given field or a subfield with a given field if a range is defined.
+The function ``setVector`` sets the entire field with a given field or a subfield with a given field if a range is defined.
 
 
 Definition
 ^^^^^^^^^^
 
-.. doxygenfunction:: NeoN::setField
+.. doxygenfunction:: NeoN::setVector
 
 Example
 ^^^^^^^
@@ -26,18 +26,18 @@ Example
     // or any other executor CPUExecutor, SerialExecutor
     NeoN::Executor = NeoN::GPUExecutor{};
 
-    NeoN::Field<NeoN::scalar> fieldA(exec, 2);
-    NeoN::Field<NeoN::scalar> fieldB(exec, 2, 1.0);
-    NeoN::Field<NeoN::scalar> fieldC(exec, 2, 2.0);
+    NeoN::Vector<NeoN::scalar> fieldA(exec, 2);
+    NeoN::Vector<NeoN::scalar> fieldB(exec, 2, 1.0);
+    NeoN::Vector<NeoN::scalar> fieldC(exec, 2, 2.0);
     // Note if the executor does not match the program will exit with a segfault
-    NeoN::setField(field, fieldB.view());
+    NeoN::setVector(field, fieldB.view());
     // only set the last element of the field
     NeoN::map(field, fieldC.view(), {1, 2});
     // copy to host
-    auto hostField = field.copyToHost();
+    auto hostVector = field.copyToHost();
     for (auto i = 0; i < field.size(); ++i)
     {
-        std::cout << hostField[i] << std::endl;
+        std::cout << hostVector[i] << std::endl;
     }
     // prints:
     // 1.0

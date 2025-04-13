@@ -21,32 +21,32 @@ namespace detail
 // I guess it was replaced by range
 template<typename ValueType>
 void setGradientValue(
-    DomainField<ValueType>& domainField,
+    Field<ValueType>& domainVector,
     const UnstructuredMesh& mesh,
     std::pair<size_t, size_t> range,
     ValueType fixedGradient
 )
 {
-    const auto iField = domainField.internalField().view();
+    const auto iVector = domainVector.internalVector().view();
 
     auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = spans(
-        domainField.boundaryField().refGrad(),
-        domainField.boundaryField().value(),
-        domainField.boundaryField().valueFraction(),
-        domainField.boundaryField().refValue(),
+        domainVector.boundaryVector().refGrad(),
+        domainVector.boundaryVector().value(),
+        domainVector.boundaryVector().valueFraction(),
+        domainVector.boundaryVector().refValue(),
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().deltaCoeffs()
     );
 
 
     NeoN::parallelFor(
-        domainField.exec(),
+        domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const size_t i) {
             refGradient[i] = fixedGradient;
             // operator / is not defined for all ValueTypes
             value[i] =
-                iField[static_cast<size_t>(faceCells[i])] + fixedGradient * (1 / deltaCoeffs[i]);
+                iVector[static_cast<size_t>(faceCells[i])] + fixedGradient * (1 / deltaCoeffs[i]);
             valueFraction[i] = 0.0;          // only use refGrad
             refValue[i] = zero<ValueType>(); // not used
         },
@@ -70,9 +70,9 @@ public:
           fixedGradient_(dict.get<ValueType>("fixedGradient"))
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) final
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setGradientValue(domainField, mesh_, this->range(), fixedGradient_);
+        detail::setGradientValue(domainVector, mesh_, this->range(), fixedGradient_);
     }
 
     static std::string name() { return "fixedGradient"; }

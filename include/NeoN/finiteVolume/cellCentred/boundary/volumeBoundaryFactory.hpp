@@ -5,7 +5,7 @@
 
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -30,7 +30,7 @@ public:
 
     virtual ~VolumeBoundaryFactory() = default;
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) = 0;
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
 };
@@ -62,9 +62,9 @@ public:
           boundaryCorrectionStrategy_(other.boundaryCorrectionStrategy_->clone())
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField)
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector)
     {
-        boundaryCorrectionStrategy_->correctBoundaryCondition(domainField);
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
 private:

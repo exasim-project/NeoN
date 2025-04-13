@@ -2,16 +2,15 @@
 // SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
-#include <memory>
 #include <vector>
-#include <utility>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
-#include "NeoN/core/error.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace la = la;
 
@@ -44,14 +43,14 @@ public:
     }
 
     /* @brief perform all explicit operation and accumulate the result */
-    Field<ValueType> explicitOperation(size_t nCells) const
+    Vector<ValueType> explicitOperation(size_t nCells) const
     {
-        Field<ValueType> source(exec_, nCells, zero<ValueType>());
+        Vector<ValueType> source(exec_, nCells, zero<ValueType>());
         return explicitOperation(source);
     }
 
     /* @brief perform all explicit operation and accumulate the result */
-    Field<ValueType> explicitOperation(Field<ValueType>& source) const
+    Vector<ValueType> explicitOperation(Vector<ValueType>& source) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -63,7 +62,7 @@ public:
         return source;
     }
 
-    Field<ValueType> explicitOperation(Field<ValueType>& source, scalar t, scalar dt) const
+    Vector<ValueType> explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -166,10 +165,10 @@ operator+(Expression<ValueType> lhs, const SpatialOperator<ValueType>& rhs)
 }
 
 template<typename leftOperator, typename rightOperator>
-[[nodiscard]] inline Expression<typename leftOperator::FieldValueType>
+[[nodiscard]] inline Expression<typename leftOperator::VectorValueType>
 operator+(leftOperator lhs, rightOperator rhs)
 {
-    using ValueType = typename leftOperator::FieldValueType;
+    using ValueType = typename leftOperator::VectorValueType;
     Expression<ValueType> expr(lhs.exec());
     expr.addOperator(lhs);
     expr.addOperator(rhs);
@@ -209,10 +208,10 @@ operator-(Expression<ValueType> lhs, const SpatialOperator<ValueType>& rhs)
 }
 
 template<typename leftOperator, typename rightOperator>
-[[nodiscard]] inline Expression<typename leftOperator::FieldValueType>
+[[nodiscard]] inline Expression<typename leftOperator::VectorValueType>
 operator-(leftOperator lhs, rightOperator rhs)
 {
-    using ValueType = typename leftOperator::FieldValueType;
+    using ValueType = typename leftOperator::VectorValueType;
     Expression<ValueType> expr(lhs.exec());
     expr.addOperator(lhs);
     expr.addOperator(Coeff(-1) * rhs);

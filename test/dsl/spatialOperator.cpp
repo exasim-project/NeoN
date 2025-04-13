@@ -17,10 +17,10 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto mesh = NeoN::createSingleCellMesh(exec);
     auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
-    auto fA = NeoN::Field<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
+    auto fA = NeoN::Vector<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
     auto bf = NeoN::BoundaryData<TestType>(exec, mesh.boundaryMesh().offset());
     auto bcs = std::vector<fvcc::VolumeBoundary<TestType>> {};
-    auto scaleField = NeoN::Field<NeoN::scalar>(exec, 1, 2.0);
+    auto scaleVector = NeoN::Vector<NeoN::scalar>(exec, 1, 2.0);
 
     SECTION("SpatialOperator creation on " + execName)
     {
@@ -36,15 +36,15 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
 
         dsl::SpatialOperator c = 2.0 * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
-        dsl::SpatialOperator d = scaleField * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
+        dsl::SpatialOperator d = scaleVector * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
         dsl::SpatialOperator e =
-            Coeff(-3, scaleField) * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
+            Coeff(-3, scaleVector) * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
 
         [[maybe_unused]] auto coeffC = c.getCoefficient();
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        NeoN::Field<TestType> source(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::Vector<TestType> source(exec, 1, 2.0 * NeoN::one<TestType>());
         c.explicitOperation(source);
 
         // 2 += 2 * 2
@@ -78,10 +78,10 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         dsl::SpatialOperator c =
             2 * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf, Operator::Type::Implicit));
         dsl::SpatialOperator d =
-            scaleField
+            scaleVector
             * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf, Operator::Type::Implicit));
         dsl::SpatialOperator e =
-            Coeff(-3, scaleField)
+            Coeff(-3, scaleVector)
             * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf, Operator::Type::Implicit));
 
         [[maybe_unused]] auto coeffC = c.getCoefficient();
@@ -92,7 +92,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             TestType,
             NeoN::localIdx,
             NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
-        Field source(exec, 1, 2.0);
+        Vector source(exec, 1, 2.0);
         c.implicitOperation(ls);
 
         // c = 2 * 2

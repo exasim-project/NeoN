@@ -9,53 +9,53 @@
 
 #include <Kokkos_Core.hpp>
 
-TEST_CASE("segmentedField")
+TEST_CASE("segmentedVector")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     SECTION("Constructor from sizes " + execName)
     {
-        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(exec, 10, 5);
-        auto [values, segments] = segField.spans();
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(exec, 10, 5);
+        auto [values, segments] = segVector.spans();
 
         REQUIRE(values.size() == 10);
         REQUIRE(segments.size() == 6);
 
-        REQUIRE(segField.numSegments() == 5);
-        REQUIRE(segField.size() == 10);
+        REQUIRE(segVector.numSegments() == 5);
+        REQUIRE(segVector.size() == 10);
     }
 
     SECTION("Constructor from field " + execName)
     {
-        NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-        NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
+        NeoN::Vector<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        NeoN::Vector<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(values, segments);
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(values, segments);
 
-        REQUIRE(segField.values().size() == 10);
-        REQUIRE(segField.segments().size() == 6);
-        REQUIRE(segField.numSegments() == 5);
+        REQUIRE(segVector.values().size() == 10);
+        REQUIRE(segVector.segments().size() == 6);
+        REQUIRE(segVector.numSegments() == 5);
 
-        REQUIRE(segField.values().exec() == exec);
+        REQUIRE(segVector.values().exec() == exec);
 
-        auto hostValues = segField.values().copyToHost();
-        auto hostSegments = segField.segments().copyToHost();
+        auto hostValues = segVector.values().copyToHost();
+        auto hostSegments = segVector.segments().copyToHost();
 
         REQUIRE(hostValues.view()[5] == 5);
         REQUIRE(hostSegments.view()[2] == 4);
 
         SECTION("loop over segments")
         {
-            auto [valueSpan, segment] = segField.spans();
-            auto segView = segField.view();
-            NeoN::Field<NeoN::label> result(exec, 5);
+            auto [valueSpan, segment] = segVector.spans();
+            auto segView = segVector.view();
+            NeoN::Vector<NeoN::label> result(exec, 5);
 
             NeoN::fill(result, 0);
             auto resultView = result.view();
 
             parallelFor(
                 exec,
-                {0, segField.numSegments()},
+                {0, segVector.numSegments()},
                 KOKKOS_LAMBDA(const size_t segI) {
                     // check if it works with bounds
                     auto [bStart, bEnd] = segView.bounds(segI);
@@ -93,10 +93,10 @@ TEST_CASE("segmentedField")
 
     SECTION("Constructor from list with offsets " + execName)
     {
-        NeoN::Field<NeoN::localIdx> offsets(exec, {1, 2, 3, 4, 5});
-        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(offsets);
+        NeoN::Vector<NeoN::localIdx> offsets(exec, {1, 2, 3, 4, 5});
+        NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(offsets);
 
-        auto hostSegments = segField.segments().copyToHost();
+        auto hostSegments = segVector.segments().copyToHost();
         REQUIRE(hostSegments.view()[0] == 0);
         REQUIRE(hostSegments.view()[1] == 1);
         REQUIRE(hostSegments.view()[2] == 3);
@@ -111,12 +111,12 @@ TEST_CASE("segmentedField")
         REQUIRE(hostOffsets.view()[3] == 4);
         REQUIRE(hostOffsets.view()[4] == 5);
 
-        REQUIRE(segField.size() == 15);
+        REQUIRE(segVector.size() == 15);
 
         SECTION("update values")
         {
-            auto segView = segField.view();
-            NeoN::Field<NeoN::label> result(exec, 5);
+            auto segView = segVector.view();
+            NeoN::Vector<NeoN::label> result(exec, 5);
 
             NeoN::fill(result, 0);
             auto resultView = result.view();
@@ -124,7 +124,7 @@ TEST_CASE("segmentedField")
 
             parallelFor(
                 exec,
-                {0, segField.numSegments()},
+                {0, segVector.numSegments()},
                 KOKKOS_LAMBDA(const size_t segI) {
                     // fill values
                     auto vals = segView.span(segI);

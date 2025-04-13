@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include <vector>
-
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+
+#include <vector>
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -28,7 +28,7 @@ class VolumeField : public DomainMixin<ValueType>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
 
     /**
@@ -46,10 +46,7 @@ public:
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(
-            exec,
-            name,
-            mesh,
-            DomainField<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
+            exec, name, mesh, Field<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
         ),
           key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions),
           db_(std::nullopt)
@@ -62,21 +59,18 @@ public:
      * @param exec The executor
      * @param name The name of the field
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      */
     VolumeField(
         const Executor& exec,
         std::string name,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& internalField,
+        const Vector<ValueType>& internalVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(
-            exec,
-            name,
-            mesh,
-            DomainField<ValueType>(exec, internalField, mesh.boundaryMesh().offset())
+            exec, name, mesh, Field<ValueType>(exec, internalVector, mesh.boundaryMesh().offset())
         ),
           key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions),
           db_(std::nullopt)
@@ -87,19 +81,19 @@ public:
      *
      * @param name The name of the field
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
-     * @param boundaryFields the underlying boundary data fields
+     * @param internalVector the underlying internal field
+     * @param boundaryVectors the underlying boundary data fields
      * @param boundaryConditions a vector of boundary conditions
      */
     VolumeField(
         const Executor& exec,
         std::string name,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& internalField,
-        const BoundaryData<ValueType>& boundaryFields,
+        const Vector<ValueType>& internalVector,
+        const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, name, mesh, internalField, boundaryFields), key(""),
+        : DomainMixin<ValueType>(exec, name, mesh, internalVector, boundaryVectors), key(""),
           fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
     {}
 
@@ -109,7 +103,7 @@ public:
      * @param exec The executor
      * @param fieldName The name of the field
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      * @param db The database
      * @param dbKey The key of the field in the database
@@ -119,13 +113,13 @@ public:
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const DomainField<ValueType>& domainField,
+        const Field<ValueType>& domainVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions,
         Database& db,
         std::string dbKey,
         std::string collectionName
     )
-        : DomainMixin<ValueType>(exec, fieldName, mesh, domainField), key(dbKey),
+        : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector), key(dbKey),
           fieldCollectionName(collectionName), boundaryConditions_(boundaryConditions), db_(&db)
     {}
 

@@ -15,7 +15,7 @@ namespace NeoN
 {
 
 template<typename ValueType>
-struct CreateField
+struct CreateVector
 {
     std::string name;
     const NeoN::UnstructuredMesh& mesh;
@@ -34,12 +34,12 @@ struct CreateField
             dict.insert("fixedValue", ValueType(2.0));
             bcs.push_back(fvcc::VolumeBoundary<ValueType>(mesh, dict, patchi));
         }
-        NeoN::DomainField<ValueType> domainField(
+        NeoN::Field<ValueType> domainVector(
             mesh.exec(),
-            NeoN::Field<ValueType>(mesh.exec(), mesh.nCells(), one<ValueType>()),
+            NeoN::Vector<ValueType>(mesh.exec(), mesh.nCells(), one<ValueType>()),
             mesh.boundaryMesh().offset()
         );
-        fvcc::VolumeField<ValueType> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        fvcc::VolumeField<ValueType> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
 
         return NeoN::Document(
             {{"name", vf.name},
@@ -47,7 +47,7 @@ struct CreateField
              {"iterationIndex", iterationIndex},
              {"subCycleIndex", subCycleIndex},
              {"field", vf}},
-            fvcc::validateFieldDoc
+            fvcc::validateVectorDoc
         );
     }
 };
@@ -60,21 +60,21 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto mesh = createSingleCellMesh(exec);
     auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
-    fvcc::FieldCollection& fieldCollection =
-        fvcc::FieldCollection::instance(db, "testFieldCollection");
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "testVectorCollection");
 
-    fvcc::VolumeField<TestType>& phi = fieldCollection.registerField<fvcc::VolumeField<TestType>>(
-        CreateField<TestType> {.name = "phi", .mesh = mesh, .timeIndex = 1}
+    fvcc::VolumeField<TestType>& phi = fieldCollection.registerVector<fvcc::VolumeField<TestType>>(
+        CreateVector<TestType> {.name = "phi", .mesh = mesh, .timeIndex = 1}
     );
-    fill(phi.internalField(), 10 * one<TestType>());
-    fill(phi.boundaryField().value(), zero<TestType>());
-    fill(oldTime(phi).internalField(), -1.0 * one<TestType>());
+    fill(phi.internalVector(), 10 * one<TestType>());
+    fill(phi.boundaryVector().value(), zero<TestType>());
+    fill(oldTime(phi).internalVector(), -1.0 * one<TestType>());
     phi.correctBoundaryConditions();
 
     SECTION("explicit DdtOperator " + execName)
     {
         fvcc::DdtOperator<TestType> ddtTerm(Operator::Type::Explicit, phi);
-        auto source = Field<TestType>(exec, phi.size(), zero<TestType>());
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
         ddtTerm.explicitOperation(source, 1.0, 0.5);
 
         // cell has one cell

@@ -17,13 +17,13 @@ void computeLinearInterpolation(
 )
 {
     const auto exec = dst.exec();
-    auto dstS = dst.internalField().view();
+    auto dstS = dst.internalVector().view();
     const auto [srcS, weightS, ownerS, neighS, boundS] = spans(
-        src.internalField(),
-        weights.internalField(),
+        src.internalVector(),
+        weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryField().value()
+        src.boundaryVector().value()
     );
     size_t nInternalFaces = dst.mesh().nInternalFaces();
 

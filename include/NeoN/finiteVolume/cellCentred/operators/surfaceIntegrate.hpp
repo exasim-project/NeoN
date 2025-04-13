@@ -3,13 +3,12 @@
 
 #pragma once
 
-#include "NeoN/fields/field.hpp"
+#include "NeoN/fields/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
-#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/operator.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -33,7 +32,7 @@ class SurfaceIntegrate
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     SurfaceIntegrate(const SurfaceField<ValueType>& flux)
         : flux_(flux), type_(dsl::Operator::Type::Explicit), coeffs_(1.0) {};
@@ -45,9 +44,9 @@ public:
 
     void build(const Input&) {}
 
-    void explicitOperation(Field<ValueType>& source) const
+    void explicitOperation(Vector<ValueType>& source) const
     {
-        NeoN::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
+        NeoN::Vector<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
 
         const UnstructuredMesh& mesh = flux_.mesh();
@@ -60,7 +59,7 @@ public:
             mesh.faceNeighbour().view(),
             mesh.faceOwner().view(),
             mesh.boundaryMesh().faceCells().view(),
-            this->flux_.internalField().view(),
+            this->flux_.internalVector().view(),
             mesh.cellVolumes().view(),
             tmpsource.view(),
             operatorScaling

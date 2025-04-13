@@ -12,7 +12,7 @@
 // only needed for msvc
 template class NeoN::timeIntegration::ForwardEuler<VolumeField>;
 
-struct CreateField
+struct CreateVector
 {
     std::string name;
     const NeoN::UnstructuredMesh& mesh;
@@ -24,20 +24,20 @@ struct CreateField
     NeoN::Document operator()(NeoN::Database& db)
     {
         std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-        NeoN::DomainField<NeoN::scalar> domainField(
+        NeoN::Field<NeoN::scalar> domainVector(
             mesh.exec(),
-            NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
             mesh.boundaryMesh().offset()
         );
-        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
-        NeoN::fill(vf.internalField(), value);
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
+        NeoN::fill(vf.internalVector(), value);
         return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
              {"subCycleIndex", subCycleIndex},
              {"field", vf}},
-            fvcc::validateFieldDoc
+            fvcc::validateVectorDoc
         );
     }
 };
@@ -48,7 +48,8 @@ TEST_CASE("TimeIntegration")
 
     NeoN::Database db;
     auto mesh = NeoN::createSingleCellMesh(exec);
-    fvcc::FieldCollection& fieldCollection = fvcc::FieldCollection::instance(db, "fieldCollection");
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "fieldCollection");
 
     NeoN::Dictionary fvSchemes;
     NeoN::Dictionary ddtSchemes;
@@ -57,8 +58,8 @@ TEST_CASE("TimeIntegration")
     NeoN::Dictionary fvSolution;
 
     fvcc::VolumeField<NeoN::scalar>& vf =
-        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(
-            CreateField {.name = "vf", .mesh = mesh, .value = 2.0, .timeIndex = 1}
+        fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+            CreateVector {.name = "vf", .mesh = mesh, .value = 2.0, .timeIndex = 1}
         );
 
     SECTION("Create expression and perform explicitOperation on " + execName)
@@ -76,6 +77,6 @@ TEST_CASE("TimeIntegration")
         // (U^1-U^0)/dt = -f
         // U^1 = - f * dt + U^0, where dt = 2, f = 2, U^0=2.0 -> U^1=-2.0
         NeoN::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
-        REQUIRE(getField(vf.internalField()) == -2.0);
+        REQUIRE(getVector(vf.internalVector()) == -2.0);
     }
 }

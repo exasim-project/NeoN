@@ -4,12 +4,14 @@
 
 #include <Kokkos_Core.hpp>
 
-#include <iostream>
 
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
-#include "NeoN/fields/field.hpp"
+#include "NeoN/fields/vector.hpp"
+
+#include <vector>
+#include <utility>
 
 namespace NeoN
 {
@@ -34,7 +36,7 @@ public:
 
     /**
      * @brief Copy constructor.
-     * @param rhs The boundaryFields object to be copied.
+     * @param rhs The boundaryVectors object to be copied.
      */
     BoundaryData(const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(rhs.value_), refValue_(rhs.refValue_),
@@ -46,7 +48,7 @@ public:
 
     /**
      * @brief Copy constructor.
-     * @param rhs The boundaryFields object to be copied.
+     * @param rhs The boundaryVectors object to be copied.
      */
     BoundaryData(const Executor& exec, const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(exec, rhs.value_), refValue_(exec, rhs.refValue_),
@@ -56,62 +58,80 @@ public:
     {}
 
 
-    BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
-        : exec_(exec), value_(exec, offsets.back()), refValue_(exec, offsets.back()),
-          valueFraction_(exec, offsets.back()), refGrad_(exec, offsets.back()),
-          boundaryTypes_(exec, offsets.size() - 1), offset_(exec, offsets),
-          nBoundaries_(offsets.size() - 1), nBoundaryFaces_(offsets.back())
+    /**
+     * @brief constructor with default initialized Vectors from sizes.
+     * @param exec - The executor
+     * @param nBoundaryFaces - The total number of boundary faces
+     * @param nBoundaryType - The total number of boundary patches
+     */
+    BoundaryData(const Executor& exec, int nBoundaryFaces, int nBoundaryTypes)
+        : exec_(exec), value_(exec, nBoundaryFaces), refValue_(exec, nBoundaryFaces),
+          valueFraction_(exec, nBoundaryFaces), refGrad_(exec, nBoundaryFaces),
+          boundaryTypes_(exec, nBoundaryTypes), offset_(exec, nBoundaryTypes + 1),
+          nBoundaries_(nBoundaryTypes), nBoundaryFaces_(nBoundaryFaces)
     {}
+
+    /**
+     * @brief constructor from a given offsets vector
+     * @warn all members except offsets are default constructed
+     * @param exec - The executor
+     * @param offsets - The total number of boundary faces
+     */
+    BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
+        : BoundaryData(exec, offsets.back(), offsets.size() - 1)
+    {
+        offset_ = Vector(exec, offsets);
+    }
 
 
     /** @copydoc BoundaryData::value()*/
-    const NeoN::Field<T>& value() const { return value_; }
+    const Vector<T>& value() const { return value_; }
 
     /**
      * @brief Get the view storing the computed values from the boundary
      * condition.
      * @return The view storing the computed values.
      */
-    NeoN::Field<T>& value() { return value_; }
+    Vector<T>& value() { return value_; }
 
     /** @copydoc BoundaryData::refValue()*/
-    const NeoN::Field<T>& refValue() const { return refValue_; }
+    const Vector<T>& refValue() const { return refValue_; }
 
     /**
      * @brief Get the view storing the Dirichlet boundary values.
      * @return The view storing the Dirichlet boundary values.
      */
-    NeoN::Field<T>& refValue() { return refValue_; }
+    Vector<T>& refValue() { return refValue_; }
 
     /** @copydoc BoundaryData::valueFraction()*/
-    const NeoN::Field<scalar>& valueFraction() const { return valueFraction_; }
+    const Vector<scalar>& valueFraction() const { return valueFraction_; }
 
     /**
      * @brief Get the view storing the fraction of the boundary value.
      * @return The view storing the fraction of the boundary value.
      */
-    NeoN::Field<scalar>& valueFraction() { return valueFraction_; }
+    Vector<scalar>& valueFraction() { return valueFraction_; }
 
     /** @copydoc BoundaryData::refGrad()*/
-    const NeoN::Field<T>& refGrad() const { return refGrad_; }
+    const Vector<T>& refGrad() const { return refGrad_; }
 
     /**
      * @brief Get the view storing the Neumann boundary values.
      * @return The view storing the Neumann boundary values.
      */
-    NeoN::Field<T>& refGrad() { return refGrad_; }
+    Vector<T>& refGrad() { return refGrad_; }
 
     /**
      * @brief Get the view storing the boundary types.
      * @return The view storing the boundary types.
      */
-    const NeoN::Field<int>& boundaryTypes() const { return boundaryTypes_; }
+    const Vector<int>& boundaryTypes() const { return boundaryTypes_; }
 
     /**
      * @brief Get the view storing the offsets of each boundary.
      * @return The view storing the offsets of each boundary.
      */
-    const NeoN::Field<localIdx>& offset() const { return offset_; }
+    const Vector<localIdx>& offset() const { return offset_; }
 
     /**
      * @brief Get the number of boundaries.
@@ -138,17 +158,17 @@ public:
 
 private:
 
-    Executor exec_;                     ///< The executor on which the field is stored
-    NeoN::Field<T> value_;              ///< The Field storing the computed values from the
-                                        ///< boundary condition.
-    NeoN::Field<T> refValue_;           ///< The Field storing the Dirichlet boundary values.
-    NeoN::Field<scalar> valueFraction_; ///< The Field storing the fraction of
-                                        ///< the boundary value.
-    NeoN::Field<T> refGrad_;            ///< The Field storing the Neumann boundary values.
-    NeoN::Field<int> boundaryTypes_;    ///< The Field storing the boundary types.
-    NeoN::Field<localIdx> offset_;      ///< The Field storing the offsets of each boundary.
-    size_t nBoundaries_;                ///< The number of boundaries.
-    size_t nBoundaryFaces_;             ///< The number of boundary faces.
+    Executor exec_;                ///< The executor on which the field is stored
+    Vector<T> value_;              ///< The Vector storing the computed values from the
+                                   ///< boundary condition.
+    Vector<T> refValue_;           ///< The Vector storing the Dirichlet boundary values.
+    Vector<scalar> valueFraction_; ///< The Vector storing the fraction of
+                                   ///< the boundary value.
+    Vector<T> refGrad_;            ///< The Vector storing the Neumann boundary values.
+    Vector<int> boundaryTypes_;    ///< The Vector storing the boundary types.
+    Vector<localIdx> offset_;      ///< The Vector storing the offsets of each boundary.
+    size_t nBoundaries_;           ///< The number of boundaries.
+    size_t nBoundaryFaces_;        ///< The number of boundary faces.
 };
 
 }

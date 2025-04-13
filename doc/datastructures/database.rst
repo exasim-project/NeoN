@@ -122,22 +122,22 @@ The following code snippet shows how to create a document with a custom validato
 
 As stated earlier, the Documents are stored as part of a Collection which itself is stored in the central database as shown in the class diagram above.
 To enable custom functionalities the developer can create a custom collection that provides additional functionality to the document.
-This is done in the FieldCollection class that is used to store the field data in the database.
+This is done in the VectorCollection class that is used to store the field data in the database.
 
 
 
-FieldCollection
+VectorCollection
 ---------------
 
-The ``FieldCollection`` stores all fields and provides additional functionality which is stored in a document.
-The ``FieldDocument`` keeps a reference to field as a ``std::any`` and stores additional metadata like the time index, iteration index, and subcycle index.
-The following code snippet shows how to create a ``FieldDocument``:
+The ``VectorCollection`` stores all fields and provides additional functionality which is stored in a document.
+The ``VectorDocument`` keeps a reference to field as a ``std::any`` and stores additional metadata like the time index, iteration index, and subcycle index.
+The following code snippet shows how to create a ``VectorDocument``:
 
 .. sourcecode:: cpp
 
-    template<class FieldType>
-    FieldDocument(
-        const FieldType& field,
+    template<class VectorType>
+    VectorDocument(
+        const VectorType& field,
         std::size_t timeIndex,
         std::size_t iterationIndex,
         std::int64_t subCycleIndex
@@ -150,30 +150,30 @@ The following code snippet shows how to create a ``FieldDocument``:
                    {"subCycleIndex", subCycleIndex},
                    {"field", field}}
               ),
-              validateFieldDoc
+              validateVectorDoc
           )
     {}
 
-The ``FieldDocument`` stores its data in a ``Document`` and provide the appropriate getters and setters for the data.
-The user will most likely not directly create FieldDocument but use the ``FieldCollection`` to register Field.
+The ``VectorDocument`` stores its data in a ``Document`` and provide the appropriate getters and setters for the data.
+The user will most likely not directly create VectorDocument but use the ``VectorCollection`` to register Vector.
 
 .. sourcecode:: cpp
 
-    fvcc::FieldCollection& fieldCollection =
-        fvcc::FieldCollection::instance(db, "newTestFieldCollection");
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "newTestVectorCollection");
 
-    fvcc::VolumeField<NeoN::scalar>& T =
-        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(CreateField {
+    fvcc::VolumeVector<NeoN::scalar>& T =
+        fieldCollection.registerVector<fvcc::VolumeVector<NeoN::scalar>>(CreateVector {
             .name = "T", .mesh = mesh, .timeIndex = 1, .iterationIndex = 1, .subCycleIndex = 1
         });
 
-The ``FieldCollection`` has a static instance methods that returns the instance of the ``FieldCollection`` or creates a new one if it doesn't exist.
-registerField method is used to register fields and expects a CreateFunction that returns a FieldDocument and expects a database as an argument.
+The ``VectorCollection`` has a static instance methods that returns the instance of the ``VectorCollection`` or creates a new one if it doesn't exist.
+registerVector method is used to register fields and expects a CreateFunction that returns a VectorDocument and expects a database as an argument.
 The createFunction could look as followed:
 
 .. sourcecode:: cpp
 
-    struct CreateField
+    struct CreateVector
     {
         std::string name;
         NeoN::UnstructuredMesh mesh;
@@ -190,10 +190,10 @@ The createFunction could look as followed:
                 dict.insert("fixedValue", 2.0);
                 bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
             }
-            NeoN::Field internalField =
-                NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0);
-            fvcc::VolumeField<NeoN::scalar> vf(
-                mesh.exec(), name, mesh, internalField, bcs, db, "", ""
+            NeoN::Vector internalVector =
+                NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0);
+            fvcc::VolumeVector<NeoN::scalar> vf(
+                mesh.exec(), name, mesh, internalVector, bcs, db, "", ""
             );
             return NeoN::Document(
                 {{"name", vf.name},
@@ -201,25 +201,25 @@ The createFunction could look as followed:
                 {"iterationIndex", iterationIndex},
                 {"subCycleIndex", subCycleIndex},
                 {"field", vf}},
-                fvcc::validateFieldDoc
+                fvcc::validateVectorDoc
             );
         }
     };
 
 This design can be easily extended to create and read fields.
-The ``FieldCollection`` allows us to access and find fields by their name, time index, iteration index, or subcycle index.
+The ``VectorCollection`` allows us to access and find fields by their name, time index, iteration index, or subcycle index.
 
 .. sourcecode:: cpp
 
-    fvcc::FieldCollection& fieldCollection =
-        fvcc::FieldCollection::instance(db, "newTestFieldCollection");
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "newTestVectorCollection");
 
     auto resName = fieldCollection.find([](const NeoN::Document& doc)
                                     { return doc.get<std::string>("name") == "T"; });
 
     REQUIRE(resName.size() == 1);
     const auto& fieldDoc = fieldCollection.fieldDoc(resName[0]);
-    const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+    const auto& constVolVector = fieldDoc.field<fvcc::VolumeVector<NeoN::scalar>>();
 
 Query of document in a collection
 ---------------------------------

@@ -34,10 +34,10 @@ namespace NeoN::dsl
  * @param fvSchemes - Dictionary containing spatial operator and time  integration properties
  * @param fvSolution - Dictionary containing linear solver properties
  */
-template<typename FieldType>
+template<typename VectorType>
 void solve(
-    Expression<typename FieldType::ElementType>& exp,
-    FieldType& solution,
+    Expression<typename VectorType::ElementType>& exp,
+    VectorType& solution,
     scalar t,
     scalar dt,
     [[maybe_unused]] const Dictionary& fvSchemes,
@@ -53,7 +53,7 @@ void solve(
     if (exp.temporalOperators().size() > 0)
     {
         // integrate equations in time
-        timeIntegration::TimeIntegration<FieldType> timeIntegrator(
+        timeIntegration::TimeIntegration<VectorType> timeIntegrator(
             fvSchemes.subDict("ddtSchemes"), fvSchemes
         );
         timeIntegrator.solve(exp, solution, t, dt);
@@ -61,7 +61,7 @@ void solve(
     else
     {
         // solve sparse matrix system
-        using ValueType = typename FieldType::ElementType;
+        using ValueType = typename VectorType::ElementType;
 
         auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
         auto ls = la::createEmptyLinearSystem<
@@ -82,7 +82,7 @@ void solve(
         );
 
         auto solver = NeoN::la::Solver(solution.exec(), fvSolution);
-        solver.solve(ls, solution.internalField());
+        solver.solve(ls, solution.internalVector());
     }
 }
 

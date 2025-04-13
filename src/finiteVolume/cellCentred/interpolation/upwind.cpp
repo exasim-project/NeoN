@@ -18,18 +18,18 @@ void computeUpwindInterpolation(
 )
 {
     const auto exec = dst.exec();
-    auto dstS = dst.internalField().view();
+    auto dstS = dst.internalVector().view();
     const auto [srcS, weightS, ownerS, neighS, boundS, fluxS] = spans(
-        src.internalField(),
-        weights.internalField(),
+        src.internalVector(),
+        weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryField().value(),
-        flux.internalField()
+        src.boundaryVector().value(),
+        flux.internalVector()
     );
     size_t nInternalFaces = dst.mesh().nInternalFaces();
 
-    NeoN::parallelFor(
+    parallelFor(
         exec,
         {0, dstS.size()},
         KOKKOS_LAMBDA(const size_t facei) {

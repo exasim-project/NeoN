@@ -11,8 +11,8 @@ namespace NeoN::finiteVolume::cellCentred
 /* @brief free standing function implementation of the explicit gradient operator
 ** ie computes \sum_f \phi_f
 **
-** @param[in] in - Field on which the gradient should be computed
-** @param[in,out] out - Field to hold the result
+** @param[in] in - Vector on which the gradient should be computed
+** @param[in,out] out - Vector to hold the result
 */
 void computeGrad(
     const VolumeField<scalar>& in,
@@ -27,12 +27,12 @@ void computeGrad(
     );
     surfInterp.interpolate(in, phif);
 
-    auto surfGradPhi = out.internalField().view();
+    auto surfGradPhi = out.internalVector().view();
 
     const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = spans(
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().sf(),
-        phif.internalField(),
+        phif.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.faceAreas(),
@@ -84,7 +84,7 @@ VolumeField<Vec3> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
 {
     auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
-    fill(gradPhi.internalField(), zero<Vec3>());
+    fill(gradPhi.internalVector(), zero<Vec3>());
     computeGrad(phi, surfaceInterpolation_, gradPhi);
     return gradPhi;
 }

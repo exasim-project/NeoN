@@ -23,14 +23,14 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
 
     auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     fvcc::VolumeField<scalar> coeff(exec, "coeff", mesh, coeffBCs);
-    fill(coeff.internalField(), 2.0);
-    fill(coeff.boundaryField().value(), 0.0);
+    fill(coeff.internalVector(), 2.0);
+    fill(coeff.boundaryVector().value(), 0.0);
     coeff.correctBoundaryConditions();
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
     fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
-    fill(phi.internalField(), 10 * one<TestType>());
-    fill(phi.boundaryField().value(), zero<TestType>());
+    fill(phi.internalVector(), 10 * one<TestType>());
+    fill(phi.boundaryVector().value(), zero<TestType>());
     phi.correctBoundaryConditions();
 
 
@@ -38,7 +38,7 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     {
         fvcc::SourceTerm<TestType> sTerm(Operator::Type::Explicit, coeff, phi);
 
-        auto source = Field<TestType>(exec, phi.size(), zero<TestType>());
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
         sTerm.explicitOperation(source);
 
         // mesh has one cell

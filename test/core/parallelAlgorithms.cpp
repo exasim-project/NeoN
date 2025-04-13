@@ -17,9 +17,9 @@ TEST_CASE("parallelFor")
 
     SECTION("parallelFor_" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewA = fieldA.view();
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
@@ -35,9 +35,9 @@ TEST_CASE("parallelFor")
 
     SECTION("parallelFor_Vec3" + execName)
     {
-        NeoN::Field<NeoN::Vec3> fieldA(exec, 5);
+        NeoN::Vector<NeoN::Vec3> fieldA(exec, 5);
         NeoN::fill(fieldA, NeoN::Vec3(0.0, 0.0, 0.0));
-        NeoN::Field<NeoN::Vec3> fieldB(exec, 5);
+        NeoN::Vector<NeoN::Vec3> fieldB(exec, 5);
         auto viewA = fieldA.view();
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, NeoN::Vec3(1.0, 1.0, 1.0));
@@ -53,11 +53,11 @@ TEST_CASE("parallelFor")
         }
     }
 
-    SECTION("parallelFor_Field_" + execName)
+    SECTION("parallelFor_Vector_" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         NeoN::parallelFor(
@@ -83,9 +83,9 @@ TEST_CASE("parallelReduce")
 
     SECTION("parallelReduce_" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         NeoN::scalar sum = 0.0;
@@ -98,9 +98,9 @@ TEST_CASE("parallelReduce")
 
     SECTION("parallelReduce_MaxValue" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         auto max = std::numeric_limits<NeoN::scalar>::lowest();
@@ -117,11 +117,11 @@ TEST_CASE("parallelReduce")
         REQUIRE(max == 1.0);
     }
 
-    SECTION("parallelReduce_Field_" + execName)
+    SECTION("parallelReduce_Vector_" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         NeoN::scalar sum = 0.0;
@@ -132,11 +132,11 @@ TEST_CASE("parallelReduce")
         REQUIRE(sum == 5.0);
     }
 
-    SECTION("parallelReduce_Field_MaxValue" + execName)
+    SECTION("parallelReduce_Vector_MaxValue" + execName)
     {
-        NeoN::Field<NeoN::scalar> fieldA(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldA(exec, 5);
         NeoN::fill(fieldA, 0.0);
-        NeoN::Field<NeoN::scalar> fieldB(exec, 5);
+        NeoN::Vector<NeoN::scalar> fieldB(exec, 5);
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         auto max = std::numeric_limits<NeoN::scalar>::lowest();
@@ -164,8 +164,8 @@ TEST_CASE("parallelScan")
 
     SECTION("parallelScan_withoutReturn" + execName)
     {
-        NeoN::Field<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
-        NeoN::Field<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
+        NeoN::Vector<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
+        NeoN::Vector<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
         auto segView = segments.view();
         const auto intView = intervals.view();
 
@@ -199,8 +199,8 @@ TEST_CASE("parallelScan")
 
     SECTION("parallelScan_withReturn" + execName)
     {
-        NeoN::Field<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
-        NeoN::Field<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
+        NeoN::Vector<NeoN::localIdx> intervals(exec, {1, 2, 3, 4, 5});
+        NeoN::Vector<NeoN::localIdx> segments(exec, intervals.size() + 1, 0);
         auto segView = segments.view();
         const auto intView = intervals.view();
         NeoN::localIdx finalValue = 0;

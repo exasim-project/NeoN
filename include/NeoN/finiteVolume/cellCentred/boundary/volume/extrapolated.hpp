@@ -20,28 +20,26 @@ namespace detail
 // I guess it was replaced by range
 template<typename ValueType>
 void extrapolateValue(
-    DomainField<ValueType>& domainField,
-    const UnstructuredMesh& mesh,
-    std::pair<size_t, size_t> range
+    Field<ValueType>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
 )
 {
-    const auto iField = domainField.internalField().view();
+    const auto iVector = domainVector.internalVector().view();
 
     auto [refGradient, value, valueFraction, refValue, faceCells] = spans(
-        domainField.boundaryField().refGrad(),
-        domainField.boundaryField().value(),
-        domainField.boundaryField().valueFraction(),
-        domainField.boundaryField().refValue(),
+        domainVector.boundaryVector().refGrad(),
+        domainVector.boundaryVector().value(),
+        domainVector.boundaryVector().valueFraction(),
+        domainVector.boundaryVector().refValue(),
         mesh.boundaryMesh().faceCells()
     );
 
 
     NeoN::parallelFor(
-        domainField.exec(),
+        domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const size_t i) {
             // operator / is not defined for all ValueTypes
-            ValueType internalCellValue = iField[static_cast<size_t>(faceCells[i])];
+            ValueType internalCellValue = iVector[static_cast<size_t>(faceCells[i])];
             value[i] = internalCellValue;
             valueFraction[i] = 1.0;          // only use refValue
             refValue[i] = internalCellValue; // not used
@@ -66,10 +64,9 @@ public:
         : Base(mesh, dict, patchID), mesh_(mesh)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] DomainField<ValueType>& domainField
-    ) final
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
     {
-        detail::extrapolateValue(domainField, mesh_, this->range());
+        detail::extrapolateValue(domainVector, mesh_, this->range());
     }
 
     static std::string name() { return "extrapolated"; }

@@ -19,7 +19,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     const auto c = mesh_.cellCentres().view();
     const auto sf = mesh_.faceAreas().view();
 
-    auto w = weights.internalField().view();
+    auto w = weights.internalVector().view();
 
     parallelFor(
         exec,
@@ -58,7 +58,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
 
     const auto [cf, cellCentre] = spans(mesh_.faceCentres(), mesh_.cellCentres());
 
-    auto deltaCoeff = deltaCoeffs.internalField().view();
+    auto deltaCoeff = deltaCoeffs.internalVector().view();
 
     parallelFor(
         exec,
@@ -95,8 +95,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     const auto [cf, cellCentre, faceAreaVec3, faceArea] =
         spans(mesh_.faceCentres(), mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
 
-    auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalField().view();
-    fill(nonOrthDeltaCoeffs.internalField(), 0.0);
+    auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
+    fill(nonOrthDeltaCoeffs.internalVector(), 0.0);
 
     const size_t nInternalFaces = mesh_.nInternalFaces();
 

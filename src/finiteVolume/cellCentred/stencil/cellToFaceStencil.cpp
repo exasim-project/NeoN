@@ -17,7 +17,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 
     const auto nInternalFaces = mesh_.nInternalFaces();
 
-    Field<localIdx> nFacesPerCell(exec, nCells, 0);
+    Vector<localIdx> nFacesPerCell(exec, nCells, 0);
     View<localIdx> nFacesPerCellSpan = nFacesPerCell.view();
 
     parallelFor(

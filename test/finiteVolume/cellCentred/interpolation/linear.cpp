@@ -38,13 +38,13 @@ TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vec3)
     auto in = VolumeField<TestType>(exec, "in", mesh, vbcs);
     auto out = SurfaceField<TestType>(exec, "out", mesh, sbcs);
 
-    fill(in.internalField(), one<TestType>());
+    fill(in.internalVector(), one<TestType>());
     in.correctBoundaryConditions();
 
     linear.interpolate(in, out);
     out.correctBoundaryConditions();
 
-    auto outHost = out.internalField().copyToHost();
+    auto outHost = out.internalVector().copyToHost();
     auto nInternal = mesh.nInternalFaces();
     auto nBoundary = mesh.nBoundaryFaces();
     for (int i = 0; i < nInternal; i++)

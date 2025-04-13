@@ -28,7 +28,7 @@ TEST_CASE("Courant Number")
         }
 
         fvcc::SurfaceField<NeoN::scalar> sf(exec, "sf", mesh, bcs);
-        NeoN::fill(sf.internalField(), 1.0);
+        NeoN::fill(sf.internalVector(), 1.0);
         sf.correctBoundaryConditions();
 
         // use arbitrary time step size of 0.01

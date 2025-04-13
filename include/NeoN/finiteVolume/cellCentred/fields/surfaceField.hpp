@@ -28,7 +28,7 @@ class SurfaceField : public DomainMixin<ValueType>
 public:
 
     /**
-     * @brief Constructor for a surfaceField with a given name and mesh.
+     * @brief Constructor for a surfaceVector with a given name and mesh.
      *
      * @param exec The executor
      * @param fieldName The name of the field
@@ -45,44 +45,44 @@ public:
             exec,
             fieldName,
             mesh,
-            DomainField<ValueType>(
+            Field<ValueType>(
                 exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
             )
         ),
           boundaryConditions_(boundaryConditions)
     {}
 
-    /* @brief Constructor for a surfaceField with a given internal field
+    /* @brief Constructor for a surfaceVector with a given internal field
      *
      * @param exec The executor
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      */
     SurfaceField(
         const Executor& exec,
         const UnstructuredMesh& mesh,
-        const DomainField<ValueType>& domainField,
+        const Field<ValueType>& domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, domainField), boundaryConditions_(boundaryConditions)
+        : DomainMixin<ValueType>(exec, mesh, domainVector), boundaryConditions_(boundaryConditions)
     {}
 
-    /* @brief Constructor for a surfaceField with a given internal field
+    /* @brief Constructor for a surfaceVector with a given internal field
      *
      * @param exec The executor
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      */
     SurfaceField(
         const Executor& exec,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& internalField,
-        const BoundaryData<ValueType>& boundaryFields,
+        const Vector<ValueType>& internalVector,
+        const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalField, boundaryFields}),
+        : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalVector, boundaryVectors}),
           boundaryConditions_(boundaryConditions)
     {}
 

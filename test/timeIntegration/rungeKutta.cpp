@@ -13,7 +13,7 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Field = NeoN::Field<NeoN::scalar>;
+using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
 using SpatialOperator = NeoN::dsl::SpatialOperator<NeoN::scalar>;
 using TemporalOperator = NeoN::dsl::TemporalOperator<NeoN::scalar>;
@@ -31,16 +31,16 @@ class YSquared : public OperatorMixin
 
 public:
 
-    using FieldValueType = NeoN::scalar;
+    using VectorValueType = NeoN::scalar;
 
     YSquared(VolumeField& field)
         : OperatorMixin(field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit)
     {}
 
-    void explicitOperation(Field& source) const
+    void explicitOperation(Vector& source) const
     {
         auto sourceView = source.view();
-        auto fieldData = field_.internalField().data();
+        auto fieldData = field_.internalVector().data();
         NeoN::parallelFor(
             source.exec(),
             source.range(),
@@ -51,7 +51,7 @@ public:
     std::string getName() const { return "YSquared"; }
 };
 
-struct CreateField
+struct CreateVector
 {
     std::string name;
     const NeoN::UnstructuredMesh& mesh;
@@ -62,19 +62,19 @@ struct CreateField
     NeoN::Document operator()(NeoN::Database& db)
     {
         std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-        NeoN::DomainField<NeoN::scalar> domainField(
+        NeoN::Field<NeoN::scalar> domainVector(
             mesh.exec(),
-            NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
             mesh.boundaryMesh().offset()
         );
-        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
         return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
              {"subCycleIndex", subCycleIndex},
              {"field", vf}},
-            fvcc::validateFieldDoc
+            fvcc::validateVectorDoc
         );
     }
 };
@@ -95,10 +95,11 @@ TEST_CASE("TimeIntegration - Runge Kutta")
 
     // Set up fields.
     auto mesh = NeoN::createSingleCellMesh(exec);
-    fvcc::FieldCollection& fieldCollection = fvcc::FieldCollection::instance(db, "fieldCollection");
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "fieldCollection");
     fvcc::VolumeField<NeoN::scalar>& vf =
-        fieldCollection.registerField<fvcc::VolumeField<NeoN::scalar>>(
-            CreateField {.name = "vf", .mesh = mesh, .timeIndex = 1}
+        fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+            CreateVector {.name = "vf", .mesh = mesh, .timeIndex = 1}
         );
 
     // Setup solve parameters.
@@ -115,8 +116,8 @@ TEST_CASE("TimeIntegration - Runge Kutta")
             // reset
             auto& vfOld = fvcc::oldTime(vf);
             NeoN::scalar time = 0.0;
-            vf.internalField() = initialValue;
-            vfOld.internalField() = initialValue;
+            vf.internalVector() = initialValue;
+            vfOld.internalVector() = initialValue;
 
             // Set expression
             TemporalOperator ddtOp = NeoN::dsl::imp::ddt(vfOld);
@@ -133,7 +134,7 @@ TEST_CASE("TimeIntegration - Runge Kutta")
 
             // check error.
             NeoN::scalar analytical = 1.0 / (initialValue - maxTime);
-            auto vfHost = vf.internalField().copyToHost();
+            auto vfHost = vf.internalVector().copyToHost();
             error[iTest] = std::abs(vfHost.view()[0] - analytical);
             iTest++;
         }

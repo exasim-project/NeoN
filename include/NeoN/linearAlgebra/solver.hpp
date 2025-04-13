@@ -27,10 +27,10 @@ public:
 
     SolverFactory(const Executor& exec) : exec_(exec) {};
 
-    virtual void solve(const LinearSystem<scalar, localIdx>&, Field<scalar>&) const = 0;
+    virtual void solve(const LinearSystem<scalar, localIdx>&, Vector<scalar>&) const = 0;
 
     // virtual void
-    // solve(const LinearSystem<ValueType, int>&, Field<Vec3>& ) const = 0;
+    // solve(const LinearSystem<ValueType, int>&, Vector<Vec3>& ) const = 0;
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<SolverFactory> clone() const = 0;
@@ -57,7 +57,7 @@ public:
     Solver(const Executor& exec, const Dictionary& dict)
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
-    void solve(const LinearSystem<scalar, localIdx>& ls, Field<scalar>& field) const
+    void solve(const LinearSystem<scalar, localIdx>& ls, Vector<scalar>& field) const
     {
         solverInstance_->solve(ls, field);
     }

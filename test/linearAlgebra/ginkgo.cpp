@@ -11,7 +11,7 @@ using NeoN::Executor;
 using NeoN::Dictionary;
 using NeoN::scalar;
 using NeoN::localIdx;
-using NeoN::Field;
+using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 using NeoN::la::Solver;
@@ -92,14 +92,14 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     SECTION("Solve linear system " + execName)
     {
 
-        Field<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
-        Field<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
-        Field<localIdx> rowPtrs(exec, {0, 2, 5, 7});
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
+        Vector<localIdx> rowPtrs(exec, {0, 2, 5, 7});
         CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        Field<scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-        Field<scalar> x(exec, {0.0, 0.0, 0.0});
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
 
         Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},

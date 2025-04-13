@@ -3,7 +3,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/fields/field.hpp"
+#include "NeoN/fields/vector.hpp"
 
 namespace NeoN
 {
@@ -21,7 +21,7 @@ namespace NeoN
  * @param[in,out] offsets The field to store the resulting offsets in.
  */
 template<typename IndexType>
-IndexType segmentsFromIntervals(const Field<IndexType>& intervals, Field<IndexType>& offsets)
+IndexType segmentsFromIntervals(const Vector<IndexType>& intervals, Vector<IndexType>& offsets)
 {
     IndexType finalValue = 0;
     const auto inSpan = intervals.view();
@@ -117,7 +117,7 @@ public:
  * @class SegmentedVector
  * @brief Data structure that stores a segmented fields or a vector of vectors
  *
- * @ingroup Fields
+ * @ingroup Vectors
  */
 template<typename ValueType, typename IndexType>
 class SegmentedVector
@@ -140,21 +140,21 @@ public:
      * @param intervals The intervals to create the segmented field from.
      * @note The intervals are the lengths of each segment
      */
-    SegmentedVector(const Field<IndexType>& intervals)
+    SegmentedVector(const Vector<IndexType>& intervals)
         : values_(intervals.exec(), 0),
           segments_(intervals.exec(), intervals.size() + 1, IndexType(0))
     {
         IndexType valueSize = segmentsFromIntervals(intervals, segments_);
-        values_ = Field<ValueType>(intervals.exec(), valueSize);
+        values_ = Vector<ValueType>(intervals.exec(), valueSize);
     }
 
 
     /**
-     * @brief Constructor to create a segmentedField from values and the segments.
+     * @brief Constructor to create a segmentedVector from values and the segments.
      * @param values The values of the segmented field.
      * @param segments The segments of the segmented field.
      */
-    SegmentedVector(const Field<ValueType>& values, const Field<IndexType>& segments)
+    SegmentedVector(const Vector<ValueType>& values, const Vector<IndexType>& segments)
         : values_(values), segments_(segments)
     {
         NF_ASSERT(values.exec() == segments.exec(), "Executors are not the same.");
@@ -204,14 +204,14 @@ public:
     // ensures not to return a span of a temporary object --> invalid memory access
     [[nodiscard]] std::pair<std::span<ValueType>, std::span<IndexType>> spans() && = delete;
 
-    const Field<ValueType>& values() const { return values_; }
+    const Vector<ValueType>& values() const { return values_; }
 
-    const Field<IndexType>& segments() const { return segments_; }
+    const Vector<IndexType>& segments() const { return segments_; }
 
 private:
 
-    Field<ValueType> values_;
-    Field<IndexType> segments_; //!< stores the [start, end) of segment i at index i, i+1
+    Vector<ValueType> values_;
+    Vector<IndexType> segments_; //!< stores the [start, end) of segment i at index i, i+1
 };
 
 } // namespace NeoN

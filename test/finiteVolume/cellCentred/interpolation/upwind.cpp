@@ -38,13 +38,13 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
     auto flux = SurfaceField<scalar>(exec, "flux", mesh, {});
     auto out = SurfaceField<TestType>(exec, "out", mesh, bcs);
 
-    fill(flux.internalField(), one<scalar>());
-    fill(in.internalField(), one<TestType>());
+    fill(flux.internalVector(), one<scalar>());
+    fill(in.internalVector(), one<TestType>());
 
     upwind.interpolate(flux, in, out);
     out.correctBoundaryConditions();
 
-    auto outHost = out.internalField().copyToHost();
+    auto outHost = out.internalVector().copyToHost();
     auto nInternal = mesh.nInternalFaces();
     auto nBoundary = mesh.nBoundaryFaces();
     for (int i = 0; i < nInternal; i++)

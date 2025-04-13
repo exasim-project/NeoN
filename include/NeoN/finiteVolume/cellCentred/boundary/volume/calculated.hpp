@@ -24,9 +24,7 @@ public:
         : Base(mesh, dict, patchID)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] DomainField<ValueType>& domainField
-    ) final
-    {}
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     static std::string name() { return "calculated"; }
 
