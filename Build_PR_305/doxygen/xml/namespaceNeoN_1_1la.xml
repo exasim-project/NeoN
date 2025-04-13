@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1la" kind="namespace" language="C++">
+    <compoundname>NeoN::la</compoundname>
+    <innerclass refid="classNeoN_1_1la_1_1CSRMatrix" prot="public">NeoN::la::CSRMatrix</innerclass>
+    <innerclass refid="structNeoN_1_1la_1_1CSRMatrixView" prot="public">NeoN::la::CSRMatrixView</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1LinearSystem" prot="public">NeoN::la::LinearSystem</innerclass>
+    <innerclass refid="structNeoN_1_1la_1_1LinearSystemView" prot="public">NeoN::la::LinearSystemView</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1Solver" prot="public">NeoN::la::Solver</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1SolverFactory" prot="public">NeoN::la::SolverFactory</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a2100cb5d8df4a82870a2ec42ba1abeb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueTypeIn</type>
+          </param>
+          <param>
+            <type>typename IndexTypeIn</type>
+          </param>
+          <param>
+            <type>typename ValueTypeOut</type>
+          </param>
+          <param>
+            <type>typename IndexTypeOut</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">la::CSRMatrix</ref>&lt; ValueTypeOut, IndexTypeOut &gt;</type>
+        <definition>la::CSRMatrix&lt; ValueTypeOut, IndexTypeOut &gt; NeoN::la::convert</definition>
+        <argsstring>(const Executor exec, const la::CSRMatrixView&lt; const ValueTypeIn, const IndexTypeIn &gt; in)</argsstring>
+        <name>convert</name>
+        <qualifiedname>NeoN::la::convert</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1la_1_1CSRMatrixView" kindref="compound">la::CSRMatrixView</ref>&lt; const ValueTypeIn, const IndexTypeIn &gt;</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="228" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="228" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ac100a97b864d51a07090acb455f29f0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+          <param>
+            <type>typename IndexType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt;</type>
+        <definition>Field&lt; ValueType &gt; NeoN::la::spmv</definition>
+        <argsstring>(LinearSystem&lt; ValueType, IndexType &gt; &amp;ls, Field&lt; ValueType &gt; &amp;xfield)</argsstring>
+        <name>spmv</name>
+        <qualifiedname>NeoN::la::spmv</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, IndexType &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>xfield</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="103" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="103" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a56b0fbaebb30bd6efeb9a1fc5b6ab1bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueTypeIn</type>
+          </param>
+          <param>
+            <type>typename IndexTypeIn</type>
+          </param>
+          <param>
+            <type>typename ValueTypeOut</type>
+          </param>
+          <param>
+            <type>typename IndexTypeOut</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueTypeOut, IndexTypeOut &gt;</type>
+        <definition>LinearSystem&lt; ValueTypeOut, IndexTypeOut &gt; NeoN::la::convertLinearSystem</definition>
+        <argsstring>(const LinearSystem&lt; ValueTypeIn, IndexTypeIn &gt; &amp;ls)</argsstring>
+        <name>convertLinearSystem</name>
+        <qualifiedname>NeoN::la::convertLinearSystem</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueTypeIn, IndexTypeIn &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="133" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="133" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1abfb8a53aafd31aadc7ffc30c8e721dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+          <param>
+            <type>typename IndexType</type>
+          </param>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, IndexType &gt;</type>
+        <definition>LinearSystem&lt; ValueType, IndexType &gt; NeoN::la::createEmptyLinearSystem</definition>
+        <argsstring>(const SparsityType &amp;sparsity)</argsstring>
+        <name>createEmptyLinearSystem</name>
+        <qualifiedname>NeoN::la::createEmptyLinearSystem</qualifiedname>
+        <param>
+          <type>const SparsityType &amp;</type>
+          <declname>sparsity</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="148" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="148" bodyend="161"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="10" column="1"/>
+  </compounddef>
+</doxygen>
