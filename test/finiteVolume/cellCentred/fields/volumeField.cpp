@@ -10,7 +10,7 @@
 template<typename T>
 using I = std::initializer_list<T>;
 
-TEST_CASE("volumeField")
+TEST_CASE("volumeVector")
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -25,58 +25,58 @@ TEST_CASE("volumeField")
         bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
     }
 
-    SECTION("can instantiate volumeField with fixedValues on: " + execName)
+    SECTION("can instantiate volumeVector with fixedValues on: " + execName)
     {
         fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, bcs);
-        NeoN::fill(vf.internalField(), 1.0);
+        NeoN::fill(vf.internalVector(), 1.0);
         vf.correctBoundaryConditions();
 
-        NeoN::Field<NeoN::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
+        NeoN::Vector<NeoN::scalar> internalVector(mesh.exec(), mesh.nCells(), 1.0);
 
         REQUIRE(vf.exec() == exec);
-        REQUIRE(vf.internalField().size() == 1);
+        REQUIRE(vf.internalVector().size() == 1);
 
-        auto internalValues = vf.internalField().copyToHost();
+        auto internalValues = vf.internalVector().copyToHost();
         for (size_t i = 0; i < internalValues.size(); ++i)
         {
             REQUIRE(internalValues.view()[i] == 1.0);
         }
 
-        auto values = vf.boundaryField().value().copyToHost();
+        auto values = vf.boundaryVector().value().copyToHost();
 
         for (size_t i = 0; i < values.size(); ++i)
         {
             REQUIRE(values.view()[i] == 2.0);
         }
 
-        auto refValue = vf.boundaryField().refValue().copyToHost();
+        auto refValue = vf.boundaryVector().refValue().copyToHost();
         for (size_t i = 0; i < refValue.size(); ++i)
         {
             REQUIRE(refValue.view()[i] == 2.0);
         }
     }
 
-    SECTION("can instantiate volumeField with fixedValues from internal Field on: " + execName)
+    SECTION("can instantiate volumeVector with fixedValues from internal Vector on: " + execName)
     {
-        NeoN::Field<NeoN::scalar> internalField(mesh.exec(), mesh.nCells(), 1.0);
+        NeoN::Vector<NeoN::scalar> internalVector(mesh.exec(), mesh.nCells(), 1.0);
 
-        fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, internalField, bcs);
+        fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, internalVector, bcs);
         vf.correctBoundaryConditions();
 
-        auto internalValues = vf.internalField().copyToHost();
+        auto internalValues = vf.internalVector().copyToHost();
         for (size_t i = 0; i < internalValues.size(); ++i)
         {
             REQUIRE(internalValues.view()[i] == 1.0);
         }
 
-        auto values = vf.boundaryField().value().copyToHost();
+        auto values = vf.boundaryVector().value().copyToHost();
 
         for (size_t i = 0; i < values.size(); ++i)
         {
             REQUIRE(values.view()[i] == 2.0);
         }
 
-        auto refValue = vf.boundaryField().refValue().copyToHost();
+        auto refValue = vf.boundaryVector().refValue().copyToHost();
         for (size_t i = 0; i < refValue.size(); ++i)
         {
             REQUIRE(refValue.view()[i] == 2.0);

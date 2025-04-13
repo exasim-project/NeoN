@@ -6,7 +6,7 @@
 
 #include "NeoN/NeoN.hpp"
 
-using Field = NeoN::Field<NeoN::scalar>;
+using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
 using namespace NeoN::dsl;
 
@@ -17,8 +17,8 @@ TEST_CASE("Coeff")
 
     SECTION("Coefficient evaluation on " + execName)
     {
-        Field fA(exec, 3, 2.0);
-        Field res(exec, 1);
+        Vector fA(exec, 3, 2.0);
+        Vector res(exec, 1);
 
         Coeff a {};
         Coeff b {2.0};
@@ -26,21 +26,21 @@ TEST_CASE("Coeff")
         REQUIRE(c[0] == 4.0);
 
         Coeff d {3.0, fA};
-        detail::toField(d, res);
+        detail::toVector(d, res);
         auto hostResD = res.copyToHost();
         REQUIRE(hostResD.data()[0] == 6.0);
         REQUIRE(hostResD.data()[1] == 6.0);
         REQUIRE(hostResD.data()[2] == 6.0);
 
         Coeff e = d * b;
-        detail::toField(e, res);
+        detail::toVector(e, res);
         auto hostResE = res.copyToHost();
         REQUIRE(hostResE.data()[0] == 12.0);
         REQUIRE(hostResE.data()[1] == 12.0);
         REQUIRE(hostResE.data()[2] == 12.0);
 
         Coeff f = b * d;
-        detail::toField(f, res);
+        detail::toVector(f, res);
         auto hostResF = res.copyToHost();
         REQUIRE(hostResF.data()[0] == 12.0);
         REQUIRE(hostResF.data()[1] == 12.0);
@@ -51,8 +51,8 @@ TEST_CASE("Coeff")
     {
         size_t size = 3;
 
-        Field fieldA(exec, size, 0.0);
-        Field fieldB(exec, size, 1.0);
+        Vector fieldA(exec, size, 0.0);
+        Vector fieldB(exec, size, 1.0);
 
         SECTION("view")
         {
@@ -62,11 +62,11 @@ TEST_CASE("Coeff")
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };
-            auto hostFieldA = fieldA.copyToHost();
+            auto hostVectorA = fieldA.copyToHost();
             REQUIRE(coeff.hasSpan() == true);
-            REQUIRE(hostFieldA.view()[0] == 3.0);
-            REQUIRE(hostFieldA.view()[1] == 3.0);
-            REQUIRE(hostFieldA.view()[2] == 3.0);
+            REQUIRE(hostVectorA.view()[0] == 3.0);
+            REQUIRE(hostVectorA.view()[1] == 3.0);
+            REQUIRE(hostVectorA.view()[2] == 3.0);
         }
 
         SECTION("scalar")
@@ -77,11 +77,11 @@ TEST_CASE("Coeff")
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };
-            auto hostFieldA = fieldA.copyToHost();
+            auto hostVectorA = fieldA.copyToHost();
             REQUIRE(coeff.hasSpan() == false);
-            REQUIRE(hostFieldA.view()[0] == 4.0);
-            REQUIRE(hostFieldA.view()[1] == 4.0);
-            REQUIRE(hostFieldA.view()[2] == 4.0);
+            REQUIRE(hostVectorA.view()[0] == 4.0);
+            REQUIRE(hostVectorA.view()[1] == 4.0);
+            REQUIRE(hostVectorA.view()[2] == 4.0);
         }
 
         SECTION("view and scalar")
@@ -92,11 +92,11 @@ TEST_CASE("Coeff")
                     fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
                 );
             };
-            auto hostFieldA = fieldA.copyToHost();
+            auto hostVectorA = fieldA.copyToHost();
             REQUIRE(coeff.hasSpan() == true);
-            REQUIRE(hostFieldA.view()[0] == -3.0);
-            REQUIRE(hostFieldA.view()[1] == -3.0);
-            REQUIRE(hostFieldA.view()[2] == -3.0);
+            REQUIRE(hostVectorA.view()[0] == -3.0);
+            REQUIRE(hostVectorA.view()[1] == -3.0);
+            REQUIRE(hostVectorA.view()[2] == -3.0);
         }
     }
 }

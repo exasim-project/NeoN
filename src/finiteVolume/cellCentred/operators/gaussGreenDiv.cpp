@@ -95,7 +95,7 @@ void computeDivExp(
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
-    Field<ValueType>& divPhi,
+    Vector<ValueType>& divPhi,
     const dsl::Coeff operatorScaling
 )
 {
@@ -105,11 +105,11 @@ void computeDivExp(
         exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
     );
     // TODO: remove or implement
-    // fill(phif.internalField(), NeoN::zero<ValueType>::value);
+    // fill(phif.internalVector(), NeoN::zero<ValueType>::value);
     surfInterp.interpolate(faceFlux, phi, phif);
 
     // TODO: currently we just copy the boundary values over
-    phif.boundaryField().value() = phi.boundaryField().value();
+    phif.boundaryVector().value() = phi.boundaryVector().value();
 
     size_t nInternalFaces = mesh.nInternalFaces();
     size_t nBoundaryFaces = mesh.nBoundaryFaces();
@@ -120,8 +120,8 @@ void computeDivExp(
         mesh.faceNeighbour().view(),
         mesh.faceOwner().view(),
         mesh.boundaryMesh().faceCells().view(),
-        faceFlux.internalField().view(),
-        phif.internalField().view(),
+        faceFlux.internalVector().view(),
+        phif.internalVector().view(),
         mesh.cellVolumes().view(),
         divPhi.view(),
         operatorScaling
@@ -134,12 +134,12 @@ void computeDivExp(
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceInterpolation<TYPENAME>&,                                                     \
-        Field<TYPENAME>&,                                                                          \
+        Vector<TYPENAME>&,                                                                         \
         const dsl::Coeff                                                                           \
     )
 
 NF_DECLARE_COMPUTE_EXP_DIV(scalar);
-NF_DECLARE_COMPUTE_EXP_DIV(Vector);
+NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 
 template<typename ValueType>
@@ -156,7 +156,7 @@ void computeDivImp(
     const auto exec = phi.exec();
 
     const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
-        faceFlux.internalField(),
+        faceFlux.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
@@ -202,10 +202,10 @@ void computeDivImp(
     );
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
+        phi.boundaryVector().refGrad(),
+        phi.boundaryVector().value(),
+        phi.boundaryVector().valueFraction(),
+        phi.boundaryVector().refValue()
     );
 
     parallelFor(
@@ -233,6 +233,6 @@ void computeDivImp(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
 
 NF_DECLARE_COMPUTE_IMP_DIV(scalar);
-NF_DECLARE_COMPUTE_IMP_DIV(Vector);
+NF_DECLARE_COMPUTE_IMP_DIV(Vec3);
 
 };

@@ -6,7 +6,7 @@
 #include <concepts>
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/coeff.hpp"
@@ -19,7 +19,7 @@ template<typename T>
 concept HasTemporalExplicitOperator = requires(T t) {
     {
         t.explicitOperation(
-            std::declval<Field<typename T::FieldValueType>&>(),
+            std::declval<Vector<typename T::VectorValueType>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
@@ -30,7 +30,7 @@ template<typename T>
 concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
-            std::declval<la::LinearSystem<typename T::FieldValueType, localIdx>&>(),
+            std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
@@ -57,7 +57,7 @@ class TemporalOperator
 {
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     template<HasTemporalOperator T>
     TemporalOperator(T cls) : model_(std::make_unique<TemporalOperatorModel<T>>(std::move(cls)))
@@ -67,7 +67,7 @@ public:
 
     TemporalOperator(TemporalOperator&& eqnOperator) : model_ {std::move(eqnOperator.model_)} {}
 
-    void explicitOperation(Field<ValueType>& source, scalar t, scalar dt) const
+    void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
     {
         model_->explicitOperation(source, t, dt);
     }
@@ -102,7 +102,7 @@ private:
     {
         virtual ~TemporalOperatorConcept() = default;
 
-        virtual void explicitOperation(Field<ValueType>& source, scalar t, scalar dt) = 0;
+        virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) = 0;
 
         virtual void
         implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) = 0;
@@ -141,7 +141,7 @@ private:
         /* returns the name of the operator */
         std::string getName() const override { return concreteOp_.getName(); }
 
-        virtual void explicitOperation(Field<ValueType>& source, scalar t, scalar dt) override
+        virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) override
         {
             if constexpr (HasTemporalExplicitOperator<ConcreteTemporalOperatorType>)
             {
@@ -196,10 +196,10 @@ TemporalOperator<ValueType> operator*(scalar scalarCoeff, TemporalOperator<Value
 
 template<typename ValueType>
 TemporalOperator<ValueType>
-operator*(const Field<scalar>& coeffField, TemporalOperator<ValueType> rhs)
+operator*(const Vector<scalar>& coeffVector, TemporalOperator<ValueType> rhs)
 {
     TemporalOperator<ValueType> result = rhs;
-    result.getCoefficient() *= Coeff(coeffField);
+    result.getCoefficient() *= Coeff(coeffVector);
     return result;
 }
 

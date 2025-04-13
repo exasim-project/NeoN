@@ -2,11 +2,10 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include <string>
-
-#include "NeoN/fields/field.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 
+#include <string>
 
 namespace NeoN::la
 {
@@ -44,7 +43,7 @@ class LinearSystem
 {
 public:
 
-    LinearSystem(const CSRMatrix<ValueType, IndexType>& matrix, const Field<ValueType>& rhs)
+    LinearSystem(const CSRMatrix<ValueType, IndexType>& matrix, const Vector<ValueType>& rhs)
         : matrix_(matrix), rhs_(rhs)
     {
         NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
@@ -59,11 +58,11 @@ public:
 
     [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
 
-    [[nodiscard]] Field<ValueType>& rhs() { return rhs_; }
+    [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
     [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
 
-    [[nodiscard]] const Field<ValueType>& rhs() const { return rhs_; }
+    [[nodiscard]] const Vector<ValueType>& rhs() const { return rhs_; }
 
     [[nodiscard]] LinearSystem copyToHost() const
     {
@@ -95,15 +94,15 @@ public:
 private:
 
     CSRMatrix<ValueType, IndexType> matrix_;
-    Field<ValueType> rhs_;
+    Vector<ValueType> rhs_;
 };
 
 
 template<typename ValueType, typename IndexType>
-Field<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Field<ValueType>& xfield)
+Vector<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Vector<ValueType>& xfield)
 {
-    Field<ValueType> resultField(ls.exec(), ls.rhs().size(), 0.0);
-    auto [result, b, x] = spans(resultField, ls.rhs(), xfield);
+    Vector<ValueType> resultVector(ls.exec(), ls.rhs().size(), 0.0);
+    auto [result, b, x] = spans(resultVector, ls.rhs(), xfield);
 
     auto values = ls.matrix().values().view();
     auto colIdxs = ls.matrix().colIdxs().view();
@@ -124,7 +123,7 @@ Field<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Field<ValueType>& 
         }
     );
 
-    return resultField;
+    return resultVector;
 };
 
 
@@ -133,7 +132,7 @@ LinearSystem<ValueTypeOut, IndexTypeOut>
 convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
 {
     auto exec = ls.exec();
-    Field<ValueTypeOut> convertedRhs(exec, ls.rhs().data(), ls.rhs().size());
+    Vector<ValueTypeOut> convertedRhs(exec, ls.rhs().data(), ls.rhs().size());
     return {
         convert<ValueTypeIn, IndexTypeIn, ValueTypeOut, IndexTypeOut>(exec, ls.view.matrix),
         convertedRhs,
@@ -154,9 +153,9 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& s
 
     return {
         CSRMatrix<ValueType, IndexType> {
-            Field<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowPtrs()
+            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowPtrs()
         },
-        Field<ValueType> {exec, rows, zero<ValueType>()}
+        Vector<ValueType> {exec, rows, zero<ValueType>()}
     };
 }
 

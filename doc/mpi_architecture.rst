@@ -83,7 +83,7 @@ For simplicity, this section focuses on the approach for two ranks to communicat
 
 To begin, the reader is reminded of 'communication terminology': simplex, half-duplex, and full-duplex. Simplex communication is one-way, from sender to receiver or vice versa. Half-duplex allows two-way communication but only in one direction at a time. Full-duplex enables two-way communication simultaneously in both directions.
 
-To facilitate communication between two or more ranks, a half-duplex buffer is introduced, namely the ``HalfDuplexCommBuffer``, which is responsible for non-blocking sending to/receiving from different ranks and into member data buffers. To generalize the buffer for different data types, ``type-punning`` is used and as such the actual data which is transferred is always of type ``char``. Further, since memory allocation is relatively expensive the buffer is never sized down. While the buffer memory is laid out continuously it is accessed on a per ``rank`` basis, which is indexed from 0 to the size for the communicated data. It is therefore required to have some map between a cell's buffer position index and its data container (typically a ``Field`` of some kind) index. The construction of this map is part of the partitioning problem, and not the responsibility of the buffer.
+To facilitate communication between two or more ranks, a half-duplex buffer is introduced, namely the ``HalfDuplexCommBuffer``, which is responsible for non-blocking sending to/receiving from different ranks and into member data buffers. To generalize the buffer for different data types, ``type-punning`` is used and as such the actual data which is transferred is always of type ``char``. Further, since memory allocation is relatively expensive the buffer is never sized down. While the buffer memory is laid out continuously it is accessed on a per ``rank`` basis, which is indexed from 0 to the size for the communicated data. It is therefore required to have some map between a cell's buffer position index and its data container (typically a ``Vector`` of some kind) index. The construction of this map is part of the partitioning problem, and not the responsibility of the buffer.
 
 .. note::
     The ``HalfDuplexCommBuffer`` duplex buffer has some guard rails in to ensure that once communication has started, various operations are no-longer possible until it is finished.
@@ -158,7 +158,7 @@ The full communication between two ranks is thus given below:
 .. note::
     In the future it is aimed to have dead-lock detection, to prevent program hangs when developing MPI based algorithms.
 
-Field Synchronization
+Vector Synchronization
 ^^^^^^^^^^^^^^^^^^^^^
 
 The focus now shifts to the actual process of synchronizing a global field between all its partitioned parts. In each ``rank`` there is some overlap of cells (i.e. cells which are present in more than one ``rank``), which is dictated by the stencil size. If these shared cell have a missing neighbor cell in a local partition they are termed ``halo cells``. A ``halo cell`` does not have enough geometric and/or field information to be able to calculate the correct result and therefore must receive the result from another rank.
@@ -174,7 +174,7 @@ It is worth noting that there may be more than one field being synchronized at a
     mpi::MPIEnvironment MPIEnviron;
     Communicator comm;
 
-    Field<int> field(SerialExecutor());
+    Vector<int> field(SerialExecutor());
 
     // ...
     // Size and populate field data.

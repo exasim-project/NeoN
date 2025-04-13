@@ -46,15 +46,15 @@ public:
      */
     BoundaryMesh(
         const Executor& exec,
-        labelField faceCells,
-        vectorField cf,
-        vectorField cn,
-        vectorField sf,
-        scalarField magSf,
-        vectorField nf,
-        vectorField delta,
-        scalarField weights,
-        scalarField deltaCoeffs,
+        labelVector faceCells,
+        vectorVector cf,
+        vectorVector cn,
+        vectorVector sf,
+        scalarVector magSf,
+        vectorVector nf,
+        vectorVector delta,
+        scalarVector weights,
+        scalarVector deltaCoeffs,
         std::vector<localIdx> offset
     );
 
@@ -64,9 +64,9 @@ public:
      *
      * @return A constant reference to the field of face cells.
      */
-    const labelField& faceCells() const;
+    const labelVector& faceCells() const;
 
-    // TODO either dont mix return types, ie dont use view and Field
+    // TODO either dont mix return types, ie dont use view and Vector
     // for functions with same name
     /**
      * @brief Get a view of face cells for a specific boundary face.
@@ -81,7 +81,7 @@ public:
      *
      * @return A constant reference to the field of face centres.
      */
-    const vectorField& cf() const;
+    const vectorVector& cf() const;
 
     /**
      * @brief Get a view of face centres for a specific boundary face.
@@ -89,14 +89,14 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face centres for the specified boundary face.
      */
-    View<const Vector> cf(const localIdx i) const;
+    View<const Vec3> cf(const localIdx i) const;
 
     /**
      * @brief Get the field of face normals.
      *
      * @return A constant reference to the field of face normals.
      */
-    const vectorField& cn() const;
+    const vectorVector& cn() const;
 
     /**
      * @brief Get a view of face normals for a specific boundary face.
@@ -104,14 +104,14 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face normals for the specified boundary face.
      */
-    View<const Vector> cn(const localIdx i) const;
+    View<const Vec3> cn(const localIdx i) const;
 
     /**
      * @brief Get the field of face areas normals.
      *
      * @return A constant reference to the field of face areas normals.
      */
-    const vectorField& sf() const;
+    const vectorVector& sf() const;
 
     /**
      * @brief Get a view of face areas normals for a specific boundary face.
@@ -119,7 +119,7 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face areas normals for the specified boundary face.
      */
-    View<const Vector> sf(const localIdx i) const;
+    View<const Vec3> sf(const localIdx i) const;
 
     /**
      * @brief Get the field of magnitudes of face areas normals.
@@ -127,7 +127,7 @@ public:
      * @return A constant reference to the field of magnitudes of face areas
      * normals.
      */
-    const scalarField& magSf() const;
+    const scalarVector& magSf() const;
 
     /**
      * @brief Get a view of magnitudes of face areas normals for a specific
@@ -144,7 +144,7 @@ public:
      *
      * @return A constant reference to the field of face unit normals.
      */
-    const vectorField& nf() const;
+    const vectorVector& nf() const;
 
     /**
      * @brief Get a view of face unit normals for a specific boundary face.
@@ -152,14 +152,14 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face unit normals for the specified boundary face.
      */
-    View<const Vector> nf(const localIdx i) const;
+    View<const Vec3> nf(const localIdx i) const;
 
     /**
      * @brief Get the field of delta vectors.
      *
      * @return A constant reference to the field of delta vectors.
      */
-    const vectorField& delta() const;
+    const vectorVector& delta() const;
 
     /**
      * @brief Get a view of delta vectors for a specific boundary face.
@@ -167,14 +167,14 @@ public:
      * @param i The index of the boundary face.
      * @return A view of delta vectors for the specified boundary face.
      */
-    View<const Vector> delta(const localIdx i) const;
+    View<const Vec3> delta(const localIdx i) const;
 
     /**
      * @brief Get the field of weights.
      *
      * @return A constant reference to the boundary field of weights.
      */
-    const scalarField& weights() const;
+    const scalarVector& weights() const;
 
     /**
      * @brief Get a view of weights for a specific boundary face.
@@ -189,7 +189,7 @@ public:
      *
      * @return A constant reference to the field of delta coefficients.
      */
-    const scalarField& deltaCoeffs() const;
+    const scalarVector& deltaCoeffs() const;
 
     /**
      * @brief Get a view of delta coefficients for a specific boundary face.
@@ -215,58 +215,58 @@ private:
     const Executor exec_;
 
     /**
-     * @brief Field of face cells.
+     * @brief Vector of face cells.
      *
      * A field with the neighbouring cell of each boundary face.
      */
-    labelField faceCells_;
+    labelVector faceCells_;
 
     /**
-     * @brief Field of face centres.
+     * @brief Vector of face centres.
      */
-    vectorField Cf_;
+    vectorVector Cf_;
 
     /**
-     * @brief Field of face normals.
+     * @brief Vector of face normals.
      */
-    vectorField Cn_;
+    vectorVector Cn_;
 
     /**
-     * @brief Field of face areas normals.
+     * @brief Vector of face areas normals.
      */
-    vectorField Sf_;
+    vectorVector Sf_;
 
     /**
-     * @brief Field of magnitudes of face areas normals.
+     * @brief Vector of magnitudes of face areas normals.
      */
-    scalarField magSf_;
+    scalarVector magSf_;
 
     /**
-     * @brief Field of face unit normals.
+     * @brief Vector of face unit normals.
      */
-    vectorField nf_;
+    vectorVector nf_;
 
     /**
-     * @brief Field of delta vectors.
+     * @brief Vector of delta vectors.
      *
      * The delta vector is defined as the vector from the face centre to the
      * cell centre.
      */
-    vectorField delta_;
+    vectorVector delta_;
 
     /**
-     * @brief Field of weights.
+     * @brief Vector of weights.
      *
      * The weights are used in cell to face interpolation.
      */
-    scalarField weights_;
+    scalarVector weights_;
 
     /**
-     * @brief Field of delta coefficients.
+     * @brief Vector of delta coefficients.
      *
-     * Field of cell to face distances.
+     * Vector of cell to face distances.
      */
-    scalarField deltaCoeffs_;
+    scalarVector deltaCoeffs_;
 
     /**
      * @brief Offset of the boundary faces.

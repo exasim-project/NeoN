@@ -18,11 +18,11 @@ The ``ForwardEuler`` class template inherits from ``TimeIntegratorBase`` and imp
 
 .. code-block:: cpp
 
-    template<typename SolutionFieldType>
-    void solve(Expression& eqn, SolutionFieldType& sol, scalar t, scalar dt)
+    template<typename SolutionVectorType>
+    void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
         auto source = eqn.explicitOperation(sol.size());
-        sol.internalField() -= source * dt;
+        sol.internalVector() -= source * dt;
         sol.correctBoundaryConditions();
     }
 
@@ -37,10 +37,10 @@ To use the Forward Euler integrator, configure it through a dictionary:
 
     Dictionary timeDict;
     timeDict.set("type", "forwardEuler");
-    TimeIntegration<VolumeField<scalar>> integrator(timeDict);
+    TimeIntegration<VolumeVector<scalar>> integrator(timeDict);
 
     // Solve for one timestep
-    integrator.solve(equation, solutionField, currentTime, deltaT);
+    integrator.solve(equation, solutionVector, currentTime, deltaT);
 
 Considerations
 -------------

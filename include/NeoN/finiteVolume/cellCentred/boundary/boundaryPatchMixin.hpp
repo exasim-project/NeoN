@@ -3,7 +3,7 @@
 #pragma once
 
 #include "NeoN/fields/fieldTypeDefs.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/fields/field.hpp"
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -14,7 +14,7 @@ namespace NeoN::finiteVolume::cellCentred
  * @brief A base class for implementing derived boundary conditions
  *
  * This class holds the information where a given boundary starts
- * and ends in the consecutive boundaryFields class
+ * and ends in the consecutive boundaryVectors class
  *
  *
  * @tparam ValueType The data type of the field.
@@ -53,7 +53,7 @@ public:
 protected:
 
     size_t patchID_; ///< The id of this patch
-    label start_;    ///< The start index of the patch in the boundaryField
-    label end_;      ///< The end  index of the patch in the boundaryField
+    label start_;    ///< The start index of the patch in the boundaryVector
+    label end_;      ///< The end  index of the patch in the boundaryVector
 };
 }

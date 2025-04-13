@@ -22,8 +22,7 @@ public:
         : Base(mesh, dict, patchID)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] DomainField<ValueType>& domainField
-    ) override
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) override
     {}
 
     static std::string name() { return "empty"; }

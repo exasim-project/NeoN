@@ -20,18 +20,18 @@ namespace detail
 // from a __device__ function is not allowed
 template<typename ValueType>
 void setFixedValue(
-    DomainField<ValueType>& domainField, std::pair<size_t, size_t> range, ValueType fixedValue
+    Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
 )
 {
     auto [refGradient, value, valueFraction, refValue] = spans(
-        domainField.boundaryField().refGrad(),
-        domainField.boundaryField().value(),
-        domainField.boundaryField().valueFraction(),
-        domainField.boundaryField().refValue()
+        domainVector.boundaryVector().refGrad(),
+        domainVector.boundaryVector().value(),
+        domainVector.boundaryVector().valueFraction(),
+        domainVector.boundaryVector().refValue()
     );
 
     NeoN::parallelFor(
-        domainField.exec(),
+        domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const size_t i) {
             refValue[i] = fixedValue;
@@ -55,9 +55,9 @@ public:
         : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) final
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setFixedValue(domainField, this->range(), fixedValue_);
+        detail::setFixedValue(domainVector, this->range(), fixedValue_);
     }
 
     static std::string name() { return "fixedValue"; }

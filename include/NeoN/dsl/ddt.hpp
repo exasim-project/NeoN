@@ -10,19 +10,20 @@
 namespace NeoN::dsl::temporal
 {
 
-template<typename FieldType>
-class Ddt : public OperatorMixin<FieldType>
+template<typename VectorType>
+class Ddt : public OperatorMixin<VectorType>
 {
 
 public:
 
-    Ddt(FieldType& field) : OperatorMixin<FieldType>(field.exec(), field, Operator::Type::Implicit)
+    Ddt(VectorType& field)
+        : OperatorMixin<VectorType>(field.exec(), field, Operator::Type::Implicit)
     {}
 
     std::string getName() const { return "TimeOperator"; }
 
     void explicitOperation(
-        [[maybe_unused]] Field<scalar>& source,
+        [[maybe_unused]] Vector<scalar>& source,
         [[maybe_unused]] scalar t,
         [[maybe_unused]] scalar dt
     )
@@ -41,8 +42,8 @@ public:
 };
 
 /* @brief factory function to create a Ddt term as ddt() */
-template<typename FieldType>
-Ddt<FieldType> ddt(FieldType& in)
+template<typename VectorType>
+Ddt<VectorType> ddt(VectorType& in)
 {
     return Ddt(in);
 };

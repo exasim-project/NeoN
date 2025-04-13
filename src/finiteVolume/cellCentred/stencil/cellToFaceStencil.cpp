@@ -8,7 +8,7 @@ namespace NeoN::finiteVolume::cellCentred
 
 CellToFaceStencil::CellToFaceStencil(const UnstructuredMesh& mesh) : mesh_(mesh) {}
 
-SegmentedField<localIdx, localIdx> CellToFaceStencil::computeStencil() const
+SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 {
     const auto exec = mesh_.exec();
     const auto nCells = mesh_.nCells();
@@ -17,7 +17,7 @@ SegmentedField<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 
     const auto nInternalFaces = mesh_.nInternalFaces();
 
-    Field<localIdx> nFacesPerCell(exec, nCells, 0);
+    Vector<localIdx> nFacesPerCell(exec, nCells, 0);
     View<localIdx> nFacesPerCellSpan = nFacesPerCell.view();
 
     parallelFor(
@@ -38,7 +38,7 @@ SegmentedField<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         }
     );
 
-    SegmentedField<localIdx, localIdx> stencil(nFacesPerCell); // guessed
+    SegmentedVector<localIdx, localIdx> stencil(nFacesPerCell); // guessed
     auto [stencilValues, segment] = stencil.spans();
 
     fill(nFacesPerCell, 0); // reset nFacesPerCell

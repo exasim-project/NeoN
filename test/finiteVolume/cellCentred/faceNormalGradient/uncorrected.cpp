@@ -15,7 +15,7 @@ namespace NeoN
 template<typename T>
 using I = std::initializer_list<T>;
 
-TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -24,16 +24,16 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vector)
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<TestType>>(mesh);
 
     fvcc::SurfaceField<TestType> phif(exec, "phif", mesh, surfaceBCs);
-    fill(phif.internalField(), zero<TestType>());
+    fill(phif.internalVector(), zero<TestType>());
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
     fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
     NeoN::parallelFor(
-        phi.internalField(),
+        phi.internalVector(),
         KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1) * one<TestType>(); }
     );
-    phi.boundaryField().value() =
-        NeoN::Field<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});
+    phi.boundaryVector().value() =
+        NeoN::Vector<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});
 
     SECTION("Construct from Token" + execName)
     {
@@ -47,7 +47,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vector)
         fvcc::FaceNormalGradient<TestType> uncorrected(exec, mesh, input);
         uncorrected.faceNormalGrad(phi, phif);
 
-        auto phifHost = phif.internalField().copyToHost();
+        auto phifHost = phif.internalVector().copyToHost();
         auto sPhif = phifHost.view();
         for (size_t i = 0; i < nCells - 1; i++)
         {

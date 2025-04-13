@@ -15,9 +15,9 @@ TEST_CASE("CSRMatrix")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
-    NeoN::Field<NeoN::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
-    NeoN::Field<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
-    NeoN::Field<NeoN::localIdx> rowPtrsSparse(exec, {0, 1, 3, 4});
+    NeoN::Vector<NeoN::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
+    NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
+    NeoN::Vector<NeoN::localIdx> rowPtrsSparse(exec, {0, 1, 3, 4});
     NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowPtrsSparse
     );
@@ -26,9 +26,9 @@ TEST_CASE("CSRMatrix")
     );
 
     // dense matrix
-    NeoN::Field<NeoN::scalar> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
-    NeoN::Field<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-    NeoN::Field<NeoN::localIdx> rowPtrsDense(exec, {0, 3, 6, 9});
+    NeoN::Vector<NeoN::scalar> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    NeoN::Vector<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
+    NeoN::Vector<NeoN::localIdx> rowPtrsDense(exec, {0, 3, 6, 9});
     NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrix(
         valuesDense, colIdxDense, rowPtrsDense
     );
@@ -63,7 +63,7 @@ TEST_CASE("CSRMatrix")
     SECTION("Read entry on " + execName)
     {
         // Sparse
-        NeoN::Field<NeoN::scalar> checkSparse(exec, 4);
+        NeoN::Vector<NeoN::scalar> checkSparse(exec, 4);
         auto checkSparseView = checkSparse.view();
         auto csrView = sparseMatrixConst.view();
         parallelFor(
@@ -84,7 +84,7 @@ TEST_CASE("CSRMatrix")
         REQUIRE(checkHost.view()[3] == 8.0);
 
         // Dense
-        NeoN::Field<NeoN::scalar> checkDense(exec, 9);
+        NeoN::Vector<NeoN::scalar> checkDense(exec, 9);
         auto checkDenseView = checkDense.view();
         auto denseView = denseMatrixConst.view();
         parallelFor(
@@ -170,7 +170,7 @@ TEST_CASE("CSRMatrix")
     SECTION("Read directValue on " + execName)
     {
         // Sparse
-        NeoN::Field<NeoN::scalar> checkSparse(exec, 4);
+        NeoN::Vector<NeoN::scalar> checkSparse(exec, 4);
         auto checkSparseView = checkSparse.view();
         auto csrView = sparseMatrixConst.view();
         parallelFor(
@@ -190,7 +190,7 @@ TEST_CASE("CSRMatrix")
         REQUIRE(checkHost.view()[3] == 8.0);
 
         // Dense
-        NeoN::Field<NeoN::scalar> checkDense(exec, 9);
+        NeoN::Vector<NeoN::scalar> checkDense(exec, 9);
         auto checkDenseView = checkDense.view();
         auto denseView = denseMatrixConst.view();
         parallelFor(

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
+#include "NeoN/core/vector.hpp"
 
 namespace NeoN::dsl
 {
@@ -27,9 +27,9 @@ public:
 
     Coeff(scalar value);
 
-    Coeff(scalar coeff, const Field<scalar>& field);
+    Coeff(scalar coeff, const Vector<scalar>& field);
 
-    Coeff(const Field<scalar>& field);
+    Coeff(const Vector<scalar>& field);
 
     KOKKOS_INLINE_FUNCTION
     scalar operator[](const size_t i) const { return (hasView_) ? view_[i] * coeff_ : coeff_; }
@@ -68,7 +68,7 @@ namespace detail
  *
  * @param field to store the result
  */
-void toField(Coeff& coeff, Field<scalar>& rhs);
+void toVector(Coeff& coeff, Vector<scalar>& rhs);
 
 } // namespace detail
 

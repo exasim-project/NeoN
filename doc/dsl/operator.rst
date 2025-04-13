@@ -20,14 +20,14 @@ To fit the specification of the Expression (storage in a vector), the Operator n
 
 .. code-block:: cpp
 
-        NeoN::Field<NeoN::scalar> scalingField(exec, nCells, 2.0);
-        auto sF = scalingField.view();
+        NeoN::Vector<NeoN::scalar> scalingVector(exec, nCells, 2.0);
+        auto sF = scalingVector.view();
 
         dsl::Operator<NeoN::scalar> customTerm =
             CustomTerm(dsl::Operator<NeoN::scalar>::Type::Explicit, exec, nCells, 1.0);
 
         auto constantScaledTerm = 2.0 * customTerm; // A constant scaling factor of 2 for the term.
-        auto fieldScaledTerm = scalingField * customTerm; // scalingField is used to scale the term.
+        auto fieldScaledTerm = scalingVector * customTerm; // scalingVector is used to scale the term.
 
         // Operator also supports a similar syntax as OpenFOAM
         auto multiScaledTerm = (scale + scale + scale + scale) * customTerm;
@@ -44,7 +44,7 @@ To add a user-defined `Operator`, a new derived class must be created, inheritin
     - implicitOperation: perform the implicit operation
     - getType: get the type of the term
     - exec: get the executor
-    - volumeField: get the volume field
+    - volumeVector: get the volume field
 
 An example can be found in `test/dsl/operator.cpp`.
 

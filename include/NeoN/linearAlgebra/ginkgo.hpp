@@ -41,7 +41,7 @@ public:
 
     static std::string schema() { return "none"; }
 
-    virtual void solve(const LinearSystem<scalar, localIdx>& sys, Field<scalar>& x) const final
+    virtual void solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
     {
         size_t nrows = sys.rhs().size();
 

@@ -12,16 +12,17 @@
 namespace NeoN::timeIntegration
 {
 
-template<typename SolutionFieldType>
+template<typename SolutionVectorType>
 class ForwardEuler :
-    public TimeIntegratorBase<SolutionFieldType>::template Register<ForwardEuler<SolutionFieldType>>
+    public TimeIntegratorBase<SolutionVectorType>::template Register<
+        ForwardEuler<SolutionVectorType>>
 {
 
 public:
 
-    using ValueType = typename SolutionFieldType::FieldValueType;
+    using ValueType = typename SolutionVectorType::VectorValueType;
     using Base =
-        TimeIntegratorBase<SolutionFieldType>::template Register<ForwardEuler<SolutionFieldType>>;
+        TimeIntegratorBase<SolutionVectorType>::template Register<ForwardEuler<SolutionVectorType>>;
 
     ForwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
         : Base(schemeDict, solutionDict)
@@ -35,27 +36,27 @@ public:
 
     void solve(
         dsl::Expression<ValueType>& eqn,
-        SolutionFieldType& solutionField,
+        SolutionVectorType& solutionVector,
         [[maybe_unused]] scalar t,
         scalar dt
     ) override
     {
-        auto source = eqn.explicitOperation(solutionField.size());
-        SolutionFieldType& oldSolutionField =
-            NeoN::finiteVolume::cellCentred::oldTime(solutionField);
+        auto source = eqn.explicitOperation(solutionVector.size());
+        SolutionVectorType& oldSolutionVector =
+            NeoN::finiteVolume::cellCentred::oldTime(solutionVector);
 
-        solutionField.internalField() = oldSolutionField.internalField() - source * dt;
-        solutionField.correctBoundaryConditions();
+        solutionVector.internalVector() = oldSolutionVector.internalVector() - source * dt;
+        solutionVector.correctBoundaryConditions();
 
         // check if executor is GPU
         if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
         {
             Kokkos::fence();
         }
-        oldSolutionField.internalField() = solutionField.internalField();
+        oldSolutionVector.internalVector() = solutionVector.internalVector();
     };
 
-    std::unique_ptr<TimeIntegratorBase<SolutionFieldType>> clone() const override
+    std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {
         return std::make_unique<ForwardEuler>(*this);
     }

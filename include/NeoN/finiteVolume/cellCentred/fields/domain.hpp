@@ -5,25 +5,25 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/fields/field.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/fields/boundaryFields.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
 /**
- * @class GeometricFieldMixin
+ * @class DomainMixin
  * @brief This class represents a mixin for a geometric field.
  *
- * The GeometricFieldMixin class provides a set of common operations and accessors for a geometric
+ * The DomainMixin class provides a set of common operations and accessors for a geometric
  * field. It is designed to be used as a mixin in other classes that require geometric field
  * functionality.
  *
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class GeometricFieldMixin
+class DomainMixin
 {
 public:
 
@@ -31,41 +31,41 @@ public:
     typedef ValueType ElementType;
 
     /**
-     * @brief Constructor for GeometricFieldMixin.
+     * @brief Constructor for DomainMixin.
      *
      * @param exec The executor object.
      * @param fieldName The name of the field.
      * @param mesh The unstructured mesh object.
-     * @param domainField The domain field object.
+     * @param domainVector The domain field object.
      */
-    GeometricFieldMixin(
+    DomainMixin(
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const DomainField<ValueType>& field
+        const Field<ValueType>& field
     )
         : name(fieldName), exec_(exec), mesh_(mesh), field_(field)
     {}
 
     /**
-     * @brief Constructor for GeometricFieldMixin.
+     * @brief Constructor for DomainMixin.
      *
      * @param exec The executor object.
      * @param fieldName The name of the corresponding field.
      * @param mesh The unstructured mesh object.
-     * @param internalField The internal field object.
-     * @param boundaryFields The boundary field object.
+     * @param internalVector The internal field object.
+     * @param boundaryVectors The boundary field object.
      */
-    GeometricFieldMixin(
+    DomainMixin(
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields
+        const Vector<ValueType>& internalVector,
+        const BoundaryData<ValueType>& boundaryVectors
     )
-        : name(fieldName), exec_(exec), mesh_(mesh), field_({exec, internalField, boundaryFields})
+        : name(fieldName), exec_(exec), mesh_(mesh), field_({exec, internalVector, boundaryVectors})
     {
-        if (mesh.nCells() != internalField.size())
+        if (mesh.nCells() != internalVector.size())
         {
             NF_ERROR_EXIT("Inconsistent size of mesh and internal field detected");
         }
@@ -76,35 +76,35 @@ public:
      *
      * @return The const reference to the internal field.
      */
-    const Field<ValueType>& internalField() const { return field_.internalField(); }
+    const Vector<ValueType>& internalVector() const { return field_.internalVector(); }
 
     /**
      * @brief Returns a reference to the internal field.
      *
      * @return The reference to the internal field.
      */
-    Field<ValueType>& internalField() { return field_.internalField(); }
+    Vector<ValueType>& internalVector() { return field_.internalVector(); }
 
     /**
      * @brief Returns the size of the internal field
      *
      * @return The size of the internal field
      */
-    size_t size() const { return field_.internalField().size(); }
+    size_t size() const { return field_.internalVector().size(); }
 
     /**
      * @brief Returns a const reference to the boundary field.
      *
      * @return The const reference to the boundary field.
      */
-    const BoundaryFields<ValueType>& boundaryField() const { return field_.boundaryField(); }
+    const BoundaryData<ValueType>& boundaryVector() const { return field_.boundaryVector(); }
 
     /**
      * @brief Returns a reference to the boundary field.
      *
      * @return The reference to the boundary field.
      */
-    BoundaryFields<ValueType>& boundaryField() { return field_.boundaryField(); }
+    BoundaryData<ValueType>& boundaryVector() { return field_.boundaryVector(); }
 
     /**
      * @brief Returns a const reference to the executor object.
@@ -126,7 +126,7 @@ protected:
 
     Executor exec_;                // The executor object
     const UnstructuredMesh& mesh_; // The unstructured mesh object
-    DomainField<ValueType> field_; // The domain field object
+    Field<ValueType> field_;       // The domain field object
 };
 
 } // namespace NeoN

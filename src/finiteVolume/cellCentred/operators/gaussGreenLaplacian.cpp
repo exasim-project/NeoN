@@ -13,7 +13,7 @@ void computeLaplacianExp(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const SurfaceField<scalar>& gamma,
     VolumeField<ValueType>& phi,
-    Field<ValueType>& lapPhi,
+    Vector<ValueType>& lapPhi,
     const dsl::Coeff operatorScaling
 )
 {
@@ -26,14 +26,14 @@ void computeLaplacianExp(
         spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
+        phi.boundaryVector().refGrad(),
+        phi.boundaryVector().value(),
+        phi.boundaryVector().valueFraction(),
+        phi.boundaryVector().refValue()
     );
 
     const auto [result, faceArea, fnGrad, vol] =
-        spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalField(), mesh.cellVolumes());
+        spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
 
 
     size_t nInternalFaces = mesh.nInternalFaces();
@@ -71,12 +71,12 @@ void computeLaplacianExp(
         const FaceNormalGradient<TYPENAME>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
         VolumeField<TYPENAME>&,                                                                    \
-        Field<TYPENAME>&,                                                                          \
+        Vector<TYPENAME>&,                                                                         \
         const dsl::Coeff                                                                           \
     )
 
 NF_DECLARE_COMPUTE_EXP_LAP(scalar);
-NF_DECLARE_COMPUTE_EXP_LAP(Vector);
+NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
 
 
 template<typename ValueType>
@@ -102,7 +102,9 @@ void computeLaplacianImpl(
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = spans(
-        gamma.internalField(), faceNormalGradient.deltaCoeffs().internalField(), mesh.magFaceAreas()
+        gamma.internalVector(),
+        faceNormalGradient.deltaCoeffs().internalVector(),
+        mesh.magFaceAreas()
     );
 
     // FIXME: what if order changes
@@ -146,10 +148,10 @@ void computeLaplacianImpl(
     );
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
+        phi.boundaryVector().refGrad(),
+        phi.boundaryVector().value(),
+        phi.boundaryVector().valueFraction(),
+        phi.boundaryVector().refValue()
     );
 
     parallelFor(
@@ -179,6 +181,6 @@ void computeLaplacianImpl(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_LAP(scalar);
-NF_DECLARE_COMPUTE_IMP_LAP(Vector);
+NF_DECLARE_COMPUTE_IMP_LAP(Vec3);
 
 };

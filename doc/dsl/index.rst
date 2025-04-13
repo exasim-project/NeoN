@@ -11,7 +11,7 @@ The Navier-Stokes equations can be expressed in the DSL in OpenFOAM as follows:
 
 .. code-block:: cpp
 
-    fvVectorMatrix UEqn
+    fvVec3Matrix UEqn
     (
         fvm::ddt(U)
         + fvm::div(phi, U)
@@ -20,12 +20,12 @@ The Navier-Stokes equations can be expressed in the DSL in OpenFOAM as follows:
 
     solve(UEqn == -fvc::grad(p));
 
-To solve the continuity equation in OpenFOAM with the PISO or SIMPLE algorithm, the VectorMatrix, UEqn, needs to provide the diagonal and off-diagonal terms of the matrix.
+To solve the continuity equation in OpenFOAM with the PISO or SIMPLE algorithm, the Vec3Matrix, UEqn, needs to provide the diagonal and off-diagonal terms of the matrix.
 
 .. code-block:: cpp
 
-    volScalarField rAU(1.0/UEqn.A());
-    volVectorField HbyA(constrainHbyA(rAU*UEqn.H(), U, p));
+    volScalarVector rAU(1.0/UEqn.A());
+    volVec3Vector HbyA(constrainHbyA(rAU*UEqn.H(), U, p));
 
 This approach is readable and easy to understand for engineers familiar with OpenFOAM. However, it has several limitations due to its implementation in OpenFOAM:
 

@@ -3,14 +3,15 @@
 
 #pragma once
 
-#include "NeoN/fields/field.hpp"
-#include "NeoN/core/runtimeSelectionFactory.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
-#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/core/vector.hpp"
+#include "NeoN/dsl/operator.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -52,7 +53,7 @@ public:
     ) = 0;
 
     virtual void laplacian(
-        Field<ValueType>& lapPhi,
+        Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
         VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
@@ -81,7 +82,7 @@ class LaplacianOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     // copy constructor
     LaplacianOperator(const LaplacianOperator& lapOp)
@@ -121,11 +122,11 @@ public:
           gamma_(gamma), laplacianOperatorStrategy_(nullptr) {};
 
 
-    void explicitOperation(Field<ValueType>& source) const
+    void explicitOperation(Vector<ValueType>& source) const
     {
         NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        NeoN::Field<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
+        NeoN::Vector<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
         laplacianOperatorStrategy_->laplacian(tmpsource, gamma_, this->field_, operatorScaling);
         source += tmpsource;
     }
@@ -137,20 +138,20 @@ public:
         laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
-    // void laplacian(Field<scalar>& lapPhi)
+    // void laplacian(Vector<scalar>& lapPhi)
     // {
-    //     laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, getField());
+    //     laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, getVector());
     // }
 
     // void laplacian(la::LinearSystem<scalar, localIdx>& ls)
     // {
-    //     laplacianOperatorStrategy_->laplacian(ls, gamma_, getField());
+    //     laplacianOperatorStrategy_->laplacian(ls, gamma_, getVector());
     // };
 
     void laplacian(VolumeField<scalar>& lapPhi)
     {
         const auto operatorScaling = this->getCoefficient();
-        laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getField(), operatorScaling);
+        laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getVector(), operatorScaling);
     }
 
 
@@ -177,7 +178,7 @@ public:
 
 private:
 
-    const SurfaceField<NeoN::scalar>& gamma_;
+    const SurfaceField<scalar>& gamma_;
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> laplacianOperatorStrategy_;
 };

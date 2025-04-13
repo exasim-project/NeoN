@@ -18,7 +18,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief computional kernel to perform a linear interpolation
-** from a source volumeField to a surface field. It performs an interpolation
+** from a source volumeVector to a surface field. It performs an interpolation
 ** of the form
 **
 ** d_f = w_f * s_O + ( 1 - w_f ) * s_N
@@ -69,8 +69,8 @@ public:
     void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weight) const override
     {
         const SurfaceField<scalar>& linearWeight = geometryScheme_->weights();
-        weight.internalField() = linearWeight.internalField();
-        weight.boundaryField() = linearWeight.boundaryField();
+        weight.internalVector() = linearWeight.internalVector();
+        weight.boundaryVector() = linearWeight.boundaryVector();
     }
 
     void weight(
@@ -80,8 +80,8 @@ public:
     ) const override
     {
         const SurfaceField<scalar>& linearWeight = geometryScheme_->weights();
-        weight.internalField() = linearWeight.internalField();
-        weight.boundaryField() = linearWeight.boundaryField();
+        weight.internalVector() = linearWeight.internalVector();
+        weight.boundaryVector() = linearWeight.boundaryVector();
     }
 
 
@@ -103,9 +103,9 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::SurfaceInterpolationFactory<scalar>;
-template class fvcc::SurfaceInterpolationFactory<Vector>;
+template class fvcc::SurfaceInterpolationFactory<Vec3>;
 
 template class fvcc::Linear<scalar>;
-template class fvcc::Linear<Vector>;
+template class fvcc::Linear<Vec3>;
 
 }
