@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SegmentedVector" href="segmentedField.html" /><link rel="prev" title="Executor" href="executor.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parallel Algorithms" href="algorithms.html" /><link rel="prev" title="Executor" href="executor.html" />
         <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Fields - NeoN documentation</title>
+        <title>Vectors - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -207,12 +207,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segmentedField.html">SegmentedVector</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="registerclass.html">Derived class discovery at compile time</a></li>
@@ -281,8 +279,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="fields">
-<span id="fvcc-fields"></span><h1>Fields<a class="headerlink" href="#fields" title="Link to this heading">¶</a></h1>
+          <section id="vectors">
+<span id="fvcc-fields"></span><h1>Vectors<a class="headerlink" href="#vectors" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
@@ -291,41 +289,41 @@
 </div>
 <p>NeoN implements several field classes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vector&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">BoundaryData&lt;ValueType&gt;</span></code> A GPU friendly datastructure storing boundary data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DomainField&lt;ValueType&gt;</span></code> The combination of an internal field and its corresponding boundary data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> The combination of an internal field and its corresponding boundary data.</p></li>
 </ul>
 <p>Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">DomainMixin&lt;ValueType&gt;</span></code> Mixin class combining a <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> and the corresponding mesh.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VolumeField&lt;ValueType&gt;</span></code> Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SurfaceField&lt;ValueType&gt;</span></code> The surface field equivalent to <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DomainMixin&lt;ValueType&gt;</span></code> Mixin class combining a <code class="docutils literal notranslate"><span class="pre">Field</span></code> and the corresponding mesh.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VolumeVector&lt;ValueType&gt;</span></code> Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SurfaceVector&lt;ValueType&gt;</span></code> The surface field equivalent to <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code></p></li>
 </ul>
 </section>
-<section id="the-field-valuetype-class">
-<h2>The Field&lt;ValueType&gt; class<a class="headerlink" href="#the-field-valuetype-class" title="Link to this heading">¶</a></h2>
-<p>The Field class is the basic container class and is the central component for implementing a platform portable CFD framework.
-One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Field</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
+<section id="the-vector-valuetype-class">
+<h2>The Vector&lt;ValueType&gt; class<a class="headerlink" href="#the-vector-valuetype-class" title="Link to this heading">¶</a></h2>
+<p>The Vector class is the basic container class and is the central component for implementing a platform portable CFD framework.
+One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Vector</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
 This is to prevent accidental access to device memory from the host.
-The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Field</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
+The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Vector</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
 .. code-block:: cpp</p>
 <blockquote>
-<div><p>// Host Fields
-Field&lt;T&gt; hostField(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
-auto hostFieldView = hostField.view();
-hostFieldView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
-<p>// Device Fields
-Field&lt;T&gt; deviceField(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
-auto deviceFieldOnHost = deviceField.copyToHost();
-auto deviceFieldOnHostView = deviceFieldOnHost.view();
-deviceFieldOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
+<div><p>// Host Vectors
+Vector&lt;T&gt; hostVector(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
+auto hostVectorView = hostVector.view();
+hostVectorView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
+<p>// Device Vectors
+Vector&lt;T&gt; deviceVector(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
+auto deviceVectorOnHost = deviceVector.copyToHost();
+auto deviceVectorOnHostView = deviceVectorOnHost.view();
+deviceVectorOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
 </div></blockquote>
-<p>Fields support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
+<p>Vectors support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
 In the following, some implementation details of the field operations are detailed using the additions operator as an example.
 The block of code below shows an example implementation of the addition operator.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec_</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec_</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
 <span class="w">    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
 <span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
@@ -336,7 +334,7 @@ The block of code below shows an example implementation of the addition operator
 This, in turn, dispatches to the <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code> function, passing the actual kernel as lambda.
 The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code>  is implemented using our parallelFor implementations which ultimately dispatch to the <code class="docutils literal notranslate"><span class="pre">Kokkos::parallel_for</span></code> function, see <a class="reference external" href="https://kokkos.org/kokkos-core-wiki/API/core/parallel-dispatch/parallel_for.html">Kokkos documentation</a> for more details.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span>
-<span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_identity_t</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_identity_t</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">detail</span><span class="o">::</span><span class="n">fieldBinaryOp</span><span class="p">(</span>
 <span class="w">      </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="n">ValueType</span><span class="w"> </span><span class="n">va</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="w"> </span><span class="n">vb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">va</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">vb</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -349,19 +347,19 @@ The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</
 The executor defines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy</span></code>, see  <a class="reference external" href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md">Kokkos Programming Model</a>.
 Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
 See our <a class="reference external" href="https://exasim-project.com/NeoN/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
-<p>Further <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Field.html">Details</a>.</p>
+<p>Further <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Vector.html">Details</a>.</p>
 </section>
-<section id="cell-centred-specific-fields">
-<h2>Cell Centred Specific Fields<a class="headerlink" href="#cell-centred-specific-fields" title="Link to this heading">¶</a></h2>
+<section id="cell-centred-specific-vectors">
+<h2>Cell Centred Specific Vectors<a class="headerlink" href="#cell-centred-specific-vectors" title="Link to this heading">¶</a></h2>
 <p>Within in the <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred</span></code> folder and the namespace
-<code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> are implemented.
-Both derive from the <code class="docutils literal notranslate"><span class="pre">DomainMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> data member.</p>
-<p><code class="docutils literal notranslate"><span class="pre">DomainField</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryFields</span></code> data structure holding actual boundary data.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
-<p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">volVec3Field</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorField</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVec3Field</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorField</span></code> respectively.</p>
-<p>A difference in the SurfaceField implementation is that the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
-Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> in NeoN differs from that of OpenFOAM.</p>
-<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html">ScalarField</a>.</p>
+<code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> are implemented.
+Both derive from the <code class="docutils literal notranslate"><span class="pre">DomainMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">Field</span></code> data member.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Field</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryVectors</span></code> data structure holding actual boundary data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
+<p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarVector</span></code>, <code class="docutils literal notranslate"><span class="pre">volVec3Vector</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorVector</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarVector</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVec3Vector</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorVector</span></code> respectively.</p>
+<p>A difference in the SurfaceVector implementation is that the <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
+Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> in NeoN differs from that of OpenFOAM.</p>
+<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeVector.html">VolumeVector</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarVector.html">ScalarVector</a>.</p>
 <span class="target" id="api-fields"></span></section>
 </section>
 
@@ -370,12 +368,12 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="segmentedField.html">
+          <a class="next-page" href="algorithms.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">SegmentedVector</div>
+                <div class="title">Parallel Algorithms</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -420,10 +418,10 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Fields</a><ul>
+<li><a class="reference internal" href="#">Vectors</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#the-field-valuetype-class">The Field&lt;ValueType&gt; class</a></li>
-<li><a class="reference internal" href="#cell-centred-specific-fields">Cell Centred Specific Fields</a></li>
+<li><a class="reference internal" href="#the-vector-valuetype-class">The Vector&lt;ValueType&gt; class</a></li>
+<li><a class="reference internal" href="#cell-centred-specific-vectors">Cell Centred Specific Vectors</a></li>
 </ul>
 </li>
 </ul>

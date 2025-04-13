@@ -22,7 +22,7 @@
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00018}00018\ \{}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00019}00019\ }
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00020}00020\ \textcolor{comment}{/*\ @brief\ computional\ kernel\ to\ perform\ a\ linear\ interpolation}}
-\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00021}00021\ \textcolor{comment}{**\ from\ a\ source\ volumeField\ to\ a\ surface\ field.\ It\ performs\ an\ interpolation}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00021}00021\ \textcolor{comment}{**\ from\ a\ source\ volumeVector\ to\ a\ surface\ field.\ It\ performs\ an\ interpolation}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00022}00022\ \textcolor{comment}{**\ of\ the\ form}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00023}00023\ \textcolor{comment}{**}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00024}00024\ \textcolor{comment}{**\ d\_f\ =\ w\_f\ *\ s\_O\ +\ (\ 1\ -\/\ w\_f\ )\ *\ s\_N}}
@@ -73,8 +73,8 @@
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{00069}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}})\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00070}00070\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ linearWeight\ =\ geometryScheme\_-\/>weights();}
-\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.internalField()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae690225dd90a6452953f71876d661f40}{internalField}}();}
-\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.boundaryField()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a0aead200324e5726c4b0c8fde0d874d3}{boundaryField}}();}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.internalVector()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.boundaryVector()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a5663ceb43ec3a2bb7b770532144445f6}{boundaryVector}}();}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00074}00074\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00075}00075\ }
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a5cebacb1ac808985aa51c8cb400d03bd}{00076}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a5cebacb1ac808985aa51c8cb400d03bd}{weight}}(}
@@ -84,8 +84,8 @@
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00080}00080\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ linearWeight\ =\ geometryScheme\_-\/>weights();}
-\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.internalField()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae690225dd90a6452953f71876d661f40}{internalField}}();}
-\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.boundaryField()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a0aead200324e5726c4b0c8fde0d874d3}{boundaryField}}();}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.internalVector()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_a9d41775283576785b588149b74e0f090}{weight}}.boundaryVector()\ =\ linearWeight.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a5663ceb43ec3a2bb7b770532144445f6}{boundaryVector}}();}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00085}00085\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00086}00086\ }
 \DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00087}00087\ }

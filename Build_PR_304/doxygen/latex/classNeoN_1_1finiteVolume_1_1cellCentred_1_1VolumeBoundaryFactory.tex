@@ -17,7 +17,7 @@ Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::Volume\+Bound
 \item 
 virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a3ba452b07c8ab275d70445f936f6005b}{\texorpdfstring{$\sim$}{\string~}\+Volume\+Boundary\+Factory}} ()=default
 \item 
-virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a0d6286cd98331d210188687f9f88245c}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1DomainField}{Domain\+Field}}$<$ Value\+Type $>$ \&domain\+Field)=0
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a4096139369d9bd6502e50c56422052d2}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector)=0
 \item 
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Volume\+Boundary\+Factory}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a06ed95a7e62e1faa3e6869eb9fb70a32}{clone}} () const =0
 \end{DoxyCompactItemize}
@@ -54,9 +54,9 @@ static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1
 \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ad53aa6c84393ff86afe40ee171775b85}{patch\+ID\+\_\+}}
 \begin{DoxyCompactList}\small\item\em The id of this patch. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a7c2da6850dca31ca53b12f1b372a2995}{start\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The start index of the patch in the boundary\+Field. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em The start index of the patch in the boundary\+Vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ae5d787dcd753ecc3fe7f63ea1ab6979f}{end\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The end index of the patch in the boundary\+Field. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The end index of the patch in the boundary\+Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -97,12 +97,12 @@ virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBound
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Volume\+Boundary\+Factory}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Volume\+Boundary\+Factory}}$<$ Value\+Type $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a0d6286cd98331d210188687f9f88245c}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a0d6286cd98331d210188687f9f88245c} 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a4096139369d9bd6502e50c56422052d2}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a4096139369d9bd6502e50c56422052d2} 
 \index{NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$}!correctBoundaryCondition@{correctBoundaryCondition}}
 \index{correctBoundaryCondition@{correctBoundaryCondition}!NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{correctBoundaryCondition()}{correctBoundaryCondition()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Volume\+Boundary\+Factory}}$<$ Value\+Type $>$\+::correct\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1DomainField}{Domain\+Field}}$<$ Value\+Type $>$ \&}]{domain\+Field }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Volume\+Boundary\+Factory}}$<$ Value\+Type $>$\+::correct\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a248b803780efd47de2efb82e9082b93e}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a248b803780efd47de2efb82e9082b93e} 
 \index{NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory$<$ ValueType $>$}!name@{name}}

@@ -14,10 +14,10 @@ Data structure that stores a segmented fields or a vector of vectors.
 \item 
 \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a00b1ee488551651e105c76a3b428c3af}{Segmented\+Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a332e0b458fb4124548f6c1cea401d8c6}{size}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a4b6998101acab7ae57f63f4a9b9bebe7}{num\+Segments}})
 \begin{DoxyCompactList}\small\item\em Create a segmented field with a given size and number of segments. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab0f9d22b0e29e5f3f5c58c8e3e2cbcff}{Segmented\+Vector}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \&intervals)
+\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a1245b2584d931e92f5ec68e04cf60335}{Segmented\+Vector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&intervals)
 \item 
-\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a872df7b1560d7ac4c8e957c1eeeda590}{Segmented\+Vector}} (const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ae1398eecfcd280bd3f53d03cfcb9776e}{values}}, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ac5497f26d2af2e33e97eb8902e0dd40f}{segments}})
-\begin{DoxyCompactList}\small\item\em Constructor to create a segmented\+Field from values and the segments. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a0282e4e49eee8c5e95323285daf113c1}{Segmented\+Vector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}})
+\begin{DoxyCompactList}\small\item\em Constructor to create a segmented\+Vector from values and the segments. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}} () const
 \begin{DoxyCompactList}\small\item\em Get the executor associated with the segmented field. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a332e0b458fb4124548f6c1cea401d8c6}{size}} () const
@@ -32,9 +32,9 @@ std\+::pair$<$ std\+::span$<$ Value\+Type $>$, std\+::span$<$ Index\+Type $>$ $>
 \begin{DoxyCompactList}\small\item\em get the combined value and range spans of the segmented field \end{DoxyCompactList}\item 
 std\+::pair$<$ std\+::span$<$ Value\+Type $>$, std\+::span$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ac30cca6c82aefefb391ac8533507f8e5}{spans}} () \&\&=delete
 \item 
-const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ae1398eecfcd280bd3f53d03cfcb9776e}{values}} () const
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}} () const
 \item 
-const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ac5497f26d2af2e33e97eb8902e0dd40f}{segments}} () const
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}} () const
 \end{DoxyCompactItemize}
 
 
@@ -72,27 +72,27 @@ Create a segmented field with a given size and number of segments.
 
 Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00134}{134}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1SegmentedVector_ab0f9d22b0e29e5f3f5c58c8e3e2cbcff}\label{classNeoN_1_1SegmentedVector_ab0f9d22b0e29e5f3f5c58c8e3e2cbcff} 
+\Hypertarget{classNeoN_1_1SegmentedVector_a1245b2584d931e92f5ec68e04cf60335}\label{classNeoN_1_1SegmentedVector_a1245b2584d931e92f5ec68e04cf60335} 
 \index{NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}!SegmentedVector@{SegmentedVector}}
 \index{SegmentedVector@{SegmentedVector}!NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{SegmentedVector()}{SegmentedVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::\+Segmented\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \&}]{intervals }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::\+Segmented\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{intervals }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
 Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00143}{143}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1SegmentedVector_a872df7b1560d7ac4c8e957c1eeeda590}\label{classNeoN_1_1SegmentedVector_a872df7b1560d7ac4c8e957c1eeeda590} 
+\Hypertarget{classNeoN_1_1SegmentedVector_a0282e4e49eee8c5e95323285daf113c1}\label{classNeoN_1_1SegmentedVector_a0282e4e49eee8c5e95323285daf113c1} 
 \index{NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}!SegmentedVector@{SegmentedVector}}
 \index{SegmentedVector@{SegmentedVector}!NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{SegmentedVector()}{SegmentedVector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::\+Segmented\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{values,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \&}]{segments }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::\+Segmented\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{segments }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Constructor to create a segmented\+Field from values and the segments. 
+Constructor to create a segmented\+Vector from values and the segments. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -144,12 +144,12 @@ The number of segments.
 
 Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00180}{180}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1SegmentedVector_ac5497f26d2af2e33e97eb8902e0dd40f}\label{classNeoN_1_1SegmentedVector_ac5497f26d2af2e33e97eb8902e0dd40f} 
+\Hypertarget{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}\label{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f} 
 \index{NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}!segments@{segments}}
 \index{segments@{segments}!NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{segments()}{segments()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::segments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::segments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -198,12 +198,12 @@ Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00199}{199}} of
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
 std\+::pair$<$ std\+::span$<$ Value\+Type $>$, std\+::span$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::spans (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
 
-\Hypertarget{classNeoN_1_1SegmentedVector_ae1398eecfcd280bd3f53d03cfcb9776e}\label{classNeoN_1_1SegmentedVector_ae1398eecfcd280bd3f53d03cfcb9776e} 
+\Hypertarget{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}\label{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0} 
 \index{NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}!values@{values}}
 \index{values@{values}!NeoN::SegmentedVector$<$ ValueType, IndexType $>$@{NeoN::SegmentedVector$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{values()}{values()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Neo\+N\+::\+Segmented\+Vector}}$<$ Value\+Type, Index\+Type $>$\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 

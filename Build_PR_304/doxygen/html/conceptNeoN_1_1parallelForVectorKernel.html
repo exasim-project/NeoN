@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/fields/domainField.hpp File Reference</title>
+<title>NeoN: NeoN::parallelForVectorKernel Concept Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,38 +70,27 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_4d3f939cb3e94ca2309d34727a08ae86.html">NeoN</a></li><li class="navelem"><a class="el" href="dir_567ec6c8f0a6d785c743e311001dcd27.html">fields</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceNeoN.html">NeoN</a></li><li class="navelem"><a class="el" href="conceptNeoN_1_1parallelForVectorKernel.html">parallelForVectorKernel</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">domainField.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">NeoN::parallelForVectorKernel Concept Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;Kokkos_Core.hpp&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &quot;<a class="el" href="executor_8hpp_source.html">NeoN/core/executor/executor.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="label_8hpp_source.html">NeoN/core/primitives/label.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="scalar_8hpp_source.html">NeoN/core/primitives/scalar.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="boundaryData_8hpp_source.html">NeoN/fields/boundaryData.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="unstructuredMesh_8hpp_source.html">NeoN/mesh/unstructured/unstructuredMesh.hpp</a>&quot;</code><br />
-</div>
-<p><a href="domainField_8hpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1DomainField.html">NeoN::DomainField&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the domain fields for a computational domain.  <a href="classNeoN_1_1DomainField.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceNeoN" id="r_namespaceNeoN"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html">NeoN</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-</div><!-- contents -->
+
+<p><code>#include &lt;<a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>&gt;</code></p>
+<h2 class="groupheader">Concept definition</h2>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Kernel, <span class="keyword">typename</span> ValueType&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptNeoN_1_1parallelForVectorKernel.html">NeoN::parallelForVectorKernel</a> =  <span class="keyword">requires</span>(Kernel t, ValueType val, <span class="keywordtype">size_t</span> i) {</div>
+<div class="line">    {</div>
+<div class="line">        t(i)</div>
+<div class="line">    } -&gt; std::same_as&lt;ValueType&gt;;</div>
+<div class="line">}</div>
+<div class="ttc" id="aconceptNeoN_1_1parallelForVectorKernel_html"><div class="ttname"><a href="conceptNeoN_1_1parallelForVectorKernel.html">NeoN::parallelForVectorKernel</a></div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00067">parallelAlgorithms.hpp:67</a></div></div>
+</div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00067">67</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

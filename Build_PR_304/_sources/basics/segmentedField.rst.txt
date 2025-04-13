@@ -1,4 +1,4 @@
-.. _fvcc_segmentedFields:
+.. _fvcc_segmentedVectors:
 
 SegmentedVector
 ^^^^^^^^^^^^^^
@@ -9,20 +9,20 @@ It can be used to represent cell to cell stencil.
 
 .. code-block:: cpp
 
-    NeoN::Field<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-    NeoN::Field<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
+    NeoN::Vector<NeoN::label> values(exec, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    NeoN::Vector<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
-    NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segField(values, segments);
-    auto [valueSpan, segment] = segField.spans();
-    auto segView = segField.view();
-    NeoN::Field<NeoN::label> result(exec, 5);
+    NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(values, segments);
+    auto [valueSpan, segment] = segVector.spans();
+    auto segView = segVector.view();
+    NeoN::Vector<NeoN::label> result(exec, 5);
 
     NeoN::fill(result, 0);
     auto resultSpan = result.view();
 
     parallelFor(
         exec,
-        {0, segField.numSegments()},
+        {0, segVector.numSegments()},
         KOKKOS_LAMBDA(const size_t segI) {
             // check if it works with bounds
             auto [bStart, bEnd] = segView.bounds(segI);

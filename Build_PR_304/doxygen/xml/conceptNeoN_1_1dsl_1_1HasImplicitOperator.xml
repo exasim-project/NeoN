@@ -12,7 +12,8 @@
 concept <ref refid="conceptNeoN_1_1dsl_1_1HasImplicitOperator" kindref="compound">NeoN::dsl::HasImplicitOperator</ref> =  requires(T t) {
     
     {
-        t.implicitOperation(std::declval&lt;la::LinearSystem&lt;typename T::FieldValueType, localIdx&gt;&amp;&gt;())
+        t.implicitOperation(std::declval&lt;la::LinearSystem&lt;typename T::VectorValueType, localIdx&gt;&amp;&gt;()
+        )
     } -&gt; std::same_as&lt;void&gt;; 
 }    </initializer>
     <briefdescription>

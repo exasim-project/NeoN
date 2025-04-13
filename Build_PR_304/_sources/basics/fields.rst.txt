@@ -1,5 +1,5 @@
 .. _fvcc_fields:
-Fields
+Vectors
 ======
 
 Overview
@@ -10,44 +10,44 @@ Overview
 
 NeoN implements several field classes:
 
-- ``Field<ValueType>`` the basic GPU capable container class supporting algebraic operations
+- ``Vector<ValueType>`` the basic GPU capable container class supporting algebraic operations
 - ``BoundaryData<ValueType>`` A GPU friendly datastructure storing boundary data.
-- ``DomainField<ValueType>`` The combination of an internal field and its corresponding boundary data.
+- ``Field<ValueType>`` The combination of an internal field and its corresponding boundary data.
 
 Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:
 
-- ``DomainMixin<ValueType>`` Mixin class combining a ``DomainField`` and the corresponding mesh.
-- ``VolumeField<ValueType>`` Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons
-- ``SurfaceField<ValueType>`` The surface field equivalent to ``VolumeField``
+- ``DomainMixin<ValueType>`` Mixin class combining a ``Field`` and the corresponding mesh.
+- ``VolumeVector<ValueType>`` Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons
+- ``SurfaceVector<ValueType>`` The surface field equivalent to ``VolumeVector``
 
-The Field<ValueType> class
+The Vector<ValueType> class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-The Field class is the basic container class and is the central component for implementing a platform portable CFD framework.
-One of the key differences between accessing the elements of a ``Field`` and typical ``std`` sequential data containers is the lack of subscript or direct element access operators.
+The Vector class is the basic container class and is the central component for implementing a platform portable CFD framework.
+One of the key differences between accessing the elements of a ``Vector`` and typical ``std`` sequential data containers is the lack of subscript or direct element access operators.
 This is to prevent accidental access to device memory from the host.
-The correct procedure to access ``Field`` elements is indirectly through a ``view``, as shown below:
+The correct procedure to access ``Vector`` elements is indirectly through a ``view``, as shown below:
 .. code-block:: cpp
 
-    // Host Fields
-    Field<T> hostField(Executor::CPUExecutor, size_);
-    auto hostFieldView = hostField.view();
-    hostFieldView[1] = 1; // assuming size_ > 2.
+    // Host Vectors
+    Vector<T> hostVector(Executor::CPUExecutor, size_);
+    auto hostVectorView = hostVector.view();
+    hostVectorView[1] = 1; // assuming size_ > 2.
 
-    // Device Fields
-    Field<T> deviceField(Executor::GPUExecutor, size_);
-    auto deviceFieldOnHost = deviceField.copyToHost();
-    auto deviceFieldOnHostView = deviceFieldOnHost.view();
-    deviceFieldOnHostView[1] = 1; // assuming size_ > 2.
+    // Device Vectors
+    Vector<T> deviceVector(Executor::GPUExecutor, size_);
+    auto deviceVectorOnHost = deviceVector.copyToHost();
+    auto deviceVectorOnHostView = deviceVectorOnHost.view();
+    deviceVectorOnHostView[1] = 1; // assuming size_ > 2.
 
-Fields support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
+Vectors support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
 In the following, some implementation details of the field operations are detailed using the additions operator as an example.
 The block of code below shows an example implementation of the addition operator.
 
 .. code-block:: cpp
 
-    [[nodiscard]] Field<T> operator+(const Field<T>& rhs)
+    [[nodiscard]] Vector<T> operator+(const Vector<T>& rhs)
     {
-        Field<T> result(exec_, size_);
+        Vector<T> result(exec_, size_);
         result = *this;
         add(result, rhs);
         return result;
@@ -61,7 +61,7 @@ The ``fieldBinaryOp``  is implemented using our parallelFor implementations whic
 .. code-block:: cpp
 
     template<typename ValueType>
-    void add(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
+    void add(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
     {
       detail::fieldBinaryOp(
           a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
@@ -97,24 +97,24 @@ The executor defines the ``Kokkos::RangePolicy``, see  `Kokkos Programming Model
 Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
 See our `documentation  <https://exasim-project.com/NeoN/latest/basics/executor.html>`_ for more details on the executor model.
 
-Further `Details  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Field.html>`_.
+Further `Details  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Vector.html>`_.
 
-Cell Centred Specific Fields
+Cell Centred Specific Vectors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Within in the ``finiteVolume/cellCentred`` folder and the namespace
-``NeoN::finiteVolume::cellCentred`` two specific field types, namely the ``VolumeField`` and the ``SurfaceField`` are implemented.
-Both derive from the ``DomainMixin`` a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the ``DomainField`` data member.
+``NeoN::finiteVolume::cellCentred`` two specific field types, namely the ``VolumeVector`` and the ``SurfaceVector`` are implemented.
+Both derive from the ``DomainMixin`` a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the ``Field`` data member.
 
-``DomainField`` acts as the fundamental data container within this structure, offering both read and write to the ``internalField`` and  ``boundaryFields`` data structure holding actual boundary data.
+``Field`` acts as the fundamental data container within this structure, offering both read and write to the ``internalVector`` and  ``boundaryVectors`` data structure holding actual boundary data.
 
-The ``VolumeField`` and the ``SurfaceField`` hold a vector of boundary conditions implemented in ``finiteVolume/cellCentred/boundary`` and a  ``correctBoundaryConditions`` member function that updates the field's boundary condition.
+The ``VolumeVector`` and the ``SurfaceVector`` hold a vector of boundary conditions implemented in ``finiteVolume/cellCentred/boundary`` and a  ``correctBoundaryConditions`` member function that updates the field's boundary condition.
 
-Functionally, the ``VolumeField`` and the ``SurfaceField`` classes are comparable to OpenFOAM classes such as ``volScalarField``, ``volVec3Field``, and ``volTensorField`` or ``surfaceScalarField``, ``surfaceVec3Field``, and ``surfaceTensorField`` respectively.
+Functionally, the ``VolumeVector`` and the ``SurfaceVector`` classes are comparable to OpenFOAM classes such as ``volScalarVector``, ``volVec3Vector``, and ``volTensorVector`` or ``surfaceScalarVector``, ``surfaceVec3Vector``, and ``surfaceTensorVector`` respectively.
 
-A difference in the SurfaceField implementation is that the ``internalField`` also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
-Thus the size of the ``internalField`` in NeoN differs from that of OpenFOAM.
+A difference in the SurfaceVector implementation is that the ``internalVector`` also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
+Thus the size of the ``internalVector`` in NeoN differs from that of OpenFOAM.
 
-Further details `VolumeField  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html>`_ and `ScalarField  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html>`_.
+Further details `VolumeVector  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeVector.html>`_ and `ScalarVector  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarVector.html>`_.
 
 .. _api_fields:

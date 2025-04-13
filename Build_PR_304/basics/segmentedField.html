@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parallel Algorithms" href="algorithms.html" /><link rel="prev" title="Fields" href="fields.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
         <link rel="canonical" href="https://exasim-project.com/NeoN/basics/segmentedField.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
@@ -201,18 +201,16 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html">Fields</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">SegmentedVector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fields.html">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="registerclass.html">Derived class discovery at compile time</a></li>
@@ -282,24 +280,24 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="segmentedvector">
-<span id="fvcc-segmentedfields"></span><h1>SegmentedVector<a class="headerlink" href="#segmentedvector" title="Link to this heading">¶</a></h1>
+<span id="fvcc-segmentedvectors"></span><h1>SegmentedVector<a class="headerlink" href="#segmentedvector" title="Link to this heading">¶</a></h1>
 <p>SegmentedVector is a template class that represents a field divided into multiple segments and can represent vector of vector of a defined ValueType.
 It also allows the definition of an IndexType, so each segment of the vector can be addressed.
 It can be used to represent cell to cell stencil.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">});</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segments</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">});</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segments</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
 
-<span class="n">NeoN</span><span class="o">::</span><span class="n">SegmentedVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segField</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">segments</span><span class="p">);</span>
-<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">valueSpan</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">spans</span><span class="p">();</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">segView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
-<span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">SegmentedVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segVector</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">segments</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">valueSpan</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">spans</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">segView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
 
 <span class="n">NeoN</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">resultSpan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
 
 <span class="n">parallelFor</span><span class="p">(</span>
 <span class="w">    </span><span class="n">exec</span><span class="p">,</span>
-<span class="w">    </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">numSegments</span><span class="p">()},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">numSegments</span><span class="p">()},</span>
 <span class="w">    </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">segI</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// check if it works with bounds</span>
 <span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">bStart</span><span class="p">,</span><span class="w"> </span><span class="n">bEnd</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segView</span><span class="p">.</span><span class="n">bounds</span><span class="p">(</span><span class="n">segI</span><span class="p">);</span>
@@ -337,26 +335,8 @@ This data allows the representation of stencils in a continuous memory layout, w
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="algorithms.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Parallel Algorithms</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="fields.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Fields</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">

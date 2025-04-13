@@ -207,12 +207,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../basics/executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../basics/fields.html">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../basics/segmentedField.html">SegmentedVector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../basics/fields.html">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../basics/algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../basics/registerclass.html">Derived class discovery at compile time</a></li>
@@ -394,15 +392,15 @@ The following code snippet shows how to create a document with a custom validato
 </div>
 <p>As stated earlier, the Documents are stored as part of a Collection which itself is stored in the central database as shown in the class diagram above.
 To enable custom functionalities the developer can create a custom collection that provides additional functionality to the document.
-This is done in the FieldCollection class that is used to store the field data in the database.</p>
-<section id="fieldcollection">
-<h2>FieldCollection<a class="headerlink" href="#fieldcollection" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> stores all fields and provides additional functionality which is stored in a document.
-The <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code> keeps a reference to field as a <code class="docutils literal notranslate"><span class="pre">std::any</span></code> and stores additional metadata like the time index, iteration index, and subcycle index.
-The following code snippet shows how to create a <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">FieldType</span><span class="o">&gt;</span>
-<span class="n">FieldDocument</span><span class="p">(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">FieldType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">,</span>
+This is done in the VectorCollection class that is used to store the field data in the database.</p>
+<section id="vectorcollection">
+<h2>VectorCollection<a class="headerlink" href="#vectorcollection" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> stores all fields and provides additional functionality which is stored in a document.
+The <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code> keeps a reference to field as a <code class="docutils literal notranslate"><span class="pre">std::any</span></code> and stores additional metadata like the time index, iteration index, and subcycle index.
+The following code snippet shows how to create a <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">VectorType</span><span class="o">&gt;</span>
+<span class="n">VectorDocument</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VectorType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">timeIndex</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">iterationIndex</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">subCycleIndex</span>
@@ -415,26 +413,26 @@ The following code snippet shows how to create a <code class="docutils literal n
 <span class="w">               </span><span class="p">{</span><span class="s">&quot;subCycleIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subCycleIndex</span><span class="p">},</span>
 <span class="w">               </span><span class="p">{</span><span class="s">&quot;field&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p">}}</span>
 <span class="w">          </span><span class="p">),</span>
-<span class="w">          </span><span class="n">validateFieldDoc</span>
+<span class="w">          </span><span class="n">validateVectorDoc</span>
 <span class="w">      </span><span class="p">)</span>
 <span class="p">{}</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code> stores its data in a <code class="docutils literal notranslate"><span class="pre">Document</span></code> and provide the appropriate getters and setters for the data.
-The user will most likely not directly create FieldDocument but use the <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> to register Field.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestFieldCollection&quot;</span><span class="p">);</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code> stores its data in a <code class="docutils literal notranslate"><span class="pre">Document</span></code> and provide the appropriate getters and setters for the data.
+The user will most likely not directly create VectorDocument but use the <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> to register Vector.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestVectorCollection&quot;</span><span class="p">);</span>
 
-<span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">registerField</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">CreateField</span><span class="w"> </span><span class="p">{</span>
+<span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">registerVector</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">CreateVector</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;T&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">timeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">iterationIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">subCycleIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">    </span><span class="p">});</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> has a static instance methods that returns the instance of the <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> or creates a new one if it doesn’t exist.
-registerField method is used to register fields and expects a CreateFunction that returns a FieldDocument and expects a database as an argument.
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> has a static instance methods that returns the instance of the <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> or creates a new one if it doesn’t exist.
+registerVector method is used to register fields and expects a CreateFunction that returns a VectorDocument and expects a database as an argument.
 The createFunction could look as followed:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">CreateField</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">CreateVector</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
 <span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">UnstructuredMesh</span><span class="w"> </span><span class="n">mesh</span><span class="p">;</span>
@@ -451,10 +449,10 @@ The createFunction could look as followed:</p>
 <span class="w">            </span><span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;fixedValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
 <span class="w">            </span><span class="n">bcs</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeBoundary</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">,</span><span class="w"> </span><span class="n">patchi</span><span class="p">));</span>
 <span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="w"> </span><span class="n">internalField</span><span class="w"> </span><span class="o">=</span>
-<span class="w">            </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">nCells</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
-<span class="w">        </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vf</span><span class="p">(</span>
-<span class="w">            </span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">internalField</span><span class="p">,</span><span class="w"> </span><span class="n">bcs</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="w"> </span><span class="n">internalVector</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">nCells</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vf</span><span class="p">(</span>
+<span class="w">            </span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">internalVector</span><span class="p">,</span><span class="w"> </span><span class="n">bcs</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="p">(</span>
 <span class="w">            </span><span class="p">{{</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">vf</span><span class="p">.</span><span class="n">name</span><span class="p">},</span>
@@ -462,23 +460,23 @@ The createFunction could look as followed:</p>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;iterationIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">iterationIndex</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;subCycleIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subCycleIndex</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;field&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">vf</span><span class="p">}},</span>
-<span class="w">            </span><span class="n">fvcc</span><span class="o">::</span><span class="n">validateFieldDoc</span>
+<span class="w">            </span><span class="n">fvcc</span><span class="o">::</span><span class="n">validateVectorDoc</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>This design can be easily extended to create and read fields.
-The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> allows us to access and find fields by their name, time index, iteration index, or subcycle index.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestFieldCollection&quot;</span><span class="p">);</span>
+The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> allows us to access and find fields by their name, time index, iteration index, or subcycle index.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestVectorCollection&quot;</span><span class="p">);</span>
 
 <span class="k">auto</span><span class="w"> </span><span class="n">resName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">find</span><span class="p">([](</span><span class="k">const</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span>
 <span class="w">                                </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;T&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
 
 <span class="n">REQUIRE</span><span class="p">(</span><span class="n">resName</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
 <span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldDoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">fieldDoc</span><span class="p">(</span><span class="n">resName</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">constVolField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldDoc</span><span class="p">.</span><span class="n">field</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">constVolVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldDoc</span><span class="p">.</span><span class="n">field</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>
@@ -657,7 +655,7 @@ The CollectionMixin template simplifies creating custom collections for user-def
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Database</a><ul>
-<li><a class="reference internal" href="#fieldcollection">FieldCollection</a></li>
+<li><a class="reference internal" href="#vectorcollection">VectorCollection</a></li>
 <li><a class="reference internal" href="#query-of-document-in-a-collection">Query of document in a collection</a></li>
 <li><a class="reference internal" href="#adding-a-new-collection-and-documents-to-the-database">Adding a new collection and documents to the database</a><ul>
 <li><a class="reference internal" href="#creating-a-custom-document">Creating a Custom Document</a></li>
