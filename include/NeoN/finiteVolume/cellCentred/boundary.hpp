@@ -55,33 +55,33 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::VolumeBoundaryFactory<scalar>;
-template class fvcc::VolumeBoundaryFactory<Vector>;
+template class fvcc::VolumeBoundaryFactory<Vec3>;
 
 template class fvcc::volumeBoundary::FixedValue<scalar>;
-template class fvcc::volumeBoundary::FixedValue<Vector>;
+template class fvcc::volumeBoundary::FixedValue<Vec3>;
 
 template class fvcc::volumeBoundary::FixedGradient<scalar>;
-template class fvcc::volumeBoundary::FixedGradient<Vector>;
+template class fvcc::volumeBoundary::FixedGradient<Vec3>;
 
 template class fvcc::volumeBoundary::Calculated<scalar>;
-template class fvcc::volumeBoundary::Calculated<Vector>;
+template class fvcc::volumeBoundary::Calculated<Vec3>;
 
 template class fvcc::volumeBoundary::Extrapolated<scalar>;
-template class fvcc::volumeBoundary::Extrapolated<Vector>;
+template class fvcc::volumeBoundary::Extrapolated<Vec3>;
 
 template class fvcc::volumeBoundary::Empty<scalar>;
-template class fvcc::volumeBoundary::Empty<Vector>;
+template class fvcc::volumeBoundary::Empty<Vec3>;
 
 template class fvcc::SurfaceBoundaryFactory<scalar>;
-template class fvcc::SurfaceBoundaryFactory<Vector>;
+template class fvcc::SurfaceBoundaryFactory<Vec3>;
 
 template class fvcc::surfaceBoundary::FixedValue<scalar>;
-template class fvcc::surfaceBoundary::FixedValue<Vector>;
+template class fvcc::surfaceBoundary::FixedValue<Vec3>;
 
 template class fvcc::surfaceBoundary::Calculated<scalar>;
-template class fvcc::surfaceBoundary::Calculated<Vector>;
+template class fvcc::surfaceBoundary::Calculated<Vec3>;
 
 template class fvcc::surfaceBoundary::Empty<scalar>;
-template class fvcc::surfaceBoundary::Empty<Vector>;
+template class fvcc::surfaceBoundary::Empty<Vec3>;
 
 }

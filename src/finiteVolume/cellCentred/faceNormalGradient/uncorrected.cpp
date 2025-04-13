@@ -10,23 +10,23 @@ namespace NeoN::finiteVolume::cellCentred
 
 template<typename ValueType>
 void computeFaceNormalGrad(
-    const VolumeField<ValueType>& volField,
+    const VolumeField<ValueType>& volVector,
     const std::shared_ptr<GeometryScheme> geometryScheme,
-    SurfaceField<ValueType>& surfaceField
+    SurfaceField<ValueType>& surfaceVector
 )
 {
-    const UnstructuredMesh& mesh = surfaceField.mesh();
-    const auto& exec = surfaceField.exec();
+    const UnstructuredMesh& mesh = surfaceVector.mesh();
+    const auto& exec = surfaceVector.exec();
 
     const auto [owner, neighbour, surfFaceCells] =
         spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
 
     const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = spans(
-        surfaceField.internalField(),
-        volField.internalField(),
-        volField.boundaryField().value(),
-        geometryScheme->nonOrthDeltaCoeffs().internalField()
+        surfaceVector.internalVector(),
+        volVector.internalVector(),
+        volVector.boundaryVector().value(),
+        geometryScheme->nonOrthDeltaCoeffs().internalVector()
     );
 
     size_t nInternalFaces = mesh.nInternalFaces();
@@ -56,6 +56,6 @@ void computeFaceNormalGrad(
         TYPENAME>(const VolumeField<TYPENAME>&, const std::shared_ptr<GeometryScheme>, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_FNG(scalar);
-NF_DECLARE_COMPUTE_IMP_FNG(Vector);
+NF_DECLARE_COMPUTE_IMP_FNG(Vec3);
 
 } // namespace NeoN

@@ -5,7 +5,6 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
 #include "NeoN/dsl/ddt.hpp"

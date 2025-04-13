@@ -19,14 +19,14 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     const UnstructuredMesh& mesh = faceFlux.mesh();
     const auto exec = faceFlux.exec();
     VolumeField<scalar> phi(exec, "phi", mesh, createCalculatedBCs<VolumeBoundary<scalar>>(mesh));
-    fill(phi.internalField(), 0.0);
+    fill(phi.internalVector(), 0.0);
 
     const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = spans(
         mesh.boundaryMesh().faceCells(),
-        phi.internalField(),
+        phi.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
-        faceFlux.internalField(),
+        faceFlux.internalVector(),
         mesh.cellVolumes()
     );
     size_t nInternalFaces = mesh.nInternalFaces();

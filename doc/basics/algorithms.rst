@@ -19,8 +19,8 @@ The following code block shows the implementation of a parallelFor for fields
 
 .. code-block:: cpp
 
-    template<typename Executor, typename ValueType, parallelForFieldKernel<ValueType> Kernel>
-    void parallelFor([[maybe_unused]] const Executor& exec, Field<ValueType>& field, Kernel kernel)
+    template<typename Executor, typename ValueType, parallelForVectorKernel<ValueType> Kernel>
+    void parallelFor([[maybe_unused]] const Executor& exec, Vector<ValueType>& field, Kernel kernel)
     {
         auto view = field.view();
         if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
@@ -61,4 +61,4 @@ Currently, the following free functions are implemented:
 
    ./freeFunctions/fill.rst
    ./freeFunctions/map.rst
-   ./freeFunctions/setField.rst
+   ./freeFunctions/setVector.rst

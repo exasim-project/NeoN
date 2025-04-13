@@ -62,10 +62,10 @@ void surfaceIntegrate(
     )
 
 NF_DECLARE_COMPUTE_IMP_INT(scalar);
-NF_DECLARE_COMPUTE_IMP_INT(Vector);
+NF_DECLARE_COMPUTE_IMP_INT(Vec3);
 
 // instantiate the template class
 template class SurfaceIntegrate<scalar>;
-template class SurfaceIntegrate<Vector>;
+template class SurfaceIntegrate<Vec3>;
 
 };

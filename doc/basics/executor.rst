@@ -15,7 +15,7 @@ NeoN uses the MPI+X approach for parallelism, where X is the execution space use
 Design
 ^^^^^^
 
-One of the design goals is the ability to easily switch between different execution spaces at run time, i.e. enabling the ability to switch between CPU and GPU execution without having to recompile NeoN. This is achieved by passing the executor as an argument to the container types like Field as shown below.
+One of the design goals is the ability to easily switch between different execution spaces at run time, i.e. enabling the ability to switch between CPU and GPU execution without having to recompile NeoN. This is achieved by passing the executor as an argument to the container types like Vector as shown below.
 
 
 
@@ -24,8 +24,8 @@ One of the design goals is the ability to easily switch between different execut
         NeoN::GPUExecutor gpuExec {};
         NeoN::CPUExecutor cpuExec {};
 
-        NeoN::Field<NeoN::scalar> GPUField(gpuExec, 10);
-        NeoN::Field<NeoN::scalar> CPUField(cpuExec, 10);
+        NeoN::Vector<NeoN::scalar> GPUVector(gpuExec, 10);
+        NeoN::Vector<NeoN::scalar> CPUVector(cpuExec, 10);
 
 
 The ``Executor`` is a `std::variant <https://en.cppreference.com/w/cpp/utility/variant>`_

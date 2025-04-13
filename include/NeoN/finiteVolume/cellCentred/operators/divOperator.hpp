@@ -59,7 +59,7 @@ public:
         const dsl::Coeff operatorScaling) const = 0;
 
     virtual void
-    div(Field<ValueType>& divPhi,
+    div(Vector<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
@@ -85,7 +85,7 @@ class DivOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     // copy constructor
     DivOperator(const DivOperator& divOp)
@@ -126,12 +126,12 @@ public:
           faceFlux_(faceFlux), divOperatorStrategy_(nullptr) {};
 
 
-    void explicitOperation(Field<scalar>& source) const
+    void explicitOperation(Vector<scalar>& source) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
-        NeoN::Field<NeoN::scalar> tmpsource(source.exec(), source.size(), 0.0);
+        NeoN::Vector<NeoN::scalar> tmpsource(source.exec(), source.size(), 0.0);
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(tmpsource, faceFlux_, this->getField(), operatorScaling);
+        divOperatorStrategy_->div(tmpsource, faceFlux_, this->getVector(), operatorScaling);
         source += tmpsource;
     }
 
@@ -145,34 +145,34 @@ public:
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getField(), operatorScaling);
+        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    void div(Field<ValueType>& divPhi) const
+    void div(Vector<ValueType>& divPhi) const
     {
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getField(), operatorScaling);
+        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
     }
 
     void div(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getField(), operatorScaling);
+        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     };
 
     void div(VolumeField<ValueType>& divPhi) const
     {
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getField(), operatorScaling);
+        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
     }
 
     void build(const Input& input)
     {
-        const UnstructuredMesh& mesh = this->getField().mesh();
+        const UnstructuredMesh& mesh = this->getVector().mesh();
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
-            std::string schemeName = "div(" + faceFlux_.name + "," + this->getField().name + ")";
+            std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
             auto tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);

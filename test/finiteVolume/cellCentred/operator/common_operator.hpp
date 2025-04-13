@@ -16,9 +16,9 @@ auto setup_operator_test(const UnstructuredMesh& mesh)
 
     // compute corresponding uniform faceFlux
     // TODO this should be handled outside of the unit test
-    auto faceFlux = fvcc::SurfaceField<scalar>(exec, "sf", mesh, surfaceBCs);
-    fill(faceFlux.internalField(), 1.0);
-    auto boundFaceFlux = faceFlux.internalField().view();
+    auto faceFlux = fvcc::SurfaceVector<scalar>(exec, "sf", mesh, surfaceBCs);
+    fill(faceFlux.internalVector(), 1.0);
+    auto boundFaceFlux = faceFlux.internalVector().view();
     // face on the left side has different orientation
     parallelFor(
         exec,
@@ -28,12 +28,12 @@ auto setup_operator_test(const UnstructuredMesh& mesh)
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
 
-    auto phi = fvcc::VolumeField<TestType>(exec, "sf", mesh, volumeBCs);
-    fill(phi.internalField(), one<TestType>());
-    fill(phi.boundaryField().value(), one<TestType>());
+    auto phi = fvcc::VolumeVector<TestType>(exec, "sf", mesh, volumeBCs);
+    fill(phi.internalVector(), one<TestType>());
+    fill(phi.boundaryVector().value(), one<TestType>());
     phi.correctBoundaryConditions();
 
-    auto result = Field<TestType>(exec, phi.size(), zero<TestType>());
+    auto result = Vector<TestType>(exec, phi.size(), zero<TestType>());
 
     return std::make_tuple(phi, faceFlux, result);
 }

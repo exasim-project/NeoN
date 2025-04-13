@@ -11,7 +11,7 @@ namespace dsl = NeoN::dsl;
 
 
 // TEST_CASE("Expression")
-TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -19,11 +19,11 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
     auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
 
     const size_t size {1};
-    NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+    NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
     std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
-    NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-    NeoN::Field<NeoN::scalar> scaleField(exec, 1, 4.0);
+    NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+    NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 4.0);
     auto vf = fvcc::VolumeField(exec, "vf", mesh, fA, bf, bcs);
 
 
@@ -34,7 +34,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
         dsl::SpatialOperator<TestType> b = Dummy<TestType>(vf);
 
         auto eqnA = a + b;
-        auto eqnB = scaleField * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf))
+        auto eqnB = scaleVector * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf))
                   + 2 * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf));
         auto eqnC = dsl::Expression<TestType>(2 * a - b);
         auto eqnD = 3 * (2 * a - b);
@@ -46,17 +46,17 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
         REQUIRE(eqnC.size() == 2);
 
         // 2 + 2 = 4
-        REQUIRE(getField(eqnA.explicitOperation(size)) == 4 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnA.explicitOperation(size)) == 4 * NeoN::one<TestType>());
         // 4*2 + 2*2 = 12
-        REQUIRE(getField(eqnB.explicitOperation(size)) == 12 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnB.explicitOperation(size)) == 12 * NeoN::one<TestType>());
         // 2*2 - 2 = 2
-        REQUIRE(getField(eqnC.explicitOperation(size)) == 2 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnC.explicitOperation(size)) == 2 * NeoN::one<TestType>());
         // 3*(2*2 - 2) = 6
-        REQUIRE(getField(eqnD.explicitOperation(size)) == 6 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnD.explicitOperation(size)) == 6 * NeoN::one<TestType>());
         // 2*2 - 2 + 2*2 - 2 = 4
-        REQUIRE(getField(eqnE.explicitOperation(size)) == 4 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnE.explicitOperation(size)) == 4 * NeoN::one<TestType>());
         // 2*2 - 2 - 2*2 + 2 = 0
-        REQUIRE(getField(eqnF.explicitOperation(size)) == 0 * NeoN::one<TestType>());
+        REQUIRE(getVector(eqnF.explicitOperation(size)) == 0 * NeoN::one<TestType>());
     }
 
     auto ls = NeoN::la::createEmptyLinearSystem<
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vector)
 
         auto eqnA = a + b;
         auto eqnB =
-            scaleField
+            scaleVector
                 * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf, Operator::Type::Implicit))
             + 2 * dsl::SpatialOperator<TestType>(Dummy<TestType>(vf, Operator::Type::Implicit));
         auto eqnC = dsl::Expression<TestType>(2 * a - b);

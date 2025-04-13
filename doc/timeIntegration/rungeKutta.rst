@@ -14,10 +14,10 @@ The implementation handles the conversion between NeoN's Kokkos-based fields and
 
 .. code-block:: cpp
 
-    template<typename SolutionFieldType>
-    void solve(Expression& exp, SolutionFieldType& solutionField, scalar t, const scalar dt)
+    template<typename SolutionVectorType>
+    void solve(Expression& exp, SolutionVectorType& solutionVector, scalar t, const scalar dt)
     {
-        if (pdeExpr_ == nullptr) initSUNERKSolver(exp, solutionField, t);
+        if (pdeExpr_ == nullptr) initSUNERKSolver(exp, solutionVector, t);
         // ... time integration logic
     }
 
@@ -37,7 +37,7 @@ Configure and use the Runge-Kutta integrator through a dictionary:
     Dictionary timeDict;
     timeDict.set("type", "Runge-Kutta");
     timeDict.set("Runge-Kutta Method", "Forward Euler");  // Choose RK method
-    TimeIntegration<VolumeField<scalar>> integrator(timeDict);
+    TimeIntegration<VolumeVector<scalar>> integrator(timeDict);
 
     // Solve for one timestep
-    integrator.solve(equation, solutionField, currentTime, deltaT);
+    integrator.solve(equation, solutionVector, currentTime, deltaT);

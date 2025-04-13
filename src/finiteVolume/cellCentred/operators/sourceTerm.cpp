@@ -16,11 +16,11 @@ SourceTerm<ValueType>::SourceTerm(
       coefficients_(coefficients), sparsityPattern_(SparsityPattern::readOrCreate(field.mesh())) {};
 
 template<typename ValueType>
-void SourceTerm<ValueType>::explicitOperation(Field<ValueType>& source) const
+void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 {
     auto operatorScaling = this->getCoefficient();
     auto [sourceSpan, fieldSpan, coeff] =
-        spans(source, this->field_.internalField(), coefficients_.internalField());
+        spans(source, this->field_.internalVector(), coefficients_.internalVector());
     NeoN::parallelFor(
         source.exec(),
         source.range(),
@@ -36,7 +36,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] =
-        spans(sparsityPattern_->diagOffset(), coefficients_.internalField());
+        spans(sparsityPattern_->diagOffset(), coefficients_.internalVector());
     auto [matrix, rhs] = ls.view();
 
     NeoN::parallelFor(
@@ -53,5 +53,5 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
 
 // instantiate the template class
 template class SourceTerm<scalar>;
-template class SourceTerm<Vector>;
+template class SourceTerm<Vec3>;
 };

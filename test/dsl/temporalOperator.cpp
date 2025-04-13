@@ -10,7 +10,7 @@
 namespace dsl = NeoN::dsl;
 
 // TEST_CASE("TemporalOperator")
-TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -19,8 +19,8 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
 
     SECTION("Operator creation on " + execName)
     {
-        NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
@@ -36,23 +36,23 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
         NeoN::scalar t = 0.0;
         NeoN::scalar dt = 0.1;
 
-        NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::Field<NeoN::scalar> scaleField(exec, 1, 2.0);
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 2.0);
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
 
         dsl::TemporalOperator<TestType> c =
             2 * dsl::TemporalOperator<TestType>(TemporalDummy<TestType>(vf));
         dsl::TemporalOperator<TestType> d =
-            scaleField * dsl::TemporalOperator<TestType>(TemporalDummy<TestType>(vf));
+            scaleVector * dsl::TemporalOperator<TestType>(TemporalDummy<TestType>(vf));
         dsl::TemporalOperator<TestType> e =
-            Coeff(-3, scaleField) * dsl::TemporalOperator<TestType>(TemporalDummy<TestType>(vf));
+            Coeff(-3, scaleVector) * dsl::TemporalOperator<TestType>(TemporalDummy<TestType>(vf));
 
         [[maybe_unused]] auto coeffC = c.getCoefficient();
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        NeoN::Field<TestType> source(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::Vector<TestType> source(exec, 1, 2.0 * NeoN::one<TestType>());
         c.explicitOperation(source, t, dt);
 
         // 2 += 2 * 2
@@ -72,8 +72,8 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
 
     SECTION("Implicit Operations " + execName)
     {
-        NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
 
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
@@ -94,22 +94,22 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vector)
         NeoN::scalar t = 0.0;
         NeoN::scalar dt = 0.1;
 
-        NeoN::Field<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
-        NeoN::Field<NeoN::scalar> scaleField(exec, 1, 2.0);
-        NeoN::BoundaryFields<TestType> bf(exec, mesh.boundaryMesh().offset());
+        NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 2.0);
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
         auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
 
         auto c = 2 * dsl::TemporalOperator<TestType>(TemporalDummy(vf, Operator::Type::Implicit));
-        auto d = scaleField
+        auto d = scaleVector
                * dsl::TemporalOperator<TestType>(TemporalDummy(vf, Operator::Type::Implicit));
-        auto e = Coeff(-3, scaleField)
+        auto e = Coeff(-3, scaleVector)
                * dsl::TemporalOperator<TestType>(TemporalDummy(vf, Operator::Type::Implicit));
 
         [[maybe_unused]] auto coeffC = c.getCoefficient();
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        Field source(exec, 1, 2.0);
+        Vector source(exec, 1, 2.0);
         c.implicitOperation(ls, t, dt);
 
         // c = 2 * 2

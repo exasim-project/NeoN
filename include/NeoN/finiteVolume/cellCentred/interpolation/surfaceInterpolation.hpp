@@ -81,7 +81,7 @@ template<typename ValueType>
 class SurfaceInterpolation
 {
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
 public:
 
@@ -159,22 +159,22 @@ public:
     SurfaceField<scalar> weight(const VolumeField<ValueType>& src) const
     {
         std::string name = "weight_" + src.name;
-        SurfaceField<scalar> weightField(
+        SurfaceField<scalar> weightVector(
             exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh_)
         );
-        weight(src, weightField);
-        return weightField;
+        weight(src, weightVector);
+        return weightVector;
     }
 
     SurfaceField<scalar>
     weight(const SurfaceField<scalar>& flux, const VolumeField<ValueType>& src) const
     {
         std::string name = "weight_" + src.name;
-        SurfaceField<scalar> weightField(
+        SurfaceField<scalar> weightVector(
             exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh_)
         );
-        weight(flux, src, weightField);
-        return weightField;
+        weight(flux, src, weightVector);
+        return weightVector;
     }
 
 private:

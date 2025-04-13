@@ -17,7 +17,7 @@ using NeoN::Input;
 namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("upwind", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("upwind", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
 
@@ -37,8 +37,8 @@ TEMPLATE_TEST_CASE("upwind", "[template]", NeoN::scalar, NeoN::Vector)
     auto flux = SurfaceField<scalar>(exec, "flux", mesh, {});
     auto out = SurfaceField<TestType>(exec, "out", mesh, surfaceBCs);
 
-    fill(flux.internalField(), one<scalar>());
-    fill(in.internalField(), one<TestType>());
+    fill(flux.internalVector(), one<scalar>());
+    fill(in.internalVector(), one<TestType>());
 
     // capture the value of size as section name
     DYNAMIC_SECTION("" << size)

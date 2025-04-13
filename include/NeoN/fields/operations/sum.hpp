@@ -11,7 +11,7 @@ namespace NeoN
 struct SumKernel
 {
     template<typename T>
-    void operator()([[maybe_unused]] const GPUExecutor& exec, const Field<T>& field, T& sum) const
+    void operator()([[maybe_unused]] const GPUExecutor& exec, const Vector<T>& field, T& sum) const
     {
         using executor = typename GPUExecutor::exec;
         auto fieldS = field.view();
@@ -25,7 +25,7 @@ struct SumKernel
     }
 
     template<typename T>
-    void operator()([[maybe_unused]] const CPUExecutor& exec, const Field<T>& field, T& sum)
+    void operator()([[maybe_unused]] const CPUExecutor& exec, const Vector<T>& field, T& sum)
     {
         using executor = typename CPUExecutor::exec;
         auto fieldS = field.view();
@@ -39,7 +39,7 @@ struct SumKernel
     }
 
     template<typename T>
-    void operator()([[maybe_unused]] const SerialExecutor& exec, const Field<T>& field, T& sum)
+    void operator()([[maybe_unused]] const SerialExecutor& exec, const Vector<T>& field, T& sum)
     {
         using executor = typename SerialExecutor::exec;
         auto fieldS = field.view();
@@ -55,7 +55,7 @@ struct SumKernel
 
 
 /*template<typename T>*/
-/*T sum(const Field<T>& field)*/
+/*T sum(const Vector<T>& field)*/
 /*{*/
 /*    T sumValue {};*/
 /*    SumKernel kernel {};*/
@@ -64,7 +64,7 @@ struct SumKernel
 /*};*/
 /**/
 /*template<>*/
-/*scalar sum(const Field<scalar>& field)*/
+/*scalar sum(const Vector<scalar>& field)*/
 /*{*/
 /*    scalar sumValue = 0;*/
 /*    SumKernel kernel {};*/

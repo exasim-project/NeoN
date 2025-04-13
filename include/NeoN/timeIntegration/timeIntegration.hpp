@@ -25,7 +25,7 @@ class TimeIntegratorBase :
 
 public:
 
-    using ValueType = typename SolutionType::FieldValueType;
+    using ValueType = typename SolutionType::VectorValueType;
     using Expression = NeoN::dsl::Expression<ValueType>;
 
     static std::string name() { return "timeIntegrationFactory"; }
@@ -53,16 +53,16 @@ protected:
  * @class Factory class to create time integration method by a given name
  * using NeoNs runTimeFactory mechanism
  *
- * @tparam SolutionFieldType Type of the solution field eg, volumeField or just a plain Field
+ * @tparam SolutionVectorType Type of the solution field eg, volumeVector or just a plain Vector
  */
-template<typename SolutionFieldType>
+template<typename SolutionVectorType>
 class TimeIntegration
 {
 
 public:
 
 
-    using ValueType = typename SolutionFieldType::FieldValueType;
+    using ValueType = typename SolutionVectorType::VectorValueType;
     using Expression = NeoN::dsl::Expression<ValueType>;
 
     TimeIntegration(const TimeIntegration& timeIntegrator)
@@ -72,18 +72,18 @@ public:
         : timeIntegratorStrategy_(std::move(timeIntegrator.timeIntegratorStrategy_)) {};
 
     TimeIntegration(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : timeIntegratorStrategy_(TimeIntegratorBase<SolutionFieldType>::create(
+        : timeIntegratorStrategy_(TimeIntegratorBase<SolutionVectorType>::create(
             schemeDict.get<std::string>("type"), schemeDict, solutionDict
         )) {};
 
-    void solve(Expression& eqn, SolutionFieldType& sol, scalar t, scalar dt)
+    void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
         timeIntegratorStrategy_->solve(eqn, sol, t, dt);
     }
 
 private:
 
-    std::unique_ptr<TimeIntegratorBase<SolutionFieldType>> timeIntegratorStrategy_;
+    std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> timeIntegratorStrategy_;
 };
 
 

@@ -25,7 +25,7 @@ public:
     template<typename T>
     T* alloc(size_t size) const
     {
-        return static_cast<T*>(Kokkos::kokkos_malloc<exec>("Field", size * sizeof(T)));
+        return static_cast<T*>(Kokkos::kokkos_malloc<exec>("Vector", size * sizeof(T)));
     }
 
     template<typename T>
@@ -49,7 +49,7 @@ public:
         );
     }
 
-    void* alloc(size_t size) const { return Kokkos::kokkos_malloc<exec>("Field", size); }
+    void* alloc(size_t size) const { return Kokkos::kokkos_malloc<exec>("Vector", size); }
 
     void* realloc(void* ptr, size_t newSize) const
     {

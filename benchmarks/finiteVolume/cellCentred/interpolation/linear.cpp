@@ -16,7 +16,7 @@ using NeoN::finiteVolume::cellCentred::SurfaceField;
 namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("linear", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("linear", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
 
@@ -35,7 +35,7 @@ TEMPLATE_TEST_CASE("linear", "[template]", NeoN::scalar, NeoN::Vector)
     auto in = VolumeField<TestType>(exec, "in", mesh, {});
     auto out = SurfaceField<TestType>(exec, "out", mesh, surfaceBCs);
 
-    fill(in.internalField(), one<TestType>());
+    fill(in.internalVector(), one<TestType>());
 
     // capture the value of size as section name
     DYNAMIC_SECTION("" << size)

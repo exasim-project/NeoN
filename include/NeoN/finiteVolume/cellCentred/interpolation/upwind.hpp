@@ -17,7 +17,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 /* @brief computional kernel to perform an upwind interpolation
-** from a source volumeField to a surface field. It performs an interpolation
+** from a source volumeVector to a surface field. It performs an interpolation
 ** of the form
 **
 ** d_f = w_f * s_O + ( 1 - w_f ) * s_N where w_1 is either 0,1 depending on the
@@ -102,6 +102,6 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::Upwind<scalar>;
-template class fvcc::Upwind<Vector>;
+template class fvcc::Upwind<Vec3>;
 
 }

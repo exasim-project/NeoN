@@ -48,7 +48,7 @@ public:
     virtual ~FaceNormalGradientFactory() {} // Virtual destructor
 
     virtual void faceNormalGrad(
-        const VolumeField<ValueType>& volField, SurfaceField<ValueType>& surfaceField
+        const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const = 0;
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const = 0;
@@ -89,23 +89,23 @@ public:
 
 
     void faceNormalGrad(
-        const VolumeField<ValueType>& volField, SurfaceField<ValueType>& surfaceField
+        const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const
     {
-        faceNormalGradKernel_->faceNormalGrad(volField, surfaceField);
+        faceNormalGradKernel_->faceNormalGrad(volVector, surfaceVector);
     }
 
     const SurfaceField<scalar>& deltaCoeffs() const { return faceNormalGradKernel_->deltaCoeffs(); }
 
 
-    SurfaceField<ValueType> faceNormalGrad(const VolumeField<ValueType>& volField) const
+    SurfaceField<ValueType> faceNormalGrad(const VolumeField<ValueType>& volVector) const
     {
-        std::string nameInterpolated = "interpolated_" + volField.name;
-        SurfaceField<ValueType> surfaceField(
+        std::string nameInterpolated = "interpolated_" + volVector.name;
+        SurfaceField<ValueType> surfaceVector(
             exec_, nameInterpolated, mesh_, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh_)
         );
-        faceNormalGrad(volField, surfaceField);
-        return surfaceField;
+        faceNormalGrad(volVector, surfaceVector);
+        return surfaceVector;
     }
 
 private:

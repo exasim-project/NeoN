@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -27,7 +27,7 @@ public:
         VolumeField<ValueType>& field
     );
 
-    void explicitOperation(Field<ValueType>& source) const;
+    void explicitOperation(Vector<ValueType>& source) const;
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
 

@@ -63,7 +63,7 @@ const OldTimeDocument& OldTimeCollection::oldTimeDoc(const std::string& id) cons
     return docs_.at(id);
 }
 
-void OldTimeCollection::setCurrentFieldAndLevel(OldTimeDocument& oldTimeDoc)
+void OldTimeCollection::setCurrentVectorAndLevel(OldTimeDocument& oldTimeDoc)
 {
     // find the document which has the previousTime identical to the nextTime
     // so the document on above in the chain
@@ -131,13 +131,13 @@ const OldTimeCollection& OldTimeCollection::instance(const Database& db, std::st
     return col.as<OldTimeCollection>();
 }
 
-OldTimeCollection& OldTimeCollection::instance(FieldCollection& fieldCollection)
+OldTimeCollection& OldTimeCollection::instance(VectorCollection& fieldCollection)
 {
     std::string name = fieldCollection.name() + "_oldTime";
     return instance(fieldCollection.db(), name, fieldCollection.name());
 }
 
-const OldTimeCollection& OldTimeCollection::instance(const FieldCollection& fieldCollection)
+const OldTimeCollection& OldTimeCollection::instance(const VectorCollection& fieldCollection)
 {
     std::string name = fieldCollection.name() + "_oldTime";
     return instance(fieldCollection.db(), name);

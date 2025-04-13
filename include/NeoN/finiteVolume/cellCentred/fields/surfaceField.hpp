@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "NeoN/finiteVolume/cellCentred/fields/geometricField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -16,19 +16,19 @@ namespace NeoN::finiteVolume::cellCentred
  * @brief Represents a surface field in a finite volume method.
  *
  * The SurfaceField class is a template class that represents a face-centered field in a finite
- * volume method. It inherits from the GeometricFieldMixin class and provides methods for correcting
+ * volume method. It inherits from the DomainMixin class and provides methods for correcting
  * boundary conditions.
  *
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class SurfaceField : public GeometricFieldMixin<ValueType>
+class SurfaceField : public DomainMixin<ValueType>
 {
 
 public:
 
     /**
-     * @brief Constructor for a surfaceField with a given name and mesh.
+     * @brief Constructor for a surfaceVector with a given name and mesh.
      *
      * @param exec The executor
      * @param fieldName The name of the field
@@ -41,49 +41,48 @@ public:
         const UnstructuredMesh& mesh,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(
+        : DomainMixin<ValueType>(
             exec,
             fieldName,
             mesh,
-            DomainField<ValueType>(
+            Field<ValueType>(
                 exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
             )
         ),
           boundaryConditions_(boundaryConditions)
     {}
 
-    /* @brief Constructor for a surfaceField with a given internal field
+    /* @brief Constructor for a surfaceVector with a given internal field
      *
      * @param exec The executor
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      */
     SurfaceField(
         const Executor& exec,
         const UnstructuredMesh& mesh,
-        const DomainField<ValueType>& domainField,
+        const Field<ValueType>& domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(exec, mesh, domainField),
-          boundaryConditions_(boundaryConditions)
+        : DomainMixin<ValueType>(exec, mesh, domainVector), boundaryConditions_(boundaryConditions)
     {}
 
-    /* @brief Constructor for a surfaceField with a given internal field
+    /* @brief Constructor for a surfaceVector with a given internal field
      *
      * @param exec The executor
      * @param mesh The underlying mesh
-     * @param internalField the underlying internal field
+     * @param internalVector the underlying internal field
      * @param boundaryConditions a vector of boundary conditions
      */
     SurfaceField(
         const Executor& exec,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& internalField,
-        const BoundaryFields<ValueType>& boundaryFields,
+        const Vector<ValueType>& internalVector,
+        const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : GeometricFieldMixin<ValueType>(exec, mesh, {exec, mesh, internalField, boundaryFields}),
+        : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalVector, boundaryVectors}),
           boundaryConditions_(boundaryConditions)
     {}
 
@@ -93,7 +92,7 @@ public:
      * @param other The surface field to copy.
      */
     SurfaceField(const SurfaceField& other)
-        : GeometricFieldMixin<ValueType>(other), boundaryConditions_(other.boundaryConditions_)
+        : DomainMixin<ValueType>(other), boundaryConditions_(other.boundaryConditions_)
     {}
 
     /**

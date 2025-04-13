@@ -5,6 +5,7 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -16,11 +17,11 @@ public:
 
     GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh);
 
-    // fvcc::VolumeField<Vector> grad(const fvcc::VolumeField<scalar>& phi);
+    // fvcc::VolumeField<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
-    void grad(const VolumeField<scalar>& phi, VolumeField<Vector>& gradPhi);
+    void grad(const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi);
 
-    VolumeField<Vector> grad(const VolumeField<scalar>& phi);
+    VolumeField<Vec3> grad(const VolumeField<scalar>& phi);
 
 private:
 

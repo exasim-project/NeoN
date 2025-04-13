@@ -19,9 +19,9 @@ namespace NeoN::finiteVolume::cellCentred
 
 template<typename ValueType>
 void computeFaceNormalGrad(
-    const VolumeField<ValueType>& volField,
+    const VolumeField<ValueType>& volVector,
     const std::shared_ptr<GeometryScheme> geometryScheme,
-    SurfaceField<ValueType>& surfaceField
+    SurfaceField<ValueType>& surfaceVector
 );
 
 template<typename ValueType>
@@ -46,10 +46,10 @@ public:
     static std::string schema() { return "none"; }
 
     virtual void faceNormalGrad(
-        const VolumeField<ValueType>& volField, SurfaceField<ValueType>& surfaceField
+        const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const override
     {
-        computeFaceNormalGrad(volField, geometryScheme_, surfaceField);
+        computeFaceNormalGrad(volVector, geometryScheme_, surfaceVector);
     }
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const override
@@ -69,6 +69,6 @@ private:
 
 // instantiate the template class
 template class Uncorrected<scalar>;
-template class Uncorrected<Vector>;
+template class Uncorrected<Vec3>;
 
 } // namespace NeoN

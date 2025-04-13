@@ -14,7 +14,7 @@ TEST_CASE("parallelFor")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    NeoN::Field<NeoN::scalar> field(exec, 5);
+    NeoN::Vector<NeoN::scalar> field(exec, 5);
     NeoN::fill(field, 2.0);
 
 

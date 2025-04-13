@@ -26,14 +26,14 @@ Example
     // or any other executor CPUExecutor, SerialExecutor
     NeoN::Executor = NeoN::GPUExecutor{};
 
-    NeoN::Field<NeoN::scalar> field(exec, 2);
+    NeoN::Vector<NeoN::scalar> field(exec, 2);
     NeoN::fill(field, 1.0);
     NeoN::fill(field, 2.0, {1, 2}); // fill a subfield with a value
     // copy to host
-    auto hostField = field.copyToHost();
+    auto hostVector = field.copyToHost();
     for (auto i = 0; i < field.size(); ++i)
     {
-        std::cout << hostField[i] << std::endl;
+        std::cout << hostVector[i] << std::endl;
     }
     // prints:
     // 1.0

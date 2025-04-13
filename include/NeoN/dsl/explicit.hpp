@@ -5,7 +5,6 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
@@ -23,11 +22,10 @@ namespace NeoN::dsl::exp
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 SpatialOperator<scalar>
-div(const fvcc::SurfaceField<NeoN::scalar>& faceFlux, fvcc::VolumeField<NeoN::scalar>& phi);
+div(const fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<scalar>& phi);
 
-SpatialOperator<scalar> div(const fvcc::SurfaceField<NeoN::scalar>& flux);
+SpatialOperator<scalar> div(const fvcc::SurfaceField<scalar>& flux);
 
-SpatialOperator<scalar>
-source(fvcc::VolumeField<NeoN::scalar>& coeff, fvcc::VolumeField<NeoN::scalar>& phi);
+SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
 
 } // namespace NeoN
