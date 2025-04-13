@@ -1,0 +1,44 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/fields/field\+Free\+Functions.hpp File Reference}
+\hypertarget{fieldFreeFunctions_8hpp}{}\label{fieldFreeFunctions_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/fieldFreeFunctions.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/fieldFreeFunctions.hpp}}
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/helpers/exceptions.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/view.\+hpp"{}}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1detail}{Neo\+N\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1e99c20b9a299c1d6f875551c13a965c}{Neo\+N\+::map}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \&a, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ range=\{0, 0\})
+\begin{DoxyCompactList}\small\item\em Map a field using a specific executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a4df3c8c32ed2bdaa77d100c44de4b3eb}{Neo\+N\+::fill}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ range=\{0, 0\})
+\begin{DoxyCompactList}\small\item\em Fill the field with a scalar value using a specific executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_abea1b0b84403cd0569cc9847703410eb}{Neo\+N\+::set\+Vector}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ b, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ range=\{0, 0\})
+\begin{DoxyCompactList}\small\item\em Set the field with a view of values using a specific executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aee59456450b9b342cca7740de8e7132f}{Neo\+N\+::scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} value)
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Binary\+Op $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1detail_a42d5c869b26c6f44557a08ec765a08af}{Neo\+N\+::detail\+::field\+Binary\+Op}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b, Binary\+Op op)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a490d5b5f574236c480c0afd38a2dc1c9}{Neo\+N\+::add}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae281a72f3e7f22c3b2993eac666d4bb4}{Neo\+N\+::sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a4803cc249d78abb5840c8cd26a45adb9}{Neo\+N\+::mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
+\item 
+{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{Neo\+N\+::spans}} (Args \&... fields)
+\item 
+{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{Neo\+N\+::copy\+To\+Hosts}} (Args \&... fields)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{Neo\+N\+::equal}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \&field, T value)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a5c3fac3c94422c5a171789e10c32d6cc}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \&field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \&field2)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_aa5322c065a947ca0de4fb946fdb82679}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \&field, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ T $>$ span2)
+\end{DoxyCompactItemize}
