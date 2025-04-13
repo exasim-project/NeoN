@@ -1,5 +1,5 @@
 \doxysection{expression.\+hpp}
-\hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{}\label{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp}}
+\hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}{}\label{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp}}
 \mbox{\hyperlink{finiteVolume_2cellCentred_2dsl_2expression_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
@@ -163,7 +163,7 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00159}00159\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ currently\ assumes\ that\ matrix\ is\ already\ assembled}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ diagOffset\ =\ sparsityPattern\_-\/>diagOffset().view();}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowPtrs\ =\ ls\_.matrix().rowPtrs();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowPtrs\ =\ ls\_.matrix().rowPtrs().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rhs\ =\ ls\_.rhs().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ values\ =\ ls\_.matrix().values().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a8eb6aca3b312b43897d752f061c55a25}{NeoN::parallelFor}}(}
