@@ -160,7 +160,7 @@ public:
      * @brief Get a const span to the column indices array.
      * @return Const span containing the column indices.
      */
-    [[nodiscard]] const Field<IndexType> colIdxs() const { return colIdxs_; }
+    [[nodiscard]] const Field<IndexType>& colIdxs() const { return colIdxs_; }
 
     /**
      * @brief Get a const span to the row pointers array.
