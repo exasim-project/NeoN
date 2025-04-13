@@ -336,7 +336,7 @@ public:
         FieldDocument doc = createFunc(db());
         if (!validateFieldDoc(doc.doc()))
         {
-            throw std::runtime_error("Document is not valid");
+            throw std::runtime_error {"Document is not valid"};
         }
 
         std::string key = insert(doc);

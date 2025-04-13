@@ -232,13 +232,13 @@ convert(const Executor exec, const la::CSRMatrixView<const ValueTypeIn, const In
     Field<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
 
     parallelFor(
-        colIdxsTmp, KOKKOS_LAMBDA(const size_t i) { return IndexTypeOut(in.colIdxs[i]); }
+        colIdxsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
     );
     parallelFor(
-        rowPtrsTmp, KOKKOS_LAMBDA(const size_t i) { return IndexTypeOut(in.rowOffs[i]); }
+        rowPtrsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
     );
     parallelFor(
-        valuesTmp, KOKKOS_LAMBDA(const size_t i) { return ValueTypeOut(in.values[i]); }
+        valuesTmp, KOKKOS_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
     );
 
     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};

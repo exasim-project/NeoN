@@ -3,8 +3,9 @@
 #pragma once
 
 #include <limits>
-
 #include <span>
+
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -21,6 +22,8 @@ template<typename ValueType>
 class View : public std::span<ValueType>
 {
 public:
+
+    using base = std::span<ValueType>;
 
     /* A flag to control whether the program should terminate on invalid memory access or throw.
      * Kokkos prefers to terminate, but for testing purpose the failureIndex is preferred
@@ -39,7 +42,7 @@ public:
      */
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
-    constexpr ValueType& operator[](std::size_t index) const
+    constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
         if (index >= this->size())
@@ -59,12 +62,14 @@ public:
                 {
                     failureIndex = index;
                 }
-                return std::span<ValueType>::operator[](index);
+                return std::span<ValueType>::operator[](static_cast<size_t>(index));
             }
         }
 #endif
-        return std::span<ValueType>::operator[](index);
+        return std::span<ValueType>::operator[](static_cast<size_t>(index));
     }
+
+    localIdx size() const { return static_cast<localIdx>(base::size()); }
 };
 
 

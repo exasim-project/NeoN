@@ -63,7 +63,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
     parallelFor(
         exec,
         {0, mesh_.nInternalFaces()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const std::size_t facei) {
             Vector cellToCellDist = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
         }
@@ -74,8 +74,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
     parallelFor(
         exec,
         {nInternalFaces, deltaCoeff.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            auto own = static_cast<size_t>(surfFaceCells[facei - nInternalFaces]);
+        KOKKOS_LAMBDA(const std::size_t facei) {
+            auto own = surfFaceCells[facei - nInternalFaces];
             Vector cellToCellDist = cf[facei] - cellCentre[own];
 
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);

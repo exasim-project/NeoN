@@ -199,7 +199,7 @@ TemporalOperator<ValueType>
 operator*(const Field<scalar>& coeffField, TemporalOperator<ValueType> rhs)
 {
     TemporalOperator<ValueType> result = rhs;
-    result.getCoefficient() *= Coeff(coeffField);
+    result.getCoefficient() *= Coeff {coeffField};
     return result;
 }
 

@@ -113,14 +113,15 @@ private:
  *
  * @tparam Type The type of the field.
  * @param field The field to validate.
+ * @param errorMessage The error message
  * @throws std::runtime_error if the field is not registered in the database.
  */
 template<typename Type>
-void validateRegistration(const Type& obj, const std::string errorMessage)
+void validateRegistration(const Type& field, const std::string& errorMessage)
 {
-    if (!obj.registered())
+    if (!field.registered())
     {
-        throw std::runtime_error(errorMessage);
+        throw std::runtime_error {errorMessage};
     }
 }
 

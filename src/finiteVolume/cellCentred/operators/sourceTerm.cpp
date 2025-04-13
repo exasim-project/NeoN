@@ -12,7 +12,7 @@ template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType, VolumeField<scalar>& coefficients, VolumeField<ValueType>& field
 )
-    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
+    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
       coefficients_(coefficients), sparsityPattern_(SparsityPattern::readOrCreate(field.mesh())) {};
 
 template<typename ValueType>

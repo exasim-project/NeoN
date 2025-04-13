@@ -30,7 +30,7 @@ bool Document::validate() const
 {
     if (!validator_(*this))
     {
-        throw std::runtime_error("Document validation failed");
+        throw std::runtime_error {"Document validation failed"};
     }
     return true;
 }

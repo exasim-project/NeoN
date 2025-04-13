@@ -27,7 +27,7 @@ namespace detail
  * @returns A function that takes a source and an destination executor
  */
 template<typename ValueType>
-auto deepCopyVisitor(size_t size, const ValueType* srcPtr, ValueType* dstPtr)
+auto deepCopyVisitor(localIdx size, const ValueType* srcPtr, ValueType* dstPtr)
 {
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
@@ -57,7 +57,7 @@ public:
      * @param exec  Executor associated to the field
      * @param size  size of the field
      */
-    Field(const Executor& exec, size_t size) : size_(size), data_(nullptr), exec_(exec)
+    Field(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
@@ -76,7 +76,10 @@ public:
      * @param hostExec Executor where the original data is located
      */
     Field(
-        const Executor& exec, const ValueType* in, size_t size, Executor hostExec = SerialExecutor()
+        const Executor& exec,
+        const ValueType* in,
+        localIdx size,
+        Executor hostExec = SerialExecutor()
     )
         : size_(size), data_(nullptr), exec_(exec)
     {
@@ -96,7 +99,7 @@ public:
      * @param size  size of the field
      * @param value  the  default value
      */
-    Field(const Executor& exec, size_t size, ValueType value)
+    Field(const Executor& exec, localIdx size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
@@ -197,10 +200,10 @@ public:
     }
 
     // ensures no return of device address on host --> invalid memory access
-    ValueType& operator[](const size_t i) = delete;
+    ValueType& operator[](const localIdx i) = delete;
 
     // ensures no return of device address on host --> invalid memory access
-    const ValueType& operator[](const size_t i) const = delete;
+    const ValueType& operator[](const localIdx i) const = delete;
 
     /**
      * @brief Assignment operator, Sets the field values to that of the passed value.
@@ -305,7 +308,7 @@ public:
      * @brief Resizes the field to a new size.
      * @param size The new size to set the field to.
      */
-    void resize(const size_t size)
+    void resize(const localIdx size)
     {
         void* ptr = nullptr;
         if (!empty())
@@ -349,7 +352,7 @@ public:
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] size_t size() const { return size_; }
+    [[nodiscard]] localIdx size() const { return size_; }
 
     /**
      * @brief Gets the size of the field.
@@ -385,16 +388,16 @@ public:
     }
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<ValueType> view(std::pair<size_t, size_t> range) && = delete;
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) && = delete;
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<const ValueType> view(std::pair<size_t, size_t> range) const&& = delete;
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
 
     /**
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<size_t, size_t> range) &
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
         return View<ValueType>(data_ + range.first, range.second - range.first);
     }
@@ -403,7 +406,7 @@ public:
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<const ValueType> view(std::pair<size_t, size_t> range) const&
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
         return View<const ValueType>(data_ + range.first, range.second - range.first);
     }
@@ -412,11 +415,11 @@ public:
      * @brief Gets the range of the field.
      * @return The range of the field {0, size()}.
      */
-    [[nodiscard]] std::pair<size_t, size_t> range() const { return {0, size()}; }
+    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 
-    size_t size_ {0};           //!< Size of the field.
+    localIdx size_ {0};         //!< Size of the field.
     ValueType* data_ {nullptr}; //!< Pointer to the field data.
     const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
 
