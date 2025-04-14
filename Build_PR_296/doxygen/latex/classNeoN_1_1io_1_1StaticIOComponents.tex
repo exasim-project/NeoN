@@ -1,0 +1,119 @@
+\doxysection{NeoN\+::io\+::Static\+IOComponents Class Reference}
+\hypertarget{classNeoN_1_1io_1_1StaticIOComponents}{}\label{classNeoN_1_1io_1_1StaticIOComponents}\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+
+
+A collection of IO components that must be initialized only once during program life time.  
+
+
+
+
+{\ttfamily \#include $<$static\+IOComponents.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_a74a5f0421151ff039d487e159897277b}{delete\+Instance}} ()
+\begin{DoxyCompactList}\small\item\em Deletes the singleton instance of \doxylink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_a99a2f811ebc4caaf95db4e1c3febd76a}{Static\+IOComponents}} (\mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \&)=delete
+\begin{DoxyCompactList}\small\item\em Static\+IOComponent is not copyable. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \& \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_ac898ed4f0ff62409bbdd697c8d0f03a7}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \&)=delete
+\begin{DoxyCompactList}\small\item\em Static\+IOComponent is not copyable. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_a89e9a6ceee7a26b23bfbca1d7d31c263}{\texorpdfstring{$\sim$}{\string~}\+Static\+IOComponents}} ()=default
+\item 
+{\footnotesize template$<$typename Component\+Type $>$ }\\auto \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_af9c507f437114eff539885a069ae7a07}{at}} (const std\+::string \&key, std\+::shared\+\_\+ptr$<$ Component\+Type $>$ \&component\+Ptr)
+\item 
+{\footnotesize template$<$typename Component\+Type $>$ }\\void \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_a3677df357d8d80558f62fd892b88b3ee}{insert}} (const std\+::string \&key, std\+::shared\+\_\+ptr$<$ Component\+Type $>$ \&component\+Ptr)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents_a202914cfada02d01a410d164dde543cd}{instance}} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the singleton instance of \doxylink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A collection of IO components that must be initialized only once during program life time. 
+
+The \doxylink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents} class renders a database for IO components that must not be recreated/reinitialized during program life time like adios2\+::\+ADIOS. Plus the class allows storing IO resources for asynchronous IO. 
+
+Definition at line \mbox{\hyperlink{staticIOComponents_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{staticIOComponents_8hpp_source}{static\+IOComponents.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_a99a2f811ebc4caaf95db4e1c3febd76a}\label{classNeoN_1_1io_1_1StaticIOComponents_a99a2f811ebc4caaf95db4e1c3febd76a} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!StaticIOComponents@{StaticIOComponents}}
+\index{StaticIOComponents@{StaticIOComponents}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{StaticIOComponents()}{StaticIOComponents()}}
+{\footnotesize\ttfamily Neo\+N\+::io\+::\+Static\+IOComponents\+::\+Static\+IOComponents (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Static\+IOComponent is not copyable. 
+
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_a89e9a6ceee7a26b23bfbca1d7d31c263}\label{classNeoN_1_1io_1_1StaticIOComponents_a89e9a6ceee7a26b23bfbca1d7d31c263} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!````~StaticIOComponents@{\texorpdfstring{$\sim$}{\string~}StaticIOComponents}}
+\index{````~StaticIOComponents@{\texorpdfstring{$\sim$}{\string~}StaticIOComponents}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}StaticIOComponents()}{\string~StaticIOComponents()}}
+{\footnotesize\ttfamily Neo\+N\+::io\+::\+Static\+IOComponents\+::\texorpdfstring{$\sim$}{\string~}\+Static\+IOComponents (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_af9c507f437114eff539885a069ae7a07}\label{classNeoN_1_1io_1_1StaticIOComponents_af9c507f437114eff539885a069ae7a07} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!at@{at}}
+\index{at@{at}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}}
+{\footnotesize\ttfamily template$<$typename Component\+Type $>$ \\
+auto Neo\+N\+::io\+::\+Static\+IOComponents\+::at (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key,  }\item[{std\+::shared\+\_\+ptr$<$ Component\+Type $>$ \&}]{component\+Ptr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{staticIOComponents_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{staticIOComponents_8hpp_source}{static\+IOComponents.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_a74a5f0421151ff039d487e159897277b}\label{classNeoN_1_1io_1_1StaticIOComponents_a74a5f0421151ff039d487e159897277b} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!deleteInstance@{deleteInstance}}
+\index{deleteInstance@{deleteInstance}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{deleteInstance()}{deleteInstance()}}
+{\footnotesize\ttfamily void Neo\+N\+::io\+::\+Static\+IOComponents\+::delete\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Deletes the singleton instance of \doxylink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}. 
+
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_a3677df357d8d80558f62fd892b88b3ee}\label{classNeoN_1_1io_1_1StaticIOComponents_a3677df357d8d80558f62fd892b88b3ee} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!insert@{insert}}
+\index{insert@{insert}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily template$<$typename Component\+Type $>$ \\
+void Neo\+N\+::io\+::\+Static\+IOComponents\+::insert (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key,  }\item[{std\+::shared\+\_\+ptr$<$ Component\+Type $>$ \&}]{component\+Ptr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{staticIOComponents_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{staticIOComponents_8hpp_source}{static\+IOComponents.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_a202914cfada02d01a410d164dde543cd}\label{classNeoN_1_1io_1_1StaticIOComponents_a202914cfada02d01a410d164dde543cd} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!instance@{instance}}
+\index{instance@{instance}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{instance()}{instance()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \texorpdfstring{$\ast$}{*} Neo\+N\+::io\+::\+Static\+IOComponents\+::instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Retrieves the singleton instance of \doxylink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}. 
+
+\Hypertarget{classNeoN_1_1io_1_1StaticIOComponents_ac898ed4f0ff62409bbdd697c8d0f03a7}\label{classNeoN_1_1io_1_1StaticIOComponents_ac898ed4f0ff62409bbdd697c8d0f03a7} 
+\index{NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::io::StaticIOComponents@{NeoN::io::StaticIOComponents}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \& Neo\+N\+::io\+::\+Static\+IOComponents\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1io_1_1StaticIOComponents}{Static\+IOComponents}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Static\+IOComponent is not copyable. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/io/\mbox{\hyperlink{staticIOComponents_8hpp}{static\+IOComponents.\+hpp}}\end{DoxyCompactItemize}
