@@ -15,28 +15,44 @@
 \DoxyCodeLine{\Hypertarget{label_8hpp_source_l00011}00011\ \{}
 \DoxyCodeLine{\Hypertarget{label_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#ifdef\ NeoN\_DP\_LABEL}}
 \DoxyCodeLine{\Hypertarget{label_8hpp_source_l00013}00013\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ =\ int64\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00014}00014\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{localIdx}}\ =\ uint64\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#else}}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00016}\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{00016}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ =\ int32\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{00017}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{localIdx}}\ =\ uint32\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00019}\mbox{\hyperlink{namespaceNeoN_a6a7f5ddf0fda0ea15fd94d7bf6eed9b6}{00019}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a6a7f5ddf0fda0ea15fd94d7bf6eed9b6}{globalIdx}}\ =\ uint64\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00020}\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{00020}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}\ =\ std::size\_t;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00021}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{00021}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ =\ int;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#ifdef\ NeoN\_US\_IDX}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00016}00016\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ =\ uint32\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00017}00017\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}{globalIdx}}\ =\ uint64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00019}00019\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ =\ int32\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00020}00020\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}{globalIdx}}\ =\ int64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#endif}}
 \DoxyCodeLine{\Hypertarget{label_8hpp_source_l00022}00022\ }
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00023}00023\ \textcolor{comment}{//\ traits\ for\ label}}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00024}00024\ \textcolor{keyword}{template}<>}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_a699a3202658d2a9175e5d3e30e1837b0}{00025}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{localIdx}}\ \mbox{\hyperlink{namespaceNeoN_a699a3202658d2a9175e5d3e30e1837b0}{one<localIdx>}}()}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00026}00026\ \{}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00028}00028\ \};}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<>}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_a985399b3ba9d36ea30ffba2bf8524e62}{00031}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{localIdx}}\ \mbox{\hyperlink{namespaceNeoN_a985399b3ba9d36ea30ffba2bf8524e62}{zero<localIdx>}}()}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00032}00032\ \{}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00034}00034\ \};}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00024}\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{00024}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ =\ int32\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#ifdef\ NeoN\_US\_IDX}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00027}00027\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ =\ uint64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00028}00028\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}{globalIdx}}\ =\ Uint64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00029}00029\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00030}\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{00030}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ =\ int64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}{00031}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}{globalIdx}}\ =\ int64\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00032}00032\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00034}00034\ \textcolor{preprocessor}{\#endif}}
 \DoxyCodeLine{\Hypertarget{label_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00036}00036\ \}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00036}\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{00036}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}\ =\ std::size\_t;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00037}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{00037}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ =\ int;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00039}00039\ \textcolor{comment}{//\ traits\ for\ label}}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00040}00040\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00041}\mbox{\hyperlink{namespaceNeoN_a699a3202658d2a9175e5d3e30e1837b0}{00041}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ \mbox{\hyperlink{namespaceNeoN_a699a3202658d2a9175e5d3e30e1837b0}{one<localIdx>}}()}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00042}00042\ \{}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00044}00044\ \};}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00046}00046\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00047}\mbox{\hyperlink{namespaceNeoN_a985399b3ba9d36ea30ffba2bf8524e62}{00047}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ \mbox{\hyperlink{namespaceNeoN_a985399b3ba9d36ea30ffba2bf8524e62}{zero<localIdx>}}()}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00048}00048\ \{}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00050}00050\ \};}
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{label_8hpp_source_l00052}00052\ \}}
 
 \end{DoxyCode}

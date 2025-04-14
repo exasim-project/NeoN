@@ -23,7 +23,7 @@ It can be used to represent cell to cell stencil.
     parallelFor(
         exec,
         {0, segVector.numSegments()},
-        KOKKOS_LAMBDA(const size_t segI) {
+        KOKKOS_LAMBDA(const localIdx segI) {
             // check if it works with bounds
             auto [bStart, bEnd] = segView.bounds(segI);
             auto bVals = valueSpan.subspan(bStart, bEnd - bStart);

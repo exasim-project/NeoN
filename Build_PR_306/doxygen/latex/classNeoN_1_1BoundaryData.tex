@@ -18,7 +18,7 @@ Represents the boundary fields for a computational domain.
 \begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1BoundaryData_a1cf89d352fe6ae633eb88d8df13c572a}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, int \mbox{\hyperlink{classNeoN_1_1BoundaryData_a8b44b1974e976b28107286299a9e0d7a}{n\+Boundary\+Faces}}, int n\+Boundary\+Types)
 \begin{DoxyCompactList}\small\item\em constructor with default initialized Vectors from sizes. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1BoundaryData_a7ddc0754967ebbf2f8ad82c82f58b1d4}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \&offsets)
+\mbox{\hyperlink{classNeoN_1_1BoundaryData_a7ddc0754967ebbf2f8ad82c82f58b1d4}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \&offsets)
 \begin{DoxyCompactList}\small\item\em constructor from a given offsets vector @warn all members except offsets are default constructed \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}} () const
 \begin{DoxyCompactList}\small\item\em Get the view storing the computed values from the boundary condition.   \end{DoxyCompactList}\item 
@@ -38,7 +38,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ T $>$ \& \mbox{\hyperlin
 \begin{DoxyCompactList}\small\item\em Get the view storing the Neumann boundary values. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ int $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_a60a1ed15ef5cadb62c0512a285ed8629}{boundary\+Types}} () const
 \begin{DoxyCompactList}\small\item\em Get the view storing the boundary types. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7b726391a9629070b2cd2a7fcec29f59}{offset}} () const
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7b726391a9629070b2cd2a7fcec29f59}{offset}} () const
 \begin{DoxyCompactList}\small\item\em Get the view storing the offsets of each boundary. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_a6c0923b1fb85dc2d018751e2885d2fea}{n\+Boundaries}} () const
 \begin{DoxyCompactList}\small\item\em Get the number of boundaries. \end{DoxyCompactList}\item 
@@ -46,7 +46,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespa
 \begin{DoxyCompactList}\small\item\em Get the number of boundary faces. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}} ()
 \item 
-std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a4611b34b97e77105f477f52beb1c621d}{range}} (\mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} patch\+Id) const
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a4611b34b97e77105f477f52beb1c621d}{range}} (\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} patch\+Id) const
 \begin{DoxyCompactList}\small\item\em Get the range for a given patch\+Id. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -138,7 +138,7 @@ Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00067}{67}} of fil
 \index{BoundaryData@{BoundaryData}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{BoundaryData()}{BoundaryData()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \&}]{offsets }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \&}]{offsets }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -228,7 +228,7 @@ Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00146}{146}} of fi
 \index{offset@{offset}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{offset()}{offset()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::offset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::offset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -246,7 +246,7 @@ Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00134}{134}} of fi
 \index{range@{range}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{range()}{range()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::range (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{local\+Idx}}}]{patch\+Id }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::range (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}}}]{patch\+Id }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 

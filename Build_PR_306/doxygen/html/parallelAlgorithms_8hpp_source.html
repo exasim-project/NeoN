@@ -133,7 +133,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        Kokkos::parallel_for(</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            Kokkos::RangePolicy&lt;runOn&gt;(start, end),</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <span class="keywordtype">size_t</span> i) { kernel(i); }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> i) { kernel(i); }</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        );</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
@@ -175,8 +175,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">auto</span> view = field.<a class="code hl_function" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a>();</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Vector.html#a74bcb84e4b7d080ed91795d23333e093">size</a>();</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> i = 0; i &lt; fieldSize; i++)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Vector.html#a74bcb84e4b7d080ed91795d23333e093">size</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> i = 0; i &lt; fieldSize; i++)</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        {</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            view[i] = kernel(i);</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
@@ -187,7 +187,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        Kokkos::parallel_for(</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <a class="code hl_function" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>,</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            Kokkos::RangePolicy&lt;runOn&gt;(0, field.<a class="code hl_function" href="classNeoN_1_1Vector.html#a74bcb84e4b7d080ed91795d23333e093">size</a>()),</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> i) { view[i] = kernel(i); }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> i) { view[i] = kernel(i); }</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        );</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
@@ -213,7 +213,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">auto</span> [start, end] = range;</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> i = start; i &lt; end; i++)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> i = start; i &lt; end; i++)</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        {</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Kokkos::is_reducer&lt;T&gt;::value)</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            {</div>
@@ -254,8 +254,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>{</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;std::remove_reference_t&lt;Executor&gt;, <a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&gt;::value)</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    {</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Vector.html#a74bcb84e4b7d080ed91795d23333e093">size</a>();</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">localIdx</a> i = 0; i &lt; fieldSize; i++)</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> fieldSize = field.<a class="code hl_function" href="classNeoN_1_1Vector.html#a74bcb84e4b7d080ed91795d23333e093">size</a>();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">localIdx</a> i = 0; i &lt; fieldSize; i++)</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        {</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Kokkos::is_reducer&lt;T&gt;::value)</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            {</div>
@@ -352,7 +352,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespaceNeoN_html_a9d445616a96928bbb015212516721784"><div class="ttname"><a href="namespaceNeoN.html#a9d445616a96928bbb015212516721784">NeoN::parallelReduce</a></div><div class="ttdeci">void parallelReduce(const Executor &amp;exec, std::pair&lt; localIdx, localIdx &gt; range, Kernel kernel, T &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00109">parallelAlgorithms.hpp:109</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_aa67294511d0c7da987259a7b1a3ba59d"><div class="ttname"><a href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">NeoN::name</a></div><div class="ttdeci">const std::string &amp; name(const NeoN::Document &amp;doc)</div><div class="ttdoc">Retrieves the name of a Document.</div></div>
 <div class="ttc" id="anamespaceNeoN_html_ade792a6b242e4bbe2d8882be6928a75a"><div class="ttname"><a href="namespaceNeoN.html#ade792a6b242e4bbe2d8882be6928a75a">NeoN::parallelScan</a></div><div class="ttdeci">void parallelScan(const Executor &amp;exec, std::pair&lt; localIdx, localIdx &gt; range, Kernel kernel)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00185">parallelAlgorithms.hpp:185</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_af0b7553899fd421d905a302d61334be3"><div class="ttname"><a href="namespaceNeoN.html#af0b7553899fd421d905a302d61334be3">NeoN::localIdx</a></div><div class="ttdeci">uint32_t localIdx</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00017">label.hpp:17</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_afa6565da2e745d8d145e02a5d6107358"><div class="ttname"><a href="namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358">NeoN::localIdx</a></div><div class="ttdeci">int64_t localIdx</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00030">label.hpp:30</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -87,7 +87,7 @@ A simplified version of the ``parallelFor`` function is shown below.
             Kokkos::parallel_for(
                 "parallelFor",
                 Kokkos::RangePolicy<runOn>(start, end),
-                KOKKOS_LAMBDA(const size_t i) { kernel(i); }
+                KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
             );
         }
     }

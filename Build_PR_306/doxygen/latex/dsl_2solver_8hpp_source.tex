@@ -70,7 +70,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sparsity\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{NeoN::finiteVolume::cellCentred::SparsityPattern}}(solution.mesh());}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ls\ =\ \mbox{\hyperlink{namespaceNeoN_1_1la_abfb8a53aafd31aadc7ffc30c8e721dd4}{la::createEmptyLinearSystem}}<}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af0b7553899fd421d905a302d61334be3}{localIdx}},}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}},}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{NeoN::finiteVolume::cellCentred::SparsityPattern}}>(sparsity);}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00071}00071\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a527d62bdba68730f6fd2e65fb6643a41}{implicitOperation}}(ls);}
@@ -82,7 +82,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a8eb6aca3b312b43897d752f061c55a25}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ solution.exec(),}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00083}00083\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ solver\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{NeoN::la::Solver}}(solution.exec(),\ fvSolution);}
