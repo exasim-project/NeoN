@@ -218,30 +218,30 @@ private:
     Vector<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
 };
 
-/* @brief given a csr matrix this function copies the matrix and converts to requested target types
- *
- *
- */
-template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
-la::CSRMatrix<ValueTypeOut, IndexTypeOut>
-convert(const Executor exec, const la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
-{
-    Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
-    Vector<IndexTypeOut> rowPtrsTmp(exec, in.rowOffs.size());
-    Vector<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
+// /* @brief given a csr matrix this function copies the matrix and converts to requested target
+// types
+//  *
+//  */
+// template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename
+// IndexTypeOut> la::CSRMatrix<ValueTypeOut, IndexTypeOut> convert(const Executor exec, const
+// la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
+// {
+//     Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
+//     Vector<IndexTypeOut> rowPtrsTmp(exec, in.rowOffs.size());
+//     Vector<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
 
-    parallelFor(
-        colIdxsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
-    );
-    parallelFor(
-        rowPtrsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
-    );
-    parallelFor(
-        valuesTmp, KOKKOS_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
-    );
+//     parallelFor(
+//         colIdxsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
+//     );
+//     parallelFor(
+//         rowPtrsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
+//     );
+//     parallelFor(
+//         valuesTmp, KOKKOS_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
+//     );
 
-    return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};
-}
+//     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};
+// }
 
 
 } // namespace NeoN

@@ -42,7 +42,7 @@ void setGradientValue(
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             refGradient[i] = fixedGradient;
             // operator / is not defined for all ValueTypes
             value[i] =

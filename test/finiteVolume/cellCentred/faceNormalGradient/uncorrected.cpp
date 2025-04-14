@@ -30,7 +30,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
     fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
     NeoN::parallelFor(
         phi.internalVector(),
-        KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1) * one<TestType>(); }
+        KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
     );
     phi.boundaryVector().value() =
         NeoN::Vector<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});

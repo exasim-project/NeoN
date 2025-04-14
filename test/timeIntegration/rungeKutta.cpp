@@ -44,7 +44,7 @@ public:
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
         );
     }
 

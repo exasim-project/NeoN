@@ -47,7 +47,7 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             // hit on performance on serial
             size_t owner = static_cast<size_t>(faceOwner[facei]);
             size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
@@ -67,7 +67,7 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
             localIdx owner = static_cast<localIdx>(faceOwner[facei]);
 
@@ -85,7 +85,7 @@ void SparsityPattern::update()
 
     map(
         nFacesPerCell,
-        KOKKOS_LAMBDA(const size_t celli) {
+        KOKKOS_LAMBDA(const localIdx celli) {
             size_t nFaces = nFacesPerCellSpan[static_cast<size_t>(celli)];
             diagOffsetSpan[celli] = static_cast<uint8_t>(nFaces);
             sColIdx[rowPtrs[celli] + nFaces] = celli;
@@ -97,7 +97,7 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
             size_t owner = static_cast<size_t>(faceOwner[facei]);
 

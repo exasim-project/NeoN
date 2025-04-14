@@ -54,7 +54,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
         fvcc::VolumeField<TestType> phi(exec, "phi", mesh, bcs);
         parallelFor(
             phi.internalVector(),
-            KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1) * one<TestType>(); }
+            KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
         );
         phi.correctBoundaryConditions();
 
@@ -174,7 +174,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 
 //         fvcc::VolumeField<NeoN::scalar> phi(exec, "phi", mesh, bcs);
 //         NeoN::parallelFor(
-//             phi.internalVector(), KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1); }
+//             phi.internalVector(), KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1); }
 //         );
 //         phi.correctBoundaryConditions();
 

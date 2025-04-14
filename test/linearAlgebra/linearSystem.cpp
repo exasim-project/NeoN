@@ -93,14 +93,14 @@ TEST_CASE("LinearSystem")
         parallelFor(
             exec,
             {0, lsView.matrix.values.size()},
-            KOKKOS_LAMBDA(const size_t i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
         );
 
         // Modify values.
         parallelFor(
             exec,
             {0, lsView.rhs.size()},
-            KOKKOS_LAMBDA(const size_t i) { lsView.rhs[i] = -lsView.rhs[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { lsView.rhs[i] = -lsView.rhs[i]; }
         );
 
         // Check modification.

@@ -24,7 +24,7 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
     NeoN::parallelFor(
         source.exec(),
         source.range(),
-        KOKKOS_LAMBDA(const size_t celli) {
+        KOKKOS_LAMBDA(const localIdx celli) {
             sourceSpan[celli] += operatorScaling[celli] * coeff[celli] * fieldSpan[celli];
         }
     );
@@ -42,7 +42,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
-        KOKKOS_LAMBDA(const size_t celli) {
+        KOKKOS_LAMBDA(const localIdx celli) {
             std::size_t idx = matrix.rowOffs[celli] + diagOffs[celli];
             matrix.values[idx] +=
                 operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();

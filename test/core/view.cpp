@@ -22,7 +22,7 @@ TEST_CASE("parallelFor")
     auto fieldNFView = NeoN::View(fieldStdView);
 
     NeoN::parallelFor(
-        exec, {0, 5}, KOKKOS_LAMBDA(const size_t i) { fieldNFView[i] *= 2.0; }
+        exec, {0, 5}, KOKKOS_LAMBDA(const NeoN::localIdx i) { fieldNFView[i] *= 2.0; }
     );
     REQUIRE(fieldNFView.failureIndex == 0);
 
@@ -32,7 +32,7 @@ TEST_CASE("parallelFor")
 #ifndef _MSC_VER
     fieldNFView.abort = false;
     NeoN::parallelFor(
-        exec, {5, 6}, KOKKOS_LAMBDA(const size_t i) { fieldNFView[i] *= 2.0; }
+        exec, {5, 6}, KOKKOS_LAMBDA(const localIdx i) { fieldNFView[i] *= 2.0; }
     );
     REQUIRE(fieldNFView.failureIndex == 5);
 #endif

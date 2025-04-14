@@ -32,7 +32,7 @@ void computeUpwindInterpolation(
     parallelFor(
         exec,
         {0, dstS.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             if (facei < nInternalFaces)
             {
                 if (fluxS[facei] >= 0)

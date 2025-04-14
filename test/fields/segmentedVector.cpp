@@ -56,7 +56,7 @@ TEST_CASE("segmentedVector")
             parallelFor(
                 exec,
                 {0, segVector.numSegments()},
-                KOKKOS_LAMBDA(const size_t segI) {
+                KOKKOS_LAMBDA(const NeoN::localIdx segI) {
                     // check if it works with bounds
                     auto [bStart, bEnd] = segView.bounds(segI);
                     auto bVals = valueSpan.subspan(bStart, bEnd - bStart);
@@ -125,7 +125,7 @@ TEST_CASE("segmentedVector")
             parallelFor(
                 exec,
                 {0, segVector.numSegments()},
-                KOKKOS_LAMBDA(const size_t segI) {
+                KOKKOS_LAMBDA(const NeoN::localIdx segI) {
                     // fill values
                     auto vals = segView.span(segI);
                     for (auto& val : vals)

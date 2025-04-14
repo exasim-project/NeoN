@@ -127,7 +127,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     parallelFor(
         exec,
         {0, nCells - 1},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             meshPointsSpan[i][0] = leftBoundaryX + static_cast<scalar>(i + 1) * meshSpacing;
         }
     );
@@ -139,7 +139,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     parallelFor(
         exec,
         {0, nCells},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             cellCentersSpan[i][0] = 0.5 * meshSpacing + meshSpacing * static_cast<scalar>(i);
         }
     );
@@ -166,7 +166,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
     parallelFor(
         exec,
         {0, nCells - 1},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             faceOwnerSpan[i] = static_cast<label>(i);
             faceNeighborSpan[i] = static_cast<label>(i + 1);
         }

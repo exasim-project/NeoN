@@ -37,7 +37,7 @@ void extrapolateValue(
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             // operator / is not defined for all ValueTypes
             ValueType internalCellValue = iVector[static_cast<size_t>(faceCells[i])];
             value[i] = internalCellValue;

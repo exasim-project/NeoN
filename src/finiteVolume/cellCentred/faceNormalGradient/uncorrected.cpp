@@ -34,7 +34,7 @@ void computeFaceNormalGrad(
     NeoN::parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbour[facei]] - phi[owner[facei]]);
         }
     );
@@ -42,7 +42,7 @@ void computeFaceNormalGrad(
     NeoN::parallelFor(
         exec,
         {nInternalFaces, phif.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             auto faceBCI = facei - nInternalFaces;
             auto own = static_cast<size_t>(surfFaceCells[faceBCI]);
 

@@ -92,7 +92,7 @@ public:
         NeoN::parallelFor(
             exec(),
             {0, rhs.size()},
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceView[i] * vol[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceView[i] * vol[i]; }
         );
     }
 
@@ -124,7 +124,7 @@ public:
             NeoN::parallelFor(
                 exec(),
                 {0, rhs.size()},
-                KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceSpan[i] * vol[i]; }
+                KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceSpan[i] * vol[i]; }
             );
         }
     }

@@ -33,7 +33,7 @@ void computeDiv(
     const dsl::Coeff operatorScaling
 )
 {
-    size_t nCells {v.size()};
+    auto nCells = v.size();
     // check if the executor is GPU
     if (std::holds_alternative<SerialExecutor>(exec))
     {
@@ -62,7 +62,7 @@ void computeDiv(
         parallelFor(
             exec,
             {0, nInternalFaces},
-            KOKKOS_LAMBDA(const size_t i) {
+            KOKKOS_LAMBDA(const localIdx i) {
                 ValueType flux = faceFlux[i] * phiF[i];
                 Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux);
                 Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux);
@@ -73,7 +73,7 @@ void computeDiv(
         parallelFor(
             exec,
             {nInternalFaces, nInternalFaces + nBoundaryFaces},
-            KOKKOS_LAMBDA(const size_t i) {
+            KOKKOS_LAMBDA(const localIdx i) {
                 auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
                 ValueType valueOwn = faceFlux[i] * phiF[i];
                 Kokkos::atomic_add(&res[own], valueOwn);
@@ -84,7 +84,9 @@ void computeDiv(
         parallelFor(
             exec,
             {0, nCells},
-            KOKKOS_LAMBDA(const size_t celli) { res[celli] *= operatorScaling[celli] / v[celli]; },
+            KOKKOS_LAMBDA(const localIdx celli) {
+                res[celli] *= operatorScaling[celli] / v[celli];
+            },
             "normalizeFluxes"
         );
     }
@@ -169,7 +171,7 @@ void computeDivImp(
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = sFaceFlux[facei];
             // scalar weight = 0.5;
             scalar weight = flux >= 0 ? 1 : 0;
@@ -211,7 +213,7 @@ void computeDivImp(
     parallelFor(
         exec,
         {nInternalFaces, sFaceFlux.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             std::size_t bcfacei = facei - nInternalFaces;
             scalar flux = sFaceFlux[facei];
 

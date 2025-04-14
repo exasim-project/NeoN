@@ -23,7 +23,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             Kokkos::atomic_increment(&nFacesPerCellSpan[static_cast<size_t>(faceOwner[i])]
             ); // hit on performance on serial
             Kokkos::atomic_increment(&nFacesPerCellSpan[static_cast<size_t>(faceNeighbour[i])]);
@@ -33,7 +33,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     parallelFor(
         exec,
         {0, faceFaceCells.size()},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             Kokkos::atomic_increment(&nFacesPerCellSpan[faceFaceCells[i]]);
         }
     );
@@ -46,7 +46,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             size_t owner = static_cast<size_t>(faceOwner[facei]);
             size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
 
@@ -66,7 +66,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     parallelFor(
         exec,
         {nInternalFaces, nInternalFaces + faceFaceCells.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             size_t owner = static_cast<size_t>(faceFaceCells[facei - nInternalFaces]);
             // return the oldValues
             size_t segIdxOwn = Kokkos::atomic_fetch_add(

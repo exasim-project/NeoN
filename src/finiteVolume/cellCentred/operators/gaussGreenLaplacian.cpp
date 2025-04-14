@@ -42,7 +42,7 @@ void computeLaplacianExp(
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             ValueType flux = faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[static_cast<size_t>(owner[i])], flux);
             Kokkos::atomic_sub(&result[static_cast<size_t>(neighbour[i])], flux);
@@ -52,7 +52,7 @@ void computeLaplacianExp(
     parallelFor(
         exec,
         {nInternalFaces, fnGrad.size()},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             size_t own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
             ValueType valueOwn = faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[own], valueOwn);
@@ -62,7 +62,9 @@ void computeLaplacianExp(
     parallelFor(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli) { result[celli] *= operatorScaling[celli] / vol[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) {
+            result[celli] *= operatorScaling[celli] / vol[celli];
+        }
     );
 }
 
@@ -118,7 +120,7 @@ void computeLaplacianImpl(
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
 
             std::size_t own = static_cast<std::size_t>(owner[facei]);
@@ -157,7 +159,7 @@ void computeLaplacianImpl(
     parallelFor(
         exec,
         {nInternalFaces, sGamma.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             std::size_t bcfacei = facei - nInternalFaces;
             scalar flux = sGamma[facei] * magFaceArea[facei];
 

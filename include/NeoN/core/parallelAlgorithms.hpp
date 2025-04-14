@@ -27,7 +27,7 @@ concept parallelForKernel = requires(Kernel t, size_t i) {
 template<typename Executor, parallelForKernel Kernel>
 void parallelFor(
     [[maybe_unused]] const Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     std::string name = "parallelFor"
 )
@@ -35,7 +35,7 @@ void parallelFor(
     auto [start, end] = range;
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (size_t i = start; i < end; i++)
+        for (localIdx i = start; i < end; i++)
         {
             kernel(i);
         }
@@ -46,7 +46,7 @@ void parallelFor(
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(start, end),
-            KOKKOS_LAMBDA(const size_t i) { kernel(i); }
+            KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
         );
     }
 }
@@ -55,7 +55,7 @@ void parallelFor(
 template<parallelForKernel Kernel>
 void parallelFor(
     const NeoN::Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     std::string name = "parallelFor"
 )

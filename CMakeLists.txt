@@ -32,6 +32,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(NeoN_DP_SCALAR "double precision scalar" ON)
 option(NeoN_DP_LABEL "double precision label" OFF)
+option(NeoN_US_IDX "double precision unsigned indices" OFF)
 option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)

@@ -30,7 +30,7 @@ void computeLinearInterpolation(
     NeoN::parallelFor(
         exec,
         {0, dstS.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             if (facei < nInternalFaces)
             {
                 size_t own = static_cast<size_t>(ownerS[facei]);

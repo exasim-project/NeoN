@@ -36,7 +36,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfOwner[i])], flux);
             Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfNeighbour[i])], flux);
@@ -46,7 +46,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelFor(
         exec,
         {nInternalFaces, faceFlux.size()},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             auto own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[own], flux);
@@ -60,7 +60,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, NeoN::scalar& lmax) {
+        KOKKOS_LAMBDA(const localIdx celli, NeoN::scalar& lmax) {
             NeoN::scalar val = (volPhi[celli] / surfV[celli]);
             if (val > lmax) lmax = val;
         },
@@ -72,7 +72,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, scalar& lsum) { lsum += volPhi[celli]; },
+        KOKKOS_LAMBDA(const localIdx celli, scalar& lsum) { lsum += volPhi[celli]; },
         sumPhi
     );
 
@@ -81,7 +81,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, scalar& lsum) { lsum += surfV[celli]; },
+        KOKKOS_LAMBDA(const localIdx celli, scalar& lsum) { lsum += surfV[celli]; },
         sumVol
     );
 

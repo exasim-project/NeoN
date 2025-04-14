@@ -6,6 +6,7 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/fields/fieldFreeFunctions.hpp"
@@ -78,7 +79,10 @@ public:
      * @param hostExec Executor where the original data is located
      */
     Vector(
-        const Executor& exec, const ValueType* in, size_t size, Executor hostExec = SerialExecutor()
+        const Executor& exec,
+        const ValueType* in,
+        localIdx size,
+        Executor hostExec = SerialExecutor()
     )
         : size_(size), data_(nullptr), exec_(exec)
     {
@@ -98,7 +102,7 @@ public:
      * @param size  size of the field
      * @param value  the  default value
      */
-    Vector(const Executor& exec, size_t size, ValueType value)
+    Vector(const Executor& exec, localIdx size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
