@@ -5,6 +5,7 @@
 #include <Kokkos_Core.hpp>
 #include <type_traits>
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
 namespace NeoN
