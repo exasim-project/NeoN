@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
-#include "NeoFOAM/core/io/staticIOComponents.hpp"
+#include "NeoN/core/io/staticIOComponents.hpp"
 
 // FIXME This is only for compile tests at the moment.
-#include "NeoFOAM/core/io/adiosCore.hpp"
+#include "NeoN/core/io/adiosCore.hpp"
 
-namespace NeoFOAM::io
+namespace NeoN::io
 {
 
 std::unique_ptr<StaticIOComponents> StaticIOComponents::ioComponents_;

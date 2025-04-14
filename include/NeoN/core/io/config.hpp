@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
 #include <memory>
 
-namespace NeoFOAM::io
+namespace NeoN::io
 {
 
 /*
@@ -55,4 +55,4 @@ private:
     std::unique_ptr<ConfigConcept> pimpl_;
 };
 
-} // namespace NeoFOAM::io
+} // namespace NeoN::io

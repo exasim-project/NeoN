@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
 #include <adios2.h>
 
 
-namespace NeoFOAM::io
+namespace NeoN::io
 {
 
 struct DataOutput
@@ -13,4 +13,4 @@ struct DataOutput
     void put();
 };
 
-} // namespace NeoFOAM::io
+} // namespace NeoN::io

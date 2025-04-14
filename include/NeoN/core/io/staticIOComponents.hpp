@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
@@ -12,7 +12,7 @@
 #include "config.hpp"
 #include "engine.hpp"
 
-namespace NeoFOAM::io
+namespace NeoN::io
 {
 
 /**
@@ -108,4 +108,4 @@ public:
     }
 };
 
-} // namespace NeoFOAM::io
+} // namespace NeoN::io

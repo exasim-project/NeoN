@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2025 NeoFOAM authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #pragma once
 
@@ -13,7 +13,7 @@ class IO;
 class Engine;
 }
 
-namespace NeoFOAM::io
+namespace NeoN::io
 {
 
 // forward declare
@@ -38,4 +38,4 @@ private:
     static std::unique_ptr<adios2::ADIOS> adiosPtr_;
 };
 
-} // namespace NeoFOAM::io
+} // namespace NeoN::io
