@@ -1,31 +1,20 @@
-\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+FOAM/fields/field.hpp File Reference}
-\hypertarget{field_8hpp}{}\label{field_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/field.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/field.hpp}}
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/fields/field.hpp File Reference}
+\hypertarget{field_8hpp}{}\label{field_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/field.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/field.hpp}}
 {\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
 {\ttfamily \#include $<$iostream$>$}\newline
-{\ttfamily \#include $<$span$>$}\newline
-{\ttfamily \#include "{}Neo\+FOAM/core/error.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+FOAM/core/executor/executor.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+FOAM/core/primitives/scalar.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+FOAM/fields/field\+Free\+Functions.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+FOAM/fields/field\+Type\+Defs.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/vector.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/fields/boundary\+Data.\+hpp"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classNeoFOAM_1_1Field}{Neo\+FOAM\+::\+Field$<$ Value\+Type $>$}}
-\begin{DoxyCompactList}\small\item\em A class to contain the data and executors for a field and define some basic operations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+class \mbox{\hyperlink{classNeoN_1_1Field}{Neo\+N\+::\+Field$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Represents the domain fields for a computational domain. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoFOAM}{Neo\+FOAM}}
-\item 
-namespace \mbox{\hyperlink{namespaceNeoFOAM_1_1detail}{Neo\+FOAM\+::detail}}
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \end{DoxyCompactItemize}
-\doxysubsubsection*{Functions}
-\begin{DoxyCompactItemize}
-\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\auto \mbox{\hyperlink{namespaceNeoFOAM_1_1detail_ad89bb3ff118f7955349e608dbde77526}{Neo\+FOAM\+::detail\+::deep\+Copy\+Visitor}} (\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size, const Value\+Type \texorpdfstring{$\ast$}{*}src\+Ptr, Value\+Type \texorpdfstring{$\ast$}{*}dst\+Ptr)
-\begin{DoxyCompactList}\small\item\em A helper function to simplify the common pattern of copying between and to executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \mbox{\hyperlink{namespaceNeoFOAM_a72c33feea028e1966251dc0430ca8651}{Neo\+FOAM\+::operator+}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ lhs, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic add operator, addition of two fields. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \mbox{\hyperlink{namespaceNeoFOAM_a7c9cbcc523297970cc4d1b13bde319d2}{Neo\+FOAM\+::operator-\/}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ lhs, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ T $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic subtraction operator, subtraction one field from another. \end{DoxyCompactList}\end{DoxyCompactItemize}

@@ -1,25 +1,25 @@
 \doxysection{sum.\+hpp}
-\hypertarget{sum_8hpp_source}{}\label{sum_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/operations/sum.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/fields/operations/sum.hpp}}
+\hypertarget{sum_8hpp_source}{}\label{sum_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/operations/sum.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/operations/sum.hpp}}
 \mbox{\hyperlink{sum_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoFOAM/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00007}00007\ }
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00008}00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM}{NeoFOAM}}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00008}00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00009}00009\ \{}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00011}\mbox{\hyperlink{structNeoFOAM_1_1SumKernel}{00011}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoFOAM_1_1SumKernel}{SumKernel}}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00011}\mbox{\hyperlink{structNeoN_1_1SumKernel}{00011}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1SumKernel}{SumKernel}}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00012}00012\ \{}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00013}00013\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00014}\mbox{\hyperlink{structNeoFOAM_1_1SumKernel_ade1d9fe0a038b9f3b5fb450e58aa8797}{00014}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoFOAM_1_1SumKernel_ade1d9fe0a038b9f3b5fb450e58aa8797}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1GPUExecutor}{GPUExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<T>}}\&\ field,\ T\&\ sum)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00014}\mbox{\hyperlink{structNeoN_1_1SumKernel_a7166bc9a556587f874265e3421a5dc91}{00014}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoN_1_1SumKernel_a7166bc9a556587f874265e3421a5dc91}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ T\&\ sum)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00015}00015\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00016}00016\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoFOAM_1_1GPUExecutor_a6b6de4e85583777ea90859d082c4beaf}{GPUExecutor::exec}};}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00017}00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a9ff92b9ff779eaae2e8bb6e9c38df479}{span}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00018}00018\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a2915161f01fcce8b84e661a414bb9a2e}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00016}00016\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{GPUExecutor::exec}};}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00017}00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00018}00018\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00019}00019\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00020}00020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00021}00021\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
@@ -29,11 +29,11 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00025}00025\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00026}00026\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00028}\mbox{\hyperlink{structNeoFOAM_1_1SumKernel_a330aa0b971d63d36ebfd5d86f8733b11}{00028}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoFOAM_1_1SumKernel_a330aa0b971d63d36ebfd5d86f8733b11}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1CPUExecutor}{CPUExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<T>}}\&\ field,\ T\&\ sum)}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00028}\mbox{\hyperlink{structNeoN_1_1SumKernel_afd7d7b8cb1a93e6f958850bf72a9c051}{00028}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoN_1_1SumKernel_afd7d7b8cb1a93e6f958850bf72a9c051}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ T\&\ sum)}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00029}00029\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoFOAM_1_1CPUExecutor_ae9332fe72769bbc6fef8d9ba0ad5c294}{CPUExecutor::exec}};}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a9ff92b9ff779eaae2e8bb6e9c38df479}{span}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a2915161f01fcce8b84e661a414bb9a2e}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{CPUExecutor::exec}};}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
@@ -43,11 +43,11 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00039}00039\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00040}00040\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00042}\mbox{\hyperlink{structNeoFOAM_1_1SumKernel_ad63090c4f3b482e78128b4d39aba454d}{00042}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoFOAM_1_1SumKernel_ad63090c4f3b482e78128b4d39aba454d}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor}{SerialExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<T>}}\&\ field,\ T\&\ sum)}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00042}\mbox{\hyperlink{structNeoN_1_1SumKernel_a1e7f7dbc532edef6fad2b97883de3632}{00042}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoN_1_1SumKernel_a1e7f7dbc532edef6fad2b97883de3632}{operator()}}([[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ T\&\ sum)}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00043}00043\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoFOAM_1_1SerialExecutor_a9d88d2e09a3c3e5d8ff690badf556437}{SerialExecutor::exec}};}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a9ff92b9ff779eaae2e8bb6e9c38df479}{span}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoFOAM_1_1Field_a2915161f01fcce8b84e661a414bb9a2e}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{SerialExecutor::exec}};}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
@@ -59,7 +59,7 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00055}00055\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00056}00056\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00057}00057\ \textcolor{comment}{/*template<typename\ T>*/}}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00058}00058\ \textcolor{comment}{/*T\ sum(const\ Field<T>\&\ field)*/}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00058}00058\ \textcolor{comment}{/*T\ sum(const\ Vector<T>\&\ field)*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00059}00059\ \textcolor{comment}{/*\{*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00060}00060\ \textcolor{comment}{/*\ \ \ \ T\ sumValue\ \{\};*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00061}00061\ \textcolor{comment}{/*\ \ \ \ SumKernel\ kernel\ \{\};*/}}
@@ -68,7 +68,7 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00064}00064\ \textcolor{comment}{/*\};*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00065}00065\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00066}00066\ \textcolor{comment}{/*template<>*/}}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00067}00067\ \textcolor{comment}{/*scalar\ sum(const\ Field<scalar>\&\ field)*/}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00067}00067\ \textcolor{comment}{/*scalar\ sum(const\ Vector<scalar>\&\ field)*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00068}00068\ \textcolor{comment}{/*\{*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00069}00069\ \textcolor{comment}{/*\ \ \ \ scalar\ sumValue\ =\ 0;*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00070}00070\ \textcolor{comment}{/*\ \ \ \ SumKernel\ kernel\ \{\};*/}}
@@ -77,6 +77,6 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00073}00073\ \textcolor{comment}{/*\};*/}}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00074}00074\ }
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00076}00076\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00076}00076\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

@@ -6,7 +6,7 @@ Executor
 Overview
 ^^^^^^^^
 
-NeoFOAM uses the MPI+X approach for parallelism, where X is the execution space used for device parallelism. The ``Executor`` class uses Kokkos, provides an interface for memory management, and specifies where to execute the operations:
+NeoN uses the MPI+X approach for parallelism, where X is the execution space used for device parallelism. The ``Executor`` class uses Kokkos, provides an interface for memory management, and specifies where to execute the operations:
 
 - ``SerialExecutor``: run on the CPU with MPI
 - ``CPUExecutor``: run on the CPU with either OpenMP or C++ Threads in Combination and MPI
@@ -15,17 +15,17 @@ NeoFOAM uses the MPI+X approach for parallelism, where X is the execution space 
 Design
 ^^^^^^
 
-One of the design goals is the ability to easily switch between different execution spaces at run time, i.e. enabling the ability to switch between CPU and GPU execution without having to recompile NeoFOAM. This is achieved by passing the executor as an argument to the container types like Field as shown below.
+One of the design goals is the ability to easily switch between different execution spaces at run time, i.e. enabling the ability to switch between CPU and GPU execution without having to recompile NeoN. This is achieved by passing the executor as an argument to the container types like Vector as shown below.
 
 
 
 .. code-block:: cpp
 
-        NeoFOAM::GPUExecutor gpuExec {};
-        NeoFOAM::CPUExecutor cpuExec {};
+        NeoN::GPUExecutor gpuExec {};
+        NeoN::CPUExecutor cpuExec {};
 
-        NeoFOAM::Field<NeoFOAM::scalar> GPUField(gpuExec, 10);
-        NeoFOAM::Field<NeoFOAM::scalar> CPUField(cpuExec, 10);
+        NeoN::Vector<NeoN::scalar> GPUVector(gpuExec, 10);
+        NeoN::Vector<NeoN::scalar> CPUVector(cpuExec, 10);
 
 
 The ``Executor`` is a `std::variant <https://en.cppreference.com/w/cpp/utility/variant>`_
@@ -38,7 +38,7 @@ and allows to switch between the different strategies for memory allocation and 
 
 .. code-block:: cpp
 
-    NeoFOAM::SerialExecutor exec{};
+    NeoN::SerialExecutor exec{};
     std::visit([&](const auto& exec)
                { Functor(exec); },
                exec);

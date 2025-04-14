@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['values_0',['values',['../classNeoFOAM_1_1SegmentedFieldView.html#a3f4b90a95afb76e87a54b394bd810ab2',1,'NeoFOAM::SegmentedFieldView::values'],['../structNeoFOAM_1_1la_1_1CSRMatrixView.html#afca7a6c7cc654bec43d0d178584e20bb',1,'NeoFOAM::la::CSRMatrixView::values']]]
+  ['values_0',['values',['../classNeoN_1_1SegmentedVectorView.html#a47b962fc9e4e46fb91080f94aeb5c93b',1,'NeoN::SegmentedVectorView::values'],['../structNeoN_1_1la_1_1CSRMatrixView.html#a445e63fa19a49ee0aa584aba4be76a1b',1,'NeoN::la::CSRMatrixView::values']]]
 ];

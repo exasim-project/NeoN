@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Derived class discovery at compile time" href="../registerclass.html" /><link rel="prev" title="map" href="map.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/freeFunctions/setField.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/freeFunctions/setField.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>setField - NeoFOAM documentation</title>
+        <title>setVector - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -201,18 +201,16 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to NeoFOAM!</a></li>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fields.html">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../segmentedField.html">SegmentedField</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../algorithms.html">Parallel Algorithms</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../fields.html">Vectors</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../registerclass.html">Derived class discovery at compile time</a></li>
@@ -281,24 +279,24 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="setfield">
-<span id="basic-functions-setfield"></span><h1><code class="docutils literal notranslate"><span class="pre">setField</span></code><a class="headerlink" href="#setfield" title="Link to this heading">¶</a></h1>
-<p>Header: <code class="docutils literal notranslate"><span class="pre">&quot;NeoFOAM/fields/fieldFreeFunctions.hpp&quot;</span></code></p>
+          <section id="setvector">
+<span id="basic-functions-setvector"></span><h1><code class="docutils literal notranslate"><span class="pre">setVector</span></code><a class="headerlink" href="#setvector" title="Link to this heading">¶</a></h1>
+<p>Header: <code class="docutils literal notranslate"><span class="pre">&quot;NeoN/fields/fieldFreeFunctions.hpp&quot;</span></code></p>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>The function <code class="docutils literal notranslate"><span class="pre">setField</span></code> sets the entire field with a given field or a subfield with a given field if a range is defined.</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">setVector</span></code> sets the entire field with a given field or a subfield with a given field if a range is defined.</p>
 </section>
 <section id="definition">
 <h2>Definition<a class="headerlink" href="#definition" title="Link to this heading">¶</a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7NeoFOAM8setFieldEvR5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE">
-<span id="_CPPv3I0EN7NeoFOAM8setFieldER5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE"></span><span id="_CPPv2I0EN7NeoFOAM8setFieldER5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceNeoFOAM_1a3fe703c8f8b0434936a60f4df8722e45"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">NeoFOAM</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setField</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Field</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7NeoFOAM8setFieldEvR5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE" title="NeoFOAM::setField::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_identity_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7NeoFOAM8setFieldEvR5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE" title="NeoFOAM::setField::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7NeoFOAM8setFieldEvR5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Set the field with a span of values using a specific executor. </p>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4NeoN9setVectorEvR6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE">
+<span id="_CPPv3I0EN4NeoN9setVectorER6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE"></span><span id="_CPPv2I0EN4NeoN9setVectorER6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceNeoN_1a0381fc1f897940000a5d5e94e89e9fb4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">NeoN</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setVector</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4NeoN9setVectorEvR6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE" title="NeoN::setVector::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">View</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_identity_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4NeoN9setVectorEvR6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE" title="NeoN::setVector::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN4NeoN9setVectorEvR6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the field with a view of values using a specific executor. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> – The field to set. </p></li>
-<li><p><strong>b</strong> – The span of values to set the field with. </p></li>
+<li><p><strong>b</strong> – The view of values to set the field with. </p></li>
 <li><p><strong>range</strong> – The range to set the field in. If not provided, the whole field is set. </p></li>
 </ul>
 </dd>
@@ -309,20 +307,20 @@
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// or any other executor CPUExecutor, SerialExecutor</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">GPUExecutor</span><span class="p">{};</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">GPUExecutor</span><span class="p">{};</span>
 
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldA</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldB</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldC</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldA</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldB</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fieldC</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
 <span class="c1">// Note if the executor does not match the program will exit with a segfault</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">setField</span><span class="p">(</span><span class="n">field</span><span class="p">,</span><span class="w"> </span><span class="n">fieldB</span><span class="p">.</span><span class="n">span</span><span class="p">());</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">setVector</span><span class="p">(</span><span class="n">field</span><span class="p">,</span><span class="w"> </span><span class="n">fieldB</span><span class="p">.</span><span class="n">view</span><span class="p">());</span>
 <span class="c1">// only set the last element of the field</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span><span class="w"> </span><span class="n">fieldC</span><span class="p">.</span><span class="n">span</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">});</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span><span class="w"> </span><span class="n">fieldC</span><span class="p">.</span><span class="n">view</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">});</span>
 <span class="c1">// copy to host</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">hostField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">copyToHost</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">hostVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">copyToHost</span><span class="p">();</span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">hostField</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">hostVector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="c1">// prints:</span>
 <span class="c1">// 1.0</span>
@@ -337,31 +335,13 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../registerclass.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Derived class discovery at compile time</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="map.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title"><code class="docutils literal notranslate"><span class="pre">map</span></code></div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -387,10 +367,10 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">setVector</span></code></a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#definition">Definition</a><ul>
-<li><a class="reference internal" href="#_CPPv4I0EN7NeoFOAM8setFieldEvR5FieldI9ValueTypeEKNSt4spanIKNSt15type_identity_tI9ValueTypeEEEENSt4pairI6size_t6size_tEE"><code class="docutils literal notranslate"><span class="pre">setField()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I0EN4NeoN9setVectorEvR6VectorI9ValueTypeEK4ViewIKNSt15type_identity_tI9ValueTypeEEENSt4pairI6size_t6size_tEE"><code class="docutils literal notranslate"><span class="pre">setVector()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#example">Example</a></li>

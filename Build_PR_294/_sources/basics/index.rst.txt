@@ -10,7 +10,7 @@ Basics
 
     executor.rst
     fields.rst
-    segmentedField.rst
+    segmentedVector.rst
     algorithms.rst
     first_kernel.rst
     registerclass.rst
