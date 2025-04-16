@@ -29,7 +29,8 @@ template<typename T>
 concept HasImplicitOperator = requires(T t) {
     // using ValueType = typename T::VectorValueType;
     {
-        t.implicitOperation(std::declval<la::LinearSystem<typename T::FieldValueType, localIdx>&>())
+        t.implicitOperation(std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>()
+        )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
