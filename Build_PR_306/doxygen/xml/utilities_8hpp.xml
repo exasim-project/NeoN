@@ -36,12 +36,12 @@
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>gko::make_array_view(exec,<sp/>values.size(),<sp/>values.data());</highlight></codeline>
 <codeline lineno="28"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal">gko::detail::const_array_view&lt;T&gt;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal">createConstGkoArray(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::span&lt;const<sp/>T&gt;<sp/>values)</highlight></codeline>
-<codeline lineno="33"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>gko::make_const_array_view(exec,<sp/>values.size(),<sp/>values.data());</highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>template&lt;typename<sp/>T&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>gko::detail::const_array_view&lt;T&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>createConstGkoArray(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec,<sp/>const<sp/>std::span&lt;const<sp/>T&gt;<sp/>values)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>return<sp/>gko::make_const_array_view(exec,<sp/>values.size(),<sp/>values.data());</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
 <codeline lineno="38"><highlight class="normal">std::shared_ptr&lt;gko::matrix::Csr&lt;ValueType,<sp/>IndexType&gt;&gt;<sp/>createGkoMtx(</highlight></codeline>
@@ -52,7 +52,7 @@
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.view().matrix;</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>we<sp/>get<sp/>a<sp/>const<sp/>view<sp/>of<sp/>the<sp/>system<sp/>but<sp/>need<sp/>a<sp/>non<sp/>const<sp/>view<sp/>to<sp/>vals<sp/>and<sp/>indices</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>auto<sp/>vals<sp/>=<sp/>createConstGkoArray(exec,<sp/>mtx.values).copy_to_array();</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vals<sp/>=<sp/>gko::array&lt;IndexType&gt;::view(</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vals<sp/>=<sp/>gko::array&lt;ValueType&gt;::view(</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exec,<sp/>mtx.values.size(),<sp/></highlight><highlight class="keyword">const_cast&lt;</highlight><highlight class="normal">ValueType*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mtx.values.data())</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>auto<sp/>col<sp/>=<sp/>createGkoArray(exec,<sp/>mtx.colIdxs);</highlight><highlight class="normal"></highlight></codeline>

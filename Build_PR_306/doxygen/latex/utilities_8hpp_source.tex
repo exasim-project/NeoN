@@ -31,12 +31,12 @@
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::make\_array\_view(exec,\ values.size(),\ values.data());}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00028}00028\ \}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00031}00031\ gko::detail::const\_array\_view<T>}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00032}00032\ createConstGkoArray(std::shared\_ptr<const\ gko::Executor>\ exec,\ \textcolor{keyword}{const}\ std::span<const\ T>\ values)}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00033}00033\ \{}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::make\_const\_array\_view(exec,\ values.size(),\ values.data());}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00035}00035\ \}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00030}00030\ \textcolor{comment}{//\ template<typename\ T>}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00031}00031\ \textcolor{comment}{//\ gko::detail::const\_array\_view<T>}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00032}00032\ \textcolor{comment}{//\ createConstGkoArray(std::shared\_ptr<const\ gko::Executor>\ exec,\ const\ std::span<const\ T>\ values)}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00033}00033\ \textcolor{comment}{//\ \{}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00034}00034\ \textcolor{comment}{//\ \ \ \ \ return\ gko::make\_const\_array\_view(exec,\ values.size(),\ values.data());}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00035}00035\ \textcolor{comment}{//\ \}}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00036}00036\ }
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType>}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00038}00038\ std::shared\_ptr<gko::matrix::Csr<ValueType,\ IndexType>>\ createGkoMtx(}
@@ -47,7 +47,7 @@
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{auto}\ mtx\ =\ sys.view().matrix;}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ NOTE\ we\ get\ a\ const\ view\ of\ the\ system\ but\ need\ a\ non\ const\ view\ to\ vals\ and\ indices}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{comment}{//\ auto\ vals\ =\ createConstGkoArray(exec,\ mtx.values).copy\_to\_array();}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{auto}\ vals\ =\ gko::array<IndexType>::view(}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{auto}\ vals\ =\ gko::array<ValueType>::view(}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ exec,\ mtx.values.size(),\ \textcolor{keyword}{const\_cast<}ValueType*\textcolor{keyword}{>}(mtx.values.data())}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00048}00048\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ auto\ col\ =\ createGkoArray(exec,\ mtx.colIdxs);}}
