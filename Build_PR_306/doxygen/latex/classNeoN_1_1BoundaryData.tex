@@ -16,7 +16,7 @@ Represents the boundary fields for a computational domain.
 \begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1BoundaryData_a511013efddae95937965d5c4c88983ec}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ T $>$ \&rhs)
 \begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1BoundaryData_a1cf89d352fe6ae633eb88d8df13c572a}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, int \mbox{\hyperlink{classNeoN_1_1BoundaryData_a8b44b1974e976b28107286299a9e0d7a}{n\+Boundary\+Faces}}, int n\+Boundary\+Types)
+\mbox{\hyperlink{classNeoN_1_1BoundaryData_a1dea4ea23b79ff66a039026f7700f47f}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{n\+Boundary\+Faces}}, \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} n\+Boundary\+Types)
 \begin{DoxyCompactList}\small\item\em constructor with default initialized Vectors from sizes. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7ddc0754967ebbf2f8ad82c82f58b1d4}{Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \&offsets)
 \begin{DoxyCompactList}\small\item\em constructor from a given offsets vector @warn all members except offsets are default constructed \end{DoxyCompactList}\item 
@@ -40,9 +40,9 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ int $>$ \& \mbox{\hyperl
 \begin{DoxyCompactList}\small\item\em Get the view storing the boundary types. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7b726391a9629070b2cd2a7fcec29f59}{offset}} () const
 \begin{DoxyCompactList}\small\item\em Get the view storing the offsets of each boundary. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_a6c0923b1fb85dc2d018751e2885d2fea}{n\+Boundaries}} () const
+\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_a43dd63100a240f03820bd1dd56329bd3}{n\+Boundaries}} () const
 \begin{DoxyCompactList}\small\item\em Get the number of boundaries. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_a8b44b1974e976b28107286299a9e0d7a}{n\+Boundary\+Faces}} () const
+\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{n\+Boundary\+Faces}} () const
 \begin{DoxyCompactList}\small\item\em Get the number of boundary faces. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}} ()
 \item 
@@ -109,12 +109,12 @@ Copy constructor.
 
 Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1BoundaryData_a1cf89d352fe6ae633eb88d8df13c572a}\label{classNeoN_1_1BoundaryData_a1cf89d352fe6ae633eb88d8df13c572a} 
+\Hypertarget{classNeoN_1_1BoundaryData_a1dea4ea23b79ff66a039026f7700f47f}\label{classNeoN_1_1BoundaryData_a1dea4ea23b79ff66a039026f7700f47f} 
 \index{NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}!BoundaryData@{BoundaryData}}
 \index{BoundaryData@{BoundaryData}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{BoundaryData()}{BoundaryData()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{int}]{n\+Boundary\+Faces,  }\item[{int}]{n\+Boundary\+Types }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}}}]{n\+Boundary\+Faces,  }\item[{\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}}}]{n\+Boundary\+Types }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -187,12 +187,12 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00148}{148}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1BoundaryData_a6c0923b1fb85dc2d018751e2885d2fea}\label{classNeoN_1_1BoundaryData_a6c0923b1fb85dc2d018751e2885d2fea} 
+\Hypertarget{classNeoN_1_1BoundaryData_a43dd63100a240f03820bd1dd56329bd3}\label{classNeoN_1_1BoundaryData_a43dd63100a240f03820bd1dd56329bd3} 
 \index{NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}!nBoundaries@{nBoundaries}}
 \index{nBoundaries@{nBoundaries}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{nBoundaries()}{nBoundaries()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::n\+Boundaries (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::n\+Boundaries (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -205,12 +205,12 @@ The number of boundaries.
 
 Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00140}{140}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1BoundaryData_a8b44b1974e976b28107286299a9e0d7a}\label{classNeoN_1_1BoundaryData_a8b44b1974e976b28107286299a9e0d7a} 
+\Hypertarget{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}\label{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21} 
 \index{NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}!nBoundaryFaces@{nBoundaryFaces}}
 \index{nBoundaryFaces@{nBoundaryFaces}!NeoN::BoundaryData$<$ T $>$@{NeoN::BoundaryData$<$ T $>$}}
 \doxysubsubsection{\texorpdfstring{nBoundaryFaces()}{nBoundaryFaces()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::n\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data}}$<$ T $>$\+::n\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
