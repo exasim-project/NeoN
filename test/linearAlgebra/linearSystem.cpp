@@ -75,16 +75,16 @@ TEST_CASE("LinearSystem")
         REQUIRE(hostLSView.rhs.size() == 3);
 
         // check system values
-        for (size_t i = 0; i < hostLSView.matrix.values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
         {
             REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
             REQUIRE(hostLSView.matrix.colIdxs[i] == (i % 3));
         }
-        for (size_t i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
         {
-            REQUIRE(hostLSView.matrix.rowOffs[i] == static_cast<localIdx>(i * 3));
+            REQUIRE(hostLSView.matrix.rowOffs[i] == i * 3);
         }
-        for (size_t i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
         {
             REQUIRE(hostLSView.rhs[i] == static_cast<scalar>((i + 1) * 10));
         }
@@ -104,15 +104,15 @@ TEST_CASE("LinearSystem")
         );
 
         // Check modification.
-        hostLS = ls.copyToHost();
-        hostLSView = hostLS.view();
-        for (size_t i = 0; i < hostLSView.matrix.values.size(); ++i)
+        auto hostLS2 = ls.copyToHost();
+        auto hostLS2View = hostLS.view();
+        for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
         {
-            REQUIRE(hostLSView.matrix.values[i] == -static_cast<scalar>(i + 1));
+            REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
         }
-        for (size_t i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
         {
-            REQUIRE(hostLSView.rhs[i] == -static_cast<scalar>((i + 1) * 10));
+            REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
         }
     }
 

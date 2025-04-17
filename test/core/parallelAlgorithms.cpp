@@ -177,7 +177,7 @@ TEST_CASE("parallelScan")
         NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {
@@ -213,7 +213,7 @@ TEST_CASE("parallelScan")
         NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {

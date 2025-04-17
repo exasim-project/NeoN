@@ -42,8 +42,8 @@ TEST_CASE("Input")
         NeoN::TokenList tokenList;
         REQUIRE(tokenList.empty());
 
-        tokenList.insert(NeoN::label(1));
-        tokenList.insert(NeoN::scalar(2.0));
+        tokenList.insert(1);
+        tokenList.insert(2.0);
         tokenList.insert(std::string("string"));
 
         REQUIRE(tokenList.size() == 3);
@@ -60,8 +60,8 @@ TEST_CASE("Input")
     {
         NeoN::Dictionary dict;
 
-        dict.insert("label", NeoN::label(1));
-        dict.insert("scalar", NeoN::scalar(2.0));
+        dict.insert("label", 1);
+        dict.insert("scalar", 2.0);
         dict.insert("string", std::string("string"));
 
         REQUIRE(dict.keys().size() == 3);

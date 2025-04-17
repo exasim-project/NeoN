@@ -203,7 +203,7 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
         "Failed to dereference pointers in sundails."
     );
 
-    size_t size = static_cast<size_t>(N_VGetLength(y));
+    auto size = static_cast<localIdx>(N_VGetLength(y));
     // Copy initial value from y to source.
     NeoN::Vector<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
     if (std::holds_alternative<NeoN::GPUExecutor>(pdeExpre->exec()))

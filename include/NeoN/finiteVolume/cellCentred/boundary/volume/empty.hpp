@@ -20,7 +20,7 @@ class Empty : public VolumeBoundaryFactory<ValueType>::template Register<Empty<V
 
 public:
 
-    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID)
     {}
 

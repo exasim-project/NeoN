@@ -377,7 +377,7 @@ public:
     VectorDocument operator()(Database& db)
     {
         Field<typename VectorType::VectorValueType> domainVector(
-            field.mesh().exec(), field.internalVector(), field.boundaryVector()
+            field.mesh().exec(), field.internalVector(), field.boundaryData()
         );
 
         VectorType vf(

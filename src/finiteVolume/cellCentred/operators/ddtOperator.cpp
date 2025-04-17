@@ -48,7 +48,7 @@ void DdtOperator<ValueType>::implicitOperation(
         ls.exec(),
         {0, oldVector.size()},
         KOKKOS_LAMBDA(const localIdx celli) {
-            std::size_t idx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli] * dtInver;
             matrix.values[idx] += commonCoef * one<ValueType>();
             rhs[celli] += commonCoef * oldVector[celli];

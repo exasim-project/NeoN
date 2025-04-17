@@ -39,7 +39,7 @@ TEST_CASE("parallelFor")
 #endif
 
     auto fieldHost = field.copyToHost();
-    auto fieldNFViewHost = NeoN::View(fieldHost.view());
+    auto fieldNFViewHost = fieldHost.view();
 
 #ifdef NF_DEBUG
 // TODO: on MSCV this results in a non terminating loop
@@ -48,7 +48,7 @@ TEST_CASE("parallelFor")
     fieldNFViewHost.abort = false;
     SECTION("detects out of range")
     {
-        auto tmp = fieldNFViewHost[5];
+        [[maybe_unused]] auto tmp = fieldNFViewHost[5];
         REQUIRE(fieldNFViewHost.failureIndex == 5);
     }
 #endif

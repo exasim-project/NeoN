@@ -24,8 +24,8 @@ void setFixedValue(
     ValueType fixedValue
 )
 {
-    auto refValue = domainVector.boundaryVector().refValue().view();
-    auto value = domainVector.boundaryVector().value().view();
+    auto refValue = domainVector.boundaryData().refValue().view();
+    auto value = domainVector.boundaryData().value().view();
     auto internalValues = domainVector.internalVector().view();
     auto nInternalFaces = mesh.nInternalFaces();
 
@@ -49,7 +49,7 @@ class FixedValue :
 
 public:
 
-    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), mesh_(mesh), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 

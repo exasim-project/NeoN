@@ -130,7 +130,7 @@ public:
     }
 
     // TODO unify with dsl/solver.hpp
-    void solve(scalar t, scalar dt)
+    void solve(scalar, scalar)
     {
         // dsl::solve(expr_, psi_, t, dt, fvSchemes_, fvSolution_);
         if (expr_.temporalOperators().size() == 0 && expr_.spatialOperators().size() == 0)
@@ -193,7 +193,7 @@ operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueTy
         "ls_" + psi.name,
         psi.mesh(),
         psi.internalVector(),
-        psi.boundaryVector(),
+        psi.boundaryData(),
         psi.boundaryConditions()
     );
 

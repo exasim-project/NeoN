@@ -30,7 +30,7 @@ auto setup_operator_test(const UnstructuredMesh& mesh)
 
     auto phi = fvcc::VolumeVector<TestType>(exec, "sf", mesh, volumeBCs);
     fill(phi.internalVector(), one<TestType>());
-    fill(phi.boundaryVector().value(), one<TestType>());
+    fill(phi.boundaryData().value(), one<TestType>());
     phi.correctBoundaryConditions();
 
     auto result = Vector<TestType>(exec, phi.size(), zero<TestType>());

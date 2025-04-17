@@ -204,6 +204,7 @@ public:
      *
      * @return A constant reference to the offset of the boundary faces.
      */
+    // FIXME use Vector here?
     const std::vector<localIdx>& offset() const;
 
 
@@ -273,6 +274,7 @@ private:
      *
      * The offset is used to access the boundary faces of each boundary.
      */
+    // FIXME use Vector here?
     std::vector<localIdx> offset_;
 };
 

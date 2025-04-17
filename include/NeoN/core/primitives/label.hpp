@@ -16,7 +16,7 @@ using label = int64_t;
 using localIdx = uint32_t;
 using globalIdx = uint64_t;
 #else
-using localIdx = int32_t;
+using localIdx = int64_t;
 using globalIdx = int64_t;
 #endif
 
@@ -24,10 +24,10 @@ using globalIdx = int64_t;
 using label = int32_t;
 
 #ifdef NeoN_US_IDX
-using localIdx = uint64_t;
-using globalIdx = Uint64_t;
+using localIdx = uint32_t;
+using globalIdx = uint64_t;
 #else
-using localIdx = int64_t;
+using localIdx = int32_t;
 using globalIdx = int64_t;
 #endif
 

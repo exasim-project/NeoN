@@ -90,21 +90,21 @@ public:
      *
      * @return The size of the internal field
      */
-    size_t size() const { return field_.internalVector().size(); }
+    localIdx size() const { return field_.internalVector().size(); }
 
     /**
      * @brief Returns a const reference to the boundary field.
      *
      * @return The const reference to the boundary field.
      */
-    const BoundaryData<ValueType>& boundaryVector() const { return field_.boundaryVector(); }
+    const BoundaryData<ValueType>& boundaryData() const { return field_.boundaryData(); }
 
     /**
      * @brief Returns a reference to the boundary field.
      *
      * @return The reference to the boundary field.
      */
-    BoundaryData<ValueType>& boundaryVector() { return field_.boundaryVector(); }
+    BoundaryData<ValueType>& boundaryData() { return field_.boundaryData(); }
 
     /**
      * @brief Returns a const reference to the executor object.

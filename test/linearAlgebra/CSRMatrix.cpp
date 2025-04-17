@@ -286,12 +286,12 @@ TEST_CASE("CSRMatrix")
         REQUIRE(hostcolIdxSparse.size() == column.size());
         REQUIRE(hostrowPtrsSparse.size() == row.size());
 
-        for (size_t i = 0; i < value.size(); ++i)
+        for (NeoN::localIdx i = 0; i < value.size(); ++i)
         {
             REQUIRE(hostvaluesSparse.view()[i] == value[i]);
             REQUIRE(hostcolIdxSparse.view()[i] == column[i]);
         }
-        for (size_t i = 0; i < row.size(); ++i)
+        for (NeoN::localIdx i = 0; i < row.size(); ++i)
         {
             REQUIRE(hostrowPtrsSparse.view()[i] == row[i]);
         }

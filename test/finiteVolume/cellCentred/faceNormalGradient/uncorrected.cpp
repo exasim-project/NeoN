@@ -19,7 +19,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    const size_t nCells = 10;
+    const NeoN::localIdx nCells = 10;
     auto mesh = create1DUniformMesh(exec, nCells);
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<TestType>>(mesh);
 
@@ -30,9 +30,9 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
     fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
     NeoN::parallelFor(
         phi.internalVector(),
-        KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
+        KOKKOS_LAMBDA(const NeoN::localIdx i) { return scalar(i + 1) * one<TestType>(); }
     );
-    phi.boundaryVector().value() =
+    phi.boundaryData().value() =
         NeoN::Vector<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});
 
     SECTION("Construct from Token" + execName)
@@ -49,7 +49,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
 
         auto phifHost = phif.internalVector().copyToHost();
         auto sPhif = phifHost.view();
-        for (size_t i = 0; i < nCells - 1; i++)
+        for (NeoN::localIdx i = 0; i < nCells - 1; i++)
         {
             // correct value is 10.0
             REQUIRE(

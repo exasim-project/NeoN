@@ -21,11 +21,11 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeDiv(
     const Executor& exec,
-    size_t nInternalFaces,
-    size_t nBoundaryFaces,
-    View<const int> neighbour,
-    View<const int> owner,
-    View<const int> faceCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    View<const localIdx> neighbour,
+    View<const localIdx> owner,
+    View<const localIdx> faceCells,
     View<const scalar> faceFlux,
     View<const ValueType> phiF,
     View<const scalar> v,
@@ -37,22 +37,22 @@ void computeDiv(
     // check if the executor is GPU
     if (std::holds_alternative<SerialExecutor>(exec))
     {
-        for (size_t i = 0; i < nInternalFaces; i++)
+        for (localIdx i = 0; i < nInternalFaces; i++)
         {
             ValueType flux = faceFlux[i] * phiF[i];
-            res[static_cast<size_t>(owner[i])] += flux;
-            res[static_cast<size_t>(neighbour[i])] -= flux;
+            res[owner[i]] += flux;
+            res[neighbour[i]] -= flux;
         }
 
-        for (size_t i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
+        for (localIdx i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
         {
-            auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+            auto own = faceCells[i - nInternalFaces];
             ValueType valueOwn = faceFlux[i] * phiF[i];
             res[own] += valueOwn;
         }
 
         // TODO does it make sense to store invVol and multiply?
-        for (size_t celli = 0; celli < nCells; celli++)
+        for (localIdx celli = 0; celli < nCells; celli++)
         {
             res[celli] *= operatorScaling[celli] / v[celli];
         }
@@ -64,8 +64,8 @@ void computeDiv(
             {0, nInternalFaces},
             KOKKOS_LAMBDA(const localIdx i) {
                 ValueType flux = faceFlux[i] * phiF[i];
-                Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux);
-                Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux);
+                Kokkos::atomic_add(&res[owner[i]], flux);
+                Kokkos::atomic_sub(&res[neighbour[i]], flux);
             },
             "sumFluxesInternal"
         );
@@ -74,7 +74,7 @@ void computeDiv(
             exec,
             {nInternalFaces, nInternalFaces + nBoundaryFaces},
             KOKKOS_LAMBDA(const localIdx i) {
-                auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+                auto own = faceCells[i - nInternalFaces];
                 ValueType valueOwn = faceFlux[i] * phiF[i];
                 Kokkos::atomic_add(&res[own], valueOwn);
             },
@@ -111,10 +111,10 @@ void computeDivExp(
     surfInterp.interpolate(faceFlux, phi, phif);
 
     // TODO: currently we just copy the boundary values over
-    phif.boundaryVector().value() = phi.boundaryVector().value();
+    phif.boundaryData().value() = phi.boundaryData().value();
 
-    size_t nInternalFaces = mesh.nInternalFaces();
-    size_t nBoundaryFaces = mesh.nBoundaryFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
     computeDiv<ValueType>(
         exec,
         nInternalFaces,
@@ -154,7 +154,7 @@ void computeDivImp(
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const std::size_t nInternalFaces = mesh.nInternalFaces();
+    const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
     const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
@@ -176,12 +176,12 @@ void computeDivImp(
             // scalar weight = 0.5;
             scalar weight = flux >= 0 ? 1 : 0;
             ValueType value = zero<ValueType>();
-            std::size_t own = static_cast<std::size_t>(owner[facei]);
-            std::size_t nei = static_cast<std::size_t>(neighbour[facei]);
+            auto own = owner[facei];
+            auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            std::size_t rowNeiStart = matrix.rowOffs[nei];
-            std::size_t rowOwnStart = matrix.rowOffs[own];
+            auto rowNeiStart = matrix.rowOffs[nei];
+            auto rowOwnStart = matrix.rowOffs[own];
 
             scalar operatorScalingNei = operatorScaling[nei];
             scalar operatorScalingOwn = operatorScaling[own];
@@ -204,21 +204,21 @@ void computeDivImp(
     );
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryVector().refGrad(),
-        phi.boundaryVector().value(),
-        phi.boundaryVector().valueFraction(),
-        phi.boundaryVector().refValue()
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().value(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
     );
 
     parallelFor(
         exec,
         {nInternalFaces, sFaceFlux.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
-            std::size_t bcfacei = facei - nInternalFaces;
+            auto bcfacei = facei - nInternalFaces;
             scalar flux = sFaceFlux[facei];
 
-            std::size_t own = static_cast<std::size_t>(surfFaceCells[bcfacei]);
-            std::size_t rowOwnStart = matrix.rowOffs[own];
+            auto own = surfFaceCells[bcfacei];
+            auto rowOwnStart = matrix.rowOffs[own];
             scalar operatorScalingOwn = operatorScaling[own];
 
             matrix.values[rowOwnStart + diagOffs[own]] +=

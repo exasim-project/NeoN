@@ -18,11 +18,11 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
-    size_t nCells,
-    size_t nInternalFaces,
-    size_t nBoundaryFaces,
-    size_t nBoundaries,
-    size_t nFaces,
+    localIdx nCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    localIdx nBoundaries,
+    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : exec_(points.exec()), points_(points), cellVolumes_(cellVolumes), cellCentres_(cellCentres),
@@ -49,15 +49,15 @@ const labelVector& UnstructuredMesh::faceOwner() const { return faceOwner_; }
 
 const labelVector& UnstructuredMesh::faceNeighbour() const { return faceNeighbour_; }
 
-size_t UnstructuredMesh::nCells() const { return nCells_; }
+localIdx UnstructuredMesh::nCells() const { return nCells_; }
 
-size_t UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
+localIdx UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
 
-size_t UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
+localIdx UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
 
-size_t UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
+localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 
-size_t UnstructuredMesh::nFaces() const { return nFaces_; }
+localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 
@@ -109,7 +109,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     );
 }
 
-UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
 {
     const Vec3 leftBoundary = {0.0, 0.0, 0.0};
     const Vec3 rightBoundary = {1.0, 0.0, 0.0};
@@ -167,8 +167,8 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
         exec,
         {0, nCells - 1},
         KOKKOS_LAMBDA(const localIdx i) {
-            faceOwnerSpan[i] = static_cast<label>(i);
-            faceNeighborSpan[i] = static_cast<label>(i + 1);
+            faceOwnerSpan[i] = i;
+            faceNeighborSpan[i] = i + 1;
         }
     );
 
@@ -188,7 +188,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
 
     BoundaryMesh boundaryMesh(
         exec,
-        {exec, {0, static_cast<int>(nCells) - 1}},
+        {exec, {0, nCells - 1}},
         {exec, {leftBoundary, rightBoundary}},
         {exec, {cellCentersHostSpan[0], cellCentersHostSpan[nCells - 1]}},
         {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},

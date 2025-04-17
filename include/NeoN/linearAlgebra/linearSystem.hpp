@@ -111,7 +111,7 @@ Vector<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Vector<ValueType>
     parallelFor(
         ls.exec(),
         {0, ls.matrix().nRows()},
-        KOKKOS_LAMBDA(const std::size_t rowi) {
+        KOKKOS_LAMBDA(const localIdx rowi) {
             IndexType rowStart = rowPtrs[rowi];
             IndexType rowEnd = rowPtrs[rowi + 1];
             ValueType sum = 0.0;

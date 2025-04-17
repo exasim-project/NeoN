@@ -36,7 +36,7 @@ void surfaceIntegrate(
         exec,
         {nInternalFaces, nInternalFaces + nBoundaryFaces},
         KOKKOS_LAMBDA(const localIdx i) {
-            auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+            auto own = faceCells[i - nInternalFaces];
             Kokkos::atomic_add(&res[own], flux[i]);
         }
     );

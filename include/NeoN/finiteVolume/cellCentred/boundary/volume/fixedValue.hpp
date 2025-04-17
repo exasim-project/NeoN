@@ -24,10 +24,10 @@ void setFixedValue(
 )
 {
     auto [refGradient, value, valueFraction, refValue] = spans(
-        domainVector.boundaryVector().refGrad(),
-        domainVector.boundaryVector().value(),
-        domainVector.boundaryVector().valueFraction(),
-        domainVector.boundaryVector().refValue()
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue()
     );
 
     NeoN::parallelFor(
@@ -51,7 +51,7 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 
 public:
 
-    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 

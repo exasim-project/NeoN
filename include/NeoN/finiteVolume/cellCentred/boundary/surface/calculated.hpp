@@ -21,7 +21,7 @@ public:
 
     using CalculatedType = Calculated<ValueType>;
 
-    Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID)
     {}
 

@@ -67,13 +67,13 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         }
     );
 
-    const size_t nInternalFaces = mesh_.nInternalFaces();
+    const auto nInternalFaces = mesh_.nInternalFaces();
 
     parallelFor(
         exec,
         {nInternalFaces, deltaCoeff.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
-            auto own = static_cast<size_t>(surfFaceCells[facei - nInternalFaces]);
+            auto own = surfFaceCells[facei - nInternalFaces];
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
 
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
@@ -96,7 +96,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
     fill(nonOrthDeltaCoeffs.internalVector(), 0.0);
 
-    const size_t nInternalFaces = mesh_.nInternalFaces();
+    const auto nInternalFaces = mesh_.nInternalFaces();
 
     parallelFor(
         exec,
@@ -116,7 +116,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         exec,
         {nInternalFaces, nonOrthDeltaCoeff.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
-            auto own = static_cast<size_t>(surfFaceCells[facei - nInternalFaces]);
+            auto own = surfFaceCells[facei - nInternalFaces];
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
             Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
 

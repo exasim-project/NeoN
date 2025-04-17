@@ -69,17 +69,17 @@ public:
         computeUpwindInterpolation(src, flux, geometryScheme_->weights(), dst);
     }
 
-    void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weight) const override
+    // src weight
+    void weight(const VolumeField<ValueType>&, SurfaceField<scalar>&) const override
     {
         NF_ERROR_EXIT("limited scheme require a faceFlux");
     }
 
-    void weight(
-        const SurfaceField<scalar>& flux,
-        const VolumeField<ValueType>& src,
-        SurfaceField<scalar>& weight
-    ) const override
+    // flux, src, weight
+    void weight(const SurfaceField<scalar>&, const VolumeField<ValueType>&, SurfaceField<scalar>&)
+        const override
     {
+        // TODO should that be implemented?
         // geometryScheme_->weights(flux, src, weight);
     }
 

@@ -26,7 +26,7 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
     Input input = TokenList({std::string("upwind")});
     auto upwind = SurfaceInterpolation<TestType>(exec, mesh, input);
     std::vector<fvcc::SurfaceBoundary<TestType>> bcs {};
-    for (auto patchi : I<size_t> {0, 1})
+    for (auto patchi : I<NeoN::localIdx> {0, 1})
     {
         Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -47,12 +47,12 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
     auto outHost = out.internalVector().copyToHost();
     auto nInternal = mesh.nInternalFaces();
     auto nBoundary = mesh.nBoundaryFaces();
-    for (int i = 0; i < nInternal; i++)
+    for (NeoN::localIdx i = 0; i < nInternal; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }
 
-    for (int i = nInternal; i < nInternal + nBoundary; i++)
+    for (NeoN::localIdx i = nInternal; i < nInternal + nBoundary; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }

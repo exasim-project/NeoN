@@ -70,6 +70,16 @@ public:
     }
 
     localIdx size() const { return static_cast<localIdx>(base::size()); }
+
+    View<ValueType> subspan(localIdx start, localIdx length) const
+    {
+        return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
+    }
+
+    View<ValueType> subspan(localIdx start) const
+    {
+        return base::subspan(static_cast<size_t>(start));
+    }
 };
 
 

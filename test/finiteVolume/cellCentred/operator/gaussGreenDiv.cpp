@@ -37,7 +37,7 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
     fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
     fill(phi.internalVector(), one<TestType>());
-    fill(phi.boundaryVector().value(), one<TestType>());
+    fill(phi.boundaryData().value(), one<TestType>());
     phi.correctBoundaryConditions();
 
     auto result = Vector<TestType>(exec, phi.size());

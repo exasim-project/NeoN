@@ -52,7 +52,7 @@ public:
         const UnstructuredMesh& mesh = flux_.mesh();
         const auto exec = flux_.exec();
 
-        size_t nInternalFaces = mesh.nInternalFaces();
+        auto nInternalFaces = mesh.nInternalFaces();
         surfaceIntegrate<ValueType>(
             exec,
             nInternalFaces,

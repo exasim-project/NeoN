@@ -49,7 +49,7 @@ TEST_CASE("Coeff")
 
     SECTION("evaluation in parallelFor" + execName)
     {
-        size_t size = 3;
+        NeoN::localIdx size = 3;
 
         Vector fieldA(exec, size, 0.0);
         Vector fieldB(exec, size, 1.0);

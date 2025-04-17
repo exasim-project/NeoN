@@ -29,7 +29,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
         faceFlux.internalVector(),
         mesh.cellVolumes()
     );
-    size_t nInternalFaces = mesh.nInternalFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
 
     scalar maxCoNum = std::numeric_limits<scalar>::lowest();
     scalar meanCoNum = 0.0;
@@ -38,8 +38,8 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx i) {
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
-            Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfOwner[i])], flux);
-            Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfNeighbour[i])], flux);
+            Kokkos::atomic_add(&volPhi[surfOwner[i]], flux);
+            Kokkos::atomic_add(&volPhi[surfNeighbour[i]], flux);
         }
     );
 
@@ -47,7 +47,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
         exec,
         {nInternalFaces, faceFlux.size()},
         KOKKOS_LAMBDA(const localIdx i) {
-            auto own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
+            auto own = surfFaceCells[i - nInternalFaces];
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[own], flux);
         }

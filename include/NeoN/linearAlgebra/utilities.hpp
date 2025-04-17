@@ -9,6 +9,7 @@
 #include <ginkgo/extensions/kokkos.hpp>
 
 #include "NeoN/fields/field.hpp"
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 
@@ -39,20 +40,26 @@ std::shared_ptr<gko::matrix::Csr<ValueType, IndexType>> createGkoMtx(
     std::shared_ptr<const gko::Executor> exec, const LinearSystem<ValueType, IndexType>& sys
 )
 {
-    size_t nrows = sys.rhs().size();
+    auto nrows = static_cast<gko::dim<2>::dimension_type>(sys.rhs().size());
     auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
     // auto vals = createConstGkoArray(exec, mtx.values).copy_to_array();
     auto vals = gko::array<ValueType>::view(
-        exec, mtx.values.size(), const_cast<ValueType*>(mtx.values.data())
+        exec,
+        static_cast<gko::size_type>(mtx.values.size()),
+        const_cast<ValueType*>(mtx.values.data())
     );
     // auto col = createGkoArray(exec, mtx.colIdxs);
     auto col = gko::array<IndexType>::view(
-        exec, mtx.colIdxs.size(), const_cast<IndexType*>(mtx.colIdxs.data())
+        exec,
+        static_cast<gko::size_type>(mtx.colIdxs.size()),
+        const_cast<IndexType*>(mtx.colIdxs.data())
     );
     // auto row = createGkoArray(exec, mtx.rowOffs);
     auto row = gko::array<IndexType>::view(
-        exec, mtx.rowOffs.size(), const_cast<IndexType*>(mtx.rowOffs.data())
+        exec,
+        static_cast<gko::size_type>(mtx.rowOffs.size()),
+        const_cast<IndexType*>(mtx.rowOffs.data())
     );
     return gko::share(gko::matrix::Csr<ValueType, IndexType>::create(
         exec, gko::dim<2> {nrows, nrows}, vals, col, row
@@ -61,8 +68,9 @@ std::shared_ptr<gko::matrix::Csr<ValueType, IndexType>> createGkoMtx(
 
 template<typename ValueType>
 std::shared_ptr<gko::matrix::Dense<ValueType>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, ValueType* ptr, size_t size)
+createGkoDense(std::shared_ptr<const gko::Executor> exec, ValueType* ptr, localIdx s)
 {
+    auto size = static_cast<std::size_t>(s);
     return gko::share(gko::matrix::Dense<ValueType>::create(
         exec, gko::dim<2> {size, 1}, createGkoArray(exec, std::span {ptr, size}), 1
     ));
@@ -70,8 +78,9 @@ createGkoDense(std::shared_ptr<const gko::Executor> exec, ValueType* ptr, size_t
 
 template<typename ValueType>
 std::shared_ptr<gko::matrix::Dense<ValueType>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, const ValueType* ptr, size_t size)
+createGkoDense(std::shared_ptr<const gko::Executor> exec, const ValueType* ptr, localIdx s)
 {
+    auto size = static_cast<std::size_t>(s);
     auto const_array_view = gko::array<ValueType>::const_view(exec, size, ptr);
     return gko::share(gko::matrix::Dense<ValueType>::create(
         exec, gko::dim<2> {size, 1}, const_array_view.copy_to_array(), 1

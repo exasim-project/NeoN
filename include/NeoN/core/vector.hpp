@@ -30,8 +30,9 @@ namespace detail
  * @returns A function that takes a source and an destination executor
  */
 template<typename ValueType>
-auto deepCopyVisitor(size_t size, const ValueType* srcPtr, ValueType* dstPtr)
+auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
 {
+    size_t size = static_cast<size_t>(ssize);
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
         Kokkos::deep_copy(
@@ -60,12 +61,12 @@ public:
      * @param exec  Executor associated to the field
      * @param size  size of the field
      */
-    Vector(const Executor& exec, size_t size) : size_(size), data_(nullptr), exec_(exec)
+    Vector(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(size * sizeof(ValueType)); },
+            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -89,7 +90,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(size * sizeof(ValueType)); },
+            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -107,7 +108,9 @@ public:
     {
         void* ptr = nullptr;
         std::visit(
-            [&ptr, size](const auto& execu) { ptr = execu.alloc(size * sizeof(ValueType)); }, exec_
+            [&ptr, size](const auto& execu)
+            { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            exec_
         );
         data_ = static_cast<ValueType*>(ptr);
         NeoN::fill(*this, value);
@@ -118,7 +121,9 @@ public:
      * @param exec  Executor associated to the field
      * @param in a vector of elements to copy over
      */
-    Vector(const Executor& exec, std::vector<ValueType> in) : Vector(exec, in.data(), in.size()) {}
+    Vector(const Executor& exec, std::vector<ValueType> in)
+        : Vector(exec, in.data(), static_cast<localIdx>(in.size()))
+    {}
 
     /**
      * @brief Create a Vector as a copy of a Vector on a specified executor
@@ -203,10 +208,10 @@ public:
     }
 
     // ensures no return of device address on host --> invalid memory access
-    ValueType& operator[](const size_t i) = delete;
+    ValueType& operator[](const localIdx i) = delete;
 
     // ensures no return of device address on host --> invalid memory access
-    const ValueType& operator[](const size_t i) const = delete;
+    const ValueType& operator[](const localIdx i) const = delete;
 
     /**
      * @brief Assignment operator, Sets the field values to that of the passed value.
@@ -311,21 +316,22 @@ public:
      * @brief Resizes the field to a new size.
      * @param size The new size to set the field to.
      */
-    void resize(const size_t size)
+    void resize(const localIdx size)
     {
         void* ptr = nullptr;
         if (!empty())
         {
             std::visit(
                 [this, &ptr, size](const auto& exec)
-                { ptr = exec.realloc(this->data_, size * sizeof(ValueType)); },
+                { ptr = exec.realloc(this->data_, static_cast<size_t>(size) * sizeof(ValueType)); },
                 exec_
             );
         }
         else
         {
             std::visit(
-                [&ptr, size](const auto& exec) { ptr = exec.alloc(size * sizeof(ValueType)); },
+                [&ptr, size](const auto& exec)
+                { ptr = exec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
                 exec_
             );
         }
@@ -355,7 +361,7 @@ public:
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] size_t size() const { return size_; }
+    [[nodiscard]] localIdx size() const { return size_; }
 
     /**
      * @brief Gets the size of the field.
@@ -379,7 +385,10 @@ public:
      * @brief Gets the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<ValueType> view() & { return View<ValueType>(data_, size_); }
+    [[nodiscard]] View<ValueType> view() &
+    {
+        return View<ValueType>(data_, static_cast<size_t>(size_));
+    }
 
     /**
      * @brief Gets the field as a view.
@@ -387,42 +396,46 @@ public:
      */
     [[nodiscard]] View<const ValueType> view() const&
     {
-        return View<const ValueType>(data_, size_);
+        return View<const ValueType>(data_, static_cast<size_t>(size_));
     }
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<ValueType> view(std::pair<size_t, size_t> range) && = delete;
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) && = delete;
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<const ValueType> view(std::pair<size_t, size_t> range) const&& = delete;
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
 
     /**
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<size_t, size_t> range) &
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
-        return View<ValueType>(data_ + range.first, range.second - range.first);
+        return View<ValueType>(
+            data_ + range.first, static_cast<size_t>(range.second - range.first)
+        );
     }
 
     /**
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<const ValueType> view(std::pair<size_t, size_t> range) const&
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
-        return View<const ValueType>(data_ + range.first, range.second - range.first);
+        return View<const ValueType>(
+            data_ + range.first, static_cast<size_t>(range.second - range.first)
+        );
     }
 
     /**
      * @brief Gets the range of the field.
      * @return The range of the field {0, size()}.
      */
-    [[nodiscard]] std::pair<size_t, size_t> range() const { return {0, size()}; }
+    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 
-    size_t size_ {0};           //!< Size of the field.
+    localIdx size_ {0};         //!< Size of the field.
     ValueType* data_ {nullptr}; //!< Pointer to the field data.
     const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
 

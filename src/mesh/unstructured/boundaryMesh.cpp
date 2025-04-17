@@ -28,11 +28,11 @@ const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
 
 template<typename ValueType>
 View<const ValueType>
-extractSubSpan(const Vector<ValueType>& field, const std::vector<localIdx>& offsets, localIdx i)
+extractSubSpan(const Vector<ValueType>& vec, const std::vector<localIdx>& offs, localIdx i)
 {
-    auto start = static_cast<size_t>(offsets[i]);
-    auto end = static_cast<size_t>(offsets[i + 1]);
-    return field.view({start, end});
+    // FIXME make offset a Vector<localIdx> instead of std::vector
+    auto j = static_cast<std::size_t>(i);
+    return vec.view({offs[j], offs[j + 1]});
 }
 
 
