@@ -8,7 +8,7 @@ var searchData=
   ['serialexecutor_5',['SerialExecutor',['../classNeoN_1_1SerialExecutor.html#ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2',1,'NeoN::SerialExecutor']]],
   ['setexecutor_6',['setExecutor',['../classNeoN_1_1sundials_1_1SKVector.html#a7dc25bd6dec0981fad907c94c66da645',1,'NeoN::sundials::SKVector']]],
   ['setfixedvalue_7',['setfixedvalue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a2ef18c0f426de4e5522a05bf1135e770',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setFixedValue()'],['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1detail.html#ab89592f07addcda65af0daab5edcc52a',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::detail::setFixedValue()']]],
-  ['setgradientvalue_8',['setGradientValue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a6b3c2da7c9986681822838142805fe81',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
+  ['setgradientvalue_8',['setGradientValue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a0d866de55405f02532dc5ab05c5d665b',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
   ['setreference_9',['setReference',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#ad55183feff01e60075b59bbe828b856e',1,'NeoN::finiteVolume::cellCentred::Expression']]],
   ['setvector_10',['setVector',['../namespaceNeoN.html#abea1b0b84403cd0569cc9847703410eb',1,'NeoN']]],
   ['sf_11',['sf',['../classNeoN_1_1BoundaryMesh.html#a269a02a34131f449ffa9f654a5889c0e',1,'NeoN::BoundaryMesh::sf(const localIdx i) const'],['../classNeoN_1_1BoundaryMesh.html#a366cd12d93943293ff42cf264151733d',1,'NeoN::BoundaryMesh::sf() const']]],
