@@ -48,7 +48,7 @@
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;ValueType,<sp/>IndexType&gt;&amp;<sp/>sys</highlight></codeline>
 <codeline lineno="40"><highlight class="normal">)</highlight></codeline>
 <codeline lineno="41"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nrows<sp/>=<sp/>sys.rhs().size();</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nrows<sp/>=<sp/>sys.rhs().size();</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.view().matrix;</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>we<sp/>get<sp/>a<sp/>const<sp/>view<sp/>of<sp/>the<sp/>system<sp/>but<sp/>need<sp/>a<sp/>non<sp/>const<sp/>view<sp/>to<sp/>vals<sp/>and<sp/>indices</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>auto<sp/>vals<sp/>=<sp/>createConstGkoArray(exec,<sp/>mtx.values).copy_to_array();</highlight><highlight class="normal"></highlight></codeline>

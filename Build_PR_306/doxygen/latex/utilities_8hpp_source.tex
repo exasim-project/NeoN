@@ -43,7 +43,7 @@
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00039}00039\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,\ \textcolor{keyword}{const}\ LinearSystem<ValueType,\ IndexType>\&\ sys}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00040}00040\ )}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00041}00041\ \{}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nrows\ =\ sys.rhs().size();}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{auto}\ nrows\ =\ sys.rhs().size();}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{auto}\ mtx\ =\ sys.view().matrix;}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ NOTE\ we\ get\ a\ const\ view\ of\ the\ system\ but\ need\ a\ non\ const\ view\ to\ vals\ and\ indices}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{comment}{//\ auto\ vals\ =\ createConstGkoArray(exec,\ mtx.values).copy\_to\_array();}}
