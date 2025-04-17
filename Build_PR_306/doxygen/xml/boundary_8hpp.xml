@@ -322,6 +322,8 @@
       <node id="53">
         <label>NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp</label>
         <link refid="surfaceBoundaryFactory_8hpp"/>
+        <childnode refid="16" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
@@ -396,6 +398,8 @@
       <node id="43">
         <label>NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</label>
         <link refid="volumeBoundaryFactory_8hpp"/>
+        <childnode refid="16" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
@@ -626,7 +630,7 @@
 <codeline lineno="39" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ac219f7675251df9d46327915c48c74e4" refkind="member"><highlight class="normal">std::vector&lt;BoundaryType&gt;<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ac219f7675251df9d46327915c48c74e4" kindref="member">createExtrapolatedBCs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
 <codeline lineno="40"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;BoundaryType&gt;<sp/>bcs;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>patchID<sp/>=<sp/>0;<sp/>patchID<sp/>&lt;<sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>();<sp/>patchID++)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>patchID<sp/>=<sp/>0;<sp/>patchID<sp/>&lt;<sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>();<sp/>patchID++)</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>patchDict({{</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;extrapolated&quot;</highlight><highlight class="normal">)}});</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bcs.push_back(BoundaryType(mesh,<sp/>patchDict,<sp/>patchID));</highlight></codeline>
