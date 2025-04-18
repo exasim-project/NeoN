@@ -36,7 +36,7 @@ The following code block shows the implementation of a parallelFor for fields
             Kokkos::parallel_for(
                 "parallelFor",
                 Kokkos::RangePolicy<runOn>(0, field.size()),
-                KOKKOS_LAMBDA(const size_t i) { view[i] = kernel(i); }
+                KOKKOS_LAMBDA(const localIdx i) { view[i] = kernel(i); }
             );
         }
     }

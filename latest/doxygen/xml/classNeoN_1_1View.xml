@@ -9,6 +9,22 @@
         <type>typename ValueType</type>
       </param>
     </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1View_1a03191759d470e4e6692d27af6a176ddc" prot="public" static="no">
+        <type>std::span&lt; ValueType &gt;</type>
+        <definition>using NeoN::View&lt; ValueType &gt;::base =  std::span&lt;ValueType&gt;</definition>
+        <argsstring></argsstring>
+        <name>base</name>
+        <qualifiedname>NeoN::View::base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="26" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -23,11 +39,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="28" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="28" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="31" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="31" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" prot="public" static="no" mutable="yes">
-        <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
-        <definition>size_t NeoN::View&lt; ValueType &gt;::failureIndex</definition>
+      <memberdef kind="variable" id="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" prot="public" static="no" mutable="yes">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::View&lt; ValueType &gt;::failureIndex</definition>
         <argsstring></argsstring>
         <name>failureIndex</name>
         <qualifiedname>NeoN::View::failureIndex</qualifiedname>
@@ -38,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="34" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="34" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="37" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="37" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -58,16 +74,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="40" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="40" bodyend="40"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="43" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="43" bodyend="43"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1View_1acfbda5daa4a9afd7f61f52244d936092" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1View_1a0ce01edd1bcd61c22395ac4d5b3774f4" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>constexpr ValueType &amp;</type>
         <definition>constexpr ValueType &amp; NeoN::View&lt; ValueType &gt;::operator[]</definition>
-        <argsstring>(std::size_t index) const</argsstring>
+        <argsstring>(localIdx index) const</argsstring>
         <name>operator[]</name>
         <qualifiedname>NeoN::View::operator[]</qualifiedname>
         <param>
-          <type>std::size_t</type>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
           <declname>index</declname>
         </param>
         <briefdescription>
@@ -76,7 +92,61 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="42" column="25" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="42" bodyend="67"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="45" column="25" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="45" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1View_1a3869dd0414ada3a29e665d982c48dcbb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::View&lt; ValueType &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>NeoN::View::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="72" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1View_1a4e2415b6c4692df6c194675f97bb8caf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
+        <definition>View&lt; ValueType &gt; NeoN::View&lt; ValueType &gt;::subspan</definition>
+        <argsstring>(localIdx start, localIdx length) const</argsstring>
+        <name>subspan</name>
+        <qualifiedname>NeoN::View::subspan</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>start</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="74" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="74" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1View_1a6a6a45480d2e24a344f4b270c5fa432b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
+        <definition>View&lt; ValueType &gt; NeoN::View&lt; ValueType &gt;::subspan</definition>
+        <argsstring>(localIdx start) const</argsstring>
+        <name>subspan</name>
+        <qualifiedname>NeoN::View::subspan</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>start</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="79" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="79" bodyend="82"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -105,11 +175,15 @@
         <label>std::span&lt; ValueType &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="21" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="22" bodyend="68"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="22" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="23" bodyend="83"/>
     <listofallmembers>
       <member refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>abort</name></member>
-      <member refid="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>failureIndex</name></member>
-      <member refid="classNeoN_1_1View_1acfbda5daa4a9afd7f61f52244d936092" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>operator[]</name></member>
+      <member refid="classNeoN_1_1View_1a03191759d470e4e6692d27af6a176ddc" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>base</name></member>
+      <member refid="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>failureIndex</name></member>
+      <member refid="classNeoN_1_1View_1a0ce01edd1bcd61c22395ac4d5b3774f4" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>operator[]</name></member>
+      <member refid="classNeoN_1_1View_1a3869dd0414ada3a29e665d982c48dcbb" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>size</name></member>
+      <member refid="classNeoN_1_1View_1a4e2415b6c4692df6c194675f97bb8caf" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>subspan</name></member>
+      <member refid="classNeoN_1_1View_1a6a6a45480d2e24a344f4b270c5fa432b" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>subspan</name></member>
       <member refid="classNeoN_1_1View_1ab8bb84d0d065dd96e49fb2aec5dd953d" prot="public" virt="non-virtual"><scope>NeoN::View</scope><name>View</name></member>
     </listofallmembers>
   </compounddef>

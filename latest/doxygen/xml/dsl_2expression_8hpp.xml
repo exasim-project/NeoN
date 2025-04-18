@@ -147,6 +147,8 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
       </node>
@@ -217,6 +219,8 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
@@ -236,6 +240,8 @@
         <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -389,6 +395,8 @@
       <node id="60">
         <label>NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</label>
         <link refid="volumeBoundaryFactory_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="40" relation="include">
         </childnode>
         <childnode refid="61" relation="include">
@@ -439,6 +447,8 @@
       <node id="27">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
       </node>
       <node id="35">
         <label>NeoN/linearAlgebra/CSRMatrix.hpp</label>
@@ -648,10 +658,10 @@
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>perform<sp/>all<sp/>explicit<sp/>operation<sp/>and<sp/>accumulate<sp/>the<sp/>result<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="46" refid="classNeoN_1_1dsl_1_1Expression_1ae8240aab017a348962ca09477a52ab07" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1ae8240aab017a348962ca09477a52ab07" kindref="member">explicitOperation</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nCells)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="46" refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" kindref="member">explicitOperation</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nCells)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="47"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>source(exec_,<sp/>nCells,<sp/>zero&lt;ValueType&gt;());</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1ae8240aab017a348962ca09477a52ab07" kindref="member">explicitOperation</ref>(source);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" kindref="member">explicitOperation</ref>(source);</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>perform<sp/>all<sp/>explicit<sp/>operation<sp/>and<sp/>accumulate<sp/>the<sp/>result<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -725,106 +735,109 @@
 <codeline lineno="120"><highlight class="normal"></highlight></codeline>
 <codeline lineno="121"><highlight class="normal"></highlight></codeline>
 <codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>getter<sp/>for<sp/>the<sp/>total<sp/>number<sp/>of<sp/>terms<sp/>in<sp/>the<sp/>equation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="123" refid="classNeoN_1_1dsl_1_1Expression_1a1e5626e89b0d8a032f34b3cd87371fef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a1e5626e89b0d8a032f34b3cd87371fef" kindref="member">size</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>temporalOperators_.size()<sp/>+<sp/>spatialOperators_.size();<sp/>}</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>getters</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="126" refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="127"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>temporalOperators_;</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight></codeline>
-<codeline lineno="131" refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="132"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spatialOperators_;</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight></codeline>
-<codeline lineno="136" refid="classNeoN_1_1dsl_1_1Expression_1af83cc00b92f50885174cd7a008473852" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1af83cc00b92f50885174cd7a008473852" kindref="member">temporalOperators</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>temporalOperators_;<sp/>}</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight></codeline>
-<codeline lineno="138" refid="classNeoN_1_1dsl_1_1Expression_1a83b1c51af4cdfd9852baeeb37c7fb14b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a83b1c51af4cdfd9852baeeb37c7fb14b" kindref="member">spatialOperators</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spatialOperators_;<sp/>}</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140" refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" kindref="member">exec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>exec_;<sp/>}</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
-<codeline lineno="145"><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;<sp/>temporalOperators_;</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"></highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;<sp/>spatialOperators_;</highlight></codeline>
-<codeline lineno="149"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="123" refid="classNeoN_1_1dsl_1_1Expression_1a776feac445b6216773eaa9a9f16a265a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a776feac445b6216773eaa9a9f16a265a" kindref="member">size</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="124"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(temporalOperators_.size()<sp/>+<sp/>spatialOperators_.size());</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>getters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="130"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>temporalOperators_;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="135"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spatialOperators_;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="classNeoN_1_1dsl_1_1Expression_1af83cc00b92f50885174cd7a008473852" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1af83cc00b92f50885174cd7a008473852" kindref="member">temporalOperators</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>temporalOperators_;<sp/>}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141" refid="classNeoN_1_1dsl_1_1Expression_1a83b1c51af4cdfd9852baeeb37c7fb14b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1a83b1c51af4cdfd9852baeeb37c7fb14b" kindref="member">spatialOperators</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spatialOperators_;<sp/>}</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143" refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" kindref="member">exec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>exec_;<sp/>}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;TemporalOperator&lt;ValueType&gt;&gt;<sp/>temporalOperators_;</highlight></codeline>
 <codeline lineno="150"><highlight class="normal"></highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="152"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="153" refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="154"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a77198421f4c3765700d158f9d675264c" kindref="member">addExpression</ref>(rhs);</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
-<codeline lineno="157"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="160"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="161" refid="namespaceNeoN_1_1dsl_1a03a2b36294837ab1965156992fe10ccd" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="162"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(rhs);</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
-<codeline lineno="165"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"></highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>rightOperator&gt;</highlight></codeline>
-<codeline lineno="168"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;typename<sp/>leftOperator::VectorValueType&gt;</highlight></codeline>
-<codeline lineno="169" refid="namespaceNeoN_1_1dsl_1a191f28ba2eb12e6ca3fdc7c25929048f" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(leftOperator<sp/>lhs,<sp/>rightOperator<sp/>rhs)</highlight></codeline>
-<codeline lineno="170"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator::VectorValueType;</highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(lhs.exec());</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(lhs);</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(rhs);</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
-<codeline lineno="176"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="179" refid="namespaceNeoN_1_1dsl_1a619c9712731a205faddf7f7b88457909" refkind="member"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1a65e72931514ea50f7a85aa2942454cee" kindref="member">operator*</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>scale,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>es)</highlight></codeline>
-<codeline lineno="180"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(es.<ref refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" kindref="member">exec</ref>());</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>oper<sp/>:<sp/>es.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>())</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(scale<sp/>*<sp/>oper);</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>oper<sp/>:<sp/>es.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>())</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(scale<sp/>*<sp/>oper);</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="192"><highlight class="normal"></highlight></codeline>
-<codeline lineno="193"><highlight class="normal"></highlight></codeline>
-<codeline lineno="194"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="195"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="196" refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="197"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a77198421f4c3765700d158f9d675264c" kindref="member">addExpression</ref>(-1.0<sp/>*<sp/>rhs);</highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
-<codeline lineno="200"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="201"><highlight class="normal"></highlight></codeline>
-<codeline lineno="202"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="203"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="204" refid="namespaceNeoN_1_1dsl_1ac6ecc9a0fd680f9e8504a39a5a0ca629" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="205"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(-1.0<sp/>*<sp/>rhs);</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
-<codeline lineno="208"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"></highlight></codeline>
-<codeline lineno="210"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>rightOperator&gt;</highlight></codeline>
-<codeline lineno="211"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;typename<sp/>leftOperator::VectorValueType&gt;</highlight></codeline>
-<codeline lineno="212" refid="namespaceNeoN_1_1dsl_1a590fbdffc01dc7fad7632c70e36a42a8" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(leftOperator<sp/>lhs,<sp/>rightOperator<sp/>rhs)</highlight></codeline>
-<codeline lineno="213"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator::VectorValueType;</highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(lhs.exec());</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(lhs);</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">Coeff</ref>(-1)<sp/>*<sp/>rhs);</highlight></codeline>
-<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
-<codeline lineno="219"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="220"><highlight class="normal"></highlight></codeline>
-<codeline lineno="221"><highlight class="normal"></highlight></codeline>
-<codeline lineno="222"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SpatialOperator&lt;ValueType&gt;&gt;<sp/>spatialOperators_;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="156" refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="157"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a77198421f4c3765700d158f9d675264c" kindref="member">addExpression</ref>(rhs);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="163"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="164" refid="namespaceNeoN_1_1dsl_1a03a2b36294837ab1965156992fe10ccd" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(rhs);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>rightOperator&gt;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;typename<sp/>leftOperator::VectorValueType&gt;</highlight></codeline>
+<codeline lineno="172" refid="namespaceNeoN_1_1dsl_1a191f28ba2eb12e6ca3fdc7c25929048f" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" kindref="member">operator+</ref>(leftOperator<sp/>lhs,<sp/>rightOperator<sp/>rhs)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator::VectorValueType;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(lhs.exec());</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(lhs);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(rhs);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="182" refid="namespaceNeoN_1_1dsl_1a619c9712731a205faddf7f7b88457909" refkind="member"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1a65e72931514ea50f7a85aa2942454cee" kindref="member">operator*</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>scale,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>es)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(es.<ref refid="classNeoN_1_1dsl_1_1Expression_1ad17c6007292ab849a306b88cbf64a5da" kindref="member">exec</ref>());</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>oper<sp/>:<sp/>es.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>())</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(scale<sp/>*<sp/>oper);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>oper<sp/>:<sp/>es.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>())</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(scale<sp/>*<sp/>oper);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="199" refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="200"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a77198421f4c3765700d158f9d675264c" kindref="member">addExpression</ref>(-1.0<sp/>*<sp/>rhs);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="207" refid="namespaceNeoN_1_1dsl_1ac6ecc9a0fd680f9e8504a39a5a0ca629" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="208"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/>lhs.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(-1.0<sp/>*<sp/>rhs);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs;</highlight></codeline>
+<codeline lineno="211"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>rightOperator&gt;</highlight></codeline>
+<codeline lineno="214"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>Expression&lt;typename<sp/>leftOperator::VectorValueType&gt;</highlight></codeline>
+<codeline lineno="215" refid="namespaceNeoN_1_1dsl_1a590fbdffc01dc7fad7632c70e36a42a8" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" kindref="member">operator-</ref>(leftOperator<sp/>lhs,<sp/>rightOperator<sp/>rhs)</highlight></codeline>
+<codeline lineno="216"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>leftOperator::VectorValueType;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;ValueType&gt;</ref><sp/>expr(lhs.exec());</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(lhs);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>expr.<ref refid="classNeoN_1_1dsl_1_1Expression_1a962146977092abb074c409b5d09a16e1" kindref="member">addOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">Coeff</ref>(-1)<sp/>*<sp/>rhs);</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>expr;</highlight></codeline>
+<codeline lineno="222"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp"/>
   </compounddef>

@@ -1,5 +1,6 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/helpers/exceptions.hpp File Reference}
 \hypertarget{exceptions_8hpp}{}\label{exceptions_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp}}
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
@@ -28,10 +29,12 @@ namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 
 {\bfseries Value\+:}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{if}\ (\_op1.size()\ !=\ \_op2.size())\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{auto}\ s1\ =\ \textcolor{keyword}{static\_cast<}localIdx\textcolor{keyword}{>}(\_op1.size());\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{auto}\ s2\ =\ \textcolor{keyword}{static\_cast<}localIdx\textcolor{keyword}{>}(\_op2.size());\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ if\ (s1\ !=\ s2)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \ \ \ \ throw\ ::NeoN::DimensionMismatch(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \_\_FILE\_\_,\ \_\_LINE\_\_,\ \_\_func\_\_,\ \_op1.size(),\ \_op2.size(),\ \textcolor{stringliteral}{"{}expected\ equal\ dimensions"{}}\ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \_\_FILE\_\_,\ \_\_LINE\_\_,\ \_\_func\_\_,\ s1,\ s2,\ \textcolor{stringliteral}{"{}expected\ equal\ dimensions"{}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \ \ \ \ );\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \}}
 
@@ -45,5 +48,5 @@ Asserts that {\ttfamily \+\_\+op1} and {\ttfamily \+\_\+op2} have the same lengt
 \end{DoxyExceptions}
 
 
-Definition at line \mbox{\hyperlink{exceptions_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{exceptions_8hpp_source}{exceptions.\+hpp}}.
+Definition at line \mbox{\hyperlink{exceptions_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{exceptions_8hpp_source}{exceptions.\+hpp}}.
 

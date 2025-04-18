@@ -19,11 +19,11 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00015}00015\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00016}00016\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{GPUExecutor::exec}};}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00017}00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00018}00018\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00018}00018\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00019}00019\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00020}00020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00021}00021\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00022}00022\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00022}00022\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \ \ \ \ sum}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00025}00025\ \ \ \ \ \}}
@@ -33,11 +33,11 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00029}00029\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{CPUExecutor::exec}};}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \ \ \ \ sum}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00039}00039\ \ \ \ \ \}}
@@ -47,11 +47,11 @@
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00043}00043\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }executor\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{SerialExecutor::exec}};}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ fieldS\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a74bcb84e4b7d080ed91795d23333e093}{size}}();}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}();}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ Kokkos::parallel\_reduce(}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<executor>(0,\ end),}
-\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
+\DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ T\&\ lsum)\ \{\ lsum\ +=\ fieldS[i];\ \},}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ sum}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{sum_8hpp_source_l00053}00053\ \ \ \ \ \}}

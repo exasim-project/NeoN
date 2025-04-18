@@ -4,9 +4,25 @@
     <compoundname>view.hpp</compoundname>
     <includes local="no">limits</includes>
     <includes local="no">span</includes>
+    <includes refid="label_8hpp" local="yes">NeoN/core/primitives/label.hpp</includes>
     <includedby refid="vector_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/core/vector.hpp</includedby>
     <includedby refid="fieldFreeFunctions_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/fields/fieldFreeFunctions.hpp</includedby>
+    <includedby refid="segmentedVector_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/fields/segmentedVector.hpp</includedby>
     <incdepgraph>
+      <node id="4">
+        <label>NeoN/core/primitives/label.hpp</label>
+        <link refid="label_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>NeoN/core/primitives/traits.hpp</label>
+        <link refid="traits_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp</label>
         <link refid="view_8hpp"/>
@@ -14,6 +30,14 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
       </node>
       <node id="2">
         <label>limits</label>
@@ -85,6 +109,8 @@
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
         </childnode>
       </node>
       <node id="8">
@@ -680,72 +706,87 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;limits&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;span&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
-<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>Span</highlight></codeline>
-<codeline lineno="13"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>@brief<sp/>A<sp/>wrapper<sp/>class<sp/>for<sp/>std::span<sp/>which<sp/>allows<sp/>to<sp/>check<sp/>whether<sp/>the<sp/>index<sp/>access<sp/>is<sp/>in<sp/>range</highlight></codeline>
-<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>The<sp/>Span<sp/>can<sp/>be<sp/>initialized<sp/>like<sp/>a<sp/>regular<sp/>std::span<sp/>or<sp/>from<sp/>an<sp/>existing<sp/>std::span</highlight></codeline>
-<codeline lineno="16"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>@ingroup<sp/>core</highlight></codeline>
-<codeline lineno="18"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="19"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="21" refid="classNeoN_1_1View" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1View" kindref="compound">View</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="22"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>flag<sp/>to<sp/>control<sp/>whether<sp/>the<sp/>program<sp/>should<sp/>terminate<sp/>on<sp/>invalid<sp/>memory<sp/>access<sp/>or<sp/>throw.</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>Kokkos<sp/>prefers<sp/>to<sp/>terminate,<sp/>but<sp/>for<sp/>testing<sp/>purpose<sp/>the<sp/>failureIndex<sp/>is<sp/>preferred</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28" refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" kindref="member">abort</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>a<sp/>member<sp/>to<sp/>store<sp/>the<sp/>first<sp/>out<sp/>of<sp/>range<sp/>data<sp/>access.<sp/>This<sp/>assumes<sp/>a<sp/>span<sp/>has</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>at<sp/>least<sp/>a<sp/>size<sp/>of<sp/>1.<sp/>A<sp/>value<sp/>of<sp/>zero<sp/>signals<sp/>success.<sp/>This<sp/>is<sp/>required<sp/>we<sp/>cannot</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>throw<sp/>from<sp/>a<sp/>device<sp/>function.</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34" refid="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" kindref="member">failureIndex</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">std::span&lt;ValueType&gt;::span;<sp/></highlight><highlight class="comment">//<sp/>Inherit<sp/>constructors<sp/>from<sp/>std::span</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Constructor<sp/>from<sp/>existing<sp/>std::span</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="40" refid="classNeoN_1_1View_1ab8bb84d0d065dd96e49fb2aec5dd953d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View_1ab8bb84d0d065dd96e49fb2aec5dd953d" kindref="member">View</ref>(std::span&lt;ValueType&gt;<sp/>in)<sp/>:<sp/><ref refid="classNeoN_1_1View" kindref="compound">View</ref>(in.begin(),<sp/>in.end())<sp/>{}</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42" refid="classNeoN_1_1View_1acfbda5daa4a9afd7f61f52244d936092" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>ValueType&amp;<sp/><ref refid="classNeoN_1_1View_1acfbda5daa4a9afd7f61f52244d936092" kindref="member">operator[]</ref>(std::size_t<sp/>index)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="43"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_DEBUG</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(index<sp/>&gt;=<sp/>this-&gt;size())</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:<sp/>currently<sp/>this<sp/>is<sp/>failing<sp/>on<sp/>our<sp/>AWS<sp/>workflow,<sp/>once<sp/>we<sp/>have<sp/>clang&gt;16<sp/>there</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>this<sp/>should<sp/>work<sp/>again.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>const<sp/>std::string<sp/>msg<sp/>{&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range.<sp/>Index:<sp/>&quot;}<sp/>+<sp/>to_string(index);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" kindref="member">abort</ref>)</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::abort(</highlight><highlight class="stringliteral">&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE:<sp/>throwing<sp/>from<sp/>a<sp/>device<sp/>function<sp/>does<sp/>not<sp/>work</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>throw<sp/>std::invalid_argument(&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range&quot;);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" kindref="member">failureIndex</ref><sp/>==<sp/>0)</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View_1a0c9390b0d3fb6e4f02b561b2e654622b" kindref="member">failureIndex</ref><sp/>=<sp/>index;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;::operator[](index);</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;::operator[](index);</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;span&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="label_8hpp" kindref="compound">NeoN/core/primitives/label.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="11"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>Span</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>@brief<sp/>A<sp/>wrapper<sp/>class<sp/>for<sp/>std::span<sp/>which<sp/>allows<sp/>to<sp/>check<sp/>whether<sp/>the<sp/>index<sp/>access<sp/>is<sp/>in<sp/>range</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>The<sp/>Span<sp/>can<sp/>be<sp/>initialized<sp/>like<sp/>a<sp/>regular<sp/>std::span<sp/>or<sp/>from<sp/>an<sp/>existing<sp/>std::span</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>@ingroup<sp/>core</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="22" refid="classNeoN_1_1View" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1View" kindref="compound">View</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="classNeoN_1_1View_1a03191759d470e4e6692d27af6a176ddc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1View_1a03191759d470e4e6692d27af6a176ddc" kindref="member">base</ref><sp/>=<sp/>std::span&lt;ValueType&gt;;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>flag<sp/>to<sp/>control<sp/>whether<sp/>the<sp/>program<sp/>should<sp/>terminate<sp/>on<sp/>invalid<sp/>memory<sp/>access<sp/>or<sp/>throw.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>Kokkos<sp/>prefers<sp/>to<sp/>terminate,<sp/>but<sp/>for<sp/>testing<sp/>purpose<sp/>the<sp/>failureIndex<sp/>is<sp/>preferred</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1View_1a63ef7ab5beb5f2636917213af3ba3c92" kindref="member">abort</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>a<sp/>member<sp/>to<sp/>store<sp/>the<sp/>first<sp/>out<sp/>of<sp/>range<sp/>data<sp/>access.<sp/>This<sp/>assumes<sp/>a<sp/>span<sp/>has</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>at<sp/>least<sp/>a<sp/>size<sp/>of<sp/>1.<sp/>A<sp/>value<sp/>of<sp/>zero<sp/>signals<sp/>success.<sp/>This<sp/>is<sp/>required<sp/>we<sp/>cannot</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>throw<sp/>from<sp/>a<sp/>device<sp/>function.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" kindref="member">failureIndex</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">std::span&lt;ValueType&gt;::span;<sp/></highlight><highlight class="comment">//<sp/>Inherit<sp/>constructors<sp/>from<sp/>std::span</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Constructor<sp/>from<sp/>existing<sp/>std::span</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classNeoN_1_1View_1ab8bb84d0d065dd96e49fb2aec5dd953d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View_1ab8bb84d0d065dd96e49fb2aec5dd953d" kindref="member">View</ref>(std::span&lt;ValueType&gt;<sp/>in)<sp/>:<sp/><ref refid="classNeoN_1_1View" kindref="compound">View</ref>(in.begin(),<sp/>in.end())<sp/>{}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classNeoN_1_1View_1a0ce01edd1bcd61c22395ac4d5b3774f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>ValueType&amp;<sp/><ref refid="classNeoN_1_1View_1a0ce01edd1bcd61c22395ac4d5b3774f4" kindref="member">operator[]</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>index)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="46"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_DEBUG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(index<sp/>&gt;=<sp/>this-&gt;<ref refid="classNeoN_1_1View_1a3869dd0414ada3a29e665d982c48dcbb" kindref="member">size</ref>())</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:<sp/>currently<sp/>this<sp/>is<sp/>failing<sp/>on<sp/>our<sp/>AWS<sp/>workflow,<sp/>once<sp/>we<sp/>have<sp/>clang&gt;16<sp/>there</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>this<sp/>should<sp/>work<sp/>again.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>const<sp/>std::string<sp/>msg<sp/>{&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range.<sp/>Index:<sp/>&quot;}<sp/>+<sp/>to_string(index);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(abort)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::abort(</highlight><highlight class="stringliteral">&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE:<sp/>throwing<sp/>from<sp/>a<sp/>device<sp/>function<sp/>does<sp/>not<sp/>work</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>throw<sp/>std::invalid_argument(&quot;Index<sp/>is<sp/>out<sp/>of<sp/>range&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" kindref="member">failureIndex</ref><sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View_1a47737a308b5ee947e194a13884aab8f9" kindref="member">failureIndex</ref><sp/>=<sp/>index;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;::operator[](</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(index));</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::span&lt;ValueType&gt;::operator[](</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(index));</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classNeoN_1_1View_1a3869dd0414ada3a29e665d982c48dcbb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1View_1a3869dd0414ada3a29e665d982c48dcbb" kindref="member">size</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(base::size());<sp/>}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classNeoN_1_1View_1a4e2415b6c4692df6c194675f97bb8caf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;ValueType&gt;</ref><sp/><ref refid="classNeoN_1_1View_1a4e2415b6c4692df6c194675f97bb8caf" kindref="member">subspan</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>start,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>length)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="75"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>base::subspan(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(start),<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(length));</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="classNeoN_1_1View_1a6a6a45480d2e24a344f4b270c5fa432b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;ValueType&gt;</ref><sp/><ref refid="classNeoN_1_1View_1a6a6a45480d2e24a344f4b270c5fa432b" kindref="member">subspan</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>start)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="80"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>base::subspan(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(start));</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp"/>
   </compounddef>
