@@ -27,10 +27,11 @@ template<typename BoundaryType>
 std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
+    bcs.reserve(mesh.nBoundaries());
     for (size_t patchID = 0; patchID < mesh.nBoundaries(); patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
-        bcs.push_back(BoundaryType(mesh, patchDict, patchID));
+        bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;
 };
@@ -39,10 +40,11 @@ template<typename BoundaryType>
 std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
+    bcs.reserve(mesh.nBoundaries());
     for (size_t patchID = 0; patchID < mesh.nBoundaries(); patchID++)
     {
         Dictionary patchDict({{"type", std::string("extrapolated")}});
-        bcs.push_back(BoundaryType(mesh, patchDict, patchID));
+        bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;
 };
