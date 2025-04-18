@@ -47,10 +47,10 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             // hit on performance on serial
-            size_t owner = static_cast<size_t>(faceOwner[facei]);
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
+            auto owner = faceOwner[facei];
+            auto neighbour = faceNeighbour[facei];
 
             Kokkos::atomic_increment(&nFacesPerCellSpan[owner]);
             Kokkos::atomic_increment(&nFacesPerCellSpan[neighbour]);
@@ -67,16 +67,16 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
-            localIdx owner = static_cast<localIdx>(faceOwner[facei]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeighbour[facei];
+            auto owner = faceOwner[facei];
 
             // return the oldValues
             // hit on performance on serial
-            size_t segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellSpan[neighbour], 1);
+            auto segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellSpan[neighbour], 1);
             neighbourOffsetSpan[facei] = static_cast<uint8_t>(segIdxNei);
 
-            size_t startSegNei = rowPtrs[neighbour];
+            auto startSegNei = rowPtrs[neighbour];
             // neighbour --> current cell
             // colIdx --> needs to be store the owner
             Kokkos::atomic_assign(&sColIdx[startSegNei + segIdxNei], owner);
@@ -85,8 +85,8 @@ void SparsityPattern::update()
 
     map(
         nFacesPerCell,
-        KOKKOS_LAMBDA(const size_t celli) {
-            size_t nFaces = nFacesPerCellSpan[static_cast<size_t>(celli)];
+        KOKKOS_LAMBDA(const localIdx celli) {
+            auto nFaces = nFacesPerCellSpan[celli];
             diagOffsetSpan[celli] = static_cast<uint8_t>(nFaces);
             sColIdx[rowPtrs[celli] + nFaces] = celli;
             return nFaces + 1;
@@ -97,16 +97,17 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
-            size_t owner = static_cast<size_t>(faceOwner[facei]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeighbour[facei];
+            auto owner = faceOwner[facei];
 
             // return the oldValues
             // hit on performance on serial
-            size_t segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellSpan[owner], 1);
-            ownerOffsetSpan[facei] = uint8_t(segIdxOwn);
+            auto segIdxOwn =
+                static_cast<uint8_t>(Kokkos::atomic_fetch_add(&nFacesPerCellSpan[owner], 1));
+            ownerOffsetSpan[facei] = segIdxOwn;
 
-            size_t startSegOwn = rowPtrs[owner];
+            auto startSegOwn = rowPtrs[owner];
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
             Kokkos::atomic_assign(&sColIdx[startSegOwn + segIdxOwn], neighbour);

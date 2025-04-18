@@ -199,7 +199,7 @@ TemporalOperator<ValueType>
 operator*(const Vector<scalar>& coeffVector, TemporalOperator<ValueType> rhs)
 {
     TemporalOperator<ValueType> result = rhs;
-    result.getCoefficient() *= Coeff(coeffVector);
+    result.getCoefficient() *= Coeff {coeffVector};
     return result;
 }
 

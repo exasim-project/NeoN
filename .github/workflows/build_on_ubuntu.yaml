@@ -86,13 +86,27 @@ jobs:
          ninja --version
          cmake --version
 
-     - name: Build NeoN
+     - name: Build NeoN without Ginkgo
+       if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
        run: |
          CC=${{matrix.compiler.CC}} \
          CXX=${{matrix.compiler.CXX}} \
          cmake --preset ${{matrix.preset}} \
            -DNeoN_BUILD_TESTS=ON \
            -DNeoN_DEVEL_TOOLS=OFF \
+           -DNeoN_WITH_GINKGO=OFF \
+           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+         cmake --build  --preset ${{matrix.preset}}
+
+     - name: Build NeoN with Ginkgo
+       if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
+       run: |
+         CC=${{matrix.compiler.CC}} \
+         CXX=${{matrix.compiler.CXX}} \
+         cmake --preset ${{matrix.preset}} \
+           -DNeoN_BUILD_TESTS=ON \
+           -DNeoN_DEVEL_TOOLS=OFF \
+           -DNeoN_WITH_GINKGO=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
          cmake --build  --preset ${{matrix.preset}}
 

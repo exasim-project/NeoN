@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   build:
-    if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-build')}}
+    if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
     name: Build NeoN on MacOs
     strategy:
       fail-fast: false

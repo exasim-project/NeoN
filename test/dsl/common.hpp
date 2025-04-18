@@ -12,6 +12,7 @@ using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
 using Operator = NeoN::dsl::Operator;
 using Executor = NeoN::Executor;
+using localIdx = NeoN::localIdx;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
 using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
@@ -47,7 +48,7 @@ public:
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
@@ -62,27 +63,15 @@ public:
         NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
-            KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
         NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
-    }
-
-    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
-    {
-        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Vector<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
-        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
-
-        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
-        return linearSystem;
     }
 
     std::string getName() const { return "Dummy"; }
@@ -118,7 +107,7 @@ public:
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
@@ -134,14 +123,14 @@ public:
         NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
-            KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
         NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
     }
 

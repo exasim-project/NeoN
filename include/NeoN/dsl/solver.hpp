@@ -78,7 +78,7 @@ void solve(
         parallelFor(
             solution.exec(),
             {0, rhs.size()},
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSource[i] * vol[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
         );
 
         auto solver = NeoN::la::Solver(solution.exec(), fvSolution);

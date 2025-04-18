@@ -22,7 +22,7 @@ TEST_CASE("parallelFor")
     auto fieldNFView = NeoN::View(fieldStdView);
 
     NeoN::parallelFor(
-        exec, {0, 5}, KOKKOS_LAMBDA(const size_t i) { fieldNFView[i] *= 2.0; }
+        exec, {0, 5}, KOKKOS_LAMBDA(const NeoN::localIdx i) { fieldNFView[i] *= 2.0; }
     );
     REQUIRE(fieldNFView.failureIndex == 0);
 
@@ -32,14 +32,14 @@ TEST_CASE("parallelFor")
 #ifndef _MSC_VER
     fieldNFView.abort = false;
     NeoN::parallelFor(
-        exec, {5, 6}, KOKKOS_LAMBDA(const size_t i) { fieldNFView[i] *= 2.0; }
+        exec, {5, 6}, KOKKOS_LAMBDA(const localIdx i) { fieldNFView[i] *= 2.0; }
     );
     REQUIRE(fieldNFView.failureIndex == 5);
 #endif
 #endif
 
     auto fieldHost = field.copyToHost();
-    auto fieldNFViewHost = NeoN::View(fieldHost.view());
+    auto fieldNFViewHost = fieldHost.view();
 
 #ifdef NF_DEBUG
 // TODO: on MSCV this results in a non terminating loop
@@ -48,7 +48,7 @@ TEST_CASE("parallelFor")
     fieldNFViewHost.abort = false;
     SECTION("detects out of range")
     {
-        auto tmp = fieldNFViewHost[5];
+        [[maybe_unused]] auto tmp = fieldNFViewHost[5];
         REQUIRE(fieldNFViewHost.failureIndex == 5);
     }
 #endif

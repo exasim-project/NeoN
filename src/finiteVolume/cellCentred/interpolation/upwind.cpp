@@ -24,25 +24,25 @@ void computeUpwindInterpolation(
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryVector().value(),
+        src.boundaryData().value(),
         flux.internalVector()
     );
-    size_t nInternalFaces = dst.mesh().nInternalFaces();
+    auto nInternalFaces = dst.mesh().nInternalFaces();
 
     parallelFor(
         exec,
         {0, dstS.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             if (facei < nInternalFaces)
             {
                 if (fluxS[facei] >= 0)
                 {
-                    size_t own = static_cast<size_t>(ownerS[facei]);
+                    auto own = ownerS[facei];
                     dstS[facei] = srcS[own];
                 }
                 else
                 {
-                    size_t nei = static_cast<size_t>(neighS[facei]);
+                    auto nei = neighS[facei];
                     dstS[facei] = srcS[nei];
                 }
             }

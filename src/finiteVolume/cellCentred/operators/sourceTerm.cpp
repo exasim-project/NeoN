@@ -12,7 +12,7 @@ template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType, VolumeField<scalar>& coefficients, VolumeField<ValueType>& field
 )
-    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
+    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
       coefficients_(coefficients), sparsityPattern_(SparsityPattern::readOrCreate(field.mesh())) {};
 
 template<typename ValueType>
@@ -24,7 +24,7 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
     NeoN::parallelFor(
         source.exec(),
         source.range(),
-        KOKKOS_LAMBDA(const size_t celli) {
+        KOKKOS_LAMBDA(const localIdx celli) {
             sourceSpan[celli] += operatorScaling[celli] * coeff[celli] * fieldSpan[celli];
         }
     );
@@ -42,8 +42,8 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
-        KOKKOS_LAMBDA(const size_t celli) {
-            std::size_t idx = matrix.rowOffs[celli] + diagOffs[celli];
+        KOKKOS_LAMBDA(const localIdx celli) {
+            localIdx idx = matrix.rowOffs[celli] + diagOffs[celli];
             matrix.values[idx] +=
                 operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
         }

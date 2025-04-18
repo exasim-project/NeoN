@@ -26,7 +26,7 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
     NeoN::parallelFor(
         source.exec(),
         source.range(),
-        KOKKOS_LAMBDA(const size_t celli) {
+        KOKKOS_LAMBDA(const localIdx celli) {
             sourceSpan[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
         }
     );
@@ -47,8 +47,8 @@ void DdtOperator<ValueType>::implicitOperation(
     NeoN::parallelFor(
         ls.exec(),
         {0, oldVector.size()},
-        KOKKOS_LAMBDA(const size_t celli) {
-            std::size_t idx = matrix.rowOffs[celli] + diagOffs[celli];
+        KOKKOS_LAMBDA(const localIdx celli) {
+            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli] * dtInver;
             matrix.values[idx] += commonCoef * one<ValueType>();
             rhs[celli] += commonCoef * oldVector[celli];

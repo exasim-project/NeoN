@@ -11,6 +11,7 @@ namespace NeoN
 {
 
 using labelVector = NeoN::Vector<label>;
+using localIdxVector = NeoN::Vector<localIdx>;
 using scalarVector = NeoN::Vector<scalar>;
 using vectorVector = NeoN::Vector<Vec3>;
 

@@ -43,7 +43,7 @@ public:
 
     virtual void solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
     {
-        size_t nrows = sys.rhs().size();
+        auto nrows = sys.rhs().size();
 
         auto gkoMtx = detail::createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);

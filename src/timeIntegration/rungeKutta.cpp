@@ -70,7 +70,7 @@ void RungeKutta<SolutionVectorType>::initSUNERKSolver(
 {
     initExpression(exp);
     initSUNContext();
-    initSUNVector(field.exec(), field.internalVector().size());
+    initSUNVector(field.exec(), static_cast<size_t>(field.internalVector().size()));
     initSUNInitialConditions(field);
     initODEMemory(t);
 }

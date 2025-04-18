@@ -198,7 +198,7 @@ SpatialOperator<ValueType>
 operator*(const Vector<scalar>& coeffVector, SpatialOperator<ValueType> rhs)
 {
     SpatialOperator<ValueType> result = rhs;
-    result.getCoefficient() *= Coeff(coeffVector);
+    result.getCoefficient() *= Coeff {coeffVector};
     return result;
 }
 

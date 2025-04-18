@@ -24,7 +24,7 @@ TEST_CASE("parallelFor")
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         NeoN::parallelFor(
-            exec, {0, 5}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + 2.0; }
+            exec, {0, 5}, KOKKOS_LAMBDA(const NeoN::localIdx i) { viewA[i] = viewB[i] + 2.0; }
         );
         auto hostA = fieldA.copyToHost();
         for (auto value : hostA.view())
@@ -44,7 +44,9 @@ TEST_CASE("parallelFor")
         NeoN::parallelFor(
             exec,
             {0, 5},
-            KOKKOS_LAMBDA(const size_t i) { viewA[i] = viewB[i] + NeoN::Vec3(2.0, 2.0, 2.0); }
+            KOKKOS_LAMBDA(const NeoN::localIdx i) {
+                viewA[i] = viewB[i] + NeoN::Vec3(2.0, 2.0, 2.0);
+            }
         );
         auto hostA = fieldA.copyToHost();
         for (auto value : hostA.view())
@@ -61,7 +63,7 @@ TEST_CASE("parallelFor")
         auto viewB = fieldB.view();
         NeoN::fill(fieldB, 1.0);
         NeoN::parallelFor(
-            fieldA, KOKKOS_LAMBDA(const size_t i) { return viewB[i] + 2.0; }
+            fieldA, KOKKOS_LAMBDA(const NeoN::localIdx i) { return viewB[i] + 2.0; }
         );
         auto hostA = fieldA.copyToHost();
         for (auto value : hostA.view())
@@ -90,7 +92,10 @@ TEST_CASE("parallelReduce")
         NeoN::fill(fieldB, 1.0);
         NeoN::scalar sum = 0.0;
         NeoN::parallelReduce(
-            exec, {0, 5}, KOKKOS_LAMBDA(const size_t i, double& lsum) { lsum += viewB[i]; }, sum
+            exec,
+            {0, 5},
+            KOKKOS_LAMBDA(const NeoN::localIdx i, double& lsum) { lsum += viewB[i]; },
+            sum
         );
 
         REQUIRE(sum == 5.0);
@@ -108,7 +113,7 @@ TEST_CASE("parallelReduce")
         NeoN::parallelReduce(
             exec,
             {0, 5},
-            KOKKOS_LAMBDA(const size_t i, NeoN::scalar& lmax) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::scalar& lmax) {
                 if (lmax < viewB[i]) lmax = viewB[i];
             },
             reducer
@@ -126,7 +131,7 @@ TEST_CASE("parallelReduce")
         NeoN::fill(fieldB, 1.0);
         NeoN::scalar sum = 0.0;
         NeoN::parallelReduce(
-            fieldA, KOKKOS_LAMBDA(const size_t i, double& lsum) { lsum += viewB[i]; }, sum
+            fieldA, KOKKOS_LAMBDA(const NeoN::localIdx i, double& lsum) { lsum += viewB[i]; }, sum
         );
 
         REQUIRE(sum == 5.0);
@@ -143,7 +148,7 @@ TEST_CASE("parallelReduce")
         Kokkos::Max<NeoN::scalar> reducer(max);
         NeoN::parallelReduce(
             fieldA,
-            KOKKOS_LAMBDA(const size_t i, NeoN::scalar& lmax) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::scalar& lmax) {
                 if (lmax < viewB[i]) lmax = viewB[i];
             },
             reducer
@@ -172,7 +177,7 @@ TEST_CASE("parallelScan")
         NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {
@@ -208,7 +213,7 @@ TEST_CASE("parallelScan")
         NeoN::parallelScan(
             exec,
             {1, segView.size()},
-            KOKKOS_LAMBDA(const std::size_t i, NeoN::localIdx& update, const bool final) {
+            KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
                 update += intView[i - 1];
                 if (final)
                 {

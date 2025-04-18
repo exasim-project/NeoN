@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#if NF_WITH_GINKGO
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
@@ -64,3 +66,5 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
     }
     return gko::config::pnode {result};
 }
+
+#endif

@@ -3,8 +3,9 @@
 #pragma once
 
 #include <limits>
-
 #include <span>
+
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -22,6 +23,8 @@ class View : public std::span<ValueType>
 {
 public:
 
+    using base = std::span<ValueType>;
+
     /* A flag to control whether the program should terminate on invalid memory access or throw.
      * Kokkos prefers to terminate, but for testing purpose the failureIndex is preferred
      */
@@ -31,7 +34,7 @@ public:
      * at least a size of 1. A value of zero signals success. This is required we cannot
      * throw from a device function.
      */
-    mutable size_t failureIndex = 0;
+    mutable localIdx failureIndex = 0;
 
     using std::span<ValueType>::span; // Inherit constructors from std::span
 
@@ -39,7 +42,7 @@ public:
      */
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
-    constexpr ValueType& operator[](std::size_t index) const
+    constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
         if (index >= this->size())
@@ -59,11 +62,23 @@ public:
                 {
                     failureIndex = index;
                 }
-                return std::span<ValueType>::operator[](index);
+                return std::span<ValueType>::operator[](static_cast<size_t>(index));
             }
         }
 #endif
-        return std::span<ValueType>::operator[](index);
+        return std::span<ValueType>::operator[](static_cast<size_t>(index));
+    }
+
+    localIdx size() const { return static_cast<localIdx>(base::size()); }
+
+    View<ValueType> subspan(localIdx start, localIdx length) const
+    {
+        return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
+    }
+
+    View<ValueType> subspan(localIdx start) const
+    {
+        return base::subspan(static_cast<size_t>(start));
     }
 };
 

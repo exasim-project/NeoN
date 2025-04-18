@@ -69,7 +69,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkSparseView[0] = csrView.entry(0, 0);
                 checkSparseView[1] = csrView.entry(1, 1);
                 checkSparseView[2] = csrView.entry(1, 2);
@@ -90,7 +90,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkDenseView[0] = denseView.entry(0, 0);
                 checkDenseView[1] = denseView.entry(0, 1);
                 checkDenseView[2] = denseView.entry(0, 2);
@@ -121,7 +121,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 csrView.entry(0, 0) = -1.0;
                 csrView.entry(1, 1) = -5.0;
                 csrView.entry(1, 2) = -6.0;
@@ -141,7 +141,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 denseView.entry(0, 0) = -1.0;
                 denseView.entry(0, 1) = -2.0;
                 denseView.entry(0, 2) = -3.0;
@@ -176,7 +176,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkSparseView[0] = csrView.entry(0);
                 checkSparseView[1] = csrView.entry(1);
                 checkSparseView[2] = csrView.entry(2);
@@ -196,7 +196,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkDenseView[0] = denseView.entry(0);
                 checkDenseView[1] = denseView.entry(1);
                 checkDenseView[2] = denseView.entry(2);
@@ -227,7 +227,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 csrView.entry(0) = -1.0;
                 csrView.entry(1) = -5.0;
                 csrView.entry(2) = -6.0;
@@ -248,7 +248,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 denseView.entry(0) = -1.0;
                 denseView.entry(1) = -2.0;
                 denseView.entry(2) = -3.0;
@@ -286,12 +286,12 @@ TEST_CASE("CSRMatrix")
         REQUIRE(hostcolIdxSparse.size() == column.size());
         REQUIRE(hostrowPtrsSparse.size() == row.size());
 
-        for (size_t i = 0; i < value.size(); ++i)
+        for (NeoN::localIdx i = 0; i < value.size(); ++i)
         {
             REQUIRE(hostvaluesSparse.view()[i] == value[i]);
             REQUIRE(hostcolIdxSparse.view()[i] == column[i]);
         }
-        for (size_t i = 0; i < row.size(); ++i)
+        for (NeoN::localIdx i = 0; i < row.size(); ++i)
         {
             REQUIRE(hostrowPtrsSparse.view()[i] == row[i]);
         }

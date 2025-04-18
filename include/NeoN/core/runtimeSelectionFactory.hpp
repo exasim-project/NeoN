@@ -390,7 +390,7 @@ private:
         const auto& tbl = table();
         if (tbl.find(name) == tbl.end())
         {
-            auto msg = std::string(" Could not find constructor for ") + name + "\n";
+            auto msg = std::string {" Could not find constructor for "} + name + "\n";
             msg += "valid constructors are: \n";
             for (const auto& it : tbl)
             {

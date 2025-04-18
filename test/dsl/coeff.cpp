@@ -49,7 +49,7 @@ TEST_CASE("Coeff")
 
     SECTION("evaluation in parallelFor" + execName)
     {
-        size_t size = 3;
+        NeoN::localIdx size = 3;
 
         Vector fieldA(exec, size, 0.0);
         Vector fieldB(exec, size, 1.0);
@@ -59,7 +59,7 @@ TEST_CASE("Coeff")
             Coeff coeff = fieldB; // is a view with uniform value 1.0
             {
                 NeoN::parallelFor(
-                    fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
+                    fieldA, KOKKOS_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
                 );
             };
             auto hostVectorA = fieldA.copyToHost();
@@ -74,7 +74,7 @@ TEST_CASE("Coeff")
             Coeff coeff = Coeff(2.0);
             {
                 NeoN::parallelFor(
-                    fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
+                    fieldA, KOKKOS_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
                 );
             };
             auto hostVectorA = fieldA.copyToHost();
@@ -89,7 +89,7 @@ TEST_CASE("Coeff")
             Coeff coeff {-5.0, fieldB};
             {
                 NeoN::parallelFor(
-                    fieldA, KOKKOS_LAMBDA(const size_t i) { return coeff[i] + 2.0; }
+                    fieldA, KOKKOS_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
                 );
             };
             auto hostVectorA = fieldA.copyToHost();

@@ -64,7 +64,7 @@ public:
      * @param nBoundaryFaces - The total number of boundary faces
      * @param nBoundaryType - The total number of boundary patches
      */
-    BoundaryData(const Executor& exec, int nBoundaryFaces, int nBoundaryTypes)
+    BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
         : exec_(exec), value_(exec, nBoundaryFaces), refValue_(exec, nBoundaryFaces),
           valueFraction_(exec, nBoundaryFaces), refGrad_(exec, nBoundaryFaces),
           boundaryTypes_(exec, nBoundaryTypes), offset_(exec, nBoundaryTypes + 1),
@@ -78,7 +78,7 @@ public:
      * @param offsets - The total number of boundary faces
      */
     BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
-        : BoundaryData(exec, offsets.back(), offsets.size() - 1)
+        : BoundaryData(exec, offsets.back(), static_cast<localIdx>(offsets.size() - 1))
     {
         offset_ = Vector(exec, offsets);
     }
@@ -137,15 +137,49 @@ public:
      * @brief Get the number of boundaries.
      * @return The number of boundaries.
      */
-    size_t nBoundaries() const { return nBoundaries_; }
+    localIdx nBoundaries() const { return nBoundaries_; }
 
     /**
      * @brief Get the number of boundary faces.
      * @return The number of boundary faces.
      */
-    size_t nBoundaryFaces() const { return nBoundaryFaces_; }
+    localIdx nBoundaryFaces() const { return nBoundaryFaces_; }
 
     const Executor& exec() { return exec_; }
+
+    BoundaryData<T>& operator=(const BoundaryData<T>& rhs)
+    {
+
+        // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
+        // but use them for a sanity check
+        nBoundaries_ = rhs.nBoundaries_;
+        nBoundaryFaces_ = rhs.nBoundaryFaces_;
+
+        value_ = rhs.value_;
+        refValue_ = rhs.refValue_;
+        valueFraction_ = rhs.valueFraction_;
+        refGrad_ = rhs.refGrad_;
+        boundaryTypes_ = rhs.boundaryTypes_;
+        offset_ = rhs.offset_;
+        return *this;
+    }
+
+    BoundaryData<T>& operator=(const BoundaryData<T>&& rhs)
+    {
+
+        // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
+        // but use them for a sanity check
+        nBoundaries_ = rhs.nBoundaries_;
+        nBoundaryFaces_ = rhs.nBoundaryFaces_;
+
+        value_ = std::move(rhs.value_);
+        refValue_ = std::move(rhs.refValue_);
+        valueFraction_ = std::move(rhs.valueFraction_);
+        refGrad_ = std::move(rhs.refGrad_);
+        boundaryTypes_ = std::move(rhs.boundaryTypes_);
+        offset_ = std::move(rhs.offset_);
+        return *this;
+    }
 
     /**
      * @brief Get the range for a given patchId
@@ -167,8 +201,8 @@ private:
     Vector<T> refGrad_;            ///< The Vector storing the Neumann boundary values.
     Vector<int> boundaryTypes_;    ///< The Vector storing the boundary types.
     Vector<localIdx> offset_;      ///< The Vector storing the offsets of each boundary.
-    size_t nBoundaries_;           ///< The number of boundaries.
-    size_t nBoundaryFaces_;        ///< The number of boundary faces.
+    localIdx nBoundaries_;         ///< The number of boundaries.
+    localIdx nBoundaryFaces_;      ///< The number of boundary faces.
 };
 
 }

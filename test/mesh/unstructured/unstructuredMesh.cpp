@@ -29,12 +29,12 @@ TEST_CASE("Unstructured Mesh")
     //     NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
     //     NeoN::Field<NeoN::scalar> domainVector(exec, mesh.);
 
-    //     REQUIRE(domainVector.boundaryVector().offset().size() == 5);
+    //     REQUIRE(domainVector.boundaryData().offset().size() == 5);
     // }
 
     SECTION("Can create a 1D uniform mesh" + execName)
     {
-        size_t nCells = 4;
+        NeoN::localIdx nCells = 4;
 
         NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, nCells);
 

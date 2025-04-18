@@ -20,16 +20,18 @@ namespace detail
 // I guess it was replaced by range
 template<typename ValueType>
 void extrapolateValue(
-    Field<ValueType>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
+    Field<ValueType>& domainVector,
+    const UnstructuredMesh& mesh,
+    std::pair<localIdx, localIdx> range
 )
 {
     const auto iVector = domainVector.internalVector().view();
 
     auto [refGradient, value, valueFraction, refValue, faceCells] = spans(
-        domainVector.boundaryVector().refGrad(),
-        domainVector.boundaryVector().value(),
-        domainVector.boundaryVector().valueFraction(),
-        domainVector.boundaryVector().refValue(),
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceCells()
     );
 
@@ -37,9 +39,9 @@ void extrapolateValue(
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             // operator / is not defined for all ValueTypes
-            ValueType internalCellValue = iVector[static_cast<size_t>(faceCells[i])];
+            ValueType internalCellValue = iVector[faceCells[i]];
             value[i] = internalCellValue;
             valueFraction[i] = 1.0;          // only use refValue
             refValue[i] = internalCellValue; // not used
@@ -60,7 +62,7 @@ public:
 
     using ExtrapolatedType = Extrapolated<ValueType>;
 
-    Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), mesh_(mesh)
     {}
 

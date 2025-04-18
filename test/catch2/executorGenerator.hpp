@@ -18,7 +18,7 @@ class ExecutorGenerator final :
 {
 public:
 
-    int i = 0;
+    std::size_t i = 0;
     std::vector<std::pair<std::string, NeoN::Executor>> execs {};
     std::pair<std::string, NeoN::Executor> current_exec = {
         "SerialExecutor", NeoN::SerialExecutor {}

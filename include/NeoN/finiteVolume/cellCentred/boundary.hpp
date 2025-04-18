@@ -28,7 +28,8 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
     bcs.reserve(mesh.nBoundaries());
-    for (size_t patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+
+    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
         bcs.emplace_back(mesh, patchDict, patchID);
@@ -41,7 +42,7 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
     bcs.reserve(mesh.nBoundaries());
-    for (size_t patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
     {
         Dictionary patchDict({{"type", std::string("extrapolated")}});
         bcs.emplace_back(mesh, patchDict, patchID);

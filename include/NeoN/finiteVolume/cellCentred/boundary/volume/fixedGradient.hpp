@@ -23,17 +23,17 @@ template<typename ValueType>
 void setGradientValue(
     Field<ValueType>& domainVector,
     const UnstructuredMesh& mesh,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     ValueType fixedGradient
 )
 {
     const auto iVector = domainVector.internalVector().view();
 
     auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = spans(
-        domainVector.boundaryVector().refGrad(),
-        domainVector.boundaryVector().value(),
-        domainVector.boundaryVector().valueFraction(),
-        domainVector.boundaryVector().refValue(),
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().deltaCoeffs()
     );
@@ -42,11 +42,10 @@ void setGradientValue(
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             refGradient[i] = fixedGradient;
             // operator / is not defined for all ValueTypes
-            value[i] =
-                iVector[static_cast<size_t>(faceCells[i])] + fixedGradient * (1 / deltaCoeffs[i]);
+            value[i] = iVector[faceCells[i]] + fixedGradient * (1 / deltaCoeffs[i]);
             valueFraction[i] = 0.0;          // only use refGrad
             refValue[i] = zero<ValueType>(); // not used
         },
@@ -65,7 +64,7 @@ public:
 
     using FixedGradientType = FixedGradient<ValueType>;
 
-    FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), mesh_(mesh),
           fixedGradient_(dict.get<ValueType>("fixedGradient"))
     {}

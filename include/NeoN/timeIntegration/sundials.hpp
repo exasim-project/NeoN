@@ -88,7 +88,7 @@ void fieldToSunNVectorImpl(const NeoN::Vector<ValueType>& field, N_Vector& vecto
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     auto fieldView = field.view();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { view(i) = fieldView[i]; }
+        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { view(i) = fieldView[i]; }
     );
 };
 
@@ -139,7 +139,7 @@ void sunNVectorToVectorImpl(const N_Vector& vector, NeoN::Vector<ValueType>& fie
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     ValueType* fieldData = field.data();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { fieldData[i] = view(i); }
+        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { fieldData[i] = view(i); }
     );
 };
 
@@ -203,7 +203,7 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
         "Failed to dereference pointers in sundails."
     );
 
-    size_t size = static_cast<size_t>(N_VGetLength(y));
+    auto size = static_cast<localIdx>(N_VGetLength(y));
     // Copy initial value from y to source.
     NeoN::Vector<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
     if (std::holds_alternative<NeoN::GPUExecutor>(pdeExpre->exec()))

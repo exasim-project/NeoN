@@ -24,7 +24,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    const size_t nCells = 10;
+    const NeoN::localIdx nCells = 10;
     auto mesh = create1DUniformMesh(exec, nCells);
     auto sp = finiteVolume::cellCentred::SparsityPattern {mesh};
 
@@ -54,7 +54,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
         fvcc::VolumeField<TestType> phi(exec, "phi", mesh, bcs);
         parallelFor(
             phi.internalVector(),
-            KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1) * one<TestType>(); }
+            KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
         );
         phi.correctBoundaryConditions();
 
@@ -75,7 +75,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             lapOp.explicitOperation(source);
             auto sourceHost = source.copyToHost();
             auto sSource = sourceHost.view();
-            for (size_t i = 0; i < nCells; i++)
+            for (NeoN::localIdx i = 0; i < nCells; i++)
             {
                 // the laplacian of a linear function is 0
                 REQUIRE(mag(sSource[i]) == Catch::Approx(0.0).margin(1e-8));
@@ -110,9 +110,9 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
         SECTION("implicit laplacian operator scale" + execName)
         {
             ls.reset();
-            dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
-            lapOp.build(input);
-            lapOp = dsl::Coeff(-0.5) * lapOp;
+            dsl::SpatialOperator lapOp2 = dsl::imp::laplacian(gamma, phi);
+            lapOp2.build(input);
+            lapOp2 = dsl::Coeff(-0.5) * lapOp2;
 
             lapOp.implicitOperation(ls);
             // FIXME:
@@ -174,7 +174,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 
 //         fvcc::VolumeField<NeoN::scalar> phi(exec, "phi", mesh, bcs);
 //         NeoN::parallelFor(
-//             phi.internalVector(), KOKKOS_LAMBDA(const size_t i) { return scalar(i + 1); }
+//             phi.internalVector(), KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1); }
 //         );
 //         phi.correctBoundaryConditions();
 

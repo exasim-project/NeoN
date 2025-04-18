@@ -10,8 +10,8 @@ TEST_CASE("tokenList")
     NeoN::TokenList tokenList;
     REQUIRE(tokenList.empty());
 
-    tokenList.insert(NeoN::label(1));
-    tokenList.insert(NeoN::scalar(2.0));
+    tokenList.insert(1);
+    tokenList.insert(2.0);
     tokenList.insert(std::string("string"));
 
     REQUIRE(tokenList.size() == 3);
@@ -51,7 +51,7 @@ TEST_CASE("tokenList")
 
     SECTION("Next Token")
     {
-        tokenList = NeoN::TokenList({NeoN::label(1), NeoN::scalar(2.0), std::string("string")});
+        tokenList = NeoN::TokenList({1, 2.0, std::string("string")});
         REQUIRE(tokenList.size() == 3);
         REQUIRE(tokenList.next<NeoN::label>() == 1);
         REQUIRE(tokenList.next<NeoN::scalar>() == 2.0);

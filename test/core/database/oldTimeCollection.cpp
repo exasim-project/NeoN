@@ -15,7 +15,7 @@ fvcc::VolumeField<NeoN::scalar>
 createVolumeField(const NeoN::UnstructuredMesh& mesh, std::string fieldName)
 {
     std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-    for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+    for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -38,7 +38,7 @@ struct CreateVector
     NeoN::Document operator()(NeoN::Database& db)
     {
         std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-        for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+        for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
         {
             NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));

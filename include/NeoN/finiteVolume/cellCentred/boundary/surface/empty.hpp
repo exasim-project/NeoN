@@ -18,7 +18,7 @@ class Empty : public SurfaceBoundaryFactory<ValueType>::template Register<Empty<
 
 public:
 
-    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID)
     {}
 

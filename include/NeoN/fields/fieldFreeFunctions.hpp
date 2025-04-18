@@ -26,7 +26,7 @@ class Vector;
  * @param range The range to map the field in. If not provided, the whole field is mapped.
  */
 template<typename T, typename Inner>
-void map(Vector<T>& a, const Inner inner, std::pair<size_t, size_t> range = {0, 0})
+void map(Vector<T>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
 {
     auto [start, end] = range;
     if (end == 0)
@@ -35,7 +35,7 @@ void map(Vector<T>& a, const Inner inner, std::pair<size_t, size_t> range = {0, 
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = inner(i); }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = inner(i); }
     );
 }
 
@@ -50,7 +50,7 @@ template<typename ValueType>
 void fill(
     Vector<ValueType>& a,
     const std::type_identity_t<ValueType> value,
-    std::pair<size_t, size_t> range = {0, 0}
+    std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
@@ -60,7 +60,7 @@ void fill(
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = value; }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }
     );
 }
 
@@ -76,7 +76,7 @@ template<typename ValueType>
 void setVector(
     Vector<ValueType>& a,
     const View<const std::type_identity_t<ValueType>> b,
-    std::pair<size_t, size_t> range = {0, 0}
+    std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
@@ -86,7 +86,7 @@ void setVector(
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = b[i]; }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = b[i]; }
     );
 }
 
@@ -95,7 +95,7 @@ void scalarMul(Vector<ValueType>& a, const scalar value)
 {
     auto viewA = a.view();
     parallelFor(
-        a, KOKKOS_LAMBDA(const size_t i) { return viewA[i] * value; }
+        a, KOKKOS_LAMBDA(const localIdx i) { return viewA[i] * value; }
     );
 }
 
@@ -110,7 +110,7 @@ void fieldBinaryOp(
     auto viewA = a.view();
     auto viewB = b.view();
     parallelFor(
-        a, KOKKOS_LAMBDA(const size_t i) { return op(viewA[i], viewB[i]); }
+        a, KOKKOS_LAMBDA(const localIdx i) { return op(viewA[i], viewB[i]); }
     );
 }
 }
@@ -157,7 +157,7 @@ bool equal(Vector<T>& field, T value)
 {
     auto hostVector = field.copyToHost();
     auto hostView = hostVector.view();
-    for (size_t i = 0; i < hostView.size(); i++)
+    for (localIdx i = 0; i < hostView.size(); i++)
     {
         if (hostView[i] != value)
         {
@@ -178,7 +178,7 @@ bool equal(const Vector<T>& field, const Vector<T>& field2)
         return false;
     }
 
-    for (size_t i = 0; i < hostSpan.size(); i++)
+    for (localIdx i = 0; i < hostSpan.size(); i++)
     {
         if (hostSpan[i] != hostSpan2[i])
         {
@@ -199,7 +199,7 @@ bool equal(const Vector<T>& field, View<T> span2)
         return false;
     }
 
-    for (size_t i = 0; i < hostView.size(); i++)
+    for (localIdx i = 0; i < hostView.size(); i++)
     {
         if (hostView[i] != span2[i])
         {

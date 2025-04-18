@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
+#include "NeoN/core/view.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector.hpp"
 
@@ -28,14 +29,17 @@ IndexType segmentsFromIntervals(const Vector<IndexType>& intervals, Vector<Index
     // skip the first element of the offsets
     // assumed to be zero
     auto offsSpan = offsets.view().subspan(1);
+    // NOTE avoid compiler warning by static_casting to localIdx since offsSpan
+    // is a std::span
     NF_ASSERT_EQUAL(inSpan.size(), offsSpan.size());
     NeoN::parallelScan(
         intervals.exec(),
         {0, offsSpan.size()},
-        KOKKOS_LAMBDA(const std::size_t i, IndexType& update, const bool final) {
+        KOKKOS_LAMBDA(const localIdx i, IndexType& update, const bool final) {
             update += inSpan[i];
             if (final)
             {
+                // offsSpan is a std::span, thus [] takes unsigned idx
                 offsSpan[i] = update;
             }
         },
@@ -57,12 +61,12 @@ public:
     /**
      * @brief A span with the values.
      */
-    std::span<ValueType> values;
+    View<ValueType> values;
 
     /**
      * @brief A span of indices representing the segments.
      */
-    std::span<IndexType> segments;
+    View<IndexType> segments;
 
     /**
      * @brief Get the bounds of a segment.
@@ -71,7 +75,7 @@ public:
      * @return A pair of indices representing the start and end of the segment.
      */
     KOKKOS_INLINE_FUNCTION
-    Kokkos::pair<IndexType, IndexType> bounds(std::size_t segI) const
+    Kokkos::pair<IndexType, IndexType> bounds(localIdx segI) const
     {
         return Kokkos::pair<IndexType, IndexType> {segments[segI], segments[segI + 1]};
     }
@@ -83,7 +87,7 @@ public:
      * @return A pair of indices representing the start and length of the segment.
      */
     KOKKOS_INLINE_FUNCTION
-    Kokkos::pair<IndexType, IndexType> range(std::size_t segI) const
+    Kokkos::pair<IndexType, IndexType> range(localIdx segI) const
     {
         return Kokkos::pair<IndexType, IndexType> {
             segments[segI], segments[segI + 1] - segments[segI]
@@ -97,7 +101,7 @@ public:
      * @param segI The index of the segment.
      * @return A subspan of values corresponding to the segment.
      */
-    KOKKOS_INLINE_FUNCTION std::span<ValueType> span(std::size_t segI) const
+    KOKKOS_INLINE_FUNCTION View<ValueType> span(localIdx segI) const
     {
         auto [start, length] = range(segI);
         return values.subspan(start, length);
@@ -110,7 +114,7 @@ public:
      * @return The value of the element at the specified index.
      */
     KOKKOS_INLINE_FUNCTION
-    IndexType operator[](std::size_t i) const { return segments[i]; }
+    IndexType operator[](localIdx i) const { return segments[i]; }
 };
 
 /**
@@ -131,7 +135,7 @@ public:
      * @param size  size of the matrix
      * @param numSegments  number of segments
      */
-    SegmentedVector(const Executor& exec, size_t size, size_t numSegments)
+    SegmentedVector(const Executor& exec, localIdx size, localIdx numSegments)
         : values_(exec, size), segments_(exec, numSegments + 1)
     {}
 
@@ -171,13 +175,13 @@ public:
      * @brief Get the size of the segmented field.
      * @return The size of the segmented field.
      */
-    size_t size() const { return values_.size(); }
+    localIdx size() const { return values_.size(); }
 
     /**
      * @brief Get the number of segments in the segmented field.
      * @return The number of segments.
      */
-    size_t numSegments() const { return segments_.size() - 1; }
+    localIdx numSegments() const { return segments_.size() - 1; }
 
 
     /**
@@ -196,13 +200,13 @@ public:
      * @brief get the combined value and range spans of the segmented field
      * @return Combined value and range spans of the fields
      */
-    [[nodiscard]] std::pair<std::span<ValueType>, std::span<IndexType>> spans() &
+    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> spans() &
     {
         return {values_.view(), segments_.view()};
     }
 
     // ensures not to return a span of a temporary object --> invalid memory access
-    [[nodiscard]] std::pair<std::span<ValueType>, std::span<IndexType>> spans() && = delete;
+    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> spans() && = delete;
 
     const Vector<ValueType>& values() const { return values_; }
 

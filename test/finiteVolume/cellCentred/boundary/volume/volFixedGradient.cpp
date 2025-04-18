@@ -18,10 +18,10 @@ TEST_CASE("fixedGradient")
         // the same as (exec, mesh.nCells(), mesh.boundaryMesh().offset())
         NeoN::Field<NeoN::scalar> domainVector(exec, mesh.nCells(), mesh.boundaryMesh().offset());
         NeoN::fill(domainVector.internalVector(), 1.0);
-        NeoN::fill(domainVector.boundaryVector().refGrad(), -1.0);
-        NeoN::fill(domainVector.boundaryVector().refValue(), -1.0);
-        NeoN::fill(domainVector.boundaryVector().valueFraction(), -1.0);
-        NeoN::fill(domainVector.boundaryVector().value(), -1.0);
+        NeoN::fill(domainVector.boundaryData().refGrad(), -1.0);
+        NeoN::fill(domainVector.boundaryData().refValue(), -1.0);
+        NeoN::fill(domainVector.boundaryData().valueFraction(), -1.0);
+        NeoN::fill(domainVector.boundaryData().value(), -1.0);
 
         SECTION("zeroGradient")
         {
@@ -35,14 +35,14 @@ TEST_CASE("fixedGradient")
 
             boundary->correctBoundaryCondition(domainVector);
 
-            auto refValues = domainVector.boundaryVector().refGrad().copyToHost();
+            auto refValues = domainVector.boundaryData().refGrad().copyToHost();
 
             for (auto boundaryValue : refValues.view(boundary->range()))
             {
                 REQUIRE(boundaryValue == setValue);
             }
 
-            auto values = domainVector.boundaryVector().value().copyToHost();
+            auto values = domainVector.boundaryData().value().copyToHost();
 
             for (auto& boundaryValue : values.view(boundary->range()))
             {
@@ -62,14 +62,14 @@ TEST_CASE("fixedGradient")
 
             boundary->correctBoundaryCondition(domainVector);
 
-            auto refValues = domainVector.boundaryVector().refGrad().copyToHost();
+            auto refValues = domainVector.boundaryData().refGrad().copyToHost();
 
             for (auto boundaryValue : refValues.view(boundary->range()))
             {
                 REQUIRE(boundaryValue == setValue);
             }
 
-            auto values = domainVector.boundaryVector().value().copyToHost();
+            auto values = domainVector.boundaryData().value().copyToHost();
 
             // deltaCoeffs is the inverse distance and has a value of 2.0
             // so the value is 1.0 + 10 / 2.0 = 6.0
