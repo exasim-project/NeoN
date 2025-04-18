@@ -90,6 +90,8 @@ public:
             this->mesh_,
             createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
         );
+        NeoN::fill(divPhi.internalVector(), zero<ValueType>());
+        NeoN::fill(divPhi.boundaryVector().value(), zero<ValueType>());
         computeDivExp<ValueType>(
             faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
         );

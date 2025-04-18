@@ -78,6 +78,8 @@ public:
             this->mesh_,
             createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
         );
+        NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
+        NeoN::fill(lapPhi.boundaryVector().value(), zero<ValueType>());
         computeLaplacianExp<ValueType>(
             faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
         );
