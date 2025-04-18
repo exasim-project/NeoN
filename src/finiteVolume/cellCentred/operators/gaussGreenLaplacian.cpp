@@ -25,14 +25,6 @@ void computeLaplacianExp(
     const auto [owner, neighbour, surfFaceCells] =
         spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
-    // FIXME  seems unused remove ?
-    // auto [refGradient, value, valueFraction, refValue] = spans(
-    //     phi.boundaryData().refGrad(),
-    //     phi.boundaryData().value(),
-    //     phi.boundaryData().valueFraction(),
-    //     phi.boundaryData().refValue()
-    // );
-
     const auto [result, faceArea, fnGrad, vol] =
         spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
 

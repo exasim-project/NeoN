@@ -105,7 +105,7 @@ TEST_CASE("LinearSystem")
 
         // Check modification.
         auto hostLS2 = ls.copyToHost();
-        auto hostLS2View = hostLS.view();
+        auto hostLS2View = hostLS2.view();
         for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
         {
             REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
