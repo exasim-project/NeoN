@@ -151,7 +151,7 @@ public:
             auto exec = psi_.exec();
             auto solver = NeoN::la::Solver(exec, fvSolution_);
             solver.solve(ls_, psi_.internalVector());
-            NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
+            // NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
         }
     }
 
