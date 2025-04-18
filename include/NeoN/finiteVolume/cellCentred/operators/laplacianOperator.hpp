@@ -52,6 +52,12 @@ public:
         const dsl::Coeff operatorScaling
     ) = 0;
 
+    virtual VolumeField<ValueType> laplacian(
+        const SurfaceField<scalar>& gamma,
+        VolumeField<ValueType>& phi,
+        const dsl::Coeff operatorScaling
+    ) const = 0;
+
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
@@ -154,6 +160,19 @@ public:
         laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getVector(), operatorScaling);
     }
 
+    VolumeField<scalar> laplacian()
+    {
+        const auto operatorScaling = this->getCoefficient();
+        std::string name = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
+        VolumeField<scalar> lapPhi(
+            this->exec_,
+            name,
+            this->field_.mesh(),
+            createCalculatedBCs<VolumeBoundary<scalar>>(this->field_.mesh())
+        );
+        laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->field_, operatorScaling);
+        return lapPhi;
+    }
 
     void build(const Input& input)
     {
