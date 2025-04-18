@@ -180,6 +180,8 @@
       <node id="25">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
       <node id="31">
         <label>NeoN/linearAlgebra/CSRMatrix.hpp</label>
@@ -504,7 +506,7 @@
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>ls.matrix().nRows()},</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::size_t<sp/>rowi)<sp/>{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>rowi)<sp/>{</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowStart<sp/>=<sp/>rowPtrs[rowi];</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowEnd<sp/>=<sp/>rowPtrs[rowi<sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ValueType<sp/>sum<sp/>=<sp/>0.0;</highlight></codeline>
@@ -541,8 +543,8 @@
 <codeline lineno="148"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>exec<sp/>=<sp/>sparsity.mesh().<ref refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" kindref="member">exec</ref>();</highlight></codeline>
 <codeline lineno="150"><highlight class="normal"></highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>rows<sp/>{sparsity.rows()};</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>nnzs<sp/>{sparsity.nnz()};</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>rows<sp/>{sparsity.rows()};</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nnzs<sp/>{sparsity.nnz()};</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;ValueType, IndexType&gt;</ref><sp/>{</highlight></codeline>

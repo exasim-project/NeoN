@@ -519,6 +519,8 @@
       <node id="29">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
       <node id="59">
         <label>NeoN/linearAlgebra/CSRMatrix.hpp</label>
@@ -731,13 +733,13 @@
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solutionVector.internalVector()<sp/>=<sp/>oldSolutionVector.internalVector()<sp/>-<sp/>source<sp/>*<sp/>dt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solutionVector.correctBoundaryConditions();</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solve<sp/>sparse<sp/>matrix<sp/>system</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1aa0038f62edb303ff02cf8792e629cd4c" kindref="member">ValueType</ref><sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionVectorType::ElementType;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>using<sp/>ValueType<sp/>=<sp/>typename<sp/>SolutionVectorType::ElementType;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight></codeline>
 <codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>decouple<sp/>from<sp/>fvcc<sp/>specific<sp/>implementation</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>sparsity<sp/>=<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">NeoN::finiteVolume::cellCentred::SparsityPattern</ref>(solutionVector.mesh());</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ls<sp/>=<sp/><ref refid="namespaceNeoN_1_1la_1abfb8a53aafd31aadc7ffc30c8e721dd4" kindref="member">la::createEmptyLinearSystem</ref>&lt;</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1aa0038f62edb303ff02cf8792e629cd4c" kindref="member">ValueType</ref>,</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref>,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>,</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">finiteVolume::cellCentred::SparsityPattern</ref>&gt;(sparsity);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>eqn.<ref refid="classNeoN_1_1dsl_1_1Expression_1a527d62bdba68730f6fd2e65fb6643a41" kindref="member">implicitOperation</ref>(ls);</highlight></codeline>

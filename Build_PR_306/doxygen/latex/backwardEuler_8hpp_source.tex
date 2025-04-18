@@ -58,13 +58,13 @@
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ solutionVector.internalVector()\ =\ oldSolutionVector.internalVector()\ -\/\ source\ *\ dt;}}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ solutionVector.correctBoundaryConditions();}}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ solve\ sparse\ matrix\ system}}
-\DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1BackwardEuler_aa0038f62edb303ff02cf8792e629cd4c}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionVectorType::ElementType;}
+\DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ using\ ValueType\ =\ typename\ SolutionVectorType::ElementType;}}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00058}00058\ }
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ decouple\ from\ fvcc\ specific\ implementation}}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sparsity\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{NeoN::finiteVolume::cellCentred::SparsityPattern}}(solutionVector.mesh());}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ls\ =\ \mbox{\hyperlink{namespaceNeoN_1_1la_abfb8a53aafd31aadc7ffc30c8e721dd4}{la::createEmptyLinearSystem}}<}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1BackwardEuler_aa0038f62edb303ff02cf8792e629cd4c}{ValueType}},}
-\DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_afa6565da2e745d8d145e02a5d6107358}{localIdx}},}
+\DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}},}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{finiteVolume::cellCentred::SparsityPattern}}>(sparsity);}
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00065}00065\ }
 \DoxyCodeLine{\Hypertarget{backwardEuler_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ eqn.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a527d62bdba68730f6fd2e65fb6643a41}{implicitOperation}}(ls);}

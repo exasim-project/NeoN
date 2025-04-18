@@ -180,6 +180,8 @@
       <node id="25">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="8">
         <label>Kokkos_Core.hpp</label>
@@ -262,11 +264,11 @@
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>offsSpan<sp/>=<sp/>offsets.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>().subspan(1);</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>avoid<sp/>compiler<sp/>warning<sp/>by<sp/>static_casting<sp/>to<sp/>localIdx<sp/>since<sp/>offsSpan</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>is<sp/>a<sp/>std::span</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a40409dec4da3178309a1b0f662496159" kindref="member">NF_ASSERT_EQUAL</ref>(inSpan.size(),<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(offsSpan.size()));</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a40409dec4da3178309a1b0f662496159" kindref="member">NF_ASSERT_EQUAL</ref>(inSpan.size(),<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(offsSpan.size()));</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1ade792a6b242e4bbe2d8882be6928a75a" kindref="member">NeoN::parallelScan</ref>(</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>intervals.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>offsSpan.size()},</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>i,<sp/>IndexType&amp;<sp/>update,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i,<sp/>IndexType&amp;<sp/>update,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>update<sp/>+=<sp/>inSpan[i];</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">final</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>

@@ -15,6 +15,7 @@
     <includedby refid="segmentedVector_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/fields/segmentedVector.hpp</includedby>
     <includedby refid="surfaceBoundaryFactory_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp</includedby>
     <includedby refid="volumeBoundaryFactory_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</includedby>
+    <includedby refid="exceptions_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp</includedby>
     <includedby refid="boundaryMesh_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/boundaryMesh.hpp</includedby>
     <incdepgraph>
       <node id="1">
@@ -117,6 +118,8 @@
         <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
         </childnode>
@@ -613,6 +616,12 @@
         <childnode refid="44" relation="include">
         </childnode>
       </node>
+      <node id="70">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp</label>
+        <link refid="exceptions_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="62">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp</label>
         <link refid="CSRMatrix_8hpp"/>
@@ -775,10 +784,10 @@
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref><sp/>=<sp/>int64_t;</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NeoN_US_IDX</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>=<sp/>uint32_t;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>=<sp/>uint32_t;</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kindref="member">globalIdx</ref><sp/>=<sp/>uint64_t;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>=<sp/>int64_t;</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kindref="member">globalIdx</ref><sp/>=<sp/>int64_t;</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
@@ -786,10 +795,10 @@
 <codeline lineno="24" refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref><sp/>=<sp/>int32_t;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NeoN_US_IDX</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>=<sp/>uint64_t;</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kindref="member">globalIdx</ref><sp/>=<sp/>Uint64_t;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>=<sp/>uint32_t;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kindref="member">globalIdx</ref><sp/>=<sp/>uint64_t;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30" refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>=<sp/>int64_t;</highlight></codeline>
+<codeline lineno="30" refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>=<sp/>int32_t;</highlight></codeline>
 <codeline lineno="31" refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kindref="member">globalIdx</ref><sp/>=<sp/>int64_t;</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
@@ -800,13 +809,13 @@
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment">//<sp/>traits<sp/>for<sp/>label</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="41" refid="namespaceNeoN_1a699a3202658d2a9175e5d3e30e1837b0" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/><ref refid="namespaceNeoN_1a699a3202658d2a9175e5d3e30e1837b0" kindref="member">one&lt;localIdx&gt;</ref>()</highlight></codeline>
+<codeline lineno="41" refid="namespaceNeoN_1a699a3202658d2a9175e5d3e30e1837b0" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="namespaceNeoN_1a699a3202658d2a9175e5d3e30e1837b0" kindref="member">one&lt;localIdx&gt;</ref>()</highlight></codeline>
 <codeline lineno="42"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
 <codeline lineno="44"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="47" refid="namespaceNeoN_1a985399b3ba9d36ea30ffba2bf8524e62" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/><ref refid="namespaceNeoN_1a985399b3ba9d36ea30ffba2bf8524e62" kindref="member">zero&lt;localIdx&gt;</ref>()</highlight></codeline>
+<codeline lineno="47" refid="namespaceNeoN_1a985399b3ba9d36ea30ffba2bf8524e62" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="namespaceNeoN_1a985399b3ba9d36ea30ffba2bf8524e62" kindref="member">zero&lt;localIdx&gt;</ref>()</highlight></codeline>
 <codeline lineno="48"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal">};</highlight></codeline>

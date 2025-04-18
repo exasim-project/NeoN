@@ -496,6 +496,8 @@
       <node id="26">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
       <node id="32">
         <label>NeoN/linearAlgebra/CSRMatrix.hpp</label>
@@ -672,7 +674,7 @@
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>psi_(psi),<sp/>expr_(expr),<sp/>fvSchemes_(fvSchemes),<sp/>fvSolution_(fvSolution),</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sparsityPattern_(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>::readOrCreate(psi.mesh())),</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls_(la::createEmptyLinearSystem&lt;ValueType,<sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref>,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&gt;(</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls_(la::createEmptyLinearSystem&lt;ValueType,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&gt;(</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*sparsityPattern_.get()</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>))</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -729,7 +731,7 @@
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a3b2b4dc757790fcf661da6b47e1c1a0a" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSourceView[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSourceView[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
@@ -761,13 +763,13 @@
 <codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a3b2b4dc757790fcf661da6b47e1c1a0a" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1afa6565da2e745d8d145e02a5d6107358" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSourceSpan[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSourceSpan[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"></highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>unify<sp/>with<sp/>dsl/solver.hpp</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="133" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a89e8a55787ccf27a5afce670c03a76c0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a89e8a55787ccf27a5afce670c03a76c0" kindref="member">solve</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)</highlight></codeline>
+<codeline lineno="133" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a3f8378adb3cc48d7a82d2dabd8575113" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a3f8378adb3cc48d7a82d2dabd8575113" kindref="member">solve</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>)</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>dsl::solve(expr_,<sp/>psi_,<sp/>t,<sp/>dt,<sp/>fvSchemes_,<sp/>fvSolution_);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(expr_.temporalOperators().size()<sp/>==<sp/>0<sp/>&amp;&amp;<sp/>expr_.spatialOperators().size()<sp/>==<sp/>0)</highlight></codeline>
@@ -830,7 +832,7 @@
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;ls_&quot;</highlight><highlight class="normal"><sp/>+<sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1adccbbd2c1b3d558ca69c4db20e2f9392" kindref="member">name</ref>,</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1a6aee693a9887535811934a27d1892e3e" kindref="member">mesh</ref>(),</highlight></codeline>
 <codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1a5663ceb43ec3a2bb7b770532144445f6" kindref="member">boundaryVector</ref>(),</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1a8cad826fe324b211022770b2d4eb7a31" kindref="member">boundaryData</ref>(),</highlight></codeline>
 <codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>psi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField_1abb0f2b7d367e01f755e53021fad3527f" kindref="member">boundaryConditions</ref>()</highlight></codeline>
 <codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="199"><highlight class="normal"></highlight></codeline>

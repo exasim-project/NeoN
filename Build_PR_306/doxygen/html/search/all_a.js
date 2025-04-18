@@ -14,7 +14,7 @@ var searchData=
   ['linearsystem_2ehpp_11',['linearSystem.hpp',['../linearSystem_8hpp.html',1,'']]],
   ['linearsystem_3c_20valuetype_2c_20localidx_20_3e_12',['LinearSystem&lt; ValueType, localIdx &gt;',['../classNeoN_1_1la_1_1LinearSystem.html',1,'NeoN::la']]],
   ['linearsystemview_13',['linearsystemview',['../structNeoN_1_1la_1_1LinearSystemView.html#a2af3aade30c0db33ba590682f25dc26a',1,'NeoN::la::LinearSystemView::LinearSystemView(CSRMatrixView&lt; ValueType, IndexType &gt; matrixView, View&lt; ValueType &gt; rhsView)'],['../structNeoN_1_1la_1_1LinearSystemView.html#a20eb74b301c5be1975ecb438a237713b',1,'NeoN::la::LinearSystemView::LinearSystemView()=default'],['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la::LinearSystemView&lt; ValueType, IndexType &gt;']]],
-  ['localidx_14',['localIdx',['../namespaceNeoN.html#afa6565da2e745d8d145e02a5d6107358',1,'NeoN']]],
+  ['localidx_14',['localIdx',['../namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc',1,'NeoN']]],
   ['localidxvector_15',['localIdxVector',['../namespaceNeoN.html#a345d64e8263d03609fc24b88fed965be',1,'NeoN']]],
   ['logbadanycast_16',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
   ['logoutrange_17',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
