@@ -819,29 +819,31 @@
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;mesh_,</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab918b7425253d07393f1e18b71aa4e22" kindref="member">createCalculatedBCs</ref>&lt;<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary" kindref="compound">VolumeBoundary&lt;ValueType&gt;</ref>&gt;(this-&gt;mesh_)</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeDivExp&lt;ValueType&gt;(</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceFlux,<sp/>phi,<sp/>surfaceInterpolation_,<sp/>divPhi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),<sp/>operatorScaling</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>divPhi;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"></highlight></codeline>
-<codeline lineno="99" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ad440894f4c88e69e55f6de53cf6c4bbe" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;DivOperatorFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ad440894f4c88e69e55f6de53cf6c4bbe" kindref="member">clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
-<codeline lineno="100"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;GaussGreenDiv&lt;ValueType&gt;&gt;(*this);</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a4df3c8c32ed2bdaa77d100c44de4b3eb" kindref="member">NeoN::fill</ref>(divPhi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),<sp/>zero&lt;ValueType&gt;());</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a4df3c8c32ed2bdaa77d100c44de4b3eb" kindref="member">NeoN::fill</ref>(divPhi.boundaryVector().value(),<sp/>zero&lt;ValueType&gt;());</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeDivExp&lt;ValueType&gt;(</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceFlux,<sp/>phi,<sp/>surfaceInterpolation_,<sp/>divPhi.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),<sp/>operatorScaling</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>divPhi;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ad440894f4c88e69e55f6de53cf6c4bbe" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;DivOperatorFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ad440894f4c88e69e55f6de53cf6c4bbe" kindref="member">clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
+<codeline lineno="102"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;GaussGreenDiv&lt;ValueType&gt;&gt;(*this);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;ValueType&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>why<sp/>store<sp/>as<sp/>shared_ptr</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;SparsityPattern&gt;<sp/>sparsityPattern_;</highlight></codeline>
-<codeline lineno="110"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;scalar&gt;;</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3&gt;;</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;ValueType&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>why<sp/>store<sp/>as<sp/>shared_ptr</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;SparsityPattern&gt;<sp/>sparsityPattern_;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;scalar&gt;;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3&gt;;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"/>
   </compounddef>
