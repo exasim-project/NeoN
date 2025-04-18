@@ -17,8 +17,9 @@ var searchData=
   ['view_14',['View',['../classNeoN_1_1View.html',1,'NeoN']]],
   ['view_3c_20const_20scalar_20_3e_15',['View&lt; const scalar &gt;',['../classNeoN_1_1View.html',1,'NeoN']]],
   ['view_3c_20indextype_20_3e_16',['View&lt; IndexType &gt;',['../classNeoN_1_1View.html',1,'NeoN']]],
-  ['volumeboundary_17',['VolumeBoundary',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['volumeboundaryfactory_18',['VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['volumefield_19',['VolumeField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['volumefield_3c_20scalar_20_3e_20',['VolumeField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['view_3c_20neon_3a_3alocalidx_20_3e_17',['View&lt; NeoN::localIdx &gt;',['../classNeoN_1_1View.html',1,'NeoN']]],
+  ['volumeboundary_18',['VolumeBoundary',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['volumeboundaryfactory_19',['VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['volumefield_20',['VolumeField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['volumefield_3c_20scalar_20_3e_21',['VolumeField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]]
 ];
