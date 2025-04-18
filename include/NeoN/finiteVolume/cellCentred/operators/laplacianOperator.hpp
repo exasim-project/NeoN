@@ -165,7 +165,9 @@ public:
         const auto operatorScaling = this->getCoefficient();
         std::string name = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
         VolumeField<scalar> lapPhi(
-            this->exec_, name, this->field_.mesh(),
+            this->exec_,
+            name,
+            this->field_.mesh(),
             createCalculatedBCs<VolumeBoundary<scalar>>(this->field_.mesh())
         );
         laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->field_, operatorScaling);

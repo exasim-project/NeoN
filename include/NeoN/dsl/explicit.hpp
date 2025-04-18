@@ -27,7 +27,8 @@ div(const fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> div(const fvcc::SurfaceField<scalar>& flux);
 
-SpatialOperator<scalar> laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<scalar>& phi);
+SpatialOperator<scalar>
+laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
 
