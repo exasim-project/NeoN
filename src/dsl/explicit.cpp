@@ -18,6 +18,13 @@ SpatialOperator<scalar> div(const fvcc::SurfaceField<NeoN::scalar>& flux)
     return SpatialOperator<scalar>(fvcc::SurfaceIntegrate<scalar>(flux));
 }
 
+SpatialOperator<scalar> laplacian(
+    const fvcc::SurfaceField<NeoN::scalar>& gamma, fvcc::VolumeField<NeoN::scalar>& phi
+)
+{
+    return SpatialOperator<scalar>(fvcc::LaplacianOperator(dsl::Operator::Type::Explicit, gamma, phi));
+}
+
 SpatialOperator<scalar>
 source(fvcc::VolumeField<NeoN::scalar>& coeff, fvcc::VolumeField<NeoN::scalar>& phi)
 {

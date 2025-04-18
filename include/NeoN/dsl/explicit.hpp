@@ -11,6 +11,7 @@
 
 // TODO we should get rid of this include since it includes details
 // from a general implementation
+#include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
@@ -25,6 +26,8 @@ SpatialOperator<scalar>
 div(const fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> div(const fvcc::SurfaceField<scalar>& flux);
+
+SpatialOperator<scalar> laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
 
