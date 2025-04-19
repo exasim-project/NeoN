@@ -8,7 +8,7 @@
 
 using Field = NeoN::Field<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
-using namespace NeoN::dsl;
+namespace dsl = NeoN::dsl;
 
 
 TEST_CASE("Coeff")
@@ -26,21 +26,21 @@ TEST_CASE("Coeff")
         REQUIRE(c[0] == 4.0);
 
         Coeff d {3.0, fA};
-        detail::toField(d, res);
+        dsl::detail::toField(d, res);
         auto hostResD = res.copyToHost();
         REQUIRE(hostResD.data()[0] == 6.0);
         REQUIRE(hostResD.data()[1] == 6.0);
         REQUIRE(hostResD.data()[2] == 6.0);
 
         Coeff e = d * b;
-        detail::toField(e, res);
+        dsl::detail::toField(e, res);
         auto hostResE = res.copyToHost();
         REQUIRE(hostResE.data()[0] == 12.0);
         REQUIRE(hostResE.data()[1] == 12.0);
         REQUIRE(hostResE.data()[2] == 12.0);
 
         Coeff f = b * d;
-        detail::toField(f, res);
+        dsl::detail::toField(f, res);
         auto hostResF = res.copyToHost();
         REQUIRE(hostResF.data()[0] == 12.0);
         REQUIRE(hostResF.data()[1] == 12.0);
