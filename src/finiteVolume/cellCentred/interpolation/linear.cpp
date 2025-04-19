@@ -52,7 +52,46 @@ void computeLinearInterpolation(
 NF_DECLARE_COMPUTE_IMP_LIN_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LIN_INT(Vec3);
 
-// template class Linear<scalar>;
-// template class Linear<Vec3>;
+template<typename ValueType>
+void computeLinearInterpolationFace(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& weights,
+    SurfaceField<ValueType>& dst,
+    const localIdx faceIdx
+)
+{
+    auto dstS = dst.internalVector().view();
+    const auto [srcS, weightS, ownerS, neighS, boundS] = spans(
+        src.internalVector(),
+        weights.internalVector(),
+        dst.mesh().faceOwner(),
+        dst.mesh().faceNeighbour(),
+        src.boundaryData().value()
+    );
+    const auto noInternalFaces = dst.mesh().nInternalFaces();
+
+    if (faceIdx < noInternalFaces)
+    {
+        const auto& own = ownerS[faceIdx];
+        const auto& nei = neighS[faceIdx];
+        dstS[faceIdx] = weightS[faceIdx] * srcS[own] + (1 - weightS[faceIdx]) * srcS[nei];
+    }
+    else
+    {
+        dstS[faceIdx] = weightS[faceIdx] * boundS[faceIdx - noInternalFaces];
+    }
+}
+
+
+#define NF_DECLARE_COMPUTE_IMP_LIN_INT_F(TYPENAME)                                                 \
+    template void computeLinearInterpolationFace<TYPENAME>(                                        \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        SurfaceField<TYPENAME>&,                                                                   \
+        const localIdx                                                                             \
+    )
+
+NF_DECLARE_COMPUTE_IMP_LIN_INT_F(scalar);
+NF_DECLARE_COMPUTE_IMP_LIN_INT_F(Vec3);
 
 } // namespace NeoN

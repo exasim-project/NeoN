@@ -120,6 +120,14 @@ public:
         interpolationKernel_->interpolate(flux, src, dst);
     }
 
+    KOKKOS_FUNCTION
+    ValueType interpolateFace(
+        const ValueType& flux, const VolumeField<ValueType>& field, const localIdx faceIdx
+    )
+    {
+        return interpolateFace(src, dst);
+    }
+
     void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weight) const
     {
         interpolationKernel_->weight(src, weight);
@@ -134,48 +142,6 @@ public:
         interpolationKernel_->weight(flux, src, weight);
     }
 
-
-    SurfaceField<ValueType> interpolate(const VolumeField<ValueType>& src) const
-    {
-        std::string nameInterpolated = "interpolated_" + src.name;
-        SurfaceField<ValueType> dst(
-            exec_, nameInterpolated, mesh_, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh_)
-        );
-        interpolate(src, dst);
-        return dst;
-    }
-
-    SurfaceField<ValueType>
-    interpolate(const SurfaceField<ValueType>& flux, const VolumeField<ValueType>& src) const
-    {
-        std::string name = "interpolated_" + src.name;
-        SurfaceField<ValueType> dst(
-            exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh_)
-        );
-        interpolate(flux, src, dst);
-        return dst;
-    }
-
-    SurfaceField<scalar> weight(const VolumeField<ValueType>& src) const
-    {
-        std::string name = "weight_" + src.name;
-        SurfaceField<scalar> weightVector(
-            exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh_)
-        );
-        weight(src, weightVector);
-        return weightVector;
-    }
-
-    SurfaceField<scalar>
-    weight(const SurfaceField<scalar>& flux, const VolumeField<ValueType>& src) const
-    {
-        std::string name = "weight_" + src.name;
-        SurfaceField<scalar> weightVector(
-            exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh_)
-        );
-        weight(flux, src, weightVector);
-        return weightVector;
-    }
 
 private:
 

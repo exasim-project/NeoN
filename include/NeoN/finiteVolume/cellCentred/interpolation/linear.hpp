@@ -35,6 +35,13 @@ void computeLinearInterpolation(
 );
 
 template<typename ValueType>
+void computeLinearInterpolationFace(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& weights,
+    SurfaceField<ValueType>& dst
+);
+
+template<typename ValueType>
 class Linear : public SurfaceInterpolationFactory<ValueType>::template Register<Linear<ValueType>>
 {
     using Base = SurfaceInterpolationFactory<ValueType>::template Register<Linear<ValueType>>;

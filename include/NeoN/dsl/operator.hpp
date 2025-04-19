@@ -18,6 +18,23 @@ public:
     };
 };
 
+template<typename ValueType>
+struct OperationDescriptor
+{
+    using DeviceExecuteFunc = void (*)(
+        const void& params, const SurfaceField<ValueType>& fields, const localIdx faceIdx
+    ) KOKKOS_FUNCTION;
+
+    deviceExecuteFunc executeFunc;
+    parameterType params;
+
+    KOKKOS_FUNCTION
+    void execute(const SurfaceField<ValueType>& fields, const localIdx faceIdx) const
+    {
+        return executeFunc(params, fields, faceIdx);
+    }
+};
+
 
 /* @class OperatorMixin
  * @brief A mixin class to simplify implementations of concrete operators

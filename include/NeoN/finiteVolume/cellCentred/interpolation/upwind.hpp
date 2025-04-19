@@ -36,6 +36,15 @@ void computeUpwindInterpolation(
 );
 
 template<typename ValueType>
+void computeUpwindInterpolationFace(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& flux,
+    const SurfaceField<scalar>& weights,
+    SurfaceField<ValueType>& dst,
+    const localIdx faceIdx
+);
+
+template<typename ValueType>
 class Upwind : public SurfaceInterpolationFactory<ValueType>::template Register<Upwind<ValueType>>
 {
 
@@ -57,7 +66,7 @@ public:
         [[maybe_unused]] SurfaceField<ValueType>& dst
     ) const override
     {
-        NF_ERROR_EXIT("limited scheme require a faceFlux");
+        NF_ERROR_EXIT("limited scheme requires a faceFlux");
     }
 
     void interpolate(
@@ -72,7 +81,7 @@ public:
     // src weight
     void weight(const VolumeField<ValueType>&, SurfaceField<scalar>&) const override
     {
-        NF_ERROR_EXIT("limited scheme require a faceFlux");
+        NF_ERROR_EXIT("limited scheme requires a faceFlux");
     }
 
     // flux, src, weight
