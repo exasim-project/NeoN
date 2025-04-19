@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <span>
+#include <type_traits>
 
 #include "NeoN/core/primitives/label.hpp"
 
@@ -82,5 +83,24 @@ public:
     }
 };
 
+/**
+ * @brief Concept, for any type which has the 'view' method.
+ * @tparam Types Class type with potential 'view' method.
+ */
+template<class Type>
+concept hasView =
+    requires(Type& inst) { inst.view(); } || requires(const Type& inst) { inst.view(); };
+
+/**
+ * @brief Unpacks all views of the passed classes.
+ * @tparam Types Types of the classes with views
+ * @return Tuple containing the unpacked views (use structured bindings).
+ */
+template<typename... Types>
+    requires(hasView<std::remove_reference_t<Types>> && ...)
+auto views(Types&... args)
+{
+    return std::tuple(args.view()...);
+}
 
 } // namespace NeoN
