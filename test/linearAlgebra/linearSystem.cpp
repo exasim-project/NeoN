@@ -11,7 +11,7 @@
 
 using NeoN::scalar;
 using NeoN::localIdx;
-using NeoN::Field;
+using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 using NeoN::la::spmv;
@@ -20,15 +20,15 @@ TEST_CASE("LinearSystem")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    Field<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
-    Field<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-    Field<localIdx> rowPtrs(exec, {0, 3, 6, 9});
+    Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
+    Vector<localIdx> rowPtrs(exec, {0, 3, 6, 9});
     CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
     SECTION("construct " + execName)
     {
 
-        Field<scalar> rhs(exec, 3, 0.0);
+        Vector<scalar> rhs(exec, 3, 0.0);
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
@@ -61,7 +61,7 @@ TEST_CASE("LinearSystem")
 
     SECTION("view read/write " + execName)
     {
-        Field<scalar> rhs(exec, {10.0, 20.0, 30.0});
+        Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         LinearSystem<scalar, localIdx> ls(csrMatrix, rhs);
 
         auto lsView = ls.view();
@@ -75,16 +75,16 @@ TEST_CASE("LinearSystem")
         REQUIRE(hostLSView.rhs.size() == 3);
 
         // check system values
-        for (size_t i = 0; i < hostLSView.matrix.values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
         {
             REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
             REQUIRE(hostLSView.matrix.colIdxs[i] == (i % 3));
         }
-        for (size_t i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
         {
-            REQUIRE(hostLSView.matrix.rowOffs[i] == static_cast<localIdx>(i * 3));
+            REQUIRE(hostLSView.matrix.rowOffs[i] == i * 3);
         }
-        for (size_t i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
         {
             REQUIRE(hostLSView.rhs[i] == static_cast<scalar>((i + 1) * 10));
         }
@@ -93,37 +93,37 @@ TEST_CASE("LinearSystem")
         parallelFor(
             exec,
             {0, lsView.matrix.values.size()},
-            KOKKOS_LAMBDA(const size_t i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
         );
 
         // Modify values.
         parallelFor(
             exec,
             {0, lsView.rhs.size()},
-            KOKKOS_LAMBDA(const size_t i) { lsView.rhs[i] = -lsView.rhs[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { lsView.rhs[i] = -lsView.rhs[i]; }
         );
 
         // Check modification.
-        hostLS = ls.copyToHost();
-        hostLSView = hostLS.view();
-        for (size_t i = 0; i < hostLSView.matrix.values.size(); ++i)
+        auto hostLS2 = ls.copyToHost();
+        auto hostLS2View = hostLS2.view();
+        for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
         {
-            REQUIRE(hostLSView.matrix.values[i] == -static_cast<scalar>(i + 1));
+            REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
         }
-        for (size_t i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
         {
-            REQUIRE(hostLSView.rhs[i] == -static_cast<scalar>((i + 1) * 10));
+            REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
         }
     }
 
 
     SECTION("SpmV" + execName)
     {
-        Field<scalar> rhs(exec, 3, 0.0);
+        Vector<scalar> rhs(exec, 3, 0.0);
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-        Field<scalar> x(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> x(exec, {1.0, 2.0, 3.0});
 
-        Field<scalar> y = spmv(linearSystem, x);
+        Vector<scalar> y = spmv(linearSystem, x);
         auto yHost = y.copyToHost();
         auto yHostView = yHost.view();
 
@@ -132,7 +132,7 @@ TEST_CASE("LinearSystem")
         REQUIRE(yHostView[2] == 7.0 * 1.0 + 8.0 * 2.0 + 9.0 * 3.0);
 
         // test with non-zero rhs
-        Field<scalar> rhs2(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> rhs2(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem2(csrMatrix, rhs2);
         y = spmv(linearSystem2, x);
         yHost = y.copyToHost();

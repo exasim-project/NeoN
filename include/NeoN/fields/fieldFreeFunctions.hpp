@@ -15,7 +15,7 @@ namespace NeoN
 
 // Forward declaration
 template<typename ValueType>
-class Field;
+class Vector;
 
 
 /**
@@ -26,7 +26,7 @@ class Field;
  * @param range The range to map the field in. If not provided, the whole field is mapped.
  */
 template<typename T, typename Inner>
-void map(Field<T>& a, const Inner inner, std::pair<size_t, size_t> range = {0, 0})
+void map(Vector<T>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
 {
     auto [start, end] = range;
     if (end == 0)
@@ -35,7 +35,7 @@ void map(Field<T>& a, const Inner inner, std::pair<size_t, size_t> range = {0, 0
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = inner(i); }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = inner(i); }
     );
 }
 
@@ -48,9 +48,9 @@ void map(Field<T>& a, const Inner inner, std::pair<size_t, size_t> range = {0, 0
  */
 template<typename ValueType>
 void fill(
-    Field<ValueType>& a,
+    Vector<ValueType>& a,
     const std::type_identity_t<ValueType> value,
-    std::pair<size_t, size_t> range = {0, 0}
+    std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
@@ -60,7 +60,7 @@ void fill(
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = value; }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }
     );
 }
 
@@ -73,10 +73,10 @@ void fill(
  * @param range The range to set the field in. If not provided, the whole field is set.
  */
 template<typename ValueType>
-void setField(
-    Field<ValueType>& a,
+void setVector(
+    Vector<ValueType>& a,
     const View<const std::type_identity_t<ValueType>> b,
-    std::pair<size_t, size_t> range = {0, 0}
+    std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
@@ -86,16 +86,16 @@ void setField(
     }
     auto viewA = a.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const size_t i) { viewA[i] = b[i]; }
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = b[i]; }
     );
 }
 
 template<typename ValueType>
-void scalarMul(Field<ValueType>& a, const scalar value)
+void scalarMul(Vector<ValueType>& a, const scalar value)
 {
     auto viewA = a.view();
     parallelFor(
-        a, KOKKOS_LAMBDA(const size_t i) { return viewA[i] * value; }
+        a, KOKKOS_LAMBDA(const localIdx i) { return viewA[i] * value; }
     );
 }
 
@@ -103,20 +103,20 @@ namespace detail
 {
 template<typename ValueType, typename BinaryOp>
 void fieldBinaryOp(
-    Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b, BinaryOp op
+    Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b, BinaryOp op
 )
 {
     NeoN_ASSERT_EQUAL_LENGTH(a, b);
     auto viewA = a.view();
     auto viewB = b.view();
     parallelFor(
-        a, KOKKOS_LAMBDA(const size_t i) { return op(viewA[i], viewB[i]); }
+        a, KOKKOS_LAMBDA(const localIdx i) { return op(viewA[i], viewB[i]); }
     );
 }
 }
 
 template<typename ValueType>
-void add(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
+void add(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 {
     detail::fieldBinaryOp(
         a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
@@ -125,7 +125,7 @@ void add(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
 
 
 template<typename ValueType>
-void sub(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
+void sub(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 {
     detail::fieldBinaryOp(
         a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va - vb; }
@@ -133,7 +133,7 @@ void sub(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
 }
 
 template<typename ValueType>
-void mul(Field<ValueType>& a, const Field<std::type_identity_t<ValueType>>& b)
+void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 {
     detail::fieldBinaryOp(
         a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va * vb; }
@@ -153,11 +153,11 @@ auto copyToHosts(Args&... fields)
 }
 
 template<typename T>
-bool equal(Field<T>& field, T value)
+bool equal(Vector<T>& field, T value)
 {
-    auto hostField = field.copyToHost();
-    auto hostView = hostField.view();
-    for (size_t i = 0; i < hostView.size(); i++)
+    auto hostVector = field.copyToHost();
+    auto hostView = hostVector.view();
+    for (localIdx i = 0; i < hostView.size(); i++)
     {
         if (hostView[i] != value)
         {
@@ -168,17 +168,17 @@ bool equal(Field<T>& field, T value)
 };
 
 template<typename T>
-bool equal(const Field<T>& field, const Field<T>& field2)
+bool equal(const Vector<T>& field, const Vector<T>& field2)
 {
-    auto [hostField, hostField2] = copyToHosts(field, field2);
-    auto [hostSpan, hostSpan2] = spans(hostField, hostField2);
+    auto [hostVector, hostVector2] = copyToHosts(field, field2);
+    auto [hostSpan, hostSpan2] = spans(hostVector, hostVector2);
 
     if (hostSpan.size() != hostSpan2.size())
     {
         return false;
     }
 
-    for (size_t i = 0; i < hostSpan.size(); i++)
+    for (localIdx i = 0; i < hostSpan.size(); i++)
     {
         if (hostSpan[i] != hostSpan2[i])
         {
@@ -190,7 +190,7 @@ bool equal(const Field<T>& field, const Field<T>& field2)
 };
 
 template<typename T>
-bool equal(const Field<T>& field, View<T> span2)
+bool equal(const Vector<T>& field, View<T> span2)
 {
     auto hostView = field.copyToHost().view();
 
@@ -199,7 +199,7 @@ bool equal(const Field<T>& field, View<T> span2)
         return false;
     }
 
-    for (size_t i = 0; i < hostView.size(); i++)
+    for (localIdx i = 0; i < hostView.size(); i++)
     {
         if (hostView[i] != span2[i])
         {

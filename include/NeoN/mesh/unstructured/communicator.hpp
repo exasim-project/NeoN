@@ -87,7 +87,7 @@ public:
      * @param commName The communication name, typically a file and line number.
      */
     template<typename valueType>
-    void startComm(Field<valueType>& field, const std::string& commName)
+    void startComm(Vector<valueType>& field, const std::string& commName)
     {
         NF_DEBUG_ASSERT(
             CommBuffer_.find(commName) == CommBuffer_.end() || (!CommBuffer_[commName]),
@@ -124,7 +124,7 @@ public:
      * @param commName The communication name, typically a file and line number.
      */
     template<typename valueType>
-    void finaliseComm(Field<valueType>& field, std::string commName)
+    void finaliseComm(Vector<valueType>& field, std::string commName)
     {
         NF_DEBUG_ASSERT(
             CommBuffer_.find(commName) != CommBuffer_.end() && CommBuffer_[commName],

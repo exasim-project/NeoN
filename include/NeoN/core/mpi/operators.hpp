@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "NeoN/core/error.hpp"
-#include "NeoN/core/primitives/vector.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 
 namespace NeoN
 {
@@ -146,7 +146,7 @@ void allReduce(valueType& value, const ReduceOp op, MPI_Comm comm)
  * @note Blocking MPI operation.
  */
 template<>
-inline void allReduce(Vector& vector, const ReduceOp op, MPI_Comm comm)
+inline void allReduce(Vec3& vector, const ReduceOp op, MPI_Comm comm)
 {
     MPI_Allreduce(
         MPI_IN_PLACE,

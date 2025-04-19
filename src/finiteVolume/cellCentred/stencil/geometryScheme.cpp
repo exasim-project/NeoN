@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include <any>
 
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+
+#include <memory>
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -30,11 +31,11 @@ GeometryScheme::GeometryScheme(
     const SurfaceField<scalar>& weights,
     const SurfaceField<scalar>& deltaCoeffs,
     const SurfaceField<scalar>& nonOrthDeltaCoeffs,
-    const SurfaceField<Vector>& nonOrthCorrectionVectors
+    const SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
     : exec_(exec), mesh_(weights.mesh()), kernel_(std::move(kernel)), weights_(weights),
       deltaCoeffs_(deltaCoeffs), nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs),
-      nonOrthCorrectionVectors_(nonOrthCorrectionVectors)
+      nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
 {
     if (kernel_ == nullptr)
     {
@@ -58,11 +59,11 @@ GeometryScheme::GeometryScheme(
           mesh,
           createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
       ),
-      nonOrthCorrectionVectors_(
+      nonOrthCorrectionVec3s_(
           mesh.exec(),
-          "nonOrthCorrectionVectors",
+          "nonOrthCorrectionVec3s",
           mesh,
-          createCalculatedBCs<SurfaceBoundary<Vector>>(mesh)
+          createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -85,11 +86,11 @@ GeometryScheme::GeometryScheme(const UnstructuredMesh& mesh)
           mesh,
           createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
       ),
-      nonOrthCorrectionVectors_(
+      nonOrthCorrectionVec3s_(
           mesh.exec(),
-          "nonOrthCorrectionVectors",
+          "nonOrthCorrectionVec3s",
           mesh,
-          createCalculatedBCs<SurfaceBoundary<Vector>>(mesh)
+          createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -109,7 +110,7 @@ void GeometryScheme::update()
             kernel_->updateWeights(exec, weights_);
             kernel_->updateDeltaCoeffs(exec, deltaCoeffs_);
             kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
-            // kernel_->updateNonOrthCorrectionVectors(exec, nonOrthCorrectionVectors_);
+            // kernel_->updateNonOrthCorrectionVec3s(exec, nonOrthCorrectionVec3s_);
         },
         exec_
     );
@@ -124,9 +125,9 @@ const SurfaceField<scalar>& GeometryScheme::nonOrthDeltaCoeffs() const
     return nonOrthDeltaCoeffs_;
 }
 
-const SurfaceField<Vector>& GeometryScheme::nonOrthCorrectionVectors() const
+const SurfaceField<Vec3>& GeometryScheme::nonOrthCorrectionVec3s() const
 {
-    return nonOrthCorrectionVectors_;
+    return nonOrthCorrectionVec3s_;
 }
 
 } // namespace NeoN

@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
+
 namespace NeoN
 {
 /**
@@ -73,8 +75,8 @@ public:
         const std::string& file,
         int line,
         const std::string& func,
-        size_t lengthA,
-        size_t lengthB,
+        localIdx lengthA,
+        localIdx lengthB,
         const std::string& clarification
     )
         : Error(
@@ -94,10 +96,12 @@ public:
  *                           rows or columns
  */
 #define NeoN_ASSERT_EQUAL_LENGTH(_op1, _op2)                                                       \
-    if (_op1.size() != _op2.size())                                                                \
+    auto s1 = static_cast<localIdx>(_op1.size());                                                  \
+    auto s2 = static_cast<localIdx>(_op2.size());                                                  \
+    if (s1 != s2)                                                                                  \
     {                                                                                              \
         throw ::NeoN::DimensionMismatch(                                                           \
-            __FILE__, __LINE__, __func__, _op1.size(), _op2.size(), "expected equal dimensions"    \
+            __FILE__, __LINE__, __func__, s1, s2, "expected equal dimensions"                      \
         );                                                                                         \
     }
 }

@@ -126,12 +126,12 @@ TEST_CASE("allReduce vectors")
 
     SECTION("MPI_MAX")
     {
-        Vector values;
+        Vec3 values;
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
             values[ivalue] = static_cast<scalar>(rank) + static_cast<scalar>(ivalue) * 10.0;
         }
-        Vector sendValues = values;
+        Vec3 sendValues = values;
         allReduce(sendValues, ReduceOp::Max, MPI_COMM_WORLD);
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
@@ -143,12 +143,12 @@ TEST_CASE("allReduce vectors")
 
     SECTION("MPI_MIN")
     {
-        Vector values;
+        Vec3 values;
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
             values[ivalue] = static_cast<scalar>(rank) + static_cast<scalar>(ivalue) * 10.0;
         }
-        Vector sendValues = values;
+        Vec3 sendValues = values;
         allReduce(sendValues, ReduceOp::Min, MPI_COMM_WORLD);
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
@@ -158,12 +158,12 @@ TEST_CASE("allReduce vectors")
 
     SECTION("MPI_SUM")
     {
-        Vector values;
+        Vec3 values;
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
             values[ivalue] = static_cast<scalar>(ivalue) * 10.0;
         }
-        Vector sendValues = values;
+        Vec3 sendValues = values;
         allReduce(sendValues, ReduceOp::Sum, MPI_COMM_WORLD);
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
@@ -177,12 +177,12 @@ TEST_CASE("allReduce vectors")
 
     SECTION("MPI_PROD")
     {
-        Vector values;
+        Vec3 values;
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {
             values[ivalue] = static_cast<scalar>(ivalue) * 10.0;
         }
-        Vector sendValues = values;
+        Vec3 sendValues = values;
         allReduce(sendValues, ReduceOp::Prod, MPI_COMM_WORLD);
         for (size_t ivalue = 0; ivalue < values.size(); ++ivalue)
         {

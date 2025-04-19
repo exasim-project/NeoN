@@ -6,7 +6,7 @@
 #include <concepts>
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/coeff.hpp"
@@ -19,17 +19,18 @@ namespace NeoN::dsl
 
 template<typename T>
 concept HasExplicitOperator = requires(T t) {
-    // using ValueType = typename T::FieldValueType;
+    // using ValueType = typename T::VectorValueType;
     {
-        t.explicitOperation(std::declval<Field<typename T::FieldValueType>&>())
+        t.explicitOperation(std::declval<Vector<typename T::VectorValueType>&>())
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
 template<typename T>
 concept HasImplicitOperator = requires(T t) {
-    // using ValueType = typename T::FieldValueType;
+    // using ValueType = typename T::VectorValueType;
     {
-        t.implicitOperation(std::declval<la::LinearSystem<typename T::FieldValueType, localIdx>&>())
+        t.implicitOperation(std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>()
+        )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
@@ -53,7 +54,7 @@ class SpatialOperator
 {
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     // FIXME add again
     // template<IsSpatialOperator T>
@@ -71,7 +72,7 @@ public:
         return *this;
     }
 
-    void explicitOperation(Field<ValueType>& source) const { model_->explicitOperation(source); }
+    void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
     {
@@ -104,7 +105,7 @@ private:
     {
         virtual ~OperatorConcept() = default;
 
-        virtual void explicitOperation(Field<ValueType>& source) = 0;
+        virtual void explicitOperation(Vector<ValueType>& source) = 0;
 
         virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) = 0;
 
@@ -140,7 +141,7 @@ private:
         /* returns the name of the operator */
         std::string getName() const override { return concreteOp_.getName(); }
 
-        virtual void explicitOperation(Field<ValueType>& source) override
+        virtual void explicitOperation(Vector<ValueType>& source) override
         {
             if constexpr (HasExplicitOperator<ConcreteOperatorType>)
             {
@@ -194,10 +195,10 @@ SpatialOperator<ValueType> operator*(scalar scalarCoeff, SpatialOperator<ValueTy
 
 template<typename ValueType>
 SpatialOperator<ValueType>
-operator*(const Field<scalar>& coeffField, SpatialOperator<ValueType> rhs)
+operator*(const Vector<scalar>& coeffVector, SpatialOperator<ValueType> rhs)
 {
     SpatialOperator<ValueType> result = rhs;
-    result.getCoefficient() *= Coeff(coeffField);
+    result.getCoefficient() *= Coeff {coeffVector};
     return result;
 }
 
@@ -218,7 +219,8 @@ SpatialOperator<ValueType> operator*(const Coeff& coeff, SpatialOperator<ValueTy
 //     SpatialOperator result = lhs;
 //     // if (!result.getCoefficient().useSpan)
 //     // {
-//     //     result.setField(std::make_shared<Field<scalar>>(result.exec(), result.nCells(), 1.0));
+//     //     result.setVector(std::make_shared<Vector<scalar>>(result.exec(),
+//     result.nCells(), 1.0));
 //     // }
 //     // map(result.exec(), result.getCoefficient().values, scaleFunc);
 //     return result;

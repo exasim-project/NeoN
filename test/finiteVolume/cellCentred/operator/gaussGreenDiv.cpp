@@ -15,7 +15,7 @@ using Operator = NeoN::dsl::Operator;
 namespace NeoN
 {
 
-TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -25,22 +25,22 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vector)
     // compute corresponding uniform faceFlux
     // TODO this should be handled outside of the unit test
     fvcc::SurfaceField<scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
-    fill(faceFlux.internalField(), 1.0);
-    auto boundFaceFlux = faceFlux.internalField().view();
+    fill(faceFlux.internalVector(), 1.0);
+    auto boundFaceFlux = faceFlux.internalVector().view();
     // face on the left side has different orientation
     parallelFor(
         exec,
         {mesh.nCells() - 1, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t i) { boundFaceFlux[i] = -1.0; }
+        KOKKOS_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
     );
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
     fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
-    fill(phi.internalField(), one<TestType>());
-    fill(phi.boundaryField().value(), one<TestType>());
+    fill(phi.internalVector(), one<TestType>());
+    fill(phi.boundaryData().value(), one<TestType>());
     phi.correctBoundaryConditions();
 
-    auto result = Field<TestType>(exec, phi.size());
+    auto result = Vector<TestType>(exec, phi.size());
     fill(result, zero<TestType>());
 
     SECTION("Construct from Token" + execName)

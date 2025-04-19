@@ -75,7 +75,7 @@ inline ARKODE_ERKTableID stringToERKTable(const std::string& key)
 }
 
 /**
- * @brief Converts NeoN Field data to SUNDIALS N_Vector format.
+ * @brief Converts NeoN Vector data to SUNDIALS N_Vector format.
  * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
  * @param field Source NeoN field
@@ -83,12 +83,12 @@ inline ARKODE_ERKTableID stringToERKTable(const std::string& key)
  * @warning Assumes matching initialization and size between field and vector
  */
 template<typename SKVectorType, typename ValueType>
-void fieldToSunNVectorImpl(const NeoN::Field<ValueType>& field, N_Vector& vector)
+void fieldToSunNVectorImpl(const NeoN::Vector<ValueType>& field, N_Vector& vector)
 {
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     auto fieldView = field.view();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { view(i) = fieldView[i]; }
+        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { view(i) = fieldView[i]; }
     );
 };
 
@@ -100,7 +100,7 @@ void fieldToSunNVectorImpl(const NeoN::Field<ValueType>& field, N_Vector& vector
  * @throws Runtime error for unsupported executors
  */
 template<typename ValueType>
-void fieldToSunNVector(const NeoN::Field<ValueType>& field, N_Vector& vector)
+void fieldToSunNVector(const NeoN::Vector<ValueType>& field, N_Vector& vector)
 {
     // CHECK FOR N_Vector on correct space in DEBUG
     if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
@@ -126,7 +126,7 @@ void fieldToSunNVector(const NeoN::Field<ValueType>& field, N_Vector& vector)
 };
 
 /**
- * @brief Converts SUNDIALS N_Vector data back to NeoN Field format.
+ * @brief Converts SUNDIALS N_Vector data back to NeoN Vector format.
  * @tparam SKVectorType The SUNDIALS Kokkos vector type
  * @tparam ValueType The field data type
  * @param vector Source SUNDIALS N_Vector
@@ -134,12 +134,12 @@ void fieldToSunNVector(const NeoN::Field<ValueType>& field, N_Vector& vector)
  * @warning Assumes matching initialization and size between vector and field
  */
 template<typename SKVectorType, typename ValueType>
-void sunNVectorToFieldImpl(const N_Vector& vector, NeoN::Field<ValueType>& field)
+void sunNVectorToVectorImpl(const N_Vector& vector, NeoN::Vector<ValueType>& field)
 {
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     ValueType* fieldData = field.data();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const size_t i) { fieldData[i] = view(i); }
+        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { fieldData[i] = view(i); }
     );
 };
 
@@ -150,25 +150,25 @@ void sunNVectorToFieldImpl(const N_Vector& vector, NeoN::Field<ValueType>& field
  * @param field Target NeoN field
  */
 template<typename ValueType>
-void sunNVectorToField(const N_Vector& vector, NeoN::Field<ValueType>& field)
+void sunNVectorToVector(const N_Vector& vector, NeoN::Vector<ValueType>& field)
 {
     if (std::holds_alternative<NeoN::GPUExecutor>(field.exec()))
     {
-        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
+        sunNVectorToVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultExecutionSpace>>(
             vector, field
         );
         return;
     }
     if (std::holds_alternative<NeoN::CPUExecutor>(field.exec()))
     {
-        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
+        sunNVectorToVectorImpl<::sundials::kokkos::Vector<Kokkos::DefaultHostExecutionSpace>>(
             vector, field
         );
         return;
     }
     if (std::holds_alternative<NeoN::SerialExecutor>(field.exec()))
     {
-        sunNVectorToFieldImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(vector, field);
+        sunNVectorToVectorImpl<::sundials::kokkos::Vector<Kokkos::Serial>>(vector, field);
         return;
     }
     NF_ERROR_EXIT("Unsupported NeoN executor for field.");
@@ -188,11 +188,11 @@ void sunNVectorToField(const N_Vector& vector, NeoN::Field<ValueType>& field)
  * variable at the start of the time step. Currently 'multi-stage RK' is not supported until y
  * can be copied to this field.
  */
-template<typename SolutionFieldType>
+template<typename SolutionVectorType>
 int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, void* userData)
 {
     // Pointer wrangling
-    using ValueType = typename SolutionFieldType::FieldValueType;
+    using ValueType = typename SolutionVectorType::VectorValueType;
     NeoN::dsl::Expression<ValueType>* pdeExpre =
         reinterpret_cast<NeoN::dsl::Expression<ValueType>*>(userData);
     sunrealtype* yDotArray = N_VGetArrayPointer(ydot);
@@ -203,9 +203,9 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
         "Failed to dereference pointers in sundails."
     );
 
-    size_t size = static_cast<size_t>(N_VGetLength(y));
+    auto size = static_cast<localIdx>(N_VGetLength(y));
     // Copy initial value from y to source.
-    NeoN::Field<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
+    NeoN::Vector<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
     if (std::holds_alternative<NeoN::GPUExecutor>(pdeExpre->exec()))
     {
         Kokkos::fence();

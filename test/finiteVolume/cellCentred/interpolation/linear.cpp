@@ -17,7 +17,7 @@ namespace NeoN
 template<typename T>
 using I = std::initializer_list<T>;
 
-TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vector)
+TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -26,7 +26,7 @@ TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vector)
     auto linear = SurfaceInterpolation<TestType>(exec, mesh, input);
     std::vector<fvcc::VolumeBoundary<TestType>> vbcs {};
     std::vector<fvcc::SurfaceBoundary<TestType>> sbcs {};
-    for (auto patchi : I<size_t> {0, 1})
+    for (auto patchi : I<NeoN::localIdx> {0, 1})
     {
         Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -38,21 +38,21 @@ TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vector)
     auto in = VolumeField<TestType>(exec, "in", mesh, vbcs);
     auto out = SurfaceField<TestType>(exec, "out", mesh, sbcs);
 
-    fill(in.internalField(), one<TestType>());
+    fill(in.internalVector(), one<TestType>());
     in.correctBoundaryConditions();
 
     linear.interpolate(in, out);
     out.correctBoundaryConditions();
 
-    auto outHost = out.internalField().copyToHost();
+    auto outHost = out.internalVector().copyToHost();
     auto nInternal = mesh.nInternalFaces();
     auto nBoundary = mesh.nBoundaryFaces();
-    for (int i = 0; i < nInternal; i++)
+    for (NeoN::localIdx i = 0; i < nInternal; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }
 
-    for (int i = nInternal; i < nInternal + nBoundary; i++)
+    for (NeoN::localIdx i = nInternal; i < nInternal + nBoundary; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }

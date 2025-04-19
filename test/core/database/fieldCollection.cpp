@@ -15,7 +15,7 @@ fvcc::VolumeField<NeoN::scalar>
 createVolumeField(const NeoN::UnstructuredMesh& mesh, std::string fieldName)
 {
     std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-    for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+    for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -23,11 +23,11 @@ createVolumeField(const NeoN::UnstructuredMesh& mesh, std::string fieldName)
         bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
     }
     fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), fieldName, mesh, bcs);
-    NeoN::fill(vf.internalField(), 1.0);
+    NeoN::fill(vf.internalVector(), 1.0);
     return vf;
 }
 
-struct CreateField
+struct CreateVector
 {
     std::string name;
     const NeoN::UnstructuredMesh& mesh;
@@ -37,7 +37,7 @@ struct CreateField
     NeoN::Document operator()(NeoN::Database& db)
     {
         std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-        for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+        for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
         {
             NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
@@ -45,23 +45,25 @@ struct CreateField
             bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(mesh, dict, patchi));
         }
 
-        NeoN::DomainField<NeoN::scalar> domainField(
-            mesh.exec(), NeoN::Field<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0), {0, 10, 20, 30}
+        NeoN::Field<NeoN::scalar> domainVector(
+            mesh.exec(),
+            NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            {0, 10, 20, 30}
         );
-        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainField, bcs, db, "", "");
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
         return NeoN::Document(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
              {"subCycleIndex", subCycleIndex},
              {"field", vf}},
-            fvcc::validateFieldDoc
+            fvcc::validateVectorDoc
         );
     }
 };
 
 
-TEST_CASE("Field Document")
+TEST_CASE("Vector Document")
 {
     NeoN::Executor exec = GENERATE(
         NeoN::Executor(NeoN::SerialExecutor {}),
@@ -73,13 +75,13 @@ TEST_CASE("Field Document")
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
     NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
 
-    SECTION("create FieldDocument: " + execName)
+    SECTION("create VectorDocument: " + execName)
     {
 
-        fvcc::FieldDocument fieldDoc(createVolumeField(mesh, "T"), 1, 2, 3);
+        fvcc::VectorDocument fieldDoc(createVolumeField(mesh, "T"), 1, 2, 3);
 
 
-        SECTION("validate FieldDocument")
+        SECTION("validate VectorDocument")
         {
             REQUIRE(fieldDoc.doc().validate());
             REQUIRE_NOTHROW(fieldDoc.doc().validate());
@@ -100,13 +102,13 @@ TEST_CASE("Field Document")
 
 
             // REQUIRE(name(doc) == "T");
-            const auto& constVolField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
-            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+            const auto& constVolVector = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+            auto& volVector = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
 
-            REQUIRE(volField.name == "T");
-            auto volFieldHost = volField.internalField().copyToHost();
-            REQUIRE(volFieldHost.view()[0] == 1.0);
-            REQUIRE(&volField == &constVolField);
+            REQUIRE(volVector.name == "T");
+            auto volVectorHost = volVector.internalVector().copyToHost();
+            REQUIRE(volVectorHost.view()[0] == 1.0);
+            REQUIRE(&volVector == &constVolVector);
         }
 
         SECTION("modify fieldDocument")
@@ -114,11 +116,11 @@ TEST_CASE("Field Document")
             fieldDoc.timeIndex() = 4;
             fieldDoc.iterationIndex() = 5;
             fieldDoc.subCycleIndex() = 6;
-            auto& volField = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
-            NeoN::fill(volField.internalField(), 2.0);
+            auto& volVector = fieldDoc.field<fvcc::VolumeField<NeoN::scalar>>();
+            NeoN::fill(volVector.internalVector(), 2.0);
 
-            auto volFieldHost = volField.internalField().copyToHost();
-            REQUIRE(volFieldHost.view()[0] == 2.0);
+            auto volVectorHost = volVector.internalVector().copyToHost();
+            REQUIRE(volVectorHost.view()[0] == 2.0);
             REQUIRE(fieldDoc.timeIndex() == 4);
             REQUIRE(fieldDoc.iterationIndex() == 5);
             REQUIRE(fieldDoc.subCycleIndex() == 6);
@@ -126,7 +128,7 @@ TEST_CASE("Field Document")
     }
 }
 
-TEST_CASE("FieldCollection")
+TEST_CASE("VectorCollection")
 {
     NeoN::Database db;
 
@@ -139,35 +141,35 @@ TEST_CASE("FieldCollection")
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
     NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
 
-    SECTION("create FieldCollection: " + execName)
+    SECTION("create VectorCollection: " + execName)
     {
-        fvcc::FieldCollection fieldCollection(db, "testFieldCollection");
+        fvcc::VectorCollection fieldCollection(db, "testVectorCollection");
         REQUIRE(fieldCollection.size() == 0);
     }
 
-    SECTION("add FieldDocument to FieldCollection" + execName)
+    SECTION("add VectorDocument to VectorCollection" + execName)
     {
-        fvcc::FieldCollection& fieldCollection =
-            fvcc::FieldCollection::instance(db, "testFieldCollection");
+        fvcc::VectorCollection& fieldCollection =
+            fvcc::VectorCollection::instance(db, "testVectorCollection");
         REQUIRE(db.size() == 1);
 
-        fvcc::FieldDocument fieldDoc(createVolumeField(mesh, "T1"), 1, 2, 3);
+        fvcc::VectorDocument fieldDoc(createVolumeField(mesh, "T1"), 1, 2, 3);
 
         REQUIRE(fieldCollection.insert(fieldDoc) != std::string(""));
         REQUIRE(
-            fieldCollection.insert(fvcc::FieldDocument(createVolumeField(mesh, "T2"), 1, 2, 3))
+            fieldCollection.insert(fvcc::VectorDocument(createVolumeField(mesh, "T2"), 1, 2, 3))
             != std::string("")
         );
         REQUIRE(
-            fieldCollection.insert(fvcc::FieldDocument(createVolumeField(mesh, "T3"), 1, 2, 3))
+            fieldCollection.insert(fvcc::VectorDocument(createVolumeField(mesh, "T3"), 1, 2, 3))
             != std::string("")
         );
 
         REQUIRE(fieldCollection.size() == 3);
 
-        SECTION("get FieldDocument from FieldCollection")
+        SECTION("get VectorDocument from VectorCollection")
         {
-            fvcc::FieldDocument& doc = fieldCollection.fieldDoc(fieldDoc.id());
+            fvcc::VectorDocument& doc = fieldCollection.fieldDoc(fieldDoc.id());
             REQUIRE(doc.doc().validate());
             REQUIRE(doc.doc().keys().size() == 6);
             REQUIRE(doc.id().substr(0, 4) == "doc_");
@@ -176,13 +178,13 @@ TEST_CASE("FieldCollection")
             REQUIRE(doc.subCycleIndex() == 3);
             REQUIRE(doc.name() == "T1");
 
-            const auto& constVolField = doc.field<fvcc::VolumeField<NeoN::scalar>>();
-            auto& volField = doc.field<fvcc::VolumeField<NeoN::scalar>>();
+            const auto& constVolVector = doc.field<fvcc::VolumeField<NeoN::scalar>>();
+            auto& volVector = doc.field<fvcc::VolumeField<NeoN::scalar>>();
 
-            REQUIRE(volField.name == "T1");
-            auto volFieldHost = volField.internalField().copyToHost();
-            REQUIRE(volFieldHost.view()[0] == 1.0);
-            REQUIRE(&volField == &constVolField);
+            REQUIRE(volVector.name == "T1");
+            auto volVectorHost = volVector.internalVector().copyToHost();
+            REQUIRE(volVectorHost.view()[0] == 1.0);
+            REQUIRE(&volVector == &constVolVector);
         }
 
         SECTION("query")
@@ -212,43 +214,44 @@ TEST_CASE("FieldCollection")
     SECTION("register " + execName)
     {
 
-        fvcc::FieldCollection& fieldCollection1 =
-            fvcc::FieldCollection::instance(db, "newTestFieldCollection");
+        fvcc::VectorCollection& fieldCollection1 =
+            fvcc::VectorCollection::instance(db, "newTestVectorCollection");
         REQUIRE(db.size() == 1);
 
         fvcc::VolumeField<NeoN::scalar>& t =
-            fieldCollection1.registerField<fvcc::VolumeField<NeoN::scalar>>(CreateField {
+            fieldCollection1.registerVector<fvcc::VolumeField<NeoN::scalar>>(CreateVector {
                 .name = "T", .mesh = mesh, .timeIndex = 1, .iterationIndex = 1, .subCycleIndex = 1
             });
 
         REQUIRE(t.name == "T");
         REQUIRE(t.hasDatabase());
-        auto tHost = t.internalField().copyToHost();
+        auto tHost = t.internalVector().copyToHost();
         REQUIRE(tHost.view()[0] == 1.0);
         REQUIRE(t.registered());
 
-        SECTION("Construct from Field")
+        SECTION("Construct from Vector")
         {
-            fvcc::FieldCollection& fieldCollection2 = fvcc::FieldCollection::instance(t);
+            fvcc::VectorCollection& fieldCollection2 = fvcc::VectorCollection::instance(t);
             REQUIRE(fieldCollection2.size() == 1);
             const fvcc::VolumeField<NeoN::scalar>& constT = t;
-            const fvcc::FieldCollection& fieldCollection3 = fvcc::FieldCollection::instance(constT);
+            const fvcc::VectorCollection& fieldCollection3 =
+                fvcc::VectorCollection::instance(constT);
             REQUIRE(fieldCollection3.size() == 1);
         }
 
 
         SECTION("register from existing field")
         {
-            fvcc::FieldCollection& fieldCollection2 = fvcc::FieldCollection::instance(t);
+            fvcc::VectorCollection& fieldCollection2 = fvcc::VectorCollection::instance(t);
             fvcc::VolumeField<NeoN::scalar>& t3 =
-                fieldCollection2.registerField<fvcc::VolumeField<NeoN::scalar>>(
-                    fvcc::CreateFromExistingField<fvcc::VolumeField<NeoN::scalar>> {
+                fieldCollection2.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                    fvcc::CreateFromExistingVector<fvcc::VolumeField<NeoN::scalar>> {
                         .name = "T3", .field = t
                     }
                 );
 
-            const fvcc::FieldDocument& docT = fieldCollection2.fieldDoc(t3.key);
-            const fvcc::FieldDocument& docT3 = fieldCollection2.fieldDoc(t.key);
+            const fvcc::VectorDocument& docT = fieldCollection2.fieldDoc(t3.key);
+            const fvcc::VectorDocument& docT3 = fieldCollection2.fieldDoc(t.key);
 
             REQUIRE(docT.timeIndex() == docT3.timeIndex());
             REQUIRE(docT.iterationIndex() == docT3.iterationIndex());

@@ -14,7 +14,7 @@ TEST_CASE("fixedValue")
     SECTION("TestDerivedClass" + execName)
     {
         auto mesh = NeoN::createSingleCellMesh(exec);
-        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
+        NeoN::Field<NeoN::scalar> domainVector(exec, mesh.nCells(), mesh.boundaryMesh().offset());
         NeoN::scalar setValue {10};
         NeoN::Dictionary dict;
         dict.insert("fixedValue", setValue);
@@ -23,9 +23,9 @@ TEST_CASE("fixedValue")
                 "fixedValue", mesh, dict, 0
             );
 
-        boundary->correctBoundaryCondition(domainField);
+        boundary->correctBoundaryCondition(domainVector);
 
-        auto refValues = domainField.boundaryField().refValue().copyToHost();
+        auto refValues = domainVector.boundaryData().refValue().copyToHost();
 
         for (auto& boundaryValue : refValues.view(boundary->range()))
         {

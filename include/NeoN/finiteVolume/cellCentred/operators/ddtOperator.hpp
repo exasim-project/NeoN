@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "NeoN/fields/field.hpp"
+#include "NeoN/core/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
-#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/operator.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -21,11 +21,11 @@ class DdtOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field);
 
-    void explicitOperation(Field<ValueType>& source, scalar, scalar dt) const;
+    void explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const;
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt);
 

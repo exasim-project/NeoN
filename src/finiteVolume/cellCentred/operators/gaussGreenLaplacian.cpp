@@ -11,9 +11,9 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeLaplacianExp(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const SurfaceField<scalar>& gamma,
+    const SurfaceField<scalar>&, // gamma,
     VolumeField<ValueType>& phi,
-    Field<ValueType>& lapPhi,
+    Vector<ValueType>& lapPhi,
     const dsl::Coeff operatorScaling
 )
 {
@@ -25,35 +25,27 @@ void computeLaplacianExp(
     const auto [owner, neighbour, surfFaceCells] =
         spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
-    auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
-    );
-
     const auto [result, faceArea, fnGrad, vol] =
-        spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalField(), mesh.cellVolumes());
+        spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
 
-
-    size_t nInternalFaces = mesh.nInternalFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
 
     // TODO use NeoN::add and sub
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             ValueType flux = faceArea[i] * fnGrad[i];
-            Kokkos::atomic_add(&result[static_cast<size_t>(owner[i])], flux);
-            Kokkos::atomic_sub(&result[static_cast<size_t>(neighbour[i])], flux);
+            Kokkos::atomic_add(&result[owner[i]], flux);
+            Kokkos::atomic_sub(&result[neighbour[i]], flux);
         }
     );
 
     parallelFor(
         exec,
         {nInternalFaces, fnGrad.size()},
-        KOKKOS_LAMBDA(const size_t i) {
-            size_t own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx i) {
+            auto own = surfFaceCells[i - nInternalFaces];
             ValueType valueOwn = faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[own], valueOwn);
         }
@@ -62,7 +54,9 @@ void computeLaplacianExp(
     parallelFor(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli) { result[celli] *= operatorScaling[celli] / vol[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) {
+            result[celli] *= operatorScaling[celli] / vol[celli];
+        }
     );
 }
 
@@ -71,12 +65,12 @@ void computeLaplacianExp(
         const FaceNormalGradient<TYPENAME>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
         VolumeField<TYPENAME>&,                                                                    \
-        Field<TYPENAME>&,                                                                          \
+        Vector<TYPENAME>&,                                                                         \
         const dsl::Coeff                                                                           \
     )
 
 NF_DECLARE_COMPUTE_EXP_LAP(scalar);
-NF_DECLARE_COMPUTE_EXP_LAP(Vector);
+NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
 
 
 template<typename ValueType>
@@ -90,7 +84,7 @@ void computeLaplacianImpl(
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const std::size_t nInternalFaces = mesh.nInternalFaces();
+    const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
     const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
         mesh.faceOwner(),
@@ -102,7 +96,9 @@ void computeLaplacianImpl(
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = spans(
-        gamma.internalField(), faceNormalGradient.deltaCoeffs().internalField(), mesh.magFaceAreas()
+        gamma.internalVector(),
+        faceNormalGradient.deltaCoeffs().internalVector(),
+        mesh.magFaceAreas()
     );
 
     // FIXME: what if order changes
@@ -116,15 +112,15 @@ void computeLaplacianImpl(
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
 
-            std::size_t own = static_cast<std::size_t>(owner[facei]);
-            std::size_t nei = static_cast<std::size_t>(neighbour[facei]);
+            auto own = owner[facei];
+            auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            std::size_t rowNeiStart = rowPtrs[nei];
-            std::size_t rowOwnStart = rowPtrs[own];
+            auto rowNeiStart = rowPtrs[nei];
+            auto rowOwnStart = rowPtrs[own];
 
             scalar operatorScalingNei = operatorScaling[nei];
             scalar operatorScalingOwn = operatorScaling[own];
@@ -146,22 +142,22 @@ void computeLaplacianImpl(
     );
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().value(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
     );
 
     parallelFor(
         exec,
         {nInternalFaces, sGamma.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            std::size_t bcfacei = facei - nInternalFaces;
-            scalar flux = sGamma[facei] * magFaceArea[facei];
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - nInternalFaces;
+            auto flux = sGamma[facei] * magFaceArea[facei];
 
-            std::size_t own = static_cast<std::size_t>(surfFaceCells[bcfacei]);
-            std::size_t rowOwnStart = rowPtrs[own];
-            scalar operatorScalingOwn = operatorScaling[own];
+            auto own = surfFaceCells[bcfacei];
+            auto rowOwnStart = rowPtrs[own];
+            auto operatorScalingOwn = operatorScaling[own];
 
             values[rowOwnStart + diagOffs[own]] -= flux * operatorScalingOwn
                                                  * valueFraction[bcfacei] * deltaCoeffs[facei]
@@ -179,6 +175,6 @@ void computeLaplacianImpl(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_LAP(scalar);
-NF_DECLARE_COMPUTE_IMP_LAP(Vector);
+NF_DECLARE_COMPUTE_IMP_LAP(Vec3);
 
 };

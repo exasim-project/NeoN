@@ -2,16 +2,17 @@
 // SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
-#include "NeoN/fields/field.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vector.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector.hpp"
 
 
 namespace NeoN
 {
 
-using labelField = NeoN::Field<label>;
-using scalarField = NeoN::Field<scalar>;
-using vectorField = NeoN::Field<Vector>;
+using labelVector = NeoN::Vector<label>;
+using localIdxVector = NeoN::Vector<localIdx>;
+using scalarVector = NeoN::Vector<scalar>;
+using vectorVector = NeoN::Vector<Vec3>;
 
 } // namespace NeoN

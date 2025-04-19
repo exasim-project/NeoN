@@ -25,13 +25,13 @@ public:
  *
  * @ingroup dsl
  */
-template<typename FieldType>
+template<typename VectorType>
 class OperatorMixin
 {
 
 public:
 
-    OperatorMixin(const Executor exec, const Coeff& coeffs, FieldType& field, Operator::Type type)
+    OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
 
@@ -45,9 +45,9 @@ public:
 
     const Coeff& getCoefficient() const { return coeffs_; }
 
-    FieldType& getField() { return field_; }
+    VectorType& getVector() { return field_; }
 
-    const FieldType& getField() const { return field_; }
+    const VectorType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
     void build([[maybe_unused]] const Input& input) {}
@@ -58,7 +58,7 @@ protected:
 
     Coeff coeffs_;
 
-    FieldType& field_;
+    VectorType& field_;
 
     Operator::Type type_;
 };

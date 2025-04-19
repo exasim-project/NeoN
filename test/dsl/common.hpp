@@ -8,13 +8,14 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using Field = NeoN::Field<NeoN::scalar>;
+using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
 using Operator = NeoN::dsl::Operator;
 using Executor = NeoN::Executor;
+using localIdx = NeoN::localIdx;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
-using BoundaryFields = NeoN::BoundaryFields<NeoN::scalar>;
+using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
@@ -25,7 +26,7 @@ class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     Dummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
@@ -39,15 +40,15 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Field<ValueType>& source)
+    void explicitOperation(NeoN::Vector<ValueType>& source)
     {
         auto sourceView = source.view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
@@ -55,34 +56,22 @@ public:
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
 
         // update diag
         NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
-            KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
         NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
-    }
-
-    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
-    {
-        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
-        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
-
-        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
-        return linearSystem;
     }
 
     std::string getName() const { return "Dummy"; }
@@ -96,7 +85,7 @@ class TemporalDummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueTyp
 
 public:
 
-    using FieldValueType = ValueType;
+    using VectorValueType = ValueType;
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
@@ -110,15 +99,15 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Field<ValueType>& source, NeoN::scalar, NeoN::scalar)
+    void explicitOperation(NeoN::Vector<ValueType>& source, NeoN::scalar, NeoN::scalar)
     {
         auto sourceView = source.view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
         );
     }
 
@@ -127,32 +116,32 @@ public:
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalField().view();
+        auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
 
         // update diag
         NeoN::parallelFor(
             this->exec(),
             {0, values.size()},
-            KOKKOS_LAMBDA(const size_t i) { values[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
         );
 
         // update rhs
         NeoN::parallelFor(
             this->exec(),
             ls.rhs().range(),
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] += coeff[i] * fieldView[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
     }
 
     la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
     {
-        NeoN::Field<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Field<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Field<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
+        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
+        NeoN::Vector<NeoN::localIdx> rowPtrs(this->exec(), {0, 1});
         NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        NeoN::Field<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
+        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
         NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
         return linearSystem;
     }
@@ -161,10 +150,10 @@ public:
 };
 
 template<typename ValueType>
-ValueType getField(const NeoN::Field<ValueType>& source)
+ValueType getVector(const NeoN::Vector<ValueType>& source)
 {
-    auto sourceField = source.copyToHost();
-    return sourceField.view()[0];
+    auto sourceVector = source.copyToHost();
+    return sourceVector.view()[0];
 }
 
 template<typename ValueType>

@@ -10,11 +10,11 @@ Coeff::Coeff() : coeff_(1.0), view_(), hasView_(false) {}
 
 Coeff::Coeff(scalar value) : coeff_(value), view_(), hasView_(false) {}
 
-Coeff::Coeff(scalar coeff, const Field<scalar>& field)
+Coeff::Coeff(scalar coeff, const Vector<scalar>& field)
     : coeff_(coeff), view_(field.view()), hasView_(true)
 {}
 
-Coeff::Coeff(const Field<scalar>& field) : coeff_(1.0), view_(field.view()), hasView_(true) {}
+Coeff::Coeff(const Vector<scalar>& field) : coeff_(1.0), view_(field.view()), hasView_(true) {}
 
 bool Coeff::hasSpan() { return hasView_; }
 
@@ -45,7 +45,7 @@ Coeff& Coeff::operator*=(const Coeff& rhs)
 
 namespace detail
 {
-void toField(Coeff& coeff, Field<scalar>& rhs)
+void toVector(Coeff& coeff, Vector<scalar>& rhs)
 {
     if (coeff.hasSpan())
     {
@@ -54,7 +54,7 @@ void toField(Coeff& coeff, Field<scalar>& rhs)
         auto rhsView = rhs.view();
         // otherwise we are unable to capture values in the lambda
         parallelFor(
-            rhs.exec(), rhs.range(), KOKKOS_LAMBDA(const size_t i) { rhsView[i] *= coeff[i]; }
+            rhs.exec(), rhs.range(), KOKKOS_LAMBDA(const localIdx i) { rhsView[i] *= coeff[i]; }
         );
     }
     else

@@ -19,7 +19,7 @@ using NeoN::Executor;
 using NeoN::Dictionary;
 using NeoN::scalar;
 using NeoN::localIdx;
-using NeoN::Field;
+using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 using NeoN::la::Solver;
@@ -42,15 +42,15 @@ TEST_CASE("MatrixAssembly - Petsc")
 
         NeoN::Database db;
 
-        Field<NeoN::scalar> values(exec, {10.0, 4.0, 7.0, 2.0, 10.0, 8.0, 3.0, 6.0, 10.0});
+        Vector<NeoN::scalar> values(exec, {10.0, 4.0, 7.0, 2.0, 10.0, 8.0, 3.0, 6.0, 10.0});
         // TODO work on support for unsingned types
-        Field<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-        Field<localIdx> rowPtrs(exec, {0, 3, 6, 9});
+        Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
+        Vector<localIdx> rowPtrs(exec, {0, 3, 6, 9});
         CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-        Field<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-        Field<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
+        Vector<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
 
         NeoN::Dictionary solverDict {{
             {"solver", std::string {"Petsc"}},
@@ -72,17 +72,17 @@ TEST_CASE("MatrixAssembly - Petsc")
         SECTION("Solve linear system second time " + execName)
         {
             // NeoN::Database db;
-            NeoN::Field<NeoN::scalar> values(
+            NeoN::Vector<NeoN::scalar> values(
                 exec, {10.0, 2.0, 3.0, 5.0, 20.0, 2.0, 4.0, 4.0, 30.0}
             );
 
-            Field<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-            Field<localIdx> rowPtrs(exec, {0, 3, 6, 9});
+            Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
+            Vector<localIdx> rowPtrs(exec, {0, 3, 6, 9});
             CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
 
-            Field<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
+            Vector<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
             LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-            Field<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
+            Vector<NeoN::scalar> x(exec, {0.0, 0.0, 0.0});
 
             NeoN::Dictionary solverDict {{
                 {"solver", std::string {"Petsc"}},

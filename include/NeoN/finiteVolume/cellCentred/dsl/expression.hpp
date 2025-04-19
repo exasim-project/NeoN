@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/dsl/expression.hpp"
 #include "NeoN/dsl/solver.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace dsl = NeoN::dsl;
@@ -59,9 +59,9 @@ public:
         return *sparsityPattern_;
     }
 
-    VolumeField<ValueType>& getField() { return this->psi_; }
+    VolumeField<ValueType>& getVector() { return this->psi_; }
 
-    const VolumeField<ValueType>& getField() const { return this->psi_; }
+    const VolumeField<ValueType>& getVector() const { return this->psi_; }
 
     [[nodiscard]] const la::LinearSystem<ValueType, IndexType>& linearSystem() const { return ls_; }
     [[nodiscard]] const SparsityPattern& sparsityPattern() const
@@ -92,7 +92,7 @@ public:
         NeoN::parallelFor(
             exec(),
             {0, rhs.size()},
-            KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceView[i] * vol[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceView[i] * vol[i]; }
         );
     }
 
@@ -124,13 +124,13 @@ public:
             NeoN::parallelFor(
                 exec(),
                 {0, rhs.size()},
-                KOKKOS_LAMBDA(const size_t i) { rhs[i] -= expSourceSpan[i] * vol[i]; }
+                KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceSpan[i] * vol[i]; }
             );
         }
     }
 
     // TODO unify with dsl/solver.hpp
-    void solve(scalar t, scalar dt)
+    void solve(scalar, scalar)
     {
         // dsl::solve(expr_, psi_, t, dt, fvSchemes_, fvSolution_);
         if (expr_.temporalOperators().size() == 0 && expr_.spatialOperators().size() == 0)
@@ -150,8 +150,8 @@ public:
         {
             auto exec = psi_.exec();
             auto solver = NeoN::la::Solver(exec, fvSolution_);
-            solver.solve(ls_, psi_.internalField());
-            NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
+            solver.solve(ls_, psi_.internalVector());
+            // NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
         }
     }
 
@@ -159,7 +159,7 @@ public:
     {
         // TODO currently assumes that matrix is already assembled
         const auto diagOffset = sparsityPattern_->diagOffset().view();
-        const auto rowPtrs = ls_.matrix().rowPtrs();
+        const auto rowPtrs = ls_.matrix().rowPtrs().view();
         auto rhs = ls_.rhs().view();
         auto values = ls_.matrix().values().view();
         NeoN::parallelFor(
@@ -188,21 +188,21 @@ template<typename ValueType, typename IndexType = localIdx>
 VolumeField<ValueType>
 operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueType>& psi)
 {
-    VolumeField<ValueType> resultField(
+    VolumeField<ValueType> resultVector(
         psi.exec(),
         "ls_" + psi.name,
         psi.mesh(),
-        psi.internalField(),
-        psi.boundaryField(),
+        psi.internalVector(),
+        psi.boundaryData(),
         psi.boundaryConditions()
     );
 
     auto [result, b, x] =
-        spans(resultField.internalField(), expr.linearSystem().rhs(), psi.internalField());
+        spans(resultVector.internalVector(), expr.linearSystem().rhs(), psi.internalVector());
     const auto [values, colIdxs, rowPtrs] = expr.linearSystem().view();
 
     NeoN::parallelFor(
-        resultField.exec(),
+        resultVector.exec(),
         {0, result.size()},
         KOKKOS_LAMBDA(const std::size_t rowi) {
             IndexType rowStart = rowPtrs[rowi];
@@ -216,7 +216,7 @@ operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueTy
         }
     );
 
-    return resultField;
+    return resultVector;
 }
 
 }

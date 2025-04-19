@@ -71,45 +71,45 @@ public:
 
     const OldTimeDocument& oldTimeDoc(const std::string& id) const;
 
-    template<typename FieldType>
-    FieldType& getOrInsert(std::string idOfNextField)
+    template<typename VectorType>
+    VectorType& getOrInsert(std::string idOfNextVector)
     {
-        std::string nextId = findNextTime(idOfNextField);
-        FieldCollection& fieldCollection = FieldCollection::instance(db(), fieldCollectionName_);
+        std::string nextId = findNextTime(idOfNextVector);
+        VectorCollection& fieldCollection = VectorCollection::instance(db(), fieldCollectionName_);
 
-        if (nextId != "") // oldField is already registered
+        if (nextId != "") // oldVector is already registered
         {
             OldTimeDocument& oldTimeDocument = oldTimeDoc(nextId);
-            return fieldCollection.fieldDoc(oldTimeDocument.previousTime()).field<FieldType>();
+            return fieldCollection.fieldDoc(oldTimeDocument.previousTime()).field<VectorType>();
         }
-        FieldDocument& fieldDoc = fieldCollection.fieldDoc(idOfNextField);
+        VectorDocument& fieldDoc = fieldCollection.fieldDoc(idOfNextVector);
 
-        std::string oldTimeName = fieldDoc.field<FieldType>().name + "_0";
-        FieldType& oldField =
-            fieldCollection.registerField<FieldType>(CreateFromExistingField<FieldType> {
+        std::string oldTimeName = fieldDoc.field<VectorType>().name + "_0";
+        VectorType& oldVector =
+            fieldCollection.registerVector<VectorType>(CreateFromExistingVector<VectorType> {
                 .name = oldTimeName,
-                .field = fieldDoc.field<FieldType>(),
+                .field = fieldDoc.field<VectorType>(),
                 .timeIndex = fieldDoc.timeIndex() - 1,
                 .iterationIndex = fieldDoc.iterationIndex(),
                 .subCycleIndex = fieldDoc.subCycleIndex()
             });
-        OldTimeDocument oldTimeDocument(fieldDoc.field<FieldType>().key, oldField.key, "", -1);
-        setCurrentFieldAndLevel(oldTimeDocument);
+        OldTimeDocument oldTimeDocument(fieldDoc.field<VectorType>().key, oldVector.key, "", -1);
+        setCurrentVectorAndLevel(oldTimeDocument);
         insert(oldTimeDocument);
-        return oldField;
+        return oldVector;
     }
 
-    template<typename FieldType>
-    const FieldType& get(std::string idOfNextField) const
+    template<typename VectorType>
+    const VectorType& get(std::string idOfNextVector) const
     {
-        std::string nextId = findNextTime(idOfNextField);
-        const FieldCollection& fieldCollection =
-            FieldCollection::instance(db(), fieldCollectionName_);
+        std::string nextId = findNextTime(idOfNextVector);
+        const VectorCollection& fieldCollection =
+            VectorCollection::instance(db(), fieldCollectionName_);
 
-        if (nextId != "") // oldField has to be registered
+        if (nextId != "") // oldVector has to be registered
         {
             const OldTimeDocument& oldTimeDocument = oldTimeDoc(nextId);
-            return fieldCollection.fieldDoc(oldTimeDocument.previousTime()).field<FieldType>();
+            return fieldCollection.fieldDoc(oldTimeDocument.previousTime()).field<VectorType>();
         }
         else
         {
@@ -123,14 +123,14 @@ public:
 
     static const OldTimeCollection& instance(const Database& db, std::string name);
 
-    static OldTimeCollection& instance(FieldCollection& fieldCollection);
+    static OldTimeCollection& instance(VectorCollection& fieldCollection);
 
-    static const OldTimeCollection& instance(const FieldCollection& fieldCollection);
+    static const OldTimeCollection& instance(const VectorCollection& fieldCollection);
 
 private:
 
     /** */
-    void setCurrentFieldAndLevel(OldTimeDocument& oldTimeDoc);
+    void setCurrentVectorAndLevel(OldTimeDocument& oldTimeDoc);
 
     std::string fieldCollectionName_;
 };
@@ -143,12 +143,12 @@ private:
  * @param field The field to retrieve the old time field from.
  * @return The old time field.
  */
-template<typename FieldType>
-FieldType& oldTime(FieldType& field)
+template<typename VectorType>
+VectorType& oldTime(VectorType& field)
 {
-    FieldCollection& fieldCollection = FieldCollection::instance(field);
+    VectorCollection& fieldCollection = VectorCollection::instance(field);
     OldTimeCollection& oldTimeCollection = OldTimeCollection::instance(fieldCollection);
-    return oldTimeCollection.getOrInsert<FieldType>(field.key);
+    return oldTimeCollection.getOrInsert<VectorType>(field.key);
 }
 
 /**
@@ -159,12 +159,12 @@ FieldType& oldTime(FieldType& field)
  * @param field The field to retrieve the old time field from.
  * @return The old time field.
  */
-template<typename FieldType>
-const FieldType& oldTime(const FieldType& field)
+template<typename VectorType>
+const VectorType& oldTime(const VectorType& field)
 {
-    const FieldCollection& fieldCollection = FieldCollection::instance(field);
+    const VectorCollection& fieldCollection = VectorCollection::instance(field);
     const OldTimeCollection& oldTimeCollection = OldTimeCollection::instance(fieldCollection);
-    return oldTimeCollection.get<FieldType>(field.key);
+    return oldTimeCollection.get<VectorType>(field.key);
 }
 
 } // namespace NeoN

@@ -19,7 +19,7 @@ TEST_CASE("Courant Number")
     {
         NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, 4);
         std::vector<fvcc::SurfaceBoundary<NeoN::scalar>> bcs {};
-        for (auto patchi : I<NeoN::size_t> {0, 1})
+        for (auto patchi : I<NeoN::localIdx> {0, 1})
         {
             NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
@@ -28,7 +28,7 @@ TEST_CASE("Courant Number")
         }
 
         fvcc::SurfaceField<NeoN::scalar> sf(exec, "sf", mesh, bcs);
-        NeoN::fill(sf.internalField(), 1.0);
+        NeoN::fill(sf.internalVector(), 1.0);
         sf.correctBoundaryConditions();
 
         // use arbitrary time step size of 0.01

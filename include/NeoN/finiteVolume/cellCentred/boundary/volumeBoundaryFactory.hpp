@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -16,7 +17,7 @@ template<typename ValueType>
 class VolumeBoundaryFactory :
     public NeoN::RuntimeSelectionFactory<
         VolumeBoundaryFactory<ValueType>,
-        Parameters<const UnstructuredMesh&, const Dictionary&, size_t>>,
+        Parameters<const UnstructuredMesh&, const Dictionary&, localIdx>>,
     public BoundaryPatchMixin
 {
 public:
@@ -24,13 +25,13 @@ public:
     static std::string name() { return "VolumeBoundaryFactory"; }
 
     VolumeBoundaryFactory(
-        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, size_t patchID
+        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, localIdx patchID
     )
         : BoundaryPatchMixin(mesh, patchID) {};
 
     virtual ~VolumeBoundaryFactory() = default;
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) = 0;
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
 };
@@ -46,10 +47,10 @@ class VolumeBoundary : public BoundaryPatchMixin
 {
 public:
 
-    VolumeBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, size_t patchID)
+    VolumeBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : BoundaryPatchMixin(
-            static_cast<label>(mesh.boundaryMesh().offset()[patchID]),
-            static_cast<label>(mesh.boundaryMesh().offset()[patchID + 1]),
+            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID)],
+            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID) + 1],
             patchID
         ),
           boundaryCorrectionStrategy_(VolumeBoundaryFactory<ValueType>::create(
@@ -62,9 +63,9 @@ public:
           boundaryCorrectionStrategy_(other.boundaryCorrectionStrategy_->clone())
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField)
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector)
     {
-        boundaryCorrectionStrategy_->correctBoundaryCondition(domainField);
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
 private:

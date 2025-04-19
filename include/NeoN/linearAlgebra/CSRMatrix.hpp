@@ -2,10 +2,9 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include <tuple>
+#include "NeoN/core/vector.hpp"
 
-#include "NeoN/fields/field.hpp"
-
+#include <type_traits>
 
 namespace NeoN::la
 {
@@ -93,9 +92,9 @@ public:
      * @param rowOffs The starting index in values/colIdxs for each row.
      */
     CSRMatrix(
-        const Field<ValueType>& values,
-        const Field<IndexType>& colIdxs,
-        const Field<IndexType>& rowOffs
+        const Vector<ValueType>& values,
+        const Vector<IndexType>& colIdxs,
+        const Vector<IndexType>& rowOffs
     )
         : values_(values), colIdxs_(colIdxs), rowOffs_(rowOffs)
     {
@@ -136,37 +135,37 @@ public:
      * @brief Get a span to the values array.
      * @return Span containing the matrix values.
      */
-    [[nodiscard]] Field<ValueType>& values() { return values_; }
+    [[nodiscard]] Vector<ValueType>& values() { return values_; }
 
     /**
      * @brief Get a span to the column indices array.
      * @return Span containing the column indices.
      */
-    [[nodiscard]] Field<IndexType>& colIdxs() { return colIdxs_; }
+    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; }
 
     /**
      * @brief Get a span to the row pointers array.
      * @return Span containing the row pointers.
      */
-    [[nodiscard]] Field<IndexType>& rowPtrs() { return rowOffs_; }
+    [[nodiscard]] Vector<IndexType>& rowPtrs() { return rowOffs_; }
 
     /**
      * @brief Get a const span to the values array.
      * @return Const span containing the matrix values.
      */
-    [[nodiscard]] const Field<ValueType>& values() const { return values_; }
+    [[nodiscard]] const Vector<ValueType>& values() const { return values_; }
 
     /**
      * @brief Get a const span to the column indices array.
      * @return Const span containing the column indices.
      */
-    [[nodiscard]] const Field<IndexType> colIdxs() const { return colIdxs_; }
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; }
 
     /**
      * @brief Get a const span to the row pointers array.
      * @return Const span containing the row pointers.
      */
-    [[nodiscard]] const Field<IndexType>& rowPtrs() const { return rowOffs_; }
+    [[nodiscard]] const Vector<IndexType>& rowPtrs() const { return rowOffs_; }
 
     /**
      * @brief Copy the matrix to another executor.
@@ -214,35 +213,35 @@ public:
 
 private:
 
-    Field<ValueType> values_;  //!< The (non-zero) values of the CSR matrix.
-    Field<IndexType> colIdxs_; //!< The column indices of the CSR matrix.
-    Field<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
+    Vector<ValueType> values_;  //!< The (non-zero) values of the CSR matrix.
+    Vector<IndexType> colIdxs_; //!< The column indices of the CSR matrix.
+    Vector<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
 };
 
-/* @brief given a csr matrix this function copies the matrix and converts to requested target types
- *
- *
- */
-template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
-la::CSRMatrix<ValueTypeOut, IndexTypeOut>
-convert(const Executor exec, const la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
-{
-    Field<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
-    Field<IndexTypeOut> rowPtrsTmp(exec, in.rowOffs.size());
-    Field<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
+// /* @brief given a csr matrix this function copies the matrix and converts to requested target
+// types
+//  *
+//  */
+// template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename
+// IndexTypeOut> la::CSRMatrix<ValueTypeOut, IndexTypeOut> convert(const Executor exec, const
+// la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
+// {
+//     Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
+//     Vector<IndexTypeOut> rowPtrsTmp(exec, in.rowOffs.size());
+//     Vector<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
 
-    parallelFor(
-        colIdxsTmp, KOKKOS_LAMBDA(const size_t i) { return IndexTypeOut(in.colIdxs[i]); }
-    );
-    parallelFor(
-        rowPtrsTmp, KOKKOS_LAMBDA(const size_t i) { return IndexTypeOut(in.rowOffs[i]); }
-    );
-    parallelFor(
-        valuesTmp, KOKKOS_LAMBDA(const size_t i) { return ValueTypeOut(in.values[i]); }
-    );
+//     parallelFor(
+//         colIdxsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
+//     );
+//     parallelFor(
+//         rowPtrsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
+//     );
+//     parallelFor(
+//         valuesTmp, KOKKOS_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
+//     );
 
-    return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};
-}
+//     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};
+// }
 
 
 } // namespace NeoN

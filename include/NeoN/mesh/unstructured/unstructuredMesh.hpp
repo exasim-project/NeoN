@@ -9,10 +9,6 @@
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
 
-#include <vector>
-#include <numeric>
-#include <algorithm>
-
 namespace NeoN
 {
 
@@ -52,19 +48,19 @@ public:
      * @param boundaryMesh The boundary mesh.
      */
     UnstructuredMesh(
-        vectorField points,
-        scalarField cellVolumes,
-        vectorField cellCentres,
-        vectorField faceAreas,
-        vectorField faceCentres,
-        scalarField magFaceAreas,
-        labelField faceOwner,
-        labelField faceNeighbour,
-        size_t nCells,
-        size_t nInternalFaces,
-        size_t nBoundaryFaces,
-        size_t nBoundaries,
-        size_t nFaces,
+        vectorVector points,
+        scalarVector cellVolumes,
+        vectorVector cellCentres,
+        vectorVector faceAreas,
+        vectorVector faceCentres,
+        scalarVector magFaceAreas,
+        labelVector faceOwner,
+        labelVector faceNeighbour,
+        localIdx nCells,
+        localIdx nInternalFaces,
+        localIdx nBoundaryFaces,
+        localIdx nBoundaries,
+        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -73,91 +69,91 @@ public:
      *
      * @return The field of mesh points.
      */
-    const vectorField& points() const;
+    const vectorVector& points() const;
 
     /**
      * @brief Get the field of cell volumes in the mesh.
      *
      * @return The field of cell volumes in the mesh.
      */
-    const scalarField& cellVolumes() const;
+    const scalarVector& cellVolumes() const;
 
     /**
      * @brief Get the field of cell centres in the mesh.
      *
      * @return The field of cell centres in the mesh.
      */
-    const vectorField& cellCentres() const;
+    const vectorVector& cellCentres() const;
 
     /**
      * @brief Get the field of face centres.
      *
      * @return The field of face centres.
      */
-    const vectorField& faceCentres() const;
+    const vectorVector& faceCentres() const;
 
     /**
      * @brief Get the field of area face normals.
      *
      * @return The field of area face normals.
      */
-    const vectorField& faceAreas() const;
+    const vectorVector& faceAreas() const;
 
     /**
      * @brief Get the field of magnitudes of face areas.
      *
      * @return The field of magnitudes of face areas.
      */
-    const scalarField& magFaceAreas() const;
+    const scalarVector& magFaceAreas() const;
 
     /**
      * @brief Get the field of face owner cells.
      *
      * @return The field of face owner cells.
      */
-    const labelField& faceOwner() const;
+    const labelVector& faceOwner() const;
 
     /**
      * @brief Get the field of face neighbour cells.
      *
      * @return The field of face neighbour cells.
      */
-    const labelField& faceNeighbour() const;
+    const labelVector& faceNeighbour() const;
 
     /**
      * @brief Get the number of cells in the mesh.
      *
      * @return The number of cells in the mesh.
      */
-    size_t nCells() const;
+    localIdx nCells() const;
 
     /**
      * @brief Get the number of internal faces in the mesh.
      *
      * @return The number of internal faces in the mesh.
      */
-    size_t nInternalFaces() const;
+    localIdx nInternalFaces() const;
 
     /**
      * @brief Get the number of boundary faces in the mesh.
      *
      * @return The number of boundary faces in the mesh.
      */
-    size_t nBoundaryFaces() const;
+    localIdx nBoundaryFaces() const;
 
     /**
      * @brief Get the number of boundaries in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
-    size_t nBoundaries() const;
+    localIdx nBoundaries() const;
 
     /**
      * @brief Get the number of faces in the mesh.
      *
      * @return The number of faces in the mesh.
      */
-    size_t nFaces() const;
+    localIdx nFaces() const;
 
     /**
      * @brief Get the boundary mesh.
@@ -190,72 +186,72 @@ private:
     const Executor exec_;
 
     /**
-     * @brief Field of mesh points.
+     * @brief Vector of mesh points.
      */
-    vectorField points_;
+    vectorVector points_;
 
     /**
-     * @brief Field of cell volumes in the mesh.
+     * @brief Vector of cell volumes in the mesh.
      */
-    scalarField cellVolumes_;
+    scalarVector cellVolumes_;
 
     /**
-     * @brief Field of cell centres in the mesh.
+     * @brief Vector of cell centres in the mesh.
      */
-    vectorField cellCentres_;
+    vectorVector cellCentres_;
 
     /**
-     * @brief Field of area face normals.
+     * @brief Vector of area face normals.
      *
      * The area face normals are defined as the normal vector to the face
      * with magnitude equal to the face area.
      */
-    vectorField faceAreas_;
+    vectorVector faceAreas_;
 
     /**
-     * @brief Field of face centres.
+     * @brief Vector of face centres.
      */
-    vectorField faceCentres_;
+    vectorVector faceCentres_;
 
     /**
-     * @brief Field of magnitudes of face areas.
+     * @brief Vector of magnitudes of face areas.
      */
-    scalarField magFaceAreas_;
+    scalarVector magFaceAreas_;
 
     /**
-     * @brief Field of face owner cells.
+     * @brief Vector of face owner cells.
      */
-    labelField faceOwner_;
+    labelVector faceOwner_;
 
     /**
-     * @brief Field of face neighbour cells.
+     * @brief Vector of face neighbour cells.
      */
-    labelField faceNeighbour_;
+    labelVector faceNeighbour_;
 
     /**
      * @brief Number of cells in the mesh.
      */
-    size_t nCells_;
+    localIdx nCells_;
 
     /**
      * @brief Number of internal faces in the mesh.
      */
-    size_t nInternalFaces_;
+    localIdx nInternalFaces_;
 
     /**
      * @brief Number of boundary faces in the mesh.
      */
-    size_t nBoundaryFaces_;
+    localIdx nBoundaryFaces_;
 
     /**
      * @brief Number of boundaries in the mesh.
      */
-    size_t nBoundaries_;
+    localIdx nBoundaries_;
 
     /**
      * @brief Number of faces in the mesh.
      */
-    size_t nFaces_;
+    localIdx nFaces_;
 
     /**
      * @brief Boundary mesh.
@@ -288,7 +284,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  * A 1D mesh in 3D space in which each cell has a left and a right face.
  * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
  */
-UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells);
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells);
 
 
 } // namespace NeoN

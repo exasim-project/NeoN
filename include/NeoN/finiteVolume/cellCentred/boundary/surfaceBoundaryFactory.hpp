@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -16,7 +17,7 @@ template<typename ValueType>
 class SurfaceBoundaryFactory :
     public NeoN::RuntimeSelectionFactory<
         SurfaceBoundaryFactory<ValueType>,
-        Parameters<const UnstructuredMesh&, const Dictionary&, size_t>>,
+        Parameters<const UnstructuredMesh&, const Dictionary&, localIdx>>,
     public BoundaryPatchMixin
 {
 public:
@@ -24,11 +25,11 @@ public:
     static std::string name() { return "SurfaceBoundaryFactory"; }
 
     SurfaceBoundaryFactory(
-        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, size_t patchID
+        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, localIdx patchID
     )
         : BoundaryPatchMixin(mesh, patchID) {};
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) = 0;
+    virtual void correctBoundaryCondition(Field<ValueType>& field) = 0;
 
     virtual std::unique_ptr<SurfaceBoundaryFactory> clone() const = 0;
 };
@@ -44,10 +45,10 @@ class SurfaceBoundary : public BoundaryPatchMixin
 {
 public:
 
-    SurfaceBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, size_t patchID)
+    SurfaceBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : BoundaryPatchMixin(
-            static_cast<label>(mesh.boundaryMesh().offset()[patchID]),
-            static_cast<label>(mesh.boundaryMesh().offset()[patchID + 1]),
+            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID)],
+            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID) + 1],
             patchID
         ),
           boundaryCorrectionStrategy_(SurfaceBoundaryFactory<ValueType>::create(
@@ -60,9 +61,9 @@ public:
           boundaryCorrectionStrategy_(other.boundaryCorrectionStrategy_->clone())
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField)
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector)
     {
-        boundaryCorrectionStrategy_->correctBoundaryCondition(domainField);
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
 

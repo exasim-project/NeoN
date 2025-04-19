@@ -75,7 +75,7 @@ public:
     }
 
 
-    virtual void solve(const LinearSystem<scalar, localIdx>& sys, Field<scalar>& x) const final
+    virtual void solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
     {
 
         Mat Amat;
@@ -114,7 +114,7 @@ public:
         PetscScalar* x_help = static_cast<PetscScalar*>(x.data());
         VecGetArray(sol, &x_help);
 
-        NeoN::Field<NeoN::scalar> x2(x.exec(), static_cast<scalar*>(x_help), nrows, x.exec());
+        NeoN::Vector<NeoN::scalar> x2(x.exec(), static_cast<scalar*>(x_help), nrows, x.exec());
         x = x2;
     }
 };

@@ -14,12 +14,12 @@ TEST_CASE("fixedValue")
     SECTION("TestDerivedClass" + execName)
     {
         auto mesh = NeoN::createSingleCellMesh(exec);
-        NeoN::DomainField<NeoN::scalar> domainField(exec, mesh);
-        NeoN::fill(domainField.internalField(), 1.0);
-        NeoN::fill(domainField.boundaryField().refGrad(), -1.0);
-        NeoN::fill(domainField.boundaryField().refValue(), -1.0);
-        NeoN::fill(domainField.boundaryField().valueFraction(), -1.0);
-        NeoN::fill(domainField.boundaryField().value(), -1.0);
+        auto field = NeoN::Field<NeoN::scalar>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
+        NeoN::fill(field.internalVector(), 1.0);
+        NeoN::fill(field.boundaryData().refGrad(), -1.0);
+        NeoN::fill(field.boundaryData().refValue(), -1.0);
+        NeoN::fill(field.boundaryData().valueFraction(), -1.0);
+        NeoN::fill(field.boundaryData().value(), -1.0);
         NeoN::scalar setValue {10};
         NeoN::Dictionary dict;
         dict.insert("fixedValue", setValue);
@@ -28,16 +28,16 @@ TEST_CASE("fixedValue")
                 "fixedValue", mesh, dict, 0
             );
 
-        boundary->correctBoundaryCondition(domainField);
+        boundary->correctBoundaryCondition(field);
 
-        auto refValues = domainField.boundaryField().refValue().copyToHost();
+        auto refValues = field.boundaryData().refValue().copyToHost();
 
         for (auto& boundaryValue : refValues.view(boundary->range()))
         {
             REQUIRE(boundaryValue == setValue);
         }
 
-        auto values = domainField.boundaryField().value().copyToHost();
+        auto values = field.boundaryData().value().copyToHost();
 
         for (auto& boundaryValue : values.view(boundary->range()))
         {

@@ -20,13 +20,11 @@ class Empty : public VolumeBoundaryFactory<ValueType>::template Register<Empty<V
 
 public:
 
-    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] DomainField<ValueType>& domainField
-    ) final
-    {}
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     static std::string name() { return "empty"; }
 

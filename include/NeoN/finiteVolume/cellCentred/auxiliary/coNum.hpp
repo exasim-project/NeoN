@@ -3,12 +3,6 @@
 
 #pragma once
 
-#include <functional>
-
-#include <Kokkos_Core.hpp>
-
-#include "NeoN/fields/field.hpp"
-#include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -19,6 +13,6 @@ namespace NeoN::finiteVolume::cellCentred
  * @param dt Size of the time step.
  * @return Maximum courant number.
  */
-NeoN::scalar computeCoNum(const SurfaceField<NeoN::scalar>& faceFlux, const scalar dt);
+scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt);
 
 } // namespace NeoN

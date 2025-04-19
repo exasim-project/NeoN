@@ -21,11 +21,11 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeDiv(
     const Executor& exec,
-    size_t nInternalFaces,
-    size_t nBoundaryFaces,
-    View<const int> neighbour,
-    View<const int> owner,
-    View<const int> faceCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    View<const localIdx> neighbour,
+    View<const localIdx> owner,
+    View<const localIdx> faceCells,
     View<const scalar> faceFlux,
     View<const ValueType> phiF,
     View<const scalar> v,
@@ -33,26 +33,26 @@ void computeDiv(
     const dsl::Coeff operatorScaling
 )
 {
-    size_t nCells {v.size()};
+    auto nCells = v.size();
     // check if the executor is GPU
     if (std::holds_alternative<SerialExecutor>(exec))
     {
-        for (size_t i = 0; i < nInternalFaces; i++)
+        for (localIdx i = 0; i < nInternalFaces; i++)
         {
             ValueType flux = faceFlux[i] * phiF[i];
-            res[static_cast<size_t>(owner[i])] += flux;
-            res[static_cast<size_t>(neighbour[i])] -= flux;
+            res[owner[i]] += flux;
+            res[neighbour[i]] -= flux;
         }
 
-        for (size_t i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
+        for (localIdx i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
         {
-            auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+            auto own = faceCells[i - nInternalFaces];
             ValueType valueOwn = faceFlux[i] * phiF[i];
             res[own] += valueOwn;
         }
 
         // TODO does it make sense to store invVol and multiply?
-        for (size_t celli = 0; celli < nCells; celli++)
+        for (localIdx celli = 0; celli < nCells; celli++)
         {
             res[celli] *= operatorScaling[celli] / v[celli];
         }
@@ -62,10 +62,10 @@ void computeDiv(
         parallelFor(
             exec,
             {0, nInternalFaces},
-            KOKKOS_LAMBDA(const size_t i) {
+            KOKKOS_LAMBDA(const localIdx i) {
                 ValueType flux = faceFlux[i] * phiF[i];
-                Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux);
-                Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux);
+                Kokkos::atomic_add(&res[owner[i]], flux);
+                Kokkos::atomic_sub(&res[neighbour[i]], flux);
             },
             "sumFluxesInternal"
         );
@@ -73,8 +73,8 @@ void computeDiv(
         parallelFor(
             exec,
             {nInternalFaces, nInternalFaces + nBoundaryFaces},
-            KOKKOS_LAMBDA(const size_t i) {
-                auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+            KOKKOS_LAMBDA(const localIdx i) {
+                auto own = faceCells[i - nInternalFaces];
                 ValueType valueOwn = faceFlux[i] * phiF[i];
                 Kokkos::atomic_add(&res[own], valueOwn);
             },
@@ -84,7 +84,9 @@ void computeDiv(
         parallelFor(
             exec,
             {0, nCells},
-            KOKKOS_LAMBDA(const size_t celli) { res[celli] *= operatorScaling[celli] / v[celli]; },
+            KOKKOS_LAMBDA(const localIdx celli) {
+                res[celli] *= operatorScaling[celli] / v[celli];
+            },
             "normalizeFluxes"
         );
     }
@@ -95,7 +97,7 @@ void computeDivExp(
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
-    Field<ValueType>& divPhi,
+    Vector<ValueType>& divPhi,
     const dsl::Coeff operatorScaling
 )
 {
@@ -105,14 +107,14 @@ void computeDivExp(
         exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
     );
     // TODO: remove or implement
-    // fill(phif.internalField(), NeoN::zero<ValueType>::value);
+    // fill(phif.internalVector(), NeoN::zero<ValueType>::value);
     surfInterp.interpolate(faceFlux, phi, phif);
 
     // TODO: currently we just copy the boundary values over
-    phif.boundaryField().value() = phi.boundaryField().value();
+    phif.boundaryData().value() = phi.boundaryData().value();
 
-    size_t nInternalFaces = mesh.nInternalFaces();
-    size_t nBoundaryFaces = mesh.nBoundaryFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
     computeDiv<ValueType>(
         exec,
         nInternalFaces,
@@ -120,8 +122,8 @@ void computeDivExp(
         mesh.faceNeighbour().view(),
         mesh.faceOwner().view(),
         mesh.boundaryMesh().faceCells().view(),
-        faceFlux.internalField().view(),
-        phif.internalField().view(),
+        faceFlux.internalVector().view(),
+        phif.internalVector().view(),
         mesh.cellVolumes().view(),
         divPhi.view(),
         operatorScaling
@@ -134,12 +136,12 @@ void computeDivExp(
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceInterpolation<TYPENAME>&,                                                     \
-        Field<TYPENAME>&,                                                                          \
+        Vector<TYPENAME>&,                                                                         \
         const dsl::Coeff                                                                           \
     )
 
 NF_DECLARE_COMPUTE_EXP_DIV(scalar);
-NF_DECLARE_COMPUTE_EXP_DIV(Vector);
+NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 
 template<typename ValueType>
@@ -152,11 +154,11 @@ void computeDivImp(
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const std::size_t nInternalFaces = mesh.nInternalFaces();
+    const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
     const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
-        faceFlux.internalField(),
+        faceFlux.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
@@ -169,17 +171,17 @@ void computeDivImp(
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = sFaceFlux[facei];
             // scalar weight = 0.5;
             scalar weight = flux >= 0 ? 1 : 0;
             ValueType value = zero<ValueType>();
-            std::size_t own = static_cast<std::size_t>(owner[facei]);
-            std::size_t nei = static_cast<std::size_t>(neighbour[facei]);
+            auto own = owner[facei];
+            auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            std::size_t rowNeiStart = matrix.rowOffs[nei];
-            std::size_t rowOwnStart = matrix.rowOffs[own];
+            auto rowNeiStart = matrix.rowOffs[nei];
+            auto rowOwnStart = matrix.rowOffs[own];
 
             scalar operatorScalingNei = operatorScaling[nei];
             scalar operatorScalingOwn = operatorScaling[own];
@@ -202,21 +204,21 @@ void computeDivImp(
     );
 
     auto [refGradient, value, valueFraction, refValue] = spans(
-        phi.boundaryField().refGrad(),
-        phi.boundaryField().value(),
-        phi.boundaryField().valueFraction(),
-        phi.boundaryField().refValue()
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().value(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
     );
 
     parallelFor(
         exec,
         {nInternalFaces, sFaceFlux.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            std::size_t bcfacei = facei - nInternalFaces;
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - nInternalFaces;
             scalar flux = sFaceFlux[facei];
 
-            std::size_t own = static_cast<std::size_t>(surfFaceCells[bcfacei]);
-            std::size_t rowOwnStart = matrix.rowOffs[own];
+            auto own = surfFaceCells[bcfacei];
+            auto rowOwnStart = matrix.rowOffs[own];
             scalar operatorScalingOwn = operatorScaling[own];
 
             matrix.values[rowOwnStart + diagOffs[own]] +=
@@ -233,6 +235,6 @@ void computeDivImp(
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
 
 NF_DECLARE_COMPUTE_IMP_DIV(scalar);
-NF_DECLARE_COMPUTE_IMP_DIV(Vector);
+NF_DECLARE_COMPUTE_IMP_DIV(Vec3);
 
 };

@@ -10,6 +10,6 @@ namespace NeoN::finiteVolume::cellCentred
 
 // instantiate the template class
 template class Expression<scalar>;
-// template class Expression<Vector>;
+// template class Expression<Vec3>;
 
 };

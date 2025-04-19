@@ -20,20 +20,20 @@ namespace detail
 // from a __device__ function is not allowed
 template<typename ValueType>
 void setFixedValue(
-    DomainField<ValueType>& domainField, std::pair<size_t, size_t> range, ValueType fixedValue
+    Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
 )
 {
     auto [refGradient, value, valueFraction, refValue] = spans(
-        domainField.boundaryField().refGrad(),
-        domainField.boundaryField().value(),
-        domainField.boundaryField().valueFraction(),
-        domainField.boundaryField().refValue()
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue()
     );
 
     NeoN::parallelFor(
-        domainField.exec(),
+        domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             refValue[i] = fixedValue;
             value[i] = fixedValue;
             valueFraction[i] = 1.0;      // only used refValue
@@ -51,13 +51,13 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 
 public:
 
-    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 
-    virtual void correctBoundaryCondition(DomainField<ValueType>& domainField) final
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setFixedValue(domainField, this->range(), fixedValue_);
+        detail::setFixedValue(domainVector, this->range(), fixedValue_);
     }
 
     static std::string name() { return "fixedValue"; }

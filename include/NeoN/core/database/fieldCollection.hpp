@@ -8,7 +8,8 @@
 
 #include "NeoN/core/demangle.hpp"
 #include "NeoN/core/error.hpp"
-#include "NeoN/fields/domainField.hpp"
+#include "NeoN/core/vector.hpp"
+#include "NeoN/fields/field.hpp"
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
 #include "NeoN/core/database/document.hpp"
@@ -16,38 +17,38 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 /**
- * @brief Validates a FieldDocument.
+ * @brief Validates a VectorDocument.
  *
- * This function validates a FieldDocument by checking if it contains the required fields.
+ * This function validates a VectorDocument by checking if it contains the required fields.
  *
  * @param doc The Document to validate.
  * @return true if the Document is valid, false otherwise.
  */
-bool validateFieldDoc(const Document& doc);
+bool validateVectorDoc(const Document& doc);
 
 /**
- * @class FieldDocument
+ * @class VectorDocument
  * @brief A class representing a field document in a database.
  *
- * The FieldDocument class represents a field document in a database. It is a subclass of the
+ * The VectorDocument class represents a field document in a database. It is a subclass of the
  * Document class and provides additional functionality for accessing field-specific data.
  */
-class FieldDocument
+class VectorDocument
 {
 public:
 
     /**
-     * @brief Constructs a FieldDocument with the given field and metadata.
+     * @brief Constructs a VectorDocument with the given field and metadata.
      *
-     * @tparam FieldType The type of the field.
+     * @tparam VectorType The type of the field.
      * @param field The field to store in the document.
      * @param timeIndex The time index of the field.
      * @param iterationIndex The iteration index of the field.
      * @param subCycleIndex The sub-cycle index of the field.
      */
-    template<class FieldType>
-    FieldDocument(
-        const FieldType& field,
+    template<class VectorType>
+    VectorDocument(
+        const VectorType& field,
         std::int64_t timeIndex,
         std::int64_t iterationIndex,
         std::int64_t subCycleIndex
@@ -60,16 +61,16 @@ public:
                  {"subCycleIndex", subCycleIndex},
                  {"field", field}}
             ),
-            validateFieldDoc
+            validateVectorDoc
         )
     {}
 
     /**
-     * @brief Constructs a FieldDocument with the given Document.
+     * @brief Constructs a VectorDocument with the given Document.
      *
-     * @param doc The Document to construct the FieldDocument from.
+     * @param doc The Document to construct the VectorDocument from.
      */
-    FieldDocument(const Document& doc);
+    VectorDocument(const Document& doc);
 
     /**
      * @brief Retrieves the underlying Document.
@@ -103,25 +104,25 @@ public:
     /**
      * @brief Retrieves the field from the document.
      *
-     * @tparam FieldType The type of the field.
+     * @tparam VectorType The type of the field.
      * @return A reference to the field.
      */
-    template<class FieldType>
-    FieldType& field()
+    template<class VectorType>
+    VectorType& field()
     {
-        return doc_.get<FieldType&>("field");
+        return doc_.get<VectorType&>("field");
     }
 
     /**
      * @brief Retrieves the field from the document (const version).
      *
-     * @tparam FieldType The type of the field.
+     * @tparam VectorType The type of the field.
      * @return A const reference to the field.
      */
-    template<class FieldType>
-    const FieldType& field() const
+    template<class VectorType>
+    const VectorType& field() const
     {
-        return doc_.get<const FieldType&>("field");
+        return doc_.get<const VectorType&>("field");
     }
 
     /**
@@ -186,54 +187,54 @@ private:
 };
 
 /**
- * @brief A function type for creating a FieldDocument.
+ * @brief A function type for creating a VectorDocument.
  *
- * This function type is used to create a FieldDocument and creates a
- * registered FieldType
+ * This function type is used to create a VectorDocument and creates a
+ * registered VectorType
  *
- * @param db The database to create the FieldDocument in.
- * @return The created FieldDocument.
+ * @param db The database to create the VectorDocument in.
+ * @return The created VectorDocument.
  */
-using CreateFunction = std::function<FieldDocument(NeoN::Database& db)>;
+using CreateFunction = std::function<VectorDocument(NeoN::Database& db)>;
 
 /**
- * @class FieldCollection
+ * @class VectorCollection
  * @brief A class representing a collection of field documents in a database.
  *
- * The FieldCollection class represents a collection of field documents in a database and provides
+ * The VectorCollection class represents a collection of field documents in a database and provides
  * additional functionality for accessing field-specific data.
  */
-class FieldCollection : public CollectionMixin<FieldDocument>
+class VectorCollection : public CollectionMixin<VectorDocument>
 {
 public:
 
     /**
-     * @brief Constructs a FieldCollection with the given database and name.
+     * @brief Constructs a VectorCollection with the given database and name.
      *
      * @param db The database to create the collection in.
      * @param name The name of the collection.
      */
-    FieldCollection(NeoN::Database& db, std::string name);
+    VectorCollection(NeoN::Database& db, std::string name);
 
     /**
-     * @brief A FieldCollection is not copyable, but moveable
+     * @brief A VectorCollection is not copyable, but moveable
      */
-    FieldCollection(const FieldCollection&) = delete;
+    VectorCollection(const VectorCollection&) = delete;
 
     /**
-     * @brief A FieldCollection is not copyable, but moveable
+     * @brief A VectorCollection is not copyable, but moveable
      */
-    FieldCollection& operator=(const FieldCollection&) = delete;
+    VectorCollection& operator=(const VectorCollection&) = delete;
 
     /**
-     * @brief A FieldCollection is move constructable, but not copyable
+     * @brief A VectorCollection is move constructable, but not copyable
      */
-    FieldCollection(FieldCollection&&) = default;
+    VectorCollection(VectorCollection&&) = default;
 
     /**
-     * @brief A FieldCollection is not move-assign-able, but move-construct-able
+     * @brief A VectorCollection is not move-assign-able, but move-construct-able
      */
-    FieldCollection& operator=(FieldCollection&&) = delete;
+    VectorCollection& operator=(VectorCollection&&) = delete;
 
     /**
      * @brief Checks if the collection contains a field with the given ID.
@@ -249,99 +250,99 @@ public:
      * @param fd The field document to insert.
      * @return A string representing the unique identifier of the inserted field.
      */
-    std::string insert(const FieldDocument& fd);
+    std::string insert(const VectorDocument& fd);
 
     /**
      * @brief Retrieves a field document by its ID.
      *
      * @param id The ID of the field document to retrieve.
-     * @return FieldDocument& A reference to the field document.
+     * @return VectorDocument& A reference to the field document.
      */
-    FieldDocument& fieldDoc(const std::string& id);
+    VectorDocument& fieldDoc(const std::string& id);
 
     /**
      * @brief Retrieves a field document by its ID (const version).
      *
      * @param id The ID of the field document to retrieve.
-     * @return const FieldDocument& A const reference to the field document.
+     * @return const VectorDocument& A const reference to the field document.
      */
-    const FieldDocument& fieldDoc(const std::string& id) const;
+    const VectorDocument& fieldDoc(const std::string& id) const;
 
     /**
-     * @brief Retrieves the instance of the FieldCollection with the given name.
+     * @brief Retrieves the instance of the VectorCollection with the given name.
      *
-     * creates the FieldCollection if it does not exist.
+     * creates the VectorCollection if it does not exist.
      *
-     * @param db The database to retrieve the FieldCollection from.
-     * @param name The name of the FieldCollection.
-     * @return FieldCollection& A reference to the FieldCollection.
+     * @param db The database to retrieve the VectorCollection from.
+     * @param name The name of the VectorCollection.
+     * @return VectorCollection& A reference to the VectorCollection.
      */
-    static FieldCollection& instance(NeoN::Database& db, std::string name);
+    static VectorCollection& instance(NeoN::Database& db, std::string name);
 
 
     /**
-     * @brief Retrieves the instance of the FieldCollection with the given name (const version).
+     * @brief Retrieves the instance of the VectorCollection with the given name (const version).
      *
-     * creates the FieldCollection if it does not exist.
+     * creates the VectorCollection if it does not exist.
      *
-     * @param db The database to retrieve the FieldCollection from.
-     * @param name The name of the FieldCollection.
-     * @return const FieldCollection& A const reference to the FieldCollection.
+     * @param db The database to retrieve the VectorCollection from.
+     * @param name The name of the VectorCollection.
+     * @return const VectorCollection& A const reference to the VectorCollection.
      */
-    static const FieldCollection& instance(const NeoN::Database& db, std::string name);
+    static const VectorCollection& instance(const NeoN::Database& db, std::string name);
 
     /**
-     * @brief Retrieves the instance of the FieldCollection from a const registered FieldType
+     * @brief Retrieves the instance of the VectorCollection from a const registered VectorType
      *
-     * @param field A registered FieldType
-     * @return FieldCollection& A reference to the FieldCollection.
+     * @param field A registered VectorType
+     * @return VectorCollection& A reference to the VectorCollection.
      */
-    template<class FieldType>
-    static FieldCollection& instance(FieldType& field)
+    template<class VectorType>
+    static VectorCollection& instance(VectorType& field)
     {
         validateRegistration(
-            field, "attempting to retrieve FieldCollection from unregistered field"
+            field, "attempting to retrieve VectorCollection from unregistered field"
         );
         return instance(field.db(), field.fieldCollectionName);
     }
 
     /**
-     * @brief Retrieves the instance of the FieldCollection from a const registered FieldType
+     * @brief Retrieves the instance of the VectorCollection from a const registered VectorType
      *
-     * @param field A registered FieldType
-     * @return FieldCollection& A reference to the FieldCollection.
+     * @param field A registered VectorType
+     * @return VectorCollection& A reference to the VectorCollection.
      */
-    template<class FieldType>
-    static const FieldCollection& instance(const FieldType& field)
+    template<class VectorType>
+    static const VectorCollection& instance(const VectorType& field)
     {
         validateRegistration(
-            field, "attempting to retrieve FieldCollection from unregistered field"
+            field, "attempting to retrieve VectorCollection from unregistered field"
         );
         const Database& db = field.db();
         const Collection& collection = db.at(field.fieldCollectionName);
-        return collection.as<FieldCollection>();
+        return collection.as<VectorCollection>();
         // return instance(field.db(), field.fieldCollectionName);
     }
 
     /**
      * @brief Registers a field in the collection.
      *
-     * @tparam FieldType The type of the field to register.
+     * @tparam VectorType The type of the field to register.
      * @param createFunc The function to create the field document.
      * @return A reference to the registered field.
      */
-    template<class FieldType>
-    FieldType& registerField(CreateFunction createFunc)
+    template<class VectorType>
+    VectorType& registerVector(CreateFunction createFunc)
     {
-        FieldDocument doc = createFunc(db());
-        if (!validateFieldDoc(doc.doc()))
+        VectorDocument doc = createFunc(db());
+        if (!validateVectorDoc(doc.doc()))
         {
-            throw std::runtime_error("Document is not valid");
+            throw std::runtime_error {"Document is not valid"};
         }
 
         std::string key = insert(doc);
-        FieldDocument& fd = fieldDoc(key);
-        FieldType& field = fd.field<FieldType>();
+        VectorDocument& fd = fieldDoc(key);
+        VectorType& field = fd.field<VectorType>();
         field.key = key;
         field.fieldCollectionName = name();
         return field;
@@ -350,43 +351,43 @@ public:
 
 
 /**
- * @brief Creates a FieldDocument from an existing field.
+ * @brief Creates a VectorDocument from an existing field.
  *
- * This functor creates a FieldDocument from an existing field.
+ * This functor creates a VectorDocument from an existing field.
  *
- * @tparam FieldType The type of the field.
+ * @tparam VectorType The type of the field.
  * @param name The name of the field document.
  * @param field The field to create the document from.
  * @param timeIndex The time index of the field document.
  * @param iterationIndex The iteration index of the field document.
  * @param subCycleIndex The sub-cycle index of the field document.
- * @return The created FieldDocument.
+ * @return The created VectorDocument.
  */
-template<typename FieldType>
-class CreateFromExistingField
+template<typename VectorType>
+class CreateFromExistingVector
 {
 public:
 
     std::string name;
-    const FieldType& field;
+    const VectorType& field;
     std::int64_t timeIndex = std::numeric_limits<std::int64_t>::max();
     std::int64_t iterationIndex = std::numeric_limits<std::int64_t>::max();
     std::int64_t subCycleIndex = std::numeric_limits<std::int64_t>::max();
 
-    FieldDocument operator()(Database& db)
+    VectorDocument operator()(Database& db)
     {
-        DomainField<typename FieldType::FieldValueType> domainField(
-            field.mesh().exec(), field.internalField(), field.boundaryField()
+        Field<typename VectorType::VectorValueType> domainVector(
+            field.mesh().exec(), field.internalVector(), field.boundaryData()
         );
 
-        FieldType vf(
-            field.exec(), name, field.mesh(), domainField, field.boundaryConditions(), db, "", ""
+        VectorType vf(
+            field.exec(), name, field.mesh(), domainVector, field.boundaryConditions(), db, "", ""
         );
 
         if (field.registered())
         {
-            const FieldCollection& fieldCollection = FieldCollection::instance(field);
-            const FieldDocument& fieldDoc = fieldCollection.fieldDoc(field.key);
+            const VectorCollection& fieldCollection = VectorCollection::instance(field);
+            const VectorDocument& fieldDoc = fieldCollection.fieldDoc(field.key);
             if (timeIndex == std::numeric_limits<std::int64_t>::max())
             {
                 timeIndex = fieldDoc.timeIndex();
@@ -406,7 +407,7 @@ public:
              {"iterationIndex", iterationIndex},
              {"subCycleIndex", subCycleIndex},
              {"field", vf}},
-            validateFieldDoc
+            validateVectorDoc
         );
     }
 };

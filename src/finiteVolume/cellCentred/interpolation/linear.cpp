@@ -17,24 +17,24 @@ void computeLinearInterpolation(
 )
 {
     const auto exec = dst.exec();
-    auto dstS = dst.internalField().view();
+    auto dstS = dst.internalVector().view();
     const auto [srcS, weightS, ownerS, neighS, boundS] = spans(
-        src.internalField(),
-        weights.internalField(),
+        src.internalVector(),
+        weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryField().value()
+        src.boundaryData().value()
     );
-    size_t nInternalFaces = dst.mesh().nInternalFaces();
+    auto nInternalFaces = dst.mesh().nInternalFaces();
 
     NeoN::parallelFor(
         exec,
         {0, dstS.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             if (facei < nInternalFaces)
             {
-                size_t own = static_cast<size_t>(ownerS[facei]);
-                size_t nei = static_cast<size_t>(neighS[facei]);
+                auto own = ownerS[facei];
+                auto nei = neighS[facei];
                 dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
             }
             else
@@ -50,9 +50,9 @@ void computeLinearInterpolation(
         TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_LIN_INT(scalar);
-NF_DECLARE_COMPUTE_IMP_LIN_INT(Vector);
+NF_DECLARE_COMPUTE_IMP_LIN_INT(Vec3);
 
 // template class Linear<scalar>;
-// template class Linear<Vector>;
+// template class Linear<Vec3>;
 
 } // namespace NeoN

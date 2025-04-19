@@ -19,17 +19,17 @@
 namespace NeoN::timeIntegration
 {
 
-template<typename SolutionFieldType>
+template<typename SolutionVectorType>
 class BackwardEuler :
-    public TimeIntegratorBase<SolutionFieldType>::template Register<
-        BackwardEuler<SolutionFieldType>>
+    public TimeIntegratorBase<SolutionVectorType>::template Register<
+        BackwardEuler<SolutionVectorType>>
 {
 
 public:
 
-    using ValueType = typename SolutionFieldType::FieldValueType;
-    using Base =
-        TimeIntegratorBase<SolutionFieldType>::template Register<BackwardEuler<SolutionFieldType>>;
+    using ValueType = typename SolutionVectorType::VectorValueType;
+    using Base = TimeIntegratorBase<SolutionVectorType>::template Register<
+        BackwardEuler<SolutionVectorType>>;
 
     BackwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
         : Base(schemeDict, solutionDict)
@@ -43,21 +43,21 @@ public:
 
     void solve(
         dsl::Expression<ValueType>& eqn,
-        SolutionFieldType& solutionField,
+        SolutionVectorType& solutionVector,
         [[maybe_unused]] scalar t,
         scalar dt
     ) override
     {
-        auto source = eqn.explicitOperation(solutionField.size());
-        SolutionFieldType& oldSolutionField = finiteVolume::cellCentred::oldTime(solutionField);
+        auto source = eqn.explicitOperation(solutionVector.size());
+        SolutionVectorType& oldSolutionVector = finiteVolume::cellCentred::oldTime(solutionVector);
 
-        // solutionField.internalField() = oldSolutionField.internalField() - source * dt;
-        // solutionField.correctBoundaryConditions();
+        // solutionVector.internalVector() = oldSolutionVector.internalVector() - source * dt;
+        // solutionVector.correctBoundaryConditions();
         // solve sparse matrix system
-        using ValueType = typename SolutionFieldType::ElementType;
+        // using ValueType = typename SolutionVectorType::ElementType;
 
         // TODO decouple from fvcc specific implementation
-        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionField.mesh());
+        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionVector.mesh());
         auto ls = la::createEmptyLinearSystem<
             ValueType,
             localIdx,
@@ -68,18 +68,18 @@ public:
         auto values = ls.matrix().values();
         eqn.implicitOperation(ls, t, dt);
 
-        auto solver = NeoN::la::Solver(solutionField.exec(), this->solutionDict_);
-        solver.solve(ls, solutionField.internalField());
+        auto solver = NeoN::la::Solver(solutionVector.exec(), this->solutionDict_);
+        solver.solve(ls, solutionVector.internalVector());
 
         // check if executor is GPU
         if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
         {
             Kokkos::fence();
         }
-        oldSolutionField.internalField() = solutionField.internalField();
+        oldSolutionVector.internalVector() = solutionVector.internalVector();
     };
 
-    std::unique_ptr<TimeIntegratorBase<SolutionFieldType>> clone() const override
+    std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {
         return std::make_unique<BackwardEuler>(*this);
     }
