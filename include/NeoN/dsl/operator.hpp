@@ -18,7 +18,12 @@ public:
     };
 };
 
-// TODO: Concept this rather
+template<typename TermType, typename ValueType>
+concept TermConcept = requires(TermType term, localIdx idx, Vector<ValueType>& target) {
+    {
+        term.evaluateFace(idx, target)
+    } -> std::same_as<void>;
+};
 
 template<typename DerivedTerm, typename Type>
 class Term
@@ -76,15 +81,16 @@ private:
     const RHSType<Type>& rhs_;
 };
 
-template<typename Type, template<typename> class LHSType, template<typename> class RHSType>
-AddTerm<Type, LHSType, RHSType> operator+(const LHSType<Type>& term1, const RHSType<Type>& term2)
+template<typename Type, template<typename> class LHS, template<typename> class RHS>
+    requires TermConcept<LHS<Type>, Type> && TermConcept<RHS<Type>, Type>
+auto operator+(const LHS<Type>& lhs, const RHS<Type>& rhs)
 {
-    return AddTerm<Type, LHSType, RHSType>(term1, term2);
+    return AddTerm<Type, LHS, RHS>(lhs, rhs);
 }
 
 inline void fictitiousExample()
 {
-    auto expr = DivOP<scalar>() + LapOP<scalar>();
+    auto expr = DivOP<scalar>() + LapOP<scalar>() + DivOP<scalar>();
     Vector<scalar> target(CPUExecutor(), 1, 0);
     expr.evaluateFace(1, target);
 }
