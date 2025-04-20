@@ -3,7 +3,7 @@
 
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
-  COMMAND git describe --tags --dirty --long
+  COMMAND git describe --tags --dirty --long --always
   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
   OUTPUT_VARIABLE GIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -53,8 +53,6 @@ macro(dump_cmake_variables regex log)
     string(APPEND ${log} "\n")
     string(APPEND ${log} " -- \t${_variableName} = ${${_variableName}}")
   endforeach()
-  # set(${ARGV1} ${out} PARENT_SCOPE)
-  message(STATUS ${log} ${out})
 endmacro()
 
 function(neon_print_banner)
