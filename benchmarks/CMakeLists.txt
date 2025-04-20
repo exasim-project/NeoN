@@ -27,6 +27,6 @@ function(NeoN_benchmark BENCH)
     WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
 endfunction()
 
-add_subdirectory(fields)
+add_subdirectory(core)
 add_subdirectory(finiteVolume/cellCentred/operator)
 add_subdirectory(finiteVolume/cellCentred/interpolation)

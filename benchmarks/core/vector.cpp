@@ -8,6 +8,39 @@
 #include "benchmarks/catch_main.hpp"
 #include "test/catch2/executorGenerator.hpp"
 
+TEST_CASE("Vector<scalar>::alloc", "[bench]")
+{
+    auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    DYNAMIC_SECTION("" << size)
+    {
+
+        BENCHMARK(std::string(execName))
+        {
+            NeoN::Vector<NeoN::scalar> cpuA(exec, size);
+            return cpuA;
+        };
+    }
+}
+
+TEST_CASE("Vector<scalar>::alloc_and_fill", "[bench]")
+{
+    auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    DYNAMIC_SECTION("" << size)
+    {
+
+        BENCHMARK(std::string(execName))
+        {
+            NeoN::Vector<NeoN::scalar> cpuA(exec, size);
+            NeoN::fill(cpuA, 1.0);
+            return cpuA;
+        };
+    }
+}
+
 TEST_CASE("Vector<scalar>::addition", "[bench]")
 {
     auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
