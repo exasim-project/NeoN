@@ -18,6 +18,77 @@ public:
     };
 };
 
+// TODO: Concept this rather
+
+template<typename DerivedTerm, typename Type>
+class Term
+{
+public:
+
+    void evaluateFace(localIdx faceIdx, Vector<Type>& target)
+    {
+        static_cast<DerivedTerm*>(this)->evaluateFace(faceIdx, target);
+    }
+
+private:
+};
+
+template<typename Type>
+class DivOP : public Term<DivOP<Type>, Type>
+{
+public:
+
+    explicit DivOp() {}
+
+    void evaluateFace(localIdx faceIdx, Vector<Type>& target) {}
+
+private:
+};
+
+template<typename Type>
+class LapOP : public Term<LapOP<Type>, Type>
+{
+public:
+
+    explicit LapOP() {}
+
+    void evaluateFace(localIdx faceIdx, Vector<Type>& target) {}
+
+private:
+};
+
+template<typename Type, template<typename> class LHSType, template<typename> typename RHSType>
+class AddTerm : public Term<AddTerm<Type, LHSType, RHSType>, Type>
+{
+public:
+
+    explicit AddTerm(const LHSType<Type>& lhs, const LHSType<Type>& rhs) : lhs_(lhs), rhs_(rhs) {}
+
+    void evaluateFace(localIdx faceIdx, Vector<Type>& target) const
+    {
+        lhs_.evaluate(faceIdx, target);
+        rhs_.evaluate(faceIdx, target);
+    }
+
+private:
+
+    const LHSType<Type>& lhs_;
+    const RHSType<Type>& rhs_;
+};
+
+template<typename Type, template<typename> class LHSType, template<typename> class RHSType>
+AddTerm<Type, LHSType, RHSType> operator+(const LHSType<Type>& term1, const RHSType<Type>& term2)
+{
+    return AddTerm<Type, LHSType, RHSType>(term1, term2);
+}
+
+inline void fictitiousExample()
+{
+    auto expr = DivOP<scalar>() + LapOP<scalar>();
+    Vector<scalar> target(CPUExecutor(), 1, 0);
+    expr.evaluateFace(1, target);
+}
+
 template<typename ValueType>
 struct OperationDescriptor
 {
