@@ -212,7 +212,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="comment">// solve sparse matrix system</span></div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keyword">auto</span> vol = psi_.mesh().cellVolumes().view();</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keyword">auto</span> expSource = expr_.explicitOperation(psi_.mesh().nCells());</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keyword">auto</span> expSourceSpan = expSource.view();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keyword">auto</span> expSourceView = expSource.view();</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            ls_ = expr_.implicitOperation();</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keyword">auto</span> rhs = ls_.rhs().view();</div>
@@ -220,7 +220,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            <a class="code hl_function" href="namespaceNeoN.html#a21e64530776182407f0f068c289adf81">NeoN::parallelFor</a>(</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a3b2b4dc757790fcf661da6b47e1c1a0a">exec</a>(),</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                {0, rhs.size()},</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i) { rhs[i] -= expSourceSpan[i] * vol[i]; }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i) { rhs[i] -= expSourceView[i] * vol[i]; }</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            );</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    }</div>
@@ -259,14 +259,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    {</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="comment">// TODO currently assumes that matrix is already assembled</span></div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">const</span> <span class="keyword">auto</span> diagOffset = sparsityPattern_-&gt;diagOffset().view();</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keyword">const</span> <span class="keyword">auto</span> rowPtrs = ls_.matrix().rowPtrs().view();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keyword">const</span> <span class="keyword">auto</span> rowOffs = ls_.matrix().rowOffs().view();</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keyword">auto</span> rhs = ls_.rhs().view();</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keyword">auto</span> values = ls_.matrix().values().view();</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <a class="code hl_function" href="namespaceNeoN.html#a21e64530776182407f0f068c289adf81">NeoN::parallelFor</a>(</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            ls_.exec(),</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            {refCell, refCell + 1},</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            KOKKOS_LAMBDA(<span class="keyword">const</span> std::size_t refCelli) {</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                <span class="keyword">auto</span> diagIdx = rowPtrs[refCelli] + diagOffset[refCelli];</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                <span class="keyword">auto</span> diagIdx = rowOffs[refCelli] + diagOffset[refCelli];</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                <span class="keyword">auto</span> diagValue = values[diagIdx];</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                rhs[refCelli] += diagValue * refValue;</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                values[diagIdx] += diagValue;</div>
@@ -301,15 +301,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    );</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keyword">auto</span> [result, b, x] =</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_function" href="namespaceNeoN.html#acc73d6dc6363f055f6e02a0ead74954f">spans</a>(resultVector.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#af26fd248fd921be40c9dd98d912feddb">internalVector</a>(), expr.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a4cfaa913d49e8f0e57ecc7595fcfbba2">linearSystem</a>().rhs(), psi.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#af26fd248fd921be40c9dd98d912feddb">internalVector</a>());</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [values, colIdxs, rowPtrs] = expr.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a4cfaa913d49e8f0e57ecc7595fcfbba2">linearSystem</a>().view();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(resultVector.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#af26fd248fd921be40c9dd98d912feddb">internalVector</a>(), expr.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a4cfaa913d49e8f0e57ecc7595fcfbba2">linearSystem</a>().rhs(), psi.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#af26fd248fd921be40c9dd98d912feddb">internalVector</a>());</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [values, colIdxs, rowOffs] = expr.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression.html#a4cfaa913d49e8f0e57ecc7595fcfbba2">linearSystem</a>().view();</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <a class="code hl_function" href="namespaceNeoN.html#a21e64530776182407f0f068c289adf81">NeoN::parallelFor</a>(</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        resultVector.<a class="code hl_function" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#ae06b75408af47206bcfa482f217bdfff">exec</a>(),</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        {0, result.size()},</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        KOKKOS_LAMBDA(<span class="keyword">const</span> std::size_t rowi) {</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            IndexType rowStart = rowPtrs[rowi];</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            IndexType rowEnd = rowPtrs[rowi + 1];</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            IndexType rowStart = rowOffs[rowi];</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            IndexType rowEnd = rowOffs[rowi + 1];</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            ValueType sum = 0.0;</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <span class="keywordflow">for</span> (IndexType coli = rowStart; coli &lt; rowEnd; coli++)</div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            {</div>
@@ -365,7 +365,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespaceNeoN_html_a4df3c8c32ed2bdaa77d100c44de4b3eb"><div class="ttname"><a href="namespaceNeoN.html#a4df3c8c32ed2bdaa77d100c44de4b3eb">NeoN::fill</a></div><div class="ttdeci">void fill(Vector&lt; ValueType &gt; &amp;a, const std::type_identity_t&lt; ValueType &gt; value, std::pair&lt; localIdx, localIdx &gt; range={0, 0})</div><div class="ttdoc">Fill the field with a scalar value using a specific executor.</div><div class="ttdef"><b>Definition</b> <a href="fieldFreeFunctions_8hpp_source.html#l00050">fieldFreeFunctions.hpp:50</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a84c514269c3ade9cf4103acb1210a65f"><div class="ttname"><a href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a></div><div class="ttdeci">std::variant&lt; SerialExecutor, CPUExecutor, GPUExecutor &gt; Executor</div><div class="ttdef"><b>Definition</b> <a href="executor_8hpp_source.html#l00016">executor.hpp:16</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a93c8d00d3aa9fc6f9271c4c0b4f0da97"><div class="ttname"><a href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a></div><div class="ttdeci">float scalar</div><div class="ttdef"><b>Definition</b> <a href="scalar_8hpp_source.html#l00014">scalar.hpp:14</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_acc73d6dc6363f055f6e02a0ead74954f"><div class="ttname"><a href="namespaceNeoN.html#acc73d6dc6363f055f6e02a0ead74954f">NeoN::spans</a></div><div class="ttdeci">auto spans(Args &amp;... fields)</div><div class="ttdef"><b>Definition</b> <a href="fieldFreeFunctions_8hpp_source.html#l00144">fieldFreeFunctions.hpp:144</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_af9198d29681d27f9a478aa99c01c00b9"><div class="ttname"><a href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">NeoN::views</a></div><div class="ttdeci">auto views(Types &amp;... args)</div><div class="ttdoc">Unpacks all views of the passed classes.</div><div class="ttdef"><b>Definition</b> <a href="view_8hpp_source.html#l00101">view.hpp:101</a></div></div>
 <div class="ttc" id="asparsityPattern_8hpp_html"><div class="ttname"><a href="sparsityPattern_8hpp.html">sparsityPattern.hpp</a></div></div>
 <div class="ttc" id="avolumeField_8hpp_html"><div class="ttname"><a href="volumeField_8hpp.html">volumeField.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

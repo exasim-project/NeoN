@@ -194,6 +194,9 @@ Concepts</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1parallelForVectorKernel.html">parallelForVectorKernel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1hasView.html">hasView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept, for any type which has the 'view' method. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -338,6 +341,11 @@ Functions</h2></td></tr>
 <tr class="memitem:a6581a4919ffb395348a7b6865bab9a58"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a6581a4919ffb395348a7b6865bab9a58">operator-</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; lhs, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;rhs)</td></tr>
 <tr class="memdesc:a6581a4919ffb395348a7b6865bab9a58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic subtraction operator, subtraction one field from another.  <br /></td></tr>
 <tr class="separator:a6581a4919ffb395348a7b6865bab9a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9198d29681d27f9a478aa99c01c00b9" id="r_af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplParams" colspan="2">template&lt;typename... Types&gt; <br />
+requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</td></tr>
+<tr class="memitem:af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a> (Types &amp;... args)</td></tr>
+<tr class="memdesc:af9198d29681d27f9a478aa99c01c00b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all views of the passed classes.  <br /></td></tr>
+<tr class="separator:af9198d29681d27f9a478aa99c01c00b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e99c20b9a299c1d6f875551c13a965c" id="r_a1e99c20b9a299c1d6f875551c13a965c"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Inner &gt; </td></tr>
 <tr class="memitem:a1e99c20b9a299c1d6f875551c13a965c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a1e99c20b9a299c1d6f875551c13a965c">map</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;a, const Inner inner, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range={0, 0})</td></tr>
 <tr class="memdesc:a1e99c20b9a299c1d6f875551c13a965c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a field using a specific executor.  <br /></td></tr>
@@ -362,9 +370,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9" id="r_a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a4803cc249d78abb5840c8cd26a45adb9">mul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
 <tr class="separator:a4803cc249d78abb5840c8cd26a45adb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc73d6dc6363f055f6e02a0ead74954f" id="r_acc73d6dc6363f055f6e02a0ead74954f"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:acc73d6dc6363f055f6e02a0ead74954f"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#acc73d6dc6363f055f6e02a0ead74954f">spans</a> (Args &amp;... fields)</td></tr>
-<tr class="separator:acc73d6dc6363f055f6e02a0ead74954f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac949366e652ae588596bb3cc4554a50a" id="r_ac949366e652ae588596bb3cc4554a50a"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:ac949366e652ae588596bb3cc4554a50a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ac949366e652ae588596bb3cc4554a50a">copyToHosts</a> (Args &amp;... fields)</td></tr>
 <tr class="separator:ac949366e652ae588596bb3cc4554a50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -374,9 +379,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5c3fac3c94422c5a171789e10c32d6cc" id="r_a5c3fac3c94422c5a171789e10c32d6cc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5c3fac3c94422c5a171789e10c32d6cc"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a5c3fac3c94422c5a171789e10c32d6cc">equal</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;field, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;field2)</td></tr>
 <tr class="separator:a5c3fac3c94422c5a171789e10c32d6cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5322c065a947ca0de4fb946fdb82679" id="r_aa5322c065a947ca0de4fb946fdb82679"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aa5322c065a947ca0de4fb946fdb82679"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aa5322c065a947ca0de4fb946fdb82679">equal</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;field, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; T &gt; span2)</td></tr>
-<tr class="separator:aa5322c065a947ca0de4fb946fdb82679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4ba8d26e82b678978a8698d06dc003" id="r_a3f4ba8d26e82b678978a8698d06dc003"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3f4ba8d26e82b678978a8698d06dc003"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a3f4ba8d26e82b678978a8698d06dc003">equal</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; T &gt; &amp;field, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; T &gt; view2)</td></tr>
+<tr class="separator:a3f4ba8d26e82b678978a8698d06dc003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ae1b9a7ec028b25e69bbbe4f3f32753" id="r_a6ae1b9a7ec028b25e69bbbe4f3f32753"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
 <tr class="memitem:a6ae1b9a7ec028b25e69bbbe4f3f32753"><td class="memTemplItemLeft" align="right" valign="top">IndexType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a6ae1b9a7ec028b25e69bbbe4f3f32753">segmentsFromIntervals</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; IndexType &gt; &amp;intervals, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; IndexType &gt; &amp;offsets)</td></tr>
 <tr class="memdesc:a6ae1b9a7ec028b25e69bbbe4f3f32753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute segment offsets from an input field corresponding to lengths by computing a prefix sum.  <br /></td></tr>
@@ -678,7 +683,7 @@ template&lt;typename... Args&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00150">150</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00144">144</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -780,12 +785,12 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00171">171</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00165">165</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
-<a id="aa5322c065a947ca0de4fb946fdb82679" name="aa5322c065a947ca0de4fb946fdb82679"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5322c065a947ca0de4fb946fdb82679">&#9670;&#160;</a></span>equal() <span class="overload">[2/3]</span></h2>
+<a id="a3f4ba8d26e82b678978a8698d06dc003" name="a3f4ba8d26e82b678978a8698d06dc003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4ba8d26e82b678978a8698d06dc003">&#9670;&#160;</a></span>equal() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -802,7 +807,7 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; T &gt;&#160;</td>
-          <td class="paramname"><em>span2</em>&#160;</td>
+          <td class="paramname"><em>view2</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -812,7 +817,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00193">193</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00187">187</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -844,7 +849,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00156">156</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00150">150</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -2143,7 +2148,7 @@ template&lt;typename IndexType &gt; </div>
 </div><div class="memdoc">
 
 <p>Compute segment offsets from an input field corresponding to lengths by computing a prefix sum. </p>
-<p>The offsets are computed by a prefix sum of the input values. So, with given input of {1, 2, 3, 4, 5} the offsets are {0, 1, 3, 6, 10, 15}. Note that the length of offSpan must be length of intervals + 1 and are all elements of offSpan are required to be zero</p>
+<p>The offsets are computed by a prefix sum of the input values. So, with given input of {1, 2, 3, 4, 5} the offsets are {0, 1, 3, 6, 10, 15}. Note that the length of offView must be length of intervals + 1 and are all elements of offVIew are required to be zero</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">in</td><td>The values to compute the offsets from. </td></tr>
@@ -2201,28 +2206,6 @@ template&lt;typename ValueType &gt; </div>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00076">76</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
-
-</div>
-</div>
-<a id="acc73d6dc6363f055f6e02a0ead74954f" name="acc73d6dc6363f055f6e02a0ead74954f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc73d6dc6363f055f6e02a0ead74954f">&#9670;&#160;</a></span>spans()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto NeoN::spans </td>
-          <td>(</td>
-          <td class="paramtype">Args &amp;...&#160;</td>
-          <td class="paramname"><em>fields</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="fieldFreeFunctions_8hpp_source.html#l00144">144</a> of file <a class="el" href="fieldFreeFunctions_8hpp_source.html">fieldFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -2308,6 +2291,38 @@ template&lt;typename Type &gt; </div>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="database_8hpp_source.html#l00120">120</a> of file <a class="el" href="database_8hpp_source.html">database.hpp</a>.</p>
+
+</div>
+</div>
+<a id="af9198d29681d27f9a478aa99c01c00b9" name="af9198d29681d27f9a478aa99c01c00b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9198d29681d27f9a478aa99c01c00b9">&#9670;&#160;</a></span>views()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Types&gt; <br />
+requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto NeoN::views </td>
+          <td>(</td>
+          <td class="paramtype">Types &amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unpacks all views of the passed classes. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Types</td><td>Types of the classes with views </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Tuple containing the unpacked views (use structured bindings). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="view_8hpp_source.html#l00101">101</a> of file <a class="el" href="view_8hpp_source.html">view.hpp</a>.</p>
 
 </div>
 </div>

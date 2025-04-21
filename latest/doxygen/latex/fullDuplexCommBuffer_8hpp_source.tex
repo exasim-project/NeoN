@@ -8,10 +8,10 @@
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <vector>}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <string>}}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <span>}}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{halfDuplexCommBuffer_8hpp}{NeoN/core/mpi/halfDuplexCommBuffer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{halfDuplexCommBuffer_8hpp}{NeoN/core/mpi/halfDuplexCommBuffer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00011}00011\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00013}00013\ \{}
@@ -44,25 +44,25 @@
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00066}00066\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00067}00067\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00075}00075\ \ \ \ \ std::span<valueType>\ getSend(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00075}00075\ \ \ \ \ View<valueType>\ getSend(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00076}00076\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ send\_.get<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00078}00078\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00079}00079\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00087}00087\ \ \ \ \ std::span<const\ valueType>\ getSend(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00087}00087\ \ \ \ \ View<const\ valueType>\ getSend(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00088}00088\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ send\_.get<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00090}00090\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00091}00091\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00099}00099\ \ \ \ \ std::span<valueType>\ getReceive(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00099}00099\ \ \ \ \ View<valueType>\ getReceive(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00100}00100\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ receive\_.get<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00102}00102\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00103}00103\ }
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00111}00111\ \ \ \ \ std::span<const\ valueType>\ getReceive(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00111}00111\ \ \ \ \ View<const\ valueType>\ getReceive(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00112}00112\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ receive\_.get<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{fullDuplexCommBuffer_8hpp_source_l00114}00114\ \ \ \ \ \}}

@@ -71,12 +71,12 @@
         <label>info.hpp</label>
         <link refid="info_8hpp"/>
       </node>
-      <node id="26">
+      <node id="27">
         <label>NeoN/core/parallelAlgorithms.hpp</label>
         <link refid="parallelAlgorithms_8hpp"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -132,7 +132,7 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="28" relation="include">
         </childnode>
@@ -148,21 +148,23 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>NeoN/fields/fieldFreeFunctions.hpp</label>
         <link refid="fieldFreeFunctions_8hpp"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
@@ -177,7 +179,7 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>NeoN/helpers/exceptions.hpp</label>
         <link refid="exceptions_8hpp"/>
         <childnode refid="16" relation="include">
@@ -188,7 +190,7 @@
         <link refid="CSRMatrix_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -228,10 +230,10 @@
       <node id="8">
         <label>string</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>tuple</label>
       </node>
-      <node id="27">
+      <node id="23">
         <label>type_traits</label>
       </node>
       <node id="12">
@@ -499,18 +501,18 @@
 <codeline lineno="102" refid="namespaceNeoN_1_1la_1ac312d3e63ffba9166a86b897c62c3b98" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1ac312d3e63ffba9166a86b897c62c3b98" kindref="member">spmv</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem&lt;ValueType, IndexType&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/>xfield)</highlight></codeline>
 <codeline lineno="103"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>resultVector(ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" kindref="member">exec</ref>(),<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kindref="member">rhs</ref>().size(),<sp/>0.0);</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[result,<sp/>b,<sp/>x]<sp/>=<sp/><ref refid="namespaceNeoN_1acc73d6dc6363f055f6e02a0ead74954f" kindref="member">spans</ref>(resultVector,<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kindref="member">rhs</ref>(),<sp/>xfield);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[result,<sp/>b,<sp/>x]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(resultVector,<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kindref="member">rhs</ref>(),<sp/>xfield);</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight></codeline>
 <codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>values<sp/>=<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a416fd6d5122482fcc2372590bc10b8f9" kindref="member">matrix</ref>().values().view();</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>colIdxs<sp/>=<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a416fd6d5122482fcc2372590bc10b8f9" kindref="member">matrix</ref>().colIdxs().view();</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rowPtrs<sp/>=<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a416fd6d5122482fcc2372590bc10b8f9" kindref="member">matrix</ref>().rowPtrs().view();</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rowOffs<sp/>=<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a416fd6d5122482fcc2372590bc10b8f9" kindref="member">matrix</ref>().rowOffs().view();</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>ls.matrix().nRows()},</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>rowi)<sp/>{</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowStart<sp/>=<sp/>rowPtrs[rowi];</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowEnd<sp/>=<sp/>rowPtrs[rowi<sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowStart<sp/>=<sp/>rowOffs[rowi];</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>rowEnd<sp/>=<sp/>rowOffs[rowi<sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ValueType<sp/>sum<sp/>=<sp/>0.0;</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(IndexType<sp/>coli<sp/>=<sp/>rowStart;<sp/>coli<sp/>&lt;<sp/>rowEnd;<sp/>coli++)</highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -550,7 +552,7 @@
 <codeline lineno="153"><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;ValueType, IndexType&gt;</ref><sp/>{</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(exec,<sp/>nnzs,<sp/>zero&lt;ValueType&gt;()),<sp/>sparsity.colIdxs(),<sp/>sparsity.rowPtrs()</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(exec,<sp/>nnzs,<sp/>zero&lt;ValueType&gt;()),<sp/>sparsity.colIdxs(),<sp/>sparsity.rowOffs()</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
 <codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>{exec,<sp/>rows,<sp/>zero&lt;ValueType&gt;()}</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
