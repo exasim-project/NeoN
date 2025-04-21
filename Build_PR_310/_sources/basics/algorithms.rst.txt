@@ -47,7 +47,7 @@ The executor type determines the ``Kokkos::RangePolicy<runOn>`` and thus dispatc
 Additionally, we name the kernel as ``"parallelFor"`` to improve visibility in profiling tools like nsys.
 Finally, a ``KOKKOS_LAMBDA`` is dispatched assigning the result of the given kernel function to the view of the field.
 Here the view holds data pointers to the device data and defines the begin and end pointer of the data.
-Several overloads of the ``parallelFor`` functions exists to simplify running parallelFor on fields and spans with and without an explicitly defined data range.
+Several overloads of the ``parallelFor`` functions exists to simplify running parallelFor on fields and views with and without an explicitly defined data range.
 
 
 To learn more on how to use the algorithms it is recommended to check the corresponding `unit test <https://github.com/exasim-project/NeoN/blob/main/test/core/parallelAlgorithms.cpp>`_.
