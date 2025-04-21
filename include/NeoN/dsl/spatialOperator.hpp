@@ -217,7 +217,7 @@ SpatialOperator<ValueType> operator*(const Coeff& coeff, SpatialOperator<ValueTy
 //     // TODO implement
 //     NF_ERROR_EXIT("Not implemented");
 //     SpatialOperator result = lhs;
-//     // if (!result.getCoefficient().useSpan)
+//     // if (!result.getCoefficient().useView)
 //     // {
 //     //     result.setVector(std::make_shared<Vector<scalar>>(result.exec(),
 //     result.nCells(), 1.0));

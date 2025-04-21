@@ -4,16 +4,17 @@
 
 #include <limits>
 #include <span>
+#include <type_traits>
 
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
 
-/* @class Span
+/* @class View
  *
  * @brief A wrapper class for std::span which allows to check whether the index access is in range
- * The Span can be initialized like a regular std::span or from an existing std::span
+ * The View can be initialized like a regular std::span or from an existing std::span
  *
  * @ingroup core
  *
@@ -71,16 +72,35 @@ public:
 
     localIdx size() const { return static_cast<localIdx>(base::size()); }
 
-    View<ValueType> subspan(localIdx start, localIdx length) const
+    View<ValueType> subview(localIdx start, localIdx length) const
     {
         return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
     }
 
-    View<ValueType> subspan(localIdx start) const
+    View<ValueType> subview(localIdx start) const
     {
         return base::subspan(static_cast<size_t>(start));
     }
 };
 
+/**
+ * @brief Concept, for any type which has the 'view' method.
+ * @tparam Types Class type with potential 'view' method.
+ */
+template<class Type>
+concept hasView =
+    requires(Type& inst) { inst.view(); } || requires(const Type& inst) { inst.view(); };
+
+/**
+ * @brief Unpacks all views of the passed classes.
+ * @tparam Types Types of the classes with views
+ * @return Tuple containing the unpacked views (use structured bindings).
+ */
+template<typename... Types>
+    requires(hasView<std::remove_reference_t<Types>> && ...)
+auto views(Types&... args)
+{
+    return std::tuple(args.view()...);
+}
 
 } // namespace NeoN

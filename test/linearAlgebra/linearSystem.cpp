@@ -22,8 +22,8 @@ TEST_CASE("LinearSystem")
 
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-    Vector<localIdx> rowPtrs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
+    Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
     SECTION("construct " + execName)
     {
@@ -33,7 +33,7 @@ TEST_CASE("LinearSystem")
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
         REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
-        REQUIRE(linearSystem.matrix().rowPtrs().size() == 4);
+        REQUIRE(linearSystem.matrix().rowOffs().size() == 4);
         REQUIRE(linearSystem.matrix().nRows() == 3);
         REQUIRE(linearSystem.rhs().size() == 3);
     }
@@ -54,7 +54,7 @@ TEST_CASE("LinearSystem")
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
-        REQUIRE(linearSystem.matrix().rowPtrs().size() == nCells + 1);
+        REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
         REQUIRE(linearSystem.matrix().nRows() == nCells);
         REQUIRE(linearSystem.rhs().size() == nCells);
     }

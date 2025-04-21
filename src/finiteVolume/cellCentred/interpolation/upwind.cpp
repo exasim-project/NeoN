@@ -19,7 +19,7 @@ void computeUpwindInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS, fluxS] = spans(
+    const auto [srcS, weightS, ownerS, neighS, boundS, fluxS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),

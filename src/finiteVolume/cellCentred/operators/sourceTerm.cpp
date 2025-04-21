@@ -19,13 +19,13 @@ template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 {
     auto operatorScaling = this->getCoefficient();
-    auto [sourceSpan, fieldSpan, coeff] =
-        spans(source, this->field_.internalVector(), coefficients_.internalVector());
+    auto [sourceView, fieldView, coeff] =
+        views(source, this->field_.internalVector(), coefficients_.internalVector());
     NeoN::parallelFor(
         source.exec(),
         source.range(),
         KOKKOS_LAMBDA(const localIdx celli) {
-            sourceSpan[celli] += operatorScaling[celli] * coeff[celli] * fieldSpan[celli];
+            sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
         }
     );
 }
@@ -36,7 +36,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] =
-        spans(sparsityPattern_->diagOffset(), coefficients_.internalVector());
+        views(sparsityPattern_->diagOffset(), coefficients_.internalVector());
     auto [matrix, rhs] = ls.view();
 
     NeoN::parallelFor(

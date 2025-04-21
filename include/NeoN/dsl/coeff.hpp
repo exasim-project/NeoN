@@ -34,7 +34,7 @@ public:
     KOKKOS_INLINE_FUNCTION
     scalar operator[](const localIdx i) const { return (hasView_) ? view_[i] * coeff_ : coeff_; }
 
-    bool hasSpan();
+    bool hasView();
 
     View<const scalar> view();
 

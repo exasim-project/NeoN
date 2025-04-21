@@ -29,7 +29,7 @@ void setGradientValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = spans(
+    auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),

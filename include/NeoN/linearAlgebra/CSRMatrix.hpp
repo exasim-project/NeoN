@@ -132,40 +132,40 @@ public:
     [[nodiscard]] IndexType nNonZeros() const { return static_cast<IndexType>(values_.size()); }
 
     /**
-     * @brief Get a span to the values array.
-     * @return Span containing the matrix values.
+     * @brief Get a reference to values vector.
+     * @return Vector containing the matrix values.
      */
     [[nodiscard]] Vector<ValueType>& values() { return values_; }
 
     /**
-     * @brief Get a span to the column indices array.
-     * @return Span containing the column indices.
+     * @brief Get a reference to column indices vector.
+     * @return Vector containing the column indices.
      */
     [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; }
 
     /**
-     * @brief Get a span to the row pointers array.
-     * @return Span containing the row pointers.
+     * @brief Get a reference to row offset vector.
+     * @return Vi containing the row pointers.
      */
-    [[nodiscard]] Vector<IndexType>& rowPtrs() { return rowOffs_; }
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; }
 
     /**
-     * @brief Get a const span to the values array.
-     * @return Const span containing the matrix values.
+     * @brief Get a const reference to values vector.
+     * @return Const vector containing the matrix values.
      */
     [[nodiscard]] const Vector<ValueType>& values() const { return values_; }
 
     /**
-     * @brief Get a const span to the column indices array.
-     * @return Const span containing the column indices.
+     * @brief Get a const reference to column indices vector.
+     * @return Const vector containing the column indices.
      */
     [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; }
 
     /**
-     * @brief Get a const span to the row pointers array.
-     * @return Const span containing the row pointers.
+     * @brief Get a const reference to row offset vector.
+     * @return Const vector containing the row pointers.
      */
-    [[nodiscard]] const Vector<IndexType>& rowPtrs() const { return rowOffs_; }
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; }
 
     /**
      * @brief Copy the matrix to another executor.
@@ -227,20 +227,20 @@ private:
 // la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
 // {
 //     Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
-//     Vector<IndexTypeOut> rowPtrsTmp(exec, in.rowOffs.size());
+//     Vector<IndexTypeOut> rowOffsTmp(exec, in.rowOffs.size());
 //     Vector<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
 
 //     parallelFor(
 //         colIdxsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
 //     );
 //     parallelFor(
-//         rowPtrsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
+//         rowOffsTmp, KOKKOS_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
 //     );
 //     parallelFor(
 //         valuesTmp, KOKKOS_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
 //     );
 
-//     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowPtrsTmp};
+//     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowOffsTmp};
 // }
 
 

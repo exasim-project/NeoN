@@ -50,9 +50,9 @@ TEST_CASE("SparsityPattern")
         REQUIRE(diagOffsS[9] == 1);
     }
 
-    SECTION("Can produce rowPtrs " + execName)
+    SECTION("Can produce rowOffs " + execName)
     {
-        auto rowPtr = sp.rowPtrs().copyToHost();
+        auto rowPtr = sp.rowOffs().copyToHost();
         auto rowPtrH = rowPtr.view();
 
         REQUIRE(rowPtrH[0] == 0);

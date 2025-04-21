@@ -176,9 +176,9 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(view[1] == 2);
         REQUIRE(view[2] == 3);
 
-        auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == 2);
-        REQUIRE(subView[1] == 3);
+        auto subview = hostA.view({1, 3});
+        REQUIRE(subview[0] == 2);
+        REQUIRE(subview[1] == 3);
     }
 
     SECTION("viewVec3" + execName)
@@ -191,9 +191,9 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(view[1] == NeoN::Vec3(2, 2, 2));
         REQUIRE(view[2] == NeoN::Vec3(3, 3, 3));
 
-        auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == NeoN::Vec3(2, 2, 2));
-        REQUIRE(subView[1] == NeoN::Vec3(3, 3, 3));
+        auto subview = hostA.view({1, 3});
+        REQUIRE(subview[0] == NeoN::Vec3(2, 2, 2));
+        REQUIRE(subview[1] == NeoN::Vec3(3, 3, 3));
     }
 
     SECTION("copyToHost " + execName)
@@ -256,7 +256,7 @@ TEST_CASE("Vector Operations")
     }
 }
 
-TEST_CASE("getSpans")
+TEST_CASE("getViews")
 {
     NeoN::Executor exec = GENERATE(
         NeoN::Executor(NeoN::SerialExecutor {}),
@@ -269,7 +269,7 @@ TEST_CASE("getSpans")
     NeoN::Vector<NeoN::scalar> c(exec, 3, 3.0);
 
     auto [hostA, hostB, hostC] = NeoN::copyToHosts(a, b, c);
-    auto [viewB, viewC] = NeoN::spans(b, c);
+    auto [viewB, viewC] = NeoN::views(b, c);
 
     REQUIRE(hostA.view()[0] == 1.0);
     REQUIRE(hostB.view()[0] == 2.0);

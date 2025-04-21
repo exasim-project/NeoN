@@ -80,7 +80,7 @@ public:
 
         // auto fieldS = field.view();
 
-        auto rowPtrHost = hostLS.matrix().rowPtrs().view();
+        auto rowPtrHost = hostLS.matrix().rowOffs().view();
         auto colIdxHost = hostLS.matrix().colIdxs().view();
         auto rhsHost = sys.rhs().copyToHost();
 

@@ -23,10 +23,10 @@ void computeLaplacianExp(
     SurfaceField<ValueType> faceNormalGrad = faceNormalGradient.faceNormalGrad(phi);
 
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
     const auto [result, faceArea, fnGrad, vol] =
-        spans(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
+        views(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
 
     auto nInternalFaces = mesh.nInternalFaces();
 
@@ -86,7 +86,7 @@ void computeLaplacianImpl(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
+    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
@@ -95,18 +95,18 @@ void computeLaplacianImpl(
         sparsityPattern.neighbourOffset()
     );
 
-    const auto [sGamma, deltaCoeffs, magFaceArea] = spans(
+    const auto [sGamma, deltaCoeffs, magFaceArea] = views(
         gamma.internalVector(),
         faceNormalGradient.deltaCoeffs().internalVector(),
         mesh.magFaceAreas()
     );
 
     // FIXME: what if order changes
-    auto [values, colIdxs, rowPtrs] = ls.matrix().view();
+    auto [values, colIdxs, rowOffs] = ls.matrix().view();
 
-    // const auto rowPtrs = ls.matrix().rowPtrs();
+    // const auto rowOffs = ls.matrix().rowOffs();
     // const auto colIdxs = ls.matrix().colIdxs();
-    // auto values = ls.matrix().values().span();
+    // auto values = ls.matrix().values().view();
     auto rhs = ls.rhs().view();
 
     parallelFor(
@@ -119,8 +119,8 @@ void computeLaplacianImpl(
             auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            auto rowNeiStart = rowPtrs[nei];
-            auto rowOwnStart = rowPtrs[own];
+            auto rowNeiStart = rowOffs[nei];
+            auto rowOwnStart = rowOffs[own];
 
             scalar operatorScalingNei = operatorScaling[nei];
             scalar operatorScalingOwn = operatorScaling[own];
@@ -141,7 +141,7 @@ void computeLaplacianImpl(
         }
     );
 
-    auto [refGradient, value, valueFraction, refValue] = spans(
+    auto [refGradient, value, valueFraction, refValue] = views(
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),
@@ -156,7 +156,7 @@ void computeLaplacianImpl(
             auto flux = sGamma[facei] * magFaceArea[facei];
 
             auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowPtrs[own];
+            auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
             values[rowOwnStart + diagOffs[own]] -= flux * operatorScalingOwn

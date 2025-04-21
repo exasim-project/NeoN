@@ -72,7 +72,7 @@ void solve(
         exp.implicitOperation(ls);
         auto expTmp = exp.explicitOperation(solution.mesh().nCells());
 
-        auto [vol, expSource, rhs] = spans(solution.mesh().cellVolumes(), expTmp, ls.rhs());
+        auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
 
         // subtract the explicit source term from the rhs
         parallelFor(

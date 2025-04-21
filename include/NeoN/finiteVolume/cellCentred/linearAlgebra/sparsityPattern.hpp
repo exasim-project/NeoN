@@ -37,7 +37,7 @@ public:
 
     [[nodiscard]] const Vector<localIdx>& colIdxs() const { return colIdxs_; };
 
-    [[nodiscard]] const Vector<localIdx>& rowPtrs() const { return rowPtrs_; };
+    [[nodiscard]] const Vector<localIdx>& rowOffs() const { return rowOffs_; };
 
     [[nodiscard]] localIdx rows() const { return diagOffset_.size(); };
 
@@ -50,7 +50,7 @@ private:
 
     const UnstructuredMesh& mesh_;
 
-    Vector<localIdx> rowPtrs_; //! rowPtrs map from row to start index in values
+    Vector<localIdx> rowOffs_; //! rowOffs map from row to start index in values
 
     Vector<localIdx> colIdxs_; //!
 

@@ -29,7 +29,7 @@ void computeGrad(
 
     auto surfGradPhi = out.internalVector().view();
 
-    const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = spans(
+    const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = views(
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().sf(),
         phif.internalVector(),

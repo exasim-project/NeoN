@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include <span>
 #include <string>
 #include <typeindex>
 #include <vector>
@@ -10,6 +9,7 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
+#include "NeoN/core/view.hpp"
 
 namespace NeoN
 {
@@ -160,36 +160,36 @@ public:
     void finaliseComm();
 
     /**
-     * @brief Get a span of the buffer data for a given rank.
+     * @brief Get a View of the buffer data for a given rank.
      *
      * @tparam valueType The type of the data to be stored in the buffer.
      * @param rank The rank of the data to be retrieved.
-     * @return std::span<valueType> A span of the data for the given rank.
+     * @return View<valueType> A View of the data for the given rank.
      */
     template<typename valueType>
-    std::span<valueType> get(const size_t rank)
+    View<valueType> get(const size_t rank)
     {
         NF_DEBUG_ASSERT(isCommInit(), "Communication buffer is not initialised.");
         NF_DEBUG_ASSERT(typeSize_ == sizeof(valueType), "Data type (size) mismatch.");
-        return std::span<valueType>(
+        return View<valueType>(
             reinterpret_cast<valueType*>(rankBuffer_.data() + rankOffset_[rank]),
             (rankOffset_[rank + 1] - rankOffset_[rank]) / sizeof(valueType)
         );
     }
 
     /**
-     * @brief Get a span of the buffer data for a given rank.
+     * @brief Get a view of the buffer data for a given rank.
      *
      * @tparam valueType The type of the data to be stored in the buffer.
      * @param rank The rank of the data to be retrieved.
-     * @return std::span<const valueType> A span of the data for the given rank.
+     * @return View<const valueType> A View of the data for the given rank.
      */
     template<typename valueType>
-    std::span<const valueType> get(const size_t rank) const
+    View<const valueType> get(const size_t rank) const
     {
         NF_DEBUG_ASSERT(isCommInit(), "Communication buffer is not initialised.");
         NF_DEBUG_ASSERT(typeSize_ == sizeof(valueType), "Data type (size) mismatch.");
-        return std::span<const valueType>(
+        return View<const valueType>(
             reinterpret_cast<const valueType*>(rankBuffer_.data() + rankOffset_[rank]),
             (rankOffset_[rank + 1] - rankOffset_[rank]) / sizeof(valueType)
         );
