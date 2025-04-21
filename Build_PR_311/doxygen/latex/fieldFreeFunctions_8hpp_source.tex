@@ -124,75 +124,69 @@
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00141}00141\ \}}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00142}00142\ }
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00143}00143\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00144}\mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{00144}}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{spans}}(Args\&...\ fields)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00144}\mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{00144}}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{copyToHosts}}(Args\&...\ fields)}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00145}00145\ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00146}00146\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_tuple(fields.view()...);}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00146}00146\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_tuple(fields.copyToHost()...);}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00147}00147\ \}}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00148}00148\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00149}00149\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00150}\mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{00150}}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{copyToHosts}}(Args\&...\ fields)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00149}00149\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00150}\mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{00150}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ T\ value)}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00151}00151\ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_tuple(fields.copyToHost()...);}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00153}00153\ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00154}00154\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00155}00155\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00156}\mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{00156}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ T\ value)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00157}00157\ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00158}00158\ \ \ \ \ \textcolor{keyword}{auto}\ hostVector\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}();}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00159}00159\ \ \ \ \ \textcolor{keyword}{auto}\ hostView\ =\ hostVector.view();}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostView.size();\ i++)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00161}00161\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView[i]\ !=\ value)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00166}00166\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00167}00167\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00168}00168\ \};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keyword}{auto}\ hostVector\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}();}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keyword}{auto}\ hostView\ =\ hostVector.view();}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostView.size();\ i++)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00155}00155\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView[i]\ !=\ value)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00160}00160\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00161}00161\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00162}00162\ \};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00164}00164\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00165}\mbox{\hyperlink{namespaceNeoN_a5c3fac3c94422c5a171789e10c32d6cc}{00165}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field2)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00166}00166\ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00167}00167\ \ \ \ \ \textcolor{keyword}{auto}\ [hostVector,\ hostVector2]\ =\ \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{copyToHosts}}(field,\ field2);}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{auto}\ [hostView,\ hostView2]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(hostVector,\ hostVector2);}
 \DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00169}00169\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00170}00170\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00171}\mbox{\hyperlink{namespaceNeoN_a5c3fac3c94422c5a171789e10c32d6cc}{00171}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field2)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00172}00172\ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{keyword}{auto}\ [hostVector,\ hostVector2]\ =\ \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{copyToHosts}}(field,\ field2);}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{keyword}{auto}\ [hostSpan,\ hostSpan2]\ =\ \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{spans}}(hostVector,\ hostVector2);}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00175}00175\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostSpan.size()\ !=\ hostSpan2.size())}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00177}00177\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00179}00179\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00180}00180\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00181}00181\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostSpan.size();\ i++)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00182}00182\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostSpan[i]\ !=\ hostSpan2[i])}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00187}00187\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00188}00188\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00189}00189\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00190}00190\ \};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00191}00191\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00192}00192\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00193}\mbox{\hyperlink{namespaceNeoN_aa5322c065a947ca0de4fb946fdb82679}{00193}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ \mbox{\hyperlink{classNeoN_1_1View}{View<T>}}\ span2)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00194}00194\ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00195}00195\ \ \ \ \ \textcolor{keyword}{auto}\ hostView\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}().view();}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00196}00196\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00197}00197\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView.size()\ !=\ span2.\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00198}00198\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00200}00200\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00201}00201\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostView.size();\ i++)}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00203}00203\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView[i]\ !=\ span2[i])}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00207}00207\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00208}00208\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00209}00209\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00210}00210\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00211}00211\ \}}
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00212}00212\ }
-\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00213}00213\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView.size()\ !=\ hostView2.size())}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00171}00171\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00173}00173\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00175}00175\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostView.size();\ i++)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00176}00176\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView[i]\ !=\ hostView2[i])}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00180}00180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00181}00181\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00182}00182\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00183}00183\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00184}00184\ \};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00186}00186\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00187}\mbox{\hyperlink{namespaceNeoN_a3f4ba8d26e82b678978a8698d06dc003}{00187}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_a1460e2d7fd723c5b4866ef1f5c590f07}{equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ field,\ \mbox{\hyperlink{classNeoN_1_1View}{View<T>}}\ view2)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00188}00188\ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00189}00189\ \ \ \ \ \textcolor{keyword}{auto}\ hostView\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}().view();}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00191}00191\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView.size()\ !=\ view2.\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00192}00192\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00194}00194\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00196}00196\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ hostView.size();\ i++)}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00197}00197\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView[i]\ !=\ view2[i])}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00202}00202\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00204}00204\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00205}00205\ \}}
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{fieldFreeFunctions_8hpp_source_l00207}00207\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
