@@ -51,10 +51,10 @@ void BasicGeometryScheme::updateDeltaCoeffs(
 )
 {
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
+        views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
 
-    const auto [cf, cellCentre] = spans(mesh_.faceCentres(), mesh_.cellCentres());
+    const auto [cf, cellCentre] = views(mesh_.faceCentres(), mesh_.cellCentres());
 
     auto deltaCoeff = deltaCoeffs.internalVector().view();
 
@@ -87,11 +87,11 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 )
 {
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
+        views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
 
     const auto [cf, cellCentre, faceAreaVec3, faceArea] =
-        spans(mesh_.faceCentres(), mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
+        views(mesh_.faceCentres(), mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
 
     auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
     fill(nonOrthDeltaCoeffs.internalVector(), 0.0);

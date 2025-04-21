@@ -4,10 +4,10 @@
 
 #include <vector>
 #include <string>
-#include <span>
 
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/halfDuplexCommBuffer.hpp"
+#include "NeoN/core/view.hpp"
 
 namespace NeoN
 {
@@ -66,49 +66,49 @@ public:
     }
 
     /**
-     * @brief Gets a span of data for the send buffer for a specific rank.
+     * @brief Gets a View of data for the send buffer for a specific rank.
      * @tparam valueType The type of the data.
      * @param rank The rank of the send buffer to get.
-     * @return A span of data for the send buffer.
+     * @return A view of data for the send buffer.
      */
     template<typename valueType>
-    std::span<valueType> getSend(const size_t rank)
+    View<valueType> getSend(const size_t rank)
     {
         return send_.get<valueType>(rank);
     }
 
     /**
-     * @brief Gets a span of data for the send buffer for a specific rank.
+     * @brief Gets a view of data for the send buffer for a specific rank.
      * @tparam valueType The type of the data.
      * @param rank The rank of the send buffer to get.
-     * @return A span of data for the send buffer.
+     * @return A view of data for the send buffer.
      */
     template<typename valueType>
-    std::span<const valueType> getSend(const size_t rank) const
+    View<const valueType> getSend(const size_t rank) const
     {
         return send_.get<valueType>(rank);
     }
 
     /**
-     * @brief Gets a span of data for the receive buffer for a specific rank.
+     * @brief Gets a view of data for the receive buffer for a specific rank.
      * @tparam valueType The type of the data.
      * @param rank The rank of the receive buffer to get.
-     * @return A span of data for the receive buffer.
+     * @return A view of data for the receive buffer.
      */
     template<typename valueType>
-    std::span<valueType> getReceive(const size_t rank)
+    View<valueType> getReceive(const size_t rank)
     {
         return receive_.get<valueType>(rank);
     }
 
     /**
-     * @brief Gets a span of data for the receive buffer for a specific rank.
+     * @brief Gets a view of data for the receive buffer for a specific rank.
      * @tparam valueType The type of the data.
      * @param rank The rank of the receive buffer to get.
-     * @return A span of data for the receive buffer.
+     * @return A view of data for the receive buffer.
      */
     template<typename valueType>
-    std::span<const valueType> getReceive(const size_t rank) const
+    View<const valueType> getReceive(const size_t rank) const
     {
         return receive_.get<valueType>(rank);
     }

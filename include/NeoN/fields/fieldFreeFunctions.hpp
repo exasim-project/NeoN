@@ -141,12 +141,6 @@ void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 }
 
 template<typename... Args>
-auto spans(Args&... fields)
-{
-    return std::make_tuple(fields.view()...);
-}
-
-template<typename... Args>
 auto copyToHosts(Args&... fields)
 {
     return std::make_tuple(fields.copyToHost()...);
@@ -171,16 +165,16 @@ template<typename T>
 bool equal(const Vector<T>& field, const Vector<T>& field2)
 {
     auto [hostVector, hostVector2] = copyToHosts(field, field2);
-    auto [hostSpan, hostSpan2] = spans(hostVector, hostVector2);
+    auto [hostView, hostView2] = views(hostVector, hostVector2);
 
-    if (hostSpan.size() != hostSpan2.size())
+    if (hostView.size() != hostView2.size())
     {
         return false;
     }
 
-    for (localIdx i = 0; i < hostSpan.size(); i++)
+    for (localIdx i = 0; i < hostView.size(); i++)
     {
-        if (hostSpan[i] != hostSpan2[i])
+        if (hostView[i] != hostView2[i])
         {
             return false;
         }
@@ -190,18 +184,18 @@ bool equal(const Vector<T>& field, const Vector<T>& field2)
 };
 
 template<typename T>
-bool equal(const Vector<T>& field, View<T> span2)
+bool equal(const Vector<T>& field, View<T> view2)
 {
     auto hostView = field.copyToHost().view();
 
-    if (hostView.size() != span2.size())
+    if (hostView.size() != view2.size())
     {
         return false;
     }
 
     for (localIdx i = 0; i < hostView.size(); i++)
     {
-        if (hostView[i] != span2[i])
+        if (hostView[i] != view2[i])
         {
             return false;
         }

@@ -94,8 +94,8 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
         Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
-        Vector<localIdx> rowPtrs(exec, {0, 2, 5, 7});
-        CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowPtrs);
+        Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);

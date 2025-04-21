@@ -23,7 +23,7 @@ void setFixedValue(
     Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
 )
 {
-    auto [refGradient, value, valueFraction, refValue] = spans(
+    auto [refGradient, value, valueFraction, refValue] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),

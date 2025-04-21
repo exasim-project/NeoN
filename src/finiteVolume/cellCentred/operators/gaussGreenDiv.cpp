@@ -157,7 +157,7 @@ void computeDivImp(
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
-    const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = spans(
+    const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
         faceFlux.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
@@ -203,7 +203,7 @@ void computeDivImp(
         }
     );
 
-    auto [refGradient, value, valueFraction, refValue] = spans(
+    auto [refGradient, value, valueFraction, refValue] = views(
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),

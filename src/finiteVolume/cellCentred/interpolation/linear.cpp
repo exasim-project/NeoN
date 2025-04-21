@@ -18,7 +18,7 @@ void computeLinearInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = spans(
+    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),

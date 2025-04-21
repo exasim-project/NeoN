@@ -15,8 +15,8 @@ namespace NeoN
  *
  * The offsets are computed by a prefix sum of the input values. So, with given
  * input of {1, 2, 3, 4, 5} the offsets are {0, 1, 3, 6, 10, 15}.
- * Note that the length of offSpan must be  length of intervals + 1
- * and are all elements of offSpan are required to be zero
+ * Note that the length of offView must be  length of intervals + 1
+ * and are all elements of offVIew are required to be zero
  *
  * @param[in] in The values to compute the offsets from.
  * @param[in,out] offsets The field to store the resulting offsets in.
@@ -25,22 +25,22 @@ template<typename IndexType>
 IndexType segmentsFromIntervals(const Vector<IndexType>& intervals, Vector<IndexType>& offsets)
 {
     IndexType finalValue = 0;
-    const auto inSpan = intervals.view();
+    const auto inView = intervals.view();
     // skip the first element of the offsets
     // assumed to be zero
-    auto offsSpan = offsets.view().subspan(1);
-    // NOTE avoid compiler warning by static_casting to localIdx since offsSpan
-    // is a std::span
-    NF_ASSERT_EQUAL(inSpan.size(), offsSpan.size());
+    auto offsView = offsets.view().subview(1);
+    // NOTE avoid compiler warning by static_casting to localIdx since offsView
+    // is a View
+    NF_ASSERT_EQUAL(inView.size(), offsView.size());
     NeoN::parallelScan(
         intervals.exec(),
-        {0, offsSpan.size()},
+        {0, offsView.size()},
         KOKKOS_LAMBDA(const localIdx i, IndexType& update, const bool final) {
-            update += inSpan[i];
+            update += inView[i];
             if (final)
             {
-                // offsSpan is a std::span, thus [] takes unsigned idx
-                offsSpan[i] = update;
+                // offView is a view, thus [] takes unsigned idx
+                offsView[i] = update;
             }
         },
         finalValue
@@ -59,12 +59,12 @@ class SegmentedVectorView
 public:
 
     /**
-     * @brief A span with the values.
+     * @brief A View with the values.
      */
     View<ValueType> values;
 
     /**
-     * @brief A span of indices representing the segments.
+     * @brief A View of indices representing the segments.
      */
     View<IndexType> segments;
 
@@ -95,16 +95,16 @@ public:
     }
 
     /**
-     * @brief Get a subspan of values corresponding to a segment.
+     * @brief Get a subview of values corresponding to a segment.
      *
      * @tparam ValueType The type of the values.
      * @param segI The index of the segment.
-     * @return A subspan of values corresponding to the segment.
+     * @return A subview of values corresponding to the segment.
      */
-    KOKKOS_INLINE_FUNCTION View<ValueType> span(localIdx segI) const
+    KOKKOS_INLINE_FUNCTION View<ValueType> view(localIdx segI) const
     {
         auto [start, length] = range(segI);
-        return values.subspan(start, length);
+        return values.subview(start, length);
     }
 
     /**
@@ -193,20 +193,20 @@ public:
         return SegmentedVectorView<ValueType, IndexType> {values_.view(), segments_.view()};
     }
 
-    // ensures no return a span of a temporary object --> invalid memory access
+    // ensures no return a view of a temporary object --> invalid memory access
     [[nodiscard]] SegmentedVectorView<ValueType, IndexType> view() && = delete;
 
     /**
-     * @brief get the combined value and range spans of the segmented field
-     * @return Combined value and range spans of the fields
+     * @brief get the combined value and range views of the segmented field
+     * @return Combined value and range views of the fields
      */
-    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> spans() &
+    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() &
     {
         return {values_.view(), segments_.view()};
     }
 
-    // ensures not to return a span of a temporary object --> invalid memory access
-    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> spans() && = delete;
+    // ensures not to return a view of a temporary object --> invalid memory access
+    [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() && = delete;
 
     const Vector<ValueType>& values() const { return values_; }
 

@@ -19,10 +19,10 @@ void computeFaceNormalGrad(
     const auto& exec = surfaceVector.exec();
 
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
 
-    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = spans(
+    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = views(
         surfaceVector.internalVector(),
         volVector.internalVector(),
         volVector.boundaryData().value(),

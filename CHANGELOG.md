@@ -1,7 +1,7 @@
 # Version 0.2.0 (unreleased)
 ## Features
 ### Refactoring
-- Free function views added, allows for multiple views from multiple class's view methods to be returned in a structured binding.  [#311](https://github.com/exasim-project/NeoN/pull/311)
+- General refactor of span and spans to view and views.  [#311](https://github.com/exasim-project/NeoN/pull/311)
 - View replaces std::span and Field uses view() rather than span() and returns a view [#298](https://github.com/exasim-project/NeoN/pull/298)
 ### Implicit Capabilities
 - Implicit BCs and Laplacian operator [#262](https://github.com/exasim-project/NeoN/pull/262)

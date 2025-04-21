@@ -102,18 +102,18 @@ template<typename ValueType, typename IndexType>
 Vector<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Vector<ValueType>& xfield)
 {
     Vector<ValueType> resultVector(ls.exec(), ls.rhs().size(), 0.0);
-    auto [result, b, x] = spans(resultVector, ls.rhs(), xfield);
+    auto [result, b, x] = views(resultVector, ls.rhs(), xfield);
 
     auto values = ls.matrix().values().view();
     auto colIdxs = ls.matrix().colIdxs().view();
-    auto rowPtrs = ls.matrix().rowPtrs().view();
+    auto rowOffs = ls.matrix().rowOffs().view();
 
     parallelFor(
         ls.exec(),
         {0, ls.matrix().nRows()},
         KOKKOS_LAMBDA(const localIdx rowi) {
-            IndexType rowStart = rowPtrs[rowi];
-            IndexType rowEnd = rowPtrs[rowi + 1];
+            IndexType rowStart = rowOffs[rowi];
+            IndexType rowEnd = rowOffs[rowi + 1];
             ValueType sum = 0.0;
             for (IndexType coli = rowStart; coli < rowEnd; coli++)
             {
@@ -153,7 +153,7 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& s
 
     return {
         CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowPtrs()
+            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
         },
         Vector<ValueType> {exec, rows, zero<ValueType>()}
     };

@@ -27,7 +27,7 @@ void extrapolateValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    auto [refGradient, value, valueFraction, refValue, faceCells] = spans(
+    auto [refGradient, value, valueFraction, refValue, faceCells] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),

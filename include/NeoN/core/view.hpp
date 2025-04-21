@@ -11,10 +11,10 @@
 namespace NeoN
 {
 
-/* @class Span
+/* @class View
  *
  * @brief A wrapper class for std::span which allows to check whether the index access is in range
- * The Span can be initialized like a regular std::span or from an existing std::span
+ * The View can be initialized like a regular std::span or from an existing std::span
  *
  * @ingroup core
  *
@@ -72,12 +72,12 @@ public:
 
     localIdx size() const { return static_cast<localIdx>(base::size()); }
 
-    View<ValueType> subspan(localIdx start, localIdx length) const
+    View<ValueType> subview(localIdx start, localIdx length) const
     {
         return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
     }
 
-    View<ValueType> subspan(localIdx start) const
+    View<ValueType> subview(localIdx start) const
     {
         return base::subspan(static_cast<size_t>(start));
     }

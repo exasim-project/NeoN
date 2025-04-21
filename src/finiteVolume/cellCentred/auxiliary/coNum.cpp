@@ -21,7 +21,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     VolumeField<scalar> phi(exec, "phi", mesh, createCalculatedBCs<VolumeBoundary<scalar>>(mesh));
     fill(phi.internalVector(), 0.0);
 
-    const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = spans(
+    const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = views(
         mesh.boundaryMesh().faceCells(),
         phi.internalVector(),
         mesh.faceOwner(),

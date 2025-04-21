@@ -63,7 +63,7 @@ TEST_CASE("Coeff")
                 );
             };
             auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasSpan() == true);
+            REQUIRE(coeff.hasView() == true);
             REQUIRE(hostVectorA.view()[0] == 3.0);
             REQUIRE(hostVectorA.view()[1] == 3.0);
             REQUIRE(hostVectorA.view()[2] == 3.0);
@@ -78,7 +78,7 @@ TEST_CASE("Coeff")
                 );
             };
             auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasSpan() == false);
+            REQUIRE(coeff.hasView() == false);
             REQUIRE(hostVectorA.view()[0] == 4.0);
             REQUIRE(hostVectorA.view()[1] == 4.0);
             REQUIRE(hostVectorA.view()[2] == 4.0);
@@ -93,7 +93,7 @@ TEST_CASE("Coeff")
                 );
             };
             auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasSpan() == true);
+            REQUIRE(coeff.hasView() == true);
             REQUIRE(hostVectorA.view()[0] == -3.0);
             REQUIRE(hostVectorA.view()[1] == -3.0);
             REQUIRE(hostVectorA.view()[2] == -3.0);
