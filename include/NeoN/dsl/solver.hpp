@@ -40,7 +40,7 @@ void solve(
     VectorType& solution,
     scalar t,
     scalar dt,
-    [[maybe_unused]] const Dictionary& fvSchemes,
+    const Dictionary& fvSchemes,
     const Dictionary& fvSolution
 )
 {
@@ -54,7 +54,7 @@ void solve(
     {
         // integrate equations in time
         timeIntegration::TimeIntegration<VectorType> timeIntegrator(
-            fvSchemes.subDict("ddtSchemes"), fvSchemes
+            fvSchemes.subDict("ddtSchemes"), fvSolution
         );
         timeIntegrator.solve(exp, solution, t, dt);
     }

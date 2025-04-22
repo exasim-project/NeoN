@@ -61,7 +61,6 @@ class TimeIntegration
 
 public:
 
-
     using ValueType = typename SolutionVectorType::VectorValueType;
     using Expression = NeoN::dsl::Expression<ValueType>;
 
