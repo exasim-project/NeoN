@@ -19,22 +19,22 @@ void computeFaceNormalGrad(
     const auto& exec = surfaceVector.exec();
 
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
 
-    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = spans(
+    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = views(
         surfaceVector.internalVector(),
         volVector.internalVector(),
-        volVector.boundaryVector().value(),
+        volVector.boundaryData().value(),
         geometryScheme->nonOrthDeltaCoeffs().internalVector()
     );
 
-    size_t nInternalFaces = mesh.nInternalFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbour[facei]] - phi[owner[facei]]);
         }
     );
@@ -42,9 +42,9 @@ void computeFaceNormalGrad(
     NeoN::parallelFor(
         exec,
         {nInternalFaces, phif.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             auto faceBCI = facei - nInternalFaces;
-            auto own = static_cast<size_t>(surfFaceCells[faceBCI]);
+            auto own = surfFaceCells[faceBCI];
 
             phif[facei] = nonOrthDeltaCoeffs[facei] * (phiBCValue[faceBCI] - phi[own]);
         }

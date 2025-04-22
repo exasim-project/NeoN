@@ -45,7 +45,7 @@ the corresponding NeoN version is implemented as
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             scalar flux = surfFaceFlux[i]*surfPhif[i];
             threadsafe_add(&surfDivPhi[static_cast<size_t>(surfOwner[i])], flux);
             threadsafe_sub(&surfDivPhi[static_cast<size_t>(surfNeighbour[i])], flux);

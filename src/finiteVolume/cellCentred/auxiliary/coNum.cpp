@@ -21,7 +21,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     VolumeField<scalar> phi(exec, "phi", mesh, createCalculatedBCs<VolumeBoundary<scalar>>(mesh));
     fill(phi.internalVector(), 0.0);
 
-    const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = spans(
+    const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = views(
         mesh.boundaryMesh().faceCells(),
         phi.internalVector(),
         mesh.faceOwner(),
@@ -29,25 +29,25 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
         faceFlux.internalVector(),
         mesh.cellVolumes()
     );
-    size_t nInternalFaces = mesh.nInternalFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
 
     scalar maxCoNum = std::numeric_limits<scalar>::lowest();
     scalar meanCoNum = 0.0;
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
-            Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfOwner[i])], flux);
-            Kokkos::atomic_add(&volPhi[static_cast<size_t>(surfNeighbour[i])], flux);
+            Kokkos::atomic_add(&volPhi[surfOwner[i]], flux);
+            Kokkos::atomic_add(&volPhi[surfNeighbour[i]], flux);
         }
     );
 
     parallelFor(
         exec,
         {nInternalFaces, faceFlux.size()},
-        KOKKOS_LAMBDA(const size_t i) {
-            auto own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx i) {
+            auto own = surfFaceCells[i - nInternalFaces];
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[own], flux);
         }
@@ -60,7 +60,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, NeoN::scalar& lmax) {
+        KOKKOS_LAMBDA(const localIdx celli, NeoN::scalar& lmax) {
             NeoN::scalar val = (volPhi[celli] / surfV[celli]);
             if (val > lmax) lmax = val;
         },
@@ -72,7 +72,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, scalar& lsum) { lsum += volPhi[celli]; },
+        KOKKOS_LAMBDA(const localIdx celli, scalar& lsum) { lsum += volPhi[celli]; },
         sumPhi
     );
 
@@ -81,7 +81,7 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli, scalar& lsum) { lsum += surfV[celli]; },
+        KOKKOS_LAMBDA(const localIdx celli, scalar& lsum) { lsum += surfV[celli]; },
         sumVol
     );
 

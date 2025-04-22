@@ -16,7 +16,7 @@ TEST_CASE("segmentedVector")
     SECTION("Constructor from sizes " + execName)
     {
         NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(exec, 10, 5);
-        auto [values, segments] = segVector.spans();
+        auto [values, segments] = segVector.views();
 
         REQUIRE(values.size() == 10);
         REQUIRE(segments.size() == 6);
@@ -46,7 +46,7 @@ TEST_CASE("segmentedVector")
 
         SECTION("loop over segments")
         {
-            auto [valueSpan, segment] = segVector.spans();
+            auto [valueView, segment] = segVector.views();
             auto segView = segVector.view();
             NeoN::Vector<NeoN::label> result(exec, 5);
 
@@ -56,10 +56,10 @@ TEST_CASE("segmentedVector")
             parallelFor(
                 exec,
                 {0, segVector.numSegments()},
-                KOKKOS_LAMBDA(const size_t segI) {
+                KOKKOS_LAMBDA(const NeoN::localIdx segI) {
                     // check if it works with bounds
                     auto [bStart, bEnd] = segView.bounds(segI);
-                    auto bVals = valueSpan.subspan(bStart, bEnd - bStart);
+                    auto bVals = valueView.subview(bStart, bEnd - bStart);
                     for (auto& val : bVals)
                     {
                         resultView[segI] += val;
@@ -67,14 +67,14 @@ TEST_CASE("segmentedVector")
 
                     // check if it works with range
                     auto [rStart, rLength] = segView.range(segI);
-                    auto rVals = valueSpan.subspan(rStart, rLength);
+                    auto rVals = valueView.subview(rStart, rLength);
                     for (auto& val : rVals)
                     {
                         resultView[segI] += val;
                     }
 
-                    // check with subspan
-                    auto vals = segView.span(segI);
+                    // check with subview
+                    auto vals = segView.view(segI);
                     for (auto& val : vals)
                     {
                         resultView[segI] += val;
@@ -125,9 +125,9 @@ TEST_CASE("segmentedVector")
             parallelFor(
                 exec,
                 {0, segVector.numSegments()},
-                KOKKOS_LAMBDA(const size_t segI) {
+                KOKKOS_LAMBDA(const NeoN::localIdx segI) {
                     // fill values
-                    auto vals = segView.span(segI);
+                    auto vals = segView.view(segI);
                     for (auto& val : vals)
                     {
                         val = segI;

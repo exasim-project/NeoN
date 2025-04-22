@@ -30,13 +30,18 @@ endif()
 # Eventhough we compile NeoN as SHARED library we need to explicitly enable PIC for all targets
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(NeoN_DP_SCALAR "double precision scalar" ON)
-option(NeoN_DP_LABEL "double precision label" OFF)
+option(NeoN_DEFINE_DP_SCALAR "double precision scalar" ON)
+option(NeoN_DEFINE_DP_LABEL "double precision label" OFF)
+option(NeoN_DEFINE_US_IDX "double precision unsigned indices" OFF)
+
 option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
+
+# Build components
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
 
+# Third party dependencies
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support [currently required]" ON)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
@@ -171,3 +176,5 @@ if(NeoN_ENABLE_IWYU)
   set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
 endif()
+
+include(cmake/banner.cmake)

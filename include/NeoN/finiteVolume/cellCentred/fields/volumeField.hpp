@@ -159,9 +159,9 @@ public:
     {
         if (!db_.has_value())
         {
-            throw std::runtime_error(
+            throw std::runtime_error {
                 "Database not set: make sure the field is registered in the database"
-            );
+            };
         }
         return *db_.value();
     }

@@ -37,7 +37,7 @@ public:
     Field(const Executor& exec) : exec_(exec), internalVector_(exec, 0), boundaryData_(exec, 0, 0)
     {}
 
-    Field(const Executor& exec, size_t nCells, const std::vector<localIdx>& offsets)
+    Field(const Executor& exec, localIdx nCells, const std::vector<localIdx>& offsets)
         : exec_(exec), internalVector_(exec, nCells), boundaryData_(exec, offsets)
     {}
 
@@ -55,7 +55,7 @@ public:
         : exec_(exec), internalVector_(exec, internalVector), boundaryData_(exec, offsets)
     {}
 
-    Field(const Executor& exec, int internalSize, int boundarySize)
+    Field(const Executor& exec, localIdx internalSize, localIdx boundarySize)
         : exec_(exec), internalVector_(exec, internalSize), boundaryData_(exec, boundarySize)
     {}
 
@@ -93,10 +93,10 @@ public:
     Vector<ValueType>& internalVector() { return internalVector_; }
 
 
-    const BoundaryData<ValueType>& boundaryVector() const { return boundaryData_; }
+    const BoundaryData<ValueType>& boundaryData() const { return boundaryData_; }
 
 
-    BoundaryData<ValueType>& boundaryVector() { return boundaryData_; }
+    BoundaryData<ValueType>& boundaryData() { return boundaryData_; }
 
     const Executor& exec() const { return exec_; }
 

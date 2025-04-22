@@ -56,11 +56,11 @@ public:
         scalarVector magFaceAreas,
         labelVector faceOwner,
         labelVector faceNeighbour,
-        size_t nCells,
-        size_t nInternalFaces,
-        size_t nBoundaryFaces,
-        size_t nBoundaries,
-        size_t nFaces,
+        localIdx nCells,
+        localIdx nInternalFaces,
+        localIdx nBoundaryFaces,
+        localIdx nBoundaries,
+        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -125,35 +125,35 @@ public:
      *
      * @return The number of cells in the mesh.
      */
-    size_t nCells() const;
+    localIdx nCells() const;
 
     /**
      * @brief Get the number of internal faces in the mesh.
      *
      * @return The number of internal faces in the mesh.
      */
-    size_t nInternalFaces() const;
+    localIdx nInternalFaces() const;
 
     /**
      * @brief Get the number of boundary faces in the mesh.
      *
      * @return The number of boundary faces in the mesh.
      */
-    size_t nBoundaryFaces() const;
+    localIdx nBoundaryFaces() const;
 
     /**
      * @brief Get the number of boundaries in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
-    size_t nBoundaries() const;
+    localIdx nBoundaries() const;
 
     /**
      * @brief Get the number of faces in the mesh.
      *
      * @return The number of faces in the mesh.
      */
-    size_t nFaces() const;
+    localIdx nFaces() const;
 
     /**
      * @brief Get the boundary mesh.
@@ -231,27 +231,27 @@ private:
     /**
      * @brief Number of cells in the mesh.
      */
-    size_t nCells_;
+    localIdx nCells_;
 
     /**
      * @brief Number of internal faces in the mesh.
      */
-    size_t nInternalFaces_;
+    localIdx nInternalFaces_;
 
     /**
      * @brief Number of boundary faces in the mesh.
      */
-    size_t nBoundaryFaces_;
+    localIdx nBoundaryFaces_;
 
     /**
      * @brief Number of boundaries in the mesh.
      */
-    size_t nBoundaries_;
+    localIdx nBoundaries_;
 
     /**
      * @brief Number of faces in the mesh.
      */
-    size_t nFaces_;
+    localIdx nFaces_;
 
     /**
      * @brief Boundary mesh.
@@ -284,7 +284,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  * A 1D mesh in 3D space in which each cell has a left and a right face.
  * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
  */
-UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells);
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells);
 
 
 } // namespace NeoN

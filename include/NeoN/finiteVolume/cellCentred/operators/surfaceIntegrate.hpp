@@ -16,7 +16,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
-    size_t nInternalFaces,
+    localIdx nInternalFaces,
     View<const int> neighbour,
     View<const int> owner,
     View<const int> faceCells,
@@ -52,7 +52,7 @@ public:
         const UnstructuredMesh& mesh = flux_.mesh();
         const auto exec = flux_.exec();
 
-        size_t nInternalFaces = mesh.nInternalFaces();
+        auto nInternalFaces = mesh.nInternalFaces();
         surfaceIntegrate<ValueType>(
             exec,
             nInternalFaces,

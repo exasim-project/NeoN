@@ -23,14 +23,14 @@ auto setup_operator_test(const UnstructuredMesh& mesh)
     parallelFor(
         exec,
         {mesh.nCells() - 1, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t i) { boundFaceFlux[i] = -1.0; }
+        KOKKOS_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
     );
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
 
     auto phi = fvcc::VolumeVector<TestType>(exec, "sf", mesh, volumeBCs);
     fill(phi.internalVector(), one<TestType>());
-    fill(phi.boundaryVector().value(), one<TestType>());
+    fill(phi.boundaryData().value(), one<TestType>());
     phi.correctBoundaryConditions();
 
     auto result = Vector<TestType>(exec, phi.size(), zero<TestType>());

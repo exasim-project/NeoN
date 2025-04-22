@@ -337,7 +337,7 @@ public:
         VectorDocument doc = createFunc(db());
         if (!validateVectorDoc(doc.doc()))
         {
-            throw std::runtime_error("Document is not valid");
+            throw std::runtime_error {"Document is not valid"};
         }
 
         std::string key = insert(doc);
@@ -377,7 +377,7 @@ public:
     VectorDocument operator()(Database& db)
     {
         Field<typename VectorType::VectorValueType> domainVector(
-            field.mesh().exec(), field.internalVector(), field.boundaryVector()
+            field.mesh().exec(), field.internalVector(), field.boundaryData()
         );
 
         VectorType vf(

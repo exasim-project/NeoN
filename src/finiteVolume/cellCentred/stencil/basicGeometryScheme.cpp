@@ -24,11 +24,9 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     parallelFor(
         exec,
         {0, mesh_.nInternalFaces()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            scalar sfdOwn =
-                std::abs(sf[facei] & (cf[facei] - c[static_cast<size_t>(owner[facei])]));
-            scalar sfdNei =
-                std::abs(sf[facei] & (c[static_cast<size_t>(neighbour[facei])] - cf[facei]));
+        KOKKOS_LAMBDA(const localIdx facei) {
+            scalar sfdOwn = std::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
+            scalar sfdNei = std::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
 
             if (std::abs(sfdOwn + sfdNei) > ROOTVSMALL)
             {
@@ -44,7 +42,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     parallelFor(
         exec,
         {mesh_.nInternalFaces(), w.size()},
-        KOKKOS_LAMBDA(const size_t facei) { w[facei] = 1.0; }
+        KOKKOS_LAMBDA(const localIdx facei) { w[facei] = 1.0; }
     );
 }
 
@@ -53,29 +51,29 @@ void BasicGeometryScheme::updateDeltaCoeffs(
 )
 {
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
+        views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
 
-    const auto [cf, cellCentre] = spans(mesh_.faceCentres(), mesh_.cellCentres());
+    const auto [cf, cellCentre] = views(mesh_.faceCentres(), mesh_.cellCentres());
 
     auto deltaCoeff = deltaCoeffs.internalVector().view();
 
     parallelFor(
         exec,
         {0, mesh_.nInternalFaces()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
         }
     );
 
-    const size_t nInternalFaces = mesh_.nInternalFaces();
+    const auto nInternalFaces = mesh_.nInternalFaces();
 
     parallelFor(
         exec,
         {nInternalFaces, deltaCoeff.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            auto own = static_cast<size_t>(surfFaceCells[facei - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto own = surfFaceCells[facei - nInternalFaces];
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
 
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
@@ -89,21 +87,21 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 )
 {
     const auto [owner, neighbour, surfFaceCells] =
-        spans(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
+        views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
 
     const auto [cf, cellCentre, faceAreaVec3, faceArea] =
-        spans(mesh_.faceCentres(), mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
+        views(mesh_.faceCentres(), mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
 
     auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
     fill(nonOrthDeltaCoeffs.internalVector(), 0.0);
 
-    const size_t nInternalFaces = mesh_.nInternalFaces();
+    const auto nInternalFaces = mesh_.nInternalFaces();
 
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
             Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
 
@@ -117,8 +115,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     parallelFor(
         exec,
         {nInternalFaces, nonOrthDeltaCoeff.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
-            auto own = static_cast<size_t>(surfFaceCells[facei - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto own = surfFaceCells[facei - nInternalFaces];
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
             Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
 

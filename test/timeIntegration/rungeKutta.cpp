@@ -44,7 +44,7 @@ public:
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const size_t i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
+            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
         );
     }
 
@@ -109,7 +109,7 @@ TEST_CASE("TimeIntegration - Runge Kutta")
 
     SECTION("Solve on " + execName)
     {
-        int iTest = 0;
+        std::size_t iTest = 0;
         std::array<NeoN::scalar, 2> error;
         for (auto dt : deltaTime)
         {

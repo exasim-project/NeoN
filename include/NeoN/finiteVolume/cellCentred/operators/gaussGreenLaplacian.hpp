@@ -65,6 +65,27 @@ public:
         );
     };
 
+    virtual VolumeField<ValueType> laplacian(
+        const SurfaceField<scalar>& gamma,
+        VolumeField<ValueType>& phi,
+        const dsl::Coeff operatorScaling
+    ) const override
+    {
+        std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
+        VolumeField<ValueType> lapPhi(
+            this->exec_,
+            name,
+            this->mesh_,
+            createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
+        );
+        NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
+        NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
+        computeLaplacianExp<ValueType>(
+            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
+        );
+        return lapPhi;
+    };
+
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,

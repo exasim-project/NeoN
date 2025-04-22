@@ -18,11 +18,11 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
-    size_t nCells,
-    size_t nInternalFaces,
-    size_t nBoundaryFaces,
-    size_t nBoundaries,
-    size_t nFaces,
+    localIdx nCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    localIdx nBoundaries,
+    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : exec_(points.exec()), points_(points), cellVolumes_(cellVolumes), cellCentres_(cellCentres),
@@ -49,15 +49,15 @@ const labelVector& UnstructuredMesh::faceOwner() const { return faceOwner_; }
 
 const labelVector& UnstructuredMesh::faceNeighbour() const { return faceNeighbour_; }
 
-size_t UnstructuredMesh::nCells() const { return nCells_; }
+localIdx UnstructuredMesh::nCells() const { return nCells_; }
 
-size_t UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
+localIdx UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
 
-size_t UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
+localIdx UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
 
-size_t UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
+localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 
-size_t UnstructuredMesh::nFaces() const { return nFaces_; }
+localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 
@@ -109,38 +109,38 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     );
 }
 
-UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
 {
     const Vec3 leftBoundary = {0.0, 0.0, 0.0};
     const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
     vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
-    auto meshPointsHostSpan = meshPointsHost.view();
-    meshPointsHostSpan[nCells - 1] = leftBoundary;
-    meshPointsHostSpan[nCells] = rightBoundary;
+    auto meshPointsHostView = meshPointsHost.view();
+    meshPointsHostView[nCells - 1] = leftBoundary;
+    meshPointsHostView[nCells] = rightBoundary;
     auto meshPoints = meshPointsHost.copyToExecutor(exec);
 
     // loop over internal mesh points
-    auto meshPointsSpan = meshPoints.view();
+    auto meshPointsView = meshPoints.view();
     auto leftBoundaryX = leftBoundary[0];
     parallelFor(
         exec,
         {0, nCells - 1},
-        KOKKOS_LAMBDA(const size_t i) {
-            meshPointsSpan[i][0] = leftBoundaryX + static_cast<scalar>(i + 1) * meshSpacing;
+        KOKKOS_LAMBDA(const localIdx i) {
+            meshPointsView[i][0] = leftBoundaryX + static_cast<scalar>(i + 1) * meshSpacing;
         }
     );
 
     scalarVector cellVolumes(exec, nCells, meshSpacing);
 
     vectorVector cellCenters(exec, nCells, {0.0, 0.0, 0.0});
-    auto cellCentersSpan = cellCenters.view();
+    auto cellCentersView = cellCenters.view();
     parallelFor(
         exec,
         {0, nCells},
-        KOKKOS_LAMBDA(const size_t i) {
-            cellCentersSpan[i][0] = 0.5 * meshSpacing + meshSpacing * static_cast<scalar>(i);
+        KOKKOS_LAMBDA(const localIdx i) {
+            cellCentersView[i][0] = 0.5 * meshSpacing + meshSpacing * static_cast<scalar>(i);
         }
     );
 
@@ -155,42 +155,42 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const size_t nCells)
 
     labelVector faceOwnerHost(hostExec, nCells + 1);
     labelVector faceNeighbor(exec, nCells - 1);
-    auto faceOwnerHostSpan = faceOwnerHost.view();
-    faceOwnerHostSpan[nCells - 1] = 0;                          // left boundary face
-    faceOwnerHostSpan[nCells] = static_cast<label>(nCells) - 1; // right boundary face
+    auto faceOwnerHostView = faceOwnerHost.view();
+    faceOwnerHostView[nCells - 1] = 0;                          // left boundary face
+    faceOwnerHostView[nCells] = static_cast<label>(nCells) - 1; // right boundary face
     auto faceOwner = faceOwnerHost.copyToExecutor(exec);
 
     // loop over internal faces
-    auto faceOwnerSpan = faceOwner.view();
-    auto faceNeighborSpan = faceNeighbor.view();
+    auto faceOwnerView = faceOwner.view();
+    auto faceNeighborView = faceNeighbor.view();
     parallelFor(
         exec,
         {0, nCells - 1},
-        KOKKOS_LAMBDA(const size_t i) {
-            faceOwnerSpan[i] = static_cast<label>(i);
-            faceNeighborSpan[i] = static_cast<label>(i + 1);
+        KOKKOS_LAMBDA(const localIdx i) {
+            faceOwnerView[i] = i;
+            faceNeighborView[i] = i + 1;
         }
     );
 
     vectorVector deltaHost(hostExec, 2);
-    auto deltaHostSpan = deltaHost.view();
+    auto deltaHostView = deltaHost.view();
     auto cellCentersHost = cellCenters.copyToHost();
-    auto cellCentersHostSpan = cellCentersHost.view();
-    deltaHostSpan[0] = {leftBoundary[0] - cellCentersHostSpan[0][0], 0.0, 0.0};
-    deltaHostSpan[1] = {rightBoundary[0] - cellCentersHostSpan[nCells - 1][0], 0.0, 0.0};
+    auto cellCentersHostView = cellCentersHost.view();
+    deltaHostView[0] = {leftBoundary[0] - cellCentersHostView[0][0], 0.0, 0.0};
+    deltaHostView[1] = {rightBoundary[0] - cellCentersHostView[nCells - 1][0], 0.0, 0.0};
     auto delta = deltaHost.copyToExecutor(exec);
 
     scalarVector deltaCoeffsHost(hostExec, 2);
-    auto deltaCoeffsHostSpan = deltaCoeffsHost.view();
-    deltaCoeffsHostSpan[0] = 1 / mag(deltaHostSpan[0]);
-    deltaCoeffsHostSpan[1] = 1 / mag(deltaHostSpan[1]);
+    auto deltaCoeffsHostView = deltaCoeffsHost.view();
+    deltaCoeffsHostView[0] = 1 / mag(deltaHostView[0]);
+    deltaCoeffsHostView[1] = 1 / mag(deltaHostView[1]);
     auto deltaCoeffs = deltaCoeffsHost.copyToExecutor(exec);
 
     BoundaryMesh boundaryMesh(
         exec,
-        {exec, {0, static_cast<int>(nCells) - 1}},
+        {exec, {0, nCells - 1}},
         {exec, {leftBoundary, rightBoundary}},
-        {exec, {cellCentersHostSpan[0], cellCentersHostSpan[nCells - 1]}},
+        {exec, {cellCentersHostView[0], cellCentersHostView[nCells - 1]}},
         {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
         {exec, {1.0, 1.0}},
         {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},

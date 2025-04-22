@@ -25,7 +25,7 @@ TEST_CASE("fixedValue")
 
         boundary->correctBoundaryCondition(domainVector);
 
-        auto refValues = domainVector.boundaryVector().refValue().copyToHost();
+        auto refValues = domainVector.boundaryData().refValue().copyToHost();
 
         for (auto& boundaryValue : refValues.view(boundary->range()))
         {

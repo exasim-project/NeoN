@@ -20,14 +20,14 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 {
     const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
-    auto [sourceSpan, field, oldVector] =
-        spans(source, this->field_.internalVector(), oldTime(this->field_).internalVector());
+    auto [sourceView, field, oldVector] =
+        views(source, this->field_.internalVector(), oldTime(this->field_).internalVector());
 
     NeoN::parallelFor(
         source.exec(),
         source.range(),
-        KOKKOS_LAMBDA(const size_t celli) {
-            sourceSpan[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
+        KOKKOS_LAMBDA(const localIdx celli) {
+            sourceView[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
         }
     );
 }
@@ -41,14 +41,14 @@ void DdtOperator<ValueType>::implicitOperation(
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     const auto [diagOffs, oldVector] =
-        spans(sparsityPattern_->diagOffset(), oldTime(this->field_).internalVector());
+        views(sparsityPattern_->diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
     NeoN::parallelFor(
         ls.exec(),
         {0, oldVector.size()},
-        KOKKOS_LAMBDA(const size_t celli) {
-            std::size_t idx = matrix.rowOffs[celli] + diagOffs[celli];
+        KOKKOS_LAMBDA(const localIdx celli) {
+            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli] * dtInver;
             matrix.values[idx] += commonCoef * one<ValueType>();
             rhs[celli] += commonCoef * oldVector[celli];

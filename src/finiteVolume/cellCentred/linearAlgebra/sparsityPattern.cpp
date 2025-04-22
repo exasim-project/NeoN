@@ -8,7 +8,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
-    : mesh_(mesh), rowPtrs_(mesh_.exec(), mesh.nCells() + 1, 0),
+    : mesh_(mesh), rowOffs_(mesh_.exec(), mesh.nCells() + 1, 0),
       colIdxs_(mesh_.exec(), mesh.nCells() + 2 * mesh.nInternalFaces(), 0),
       ownerOffset_(mesh_.exec(), mesh_.nInternalFaces(), 0),
       neighbourOffset_(mesh_.exec(), mesh_.nInternalFaces(), 0),
@@ -38,8 +38,8 @@ void SparsityPattern::update()
 
     // start with one to include the diagonal
     Vector<localIdx> nFacesPerCell(exec, nCells, 1);
-    auto [nFacesPerCellSpan, neighbourOffsetSpan, ownerOffsetSpan, diagOffsetSpan] =
-        spans(nFacesPerCell, neighbourOffset_, ownerOffset_, diagOffset_);
+    auto [nFacesPerCellView, neighbourOffsetView, ownerOffsetView, diagOffsetView] =
+        views(nFacesPerCell, neighbourOffset_, ownerOffset_, diagOffset_);
 
     // accumulate number non-zeros per row
     // only the internalfaces define the sparsity pattern
@@ -47,19 +47,19 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             // hit on performance on serial
-            size_t owner = static_cast<size_t>(faceOwner[facei]);
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
+            auto owner = faceOwner[facei];
+            auto neighbour = faceNeighbour[facei];
 
-            Kokkos::atomic_increment(&nFacesPerCellSpan[owner]);
-            Kokkos::atomic_increment(&nFacesPerCellSpan[neighbour]);
+            Kokkos::atomic_increment(&nFacesPerCellView[owner]);
+            Kokkos::atomic_increment(&nFacesPerCellView[neighbour]);
         }
     );
 
     // get number of total non-zeros
-    segmentsFromIntervals(nFacesPerCell, rowPtrs_);
-    auto rowPtrs = rowPtrs_.view();
+    segmentsFromIntervals(nFacesPerCell, rowOffs_);
+    auto rowOffs = rowOffs_.view();
     View<localIdx> sColIdx = colIdxs_.view();
     fill(nFacesPerCell, 0); // reset nFacesPerCell
 
@@ -67,16 +67,16 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
-            localIdx owner = static_cast<localIdx>(faceOwner[facei]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeighbour[facei];
+            auto owner = faceOwner[facei];
 
             // return the oldValues
             // hit on performance on serial
-            size_t segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellSpan[neighbour], 1);
-            neighbourOffsetSpan[facei] = static_cast<uint8_t>(segIdxNei);
+            auto segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellView[neighbour], 1);
+            neighbourOffsetView[facei] = static_cast<uint8_t>(segIdxNei);
 
-            size_t startSegNei = rowPtrs[neighbour];
+            auto startSegNei = rowOffs[neighbour];
             // neighbour --> current cell
             // colIdx --> needs to be store the owner
             Kokkos::atomic_assign(&sColIdx[startSegNei + segIdxNei], owner);
@@ -85,10 +85,10 @@ void SparsityPattern::update()
 
     map(
         nFacesPerCell,
-        KOKKOS_LAMBDA(const size_t celli) {
-            size_t nFaces = nFacesPerCellSpan[static_cast<size_t>(celli)];
-            diagOffsetSpan[celli] = static_cast<uint8_t>(nFaces);
-            sColIdx[rowPtrs[celli] + nFaces] = celli;
+        KOKKOS_LAMBDA(const localIdx celli) {
+            auto nFaces = nFacesPerCellView[celli];
+            diagOffsetView[celli] = static_cast<uint8_t>(nFaces);
+            sColIdx[rowOffs[celli] + nFaces] = celli;
             return nFaces + 1;
         }
     );
@@ -97,16 +97,17 @@ void SparsityPattern::update()
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t facei) {
-            size_t neighbour = static_cast<size_t>(faceNeighbour[facei]);
-            size_t owner = static_cast<size_t>(faceOwner[facei]);
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeighbour[facei];
+            auto owner = faceOwner[facei];
 
             // return the oldValues
             // hit on performance on serial
-            size_t segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellSpan[owner], 1);
-            ownerOffsetSpan[facei] = uint8_t(segIdxOwn);
+            auto segIdxOwn =
+                static_cast<uint8_t>(Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1));
+            ownerOffsetView[facei] = segIdxOwn;
 
-            size_t startSegOwn = rowPtrs[owner];
+            auto startSegOwn = rowOffs[owner];
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
             Kokkos::atomic_assign(&sColIdx[startSegOwn + segIdxOwn], neighbour);

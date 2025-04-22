@@ -145,10 +145,11 @@ if(${NeoN_WITH_SUNDIALS})
     LLNL/sundials
     VERSION
     7.1.1
+    SYSTEM
+    YES
     OPTIONS
     ${SUNDIALS_OPTIONS}
-    ${SUNDIALS_CUDA_OPTIONS}
-    SYSTEM)
+    ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
 cpmaddpackage(
@@ -179,15 +180,16 @@ if(${NeoN_WITH_GINKGO})
     ginkgo-project/ginkgo
     GIT_TAG
     kokkos-threads
+    SYSTEM
+    YES
     OPTIONS
     "GINKGO_BUILD_TESTS OFF"
     "GINKGO_BUILD_BENCHMARKS OFF"
     "GINKGO_BUILD_EXAMPLES OFF"
     "GINKGO_ENABLE_HALF OFF"
-    "GINKGO_BUILD_MPI ${NeoN_ENABLE_MPI_SUPPORT}"
+    "GINKGO_BUILD_MPI OFF"
     "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-    "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}"
-    SYSTEM)
+    "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
 endif()
 
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
@@ -198,5 +200,6 @@ if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
     https://github.com/catchorg/Catch2/archive/refs/tags/v3.4.0.zip
     VERSION
     3.4.0
-    SYSTEM)
+    SYSTEM
+    YES)
 endif()

@@ -13,7 +13,7 @@ TEST_CASE("Vector Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
         NeoN::Vector<NeoN::scalar> b(a);
@@ -73,7 +73,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+= " + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -90,7 +90,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-= " + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -107,7 +107,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+ " + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -124,7 +124,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-" + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -153,7 +153,7 @@ TEST_CASE("Vector Container Operations")
 
     SECTION("empty, size, range" + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, 0);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         REQUIRE(a.empty() == true);
@@ -176,9 +176,9 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(view[1] == 2);
         REQUIRE(view[2] == 3);
 
-        auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == 2);
-        REQUIRE(subView[1] == 3);
+        auto subview = hostA.view({1, 3});
+        REQUIRE(subview[0] == 2);
+        REQUIRE(subview[1] == 3);
     }
 
     SECTION("viewVec3" + execName)
@@ -191,9 +191,9 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(view[1] == NeoN::Vec3(2, 2, 2));
         REQUIRE(view[2] == NeoN::Vec3(3, 3, 3));
 
-        auto subView = hostA.view({1, 3});
-        REQUIRE(subView[0] == NeoN::Vec3(2, 2, 2));
-        REQUIRE(subView[1] == NeoN::Vec3(3, 3, 3));
+        auto subview = hostA.view({1, 3});
+        REQUIRE(subview[0] == NeoN::Vec3(2, 2, 2));
+        REQUIRE(subview[1] == NeoN::Vec3(3, 3, 3));
     }
 
     SECTION("copyToHost " + execName)
@@ -221,7 +221,7 @@ TEST_CASE("Vector Operations")
 
     SECTION("Vector_" + execName)
     {
-        NeoN::size_t size = 10;
+        NeoN::localIdx size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
 
@@ -251,12 +251,12 @@ TEST_CASE("Vector Operations")
         REQUIRE(equal(a, 20.0));
 
         auto sB = b.view();
-        a.apply(KOKKOS_LAMBDA(const NeoN::size_t i) { return 2 * sB[i]; });
+        a.apply(KOKKOS_LAMBDA(const NeoN::localIdx i) { return 2 * sB[i]; });
         REQUIRE(equal(a, 20.0));
     }
 }
 
-TEST_CASE("getSpans")
+TEST_CASE("getViews")
 {
     NeoN::Executor exec = GENERATE(
         NeoN::Executor(NeoN::SerialExecutor {}),
@@ -269,14 +269,14 @@ TEST_CASE("getSpans")
     NeoN::Vector<NeoN::scalar> c(exec, 3, 3.0);
 
     auto [hostA, hostB, hostC] = NeoN::copyToHosts(a, b, c);
-    auto [viewB, viewC] = NeoN::spans(b, c);
+    auto [viewB, viewC] = NeoN::views(b, c);
 
     REQUIRE(hostA.view()[0] == 1.0);
     REQUIRE(hostB.view()[0] == 2.0);
     REQUIRE(hostC.view()[0] == 3.0);
 
     NeoN::parallelFor(
-        a, KOKKOS_LAMBDA(const NeoN::size_t i) { return viewB[i] + viewC[i]; }
+        a, KOKKOS_LAMBDA(const NeoN::localIdx i) { return viewB[i] + viewC[i]; }
     );
 
     auto hostD = a.copyToHost();

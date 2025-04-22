@@ -32,9 +32,9 @@ public:
     Coeff(const Vector<scalar>& field);
 
     KOKKOS_INLINE_FUNCTION
-    scalar operator[](const size_t i) const { return (hasView_) ? view_[i] * coeff_ : coeff_; }
+    scalar operator[](const localIdx i) const { return (hasView_) ? view_[i] * coeff_ : coeff_; }
 
-    bool hasSpan();
+    bool hasView();
 
     View<const scalar> view();
 

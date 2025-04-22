@@ -17,23 +17,23 @@ TEST_CASE("CSRMatrix")
     // sparse matrix
     NeoN::Vector<NeoN::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
-    NeoN::Vector<NeoN::localIdx> rowPtrsSparse(exec, {0, 1, 3, 4});
+    NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
     NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrix(
-        valuesSparse, colIdxSparse, rowPtrsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse
     );
     const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrixConst(
-        valuesSparse, colIdxSparse, rowPtrsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse
     );
 
     // dense matrix
     NeoN::Vector<NeoN::scalar> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     NeoN::Vector<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
-    NeoN::Vector<NeoN::localIdx> rowPtrsDense(exec, {0, 3, 6, 9});
+    NeoN::Vector<NeoN::localIdx> rowOffsDense(exec, {0, 3, 6, 9});
     NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrix(
-        valuesDense, colIdxDense, rowPtrsDense
+        valuesDense, colIdxDense, rowOffsDense
     );
     const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrixConst(
-        valuesDense, colIdxDense, rowPtrsDense
+        valuesDense, colIdxDense, rowOffsDense
     );
 
     // NOTE: The purpose of this test is to detect changes in the order
@@ -46,17 +46,17 @@ TEST_CASE("CSRMatrix")
         auto valuesDenseHostView = valuesDenseHost.view();
         auto colIdxDenseHost = colIdxDense.copyToHost();
         auto colIdxDenseHostView = colIdxDenseHost.view();
-        auto rowPtrsDenseHost = rowPtrsDense.copyToHost();
-        auto rowPtrsDenseHostView = rowPtrsDenseHost.view();
+        auto rowOffsDenseHost = rowOffsDense.copyToHost();
+        auto rowOffsDenseHostView = rowOffsDenseHost.view();
 
         for (int i = 0; i < valuesDenseHostView.size(); ++i)
         {
             REQUIRE(valuesDenseHostView[i] == values[i]);
             REQUIRE(colIdxDenseHostView[i] == colIdxs[i]);
         }
-        for (int i = 0; i < rowPtrsDenseHostView.size(); ++i)
+        for (int i = 0; i < rowOffsDenseHostView.size(); ++i)
         {
-            REQUIRE(rowPtrsDenseHostView[i] == rowOffs[i]);
+            REQUIRE(rowOffsDenseHostView[i] == rowOffs[i]);
         }
     }
 
@@ -69,7 +69,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkSparseView[0] = csrView.entry(0, 0);
                 checkSparseView[1] = csrView.entry(1, 1);
                 checkSparseView[2] = csrView.entry(1, 2);
@@ -90,7 +90,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkDenseView[0] = denseView.entry(0, 0);
                 checkDenseView[1] = denseView.entry(0, 1);
                 checkDenseView[2] = denseView.entry(0, 2);
@@ -121,7 +121,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 csrView.entry(0, 0) = -1.0;
                 csrView.entry(1, 1) = -5.0;
                 csrView.entry(1, 2) = -6.0;
@@ -141,7 +141,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 denseView.entry(0, 0) = -1.0;
                 denseView.entry(0, 1) = -2.0;
                 denseView.entry(0, 2) = -3.0;
@@ -176,7 +176,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkSparseView[0] = csrView.entry(0);
                 checkSparseView[1] = csrView.entry(1);
                 checkSparseView[2] = csrView.entry(2);
@@ -196,7 +196,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 checkDenseView[0] = denseView.entry(0);
                 checkDenseView[1] = denseView.entry(1);
                 checkDenseView[2] = denseView.entry(2);
@@ -227,7 +227,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 csrView.entry(0) = -1.0;
                 csrView.entry(1) = -5.0;
                 csrView.entry(2) = -6.0;
@@ -248,7 +248,7 @@ TEST_CASE("CSRMatrix")
         parallelFor(
             exec,
             {0, 1},
-            KOKKOS_LAMBDA(const size_t) {
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
                 denseView.entry(0) = -1.0;
                 denseView.entry(1) = -2.0;
                 denseView.entry(2) = -3.0;
@@ -280,20 +280,20 @@ TEST_CASE("CSRMatrix")
         auto [value, column, row] = hostMatrix.view();
         auto hostvaluesSparse = valuesSparse.copyToHost();
         auto hostcolIdxSparse = colIdxSparse.copyToHost();
-        auto hostrowPtrsSparse = rowPtrsSparse.copyToHost();
+        auto hostrowOffsSparse = rowOffsSparse.copyToHost();
 
         REQUIRE(hostvaluesSparse.size() == value.size());
         REQUIRE(hostcolIdxSparse.size() == column.size());
-        REQUIRE(hostrowPtrsSparse.size() == row.size());
+        REQUIRE(hostrowOffsSparse.size() == row.size());
 
-        for (size_t i = 0; i < value.size(); ++i)
+        for (NeoN::localIdx i = 0; i < value.size(); ++i)
         {
             REQUIRE(hostvaluesSparse.view()[i] == value[i]);
             REQUIRE(hostcolIdxSparse.view()[i] == column[i]);
         }
-        for (size_t i = 0; i < row.size(); ++i)
+        for (NeoN::localIdx i = 0; i < row.size(); ++i)
         {
-            REQUIRE(hostrowPtrsSparse.view()[i] == row[i]);
+            REQUIRE(hostrowOffsSparse.view()[i] == row[i]);
         }
     }
 }

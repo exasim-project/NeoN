@@ -18,23 +18,23 @@ void computeLinearInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = spans(
+    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryVector().value()
+        src.boundaryData().value()
     );
-    size_t nInternalFaces = dst.mesh().nInternalFaces();
+    auto nInternalFaces = dst.mesh().nInternalFaces();
 
     NeoN::parallelFor(
         exec,
         {0, dstS.size()},
-        KOKKOS_LAMBDA(const size_t facei) {
+        KOKKOS_LAMBDA(const localIdx facei) {
             if (facei < nInternalFaces)
             {
-                size_t own = static_cast<size_t>(ownerS[facei]);
-                size_t nei = static_cast<size_t>(neighS[facei]);
+                auto own = ownerS[facei];
+                auto nei = neighS[facei];
                 dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
             }
             else

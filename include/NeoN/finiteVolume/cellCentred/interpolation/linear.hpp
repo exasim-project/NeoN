@@ -66,22 +66,20 @@ public:
         interpolate(src, dst);
     }
 
-    void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weight) const override
+    void weight(const VolumeField<ValueType>&, SurfaceField<scalar>& weight) const override
     {
         const SurfaceField<scalar>& linearWeight = geometryScheme_->weights();
         weight.internalVector() = linearWeight.internalVector();
-        weight.boundaryVector() = linearWeight.boundaryVector();
+        weight.boundaryData() = linearWeight.boundaryData();
     }
 
     void weight(
-        const SurfaceField<scalar>& flux,
-        const VolumeField<ValueType>& src,
-        SurfaceField<scalar>& weight
+        const SurfaceField<scalar>&, const VolumeField<ValueType>&, SurfaceField<scalar>& weight
     ) const override
     {
         const SurfaceField<scalar>& linearWeight = geometryScheme_->weights();
         weight.internalVector() = linearWeight.internalVector();
-        weight.boundaryVector() = linearWeight.boundaryVector();
+        weight.boundaryData() = linearWeight.boundaryData();
     }
 
 

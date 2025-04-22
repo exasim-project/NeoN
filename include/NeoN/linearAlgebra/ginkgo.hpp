@@ -53,7 +53,7 @@ public:
             return res;
         };
 
-        size_t nrows = sys.rhs().size();
+        auto nrows = sys.rhs().size();
 
         auto gkoMtx = detail::createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);

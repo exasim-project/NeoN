@@ -23,17 +23,17 @@ void setFixedValue(
     Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
 )
 {
-    auto [refGradient, value, valueFraction, refValue] = spans(
-        domainVector.boundaryVector().refGrad(),
-        domainVector.boundaryVector().value(),
-        domainVector.boundaryVector().valueFraction(),
-        domainVector.boundaryVector().refValue()
+    auto [refGradient, value, valueFraction, refValue] = views(
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue()
     );
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             refValue[i] = fixedValue;
             value[i] = fixedValue;
             valueFraction[i] = 1.0;      // only used refValue
@@ -51,7 +51,7 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 
 public:
 
-    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, std::size_t patchID)
+    FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 

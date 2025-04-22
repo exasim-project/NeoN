@@ -17,7 +17,7 @@ TEST_CASE("volumeVector")
 
     NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
     std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-    for (auto patchi : I<size_t> {0, 1, 2, 3})
+    for (auto patchi : I<NeoN::localIdx> {0, 1, 2, 3})
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -37,20 +37,20 @@ TEST_CASE("volumeVector")
         REQUIRE(vf.internalVector().size() == 1);
 
         auto internalValues = vf.internalVector().copyToHost();
-        for (size_t i = 0; i < internalValues.size(); ++i)
+        for (NeoN::localIdx i = 0; i < internalValues.size(); ++i)
         {
             REQUIRE(internalValues.view()[i] == 1.0);
         }
 
-        auto values = vf.boundaryVector().value().copyToHost();
+        auto values = vf.boundaryData().value().copyToHost();
 
-        for (size_t i = 0; i < values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < values.size(); ++i)
         {
             REQUIRE(values.view()[i] == 2.0);
         }
 
-        auto refValue = vf.boundaryVector().refValue().copyToHost();
-        for (size_t i = 0; i < refValue.size(); ++i)
+        auto refValue = vf.boundaryData().refValue().copyToHost();
+        for (NeoN::localIdx i = 0; i < refValue.size(); ++i)
         {
             REQUIRE(refValue.view()[i] == 2.0);
         }
@@ -64,20 +64,20 @@ TEST_CASE("volumeVector")
         vf.correctBoundaryConditions();
 
         auto internalValues = vf.internalVector().copyToHost();
-        for (size_t i = 0; i < internalValues.size(); ++i)
+        for (NeoN::localIdx i = 0; i < internalValues.size(); ++i)
         {
             REQUIRE(internalValues.view()[i] == 1.0);
         }
 
-        auto values = vf.boundaryVector().value().copyToHost();
+        auto values = vf.boundaryData().value().copyToHost();
 
-        for (size_t i = 0; i < values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < values.size(); ++i)
         {
             REQUIRE(values.view()[i] == 2.0);
         }
 
-        auto refValue = vf.boundaryVector().refValue().copyToHost();
-        for (size_t i = 0; i < refValue.size(); ++i)
+        auto refValue = vf.boundaryData().refValue().copyToHost();
+        for (NeoN::localIdx i = 0; i < refValue.size(); ++i)
         {
             REQUIRE(refValue.view()[i] == 2.0);
         }

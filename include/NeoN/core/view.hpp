@@ -3,16 +3,18 @@
 #pragma once
 
 #include <limits>
-
 #include <span>
+#include <type_traits>
+
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
 
-/* @class Span
+/* @class View
  *
  * @brief A wrapper class for std::span which allows to check whether the index access is in range
- * The Span can be initialized like a regular std::span or from an existing std::span
+ * The View can be initialized like a regular std::span or from an existing std::span
  *
  * @ingroup core
  *
@@ -21,6 +23,8 @@ template<typename ValueType>
 class View : public std::span<ValueType>
 {
 public:
+
+    using base = std::span<ValueType>;
 
     /* A flag to control whether the program should terminate on invalid memory access or throw.
      * Kokkos prefers to terminate, but for testing purpose the failureIndex is preferred
@@ -31,7 +35,7 @@ public:
      * at least a size of 1. A value of zero signals success. This is required we cannot
      * throw from a device function.
      */
-    mutable size_t failureIndex = 0;
+    mutable localIdx failureIndex = 0;
 
     using std::span<ValueType>::span; // Inherit constructors from std::span
 
@@ -39,7 +43,7 @@ public:
      */
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
-    constexpr ValueType& operator[](std::size_t index) const
+    constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
         if (index >= this->size())
@@ -59,13 +63,44 @@ public:
                 {
                     failureIndex = index;
                 }
-                return std::span<ValueType>::operator[](index);
+                return std::span<ValueType>::operator[](static_cast<size_t>(index));
             }
         }
 #endif
-        return std::span<ValueType>::operator[](index);
+        return std::span<ValueType>::operator[](static_cast<size_t>(index));
+    }
+
+    localIdx size() const { return static_cast<localIdx>(base::size()); }
+
+    View<ValueType> subview(localIdx start, localIdx length) const
+    {
+        return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
+    }
+
+    View<ValueType> subview(localIdx start) const
+    {
+        return base::subspan(static_cast<size_t>(start));
     }
 };
 
+/**
+ * @brief Concept, for any type which has the 'view' method.
+ * @tparam Types Class type with potential 'view' method.
+ */
+template<class Type>
+concept hasView =
+    requires(Type& inst) { inst.view(); } || requires(const Type& inst) { inst.view(); };
+
+/**
+ * @brief Unpacks all views of the passed classes.
+ * @tparam Types Types of the classes with views
+ * @return Tuple containing the unpacked views (use structured bindings).
+ */
+template<typename... Types>
+    requires(hasView<std::remove_reference_t<Types>> && ...)
+auto views(Types&... args)
+{
+    return std::tuple(args.view()...);
+}
 
 } // namespace NeoN

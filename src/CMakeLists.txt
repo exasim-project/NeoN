@@ -8,6 +8,7 @@ include(GNUInstallDirs)
 if(NeoN_ENABLE_CUDA)
   set_source_files_properties(${NeoN_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
+
 target_sources(
   NeoN
   PRIVATE "core/primitives/vector.cpp"
@@ -28,6 +29,7 @@ target_sources(
           "executor/GPUExecutor.cpp"
           "executor/serialExecutor.cpp"
           "linearAlgebra/utilities.cpp"
+          "linearAlgebra/ginkgo.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
           "finiteVolume/cellCentred/linearAlgebra/sparsityPattern.cpp"
@@ -53,10 +55,6 @@ target_sources(
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
                               "mesh/unstructured/communicator.cpp")
-endif()
-
-if(NeoN_WITH_GINKGO)
-  target_sources(NeoN PRIVATE "linearAlgebra/ginkgo.cpp")
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)

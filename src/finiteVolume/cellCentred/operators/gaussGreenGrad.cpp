@@ -29,7 +29,7 @@ void computeGrad(
 
     auto surfGradPhi = out.internalVector().view();
 
-    const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = spans(
+    const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = views(
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().sf(),
         phif.internalVector(),
@@ -39,24 +39,24 @@ void computeGrad(
         mesh.cellVolumes()
     );
 
-    size_t nInternalFaces = mesh.nInternalFaces();
+    auto nInternalFaces = mesh.nInternalFaces();
 
     // TODO use NeoN::atomic_
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             Vec3 flux = faceAreaS[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[static_cast<size_t>(surfOwner[i])], flux);
-            Kokkos::atomic_sub(&surfGradPhi[static_cast<size_t>(surfNeighbour[i])], flux);
+            Kokkos::atomic_add(&surfGradPhi[surfOwner[i]], flux);
+            Kokkos::atomic_sub(&surfGradPhi[surfNeighbour[i]], flux);
         }
     );
 
     parallelFor(
         exec,
         {nInternalFaces, surfPhif.size()},
-        KOKKOS_LAMBDA(const size_t i) {
-            size_t own = static_cast<size_t>(surfFaceCells[i - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx i) {
+            auto own = surfFaceCells[i - nInternalFaces];
             Vec3 valueOwn = faceAreaS[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         }
@@ -65,7 +65,7 @@ void computeGrad(
     parallelFor(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const size_t celli) { surfGradPhi[celli] *= 1 / surfV[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) { surfGradPhi[celli] *= 1 / surfV[celli]; }
     );
 }
 

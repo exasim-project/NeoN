@@ -27,7 +27,7 @@ struct CreateVector
     {
 
         std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
-        for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+        for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
         {
             NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         CreateVector<TestType> {.name = "phi", .mesh = mesh, .timeIndex = 1}
     );
     fill(phi.internalVector(), 10 * one<TestType>());
-    fill(phi.boundaryVector().value(), zero<TestType>());
+    fill(phi.boundaryData().value(), zero<TestType>());
     fill(oldTime(phi).internalVector(), -1.0 * one<TestType>());
     phi.correctBoundaryConditions();
 

@@ -5,6 +5,7 @@
 #include <Kokkos_Core.hpp>
 #include <type_traits>
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
 namespace NeoN
@@ -26,7 +27,7 @@ concept parallelForKernel = requires(Kernel t, size_t i) {
 template<typename Executor, parallelForKernel Kernel>
 void parallelFor(
     [[maybe_unused]] const Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     std::string name = "parallelFor"
 )
@@ -34,7 +35,7 @@ void parallelFor(
     auto [start, end] = range;
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (size_t i = start; i < end; i++)
+        for (localIdx i = start; i < end; i++)
         {
             kernel(i);
         }
@@ -45,7 +46,7 @@ void parallelFor(
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(start, end),
-            KOKKOS_LAMBDA(const size_t i) { kernel(i); }
+            KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
         );
     }
 }
@@ -54,7 +55,7 @@ void parallelFor(
 template<parallelForKernel Kernel>
 void parallelFor(
     const NeoN::Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     std::string name = "parallelFor"
 )
@@ -81,8 +82,8 @@ void parallelFor(
     auto view = field.view();
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        size_t fieldSize = field.size();
-        for (size_t i = 0; i < fieldSize; i++)
+        localIdx fieldSize = field.size();
+        for (localIdx i = 0; i < fieldSize; i++)
         {
             view[i] = kernel(i);
         }
@@ -93,7 +94,7 @@ void parallelFor(
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(0, field.size()),
-            KOKKOS_LAMBDA(const size_t i) { view[i] = kernel(i); }
+            KOKKOS_LAMBDA(const localIdx i) { view[i] = kernel(i); }
         );
     }
 }
@@ -106,13 +107,16 @@ void parallelFor(Vector<ValueType>& field, Kernel kernel, std::string name = "pa
 
 template<typename Executor, typename Kernel, typename T>
 void parallelReduce(
-    [[maybe_unused]] const Executor& exec, std::pair<size_t, size_t> range, Kernel kernel, T& value
+    [[maybe_unused]] const Executor& exec,
+    std::pair<localIdx, localIdx> range,
+    Kernel kernel,
+    T& value
 )
 {
     auto [start, end] = range;
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (size_t i = start; i < end; i++)
+        for (localIdx i = start; i < end; i++)
         {
             if constexpr (Kokkos::is_reducer<T>::value)
             {
@@ -135,7 +139,7 @@ void parallelReduce(
 
 template<typename Kernel, typename T>
 void parallelReduce(
-    const NeoN::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel, T& value
+    const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel, T& value
 )
 {
     std::visit([&](const auto& e) { parallelReduce(e, range, kernel, value); }, exec);
@@ -149,8 +153,8 @@ void parallelReduce(
 {
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        size_t fieldSize = field.size();
-        for (size_t i = 0; i < fieldSize; i++)
+        localIdx fieldSize = field.size();
+        for (localIdx i = 0; i < fieldSize; i++)
         {
             if constexpr (Kokkos::is_reducer<T>::value)
             {
@@ -179,7 +183,7 @@ void parallelReduce(Vector<ValueType>& field, Kernel kernel, T& value)
 
 template<typename Executor, typename Kernel>
 void parallelScan(
-    [[maybe_unused]] const Executor& exec, std::pair<size_t, size_t> range, Kernel kernel
+    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel
 )
 {
     auto [start, end] = range;
@@ -188,7 +192,7 @@ void parallelScan(
 }
 
 template<typename Kernel>
-void parallelScan(const NeoN::Executor& exec, std::pair<size_t, size_t> range, Kernel kernel)
+void parallelScan(const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel)
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel); }, exec);
 }
@@ -196,7 +200,7 @@ void parallelScan(const NeoN::Executor& exec, std::pair<size_t, size_t> range, K
 template<typename Executor, typename Kernel, typename ReturnType>
 void parallelScan(
     [[maybe_unused]] const Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     ReturnType& returnValue
 )
@@ -211,7 +215,7 @@ void parallelScan(
 template<typename Kernel, typename ReturnType>
 void parallelScan(
     const NeoN::Executor& exec,
-    std::pair<size_t, size_t> range,
+    std::pair<localIdx, localIdx> range,
     Kernel kernel,
     ReturnType& returnValue
 )

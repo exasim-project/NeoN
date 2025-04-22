@@ -16,10 +16,10 @@ TEST_CASE("fixedValue")
         auto mesh = NeoN::createSingleCellMesh(exec);
         auto field = NeoN::Field<NeoN::scalar>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
         NeoN::fill(field.internalVector(), 1.0);
-        NeoN::fill(field.boundaryVector().refGrad(), -1.0);
-        NeoN::fill(field.boundaryVector().refValue(), -1.0);
-        NeoN::fill(field.boundaryVector().valueFraction(), -1.0);
-        NeoN::fill(field.boundaryVector().value(), -1.0);
+        NeoN::fill(field.boundaryData().refGrad(), -1.0);
+        NeoN::fill(field.boundaryData().refValue(), -1.0);
+        NeoN::fill(field.boundaryData().valueFraction(), -1.0);
+        NeoN::fill(field.boundaryData().value(), -1.0);
         NeoN::scalar setValue {10};
         NeoN::Dictionary dict;
         dict.insert("fixedValue", setValue);
@@ -30,14 +30,14 @@ TEST_CASE("fixedValue")
 
         boundary->correctBoundaryCondition(field);
 
-        auto refValues = field.boundaryVector().refValue().copyToHost();
+        auto refValues = field.boundaryData().refValue().copyToHost();
 
         for (auto& boundaryValue : refValues.view(boundary->range()))
         {
             REQUIRE(boundaryValue == setValue);
         }
 
-        auto values = field.boundaryVector().value().copyToHost();
+        auto values = field.boundaryData().value().copyToHost();
 
         for (auto& boundaryValue : values.view(boundary->range()))
         {

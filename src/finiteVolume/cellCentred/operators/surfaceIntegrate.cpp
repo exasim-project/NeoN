@@ -11,7 +11,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
-    size_t nInternalFaces,
+    localIdx nInternalFaces,
     View<const int> neighbour,
     View<const int> owner,
     View<const int> faceCells,
@@ -21,12 +21,12 @@ void surfaceIntegrate(
     const dsl::Coeff operatorScaling
 )
 {
-    size_t nCells {v.size()};
-    const size_t nBoundaryFaces = faceCells.size();
+    auto nCells = v.size();
+    const auto nBoundaryFaces = faceCells.size();
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const size_t i) {
+        KOKKOS_LAMBDA(const localIdx i) {
             Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux[i]);
             Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux[i]);
         }
@@ -35,8 +35,8 @@ void surfaceIntegrate(
     parallelFor(
         exec,
         {nInternalFaces, nInternalFaces + nBoundaryFaces},
-        KOKKOS_LAMBDA(const size_t i) {
-            auto own = static_cast<size_t>(faceCells[i - nInternalFaces]);
+        KOKKOS_LAMBDA(const localIdx i) {
+            auto own = faceCells[i - nInternalFaces];
             Kokkos::atomic_add(&res[own], flux[i]);
         }
     );
@@ -44,14 +44,14 @@ void surfaceIntegrate(
     parallelFor(
         exec,
         {0, nCells},
-        KOKKOS_LAMBDA(const size_t celli) { res[celli] *= operatorScaling[celli] / v[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) { res[celli] *= operatorScaling[celli] / v[celli]; }
     );
 }
 
 #define NF_DECLARE_COMPUTE_IMP_INT(TYPENAME)                                                       \
     template void surfaceIntegrate<TYPENAME>(                                                      \
         const Executor&,                                                                           \
-        size_t,                                                                                    \
+        localIdx,                                                                                  \
         View<const int>,                                                                           \
         View<const int>,                                                                           \
         View<const int>,                                                                           \
