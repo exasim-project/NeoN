@@ -120,7 +120,7 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ solve\ sparse\ matrix\ system}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ vol\ =\ psi\_.mesh().cellVolumes().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ expSource\ =\ expr\_.explicitOperation(psi\_.mesh().nCells());}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ expSourceSpan\ =\ expSource.view();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ expSourceView\ =\ expSource.view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00120}00120\ }
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ ls\_\ =\ expr\_.implicitOperation();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rhs\ =\ ls\_.rhs().view();}
@@ -128,7 +128,7 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a3b2b4dc757790fcf661da6b47e1c1a0a}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSourceSpan[i]\ *\ vol[i];\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSourceView[i]\ *\ vol[i];\ \}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00130}00130\ \ \ \ \ \}}
@@ -163,14 +163,14 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00159}00159\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ currently\ assumes\ that\ matrix\ is\ already\ assembled}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ diagOffset\ =\ sparsityPattern\_-\/>diagOffset().view();}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowPtrs\ =\ ls\_.matrix().rowPtrs().view();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowOffs\ =\ ls\_.matrix().rowOffs().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rhs\ =\ ls\_.rhs().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ values\ =\ ls\_.matrix().values().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ ls\_.exec(),}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \{refCell,\ refCell\ +\ 1\},}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ std::size\_t\ refCelli)\ \{}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ diagIdx\ =\ rowPtrs[refCelli]\ +\ diagOffset[refCelli];}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ diagIdx\ =\ rowOffs[refCelli]\ +\ diagOffset[refCelli];}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ diagValue\ =\ values[diagIdx];}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rhs[refCelli]\ +=\ diagValue\ *\ refValue;}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values[diagIdx]\ +=\ diagValue;}
@@ -202,15 +202,15 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00198}00198\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00199}00199\ }
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{keyword}{auto}\ [result,\ b,\ x]\ =}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{spans}}(resultVector.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}(),\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}().rhs(),\ psi.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}());}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ [values,\ colIdxs,\ rowPtrs]\ =\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}().view();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(resultVector.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}(),\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}().rhs(),\ psi.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}());}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ [values,\ colIdxs,\ rowOffs]\ =\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}().view();}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00203}00203\ }
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00204}00204\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ resultVector.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \{0,\ result.size()\},}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00207}00207\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ std::size\_t\ rowi)\ \{}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ IndexType\ rowStart\ =\ rowPtrs[rowi];}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ IndexType\ rowEnd\ =\ rowPtrs[rowi\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ IndexType\ rowStart\ =\ rowOffs[rowi];}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ IndexType\ rowEnd\ =\ rowOffs[rowi\ +\ 1];}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ sum\ =\ 0.0;}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (IndexType\ coli\ =\ rowStart;\ coli\ <\ rowEnd;\ coli++)}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \{}

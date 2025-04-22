@@ -131,7 +131,7 @@ The full communication between two ranks is thus given below:
 
         // load the send buffer
         const int commRank = mpiEnv.Rank() ? 1 : 0;
-        auto sendBuffer = buffer.getSendBuffer<double>(commRank); // span returned.
+        auto sendBuffer = buffer.getSendBuffer<double>(commRank); // View returned.
         sendBuffer[0] = allData[sendMap[0]];
 
         // start the non-blocking communication
@@ -145,7 +145,7 @@ The full communication between two ranks is thus given below:
         buffer.waitComplete();
 
         // unload the receive buffer
-        auto receiveBuffer = buffer.getReceiveBuffer<double>(commRank); // span returned.
+        auto receiveBuffer = buffer.getReceiveBuffer<double>(commRank); // View returned.
         allData[receiveMap[0]] = receiveBuffer[0];
 
         // finalize the communication, releasing the buffer
