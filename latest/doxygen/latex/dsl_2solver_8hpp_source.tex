@@ -44,7 +44,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00040}00040\ \ \ \ \ VectorType\&\ solution,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00041}00041\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00043}00043\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00045}00045\ )}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00046}00046\ \{}
@@ -53,12 +53,12 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00049}00049\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ temporal\ or\ implicit\ terms\ to\ solve."{}});}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00051}00051\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00052}00052\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ab0d9e2020ea176aaa07f81f414508c04}{build}}(fvSchemes);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00052}00052\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_acf0ed15b8ff8fa242d0bb385a11253f2}{read}}(fvSchemes);}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keywordflow}{if}\ (exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066}{temporalOperators}}().size()\ >\ 0)}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00054}00054\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ integrate\ equations\ in\ time}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{timeIntegration::TimeIntegration<VectorType>}}\ timeIntegrator(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ fvSchemes.subDict(\textcolor{stringliteral}{"{}ddtSchemes"{}}),\ fvSchemes}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ fvSchemes.\mbox{\hyperlink{classNeoN_1_1Dictionary_a5fba75245132842e0ad343b4fceaca39}{subDict}}(\textcolor{stringliteral}{"{}ddtSchemes"{}}),\ fvSolution}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ timeIntegrator.\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d}{solve}}(exp,\ solution,\ t,\ dt);}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00060}00060\ \ \ \ \ \}}
