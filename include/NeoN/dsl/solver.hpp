@@ -49,7 +49,7 @@ void solve(
     {
         NF_ERROR_EXIT("No temporal or implicit terms to solve.");
     }
-    exp.build(fvSchemes);
+    exp.read(fvSchemes);
     if (exp.temporalOperators().size() > 0)
     {
         // integrate equations in time

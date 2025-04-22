@@ -158,7 +158,7 @@ private:
         }
 
         /* @brief Given an input this function reads required coeffs */
-        virtual void read(const Input& input) override { concreteOp_.build(input); }
+        virtual void read(const Input& input) override { concreteOp_.read(input); }
 
         /* returns the fundamental type of an operator, ie explicit, implicit, temporal */
         Operator::Type getType() const override { return concreteOp_.getType(); }

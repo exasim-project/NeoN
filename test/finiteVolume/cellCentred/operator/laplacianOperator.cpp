@@ -111,7 +111,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
         {
             ls.reset();
             dsl::SpatialOperator lapOp2 = dsl::imp::laplacian(gamma, phi);
-            lapOp2.build(input);
+            lapOp2.read(input);
             lapOp2 = dsl::Coeff(-0.5) * lapOp2;
 
             lapOp.implicitOperation(ls);
