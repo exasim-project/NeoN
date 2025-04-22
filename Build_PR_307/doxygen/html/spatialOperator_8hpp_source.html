@@ -297,7 +297,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#acf2ba01e32969b7a4dbdd538697a0463">  198</a></span><a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a65e72931514ea50f7a85aa2942454cee">operator*</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; coeffVector, <a class="code hl_class" href="classNeoN_1_1dsl_1_1SpatialOperator.html">SpatialOperator&lt;ValueType&gt;</a> rhs)</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>{</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <a class="code hl_class" href="classNeoN_1_1dsl_1_1SpatialOperator.html">SpatialOperator&lt;ValueType&gt;</a> result = rhs;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    result.<a class="code hl_function" href="classNeoN_1_1dsl_1_1SpatialOperator.html#aa6974df9f345d3d1e6fd66b685db9a38">getCoefficient</a>() *= <a class="code hl_class" href="classNeoN_1_1dsl_1_1Coeff.html">Coeff</a>(coeffVector);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    result.<a class="code hl_function" href="classNeoN_1_1dsl_1_1SpatialOperator.html#aa6974df9f345d3d1e6fd66b685db9a38">getCoefficient</a>() *= <a class="code hl_class" href="classNeoN_1_1dsl_1_1Coeff.html">Coeff</a> {coeffVector};</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordflow">return</span> result;</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>}</div>
 </div>
@@ -319,7 +319,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="comment">//     // TODO implement</span></div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="comment">//     NF_ERROR_EXIT(&quot;Not implemented&quot;);</span></div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="comment">//     SpatialOperator result = lhs;</span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="comment">//     // if (!result.getCoefficient().useSpan)</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="comment">//     // if (!result.getCoefficient().useView)</span></div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="comment">//     // {</span></div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="comment">//     //     result.setVector(std::make_shared&lt;Vector&lt;scalar&gt;&gt;(result.exec(),</span></div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="comment">//     result.nCells(), 1.0));</span></div>
@@ -329,7 +329,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="comment">// }</span></div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>} <span class="comment">// namespace dsl</span></div>
-<div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00050">vector.hpp:51</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00052">vector.hpp:53</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Coeff_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Coeff.html">NeoN::dsl::Coeff</a></div><div class="ttdoc">A class that represents a coefficient for the NeoN dsl.</div><div class="ttdef"><b>Definition</b> <a href="coeff_8hpp_source.html#l00021">coeff.hpp:22</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Operator_html_ad72823c9a2d04641ab7c7181902f6dd3"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3">NeoN::dsl::Operator::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> <a href="operator_8hpp_source.html#l00014">operator.hpp:15</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1SpatialOperator_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1SpatialOperator.html">NeoN::dsl::SpatialOperator</a></div><div class="ttdef"><b>Definition</b> <a href="spatialOperator_8hpp_source.html#l00053">spatialOperator.hpp:54</a></div></div>

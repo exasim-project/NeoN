@@ -23,71 +23,73 @@
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00019}00019\ \textcolor{comment}{//\ NOTE:\ patchID\ was\ removed\ since\ it\ was\ unused}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00020}00020\ \textcolor{comment}{//\ I\ guess\ it\ was\ replaced\ by\ range}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00021}00021\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00022}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a27c189a0034faafea2a314e20743c88a}{00022}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a27c189a0034faafea2a314e20743c88a}{extrapolateValue}}(}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00023}00023\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ std::pair<size\_t,\ size\_t>\ range}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00024}00024\ )}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00025}00025\ \{}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iVector\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells]\ =\ \mbox{\hyperlink{namespaceNeoN_acc73d6dc6363f055f6e02a0ead74954f}{spans}}(}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}{boundaryVector}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}(),}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}{boundaryVector}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}(),}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}{boundaryVector}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}(),}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_aea8611900812b79f330119531fb1e359}{boundaryVector}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ac9cdc3476319a4dfd80a32e6702850f4}{refValue}}(),}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aae76ed2a48eb7c003c982762d366b04a}{faceCells}}()}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00034}00034\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00036}00036\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a8eb6aca3b312b43897d752f061c55a25}{NeoN::parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ range,}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ operator\ /\ is\ not\ defined\ for\ all\ ValueTypes}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ internalCellValue\ =\ iVector[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(faceCells[i])];}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ internalCellValue;}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 1.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refValue}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ internalCellValue;\ \textcolor{comment}{//\ not\ used}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ zero<ValueType>();}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}extrapolateValue"{}}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00049}00049\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00050}00050\ \}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00051}00051\ \}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00053}00053\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{00054}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated}}\ :}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Extrapolated<ValueType>>}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00056}00056\ \{}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Extrapolated<ValueType>}}>;}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00059}00059\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00022}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2864d5431aa5578080a90ff1e791f389}{00022}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2864d5431aa5578080a90ff1e791f389}{extrapolateValue}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00023}00023\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00025}00025\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00026}00026\ )}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iVector\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ac9cdc3476319a4dfd80a32e6702850f4}{refValue}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aae76ed2a48eb7c003c982762d366b04a}{faceCells}}()}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00036}00036\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00039}00039\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ operator\ /\ is\ not\ defined\ for\ all\ ValueTypes}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ internalCellValue\ =\ iVector[faceCells[i]];}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ internalCellValue;}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 1.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refValue}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ internalCellValue;\ \textcolor{comment}{//\ not\ used}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ zero<ValueType>();}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}extrapolateValue"{}}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00051}00051\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00052}00052\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00053}00053\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00055}00055\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{00056}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated}}\ :}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Extrapolated<ValueType>>}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Extrapolated<ValueType>}}>;}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a8067013f72e53e76a45ae0138fcbd7c4}{00061}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{ExtrapolatedType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00061}00061\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00062}00062\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_ae372bcfa2a3a1a17441b069b7f76411f}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_ae372bcfa2a3a1a17441b069b7f76411f}{Extrapolated}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ std::size\_t\ patchID)}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID),\ mesh\_(mesh)}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00065}00065\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a1fc9bd56bfccc7a875a6ec5f9f57400e}{00067}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a1fc9bd56bfccc7a875a6ec5f9f57400e}{correctBoundaryCondition}}([[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00068}00068\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a27c189a0034faafea2a314e20743c88a}{detail::extrapolateValue}}(domainVector,\ mesh\_,\ this-\/>range());}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00070}00070\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a2a57aeedb0d764cb2a795619719d7fe8}{00072}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a2a57aeedb0d764cb2a795619719d7fe8}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}extrapolated"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a8067013f72e53e76a45ae0138fcbd7c4}{00063}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{ExtrapolatedType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated}{Extrapolated<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a340bd68a2f070e9700823ec19a977dda}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a340bd68a2f070e9700823ec19a977dda}{Extrapolated}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID),\ mesh\_(mesh)}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00067}00067\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a1fc9bd56bfccc7a875a6ec5f9f57400e}{00069}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a1fc9bd56bfccc7a875a6ec5f9f57400e}{correctBoundaryCondition}}([[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00070}00070\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2864d5431aa5578080a90ff1e791f389}{detail::extrapolateValue}}(domainVector,\ mesh\_,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00072}00072\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a23bf088ef994133485e84405e8a8d00c}{00074}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a23bf088ef994133485e84405e8a8d00c}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a2a57aeedb0d764cb2a795619719d7fe8}{00074}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a2a57aeedb0d764cb2a795619719d7fe8}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}extrapolated"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a970f371002c68aff8add7f4c544d143a}{00076}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a970f371002c68aff8add7f4c544d143a}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a23bf088ef994133485e84405e8a8d00c}{00076}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a23bf088ef994133485e84405e8a8d00c}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00077}00077\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a5554790a7b94d3c87550e4fa8246e84a}{00078}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a5554790a7b94d3c87550e4fa8246e84a}{clone}}()\ const\ final}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00079}00079\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Extrapolated>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00081}00081\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00082}00082\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00083}00083\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a970f371002c68aff8add7f4c544d143a}{00078}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a970f371002c68aff8add7f4c544d143a}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a5554790a7b94d3c87550e4fa8246e84a}{00080}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_a5554790a7b94d3c87550e4fa8246e84a}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00081}00081\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Extrapolated>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00083}00083\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00086}00086\ \};}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00087}00087\ \}}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00085}00085\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00088}00088\ \};}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00089}00089\ \}}
 
 \end{DoxyCode}

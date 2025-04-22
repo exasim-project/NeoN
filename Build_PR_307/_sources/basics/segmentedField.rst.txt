@@ -13,38 +13,38 @@ It can be used to represent cell to cell stencil.
     NeoN::Vector<NeoN::localIdx> segments(exec, {0, 2, 4, 6, 8, 10});
 
     NeoN::SegmentedVector<NeoN::label, NeoN::localIdx> segVector(values, segments);
-    auto [valueSpan, segment] = segVector.spans();
+    auto [valueView, segment] = segVector.views();
     auto segView = segVector.view();
     NeoN::Vector<NeoN::label> result(exec, 5);
 
     NeoN::fill(result, 0);
-    auto resultSpan = result.view();
+    auto resultView = result.view();
 
     parallelFor(
         exec,
         {0, segVector.numSegments()},
-        KOKKOS_LAMBDA(const size_t segI) {
+        KOKKOS_LAMBDA(const localIdx segI) {
             // check if it works with bounds
             auto [bStart, bEnd] = segView.bounds(segI);
-            auto bVals = valueSpan.subspan(bStart, bEnd - bStart);
+            auto bVals = valueView.subview(bStart, bEnd - bStart);
             for (auto& val : bVals)
             {
-                resultSpan[segI] += val;
+                resultView[segI] += val;
             }
 
             // check if it works with range
             auto [rStart, rLength] = segView.range(segI);
-            auto rVals = valueSpan.subspan(rStart, rLength);
+            auto rVals = valueView.subview(rStart, rLength);
             for (auto& val : rVals)
             {
-                resultSpan[segI] += val;
+                resultView[segI] += val;
             }
 
-            // check with subspan
-            auto vals = segView.span(segI);
+            // check with subview
+            auto vals = segView.view(segI);
             for (auto& val : vals)
             {
-                resultSpan[segI] += val;
+                resultView[segI] += val;
             }
         }
     );
@@ -52,4 +52,4 @@ It can be used to represent cell to cell stencil.
 In this example, each of the five segments would have a size of two.
 This data allows the representation of stencils in a continuous memory layout, which can be beneficial for performance optimization in numerical simulations especially on GPUs.
 
-The spans method return the value and segment span and it is also possible to return a view that can also be called on a device
+The views method return the value and segment view and it is also possible to return a view that can also be called on a device
