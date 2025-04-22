@@ -41,25 +41,45 @@ public:
 
     static std::string schema() { return "none"; }
 
-    virtual void solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
+    virtual SolverStats
+    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
     {
+        using vec = gko::matrix::Dense<scalar>;
+
+        auto retrieve = [](const auto& in)
+        {
+            auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+            scalar res = host->copy_from(in)->at(0);
+            return res;
+        };
+
         auto nrows = sys.rhs().size();
 
         auto gkoMtx = detail::createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);
-        // std::shared_ptr<const gko::log::Convergence<ValueType>> logger =
-        //     gko::log::Convergence<ValueType>::create();
-        // solver->add_logger(logger);
+
+        std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+            gko::log::Convergence<scalar>::create();
+        solver->add_logger(logger);
 
         auto rhs = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
+        auto rhs2 = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
         auto gkoX = detail::createGkoDense(gkoExec_, x.data(), nrows);
 
+        auto one = gko::initialize<vec>({1.0}, gkoExec_);
+        auto neg_one = gko::initialize<vec>({-1.0}, gkoExec_);
+        auto init = gko::initialize<vec>({0.0}, gkoExec_);
+        gkoMtx->apply(one, gkoX, neg_one, rhs2);
+        rhs->compute_norm2(init);
+        scalar initResNorm = retrieve(init);
+
         solver->apply(rhs, gkoX);
-        // auto res_norm = gko::as<gko::matrix::Dense<ValueType>>(logger->get_residual_norm());
-        // auto res_norm_host = gko::matrix::Dense<ValueType>::create(
-        //     res_norm->get_executor()->get_master(), gko::dim<2> {1}
-        // );
-        // res_norm_host->copy_from(res_norm);
+
+        scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+        auto numIter = label(logger->get_num_iterations());
+
+        return {numIter, initResNorm, finalResNorm};
     }
 
     virtual std::unique_ptr<SolverFactory> clone() const final
