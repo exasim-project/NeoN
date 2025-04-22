@@ -36,7 +36,7 @@ var searchData=
   ['neonexception_33',['neonexception',['../classNeoN_1_1NeoNException.html#a0c08cb41205f0c35fcd9ee9472704049',1,'NeoN::NeoNException::NeoNException()'],['../classNeoN_1_1NeoNException.html',1,'NeoN::NeoNException']]],
   ['next_34',['next',['../classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f',1,'NeoN::TokenList::next()'],['../classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6',1,'NeoN::TokenList::next() const']]],
   ['nexttime_35',['nexttime',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#af297ed1aa8ddee36546a626689fbac64',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::nextTime() const'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#a13573a6b2f0ceee578fdf4cf10ef52f5',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::nextTime()']]],
-  ['nf_36',['nf',['../classNeoN_1_1BoundaryMesh.html#a3b201b06dfc75ee04f7c5902c690cf37',1,'NeoN::BoundaryMesh::nf(const localIdx i) const'],['../classNeoN_1_1BoundaryMesh.html#a842a8e1bdf44ea64425502a9c4058e2e',1,'NeoN::BoundaryMesh::nf() const']]],
+  ['nf_36',['nf',['../classNeoN_1_1BoundaryMesh.html#a842a8e1bdf44ea64425502a9c4058e2e',1,'NeoN::BoundaryMesh::nf() const'],['../classNeoN_1_1BoundaryMesh.html#a3b201b06dfc75ee04f7c5902c690cf37',1,'NeoN::BoundaryMesh::nf(const localIdx i) const']]],
   ['nf_5fassert_37',['NF_ASSERT',['../error_8hpp.html#aecc669a189db22f652ffb9788f01a99b',1,'error.hpp']]],
   ['nf_5fassert_5fequal_38',['NF_ASSERT_EQUAL',['../error_8hpp.html#a40409dec4da3178309a1b0f662496159',1,'error.hpp']]],
   ['nf_5fassert_5fequal_5fthrow_39',['NF_ASSERT_EQUAL_THROW',['../error_8hpp.html#ac8d1c67acd41932bbf7b7da3e3d1508d',1,'error.hpp']]],
@@ -58,5 +58,6 @@ var searchData=
   ['nonorthcorrectionvec3s_55',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_56',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nrows_57',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],
-  ['numsegments_58',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
+  ['numiter_58',['numIter',['../structNeoN_1_1la_1_1SolverStats.html#a1c1ed94a5cb51273fc760ac035317625',1,'NeoN::la::SolverStats']]],
+  ['numsegments_59',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
 ];

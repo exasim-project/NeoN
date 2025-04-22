@@ -671,8 +671,8 @@
 <codeline lineno="30" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1aab0bf4552af22f09687801782cb49ce6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1aab0bf4552af22f09687801782cb49ce6" kindref="member">Expression</ref>(</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">dsl::Expression&lt;ValueType&gt;</ref><sp/>expr,</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>psi,</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>psi_(psi),<sp/>expr_(expr),<sp/>fvSchemes_(fvSchemes),<sp/>fvSolution_(fvSolution),</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sparsityPattern_(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>::readOrCreate(psi.mesh())),</highlight></codeline>
@@ -680,7 +680,7 @@
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*sparsityPattern_.get()</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>))</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr_.build(fvSchemes_);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>expr_.read(fvSchemes_);</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>assemble();</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight></codeline>
