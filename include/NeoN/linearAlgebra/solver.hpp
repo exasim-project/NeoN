@@ -13,7 +13,6 @@ namespace NeoN::la
 /* @brief A helper to collect statistics of the solver */
 struct SolverStats
 {
-
     int numIter;
 
     scalar initResNorm;

@@ -30,15 +30,16 @@ public:
           spatialOperators_(exp.spatialOperators_)
     {}
 
-    void build(const Dictionary& input)
+    /* @brief dispatch read call to operator */
+    void read(const Dictionary& input)
     {
         for (auto& op : temporalOperators_)
         {
-            op.build(input);
+            op.read(input);
         }
         for (auto& op : spatialOperators_)
         {
-            op.build(input);
+            op.read(input);
         }
     }
 

@@ -42,7 +42,7 @@ public:
           coeffs_(surfaceIntegrate.coeffs_) {};
 
 
-    void build(const Input&) {}
+    void read(const Input&) {}
 
     void explicitOperation(Vector<ValueType>& source) const
     {

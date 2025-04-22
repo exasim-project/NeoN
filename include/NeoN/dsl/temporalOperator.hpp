@@ -86,8 +86,8 @@ public:
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }
 
-    /* @brief Given an input this function reads required coeffs */
-    void build(const Input& input) { model_->build(input); }
+    /* @brief Given an input this function reads required properties */
+    void read(const Input& input) { model_->read(input); }
 
     /* @brief Get the executor */
     const Executor& exec() const { return model_->exec(); }
@@ -107,8 +107,8 @@ private:
         virtual void
         implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) = 0;
 
-        /* @brief Given an input this function reads required coeffs */
-        virtual void build(const Input& input) = 0;
+        /* @brief Given an input this function reads required properties */
+        virtual void read(const Input& input) = 0;
 
         /* returns the name of the operator */
         virtual std::string getName() const = 0;
@@ -159,7 +159,7 @@ private:
         }
 
         /* @brief Given an input this function reads required coeffs */
-        virtual void build(const Input& input) override { concreteOp_.build(input); }
+        virtual void read(const Input& input) override { concreteOp_.read(input); }
 
         /* returns the fundamental type of an operator, ie explicit, implicit, temporal */
         Operator::Type getType() const override { return concreteOp_.getType(); }

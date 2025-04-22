@@ -174,7 +174,7 @@ public:
         return lapPhi;
     }
 
-    void build(const Input& input)
+    void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->field_.mesh();
         if (std::holds_alternative<NeoN::Dictionary>(input))

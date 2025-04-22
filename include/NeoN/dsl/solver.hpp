@@ -40,7 +40,7 @@ void solve(
     VectorType& solution,
     scalar t,
     scalar dt,
-    [[maybe_unused]] const Dictionary& fvSchemes,
+    const Dictionary& fvSchemes,
     const Dictionary& fvSolution
 )
 {
@@ -49,12 +49,12 @@ void solve(
     {
         NF_ERROR_EXIT("No temporal or implicit terms to solve.");
     }
-    exp.build(fvSchemes);
+    exp.read(fvSchemes);
     if (exp.temporalOperators().size() > 0)
     {
         // integrate equations in time
         timeIntegration::TimeIntegration<VectorType> timeIntegrator(
-            fvSchemes.subDict("ddtSchemes"), fvSchemes
+            fvSchemes.subDict("ddtSchemes"), fvSolution
         );
         timeIntegrator.solve(exp, solution, t, dt);
     }

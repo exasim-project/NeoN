@@ -31,7 +31,7 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
 
-    void build(const Input&) {}
+    void read(const Input&) {}
 
     std::string getName() const { return "sourceTerm"; }
 

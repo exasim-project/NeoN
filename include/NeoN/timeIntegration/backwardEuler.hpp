@@ -42,10 +42,7 @@ public:
     static std::string schema() { return "none"; }
 
     void solve(
-        dsl::Expression<ValueType>& eqn,
-        SolutionVectorType& solutionVector,
-        [[maybe_unused]] scalar t,
-        scalar dt
+        dsl::Expression<ValueType>& eqn, SolutionVectorType& solutionVector, scalar t, scalar dt
     ) override
     {
         auto source = eqn.explicitOperation(solutionVector.size());

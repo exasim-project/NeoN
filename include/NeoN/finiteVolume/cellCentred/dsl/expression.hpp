@@ -30,8 +30,8 @@ public:
     Expression(
         dsl::Expression<ValueType> expr,
         VolumeField<ValueType>& psi,
-        [[maybe_unused]] const Dictionary& fvSchemes,
-        [[maybe_unused]] const Dictionary& fvSolution
+        const Dictionary& fvSchemes,
+        const Dictionary& fvSolution
     )
         : psi_(psi), expr_(expr), fvSchemes_(fvSchemes), fvSolution_(fvSolution),
           sparsityPattern_(SparsityPattern::readOrCreate(psi.mesh())),
@@ -39,7 +39,7 @@ public:
               *sparsityPattern_.get()
           ))
     {
-        expr_.build(fvSchemes_);
+        expr_.read(fvSchemes_);
         // assemble();
     };
 

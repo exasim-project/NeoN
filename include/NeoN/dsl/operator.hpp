@@ -50,7 +50,7 @@ public:
     const VectorType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
-    void build([[maybe_unused]] const Input& input) {}
+    void read([[maybe_unused]] const Input& input) {}
 
 protected:
 

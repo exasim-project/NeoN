@@ -166,7 +166,7 @@ public:
         divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    void build(const Input& input)
+    void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();
         if (std::holds_alternative<NeoN::Dictionary>(input))
