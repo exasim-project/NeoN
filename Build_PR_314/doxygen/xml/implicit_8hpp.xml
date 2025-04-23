@@ -257,7 +257,7 @@
         <link refid="ddt_8hpp"/>
         <childnode refid="46" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -286,6 +286,8 @@
         <label>NeoN/dsl/operator.hpp</label>
         <link refid="operator_8hpp"/>
         <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -843,42 +845,36 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">fvcc</ref><sp/>=<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref>;</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21" refid="namespaceNeoN_1_1dsl_1_1imp" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp" kindref="compound">NeoN::dsl::imp</ref></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp" kindref="compound">NeoN::dsl::imp</ref></highlight></codeline>
 <codeline lineno="22"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="26" refid="namespaceNeoN_1_1dsl_1_1imp_1a26b14c3e44a5169479f46673d14a09fb" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1TemporalOperator" kindref="compound">TemporalOperator&lt;ValueType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1imp_1a26b14c3e44a5169479f46673d14a09fb" kindref="member">ddt</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
-<codeline lineno="27"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kindref="compound">fvcc::DdtOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>phi);</highlight></codeline>
-<codeline lineno="29"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref></highlight></codeline>
-<codeline lineno="33" refid="namespaceNeoN_1_1dsl_1_1imp_1a24af30e06fc5eec576cd9afc2a43ee42" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1a24af30e06fc5eec576cd9afc2a43ee42" kindref="member">source</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;scalar&gt;</ref>&amp;<sp/>coeff,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
-<codeline lineno="34"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm" kindref="compound">fvcc::SourceTerm</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>coeff,<sp/>phi));</highlight></codeline>
-<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref></highlight></codeline>
-<codeline lineno="40" refid="namespaceNeoN_1_1dsl_1_1imp_1a465815f9b5d41a4eb20d9149fcd596e5" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1a465815f9b5d41a4eb20d9149fcd596e5" kindref="member">div</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
-<codeline lineno="41"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator" kindref="compound">fvcc::DivOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>faceFlux,<sp/>phi)</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref></highlight></codeline>
-<codeline lineno="49" refid="namespaceNeoN_1_1dsl_1_1imp_1aea38bd4e8f658706a47086bb2c60ae87" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1aea38bd4e8f658706a47086bb2c60ae87" kindref="member">laplacian</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
-<codeline lineno="50"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator" kindref="compound">fvcc::LaplacianOperator&lt;ValueType&gt;</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>gamma,<sp/>phi)</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="54"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight></codeline>
-<codeline lineno="56"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal">SpatialOperator&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="27" refid="namespaceNeoN_1_1dsl_1_1imp_1a24af30e06fc5eec576cd9afc2a43ee42" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1a24af30e06fc5eec576cd9afc2a43ee42" kindref="member">source</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;scalar&gt;</ref>&amp;<sp/>coeff,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm" kindref="compound">fvcc::SourceTerm</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>coeff,<sp/>phi));</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref></highlight></codeline>
+<codeline lineno="34" refid="namespaceNeoN_1_1dsl_1_1imp_1a465815f9b5d41a4eb20d9149fcd596e5" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1a465815f9b5d41a4eb20d9149fcd596e5" kindref="member">div</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator" kindref="compound">fvcc::DivOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>faceFlux,<sp/>phi)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref></highlight></codeline>
+<codeline lineno="43" refid="namespaceNeoN_1_1dsl_1_1imp_1aea38bd4e8f658706a47086bb2c60ae87" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1imp_1aea38bd4e8f658706a47086bb2c60ae87" kindref="member">laplacian</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>phi)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;ValueType&gt;</ref>(</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator" kindref="compound">fvcc::LaplacianOperator&lt;ValueType&gt;</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">dsl::Operator::Type::Implicit</ref>,<sp/>gamma,<sp/>phi)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/implicit.hpp"/>
   </compounddef>
