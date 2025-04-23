@@ -34,7 +34,6 @@ public:
     OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
-
     Operator::Type getType() const { return type_; }
 
     virtual ~OperatorMixin() = default;
