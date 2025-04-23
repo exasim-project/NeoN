@@ -8,6 +8,7 @@
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/dsl/operator.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -24,9 +25,16 @@ public:
     using Base =
         TimeIntegratorBase<SolutionVectorType>::template Register<ForwardEuler<SolutionVectorType>>;
 
-    ForwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : Base(schemeDict, solutionDict)
-    {}
+    ForwardEuler(
+        const Dictionary& schemeDict, const Dictionary& solutionDict, const dsl::Operator::Type type
+    )
+        : Base(schemeDict, solutionDict, type)
+    {
+        if (type == dsl::Operator::Type::Implicit)
+        {
+            NF_ERROR_EXIT("Incompatible scheme: " + name() + " for imp::ddt operator");
+        }
+    }
 
     static std::string name() { return "forwardEuler"; }
 

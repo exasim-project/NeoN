@@ -3,6 +3,7 @@
 #pragma once
 
 #include "NeoN/dsl/coeff.hpp"
+#include "NeoN/core/input.hpp"
 
 namespace NeoN::dsl
 {
@@ -49,7 +50,7 @@ public:
     const VectorType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
-    void read([[maybe_unused]] const Input& input) {}
+    void read(const Input&) {}
 
 protected:
 
