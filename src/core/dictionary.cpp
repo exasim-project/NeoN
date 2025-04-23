@@ -102,4 +102,55 @@ std::unordered_map<std::string, std::any>& Dictionary::getMap() { return data_; 
 
 const std::unordered_map<std::string, std::any>& Dictionary::getMap() const { return data_; }
 
+
+std::string to_string(std::any& in)
+{
+    try
+    {
+        return std::to_string(std::any_cast<int>(in));
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        return std::any_cast<std::string>(in);
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        return std::to_string(std::any_cast<float>(in));
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        auto d = std::any_cast<Dictionary>(in);
+        std::string ret = "{\n";
+        for (auto [k, v] : d.getMap())
+        {
+            ret += k + ": ";
+            ret += to_string(v);
+            ret += "\n";
+        }
+        ret += "}";
+        return ret;
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+
+    return "???";
+}
+
+std::ostream& operator<<(std::ostream& os, const Dictionary& in)
+{
+    os << "{\n";
+    for (auto [k, v] : in.getMap())
+    {
+        os << k << ": " << to_string(v) << " ";
+        os << "\n";
+    }
+    os << "}\n";
+    return os;
+}
 } // namespace NeoN
