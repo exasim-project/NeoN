@@ -9,7 +9,6 @@
 
 namespace dsl = NeoN::dsl;
 
-// TEST_CASE("TemporalOperator")
 TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -30,11 +29,27 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == dsl::Operator::Type::Explicit);
     }
 
+    SECTION("Can create imp::ddt and exp::ddt on " + execName)
+    {
+        NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
+        NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
+
+        std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
+        auto vf = fvcc::VolumeField<TestType>(exec, "vf", mesh, fA, bf, bcs);
+
+        auto expDdt = dsl::exp::ddt(vf);
+        auto impDdt = dsl::imp::ddt(vf);
+
+        REQUIRE(expDdt.getName() == "TimeOperator");
+        REQUIRE(impDdt.getName() == "TimeOperator");
+    }
+
+    NeoN::scalar t = 0.0;
+    NeoN::scalar dt = 0.1;
+
     SECTION("Supports Coefficients Explicit " + execName)
     {
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
-        NeoN::scalar t = 0.0;
-        NeoN::scalar dt = 0.1;
 
         NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
         NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 2.0);
@@ -91,8 +106,6 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     SECTION("Supports Coefficients Implicit " + execName)
     {
         std::vector<fvcc::VolumeBoundary<TestType>> bcs {};
-        NeoN::scalar t = 0.0;
-        NeoN::scalar dt = 0.1;
 
         NeoN::Vector<TestType> fA(exec, 1, 2.0 * NeoN::one<TestType>());
         NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 2.0);
@@ -118,15 +131,13 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostLsC = ls.copyToHost();
         REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
-
-        // // d= 2 * 2
+        // d= 2 * 2
         ls.reset();
         d.implicitOperation(ls, t, dt);
         auto hostRhsD = ls.rhs().copyToHost();
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
         auto hostLsD = ls.copyToHost();
         REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
-
 
         // e = - -3 * 2 * 2 = -12
         ls.reset();
