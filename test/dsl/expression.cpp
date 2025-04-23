@@ -85,37 +85,37 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(eqnC.size() == 2);
 
         // 2 + 2 = 4
-        eqnA.implicitOperation(ls);
+        eqnA.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 4 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 4 * NeoN::one<TestType>());
 
         // 4*2 + 2*2 = 12
         ls.reset();
-        eqnB.implicitOperation(ls);
+        eqnB.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 12 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 12 * NeoN::one<TestType>());
 
         // 2*2 - 2 = 2
         ls.reset();
-        eqnC.implicitOperation(ls);
+        eqnC.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 2 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 2 * NeoN::one<TestType>());
 
         // 3*(2*2 - 2) = 6
         ls.reset();
-        eqnD.implicitOperation(ls);
+        eqnD.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 6 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 6 * NeoN::one<TestType>());
 
         // 2*2 - 2 + 2*2 - 2 = 4
         ls.reset();
-        eqnE.implicitOperation(ls);
+        eqnE.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 4 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 4 * NeoN::one<TestType>());
 
         // // 2*2 - 2 - 2*2 + 2 = 0
         ls.reset();
-        eqnF.implicitOperation(ls);
+        eqnF.assembleLinearSystem(ls);
         REQUIRE(getDiag(ls) == 0 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 0 * NeoN::one<TestType>());
     }
