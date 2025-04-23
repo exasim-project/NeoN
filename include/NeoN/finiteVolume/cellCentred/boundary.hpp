@@ -27,7 +27,7 @@ template<typename BoundaryType>
 std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
-    bcs.reserve(mesh.nBoundaries());
+    bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
 
     for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
     {
