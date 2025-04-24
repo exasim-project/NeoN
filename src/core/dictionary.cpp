@@ -103,11 +103,11 @@ std::unordered_map<std::string, std::any>& Dictionary::getMap() { return data_; 
 const std::unordered_map<std::string, std::any>& Dictionary::getMap() const { return data_; }
 
 
-std::string to_string(std::any& in)
+std::string toString(std::any& in)
 {
     try
     {
-        return std::to_string(std::any_cast<int>(in));
+        return std::toString(std::any_cast<int>(in));
     }
     catch (const std::bad_any_cast& e)
     {}
@@ -119,7 +119,7 @@ std::string to_string(std::any& in)
     {}
     try
     {
-        return std::to_string(std::any_cast<float>(in));
+        return std::toString(std::any_cast<float>(in));
     }
     catch (const std::bad_any_cast& e)
     {}
@@ -130,7 +130,7 @@ std::string to_string(std::any& in)
         for (auto [k, v] : d.getMap())
         {
             ret += k + ": ";
-            ret += to_string(v);
+            ret += toString(v);
             ret += "\n";
         }
         ret += "}";
@@ -147,7 +147,7 @@ std::ostream& operator<<(std::ostream& os, const Dictionary& in)
     os << "{\n";
     for (auto [k, v] : in.getMap())
     {
-        os << k << ": " << to_string(v) << " ";
+        os << k << ": " << toString(v) << " ";
         os << "\n";
     }
     os << "}\n";
