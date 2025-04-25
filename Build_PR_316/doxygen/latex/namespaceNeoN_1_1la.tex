@@ -1,0 +1,72 @@
+\doxysection{NeoN\+::la Namespace Reference}
+\hypertarget{namespaceNeoN_1_1la}{}\label{namespaceNeoN_1_1la}\index{NeoN::la@{NeoN::la}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}
+\begin{DoxyCompactList}\small\item\em Sparse matrix class with compact storage by row (CSR) format. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}
+\begin{DoxyCompactList}\small\item\em A view struct to allow easy read/write on all executors. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}
+\begin{DoxyCompactList}\small\item\em A class representing a linear system of equations. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}
+\begin{DoxyCompactList}\small\item\em A view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{Solver}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory}{Solver\+Factory}}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ac312d3e63ffba9166a86b897c62c3b98}{spmv}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&xfield)
+\item 
+{\footnotesize template$<$typename Value\+Type\+In , typename Index\+Type\+In , typename Value\+Type\+Out , typename Index\+Type\+Out $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+Out, Index\+Type\+Out $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd}{convert\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+In, Index\+Type\+In $>$ \&ls)
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type , typename Sparsity\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_abfb8a53aafd31aadc7ffc30c8e721dd4}{create\+Empty\+Linear\+System}} (const Sparsity\+Type \&sparsity)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1la_a966b549ce0b7a84f3f5ca14c07fb81b5}{compute\+Residual}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&x, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&res)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_1_1la_a966b549ce0b7a84f3f5ca14c07fb81b5}\label{namespaceNeoN_1_1la_a966b549ce0b7a84f3f5ca14c07fb81b5} 
+\index{NeoN::la@{NeoN::la}!computeResidual@{computeResidual}}
+\index{computeResidual@{computeResidual}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{computeResidual()}{computeResidual()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd}\label{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd} 
+\index{NeoN::la@{NeoN::la}!convertLinearSystem@{convertLinearSystem}}
+\index{convertLinearSystem@{convertLinearSystem}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{convertLinearSystem()}{convertLinearSystem()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type\+In , typename Index\+Type\+In , typename Value\+Type\+Out , typename Index\+Type\+Out $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+Out, Index\+Type\+Out $>$ Neo\+N\+::la\+::convert\+Linear\+System (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+In, Index\+Type\+In $>$ \&}]{ls }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_abfb8a53aafd31aadc7ffc30c8e721dd4}\label{namespaceNeoN_1_1la_abfb8a53aafd31aadc7ffc30c8e721dd4} 
+\index{NeoN::la@{NeoN::la}!createEmptyLinearSystem@{createEmptyLinearSystem}}
+\index{createEmptyLinearSystem@{createEmptyLinearSystem}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{createEmptyLinearSystem()}{createEmptyLinearSystem()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type , typename Sparsity\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Index\+Type $>$ Neo\+N\+::la\+::create\+Empty\+Linear\+System (\begin{DoxyParamCaption}\item[{const Sparsity\+Type \&}]{sparsity }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00147}{147}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_ac312d3e63ffba9166a86b897c62c3b98}\label{namespaceNeoN_1_1la_ac312d3e63ffba9166a86b897c62c3b98} 
+\index{NeoN::la@{NeoN::la}!spmv@{spmv}}
+\index{spmv@{spmv}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{spmv()}{spmv()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::la\+::spmv (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{xfield }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
