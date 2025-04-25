@@ -1,25 +1,21 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
-#include "NeoN/linearAlgebra/utilities.hpp"
-
-
-namespace NeoN::la
-{
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
-    const Vector<scalar>& bV,
-    const Vector<scalar>& xV,
-    Vector<scalar>& resV
+    const CsrMatrix<scalar, localIdx>& mtx,
+    const Vector<scalar> b,
+    const Vector<scalar>& x,
+    Vector<scalar>& res
 )
 {
-    auto [res, b, x] = views(resV, bV, xV);
+    auto [resV, bV, xV] = views(res, b, x);
     const auto [coeffs, colIdxs, rowOffs] = mtx.view();
 
     NeoN::parallelFor(
-        resV.exec(),
-        {0, resV.size()},
+        res.exec(),
+        {0, result.size()},
         KOKKOS_LAMBDA(const localIdx rowi) {
             auto rowStart = rowOffs[rowi];
             auto rowEnd = rowOffs[rowi + 1];
@@ -28,9 +24,7 @@ void computeResidual(
             {
                 sum += coeffs[coli] * x[colIdxs[coli]];
             }
-            res[rowi] = sum - b[rowi];
+            values[rowi] = sum - b[rowi];
         }
     );
-}
-
 }

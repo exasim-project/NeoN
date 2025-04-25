@@ -10,6 +10,7 @@
 #include "NeoN/dsl/solver.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp"
 
 namespace dsl = NeoN::dsl;
 
@@ -184,39 +185,18 @@ private:
     la::LinearSystem<ValueType, IndexType> ls_;
 };
 
+/* @brief given a linear system consisting of A, b and x the operator computes Ax-b
+ *
+ */
 template<typename ValueType, typename IndexType = localIdx>
 VolumeField<ValueType>
-operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueType>& psi)
+operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueType>& x)
 {
-    VolumeField<ValueType> resultVector(
-        psi.exec(),
-        "ls_" + psi.name,
-        psi.mesh(),
-        psi.internalVector(),
-        psi.boundaryData(),
-        psi.boundaryConditions()
-    );
+    VolumeField<ValueType> res(x);
 
-    auto [result, b, x] =
-        views(resultVector.internalVector(), expr.linearSystem().rhs(), psi.internalVector());
-    const auto [values, colIdxs, rowOffs] = expr.linearSystem().view();
-
-    NeoN::parallelFor(
-        resultVector.exec(),
-        {0, result.size()},
-        KOKKOS_LAMBDA(const std::size_t rowi) {
-            IndexType rowStart = rowOffs[rowi];
-            IndexType rowEnd = rowOffs[rowi + 1];
-            ValueType sum = 0.0;
-            for (IndexType coli = rowStart; coli < rowEnd; coli++)
-            {
-                sum += values[coli] * x[colIdxs[coli]];
-            }
-            result[rowi] = sum - b[rowi];
-        }
-    );
-
-    return resultVector;
+    auto ls = expr.linearSystem();
+    computeResidual(ls.matrix(), ls.rhs(), x.internalVector(), res.internalVector());
+    return res;
 }
 
 }

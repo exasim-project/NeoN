@@ -3,6 +3,7 @@
 
 neon_unit_test(CSRMatrix)
 neon_unit_test(linearSystem)
+neon_unit_test(utilities)
 
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
