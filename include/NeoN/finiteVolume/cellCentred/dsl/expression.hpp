@@ -10,7 +10,6 @@
 #include "NeoN/dsl/solver.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp"
 
 namespace dsl = NeoN::dsl;
 
