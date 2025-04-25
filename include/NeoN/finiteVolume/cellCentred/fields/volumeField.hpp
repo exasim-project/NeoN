@@ -44,16 +44,7 @@ public:
         std::string fieldName,
         const UnstructuredMesh& mesh,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
-    )
-        : DomainMixin<ValueType>(
-            exec,
-            fieldName,
-            mesh,
-            Field<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
-        ),
-          key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions),
-          db_(std::nullopt)
-    {}
+    );
 
 
     /**
@@ -71,13 +62,7 @@ public:
         const UnstructuredMesh& mesh,
         const Vector<ValueType>& internalVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
-    )
-        : DomainMixin<ValueType>(
-            exec, name, mesh, Field<ValueType>(exec, internalVector, mesh.boundaryMesh().offset())
-        ),
-          key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions),
-          db_(std::nullopt)
-    {}
+    );
 
     /**
      * @brief Constructor for a VolumeField with a given internal and boundary field
@@ -95,10 +80,7 @@ public:
         const Vector<ValueType>& internalVector,
         const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
-    )
-        : DomainMixin<ValueType>(exec, name, mesh, internalVector, boundaryVectors), key(""),
-          fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
-    {}
+    );
 
     /**
      * @brief Constructor for a VolumeField with a given internal field and database
@@ -121,16 +103,13 @@ public:
         Database& db,
         std::string dbKey,
         std::string collectionName
-    )
-        : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector), key(dbKey),
-          fieldCollectionName(collectionName), boundaryConditions_(boundaryConditions), db_(&db)
-    {}
+    );
 
-    VolumeField(const VolumeField& other)
-        : DomainMixin<ValueType>(other), key(other.key),
-          fieldCollectionName(other.fieldCollectionName),
-          boundaryConditions_(other.boundaryConditions_), db_(other.db_)
-    {}
+    VolumeField(const VolumeField& other);
+
+    VolumeField<ValueType>& operator-=(const ValueType rhs);
+
+    VolumeField<ValueType>& operator+=(const ValueType rhs);
 
     /**
      * @brief Corrects the boundary conditions of the surface field.
@@ -138,13 +117,7 @@ public:
      * This function applies the correctBoundaryConditions() method to each boundary condition in
      * the field.
      */
-    void correctBoundaryConditions()
-    {
-        for (auto& boundaryCondition : boundaryConditions_)
-        {
-            boundaryCondition.correctBoundaryCondition(this->field_);
-        }
-    }
+    void correctBoundaryConditions();
 
     /**
      * @brief Returns true if the field has a database, false otherwise.
