@@ -112,19 +112,9 @@ public:
 
     VolumeField<ValueType>& operator+=(const ValueType rhs);
 
-    VolumeField<ValueType>& operator-=(const scalar rhs)
-    {
-        sub(this->internalVector(), rhs);
-        correctBoundaryConditions();
-        return *this;
-    }
+    VolumeField<ValueType>& operator-=(const ValueType rhs);
 
-    VolumeField<ValueType>& operator+=(const scalar rhs)
-    {
-        sub(this->internalVector(), rhs);
-        correctBoundaryConditions();
-        return *this;
-    }
+    VolumeField<ValueType>& operator+=(const ValueType rhs);
 
     /**
      * @brief Corrects the boundary conditions of the surface field.
