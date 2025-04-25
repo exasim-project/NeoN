@@ -171,4 +171,6 @@ private:
     std::unordered_map<std::string, std::any> data_;
 };
 
+std::ostream& operator<<(std::ostream& os, const Dictionary& in);
+
 } // namespace NeoN

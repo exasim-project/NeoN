@@ -9,6 +9,54 @@
 
 namespace NeoN
 {
+
+/* @brief basic function to convert std::any to std::string
+ *
+ * The function tries to convert a given std::any to either an
+ * int, float, or Dictionary. In case of a dictionary toString is
+ * applied recursively
+ *
+ * @return the resulting string
+ */
+std::string toString(std::any& in)
+{
+    try
+    {
+        return std::to_string(std::any_cast<int>(in));
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        return std::any_cast<std::string>(in);
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        return std::to_string(std::any_cast<float>(in));
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+    try
+    {
+        auto d = std::any_cast<Dictionary>(in);
+        std::string ret = "{\n";
+        for (auto [k, v] : d.getMap())
+        {
+            ret += k + ": ";
+            ret += toString(v);
+            ret += "\n";
+        }
+        ret += "}";
+        return ret;
+    }
+    catch (const std::bad_any_cast& e)
+    {}
+
+    return "???";
+}
+
 void logOutRange(
     const std::out_of_range& e,
     const std::string& key,
@@ -102,4 +150,15 @@ std::unordered_map<std::string, std::any>& Dictionary::getMap() { return data_; 
 
 const std::unordered_map<std::string, std::any>& Dictionary::getMap() const { return data_; }
 
+std::ostream& operator<<(std::ostream& os, const Dictionary& in)
+{
+    os << "{\n";
+    for (auto [k, v] : in.getMap())
+    {
+        os << k << ": " << toString(v) << " ";
+        os << "\n";
+    }
+    os << "}" <<std::flush;
+    return os;
+}
 } // namespace NeoN
