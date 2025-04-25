@@ -21,14 +21,7 @@ namespace NeoN
 
 namespace detail
 {
-/**
- * @brief A helper function to simplify the common pattern of copying between and to executor.
- * @param size The number of elements to copy.
- * @param srcPtr Pointer to the original block of memory.
- * @param dstPtr Pointer to the target block of memory.
- * @tparam ValueType The type of the underlying elements.
- * @returns A function that takes a source and an destination executor
- */
+
 template<typename ValueType>
 auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
 {
@@ -40,6 +33,7 @@ auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
         );
     };
 }
+
 }
 
 /**
@@ -61,16 +55,7 @@ public:
      * @param exec  Executor associated to the field
      * @param size  size of the field
      */
-    Vector(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
-    {
-        void* ptr = nullptr;
-        std::visit(
-            [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-            exec_
-        );
-        data_ = static_cast<ValueType*>(ptr);
-    }
+    Vector(const Executor& exec, localIdx size);
 
     /**
      * @brief Create a Vector with a given size from existing memory on an executor
@@ -84,18 +69,7 @@ public:
         const ValueType* in,
         localIdx size,
         Executor hostExec = SerialExecutor()
-    )
-        : size_(size), data_(nullptr), exec_(exec)
-    {
-        void* ptr = nullptr;
-        std::visit(
-            [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-            exec_
-        );
-        data_ = static_cast<ValueType*>(ptr);
-        std::visit(detail::deepCopyVisitor<ValueType>(size_, in, data_), hostExec, exec_);
-    }
+    );
 
     /**
      * @brief Create a Vector with a given size on an executor and uniform value
@@ -103,61 +77,38 @@ public:
      * @param size  size of the field
      * @param value  the  default value
      */
-    Vector(const Executor& exec, localIdx size, ValueType value)
-        : size_(size), data_(nullptr), exec_(exec)
-    {
-        void* ptr = nullptr;
-        std::visit(
-            [&ptr, size](const auto& execu)
-            { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-            exec_
-        );
-        data_ = static_cast<ValueType*>(ptr);
-        NeoN::fill(*this, value);
-    }
+    Vector(const Executor& exec, localIdx size, ValueType value);
 
     /**
      * @brief Create a Vector from a given vector of values on an executor
      * @param exec  Executor associated to the field
      * @param in a vector of elements to copy over
      */
-    Vector(const Executor& exec, std::vector<ValueType> in)
-        : Vector(exec, in.data(), static_cast<localIdx>(in.size()))
-    {}
+    Vector(const Executor& exec, std::vector<ValueType> in);
 
     /**
      * @brief Create a Vector as a copy of a Vector on a specified executor
      * @param exec  Executor associated to the field
      * @param in a Vector of elements to copy over
      */
-    Vector(const Executor& exec, const Vector<ValueType>& in)
-        : Vector(exec, in.data(), in.size(), in.exec())
-    {}
+    Vector(const Executor& exec, const Vector<ValueType>& in);
 
     /**
      * @brief Copy constructor, creates a new field with the same size and data as the parsed field.
      * @param rhs The field to copy from.
      */
-    Vector(const Vector<ValueType>& rhs) : Vector(rhs.exec(), rhs.data(), rhs.size(), rhs.exec()) {}
+    Vector(const Vector<ValueType>& rhs);
 
     /**
      * @brief Move constructor, moves the data from the parsed field to the new field.
      * @param rhs The field to move from.
      */
-    Vector(Vector<ValueType>&& rhs) noexcept : size_(rhs.size_), data_(rhs.data_), exec_(rhs.exec_)
-    {
-        rhs.data_ = nullptr;
-        rhs.size_ = 0;
-    }
+    Vector(Vector<ValueType>&& rhs) noexcept;
 
     /**
      * @brief Destroy the Vector object.
      */
-    ~Vector()
-    {
-        std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
-        data_ = nullptr;
-    }
+    ~Vector();
 
     /**
      * @brief applies a functor, transformation, to the field
@@ -175,21 +126,13 @@ public:
      * @param dstExec The executor on which the data should be copied.
      * @returns A copy of the field on the host.
      */
-    [[nodiscard]] Vector<ValueType> copyToExecutor(Executor dstExec) const
-    {
-        if (dstExec == exec_) return *this;
-
-        Vector<ValueType> result(dstExec, size_);
-        std::visit(detail::deepCopyVisitor(size_, data_, result.data()), exec_, dstExec);
-
-        return result;
-    }
+    [[nodiscard]] Vector<ValueType> copyToExecutor(Executor dstExec) const;
 
     /**
      * @brief Returns a copy of the field back to the host.
      * @returns A copy of the field on the host.
      */
-    [[nodiscard]] Vector<ValueType> copyToHost() const { return copyToExecutor(SerialExecutor()); }
+    [[nodiscard]] Vector<ValueType> copyToHost() const;
 
     /**
      * @brief Copies the data (from anywhere) to a parsed host field.
@@ -199,13 +142,7 @@ public:
      * @warning exits if the size of the result field is not the same as the
      * source field.
      */
-    void copyToHost(Vector<ValueType>& result)
-    {
-        NF_DEBUG_ASSERT(
-            result.size() == size_, "Parsed Vector size not the same as current field size"
-        );
-        result = copyToExecutor(SerialExecutor());
-    }
+    void copyToHost(Vector<ValueType>& result);
 
     // ensures no return of device address on host --> invalid memory access
     ValueType& operator[](const localIdx i) = delete;
@@ -217,7 +154,7 @@ public:
      * @brief Assignment operator, Sets the field values to that of the passed value.
      * @param rhs The value to set the field to.
      */
-    void operator=(const ValueType& rhs) { fill(*this, rhs); }
+    void operator=(const ValueType& rhs);
 
     /**
      * @brief Assignment operator, Sets the field values to that of the parsed field.
@@ -225,53 +162,28 @@ public:
      *
      * @warning This field will be sized to the size of the parsed field.
      */
-    void operator=(const Vector<ValueType>& rhs)
-    {
-        NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
-        if (this->size() != rhs.size())
-        {
-            this->resize(rhs.size());
-        }
-        setVector(*this, rhs.view());
-    }
+    void operator=(const Vector<ValueType>& rhs);
 
     /**
      * @brief Arithmetic add operator, addition of a second field.
      * @param rhs The field to add with this field.
      * @returns The result of the addition.
      */
-    Vector<ValueType>& operator+=(const Vector<ValueType>& rhs)
-    {
-        validateOtherVector(rhs);
-        add(*this, rhs);
-        return *this;
-    }
+    Vector<ValueType>& operator+=(const Vector<ValueType>& rhs);
 
     /**
      * @brief Arithmetic subtraction operator, subtraction by a second field.
      * @param rhs The field to subtract from this field.
      * @returns The result of the subtraction.
      */
-    Vector<ValueType>& operator-=(const Vector<ValueType>& rhs)
-    {
-        validateOtherVector(rhs);
-        sub(*this, rhs);
-        return *this;
-    }
+    Vector<ValueType>& operator-=(const Vector<ValueType>& rhs);
 
     /**
      * @brief Arithmetic multiply operator, multiply by a second field.
      * @param rhs The field to subtract from this field.
      * @returns The result of the multiply.
      */
-    [[nodiscard]] Vector<ValueType> operator*(const Vector<scalar>& rhs)
-    {
-        validateOtherVector(rhs);
-        Vector<ValueType> result(exec_, size_);
-        result = *this;
-        mul(result, rhs);
-        return result;
-    }
+    [[nodiscard]] Vector<ValueType> operator*(const Vector<scalar>& rhs);
 
     /**
      * @brief Arithmetic multiply operator, multiplies every cell in the field
@@ -279,101 +191,63 @@ public:
      * @param rhs The scalar to multiply with the field.
      * @returns The result of the multiplication.
      */
-    [[nodiscard]] Vector<ValueType> operator*(const scalar rhs)
-    {
-        Vector<ValueType> result(exec_, size_);
-        result = *this;
-        scalarMul(result, rhs);
-        return result;
-    }
+    [[nodiscard]] Vector<ValueType> operator*(const scalar rhs);
 
     /**
      * @brief Arithmetic multiply operator, multiplies this field by another field element-wise.
      * @param rhs The field to multiply with this field.
      * @returns The result of the element-wise multiplication.
      */
-    Vector<ValueType>& operator*=(const Vector<scalar>& rhs)
-    {
-        validateOtherVector(rhs);
-        Vector<ValueType>& result = *this;
-        mul(result, rhs);
-        return result;
-    }
+    Vector<ValueType>& operator*=(const Vector<scalar>& rhs);
 
     /**
      * @brief Arithmetic multiply-assignment operator, multiplies every cell in the field
      * by a scalar and updates the field in place.
      * @param rhs The scalar to multiply with the field.
      */
-    Vector<ValueType>& operator*=(const scalar rhs)
-    {
-        Vector<ValueType>& result = *this;
-        scalarMul(result, rhs);
-        return result;
-    }
+    Vector<ValueType>& operator*=(const scalar rhs);
 
     /**
      * @brief Resizes the field to a new size.
      * @param size The new size to set the field to.
      */
-    void resize(const localIdx size)
-    {
-        void* ptr = nullptr;
-        if (!empty())
-        {
-            std::visit(
-                [this, &ptr, size](const auto& exec)
-                { ptr = exec.realloc(this->data_, static_cast<size_t>(size) * sizeof(ValueType)); },
-                exec_
-            );
-        }
-        else
-        {
-            std::visit(
-                [&ptr, size](const auto& exec)
-                { ptr = exec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-                exec_
-            );
-        }
-        data_ = static_cast<ValueType*>(ptr);
-        size_ = size;
-    }
+    void resize(const localIdx size);
 
     /**
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] ValueType* data() { return data_; }
+    [[nodiscard]] inline ValueType* data() { return data_; }
 
     /**
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] const ValueType* data() const { return data_; }
+    [[nodiscard]] inline const ValueType* data() const { return data_; }
 
     /**
      * @brief Gets the executor associated with the field.
      * @return Reference to the executor.
      */
-    [[nodiscard]] const Executor& exec() const { return exec_; }
+    [[nodiscard]] inline const Executor& exec() const { return exec_; }
 
     /**
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] localIdx size() const { return size_; }
+    [[nodiscard]] inline localIdx size() const { return size_; }
 
     /**
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] label ssize() const { return static_cast<label>(size_); }
+    [[nodiscard]] inline label ssize() const { return static_cast<label>(size_); }
 
     /**
      * @brief Checks if the field is empty.
      * @return True if the field is empty, false otherwise.
      */
-    [[nodiscard]] bool empty() const { return size() == 0; }
+    [[nodiscard]] inline bool empty() const { return size() == 0; }
 
     // return of a temporary --> invalid memory access
     View<ValueType> view() && = delete;
@@ -385,7 +259,7 @@ public:
      * @brief Gets the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<ValueType> view() &
+    [[nodiscard]] inline View<ValueType> view() &
     {
         return View<ValueType>(data_, static_cast<size_t>(size_));
     }
@@ -394,7 +268,7 @@ public:
      * @brief Gets the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<const ValueType> view() const&
+    [[nodiscard]] inline View<const ValueType> view() const&
     {
         return View<const ValueType>(data_, static_cast<size_t>(size_));
     }
@@ -409,7 +283,7 @@ public:
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
+    [[nodiscard]] inline View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
         return View<ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
@@ -420,7 +294,7 @@ public:
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
+    [[nodiscard]] inline View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
         return View<const ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
@@ -431,7 +305,7 @@ public:
      * @brief Gets the range of the field.
      * @return The range of the field {0, size()}.
      */
-    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 
@@ -443,11 +317,7 @@ private:
      * @brief Checks if two fields are the same size and have the same executor.
      * @param rhs The field to compare with.
      */
-    void validateOtherVector(const Vector<ValueType>& rhs) const
-    {
-        NF_DEBUG_ASSERT(size() == rhs.size(), "Vectors are not the same size.");
-        NF_DEBUG_ASSERT(exec() == rhs.exec(), "Executors are not the same.");
-    }
+    void validateOtherVector(const Vector<ValueType>& rhs) const;
 };
 
 /**
