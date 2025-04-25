@@ -67,4 +67,46 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
     return gko::config::pnode {result};
 }
 
+// TODO: check if this can be replaced by Ginkgos executor mapping
+std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
+{
+    return std::visit(
+        [](auto concreteExec) -> std::shared_ptr<gko::Executor>
+        {
+            using ExecType = std::decay_t<decltype(concreteExec)>;
+            if constexpr (std::is_same_v<ExecType, NeoN::SerialExecutor>)
+            {
+                return gko::ReferenceExecutor::create();
+            }
+            else if constexpr (std::is_same_v<ExecType, NeoN::CPUExecutor>)
+            {
+#if defined(KOKKOS_ENABLE_OMP)
+                return gko::OmpExecutor::create();
+#elif defined(KOKKOS_ENABLE_THREADS)
+                return gko::ReferenceExecutor::create();
+#endif
+            }
+            else if constexpr (std::is_same_v<ExecType, NeoN::GPUExecutor>)
+            {
+#if defined(KOKKOS_ENABLE_CUDA)
+                return gko::CudaExecutor::create(
+                    Kokkos::device_id(), gko::ReferenceExecutor::create()
+                );
+#elif defined(KOKKOS_ENABLE_HIP)
+                return gko::HipExecutor::create(
+                    Kokkos::device_id(), gko::ReferenceExecutor::create()
+                );
+#endif
+                throw std::runtime_error("No valid GPU executor mapping available");
+            }
+            else
+            {
+                throw std::runtime_error("Unsupported executor type");
+            }
+            return gko::ReferenceExecutor::create();
+        },
+        exec
+    );
+}
+
 #endif
