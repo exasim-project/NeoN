@@ -9,7 +9,7 @@ namespace NeoN::la
 
 void computeResidual(
     const CSRMatrix<scalar, localIdx>& mtx,
-    const Vector<scalar> bV,
+    const Vector<scalar>& bV,
     const Vector<scalar>& xV,
     Vector<scalar>& resV
 )
