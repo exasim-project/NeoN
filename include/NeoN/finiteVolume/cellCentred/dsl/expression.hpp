@@ -185,8 +185,11 @@ private:
     la::LinearSystem<ValueType, IndexType> ls_;
 };
 
-/* @brief given a linear system consisting of A, b and x the operator computes Ax-b
+/* @brief given a linear system consisting of A, b and x the operator computes the residual Ax-b
  *
+ * @param[in] expr, the corresponding expression
+ * @param[in] x, initial guess vector x
+ * @return the corresponding residual stored in a VolumeField
  */
 template<typename ValueType, typename IndexType = localIdx>
 VolumeField<ValueType>
