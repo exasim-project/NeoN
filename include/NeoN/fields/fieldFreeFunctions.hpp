@@ -133,6 +133,25 @@ void sub(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 }
 
 template<typename ValueType>
+void sub(Vector<ValueType>& a, const ValueType b)
+{
+    auto aView = a.view();
+    map(
+        a, KOKKOS_LAMBDA(const localIdx i) { return aView[i] - b; }
+    );
+}
+
+template<typename ValueType>
+void add(Vector<ValueType>& a, const ValueType b)
+{
+    auto aView = a.view();
+    map(
+        a, KOKKOS_LAMBDA(const localIdx i) { return aView[i] + b; }
+    );
+}
+
+
+template<typename ValueType>
 void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
 {
     detail::fieldBinaryOp(
