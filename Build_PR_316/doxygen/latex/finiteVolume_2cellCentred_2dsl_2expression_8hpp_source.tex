@@ -189,20 +189,23 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00185}00185\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ IndexType>}}\ ls\_;}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00186}00186\ \};}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00187}00187\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00188}00188\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ Ax-\/b}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00188}00188\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ the\ residual\ Ax-\/b}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00189}00189\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00190}00190\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00191}00191\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType\ =\ localIdx>}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00192}00192\ VolumeField<ValueType>}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00193}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad79364c9fe8d6543256bec59bdae00a0}{00193}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad79364c9fe8d6543256bec59bdae00a0}{operator\&}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Expression<ValueType,\ IndexType>}}\ expr,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ x)}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00194}00194\ \{}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00195}00195\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\ res(x);}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00196}00196\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00197}00197\ \ \ \ \ \textcolor{keyword}{auto}\ ls\ =\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}();}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00198}00198\ \ \ \ \ computeResidual(ls.matrix(),\ ls.rhs(),\ x.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}(),\ res.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}());}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00200}00200\ \}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00201}00201\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00202}00202\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00190}00190\ \textcolor{comment}{\ *\ @param[in]\ expr,\ the\ corresponding\ expression}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00191}00191\ \textcolor{comment}{\ *\ @param[in]\ x,\ initial\ guess\ vector\ x}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00192}00192\ \textcolor{comment}{\ *\ @return\ the\ corresponding\ residual\ stored\ in\ a\ VolumeField}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00193}00193\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00194}00194\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType\ =\ localIdx>}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00195}00195\ VolumeField<ValueType>}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00196}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad79364c9fe8d6543256bec59bdae00a0}{00196}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad79364c9fe8d6543256bec59bdae00a0}{operator\&}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression}{Expression<ValueType,\ IndexType>}}\ expr,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ x)}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00197}00197\ \{}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00198}00198\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\ res(x);}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{keyword}{auto}\ ls\ =\ expr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_a4cfaa913d49e8f0e57ecc7595fcfbba2}{linearSystem}}();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00201}00201\ \ \ \ \ computeResidual(ls.matrix(),\ ls.rhs(),\ x.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}(),\ res.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}());}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00203}00203\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2dsl_2expression_8hpp_source_l00205}00205\ \}}
 
 \end{DoxyCode}

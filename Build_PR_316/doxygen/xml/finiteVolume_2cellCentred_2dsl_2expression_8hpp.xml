@@ -835,21 +835,24 @@
 <codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, IndexType&gt;</ref><sp/>ls_;</highlight></codeline>
 <codeline lineno="186"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="187"><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>linear<sp/>system<sp/>consisting<sp/>of<sp/>A,<sp/>b<sp/>and<sp/>x<sp/>the<sp/>operator<sp/>computes<sp/>Ax-b</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>linear<sp/>system<sp/>consisting<sp/>of<sp/>A,<sp/>b<sp/>and<sp/>x<sp/>the<sp/>operator<sp/>computes<sp/>the<sp/>residual<sp/>Ax-b</highlight></codeline>
 <codeline lineno="189"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="190"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType<sp/>=<sp/>localIdx&gt;</highlight></codeline>
-<codeline lineno="192"><highlight class="normal">VolumeField&lt;ValueType&gt;</highlight></codeline>
-<codeline lineno="193" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad79364c9fe8d6543256bec59bdae00a0" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad79364c9fe8d6543256bec59bdae00a0" kindref="member">operator&amp;</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression" kindref="compound">Expression&lt;ValueType, IndexType&gt;</ref><sp/>expr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>x)</highlight></codeline>
-<codeline lineno="194"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref><sp/>res(x);</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"></highlight></codeline>
-<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ls<sp/>=<sp/>expr.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a4cfaa913d49e8f0e57ecc7595fcfbba2" kindref="member">linearSystem</ref>();</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>computeResidual(ls.matrix(),<sp/>ls.rhs(),<sp/>x.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),<sp/>res.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>());</highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>res;</highlight></codeline>
-<codeline lineno="200"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="201"><highlight class="normal"></highlight></codeline>
-<codeline lineno="202"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>expr,<sp/>the<sp/>corresponding<sp/>expression</highlight></codeline>
+<codeline lineno="191"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>x,<sp/>initial<sp/>guess<sp/>vector<sp/>x</highlight></codeline>
+<codeline lineno="192"><highlight class="comment"><sp/>*<sp/>@return<sp/>the<sp/>corresponding<sp/>residual<sp/>stored<sp/>in<sp/>a<sp/>VolumeField</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType<sp/>=<sp/>localIdx&gt;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">VolumeField&lt;ValueType&gt;</highlight></codeline>
+<codeline lineno="196" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad79364c9fe8d6543256bec59bdae00a0" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad79364c9fe8d6543256bec59bdae00a0" kindref="member">operator&amp;</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression" kindref="compound">Expression&lt;ValueType, IndexType&gt;</ref><sp/>expr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>x)</highlight></codeline>
+<codeline lineno="197"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref><sp/>res(x);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ls<sp/>=<sp/>expr.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression_1a4cfaa913d49e8f0e57ecc7595fcfbba2" kindref="member">linearSystem</ref>();</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/>computeResidual(ls.matrix(),<sp/>ls.rhs(),<sp/>x.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>(),<sp/>res.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_1af26fd248fd921be40c9dd98d912feddb" kindref="member">internalVector</ref>());</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>res;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp"/>
   </compounddef>
