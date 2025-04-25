@@ -72,8 +72,10 @@ public:
      * @brief Constructor that initializes the RungeKutta solver with a dictionary configuration.
      * @param dict The dictionary containing configuration parameters.
      */
-    RungeKutta(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : Base(schemeDict, solutionDict)
+    RungeKutta(
+        const Dictionary& schemeDict, const Dictionary& solutionDict, const dsl::Operator::Type type
+    )
+        : Base(schemeDict, solutionDict, type)
     {}
 
     /**

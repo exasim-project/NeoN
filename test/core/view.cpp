@@ -67,7 +67,6 @@ TEST_CASE("parallelFor")
     // unpack multiple views, and check correctness.
     SECTION("views")
     {
-        auto fieldHost = field.copyToHost();
         auto field1Host = field1.copyToHost();
 
         auto [viewHost, view1Host] = views(fieldHost, field1Host);

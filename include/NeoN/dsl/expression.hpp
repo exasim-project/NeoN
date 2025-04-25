@@ -75,9 +75,8 @@ public:
         return source;
     }
 
-    // TODO: rename to assembleMatrixCoefficients ?
     /* @brief perform all implicit operation and accumulate the result */
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    void assembleSpatialContributions(la::LinearSystem<ValueType, localIdx>& ls)
     {
         for (auto& op : spatialOperators_)
         {
@@ -88,7 +87,9 @@ public:
         }
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
+    /* @brief perform all implicit operation and accumulate the result */
+    void
+    assembleTemporalContributions(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
     {
         for (auto& op : temporalOperators_)
         {
@@ -99,6 +100,15 @@ public:
         }
     }
 
+    void
+    assembleLinearSystem(la::LinearSystem<ValueType, localIdx>& ls, scalar t = 0.0, scalar dt = 0.0)
+    {
+        assembleSpatialContributions(ls);
+        if (dt > 0.0)
+        {
+            assembleTemporalContributions(ls, t, dt);
+        }
+    }
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
 

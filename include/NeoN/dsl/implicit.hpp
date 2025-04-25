@@ -23,12 +23,6 @@ namespace NeoN::dsl::imp
 
 
 template<typename ValueType>
-TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
-{
-    return fvcc::DdtOperator(dsl::Operator::Type::Implicit, phi);
-}
-
-template<typename ValueType>
 SpatialOperator<ValueType>
 source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 {

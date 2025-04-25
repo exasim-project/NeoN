@@ -89,7 +89,7 @@ public:
         expr_.implicitOperation(ls_, t, dt);
         auto rhs = ls_.rhs().view();
         // we subtract the explicit source term from the rhs
-        NeoN::parallelFor(
+        parallelFor(
             exec(),
             {0, rhs.size()},
             KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceView[i] * vol[i]; }
@@ -121,7 +121,7 @@ public:
             ls_ = expr_.implicitOperation();
             auto rhs = ls_.rhs().view();
             // we subtract the explicit source term from the rhs
-            NeoN::parallelFor(
+            parallelFor(
                 exec(),
                 {0, rhs.size()},
                 KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceView[i] * vol[i]; }
@@ -149,7 +149,7 @@ public:
         else
         {
             auto exec = psi_.exec();
-            auto solver = NeoN::la::Solver(exec, fvSolution_);
+            auto solver = la::Solver(exec, fvSolution_);
             solver.solve(ls_, psi_.internalVector());
             // NF_ERROR_EXIT("No linear solver is available, build with -DNeoN_WITH_GINKGO=ON");
         }
@@ -162,7 +162,7 @@ public:
         const auto rowOffs = ls_.matrix().rowOffs().view();
         auto rhs = ls_.rhs().view();
         auto values = ls_.matrix().values().view();
-        NeoN::parallelFor(
+        parallelFor(
             ls_.exec(),
             {refCell, refCell + 1},
             KOKKOS_LAMBDA(const std::size_t refCelli) {
@@ -201,7 +201,7 @@ operator&(const Expression<ValueType, IndexType> expr, const VolumeField<ValueTy
         views(resultVector.internalVector(), expr.linearSystem().rhs(), psi.internalVector());
     const auto [values, colIdxs, rowOffs] = expr.linearSystem().view();
 
-    NeoN::parallelFor(
+    parallelFor(
         resultVector.exec(),
         {0, result.size()},
         KOKKOS_LAMBDA(const std::size_t rowi) {

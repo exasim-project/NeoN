@@ -7,8 +7,9 @@
 #include <functional>
 
 #include "NeoN/fields/field.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/dsl/operator.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -20,7 +21,7 @@ template<typename SolutionType>
 class TimeIntegratorBase :
     public RuntimeSelectionFactory<
         TimeIntegratorBase<SolutionType>,
-        Parameters<const Dictionary&, const Dictionary&>>
+        Parameters<const Dictionary&, const Dictionary&, const dsl::Operator::Type>>
 {
 
 public:
@@ -30,7 +31,9 @@ public:
 
     static std::string name() { return "timeIntegrationFactory"; }
 
-    TimeIntegratorBase(const Dictionary& schemeDict, const Dictionary& solutionDict)
+    TimeIntegratorBase(
+        const Dictionary& schemeDict, const Dictionary& solutionDict, const dsl::Operator::Type
+    )
         : schemeDict_(schemeDict), solutionDict_(solutionDict)
     {}
 
@@ -70,9 +73,11 @@ public:
     TimeIntegration(TimeIntegration&& timeIntegrator)
         : timeIntegratorStrategy_(std::move(timeIntegrator.timeIntegratorStrategy_)) {};
 
-    TimeIntegration(const Dictionary& schemeDict, const Dictionary& solutionDict)
+    TimeIntegration(
+        const Dictionary& schemeDict, const Dictionary& solutionDict, const dsl::Operator::Type type
+    )
         : timeIntegratorStrategy_(TimeIntegratorBase<SolutionVectorType>::create(
-            schemeDict.get<std::string>("type"), schemeDict, solutionDict
+            schemeDict.get<std::string>("type"), schemeDict, solutionDict, type
         )) {};
 
     void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)

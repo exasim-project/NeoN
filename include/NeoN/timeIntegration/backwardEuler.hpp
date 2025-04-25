@@ -8,6 +8,7 @@
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/dsl/operator.hpp"
 #include "NeoN/dsl/solver.hpp"
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -31,9 +32,17 @@ public:
     using Base = TimeIntegratorBase<SolutionVectorType>::template Register<
         BackwardEuler<SolutionVectorType>>;
 
-    BackwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : Base(schemeDict, solutionDict)
-    {}
+    BackwardEuler(
+        const Dictionary& schemeDict, const Dictionary& solutionDict, const dsl::Operator::Type type
+    )
+        : Base(schemeDict, solutionDict, type)
+    {
+        if (type == dsl::Operator::Type::Explicit)
+        {
+            NF_ERROR_EXIT("Incompatible scheme: " + name() + " for exp::ddt operator");
+            ;
+        }
+    }
 
     static std::string name() { return "backwardEuler"; }
 
@@ -45,25 +54,16 @@ public:
         dsl::Expression<ValueType>& eqn, SolutionVectorType& solutionVector, scalar t, scalar dt
     ) override
     {
-        auto source = eqn.explicitOperation(solutionVector.size());
-        SolutionVectorType& oldSolutionVector = finiteVolume::cellCentred::oldTime(solutionVector);
-
-        // solutionVector.internalVector() = oldSolutionVector.internalVector() - source * dt;
-        // solutionVector.correctBoundaryConditions();
-        // solve sparse matrix system
-        // using ValueType = typename SolutionVectorType::ElementType;
-
         // TODO decouple from fvcc specific implementation
+        SolutionVectorType& oldSolutionVector = finiteVolume::cellCentred::oldTime(solutionVector);
         auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionVector.mesh());
         auto ls = la::createEmptyLinearSystem<
             ValueType,
             localIdx,
             finiteVolume::cellCentred::SparsityPattern>(sparsity);
 
-        eqn.implicitOperation(ls);
-
-        auto values = ls.matrix().values();
-        eqn.implicitOperation(ls, t, dt);
+        eqn.assembleLinearSystem(ls);
+        eqn.assembleTemporalContributions(ls, t, dt);
 
         auto solver = NeoN::la::Solver(solutionVector.exec(), this->solutionDict_);
         solver.solve(ls, solutionVector.internalVector());

@@ -51,32 +51,48 @@ TEST_CASE("TimeIntegration")
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "fieldCollection");
 
-    NeoN::Dictionary fvSchemes;
-    NeoN::Dictionary ddtSchemes;
-    ddtSchemes.insert("type", std::string("forwardEuler"));
-    fvSchemes.insert("ddtSchemes", ddtSchemes);
-    NeoN::Dictionary fvSolution;
 
     fvcc::VolumeField<NeoN::scalar>& vf =
         fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
             CreateVector {.name = "vf", .mesh = mesh, .value = 2.0, .timeIndex = 1}
         );
 
-    SECTION("Create expression and perform explicitOperation on " + execName)
+    auto dummy = Dummy(vf);
+
+    double dt {2.0};
+    double time {1.0};
+
+    NeoN::Dictionary fvSolution;
+    NeoN::Dictionary fvSchemes;
+    NeoN::Dictionary ddtSchemes;
+
+    SECTION("ForwardEuler via DSL on " + execName)
     {
-        auto dummy = Dummy(vf);
-        NeoN::dsl::TemporalOperator<NeoN::scalar> ddtOperator = NeoN::dsl::imp::ddt(vf);
+        ddtSchemes.insert("type", std::string("forwardEuler"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
 
         // ddt(U) = f
-        NeoN::dsl::Expression<NeoN::scalar> eqn = ddtOperator + dummy;
-        double dt {2.0};
-        double time {1.0};
-
+        NeoN::dsl::Expression<NeoN::scalar> eqn = NeoN::dsl::exp::ddt(vf) + dummy;
 
         // int(ddt(U)) + f = 0
         // (U^1-U^0)/dt = -f
         // U^1 = - f * dt + U^0, where dt = 2, f = 2, U^0=2.0 -> U^1=-2.0
         NeoN::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
         REQUIRE(getVector(vf.internalVector()) == -2.0);
+    }
+
+    SECTION("BackwardEuler via DSL on " + execName)
+    {
+        ddtSchemes.insert("type", std::string("backwardEuler"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+        // ddt(U) = f
+        NeoN::dsl::Expression<NeoN::scalar> eqn = NeoN::dsl::imp::ddt(vf) + dummy;
+
+        // int(ddt(U)) + f = 0
+        // (U^1-U^0)/dt = -f
+        // U^1 = - f * dt + U^0, where dt = 2, f = 2, U^0=2.0 -> U^1=-2.0
+        NeoN::dsl::solve(eqn, vf, time, dt, fvSchemes, fvSolution);
+        REQUIRE(getVector(vf.internalVector()) == -5.0);
     }
 }

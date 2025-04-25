@@ -3,6 +3,7 @@
 #pragma once
 
 #include "NeoN/dsl/coeff.hpp"
+#include "NeoN/core/input.hpp"
 
 namespace NeoN::dsl
 {
@@ -34,7 +35,6 @@ public:
     OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
-
     Operator::Type getType() const { return type_; }
 
     virtual ~OperatorMixin() = default;
@@ -50,7 +50,7 @@ public:
     const VectorType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
-    void read([[maybe_unused]] const Input& input) {}
+    void read(const Input&) {}
 
 protected:
 

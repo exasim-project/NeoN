@@ -44,46 +44,52 @@ void solve(
     const Dictionary& fvSolution
 )
 {
-    // TODO:
-    if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
+    if (exp.size() == 0)
     {
-        NF_ERROR_EXIT("No temporal or implicit terms to solve.");
+        NF_ERROR_EXIT("Empty expression, no temporal or implicit terms to solve.");
     }
-    exp.read(fvSchemes);
-    if (exp.temporalOperators().size() > 0)
+
+    if (exp.temporalOperators().size() > 1)
     {
+        NF_ERROR_EXIT("Found more then one temporal operator ");
+    }
+
+    exp.read(fvSchemes);
+    if (exp.temporalOperators().size() == 1)
+    {
+        // TODO Make sure that scheme is explicit
         // integrate equations in time
         timeIntegration::TimeIntegration<VectorType> timeIntegrator(
-            fvSchemes.subDict("ddtSchemes"), fvSolution
+            fvSchemes.subDict("ddtSchemes"), fvSolution, exp.temporalOperators()[0].getType()
         );
         timeIntegrator.solve(exp, solution, t, dt);
+        return;
     }
-    else
-    {
-        // solve sparse matrix system
-        using ValueType = typename VectorType::ElementType;
 
-        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
-        auto ls = la::createEmptyLinearSystem<
-            ValueType,
-            localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sparsity);
+    // solve sparse matrix system
+    using ValueType = typename VectorType::ElementType;
 
-        exp.implicitOperation(ls);
-        auto expTmp = exp.explicitOperation(solution.mesh().nCells());
+    // TODO store the sparsity pattern to avoid recomputing it every time
+    auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
+    auto ls = la::createEmptyLinearSystem<
+        ValueType,
+        localIdx,
+        NeoN::finiteVolume::cellCentred::SparsityPattern>(sparsity);
 
-        auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
+    exp.assembleLinearSystem(ls);
+    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
 
-        // subtract the explicit source term from the rhs
-        parallelFor(
-            solution.exec(),
-            {0, rhs.size()},
-            KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
-        );
+    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
 
-        auto solver = NeoN::la::Solver(solution.exec(), fvSolution);
-        solver.solve(ls, solution.internalVector());
-    }
+    // subtract the explicit source term from the rhs
+    parallelFor(
+        solution.exec(),
+        {0, rhs.size()},
+        KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+    );
+
+    auto solver = NeoN::la::Solver(solution.exec(), fvSolution);
+    solver.solve(ls, solution.internalVector());
 }
 
 } // namespace dsl
