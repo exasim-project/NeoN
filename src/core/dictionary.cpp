@@ -158,7 +158,7 @@ std::ostream& operator<<(std::ostream& os, const Dictionary& in)
         os << k << ": " << toString(v) << " ";
         os << "\n";
     }
-    os << "}\n";
+    os<<std::flush;
     return os;
 }
 } // namespace NeoN
