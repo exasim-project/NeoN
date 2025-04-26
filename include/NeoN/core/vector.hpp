@@ -7,10 +7,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/view.hpp"
-#include "NeoN/fields/fieldFreeFunctions.hpp"
-#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/fields/vectorFreeFunctions.hpp"
 
 #include <variant>
 #include <vector>
@@ -22,17 +20,16 @@ namespace NeoN
 namespace detail
 {
 
+/**
+ * @brief A helper function to simplify the common pattern of copying between and to executor.
+ * @param size The number of elements to copy.
+ * @param srcPtr Pointer to the original block of memory.
+ * @param dstPtr Pointer to the target block of memory.
+ * @tparam ValueType The type of the underlying elements.
+ * @returns A function that takes a source and an destination executor
+ */
 template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
-{
-    size_t size = static_cast<size_t>(ssize);
-    return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
-    {
-        Kokkos::deep_copy(
-            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
-        );
-    };
-}
+auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr);
 
 }
 
@@ -183,7 +180,7 @@ public:
      * @param rhs The field to subtract from this field.
      * @returns The result of the multiply.
      */
-    [[nodiscard]] Vector<ValueType> operator*(const Vector<scalar>& rhs);
+    [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs);
 
     /**
      * @brief Arithmetic multiply operator, multiplies every cell in the field
@@ -191,21 +188,21 @@ public:
      * @param rhs The scalar to multiply with the field.
      * @returns The result of the multiplication.
      */
-    [[nodiscard]] Vector<ValueType> operator*(const scalar rhs);
+    [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs);
 
     /**
      * @brief Arithmetic multiply operator, multiplies this field by another field element-wise.
      * @param rhs The field to multiply with this field.
      * @returns The result of the element-wise multiplication.
      */
-    Vector<ValueType>& operator*=(const Vector<scalar>& rhs);
+    Vector<ValueType>& operator*=(const Vector<ValueType>& rhs);
 
     /**
      * @brief Arithmetic multiply-assignment operator, multiplies every cell in the field
      * by a scalar and updates the field in place.
      * @param rhs The scalar to multiply with the field.
      */
-    Vector<ValueType>& operator*=(const scalar rhs);
+    Vector<ValueType>& operator*=(const ValueType rhs);
 
     /**
      * @brief Resizes the field to a new size.
@@ -326,12 +323,8 @@ private:
  * @param rhs The field to add with this field.
  * @returns The result of the addition.
  */
-template<typename T>
-[[nodiscard]] Vector<T> operator+(Vector<T> lhs, const Vector<T>& rhs)
-{
-    lhs += rhs;
-    return lhs;
-}
+template<typename ValueType>
+[[nodiscard]] Vector<ValueType> operator+(Vector<ValueType> lhs, const Vector<ValueType>& rhs);
 
 /**
  * @brief Arithmetic subtraction operator, subtraction one field from another.
@@ -339,11 +332,7 @@ template<typename T>
  * @param rhs The field to subtract by.
  * @returns The result of the subtraction.
  */
-template<typename T>
-[[nodiscard]] Vector<T> operator-(Vector<T> lhs, const Vector<T>& rhs)
-{
-    lhs -= rhs;
-    return lhs;
-}
+template<typename ValueType>
+[[nodiscard]] Vector<ValueType> operator-(Vector<ValueType> lhs, const Vector<ValueType>& rhs);
 
 } // namespace NeoN

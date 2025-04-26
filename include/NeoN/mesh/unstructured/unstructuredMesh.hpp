@@ -5,7 +5,7 @@
 
 #include "Kokkos_Sort.hpp"
 
-#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/fields/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
 

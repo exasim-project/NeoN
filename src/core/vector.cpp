@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
-#pragma once
 
-#include <Kokkos_Core.hpp>
-
-#include "NeoN/core/Vector.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/vector.hpp"
 
 #include <variant>
 #include <vector>
@@ -16,16 +15,18 @@ namespace NeoN
 namespace detail
 {
 
-/**
- * @brief A helper function to simplify the common pattern of copying between and to executor.
- * @param size The number of elements to copy.
- * @param srcPtr Pointer to the original block of memory.
- * @param dstPtr Pointer to the target block of memory.
- * @tparam ValueType The type of the underlying elements.
- * @returns A function that takes a source and an destination executor
- */
+// automatically instantiated by calling routines here in this translation unit.
 template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr);
+auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
+{
+    size_t size = static_cast<size_t>(ssize);
+    return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
+    {
+        Kokkos::deep_copy(
+            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
+        );
+    };
+}
 
 }
 
@@ -114,7 +115,7 @@ template<typename ValueType>
 }
 
 template<typename ValueType>
-[[nodiscard]] Vector<ValueType>::Vector<ValueType> copyToHost() const
+[[nodiscard]] Vector<ValueType> Vector<ValueType>::copyToHost() const
 {
     return copyToExecutor(SerialExecutor());
 }
@@ -162,7 +163,7 @@ Vector<ValueType>& Vector<ValueType>::operator-=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
-[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const Vector<scalar>& rhs)
+[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const Vector<ValueType>& rhs)
 {
     validateOtherVector(rhs);
     Vector<ValueType> result(exec_, size_);
@@ -172,7 +173,7 @@ template<typename ValueType>
 }
 
 template<typename ValueType>
-[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const scalar rhs)
+[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const ValueType rhs)
 {
     Vector<ValueType> result(exec_, size_);
     result = *this;
@@ -181,7 +182,7 @@ template<typename ValueType>
 }
 
 template<typename ValueType>
-Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<scalar>& rhs)
+Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
 {
     validateOtherVector(rhs);
     Vector<ValueType>& result = *this;
@@ -190,7 +191,7 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<scalar>& rhs)
 }
 
 template<typename ValueType>
-Vector<ValueType>& Vector<ValueType>::operator*=(const scalar rhs)
+Vector<ValueType>& Vector<ValueType>::operator*=(const ValueType rhs)
 {
     Vector<ValueType>& result = *this;
     scalarMul(result, rhs);
@@ -228,31 +229,42 @@ void Vector<ValueType>::validateOtherVector(const Vector<ValueType>& rhs) const
     NF_DEBUG_ASSERT(exec() == rhs.exec(), "Executors are not the same.");
 }
 
-
-/**
- * @brief Arithmetic add operator, addition of two fields.
- * @param lhs The field to add with this field.
- * @param rhs The field to add with this field.
- * @returns The result of the addition.
- */
-template<typename T>
-[[nodiscard]] Vector<T> operator+(Vector<T> lhs, const Vector<T>& rhs)
+template<typename ValueType>
+[[nodiscard]] Vector<ValueType> operator+(Vector<ValueType> lhs, const Vector<ValueType>& rhs)
 {
     lhs += rhs;
     return lhs;
 }
 
-/**
- * @brief Arithmetic subtraction operator, subtraction one field from another.
- * @param lhs The field to subtract from.
- * @param rhs The field to subtract by.
- * @returns The result of the subtraction.
- */
-template<typename T>
-[[nodiscard]] Vector<T> operator-(Vector<T> lhs, const Vector<T>& rhs)
+template<typename ValueType>
+[[nodiscard]] Vector<ValueType> operator-(Vector<ValueType> lhs, const Vector<ValueType>& rhs)
 {
     lhs -= rhs;
     return lhs;
 }
+
+// template class instantiation
+template class Vector<uint32_t>;
+template class Vector<uint64_t>;
+template class Vector<int32_t>;
+template class Vector<int64_t>;
+template class Vector<float>;
+template class Vector<double>;
+template class Vector<Vec3>;
+
+// operator instantiation
+#define OPERATOR_INSTANTIATION(Type)                                                               \
+    template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
+    template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);
+
+
+OPERATOR_INSTANTIATION(uint32_t);
+OPERATOR_INSTANTIATION(uint64_t);
+OPERATOR_INSTANTIATION(int32_t);
+OPERATOR_INSTANTIATION(int64_t);
+OPERATOR_INSTANTIATION(float);
+OPERATOR_INSTANTIATION(double);
+OPERATOR_INSTANTIATION(Vec3);
+
 
 } // namespace NeoN

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/fields/vectorTypeDefs.hpp"
 
 namespace NeoN
 {
