@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
-#include "NeoN/fields/segmentedVector.hpp"
+#include "NeoN/core/segmentedVector.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

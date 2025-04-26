@@ -4,7 +4,7 @@
 #pragma once
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/fields/segmentedVector.hpp"
+#include "NeoN/core/segmentedVector.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

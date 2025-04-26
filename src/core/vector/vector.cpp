@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-
-#include <variant>
-#include <vector>
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 
 namespace NeoN
@@ -163,6 +160,8 @@ Vector<ValueType>& Vector<ValueType>::operator-=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
+template<typename VType>
+    requires requires(VType a, VType b) { a* b; }
 [[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const Vector<ValueType>& rhs)
 {
     validateOtherVector(rhs);
@@ -173,6 +172,8 @@ template<typename ValueType>
 }
 
 template<typename ValueType>
+template<typename VType>
+    requires requires(VType a, VType b) { a* b; }
 [[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const ValueType rhs)
 {
     Vector<ValueType> result(exec_, size_);
@@ -182,6 +183,8 @@ template<typename ValueType>
 }
 
 template<typename ValueType>
+template<typename VType>
+    requires requires(VType a, VType b) { a *= b; }
 Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
 {
     validateOtherVector(rhs);
@@ -191,6 +194,8 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
+template<typename VType>
+    requires requires(VType a, VType b) { a *= b; }
 Vector<ValueType>& Vector<ValueType>::operator*=(const ValueType rhs)
 {
     Vector<ValueType>& result = *this;

@@ -8,27 +8,16 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-#include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
+
 
 namespace NeoN
 {
 
-// Forward declaration
-template<typename ValueType>
-class Vector;
 
-
-/**
- * @brief Map a field using a specific executor.
- *
- * @param a The field to map.
- * @param inner The function to apply to each element of the field.
- * @param range The range to map the field in. If not provided, the whole field is mapped.
- */
 template<typename ValueType, typename Inner>
-void map(Vector<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
+void map(Vector<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> range)
 {
     auto [start, end] = range;
     if (end == 0)
@@ -42,17 +31,17 @@ void map(Vector<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> 
 }
 
 /**
- * @brief Fill the field with a vector value using a specific executor.
+ * @brief Fill the field with a scalar value using a specific executor.
  *
  * @param field The field to fill.
- * @param value The vector value to fill the field with.
+ * @param value The scalar value to fill the field with.
  * @param range The range to fill the field in. If not provided, the whole field is filled.
  */
 template<typename ValueType>
 void fill(
     Vector<ValueType>& a,
     const std::type_identity_t<ValueType> value,
-    std::pair<localIdx, localIdx> range = {0, 0}
+    std::pair<localIdx, localIdx> range
 )
 {
     auto [start, end] = range;
@@ -68,17 +57,17 @@ void fill(
 
 
 /**
- * @brief Set the vector with a view of values using a specific executor.
+ * @brief Set the field with a view of values using a specific executor.
  *
- * @param a The vector to set.
- * @param b The view of values to set the vector with.
- * @param range The range to set the vector in. If not provided, the whole vector is set.
+ * @param a The field to set.
+ * @param b The view of values to set the field with.
+ * @param range The range to set the field in. If not provided, the whole field is set.
  */
 template<typename ValueType>
 void setVector(
     Vector<ValueType>& a,
     const View<const std::type_identity_t<ValueType>> b,
-    std::pair<localIdx, localIdx> range = {0, 0}
+    std::pair<localIdx, localIdx> range
 )
 {
     auto [start, end] = range;

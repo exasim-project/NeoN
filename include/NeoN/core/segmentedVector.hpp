@@ -4,7 +4,7 @@
 
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/core/vector/vector/vector/vector/vector/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 
 namespace NeoN
 {
