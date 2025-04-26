@@ -25,8 +25,8 @@ class Vector;
  * @param inner The function to apply to each element of the field.
  * @param range The range to map the field in. If not provided, the whole field is mapped.
  */
-template<typename T, typename Inner>
-void map(Vector<T>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
+template<typename ValueType, typename Inner>
+void map(Vector<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
 {
     auto [start, end] = range;
     if (end == 0)
@@ -146,8 +146,8 @@ auto copyToHosts(Args&... fields)
     return std::make_tuple(fields.copyToHost()...);
 }
 
-template<typename T>
-bool equal(Vector<T>& field, T value)
+template<typename ValueType>
+bool equal(Vector<ValueType>& field, ValueType value)
 {
     auto hostVector = field.copyToHost();
     auto hostView = hostVector.view();
@@ -161,8 +161,8 @@ bool equal(Vector<T>& field, T value)
     return true;
 };
 
-template<typename T>
-bool equal(const Vector<T>& field, const Vector<T>& field2)
+template<typename ValueType>
+bool equal(const Vector<ValueType>& field, const Vector<ValueType>& field2)
 {
     auto [hostVector, hostVector2] = copyToHosts(field, field2);
     auto [hostView, hostView2] = views(hostVector, hostVector2);
@@ -183,8 +183,8 @@ bool equal(const Vector<T>& field, const Vector<T>& field2)
     return true;
 };
 
-template<typename T>
-bool equal(const Vector<T>& field, View<T> view2)
+template<typename ValueType>
+bool equal(const Vector<ValueType>& field, View<ValueType> view2)
 {
     auto hostView = field.copyToHost().view();
 

@@ -6,7 +6,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"

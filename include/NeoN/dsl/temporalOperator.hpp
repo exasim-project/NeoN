@@ -6,7 +6,7 @@
 #include <concepts>
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/coeff.hpp"

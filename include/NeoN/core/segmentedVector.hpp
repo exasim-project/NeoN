@@ -4,7 +4,7 @@
 
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector/vector/vector/vector/vector.hpp"
 
 namespace NeoN
 {
@@ -130,7 +130,7 @@ public:
 
 
     /**
-     * @brief Create a segmented field with a given size and number of segments.
+     * @brief Create a segmented vector with a given size and number of segments.
      * @param exec  Executor associated to the matrix
      * @param size  size of the matrix
      * @param numSegments  number of segments
@@ -140,8 +140,8 @@ public:
     {}
 
     /*
-     * @brief Create a segmented field from intervals.
-     * @param intervals The intervals to create the segmented field from.
+     * @brief Create a segmented vector from intervals.
+     * @param intervals The intervals to create the segmented vector from.
      * @note The intervals are the lengths of each segment
      */
     SegmentedVector(const Vector<IndexType>& intervals)
@@ -155,8 +155,8 @@ public:
 
     /**
      * @brief Constructor to create a segmentedVector from values and the segments.
-     * @param values The values of the segmented field.
-     * @param segments The segments of the segmented field.
+     * @param values The values of the segmented vector.
+     * @param segments The segments of the segmented vector.
      */
     SegmentedVector(const Vector<ValueType>& values, const Vector<IndexType>& segments)
         : values_(values), segments_(segments)
@@ -166,26 +166,26 @@ public:
 
 
     /**
-     * @brief Get the executor associated with the segmented field.
+     * @brief Get the executor associated with the segmented vector.
      * @return Reference to the executor.
      */
     const Executor& exec() const { return values_.exec(); }
 
     /**
-     * @brief Get the size of the segmented field.
-     * @return The size of the segmented field.
+     * @brief Get the size of the segmented vector.
+     * @return The size of the segmented vector.
      */
     localIdx size() const { return values_.size(); }
 
     /**
-     * @brief Get the number of segments in the segmented field.
+     * @brief Get the number of segments in the segmented vector.
      * @return The number of segments.
      */
     localIdx numSegments() const { return segments_.size() - 1; }
 
 
     /**
-     * @brief get a view of the segmented field
+     * @brief get a view of the segmented vector
      * @return View of the fields
      */
     [[nodiscard]] SegmentedVectorView<ValueType, IndexType> view() &
@@ -197,7 +197,7 @@ public:
     [[nodiscard]] SegmentedVectorView<ValueType, IndexType> view() && = delete;
 
     /**
-     * @brief get the combined value and range views of the segmented field
+     * @brief get the combined value and range views of the segmented vector
      * @return Combined value and range views of the fields
      */
     [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() &

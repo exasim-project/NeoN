@@ -8,7 +8,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
-#include "NeoN/fields/vectorFreeFunctions.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 #include <variant>
 #include <vector>

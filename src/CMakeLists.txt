@@ -13,7 +13,7 @@ target_sources(
   NeoN
   PRIVATE "core/primitives/vec3.cpp"
           "core/time.cpp"
-          "core/vector.cpp"
+          "core/vector/vector.cpp"
           "core/database/database.cpp"
           "core/database/collection.cpp"
           "core/database/document.cpp"

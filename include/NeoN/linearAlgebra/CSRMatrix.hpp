@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 
 #include <type_traits>
 
