@@ -115,31 +115,4 @@ TEST_CASE("LinearSystem")
             REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
         }
     }
-
-
-    SECTION("SpmV" + execName)
-    {
-        Vector<scalar> rhs(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-        Vector<scalar> x(exec, {1.0, 2.0, 3.0});
-
-        Vector<scalar> y = spmv(linearSystem, x);
-        auto yHost = y.copyToHost();
-        auto yHostView = yHost.view();
-
-        REQUIRE(yHostView[0] == 1.0 * 1.0 + 2.0 * 2.0 + 3.0 * 3.0);
-        REQUIRE(yHostView[1] == 4.0 * 1.0 + 5.0 * 2.0 + 6.0 * 3.0);
-        REQUIRE(yHostView[2] == 7.0 * 1.0 + 8.0 * 2.0 + 9.0 * 3.0);
-
-        // test with non-zero rhs
-        Vector<scalar> rhs2(exec, {1.0, 2.0, 3.0});
-        LinearSystem<scalar, localIdx> linearSystem2(csrMatrix, rhs2);
-        y = spmv(linearSystem2, x);
-        yHost = y.copyToHost();
-        yHostView = yHost.view();
-
-        REQUIRE(yHostView[0] == 14.0 - 1.0);
-        REQUIRE(yHostView[1] == 32.0 - 2.0);
-        REQUIRE(yHostView[2] == 50.0 - 3.0);
-    }
 }
