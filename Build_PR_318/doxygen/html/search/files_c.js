@@ -8,10 +8,9 @@ var searchData=
   ['sparsitypattern_2ehpp_5',['sparsityPattern.hpp',['../sparsityPattern_8hpp.html',1,'']]],
   ['spatialoperator_2ehpp_6',['spatialOperator.hpp',['../spatialOperator_8hpp.html',1,'']]],
   ['stencildatabase_2ehpp_7',['stencilDataBase.hpp',['../stencilDataBase_8hpp.html',1,'']]],
-  ['sum_2ehpp_8',['sum.hpp',['../sum_8hpp.html',1,'']]],
-  ['sundials_2ehpp_9',['sundials.hpp',['../sundials_8hpp.html',1,'']]],
-  ['surfaceboundaryfactory_2ehpp_10',['surfaceBoundaryFactory.hpp',['../surfaceBoundaryFactory_8hpp.html',1,'']]],
-  ['surfacefield_2ehpp_11',['surfaceField.hpp',['../surfaceField_8hpp.html',1,'']]],
-  ['surfaceintegrate_2ehpp_12',['surfaceIntegrate.hpp',['../surfaceIntegrate_8hpp.html',1,'']]],
-  ['surfaceinterpolation_2ehpp_13',['surfaceInterpolation.hpp',['../surfaceInterpolation_8hpp.html',1,'']]]
+  ['sundials_2ehpp_8',['sundials.hpp',['../sundials_8hpp.html',1,'']]],
+  ['surfaceboundaryfactory_2ehpp_9',['surfaceBoundaryFactory.hpp',['../surfaceBoundaryFactory_8hpp.html',1,'']]],
+  ['surfacefield_2ehpp_10',['surfaceField.hpp',['../surfaceField_8hpp.html',1,'']]],
+  ['surfaceintegrate_2ehpp_11',['surfaceIntegrate.hpp',['../surfaceIntegrate_8hpp.html',1,'']]],
+  ['surfaceinterpolation_2ehpp_12',['surfaceInterpolation.hpp',['../surfaceInterpolation_8hpp.html',1,'']]]
 ];
