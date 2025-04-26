@@ -2,3 +2,4 @@
 # SPDX-FileCopyrightText: 2025 NeoN authors
 
 neon_unit_test(sparsityPattern)
+neon_unit_test(fvccutilities)

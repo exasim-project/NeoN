@@ -14,7 +14,6 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
-using NeoN::la::spmv;
 
 TEST_CASE("LinearSystem")
 {

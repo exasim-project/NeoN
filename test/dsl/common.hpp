@@ -30,13 +30,13 @@ public:
 
     Dummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
+            field.exec(), NeoN::dsl::Coeff(1.0), field, Operator::Type::Explicit
         )
     {}
 
     Dummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, type
+            field.exec(), NeoN::dsl::Coeff(1.0), field, type
         )
     {}
 
@@ -89,13 +89,13 @@ public:
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
+            field.exec(), NeoN::dsl::Coeff(1.0), field, Operator::Type::Explicit
         )
     {}
 
     TemporalDummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
         : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, type
+            field.exec(), NeoN::dsl::Coeff(1.0), field, type
         )
     {}
 
