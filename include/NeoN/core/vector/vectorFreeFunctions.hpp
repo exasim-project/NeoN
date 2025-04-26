@@ -93,7 +93,7 @@ void setVector(
 }
 
 template<typename ValueType>
-void scalarMul(Vector<ValueType>& a, const scalar value)
+void scalarMul(Vector<ValueType>& a, const ValueType value)
 {
     auto viewA = a.view();
     parallelFor(
@@ -103,6 +103,7 @@ void scalarMul(Vector<ValueType>& a, const scalar value)
 
 namespace detail
 {
+
 template<typename ValueType, typename BinaryOp>
 void fieldBinaryOp(
     Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b, BinaryOp op
@@ -115,6 +116,7 @@ void fieldBinaryOp(
         a, KOKKOS_LAMBDA(const localIdx i) { return op(viewA[i], viewB[i]); }
     );
 }
+
 }
 
 template<typename ValueType>
@@ -124,7 +126,6 @@ void add(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
         a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
     );
 }
-
 
 template<typename ValueType>
 void sub(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)

@@ -262,7 +262,6 @@ template class Vector<Vec3>;
     template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
     template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);
 
-
 OPERATOR_INSTANTIATION(uint32_t);
 OPERATOR_INSTANTIATION(uint64_t);
 OPERATOR_INSTANTIATION(int32_t);
