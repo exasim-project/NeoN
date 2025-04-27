@@ -13,40 +13,41 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType, typename IndexType, typename SparsityType>
-la::LinearSystem<ValueType, IndexType> assembleLinearSystem(
-    dsl::Expression<ValueType> expr, VolumeField<ValueType>& rhs, const Dictionary& fvSchemes
+template<typename ValueType>
+[[nodiscard]] la::LinearSystem<ValueType, localIdx> assembleLinearSystem(
+    dsl::Expression<ValueType> expr,
+    VolumeField<ValueType>& rhs,
+    const Dictionary& fvSchemes,
+    scalar t,
+    scalar dt
 )
 {
+    auto sp = SparsityPattern(rhs.mesh());
+    auto exec = expr.exec();
 
-    auto sp = SparsityPattern(SparsityPattern::readOrCreate(rhs.mesh()));
-
-    la::LinearSystem<ValueType, IndexType> ls =
+    la::LinearSystem<ValueType, localIdx> ls =
         la::createEmptyLinearSystem<ValueType, localIdx, SparsityPattern>(sp);
 
-    // auto vol = rhs.mesh().cellVolumes().view();
+    auto nCells = rhs.size();
+    Vector<ValueType> source(exec, nCells);
 
-    // Vector<ValueType> source(exec_, nCells);
+    fill(ls.rhs(), zero<ValueType>());
+    fill(ls.matrix().values(), zero<ValueType>());
 
-    // expr.explicitOperation(source);
-    // expr.explicitOperation(source, t, dt);
+    auto [csrHV, rhsHV] = ls.view();
 
-    // fill(ls.rhs(), zero<ValueType>());
-    // fill(ls.matrix().values(), zero<ValueType>());
+    expr.explicitOperation(source);
+    expr.explicitOperation(source, t, dt);
+    expr.implicitOperation(ls);
+    expr.implicitOperation(ls, t, dt);
 
-    // expr.implicitOperation(ls_);
-    // // TODO rename implicitOperation -> assembleLinearSystem
-    // expr.implicitOperation(ls_, t, dt);
+    auto [rhsV, sourceV] = views(ls.rhs(), source);
 
-    // auto rhsV = ls.rhs().view();
-    // auto sourceV = source.view();
-
-    // // we subtract the explicit source term from the rhs
-    // NeoN::parallelFor(
-    //     exec(),
-    //     {0, rhs.size()},
-    //     KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSourceView[i] * vol[i]; }
-    // );
+    // subtract the explicit source term from the rhs
+    auto vol = rhs.mesh().cellVolumes().view();
+    NeoN::parallelFor(
+        exec, {0, rhs.size()}, KOKKOS_LAMBDA(const localIdx i) { rhsV[i] -= sourceV[i] * vol[i]; }
+    );
 
     return ls;
 }
