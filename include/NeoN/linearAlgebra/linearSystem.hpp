@@ -6,6 +6,8 @@
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+
 #include <string>
 
 namespace NeoN::la
@@ -184,5 +186,15 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& s
     };
 }
 
+template<typename ValueType>
+finiteVolume::cellCentred::VolumeField<ValueType> operator&(
+    const LinearSystem<ValueType, localIdx> ls,
+    const finiteVolume::cellCentred::VolumeField<ValueType>& x
+)
+{
+    finiteVolume::cellCentred::VolumeField<ValueType> res(x);
+    computeResidual(ls.matrix(), ls.rhs(), x.internalVector(), res.internalVector());
+    return res;
+}
 
 } // namespace NeoN::la
