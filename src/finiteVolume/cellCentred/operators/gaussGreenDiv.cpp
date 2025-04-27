@@ -144,6 +144,7 @@ NF_DECLARE_COMPUTE_EXP_DIV(scalar);
 NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 
+// FIXME currently hardcodes weight to 0.5 -> cds
 template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType, localIdx>& ls,
@@ -173,8 +174,8 @@ void computeDivImp(
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = sFaceFlux[facei];
-            // scalar weight = 0.5;
-            scalar weight = flux >= 0 ? 1 : 0;
+            scalar weight = 0.5;
+            // scalar weight = flux >= 0 ? 1 : 0;
             ValueType value = zero<ValueType>();
             auto own = owner[facei];
             auto nei = neighbour[facei];
@@ -186,7 +187,7 @@ void computeDivImp(
             scalar operatorScalingNei = operatorScaling[nei];
             scalar operatorScalingOwn = operatorScaling[own];
 
-            value = -weight * flux * one<ValueType>();
+            value = -flux * weight * one<ValueType>();
             // scalar valueNei = (1 - weight) * flux;
             matrix.values[rowNeiStart + neiOffs[facei]] += value * operatorScalingNei;
             Kokkos::atomic_sub(
@@ -195,7 +196,7 @@ void computeDivImp(
 
             // upper triangular part
             // add owner contribution lower
-            value = flux * (1 - weight) * one<ValueType>();
+            value = -flux * (1 - weight) * one<ValueType>();
             matrix.values[rowOwnStart + ownOffs[facei]] += value * operatorScalingOwn;
             Kokkos::atomic_sub(
                 &matrix.values[rowNeiStart + diagOffs[nei]], value * operatorScalingNei
