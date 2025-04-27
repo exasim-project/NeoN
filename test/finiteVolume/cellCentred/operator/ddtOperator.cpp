@@ -25,7 +25,6 @@ struct CreateVector
 
     NeoN::Document operator()(NeoN::Database& db)
     {
-
         std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
         for (auto patchi : std::vector<NeoN::localIdx> {0, 1, 2, 3})
         {
@@ -73,20 +72,17 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     SECTION("explicit DdtOperator " + execName)
     {
-        fvcc::DdtOperator<TestType> ddtTerm(Operator::Type::Explicit, phi);
+        auto ddtOp = dsl::exp::ddt(phi);
         auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
-        ddtTerm.explicitOperation(source, 1.0, 0.5);
+        ddtOp.explicitOperation(source, 1.0, 0.5);
 
-        // cell has one cell
-        const auto vol = mesh.cellVolumes().copyToHost();
-        const auto volView = vol.view();
-        auto hostSource = source.copyToHost();
-        auto values = hostSource.view();
-        for (auto ii = 0; ii < values.size(); ++ii)
+        const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+        const auto [volV, vals] = views(vol, hostSource);
+
+        for (auto ii = 0; ii < vals.size(); ++ii)
         {
-            REQUIRE(
-                values[ii] == volView[0] * TestType(22.0)
-            ); // => (phi^{n + 1} - phi^{n})/dt*V => (10 -- 1)/.5*V = 22V
+            // => (phi^{n + 1} - phi^{n})/dt*V => (10 -- 1)/.5*V = 22V
+            REQUIRE(vals[ii] == volV[0] * TestType(22.0));
         }
     }
 
@@ -96,24 +92,19 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             TestType,
             NeoN::localIdx,
             NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
-        fvcc::DdtOperator<TestType> ddtTerm(Operator::Type::Implicit, phi);
-        ddtTerm.implicitOperation(ls, 1.0, 0.5);
 
-        auto lsHost = ls.copyToHost();
-        const auto vol = mesh.cellVolumes().copyToHost();
-        const auto volView = vol.view();
-        const auto matrixValues = lsHost.matrix().values();
-        const auto matrixValuesView = matrixValues.view();
-        const auto rhs = lsHost.rhs().view();
+        auto ddtOp = dsl::imp::ddt(phi);
+        ddtOp.implicitOperation(ls, 1.0, 0.5);
 
-        for (auto ii = 0; ii < matrixValues.size(); ++ii)
+        const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
+
+        for (auto ii = 0; ii < mtxValsV.size(); ++ii)
         {
-            REQUIRE(
-                matrixValuesView[ii] == 2.0 * volView[0] * one<TestType>()
-            ); // => 1/dt*V => 1/.5*V = 2V
-            REQUIRE(
-                rhs[ii] == -2.0 * volView[0] * one<TestType>()
-            ); // => phi^{n}/dt*V => -1/.5*V = -2V
+            // => 1/dt*V => 1/.5*V = 2V
+            REQUIRE(mtxValsV[ii] == 2.0 * volV[0] * one<TestType>());
+            // => phi^{n}/dt*V => -1/.5*V = -2V
+            REQUIRE(rhsV[ii] == -2.0 * volV[0] * one<TestType>());
         }
     }
 }
