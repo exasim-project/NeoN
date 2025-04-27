@@ -51,34 +51,6 @@ public:
     std::string getName() const { return "YSquared"; }
 };
 
-struct CreateVector
-{
-    std::string name;
-    const NeoN::UnstructuredMesh& mesh;
-    std::int64_t timeIndex = 0;
-    std::int64_t iterationIndex = 0;
-    std::int64_t subCycleIndex = 0;
-
-    NeoN::Document operator()(NeoN::Database& db)
-    {
-        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-        NeoN::Field<NeoN::scalar> domainVector(
-            mesh.exec(),
-            NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
-            mesh.boundaryMesh().offset()
-        );
-        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
-        return NeoN::Document(
-            {{"name", vf.name},
-             {"timeIndex", timeIndex},
-             {"iterationIndex", iterationIndex},
-             {"subCycleIndex", subCycleIndex},
-             {"field", vf}},
-            fvcc::validateVectorDoc
-        );
-    }
-};
-
 TEST_CASE("TimeIntegration - Runge Kutta")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
