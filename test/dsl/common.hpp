@@ -191,6 +191,7 @@ ValueType getVector(const NeoN::Vector<ValueType>& source)
     return sourceVector.view()[0];
 }
 
+// FIXME
 template<typename ValueType>
 ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
 {
