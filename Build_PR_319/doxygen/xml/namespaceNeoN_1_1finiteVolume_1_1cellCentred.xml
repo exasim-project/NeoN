@@ -341,21 +341,15 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" line="31" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" declline="31" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a4618a1c1220503a6c340b0df93f05607" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aa9517eb3622009c5522170f69d265c59" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
           </param>
-          <param>
-            <type>typename IndexType</type>
-          </param>
-          <param>
-            <type>typename SparsityType</type>
-          </param>
         </templateparamlist>
-        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType, IndexType &gt;</type>
-        <definition>la::LinearSystem&lt; ValueType, IndexType &gt; NeoN::finiteVolume::cellCentred::assembleLinearSystem</definition>
-        <argsstring>(dsl::Expression&lt; ValueType &gt; expr, VolumeField&lt; ValueType &gt; &amp;rhs, const Dictionary &amp;fvSchemes)</argsstring>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>la::LinearSystem&lt; ValueType, localIdx &gt; NeoN::finiteVolume::cellCentred::assembleLinearSystem</definition>
+        <argsstring>(dsl::Expression&lt; ValueType &gt; expr, VolumeField&lt; ValueType &gt; &amp;rhs, const Dictionary &amp;fvSchemes, scalar t, scalar dt)</argsstring>
         <name>assembleLinearSystem</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::assembleLinearSystem</qualifiedname>
         <param>
@@ -370,13 +364,21 @@
           <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
           <declname>fvSchemes</declname>
         </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp" line="17" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp" bodystart="17" bodyend="52"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp" line="17" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp" bodystart="17" bodyend="53"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1adebf18ffc07511e7a497371f83f92fc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

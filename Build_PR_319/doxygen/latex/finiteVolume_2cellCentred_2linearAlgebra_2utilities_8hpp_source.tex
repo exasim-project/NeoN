@@ -17,43 +17,44 @@
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00014}00014\ \{}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00015}00015\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00016}00016\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType,\ \textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a4618a1c1220503a6c340b0df93f05607}{00017}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ IndexType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a4618a1c1220503a6c340b0df93f05607}{assembleLinearSystem}}(}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00018}00018\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\ expr,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ rhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00019}00019\ )}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00020}00020\ \{}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00021}00021\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{keyword}{auto}\ sp\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{SparsityPattern}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern_a12ee4abea8de0db794477f96df6467c4}{SparsityPattern::readOrCreate}}(rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}()));}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00023}00023\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00024}00024\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ IndexType>}}\ ls\ =}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ la::createEmptyLinearSystem<ValueType,\ localIdx,\ SparsityPattern>(sp);}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00026}00026\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{comment}{//\ auto\ vol\ =\ rhs.mesh().cellVolumes().view();}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{comment}{//\ Vector<ValueType>\ source(exec\_,\ nCells);}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00016}00016\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aa9517eb3622009c5522170f69d265c59}{00017}}\ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aa9517eb3622009c5522170f69d265c59}{assembleLinearSystem}}(}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00018}00018\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl::Expression<ValueType>}}\ expr,}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00019}00019\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ rhs,}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00020}00020\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00021}00021\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00022}00022\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00023}00023\ )}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{auto}\ sp\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern}{SparsityPattern}}(rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}());}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00028}00028\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\ ls\ =}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ la::createEmptyLinearSystem<ValueType,\ localIdx,\ SparsityPattern>(sp);}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00030}00030\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ expr.explicitOperation(source);}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ expr.explicitOperation(source,\ t,\ dt);}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{auto}\ nCells\ =\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8848bf626211ed2b6e0192951e61ef9a}{size}}();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ source(exec,\ nCells);}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00033}00033\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//\ fill(ls.rhs(),\ zero<ValueType>());}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ fill(ls.matrix().values(),\ zero<ValueType>());}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00034}00034\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4df3c8c32ed2bdaa77d100c44de4b3eb}{fill}}(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac2fcf5bbb16345399ffdb4fd8741833b}{rhs}}(),\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4df3c8c32ed2bdaa77d100c44de4b3eb}{fill}}(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a416fd6d5122482fcc2372590bc10b8f9}{matrix}}().values(),\ zero<ValueType>());}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00036}00036\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{comment}{//\ expr.implicitOperation(ls\_);}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{comment}{//\ //\ TODO\ rename\ implicitOperation\ -\/>\ assembleLinearSystem}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ expr.implicitOperation(ls\_,\ t,\ dt);}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00040}00040\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ auto\ rhsV\ =\ ls.rhs().view();}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{//\ auto\ sourceV\ =\ source.view();}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{auto}\ [csrHV,\ rhsHV]\ =\ ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ad00f3e7eab80d4a8b35c8a70071ba6d9}{view}}();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00039}00039\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(source);}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00040}00040\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(source,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00041}00041\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a527d62bdba68730f6fd2e65fb6643a41}{implicitOperation}}(ls);}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00042}00042\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a527d62bdba68730f6fd2e65fb6643a41}{implicitOperation}}(ls,\ t,\ dt);}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ //\ we\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{comment}{//\ NeoN::parallelFor(}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ exec(),}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \{0,\ rhs.size()\},}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ rhs[i]\ -\/=\ expSourceView[i]\ *\ vol[i];\ \}}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ );}}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00050}00050\ }
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keywordflow}{return}\ ls;}
-\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00052}00052\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{auto}\ [rhsV,\ sourceV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac2fcf5bbb16345399ffdb4fd8741833b}{rhs}}(),\ source);}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{auto}\ vol\ =\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}().\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a2bfdd3e60fd2916c0e35beebe83d6ee7}{cellVolumes}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00048}00048\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ exec,\ \{0,\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8848bf626211ed2b6e0192951e61ef9a}{size}}()\},\ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhsV[i]\ -\/=\ sourceV[i]\ *\ vol[i];\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00050}00050\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{return}\ ls;}
 \DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00053}00053\ \}}
+\DoxyCodeLine{\Hypertarget{finiteVolume_2cellCentred_2linearAlgebra_2utilities_8hpp_source_l00054}00054\ \}}
 
 \end{DoxyCode}
