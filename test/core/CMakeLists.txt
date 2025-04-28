@@ -13,7 +13,9 @@ neon_unit_test(tokenList)
 neon_unit_test(input)
 neon_unit_test(executor)
 neon_unit_test(parallelAlgorithms)
+neon_unit_test(vector)
 neon_unit_test(view)
+neon_unit_test(segmentedVector)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace

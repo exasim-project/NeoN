@@ -160,50 +160,6 @@ Vector<ValueType>& Vector<ValueType>::operator-=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
-template<typename VType>
-    requires requires(VType a, VType b) { a* b; }
-[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const Vector<ValueType>& rhs)
-{
-    validateOtherVector(rhs);
-    Vector<ValueType> result(exec_, size_);
-    result = *this;
-    mul(result, rhs);
-    return result;
-}
-
-template<typename ValueType>
-template<typename VType>
-    requires requires(VType a, VType b) { a* b; }
-[[nodiscard]] Vector<ValueType> Vector<ValueType>::operator*(const ValueType rhs)
-{
-    Vector<ValueType> result(exec_, size_);
-    result = *this;
-    scalarMul(result, rhs);
-    return result;
-}
-
-template<typename ValueType>
-template<typename VType>
-    requires requires(VType a, VType b) { a *= b; }
-Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
-{
-    validateOtherVector(rhs);
-    Vector<ValueType>& result = *this;
-    mul(result, rhs);
-    return result;
-}
-
-template<typename ValueType>
-template<typename VType>
-    requires requires(VType a, VType b) { a *= b; }
-Vector<ValueType>& Vector<ValueType>::operator*=(const ValueType rhs)
-{
-    Vector<ValueType>& result = *this;
-    scalarMul(result, rhs);
-    return result;
-}
-
-template<typename ValueType>
 void Vector<ValueType>::resize(const localIdx size)
 {
     void* ptr = nullptr;
@@ -259,6 +215,7 @@ template class Vector<Vec3>;
 
 // operator instantiation
 #define OPERATOR_INSTANTIATION(Type)                                                               \
+    /* free function opperators with additional requirements  */                                   \
     template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
     template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);
 

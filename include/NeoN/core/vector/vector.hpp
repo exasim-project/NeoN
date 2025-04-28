@@ -182,7 +182,14 @@ public:
      */
     template<typename VType = ValueType>
         requires requires(VType a, VType b) { a* b; }
-    [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs);
+    [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
+    {
+        validateOtherVector(rhs);
+        Vector<ValueType> result(exec_, size_);
+        result = *this;
+        mul(result, rhs);
+        return result;
+    }
 
     /**
      * @brief Arithmetic multiply operator, multiplies every cell in the field
@@ -192,7 +199,13 @@ public:
      */
     template<typename VType = ValueType>
         requires requires(VType a, VType b) { a* b; }
-    [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs);
+    [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs)
+    {
+        Vector<ValueType> result(exec_, size_);
+        result = *this;
+        scalarMul(result, rhs);
+        return result;
+    }
 
     /**
      * @brief Arithmetic multiply operator, multiplies this field by another field element-wise.
@@ -201,7 +214,13 @@ public:
      */
     template<typename VType = ValueType>
         requires requires(VType a, VType b) { a *= b; }
-    Vector<ValueType>& operator*=(const Vector<ValueType>& rhs);
+    Vector<ValueType>& operator*=(const Vector<ValueType>& rhs)
+    {
+        validateOtherVector(rhs);
+        Vector<ValueType>& result = *this;
+        mul(result, rhs);
+        return result;
+    }
 
     /**
      * @brief Arithmetic multiply-assignment operator, multiplies every cell in the field
@@ -210,7 +229,12 @@ public:
      */
     template<typename VType = ValueType>
         requires requires(VType a, VType b) { a *= b; }
-    Vector<ValueType>& operator*=(const ValueType rhs);
+    Vector<ValueType>& operator*=(const ValueType rhs)
+    {
+        Vector<ValueType>& result = *this;
+        scalarMul(result, rhs);
+        return result;
+    }
 
     /**
      * @brief Resizes the field to a new size.
