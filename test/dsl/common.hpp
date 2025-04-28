@@ -7,6 +7,7 @@
 #include "NeoN/NeoN.hpp"
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
+namespace dsl = NeoN::dsl;
 
 using Vector = NeoN::Vector<NeoN::scalar>;
 using Coeff = NeoN::dsl::Coeff;
