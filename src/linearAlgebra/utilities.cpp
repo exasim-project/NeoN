@@ -7,49 +7,30 @@
 namespace NeoN::la
 {
 
-
-// TODO: check if this can be replaced by Ginkgos executor mapping
-#if NF_WITH_GINKGO
-std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec)
+void computeResidual(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const Vector<scalar>& bV,
+    const Vector<scalar>& xV,
+    Vector<scalar>& resV
+)
 {
-    return std::visit(
-        [](auto concreteExec) -> std::shared_ptr<gko::Executor>
-        {
-            using ExecType = std::decay_t<decltype(concreteExec)>;
-            if constexpr (std::is_same_v<ExecType, SerialExecutor>)
+    auto [res, b, x] = views(resV, bV, xV);
+    const auto [coeffs, colIdxs, rowOffs] = mtx.view();
+
+    NeoN::parallelFor(
+        resV.exec(),
+        {0, resV.size()},
+        KOKKOS_LAMBDA(const localIdx rowi) {
+            auto rowStart = rowOffs[rowi];
+            auto rowEnd = rowOffs[rowi + 1];
+            scalar sum = 0.0;
+            for (localIdx coli = rowStart; coli < rowEnd; coli++)
             {
-                return gko::ReferenceExecutor::create();
+                sum += coeffs[coli] * x[colIdxs[coli]];
             }
-            else if constexpr (std::is_same_v<ExecType, CPUExecutor>)
-            {
-#if defined(KOKKOS_ENABLE_OMP)
-                return gko::OmpExecutor::create();
-#elif defined(KOKKOS_ENABLE_THREADS)
-                return gko::ReferenceExecutor::create();
-#endif
-            }
-            else if constexpr (std::is_same_v<ExecType, GPUExecutor>)
-            {
-#if defined(KOKKOS_ENABLE_CUDA)
-                return gko::CudaExecutor::create(
-                    Kokkos::device_id(), gko::ReferenceExecutor::create()
-                );
-#elif defined(KOKKOS_ENABLE_HIP)
-                return gko::HipExecutor::create(
-                    Kokkos::device_id(), gko::ReferenceExecutor::create()
-                );
-#endif
-                throw std::runtime_error("No valid GPU executor mapping available");
-            }
-            else
-            {
-                throw std::runtime_error("Unsupported executor type");
-            }
-            return gko::ReferenceExecutor::create();
-        },
-        exec
+            res[rowi] = sum - b[rowi];
+        }
     );
 }
 
-#endif
 }

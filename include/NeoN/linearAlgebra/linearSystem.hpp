@@ -98,35 +98,6 @@ private:
 };
 
 
-template<typename ValueType, typename IndexType>
-Vector<ValueType> spmv(LinearSystem<ValueType, IndexType>& ls, Vector<ValueType>& xfield)
-{
-    Vector<ValueType> resultVector(ls.exec(), ls.rhs().size(), 0.0);
-    auto [result, b, x] = views(resultVector, ls.rhs(), xfield);
-
-    auto values = ls.matrix().values().view();
-    auto colIdxs = ls.matrix().colIdxs().view();
-    auto rowOffs = ls.matrix().rowOffs().view();
-
-    parallelFor(
-        ls.exec(),
-        {0, ls.matrix().nRows()},
-        KOKKOS_LAMBDA(const localIdx rowi) {
-            IndexType rowStart = rowOffs[rowi];
-            IndexType rowEnd = rowOffs[rowi + 1];
-            ValueType sum = 0.0;
-            for (IndexType coli = rowStart; coli < rowEnd; coli++)
-            {
-                sum += values[coli] * x[colIdxs[coli]];
-            }
-            result[rowi] = sum - b[rowi];
-        }
-    );
-
-    return resultVector;
-};
-
-
 template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
 LinearSystem<ValueTypeOut, IndexTypeOut>
 convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
