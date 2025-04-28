@@ -4,6 +4,5 @@ var searchData=
   ['laplacianoperatorfactory_1',['LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['linear_2',['Linear',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['linearsystem_3',['LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html',1,'NeoN::la']]],
-  ['linearsystem_3c_20valuetype_2c_20localidx_20_3e_4',['LinearSystem&lt; ValueType, localIdx &gt;',['../classNeoN_1_1la_1_1LinearSystem.html',1,'NeoN::la']]],
-  ['linearsystemview_5',['LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la']]]
+  ['linearsystemview_4',['LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la']]]
 ];

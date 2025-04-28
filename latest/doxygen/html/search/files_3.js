@@ -6,6 +6,6 @@ var searchData=
   ['exceptions_2ehpp_3',['exceptions.hpp',['../exceptions_8hpp.html',1,'']]],
   ['executor_2ehpp_4',['executor.hpp',['../executor_8hpp.html',1,'']]],
   ['explicit_2ehpp_5',['explicit.hpp',['../explicit_8hpp.html',1,'']]],
-  ['expression_2ehpp_6',['expression.hpp',['../dsl_2expression_8hpp.html',1,'(Global Namespace)'],['../finiteVolume_2cellCentred_2dsl_2expression_8hpp.html',1,'(Global Namespace)']]],
+  ['expression_2ehpp_6',['expression.hpp',['../expression_8hpp.html',1,'']]],
   ['extrapolated_2ehpp_7',['extrapolated.hpp',['../extrapolated_8hpp.html',1,'']]]
 ];
