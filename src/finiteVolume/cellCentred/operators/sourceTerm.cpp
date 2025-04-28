@@ -31,7 +31,7 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 }
 
 template<typename ValueType>
-void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
+void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();

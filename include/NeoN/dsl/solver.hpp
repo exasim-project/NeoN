@@ -64,10 +64,7 @@ void solve(
         using ValueType = typename VectorType::ElementType;
 
         auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
-        auto ls = la::createEmptyLinearSystem<
-            ValueType,
-            localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sparsity);
+        auto ls = la::LinearSystem<ValueType>::createEmpty(sparsity);
 
         exp.implicitOperation(ls);
         auto expTmp = exp.explicitOperation(solution.mesh().nCells());

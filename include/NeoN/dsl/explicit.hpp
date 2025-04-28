@@ -6,6 +6,7 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
@@ -15,12 +16,19 @@
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 
 
 namespace NeoN::dsl::exp
 {
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
+
+template<typename ValueType>
+TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
+{
+    return fvcc::DdtOperator(dsl::Operator::Type::Explicit, phi);
+}
 
 SpatialOperator<scalar>
 div(const fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<scalar>& phi);

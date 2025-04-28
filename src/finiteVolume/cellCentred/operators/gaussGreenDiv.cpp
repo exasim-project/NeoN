@@ -147,7 +147,7 @@ NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 // FIXME currently hardcodes weight to 0.5 -> cds
 template<typename ValueType>
 void computeDivImp(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
@@ -233,7 +233,7 @@ void computeDivImp(
 
 #define NF_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivImp<                                                                   \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
+        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
 
 NF_DECLARE_COMPUTE_IMP_DIV(scalar);
 NF_DECLARE_COMPUTE_IMP_DIV(Vec3);

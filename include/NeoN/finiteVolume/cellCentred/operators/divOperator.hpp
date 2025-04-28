@@ -53,7 +53,7 @@ public:
         const dsl::Coeff operatorScaling) const = 0;
 
     virtual void
-    div(la::LinearSystem<ValueType, localIdx>& ls,
+    div(la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
@@ -135,13 +135,13 @@ public:
         source += tmpsource;
     }
 
-    la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const
+    la::LinearSystem<ValueType> createEmptyLinearSystem() const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         return divOperatorStrategy_->createEmptyLinearSystem();
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType>& ls)
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
@@ -154,7 +154,7 @@ public:
         divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    void div(la::LinearSystem<ValueType, localIdx>& ls) const
+    void div(la::LinearSystem<ValueType>& ls) const
     {
         const auto operatorScaling = this->getCoefficient();
         divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);

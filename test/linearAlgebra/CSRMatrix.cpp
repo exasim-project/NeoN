@@ -278,22 +278,21 @@ TEST_CASE("CSRMatrix")
     {
         auto hostMatrix = sparseMatrix.copyToHost();
         auto [value, column, row] = hostMatrix.view();
-        auto hostvaluesSparse = valuesSparse.copyToHost();
-        auto hostcolIdxSparse = colIdxSparse.copyToHost();
-        auto hostrowOffsSparse = rowOffsSparse.copyToHost();
+        const auto [valsH, colsIdxH, rowOffsH] =
+            copyToHosts(valuesSparse, colIdxSparse, rowOffsSparse);
 
-        REQUIRE(hostvaluesSparse.size() == value.size());
-        REQUIRE(hostcolIdxSparse.size() == column.size());
-        REQUIRE(hostrowOffsSparse.size() == row.size());
+        REQUIRE(valsH.size() == value.size());
+        REQUIRE(colsIdxH.size() == column.size());
+        REQUIRE(rowOffsH.size() == row.size());
 
         for (NeoN::localIdx i = 0; i < value.size(); ++i)
         {
-            REQUIRE(hostvaluesSparse.view()[i] == value[i]);
-            REQUIRE(hostcolIdxSparse.view()[i] == column[i]);
+            REQUIRE(valsH.view()[i] == value[i]);
+            REQUIRE(colsIdxH.view()[i] == column[i]);
         }
         for (NeoN::localIdx i = 0; i < row.size(); ++i)
         {
-            REQUIRE(hostrowOffsSparse.view()[i] == row[i]);
+            REQUIRE(rowOffsH.view()[i] == row[i]);
         }
     }
 }

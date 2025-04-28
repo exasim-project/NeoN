@@ -24,7 +24,7 @@ void computeDivExp(
 
 template<typename ValueType>
 void computeDivImp(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
@@ -61,7 +61,7 @@ public:
     }
 
     virtual void
-    div(la::LinearSystem<ValueType, localIdx>& ls,
+    div(la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override

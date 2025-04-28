@@ -39,7 +39,7 @@ public:
 
     SolverFactory(const Executor& exec) : exec_(exec) {};
 
-    virtual SolverStats solve(const LinearSystem<scalar, localIdx>&, Vector<scalar>&) const = 0;
+    virtual SolverStats solve(const LinearSystem<scalar>&, Vector<scalar>&) const = 0;
 
     // virtual void
     // solve(const LinearSystem<ValueType, int>&, Vector<Vec3>& ) const = 0;
@@ -69,7 +69,7 @@ public:
     Solver(const Executor& exec, const Dictionary& dict)
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
-    SolverStats solve(const LinearSystem<scalar, localIdx>& ls, Vector<scalar>& field) const
+    SolverStats solve(const LinearSystem<scalar>& ls, Vector<scalar>& field) const
     {
         return solverInstance_->solve(ls, field);
     }

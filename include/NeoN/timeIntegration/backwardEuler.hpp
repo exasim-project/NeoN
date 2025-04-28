@@ -55,10 +55,7 @@ public:
 
         // TODO decouple from fvcc specific implementation
         auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionVector.mesh());
-        auto ls = la::createEmptyLinearSystem<
-            ValueType,
-            localIdx,
-            finiteVolume::cellCentred::SparsityPattern>(sparsity);
+        auto ls = la::LinearSystem<ValueType>::createEmpty(sparsity);
 
         eqn.implicitOperation(ls);
 

@@ -16,7 +16,7 @@ namespace NeoN::la
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType>
 struct CSRMatrixView
 {
     /**
@@ -27,8 +27,8 @@ struct CSRMatrixView
      */
     CSRMatrixView(
         const View<ValueType>& valueView,
-        const View<IndexType>& colIdxsView,
-        const View<IndexType>& rowOffsView
+        const View<localIdx>& colIdxsView,
+        const View<localIdx>& rowOffsView
     )
         : values(valueView), colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 
@@ -44,12 +44,12 @@ struct CSRMatrixView
      * @return Reference to the matrix element if it exists.
      */
     KOKKOS_INLINE_FUNCTION
-    ValueType& entry(const IndexType i, const IndexType j) const
+    ValueType& entry(const localIdx i, const localIdx j) const
     {
-        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
-        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
+        const localIdx rowSize = rowOffs[i + 1] - rowOffs[i];
+        for (std::remove_const_t<const localIdx> ic = 0; ic < rowSize; ++ic)
         {
-            const IndexType localCol = rowOffs[i] + ic;
+            const localIdx localCol = rowOffs[i] + ic;
             if (colIdxs[localCol] == j)
             {
                 return values[localCol];
@@ -66,11 +66,11 @@ struct CSRMatrixView
      * @return Reference to the matrix element if it exists.
      */
     KOKKOS_INLINE_FUNCTION
-    ValueType& entry(const IndexType offset) const { return values[offset]; }
+    ValueType& entry(const localIdx offset) const { return values[offset]; }
 
-    View<ValueType> values;  //!< View to the values of the CSR matrix.
-    View<IndexType> colIdxs; //!< View to the column indices of the CSR matrix.
-    View<IndexType> rowOffs; //!< View to the row offsets for the CSR matrix.
+    View<ValueType> values;       //!< View to the values of the CSR matrix.
+    View<const localIdx> colIdxs; //!< View to the column indices of the CSR matrix.
+    View<const localIdx> rowOffs; //!< View to the row offsets for the CSR matrix.
 };
 
 /**
@@ -79,7 +79,7 @@ struct CSRMatrixView
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename IndexType = localIdx>
 class CSRMatrix
 {
 
@@ -188,7 +188,7 @@ public:
      * @brief Copy the matrix to the host.
      * @return A copy of the matrix on the host.
      */
-    [[nodiscard]] CSRMatrix<ValueType, IndexType> copyToHost() const
+    [[nodiscard]] CSRMatrix<ValueType> copyToHost() const
     {
         return copyToExecutor(SerialExecutor());
     }
@@ -197,7 +197,7 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return CSRMatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] CSRMatrixView<ValueType, IndexType> view()
+    [[nodiscard]] CSRMatrixView<ValueType> view()
     {
         return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
     }
@@ -206,9 +206,9 @@ public:
      * @brief Get a const view representation of the matrix's data.
      * @return Const CSRMatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] const CSRMatrixView<const ValueType, const IndexType> view() const
+    [[nodiscard]] const CSRMatrixView<const ValueType> view() const
     {
-        return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
+        return CSRMatrixView<const ValueType>(values_.view(), colIdxs_.view(), rowOffs_.view());
     }
 
 private:
@@ -218,6 +218,7 @@ private:
     Vector<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
 };
 
+// NOTE this is currently unused
 // /* @brief given a csr matrix this function copies the matrix and converts to requested target
 // types
 //  *

@@ -29,7 +29,7 @@ public:
 
     void explicitOperation(Vector<ValueType>& source) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const;
 
     void read(const Input&) {}
 

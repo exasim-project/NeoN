@@ -37,10 +37,9 @@ gko::array<T> createGkoArray(std::shared_ptr<const gko::Executor> exec, std::spa
 //     return gko::make_const_array_view(exec, values.size(), values.data());
 // }
 
-template<typename ValueType, typename IndexType>
-std::shared_ptr<gko::matrix::Csr<ValueType, IndexType>> createGkoMtx(
-    std::shared_ptr<const gko::Executor> exec, const LinearSystem<ValueType, IndexType>& sys
-)
+template<typename ValueType>
+std::shared_ptr<gko::matrix::Csr<ValueType, localIdx>>
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<ValueType>& sys)
 {
     auto nrows = static_cast<gko::dim<2>::dimension_type>(sys.rhs().size());
     auto mtx = sys.view().matrix;
@@ -52,18 +51,18 @@ std::shared_ptr<gko::matrix::Csr<ValueType, IndexType>> createGkoMtx(
         const_cast<ValueType*>(mtx.values.data())
     );
     // auto col = createGkoArray(exec, mtx.colIdxs);
-    auto col = gko::array<IndexType>::view(
+    auto col = gko::array<localIdx>::view(
         exec,
         static_cast<gko::size_type>(mtx.colIdxs.size()),
-        const_cast<IndexType*>(mtx.colIdxs.data())
+        const_cast<localIdx*>(mtx.colIdxs.data())
     );
     // auto row = createGkoArray(exec, mtx.rowOffs);
-    auto row = gko::array<IndexType>::view(
+    auto row = gko::array<localIdx>::view(
         exec,
         static_cast<gko::size_type>(mtx.rowOffs.size()),
-        const_cast<IndexType*>(mtx.rowOffs.data())
+        const_cast<localIdx*>(mtx.rowOffs.data())
     );
-    return gko::share(gko::matrix::Csr<ValueType, IndexType>::create(
+    return gko::share(gko::matrix::Csr<ValueType, localIdx>::create(
         exec, gko::dim<2> {nrows, nrows}, vals, col, row
     ));
 }
@@ -113,8 +112,7 @@ public:
 
     static std::string schema() { return "none"; }
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
+    virtual SolverStats solve(const LinearSystem<scalar>& sys, Vector<scalar>& x) const final
     {
         using vec = gko::matrix::Dense<scalar>;
 
