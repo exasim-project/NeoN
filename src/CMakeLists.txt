@@ -14,6 +14,7 @@ target_sources(
   PRIVATE "core/primitives/vec3.cpp"
           "core/time.cpp"
           "core/vector/vector.cpp"
+          "core/vector/vectorFreeFunctions.cpp"
           "core/database/database.cpp"
           "core/database/collection.cpp"
           "core/database/document.cpp"

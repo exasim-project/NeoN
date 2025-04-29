@@ -1,0 +1,152 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2023 NeoN authors
+#pragma once
+
+#include <type_traits>
+#include <tuple>
+#include <Kokkos_Core.hpp>
+
+#include "NeoN/core/view.hpp"
+#include "NeoN/core/primitives/label.hpp"
+
+namespace NeoN
+{
+
+/**
+ * @brief Map a field using a specific executor.
+ *
+ * @param a The field to map.
+ * @param inner The function to apply to each element of the field.
+ * @param range The range to map the field in. If not provided, the whole field is mapped.
+ */
+template<template<typename> class ContType, typename ValueType, typename Inner>
+void map(ContType<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
+{
+    auto [start, end] = range;
+    if (end == 0)
+    {
+        end = a.size();
+    }
+    auto viewA = a.view();
+    parallelFor(
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = inner(i); }
+    );
+}
+
+
+/**
+ * @brief Fill the field with a vector value using a specific executor.
+ *
+ * @param field The field to fill.
+ * @param value The vector value to fill the field with.
+ * @param range The range to fill the field in. If not provided, the whole field is filled.
+ */
+template<template<typename> class ContType, typename ValueType>
+void fill(
+    ContType<ValueType>& a,
+    const std::type_identity_t<ValueType> value,
+    std::pair<localIdx, localIdx> range = {0, 0}
+)
+{
+    auto [start, end] = range;
+    if (end == 0)
+    {
+        end = a.size();
+    }
+    auto viewA = a.view();
+    parallelFor(
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }
+    );
+}
+
+
+/**
+ * @brief Set the vector with a view of values using a specific executor.
+ *
+ * @param a The vector to set.
+ * @param b The view of values to set the vector with.
+ * @param range The range to set the vector in. If not provided, the whole vector is set.
+ */
+template<template<typename> class ContType, typename ValueType>
+void setContainer(
+    ContType<ValueType>& a,
+    const View<const std::type_identity_t<ValueType>> b,
+    std::pair<localIdx, localIdx> range = {0, 0}
+)
+{
+    auto [start, end] = range;
+    if (end == 0)
+    {
+        end = a.size();
+    }
+    auto viewA = a.view();
+    parallelFor(
+        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = b[i]; }
+    );
+}
+
+template<typename... Args>
+auto copyToHosts(Args&... container)
+{
+    return std::make_tuple(container.copyToHost()...);
+}
+
+template<template<typename> class ContType, typename ValueType>
+bool equal(ContType<ValueType>& vector, ValueType value)
+{
+    auto hostVector = vector.copyToHost();
+    auto hostView = hostVector.view();
+    for (localIdx i = 0; i < hostView.size(); i++)
+    {
+        if (hostView[i] != value)
+        {
+            return false;
+        }
+    }
+    return true;
+};
+
+template<template<typename> class ContType, typename ValueType>
+bool equal(const ContType<ValueType>& vector1, const ContType<ValueType>& vector2)
+{
+    auto [hostVector1, hostVector2] = copyToHosts(vector1, vector2);
+    auto [hostView1, hostView2] = views(hostVector1, hostVector2);
+
+    if (hostView1.size() != hostView2.size())
+    {
+        return false;
+    }
+
+    for (localIdx i = 0; i < hostView1.size(); i++)
+    {
+        if (hostView1[i] != hostView2[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+template<template<typename> class ContType, typename ValueType>
+bool equal(const ContType<ValueType>& vector, View<ValueType> view2)
+{
+    auto hostView = vector.copyToHost().view();
+
+    if (hostView.size() != view2.size())
+    {
+        return false;
+    }
+
+    for (localIdx i = 0; i < hostView.size(); i++)
+    {
+        if (hostView[i] != view2[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+}

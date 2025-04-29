@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
