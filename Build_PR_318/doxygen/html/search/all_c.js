@@ -5,7 +5,7 @@ var searchData=
   ['nboundaries_2',['nboundaries',['../classNeoN_1_1BoundaryData.html#a43dd63100a240f03820bd1dd56329bd3',1,'NeoN::BoundaryData::nBoundaries()'],['../classNeoN_1_1UnstructuredMesh.html#a401abe2bb196b51465ea476e55a5622e',1,'NeoN::UnstructuredMesh::nBoundaries()']]],
   ['nboundaryfaces_3',['nboundaryfaces',['../classNeoN_1_1BoundaryData.html#ae02127156206dae46c11bf1d84c25a21',1,'NeoN::BoundaryData::nBoundaryFaces()'],['../classNeoN_1_1UnstructuredMesh.html#a2cc40de21a651f18026027a53f13ce24',1,'NeoN::UnstructuredMesh::nBoundaryFaces() const']]],
   ['ncells_4',['nCells',['../classNeoN_1_1UnstructuredMesh.html#a0e2245854aad317731034ac549956117',1,'NeoN::UnstructuredMesh']]],
-  ['neighbouroffset_5',['neighbourOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#a38cbca1669cbd3460c2e0da1c5b009d8',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]],
+  ['neighbouroffset_5',['neighbourOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#af9ace9c5b2ec11b4ef7aec22d1838cd4',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]],
   ['neon_6',['NeoN',['../namespaceNeoN.html',1,'']]],
   ['neon_3a_3adetail_7',['detail',['../namespaceNeoN_1_1detail.html',1,'NeoN']]],
   ['neon_3a_3adsl_8',['dsl',['../namespaceNeoN_1_1dsl.html',1,'NeoN']]],

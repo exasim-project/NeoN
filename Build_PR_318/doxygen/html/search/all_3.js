@@ -16,7 +16,7 @@ var searchData=
   ['demangle_2ehpp_13',['demangle.hpp',['../demangle_8hpp.html',1,'']]],
   ['derivedclass_14',['derivedClass',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a5ab28273ae4c40a351d732aa503125f2',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['derivedclassdocumentation_15',['DerivedClassDocumentation',['../classNeoN_1_1DerivedClassDocumentation.html',1,'NeoN']]],
-  ['diagoffset_16',['diagOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#aba6936eb9d0bf973559491a1d0486b75',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]],
+  ['diagoffset_16',['diagOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#ac80856de5e37d4f31c3711c402677523',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]],
   ['dictionary_17',['dictionary',['../classNeoN_1_1Dictionary.html#a8f54d8ca4b0f349d277cc2bed51d06bc',1,'NeoN::Dictionary::Dictionary()'],['../classNeoN_1_1Dictionary.html',1,'NeoN::Dictionary'],['../classNeoN_1_1Dictionary.html#afc322ec82ab3993bf9d2fee41591d275',1,'NeoN::Dictionary::Dictionary(const std::unordered_map&lt; std::string, std::any &gt; &amp;keyValuePairs)'],['../classNeoN_1_1Dictionary.html#af39eea7cc13e5277def74ef334043c39',1,'NeoN::Dictionary::Dictionary()=default']]],
   ['dictionary_2ehpp_18',['dictionary.hpp',['../dictionary_8hpp.html',1,'']]],
   ['dimensionmismatch_19',['dimensionmismatch',['../classNeoN_1_1DimensionMismatch.html',1,'NeoN::DimensionMismatch'],['../classNeoN_1_1DimensionMismatch.html#a39c69f28efc25ac526f44d140d955817',1,'NeoN::DimensionMismatch::DimensionMismatch()']]],

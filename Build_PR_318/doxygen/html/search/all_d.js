@@ -28,5 +28,5 @@ var searchData=
   ['operatormixin_25',['operatormixin',['../classNeoN_1_1dsl_1_1OperatorMixin.html',1,'NeoN::dsl::OperatorMixin&lt; VectorType &gt;'],['../classNeoN_1_1dsl_1_1OperatorMixin.html#a78552662d829538b99b19793af481179',1,'NeoN::dsl::OperatorMixin::OperatorMixin()']]],
   ['operatormixin_3c_20volumefield_3c_20valuetype_20_3e_20_3e_26',['OperatorMixin&lt; VolumeField&lt; ValueType &gt; &gt;',['../classNeoN_1_1dsl_1_1OperatorMixin.html',1,'NeoN::dsl']]],
   ['operators_2ehpp_27',['operators.hpp',['../operators_8hpp.html',1,'']]],
-  ['owneroffset_28',['ownerOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#a585530d804a5c65d763de709723bca10',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]]
+  ['owneroffset_28',['ownerOffset',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html#a2dde9a9a0a891a30ab8d7140b8890ca6',1,'NeoN::finiteVolume::cellCentred::SparsityPattern']]]
 ];
