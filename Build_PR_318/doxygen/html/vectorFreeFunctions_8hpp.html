@@ -80,14 +80,7 @@ $(function() {
   <div class="headertitle"><div class="title">vectorFreeFunctions.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;tuple&gt;</code><br />
-<code>#include &lt;Kokkos_Core.hpp&gt;</code><br />
-<code>#include &quot;<a class="el" href="label_8hpp_source.html">NeoN/core/primitives/label.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="exceptions_8hpp_source.html">NeoN/helpers/exceptions.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="parallelAlgorithms_8hpp_source.html">NeoN/core/parallelAlgorithms.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="scalar_8hpp_source.html">NeoN/core/primitives/scalar.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="vec3_8hpp_source.html">NeoN/core/primitives/vec3.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="view_8hpp_source.html">NeoN/core/view.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;type_traits&gt;</code><br />
 </div>
 <p><a href="vectorFreeFunctions_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -100,18 +93,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1b7a193dbeadab3f462d2285f2a13a8c" id="r_a1b7a193dbeadab3f462d2285f2a13a8c"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename Inner &gt; </td></tr>
-<tr class="memitem:a1b7a193dbeadab3f462d2285f2a13a8c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a1b7a193dbeadab3f462d2285f2a13a8c">NeoN::map</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const Inner inner, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range={0, 0})</td></tr>
-<tr class="memdesc:a1b7a193dbeadab3f462d2285f2a13a8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a field using a specific executor.  <br /></td></tr>
-<tr class="separator:a1b7a193dbeadab3f462d2285f2a13a8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4df3c8c32ed2bdaa77d100c44de4b3eb" id="r_a4df3c8c32ed2bdaa77d100c44de4b3eb"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a4df3c8c32ed2bdaa77d100c44de4b3eb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a4df3c8c32ed2bdaa77d100c44de4b3eb">NeoN::fill</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const std::type_identity_t&lt; ValueType &gt; value, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range={0, 0})</td></tr>
-<tr class="memdesc:a4df3c8c32ed2bdaa77d100c44de4b3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the field with a vector value using a specific executor.  <br /></td></tr>
-<tr class="separator:a4df3c8c32ed2bdaa77d100c44de4b3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abea1b0b84403cd0569cc9847703410eb" id="r_abea1b0b84403cd0569cc9847703410eb"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:abea1b0b84403cd0569cc9847703410eb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#abea1b0b84403cd0569cc9847703410eb">NeoN::setVector</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const std::type_identity_t&lt; ValueType &gt; &gt; b, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range={0, 0})</td></tr>
-<tr class="memdesc:abea1b0b84403cd0569cc9847703410eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the vector with a view of values using a specific executor.  <br /></td></tr>
-<tr class="separator:abea1b0b84403cd0569cc9847703410eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77166d114ce12c3381d142498be4874f" id="r_a77166d114ce12c3381d142498be4874f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a77166d114ce12c3381d142498be4874f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a77166d114ce12c3381d142498be4874f">NeoN::scalarMul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const ValueType value)</td></tr>
 <tr class="separator:a77166d114ce12c3381d142498be4874f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,18 +108,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9" id="r_a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a4803cc249d78abb5840c8cd26a45adb9">NeoN::mul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
 <tr class="separator:a4803cc249d78abb5840c8cd26a45adb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac949366e652ae588596bb3cc4554a50a" id="r_ac949366e652ae588596bb3cc4554a50a"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:ac949366e652ae588596bb3cc4554a50a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ac949366e652ae588596bb3cc4554a50a">NeoN::copyToHosts</a> (Args &amp;... fields)</td></tr>
-<tr class="separator:ac949366e652ae588596bb3cc4554a50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a599f183b6ef127882e8185038764c933" id="r_a599f183b6ef127882e8185038764c933"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a599f183b6ef127882e8185038764c933"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a599f183b6ef127882e8185038764c933">NeoN::equal</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field, ValueType value)</td></tr>
-<tr class="separator:a599f183b6ef127882e8185038764c933"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a238bb32210cb2ec862ab14e9c0f2ed5e" id="r_a238bb32210cb2ec862ab14e9c0f2ed5e"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a238bb32210cb2ec862ab14e9c0f2ed5e"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a238bb32210cb2ec862ab14e9c0f2ed5e">NeoN::equal</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field2)</td></tr>
-<tr class="separator:a238bb32210cb2ec862ab14e9c0f2ed5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef03582908e3286cc8f8912ac113b739" id="r_aef03582908e3286cc8f8912ac113b739"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:aef03582908e3286cc8f8912ac113b739"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aef03582908e3286cc8f8912ac113b739">NeoN::equal</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt; view2)</td></tr>
-<tr class="separator:aef03582908e3286cc8f8912ac113b739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

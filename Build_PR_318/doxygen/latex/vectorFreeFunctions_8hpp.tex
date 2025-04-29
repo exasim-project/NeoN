@@ -1,13 +1,6 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/vector/vector\+Free\+Functions.hpp File Reference}
 \hypertarget{vectorFreeFunctions_8hpp}{}\label{vectorFreeFunctions_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp}}
-{\ttfamily \#include $<$tuple$>$}\newline
-{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
-{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/helpers/exceptions.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/core/view.\+hpp"{}}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
@@ -18,12 +11,6 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1detail}{Neo\+N\+::detail}}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1b7a193dbeadab3f462d2285f2a13a8c}{Neo\+N\+::map}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
-\begin{DoxyCompactList}\small\item\em Map a field using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a4df3c8c32ed2bdaa77d100c44de4b3eb}{Neo\+N\+::fill}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
-\begin{DoxyCompactList}\small\item\em Fill the field with a vector value using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_abea1b0b84403cd0569cc9847703410eb}{Neo\+N\+::set\+Vector}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ b, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
-\begin{DoxyCompactList}\small\item\em Set the vector with a view of values using a specific executor. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a77166d114ce12c3381d142498be4874f}{Neo\+N\+::scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const Value\+Type value)
 \item 
 {\footnotesize template$<$\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} Value\+Type , \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}} $>$ }\\\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{void}} \mbox{\hyperlink{namespaceNeoN_1_1detail_a42d5c869b26c6f44557a08ec765a08af}{Neo\+N\+::detail\+::field\+Binary\+Op}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{a}}, \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{const}} \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{b}}, \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{op}})
@@ -33,12 +20,4 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1detail}{Neo\+N\+::detail}}
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae281a72f3e7f22c3b2993eac666d4bb4}{Neo\+N\+::sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a4803cc249d78abb5840c8cd26a45adb9}{Neo\+N\+::mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b)
-\item 
-{\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_ac949366e652ae588596bb3cc4554a50a}{Neo\+N\+::copy\+To\+Hosts}} (Args \&... fields)
-\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a599f183b6ef127882e8185038764c933}{Neo\+N\+::equal}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, Value\+Type value)
-\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a238bb32210cb2ec862ab14e9c0f2ed5e}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field2)
-\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_aef03582908e3286cc8f8912ac113b739}{Neo\+N\+::equal}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ view2)
 \end{DoxyCompactItemize}

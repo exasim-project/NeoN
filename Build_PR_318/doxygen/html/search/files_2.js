@@ -5,7 +5,8 @@ var searchData=
   ['coeff_2ehpp_2',['coeff.hpp',['../coeff_8hpp.html',1,'']]],
   ['collection_2ehpp_3',['collection.hpp',['../collection_8hpp.html',1,'']]],
   ['communicator_2ehpp_4',['communicator.hpp',['../communicator_8hpp.html',1,'']]],
-  ['conum_2ehpp_5',['coNum.hpp',['../coNum_8hpp.html',1,'']]],
-  ['cpuexecutor_2ehpp_6',['CPUExecutor.hpp',['../CPUExecutor_8hpp.html',1,'']]],
-  ['csrmatrix_2ehpp_7',['CSRMatrix.hpp',['../CSRMatrix_8hpp.html',1,'']]]
+  ['containerfreefunctions_2ehpp_5',['containerFreeFunctions.hpp',['../containerFreeFunctions_8hpp.html',1,'']]],
+  ['conum_2ehpp_6',['coNum.hpp',['../coNum_8hpp.html',1,'']]],
+  ['cpuexecutor_2ehpp_7',['CPUExecutor.hpp',['../CPUExecutor_8hpp.html',1,'']]],
+  ['csrmatrix_2ehpp_8',['CSRMatrix.hpp',['../CSRMatrix_8hpp.html',1,'']]]
 ];
