@@ -100,14 +100,14 @@ public:
     Array(const Executor& exec, localIdx size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
-        void* ptr = nullptr;
-        std::visit(
-            [&ptr, size](const auto& execu)
-            { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-            exec_
-        );
-        data_ = static_cast<ValueType*>(ptr);
-        NeoN::fill(*this, value);
+        // void* ptr = nullptr;
+        // std::visit(
+        //     [&ptr, size](const auto& execu)
+        //     { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+        //     exec_
+        // );
+        // data_ = static_cast<ValueType*>(ptr);
+        // NeoN::fill(*this, value);
     }
 
     /**
@@ -163,15 +163,16 @@ public:
     template<typename func>
     void apply(func f)
     {
-        auto [start, end] = range;
-        if (end == 0)
-        {
-            end = a.size();
-        }
-        auto viewA = a.view();
-        parallelFor(
-            a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = f(i); }
-        );
+        // FIXME:
+        // auto [start, end] = range;
+        // if (end == 0)
+        // {
+        //     end = this->size();
+        // }
+        // auto viewA = this->view();
+        // parallelFor(
+        //     this->exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = f(i); }
+        // );
     }
 
     /**
@@ -221,7 +222,12 @@ public:
      * @brief Assignment operator, Sets the field values to that of the passed value.
      * @param rhs The value to set the field to.
      */
-    void operator=(const ValueType& rhs) { fill(*this, rhs); }
+    void operator=(const ValueType& rhs)
+    {
+        // FIXME:
+        NF_ERROR_EXIT("Not implemented");
+        // (*this, rhs);
+    }
 
     /**
      * @brief Assignment operator, Sets the field values to that of the parsed field.
@@ -231,12 +237,13 @@ public:
      */
     void operator=(const Array<ValueType>& rhs)
     {
+        // FIXME:
         NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
-        if (this->size() != rhs.size())
-        {
-            this->resize(rhs.size());
-        }
-        setVector(*this, rhs.view());
+        // if (this->size() != rhs.size())
+        // {
+        //     this->resize(rhs.size());
+        // }
+        // setVector(*this, rhs.view());
     }
 
     /**

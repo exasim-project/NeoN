@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -116,10 +116,10 @@ void SparsityPattern::update()
 }
 
 
-const NeoN::Vector<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
+const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
-const NeoN::Vector<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
+const NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
 
-const NeoN::Vector<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
+const NeoN::Array<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
 
 } // namespace NeoN::finiteVolume::cellCentred
