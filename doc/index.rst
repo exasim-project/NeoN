@@ -6,15 +6,14 @@
 Welcome to NeoN!
 ===================
 
-The NeoN project has set itself the goal of bringing modern software development methods to the core libraries of OpenFOAM.
-By reimplementing the `libfiniteVolume` and `libOpenFOAM` we want to deliver a code that:
+The NeoN project has set itself the goal of bringing modern software development methods to for the development of platform portable CFD software.
 
 * is compliant with modern C++20;
 * is extensively unit-tested;
 * is platform portable and GPU ready;
 * is highly extensible via Plugins
 
-We aim for a high level of interoperability with OpenFOAM, however, if reasonable, NeoN might deviate from the OpenFOAM API.
+We aim for an easy integration other with CFD frameworks by providing a simple, yet powerful API.
 NeoN is a community-driven project and we welcome contributions from everyone.
 
 Table of Contents
@@ -31,15 +30,6 @@ Table of Contents
    finiteVolume/cellCentred/index
    datastructures/index
    mpi_architecture
-
-Compatibility with OpenFOAM
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We are aiming for a high level of compatibility with OpenFOAM.
-However, we don't expect binary or ABI compatibility.
-This means that NeoN won't produce a `libfiniteVolume.so` and `libOpenFOAM.so` which could serve as a plugin replacement for existing `libfiniteVolume.so` and `libOpenFOAM.so`.
-Instead, we aim for source compatibility, i.e. the possibility to compile application OpenFOAM code like pimpleFoam and others against the NeoN libraries.
-This approach is demonstrated in the `FoamAdapter <https://github.com/exasim-project/FoamAdapter>`_ repository.
 
 .. toctree::
    :maxdepth: 2
