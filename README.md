@@ -1,6 +1,6 @@
 **[Requirements](#requirements)** |
 **[Compilation](#Compilation)** |
-**[Integration](#integration-with-openfoam)** |
+**[Integration](#integration-with-other-cfd-frameworks)** |
 **[Documentation](https://exasim-project.com/NeoN/latest)** |
 **[Roadmap](https://github.com/orgs/exasim-project/projects/1/views/8)** |
 
