@@ -13,10 +13,17 @@ namespace NeoN::finiteVolume::cellCentred
 **  phi_f is the face interpolate value
 **
 **
-** @param faceFlux
+** @param exec The executor
+** @param nInternalFaces - number of internal faces
+** @param nBoundaryFaces - number of boundary faces
 ** @param neighbour - mapping from face id to neighbour cell id
 ** @param owner - mapping from face id to owner cell id
 ** @param faceCells - mapping from boundary face id to owner cell id
+** @param faceFlux - flux on cell faces
+** @param phiF - flux on cell faces
+** @param v - cell volumes
+** @param res - view holding the result
+** @param operatorScaling - any additional coefficients
 */
 template<typename ValueType>
 void computeDiv(
