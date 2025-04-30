@@ -4,7 +4,6 @@ Derived class discovery at compile time
 =======================================
 
 The ``RuntimeSelectionFactory`` class is a template class that allows to register derived classes for creation at runtime via a factory class by its name.
-This mechanism is similar to OpenFOAM's runtime selection mechanism.
 The classes are registered at compile time via static member initialization.
 Additional explanation can be found in the following two posts on Stack OverFlow: `Derived class discovery at compile time <https://stackoverflow.com/questions/52354538/derived-class-discovery-at-compile-time>`_ and  `How to automatically register a class on creation <https://stackoverflow.com/questions/10332725/how-to-automatically-register-a-class-on-creation>`_ .
 
