@@ -284,53 +284,20 @@
 <p>The concept of a Domain Specific Language (DSL) allows to simplify the process of implementing and solving equations in a given programming language like C++.
 Engineers can express equations in a concise and readable form, closely resembling their mathematical representation, while no or little knowledge of the numerical schemes and implementation is required.
 This approach allows engineers to focus on the physics of the problem rather than the numerical implementation and helps in reducing the time and effort required to develop and maintain complex simulations.</p>
-<p>The Navier-Stokes equations can be expressed in the DSL in OpenFOAM as follows:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvVec3Matrix</span><span class="w"> </span><span class="nf">UEqn</span>
-<span class="p">(</span>
-<span class="w">    </span><span class="n">fvm</span><span class="o">::</span><span class="n">ddt</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
-<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">fvm</span><span class="o">::</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">fvm</span><span class="o">::</span><span class="n">laplacian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
-<span class="p">);</span>
-
-<span class="n">solve</span><span class="p">(</span><span class="n">UEqn</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="n">fvc</span><span class="o">::</span><span class="n">grad</span><span class="p">(</span><span class="n">p</span><span class="p">));</span>
-</pre></div>
-</div>
-<p>To solve the continuity equation in OpenFOAM with the PISO or SIMPLE algorithm, the Vec3Matrix, UEqn, needs to provide the diagonal and off-diagonal terms of the matrix.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">volScalarVector</span><span class="w"> </span><span class="nf">rAU</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">UEqn</span><span class="p">.</span><span class="n">A</span><span class="p">());</span>
-<span class="n">volVec3Vector</span><span class="w"> </span><span class="nf">HbyA</span><span class="p">(</span><span class="n">constrainHbyA</span><span class="p">(</span><span class="n">rAU</span><span class="o">*</span><span class="n">UEqn</span><span class="p">.</span><span class="n">H</span><span class="p">(),</span><span class="w"> </span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">));</span>
-</pre></div>
-</div>
-<p>This approach is readable and easy to understand for engineers familiar with OpenFOAM. However, it has several limitations due to its implementation in OpenFOAM:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>the solution system is always a sparse matrix</p></li>
-<li><p>individual terms are eagerly evaluated, resulting in unnecessary use of temporaries</p></li>
-<li><p>the sparse matrix is always an LDU matrix that is not supported by external linear solvers</p></li>
-<li><p>Only cell-centred discretisation is supported</p></li>
-</ul>
-</div></blockquote>
-<p>NeoN DSL tries to address these issues by providing:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>lazy evaluation of the equations terms. This allows for better optimisation of the resulting equation and can reduce the number of required temporaries.</p></li>
-<li><p>a more modular design</p></li>
-<li><p>Support for standard matrix formats like COO and CSR, to simplify the use of external linear solvers</p></li>
-</ul>
-</div></blockquote>
 <p>The use of standard matrix formats combined with lazy evaluation allows for the use of external libraries to integrate PDEs in time and space.
 The equation system can be passed to <strong>sundials</strong> and be integrated by <strong>RK methods</strong> and <strong>BDF methods</strong> on heterogeneous architectures.</p>
-<p>The NeoN DSL is designed as drop in replacement for OpenFOAM DSL and the adoption should be possible with minimal effort and the same equation from above should read:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">Equation</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">UEqn</span>
+<p>With the NeoN DSL the implementation of a momentum equation should read</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">Expression</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">momentum</span>
 <span class="p">(</span>
 <span class="w">    </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">ddt</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
 <span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">laplacian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">solve</span><span class="p">(</span><span class="n">UEqn</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="n">dsl</span><span class="o">::</span><span class="n">exp</span><span class="o">::</span><span class="n">grad</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="w"> </span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">fvSchemes</span><span class="p">,</span><span class="w"> </span><span class="n">fvSolution</span><span class="p">);</span>
+<span class="n">solve</span><span class="p">(</span><span class="n">momentum</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="n">dsl</span><span class="o">::</span><span class="n">exp</span><span class="o">::</span><span class="n">grad</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="w"> </span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">solverProperties</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>In contrast to OpenFOAM, the matrix assembly is deferred till the solve step. Hence the majority of the computational work is performed during the solve step.
+<p>In contrast to other CFD software, the matrix assembly is deferred till the solve step. Hence the majority of the computational work is performed during the solve step.
 That is 1. assemble the system and 2. solve the system.
 After the system is assembled or solved, it provides access to the linear system for the SIMPLE and PISO algorithms.</p>
 <div class="toctree-wrapper compound">

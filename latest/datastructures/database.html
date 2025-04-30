@@ -281,18 +281,10 @@
         <article role="main" id="furo-main-content">
           <section id="database">
 <span id="basics-database"></span><h1>Database<a class="headerlink" href="#database" title="Link to this heading">¶</a></h1>
-<p>OpenFOAM stores objects in the <code class="docutils literal notranslate"><span class="pre">objectRegistry</span></code> and they can be accessed by their name and type.
-In modern software development, best practices emphasize modularity, testability, and loosely coupled components.
-While the <code class="docutils literal notranslate"><span class="pre">objectRegistry</span></code> of OpenFOAM offers convenience and simple approach for managing objects, its inherent design conflicts with these principles by:</p>
-<ul class="simple">
-<li><p>Encouraging reliance on a central container.</p></li>
-<li><p>Making the codebase less flexible for testing, refactoring, or adopting new architectural patterns.</p></li>
-<li><p>Introducing potential performance bottlenecks and debugging challenges.</p></li>
-</ul>
-<p>In contrast, NeoN adopts a document-based database approach, where data is stored as a collection of documents.
+<p>NeoN adopts a document-based database approach, where data is stored as a collection of documents.
 Each document consists of a pair of strings and values, validated using a custom validator function to ensure data integrity.
 The validation ensures that the data stored in the documents adheres to predefined rules and formats, preventing errors and inconsistencies in the database.
-The database is not tightly coupled to the <code class="docutils literal notranslate"><span class="pre">fvMesh</span></code> or <code class="docutils literal notranslate"><span class="pre">Time</span></code> classes, making it more flexible and easier to test.</p>
+The database is a standalone datastructure not tightly coupled to other  classes, making it more flexible and easier to test.</p>
 <p>The following class diagram illustrates the relationships between the <code class="docutils literal notranslate"><span class="pre">Database</span></code>, <code class="docutils literal notranslate"><span class="pre">Collection</span></code>, and <code class="docutils literal notranslate"><span class="pre">Document</span></code> components:</p>
 <pre  class="mermaid">
         classDiagram

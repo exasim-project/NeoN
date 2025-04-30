@@ -298,16 +298,6 @@ In NeoN it is a common pattern to use free standing functions since they are eas
 <div class="math notranslate nohighlight">
 \[\int \nabla \phi dV = \int dS\cdot\phi = \sum_f S_f\cdot\phi_f\]</div>
 </div>
-<p>and the internal field part is implemented in OpenFOAM as</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">forAll</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span><span class="w"> </span><span class="n">facei</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">GradType</span><span class="w"> </span><span class="n">Sfssf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sf</span><span class="p">[</span><span class="n">facei</span><span class="p">]</span><span class="o">*</span><span class="n">issf</span><span class="p">[</span><span class="n">facei</span><span class="p">];</span>
-
-<span class="w">    </span><span class="n">igGrad</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Sfssf</span><span class="p">;</span>
-<span class="w">    </span><span class="n">igGrad</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">Sfssf</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
 <p>the corresponding NeoN version is implemented as</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">parallelFor</span><span class="p">(</span>
 <span class="w">    </span><span class="n">exec</span><span class="p">,</span>

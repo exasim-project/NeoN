@@ -285,7 +285,7 @@
 </div>
 <section id="boundary-conditions">
 <h1>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading">¶</a></h1>
-<p>In contrast to OpenFOAM, the boundary conditions do not store the underlying  data but instead modify the data provided by <code class="docutils literal notranslate"><span class="pre">Field</span></code>.  A basic NoOp implementation is provided by  the <code class="docutils literal notranslate"><span class="pre">VolumeBoundary</span></code> and <code class="docutils literal notranslate"><span class="pre">SurfaceBoundary</span></code> classes.
+<p>In NeoN the boundary conditions do not store the underlying  data but instead modify the data provided by <code class="docutils literal notranslate"><span class="pre">Field</span></code>.  A basic NoOp implementation is provided by  the <code class="docutils literal notranslate"><span class="pre">VolumeBoundary</span></code> and <code class="docutils literal notranslate"><span class="pre">SurfaceBoundary</span></code> classes.
 To apply boundary conditions for both Surface and Volume Vectors, a virtual base class member function <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> is used. The member acts as an interface and is responsible for updating the actual boundary data contained within an <code class="docutils literal notranslate"><span class="pre">InternalVector</span></code> (an attribute of the <code class="docutils literal notranslate"><span class="pre">Field</span></code>).</p>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE">

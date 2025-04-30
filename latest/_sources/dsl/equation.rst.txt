@@ -6,13 +6,10 @@ The `Expression` class in NeoN holds a set of operators to express an expression
 Its core responsibility lies in the answering of the following questions:
 
     - How to discretize the spatial terms?
-        - In OpenFOAM this information is provided in **fvSchemes**
     - How to integrate the system in time?
-        - In OpenFOAM this information is provided in **fvSchemes**
     - How to solve the system?
-        - In OpenFOAM this information is provided in **fvSolution**
 
-The main difference between NeoN and OpenFOAM is that the DSL is evaluated lazily, i.e. evaluation is not performed on construction by default.
+A core feature of NeoN is that the DSL is evaluated lazily, i.e. evaluation is not performed on construction by default.
 Since, the evaluation is not tied to the construction but rather delayed, other numerical integration strategies (e.g. RK methods or even sub-stepping within an the equation) are possible.
 
 To implement lazy evaluation, the `Expression` stores 3 vectors:
