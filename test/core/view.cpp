@@ -30,7 +30,7 @@ TEST_CASE("parallelFor")
 // TODO: on MSCV this results in a non terminating loop
 // so for now we deactivate it on MSVC since it a debugging helper
 #ifndef _MSC_VER
-    fieldNFView.abort = false;
+    fieldNFView.abortOnFail = false;
     NeoN::parallelFor(
         exec, {5, 6}, KOKKOS_LAMBDA(const localIdx i) { fieldNFView[i] *= 2.0; }
     );
@@ -45,7 +45,7 @@ TEST_CASE("parallelFor")
 // TODO: on MSCV this results in a non terminating loop
 // so for now we deactivate it on MSVC since it a debugging helper
 #ifndef _MSC_VER
-    fieldNFViewHost.abort = false;
+    fieldNFViewHost.abortOnFail = false;
     SECTION("detects out of range")
     {
         [[maybe_unused]] auto tmp = fieldNFViewHost[5];
