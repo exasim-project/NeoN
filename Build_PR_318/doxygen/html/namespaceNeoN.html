@@ -23,7 +23,7 @@
   <td id="projectalign">
    <div id="projectname">NeoN
    </div>
-   <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
+   <div id="projectbrief">A framework for CFD software</div>
   </td>
  </tr>
  </tbody>
@@ -371,18 +371,20 @@ Functions</h2></td></tr>
 <tr class="memitem:a44e55549c34b75c79d8e9ce48fc3600a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a44e55549c34b75c79d8e9ce48fc3600a">operator-</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; lhs, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
 <tr class="memdesc:a44e55549c34b75c79d8e9ce48fc3600a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic subtraction operator, subtraction one field from another.  <br /></td></tr>
 <tr class="separator:a44e55549c34b75c79d8e9ce48fc3600a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77166d114ce12c3381d142498be4874f" id="r_a77166d114ce12c3381d142498be4874f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a77166d114ce12c3381d142498be4874f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a77166d114ce12c3381d142498be4874f">scalarMul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const ValueType value)</td></tr>
-<tr class="separator:a77166d114ce12c3381d142498be4874f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fffa84006dcdf9e579168adbc9f8f4a" id="r_a8fffa84006dcdf9e579168adbc9f8f4a"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; <br />
+requires requires(ValueType a, ValueType b) { a* b; }</td></tr>
+<tr class="memitem:a8fffa84006dcdf9e579168adbc9f8f4a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a8fffa84006dcdf9e579168adbc9f8f4a">scalarMul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const ValueType value)</td></tr>
+<tr class="separator:a8fffa84006dcdf9e579168adbc9f8f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a490d5b5f574236c480c0afd38a2dc1c9" id="r_a490d5b5f574236c480c0afd38a2dc1c9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a490d5b5f574236c480c0afd38a2dc1c9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a490d5b5f574236c480c0afd38a2dc1c9">add</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
 <tr class="separator:a490d5b5f574236c480c0afd38a2dc1c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae281a72f3e7f22c3b2993eac666d4bb4" id="r_ae281a72f3e7f22c3b2993eac666d4bb4"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ae281a72f3e7f22c3b2993eac666d4bb4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ae281a72f3e7f22c3b2993eac666d4bb4">sub</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
 <tr class="separator:ae281a72f3e7f22c3b2993eac666d4bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9" id="r_a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a4803cc249d78abb5840c8cd26a45adb9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a4803cc249d78abb5840c8cd26a45adb9">mul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
-<tr class="separator:a4803cc249d78abb5840c8cd26a45adb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac51e1ab1dc1254a2f8904cd9365f96" id="r_a0ac51e1ab1dc1254a2f8904cd9365f96"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; <br />
+requires requires(ValueType a, ValueType b) { a* b; }</td></tr>
+<tr class="memitem:a0ac51e1ab1dc1254a2f8904cd9365f96"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a0ac51e1ab1dc1254a2f8904cd9365f96">mul</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;b)</td></tr>
+<tr class="separator:a0ac51e1ab1dc1254a2f8904cd9365f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9198d29681d27f9a478aa99c01c00b9" id="r_af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplParams" colspan="2">template&lt;typename... Types&gt; <br />
 requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</td></tr>
 <tr class="memitem:af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a> (Types &amp;... args)</td></tr>
@@ -683,7 +685,7 @@ template&lt;typename... Args&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00089">89</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00090">90</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -785,7 +787,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType &gt; <
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00132">132</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00133">133</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -817,7 +819,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType &gt; <
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00110">110</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00111">111</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -849,7 +851,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType &gt; <
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00095">95</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00096">96</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -897,7 +899,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType &gt; <
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00045">45</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00046">46</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
@@ -1119,17 +1121,18 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType , type
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00023">23</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00024">24</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a4803cc249d78abb5840c8cd26a45adb9" name="a4803cc249d78abb5840c8cd26a45adb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4803cc249d78abb5840c8cd26a45adb9">&#9670;&#160;</a></span>mul()</h2>
+<a id="a0ac51e1ab1dc1254a2f8904cd9365f96" name="a0ac51e1ab1dc1254a2f8904cd9365f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac51e1ab1dc1254a2f8904cd9365f96">&#9670;&#160;</a></span>mul()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType &gt; </div>
+template&lt;typename ValueType &gt; <br />
+requires requires(ValueType a, ValueType b) { a* b; }</div>
       <table class="memname">
         <tr>
           <td class="memname">void NeoN::mul </td>
@@ -2109,13 +2112,14 @@ template&lt;class DataClass &gt; </div>
 
 </div>
 </div>
-<a id="a77166d114ce12c3381d142498be4874f" name="a77166d114ce12c3381d142498be4874f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77166d114ce12c3381d142498be4874f">&#9670;&#160;</a></span>scalarMul()</h2>
+<a id="a8fffa84006dcdf9e579168adbc9f8f4a" name="a8fffa84006dcdf9e579168adbc9f8f4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fffa84006dcdf9e579168adbc9f8f4a">&#9670;&#160;</a></span>scalarMul()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType &gt; </div>
+template&lt;typename ValueType &gt; <br />
+requires requires(ValueType a, ValueType b) { a* b; }</div>
       <table class="memname">
         <tr>
           <td class="memname">void NeoN::scalarMul </td>
@@ -2177,7 +2181,7 @@ template&lt;typename IndexType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="segmentedVector_8hpp_source.html#l00025">25</a> of file <a class="el" href="segmentedVector_8hpp_source.html">segmentedVector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="segmentedVector_8hpp_source.html#l00026">26</a> of file <a class="el" href="segmentedVector_8hpp_source.html">segmentedVector.hpp</a>.</p>
 
 </div>
 </div>
@@ -2225,7 +2229,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType &gt; <
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00071">71</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="containerFreeFunctions_8hpp_source.html#l00072">72</a> of file <a class="el" href="containerFreeFunctions_8hpp_source.html">containerFreeFunctions.hpp</a>.</p>
 
 </div>
 </div>

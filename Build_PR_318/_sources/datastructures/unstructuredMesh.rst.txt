@@ -4,8 +4,7 @@ UnstructuredMesh
 ================
 
 The `unstructuredMesh` holds the relevant data for the representing a computational grid on the selected executor.
-It is comparable to OpenFOAMs `fvMesh` class.
-However, since currently no construction from disc is supported, it is mainly used a data container for mesh data.
+However, currently no construction from disc is supported, thus it is mainly used a data container for mesh data.
 
 .. warning::
    - Currently no method to read meshes from disc is implemented. Thus
