@@ -108,9 +108,9 @@ template<
     class ContType,
     typename ValueType,
     parallelForContainerKernel<ValueType> Kernel>
-void parallelFor(ContType<ValueType>& field, Kernel kernel, std::string name = "parallelFor")
+void parallelFor(ContType<ValueType>& cont, Kernel kernel, std::string name = "parallelFor")
 {
-    std::visit([&](const auto& e) { parallelFor(e, field, kernel, name); }, field.exec());
+    std::visit([&](const auto& e) { parallelFor(e, cont, kernel, name); }, cont.exec());
 }
 
 template<typename Executor, typename Kernel, typename T>
