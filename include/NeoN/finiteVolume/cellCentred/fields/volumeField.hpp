@@ -35,18 +35,21 @@ public:
      * @brief Constructor for a uninitialized VolumeField
      *
      * @param exec The executor
-     * @param name The name of the field
+     * @param fieldName The name of the field
      * @param mesh The underlying mesh
      * @param boundaryConditions a vector of boundary conditions
      */
     VolumeField(
         const Executor& exec,
-        std::string name,
+        std::string fieldName,
         const UnstructuredMesh& mesh,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(
-            exec, name, mesh, Field<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
+            exec,
+            fieldName,
+            mesh,
+            Field<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
         ),
           key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions),
           db_(std::nullopt)

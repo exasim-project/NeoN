@@ -71,19 +71,20 @@ void map(ContType<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx
  */
 template<template<typename> class ContType, typename ValueType>
 void fill(
-    ContType<ValueType>& a,
+    ContType<ValueType>& cont,
     const std::type_identity_t<ValueType> value,
     std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
+    NF_DEBUG_ASSERT(start <= end, "Range must be ordered in ascending fashion");
     if (end == 0)
     {
-        end = a.size();
+        end = cont.size();
     }
-    auto viewA = a.view();
+    auto viewA = cont.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }
+        cont.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }
     );
 }
 

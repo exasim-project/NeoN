@@ -12,7 +12,7 @@ template<typename ValueType>
 class Vector;
 
 template<typename ValueType>
-void scalarMul(Vector<ValueType>& a, const ValueType value)
+void scalarMul(Vector<ValueType>& vect, const ValueType value)
     requires requires(ValueType a, ValueType b) { a* b; };
 
 namespace detail
@@ -20,19 +20,19 @@ namespace detail
 
 template<typename ValueType, typename BinaryOp>
 void fieldBinaryOp(
-    Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b, BinaryOp op
+    Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2, BinaryOp op
 );
 
 }
 
 template<typename ValueType>
-void add(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b);
+void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2);
 
 template<typename ValueType>
-void sub(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b);
+void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2);
 
 template<typename ValueType>
-void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
+void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
     requires requires(ValueType a, ValueType b) { a* b; };
 
 } // namespace NeoN
