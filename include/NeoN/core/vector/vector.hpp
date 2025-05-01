@@ -228,37 +228,37 @@ public:
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] inline ValueType* data() { return data_; }
+    [[nodiscard]] ValueType* data() { return data_; }
 
     /**
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] inline const ValueType* data() const { return data_; }
+    [[nodiscard]] const ValueType* data() const { return data_; }
 
     /**
      * @brief Gets the executor associated with the field.
      * @return Reference to the executor.
      */
-    [[nodiscard]] inline const Executor& exec() const { return exec_; }
+    [[nodiscard]] const Executor& exec() const { return exec_; }
 
     /**
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] inline localIdx size() const { return size_; }
+    [[nodiscard]] localIdx size() const { return size_; }
 
     /**
      * @brief Gets the size of the field.
      * @return The size of the field.
      */
-    [[nodiscard]] inline label ssize() const { return static_cast<label>(size_); }
+    [[nodiscard]] label ssize() const { return static_cast<label>(size_); }
 
     /**
      * @brief Checks if the field is empty.
      * @return True if the field is empty, false otherwise.
      */
-    [[nodiscard]] inline bool empty() const { return size() == 0; }
+    [[nodiscard]] bool empty() const { return size() == 0; }
 
     // return of a temporary --> invalid memory access
     View<ValueType> view() && = delete;
@@ -270,7 +270,7 @@ public:
      * @brief Gets the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] inline View<ValueType> view() &
+    [[nodiscard]] View<ValueType> view() &
     {
         return View<ValueType>(data_, static_cast<size_t>(size_));
     }
@@ -279,7 +279,7 @@ public:
      * @brief Gets the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] inline View<const ValueType> view() const&
+    [[nodiscard]] View<const ValueType> view() const&
     {
         return View<const ValueType>(data_, static_cast<size_t>(size_));
     }
@@ -294,7 +294,7 @@ public:
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] inline View<ValueType> view(std::pair<localIdx, localIdx> range) &
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
         return View<ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
@@ -305,7 +305,7 @@ public:
      * @brief Gets a sub view of the field as a view.
      * @return View of the field.
      */
-    [[nodiscard]] inline View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
         return View<const ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
@@ -316,7 +316,7 @@ public:
      * @brief Gets the range of the field.
      * @return The range of the field {0, size()}.
      */
-    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 
