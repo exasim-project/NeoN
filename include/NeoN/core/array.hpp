@@ -19,22 +19,6 @@
 namespace NeoN
 {
 
-namespace detail
-{
-
-/**
- * @brief A helper function to simplify the common pattern of copying between and to executor.
- * @param size The number of elements to copy.
- * @param srcPtr Pointer to the original block of memory.
- * @param dstPtr Pointer to the target block of memory.
- * @tparam ValueType The type of the underlying elements.
- * @returns A function that takes a source and an destination executor
- */
-template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr);
-
-}
-
 /**
  * @class Vector
  * @brief A class to contain the data and executors for a field and define some basic operations.
@@ -163,16 +147,7 @@ public:
     template<typename func>
     void apply(func f)
     {
-        // FIXME:
-        // auto [start, end] = range;
-        // if (end == 0)
-        // {
-        //     end = this->size();
-        // }
-        // auto viewA = this->view();
-        // parallelFor(
-        //     this->exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = f(i); }
-        // );
+        map(*this, f);
     }
 
     /**

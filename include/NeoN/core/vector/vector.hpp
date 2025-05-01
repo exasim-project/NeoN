@@ -7,8 +7,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/core/view.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/view.hpp"
 
 #include <variant>
 #include <vector>
@@ -16,22 +16,6 @@
 
 namespace NeoN
 {
-
-namespace detail
-{
-
-/**
- * @brief A helper function to simplify the common pattern of copying between and to executor.
- * @param size The number of elements to copy.
- * @param srcPtr Pointer to the original block of memory.
- * @param dstPtr Pointer to the target block of memory.
- * @tparam ValueType The type of the underlying elements.
- * @returns A function that takes a source and an destination executor
- */
-template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr);
-
-}
 
 /**
  * @class Vector

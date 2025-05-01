@@ -13,6 +13,33 @@
 namespace NeoN
 {
 
+
+namespace detail
+{
+
+/**
+ * @brief A helper function to simplify the common pattern of copying between and to executor.
+ * @param size The number of elements to copy.
+ * @param srcPtr Pointer to the original block of memory.
+ * @param dstPtr Pointer to the target block of memory.
+ * @tparam ValueType The type of the underlying elements.
+ * @returns A function that takes a source and an destination executor
+ */
+template<typename ValueType>
+auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
+{
+    size_t size = static_cast<size_t>(ssize);
+    return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
+    {
+        Kokkos::deep_copy(
+            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
+        );
+    };
+};
+
+}
+
+
 /**
  * @brief Map a field using a specific executor.
  *
@@ -87,16 +114,16 @@ void setContainer(
 }
 
 template<typename... Args>
-auto copyToHosts(Args&... container)
+auto copyToHosts(Args&... cont)
 {
-    return std::make_tuple(container.copyToHost()...);
+    return std::make_tuple(cont.copyToHost()...);
 }
 
 template<template<typename> class ContType, typename ValueType>
-bool equal(ContType<ValueType>& vector, ValueType value)
+bool equal(ContType<ValueType>& cont, ValueType value)
 {
-    auto hostVector = vector.copyToHost();
-    auto hostView = hostVector.view();
+    auto hostCont = cont.copyToHost();
+    auto hostView = hostCont.view();
     for (localIdx i = 0; i < hostView.size(); i++)
     {
         if (hostView[i] != value)
@@ -108,10 +135,10 @@ bool equal(ContType<ValueType>& vector, ValueType value)
 };
 
 template<template<typename> class ContType, typename ValueType>
-bool equal(const ContType<ValueType>& vector1, const ContType<ValueType>& vector2)
+bool equal(const ContType<ValueType>& cont1, const ContType<ValueType>& cont2)
 {
-    auto [hostVector1, hostVector2] = copyToHosts(vector1, vector2);
-    auto [hostView1, hostView2] = views(hostVector1, hostVector2);
+    auto [hostCont1, hostCont2] = copyToHosts(cont1, cont2);
+    auto [hostView1, hostView2] = views(hostCont1, hostCont2);
 
     if (hostView1.size() != hostView2.size())
     {
@@ -130,9 +157,9 @@ bool equal(const ContType<ValueType>& vector1, const ContType<ValueType>& vector
 };
 
 template<template<typename> class ContType, typename ValueType>
-bool equal(const ContType<ValueType>& vector, View<ValueType> view2)
+bool equal(const ContType<ValueType>& cont, View<ValueType> view2)
 {
-    auto hostView = vector.copyToHost().view();
+    auto hostView = cont.copyToHost().view();
 
     if (hostView.size() != view2.size())
     {

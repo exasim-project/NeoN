@@ -3,30 +3,11 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
-#include "NeoN/core/vector/vector.hpp"
-#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/vector/vector.hpp"
 
 namespace NeoN
 {
-
-namespace detail
-{
-
-// automatically instantiated by calling routines here in this translation unit.
-template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
-{
-    size_t size = static_cast<size_t>(ssize);
-    return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
-    {
-        Kokkos::deep_copy(
-            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
-        );
-    };
-}
-
-}
 
 template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, localIdx size)
