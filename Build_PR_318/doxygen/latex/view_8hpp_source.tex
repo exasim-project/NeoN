@@ -33,7 +33,7 @@
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{comment}{/*\ A\ flag\ to\ control\ whether\ the\ program\ should\ terminate\ on\ invalid\ memory\ access\ or\ throw.}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00030}00030\ \textcolor{comment}{\ \ \ \ \ *\ Kokkos\ prefers\ to\ terminate,\ but\ for\ testing\ purpose\ the\ failureIndex\ is\ preferred}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00031}00031\ \textcolor{comment}{\ \ \ \ \ */}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1View_a63ef7ab5beb5f2636917213af3ba3c92}{00032}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1View_a63ef7ab5beb5f2636917213af3ba3c92}{abort}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1View_a7e047af414596f9800112810a15a686e}{00032}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1View_a7e047af414596f9800112810a15a686e}{abortOnFail}}\ =\ \textcolor{keyword}{true};}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00033}00033\ }
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{/*\ a\ member\ to\ store\ the\ first\ out\ of\ range\ data\ access.\ This\ assumes\ a\ span\ has}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00035}00035\ \textcolor{comment}{\ \ \ \ \ *\ at\ least\ a\ size\ of\ 1.\ A\ value\ of\ zero\ signals\ success.\ This\ is\ required\ we\ cannot}}
@@ -50,12 +50,12 @@
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1View_a0ce01edd1bcd61c22395ac4d5b3774f4}{00046}}\ \ \ \ \ \textcolor{keyword}{constexpr}\ ValueType\&\ \mbox{\hyperlink{classNeoN_1_1View_a0ce01edd1bcd61c22395ac4d5b3774f4}{operator[]}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ index)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00047}00047\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00048}00048\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ >=\ this-\/>\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ <\ 0\ ||\ index\ >=\ this-\/>\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ currently\ this\ is\ failing\ on\ our\ AWS\ workflow,\ once\ we\ have\ clang>16\ there}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ should\ work\ again.}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ const\ std::string\ msg\ \{"{}Index\ is\ out\ of\ range.\ Index:\ "{}\}\ +\ to\_string(index);}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abort)}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abortOnFail)}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}Index\ is\ out\ of\ range"{}});}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
