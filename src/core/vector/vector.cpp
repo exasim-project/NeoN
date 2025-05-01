@@ -142,6 +142,46 @@ Vector<ValueType>& Vector<ValueType>::operator-=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
+Vector<ValueType> Vector<ValueType>::operator*(const Vector<ValueType>& rhs)
+    requires requires(ValueType a, ValueType b) { a* b; }
+{
+    validateOtherVector(rhs);
+    Vector<ValueType> result(exec_, size_);
+    result = *this;
+    mul(result, rhs);
+    return result;
+}
+
+template<typename ValueType>
+Vector<ValueType> Vector<ValueType>::operator*(const ValueType rhs)
+    requires requires(ValueType a, ValueType b) { a* b; }
+{
+    Vector<ValueType> result(exec_, size_);
+    result = *this;
+    scalarMul(result, rhs);
+    return result;
+}
+
+template<typename ValueType>
+Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
+    requires requires(ValueType a, ValueType b) { a *= b; }
+{
+    validateOtherVector(rhs);
+    Vector<ValueType>& result = *this;
+    mul(result, rhs);
+    return result;
+}
+
+template<typename ValueType>
+Vector<ValueType>& Vector<ValueType>::operator*=(const ValueType rhs)
+    requires requires(ValueType a, ValueType b) { a *= b; }
+{
+    Vector<ValueType>& result = *this;
+    scalarMul(result, rhs);
+    return result;
+}
+
+template<typename ValueType>
 void Vector<ValueType>::resize(const localIdx size)
 {
     void* ptr = nullptr;

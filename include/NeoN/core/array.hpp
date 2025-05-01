@@ -84,14 +84,14 @@ public:
     Array(const Executor& exec, localIdx size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
-        // void* ptr = nullptr;
-        // std::visit(
-        //     [&ptr, size](const auto& execu)
-        //     { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
-        //     exec_
-        // );
-        // data_ = static_cast<ValueType*>(ptr);
-        // NeoN::fill(*this, value);
+        void* ptr = nullptr;
+        std::visit(
+            [&ptr, size](const auto& execu)
+            { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            exec_
+        );
+        data_ = static_cast<ValueType*>(ptr);
+        NeoN::fill(*this, value);
     }
 
     /**

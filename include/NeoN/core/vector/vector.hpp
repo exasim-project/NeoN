@@ -165,14 +165,7 @@ public:
      * @returns The result of the multiply.
      */
     [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
-        requires requires(ValueType a, ValueType b) { a* b; }
-    {
-        validateOtherVector(rhs);
-        Vector<ValueType> result(exec_, size_);
-        result = *this;
-        mul(result, rhs);
-        return result;
-    }
+        requires requires(ValueType a, ValueType b) { a* b; };
 
     /**
      * @brief Arithmetic multiply operator, multiplies every cell in the field
@@ -181,42 +174,23 @@ public:
      * @returns The result of the multiplication.
      */
     [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs)
-        requires requires(ValueType a, ValueType b) { a* b; }
-    {
-        Vector<ValueType> result(exec_, size_);
-        result = *this;
-        scalarMul(result, rhs);
-        return result;
-    }
+        requires requires(ValueType a, ValueType b) { a* b; };
 
     /**
      * @brief Arithmetic multiply operator, multiplies this field by another field element-wise.
      * @param rhs The field to multiply with this field.
      * @returns The result of the element-wise multiplication.
      */
-    template<typename VType = ValueType>
-        requires requires(VType a, VType b) { a *= b; }
     Vector<ValueType>& operator*=(const Vector<ValueType>& rhs)
-    {
-        validateOtherVector(rhs);
-        Vector<ValueType>& result = *this;
-        mul(result, rhs);
-        return result;
-    }
+        requires requires(ValueType a, ValueType b) { a *= b; };
 
     /**
      * @brief Arithmetic multiply-assignment operator, multiplies every cell in the field
      * by a scalar and updates the field in place.
      * @param rhs The scalar to multiply with the field.
      */
-    template<typename VType = ValueType>
-        requires requires(VType a, VType b) { a *= b; }
     Vector<ValueType>& operator*=(const ValueType rhs)
-    {
-        Vector<ValueType>& result = *this;
-        scalarMul(result, rhs);
-        return result;
-    }
+        requires requires(ValueType a, ValueType b) { a *= b; };
 
     /**
      * @brief Resizes the field to a new size.
