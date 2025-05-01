@@ -192,7 +192,7 @@ Classes</h2></td></tr>
 Concepts</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1parallelForKernel.html">parallelForKernel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1parallelForVectorKernel.html">parallelForVectorKernel</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1parallelForContainerKernel.html">parallelForContainerKernel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1hasView.html">hasView</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept, for any type which has the 'view' method. <br /></td></tr>
@@ -293,12 +293,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a44f27717687a4b73cc58ec9918530f05" id="r_a44f27717687a4b73cc58ec9918530f05"><td class="memTemplParams" colspan="2">template&lt;parallelForKernel Kernel&gt; </td></tr>
 <tr class="memitem:a44f27717687a4b73cc58ec9918530f05"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a44f27717687a4b73cc58ec9918530f05">parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
 <tr class="separator:a44f27717687a4b73cc58ec9918530f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8102905ff0f590304600227d4fb072bf" id="r_a8102905ff0f590304600227d4fb072bf"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , typename ValueType , parallelForVectorKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
-<tr class="memitem:a8102905ff0f590304600227d4fb072bf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a8102905ff0f590304600227d4fb072bf">parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
-<tr class="separator:a8102905ff0f590304600227d4fb072bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8df765eb52ac2f842d3a7ff423638e5d" id="r_a8df765eb52ac2f842d3a7ff423638e5d"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , parallelForVectorKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
-<tr class="memitem:a8df765eb52ac2f842d3a7ff423638e5d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a8df765eb52ac2f842d3a7ff423638e5d">parallelFor</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;field, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
-<tr class="separator:a8df765eb52ac2f842d3a7ff423638e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad159397b740c7143932f44f43cf04cbf" id="r_ad159397b740c7143932f44f43cf04cbf"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
+<tr class="memitem:ad159397b740c7143932f44f43cf04cbf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ad159397b740c7143932f44f43cf04cbf">parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, ContType&lt; ValueType &gt; &amp;container, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
+<tr class="separator:ad159397b740c7143932f44f43cf04cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca5787008022dbcc87361079fe2ed1e" id="r_a1ca5787008022dbcc87361079fe2ed1e"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
+<tr class="memitem:a1ca5787008022dbcc87361079fe2ed1e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a1ca5787008022dbcc87361079fe2ed1e">parallelFor</a> (ContType&lt; ValueType &gt; &amp;field, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
+<tr class="separator:a1ca5787008022dbcc87361079fe2ed1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d445616a96928bbb015212516721784" id="r_a9d445616a96928bbb015212516721784"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , typename Kernel , typename T &gt; </td></tr>
 <tr class="memitem:a9d445616a96928bbb015212516721784"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a9d445616a96928bbb015212516721784">parallelReduce</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, T &amp;value)</td></tr>
 <tr class="separator:a9d445616a96928bbb015212516721784"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1586,8 +1586,52 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
+<a id="ad159397b740c7143932f44f43cf04cbf" name="ad159397b740c7143932f44f43cf04cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad159397b740c7143932f44f43cf04cbf">&#9670;&#160;</a></span>parallelFor() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::parallelFor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td>
+          <td class="paramname"><em>exec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ContType&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Kernel&#160;</td>
+          <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em> = <code>&quot;parallelFor&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00080">80</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a21e64530776182407f0f068c289adf81" name="a21e64530776182407f0f068c289adf81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21e64530776182407f0f068c289adf81">&#9670;&#160;</a></span>parallelFor() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a21e64530776182407f0f068c289adf81">&#9670;&#160;</a></span>parallelFor() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1627,50 +1671,6 @@ template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf41
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00028">28</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
-
-</div>
-</div>
-<a id="a8102905ff0f590304600227d4fb072bf" name="a8102905ff0f590304600227d4fb072bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8102905ff0f590304600227d4fb072bf">&#9670;&#160;</a></span>parallelFor() <span class="overload">[2/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , typename ValueType , parallelForVectorKernel&lt; ValueType &gt; Kernel&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void NeoN::parallelFor </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td>
-          <td class="paramname"><em>exec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Kernel&#160;</td>
-          <td class="paramname"><em>kernel</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>name</em> = <code>&quot;parallelFor&quot;</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00075">75</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1718,18 +1718,18 @@ template&lt;parallelForKernel Kernel&gt; </div>
 
 </div>
 </div>
-<a id="a8df765eb52ac2f842d3a7ff423638e5d" name="a8df765eb52ac2f842d3a7ff423638e5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8df765eb52ac2f842d3a7ff423638e5d">&#9670;&#160;</a></span>parallelFor() <span class="overload">[4/4]</span></h2>
+<a id="a1ca5787008022dbcc87361079fe2ed1e" name="a1ca5787008022dbcc87361079fe2ed1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca5787008022dbcc87361079fe2ed1e">&#9670;&#160;</a></span>parallelFor() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , parallelForVectorKernel&lt; ValueType &gt; Kernel&gt; </div>
+template&lt;template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void NeoN::parallelFor </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramtype">ContType&lt; ValueType &gt; &amp;&#160;</td>
           <td class="paramname"><em>field</em>, </td>
         </tr>
         <tr>
@@ -1752,7 +1752,7 @@ template&lt;typename ValueType , parallelForVectorKernel&lt; ValueType &gt; Kern
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00103">103</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00111">111</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1796,7 +1796,7 @@ template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf41
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00109">109</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00117">117</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1840,7 +1840,7 @@ template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf41
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00150">150</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00158">158</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1884,7 +1884,7 @@ template&lt;typename Kernel , typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00141">141</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00149">149</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1922,7 +1922,7 @@ template&lt;typename ValueType , typename Kernel , typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00179">179</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00187">187</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -1960,7 +1960,7 @@ template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf41
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00185">185</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00193">193</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -2004,7 +2004,7 @@ template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf41
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00201">201</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00209">209</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -2042,7 +2042,7 @@ template&lt;typename Kernel &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00195">195</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00203">203</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>
@@ -2086,7 +2086,7 @@ template&lt;typename Kernel , typename ReturnType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00216">216</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00224">224</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
 
 </div>
 </div>

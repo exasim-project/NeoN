@@ -151,14 +151,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classNeoN_1_1Array.html#a0da6227d6715ab3384654f6ca337ea16">   84</a></span>    <a class="code hl_function" href="classNeoN_1_1Array.html#a0da6227d6715ab3384654f6ca337ea16">Array</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1Array.html#a86786f624d5d9837305ae12bb6d5eea1">exec</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1Array.html#a724b44f0930b2af455ca56c2811cb56c">size</a>, ValueType value)</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        : size_(<a class="code hl_function" href="classNeoN_1_1Array.html#a724b44f0930b2af455ca56c2811cb56c">size</a>), data_(nullptr), exec_(<a class="code hl_function" href="classNeoN_1_1Array.html#a86786f624d5d9837305ae12bb6d5eea1">exec</a>)</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="comment">// void* ptr = nullptr;</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="comment">// std::visit(</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="comment">//     [&amp;ptr, size](const auto&amp; execu)</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">//     { ptr = execu.alloc(static_cast&lt;size_t&gt;(size) * sizeof(ValueType)); },</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="comment">//     exec_</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="comment">// );</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="comment">// data_ = static_cast&lt;ValueType*&gt;(ptr);</span></div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="comment">// NeoN::fill(*this, value);</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordtype">void</span>* ptr = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::visit(</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            [&amp;ptr, <a class="code hl_function" href="classNeoN_1_1Array.html#a724b44f0930b2af455ca56c2811cb56c">size</a>](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; execu)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            { ptr = execu.alloc(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="classNeoN_1_1Array.html#a724b44f0930b2af455ca56c2811cb56c">size</a>) * <span class="keyword">sizeof</span>(ValueType)); },</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            exec_</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        );</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        data_ = <span class="keyword">static_cast&lt;</span>ValueType*<span class="keyword">&gt;</span>(ptr);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_function" href="namespaceNeoN.html#aef3e2dce49fdf45c689e6718112c258c">NeoN::fill</a>(*<span class="keyword">this</span>, value);</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
 </div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
