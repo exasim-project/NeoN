@@ -296,9 +296,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad159397b740c7143932f44f43cf04cbf" id="r_ad159397b740c7143932f44f43cf04cbf"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
 <tr class="memitem:ad159397b740c7143932f44f43cf04cbf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ad159397b740c7143932f44f43cf04cbf">parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, ContType&lt; ValueType &gt; &amp;container, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
 <tr class="separator:ad159397b740c7143932f44f43cf04cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ca5787008022dbcc87361079fe2ed1e" id="r_a1ca5787008022dbcc87361079fe2ed1e"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
-<tr class="memitem:a1ca5787008022dbcc87361079fe2ed1e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a1ca5787008022dbcc87361079fe2ed1e">parallelFor</a> (ContType&lt; ValueType &gt; &amp;field, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
-<tr class="separator:a1ca5787008022dbcc87361079fe2ed1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a998b4b2db7ab2fb275c20a76cf323a49" id="r_a998b4b2db7ab2fb275c20a76cf323a49"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
+<tr class="memitem:a998b4b2db7ab2fb275c20a76cf323a49"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a998b4b2db7ab2fb275c20a76cf323a49">parallelFor</a> (ContType&lt; ValueType &gt; &amp;cont, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
+<tr class="separator:a998b4b2db7ab2fb275c20a76cf323a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d445616a96928bbb015212516721784" id="r_a9d445616a96928bbb015212516721784"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , typename Kernel , typename T &gt; </td></tr>
 <tr class="memitem:a9d445616a96928bbb015212516721784"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a9d445616a96928bbb015212516721784">parallelReduce</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, T &amp;value)</td></tr>
 <tr class="separator:a9d445616a96928bbb015212516721784"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1718,8 +1718,8 @@ template&lt;parallelForKernel Kernel&gt; </div>
 
 </div>
 </div>
-<a id="a1ca5787008022dbcc87361079fe2ed1e" name="a1ca5787008022dbcc87361079fe2ed1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ca5787008022dbcc87361079fe2ed1e">&#9670;&#160;</a></span>parallelFor() <span class="overload">[4/4]</span></h2>
+<a id="a998b4b2db7ab2fb275c20a76cf323a49" name="a998b4b2db7ab2fb275c20a76cf323a49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998b4b2db7ab2fb275c20a76cf323a49">&#9670;&#160;</a></span>parallelFor() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1730,7 +1730,7 @@ template&lt;template&lt; typename &gt; class ContType, typename ValueType , para
           <td class="memname">void NeoN::parallelFor </td>
           <td>(</td>
           <td class="paramtype">ContType&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
+          <td class="paramname"><em>cont</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2344,7 +2344,7 @@ requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</d
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Tuple containing the unpacked views (use structured bindings). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="view_8hpp_source.html#l00101">101</a> of file <a class="el" href="view_8hpp_source.html">view.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="view_8hpp_source.html#l00102">102</a> of file <a class="el" href="view_8hpp_source.html">view.hpp</a>.</p>
 
 </div>
 </div>

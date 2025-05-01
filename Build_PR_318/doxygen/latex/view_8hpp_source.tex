@@ -50,54 +50,55 @@
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1View_a0ce01edd1bcd61c22395ac4d5b3774f4}{00046}}\ \ \ \ \ \textcolor{keyword}{constexpr}\ ValueType\&\ \mbox{\hyperlink{classNeoN_1_1View_a0ce01edd1bcd61c22395ac4d5b3774f4}{operator[]}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ index)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00047}00047\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00048}00048\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ <\ 0\ ||\ index\ >=\ this-\/>\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ <\ 0\ ||\ this-\/>\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}()\ <=\ index)}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ currently\ this\ is\ failing\ on\ our\ AWS\ workflow,\ once\ we\ have\ clang>16\ there}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ should\ work\ again.}}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ const\ std::string\ msg\ \{"{}Index\ is\ out\ of\ range.\ Index:\ "{}\}\ +\ to\_string(index);}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abortOnFail)}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classNeoN_1_1View_a7e047af414596f9800112810a15a686e}{abortOnFail}})}
 \DoxyCodeLine{\Hypertarget{view_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}Index\ is\ out\ of\ range"{}});}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ throwing\ from\ a\ device\ function\ does\ not\ work}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ throw\ std::invalid\_argument("{}Index\ is\ out\ of\ range"{});}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classNeoN_1_1View_a47737a308b5ee947e194a13884aab8f9}{failureIndex}}\ ==\ 0)}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View_a47737a308b5ee947e194a13884aab8f9}{failureIndex}}\ =\ index;}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::span<ValueType>::operator[](\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(index));}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00069}00069\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::span<ValueType>::operator[](\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(index));}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00071}00071\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00072}00072\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00073}\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{00073}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(base::size());\ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1View_aed1371714ed30af7361e8a5bd2689104}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1View_aed1371714ed30af7361e8a5bd2689104}{subview}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ length)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00076}00076\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base::subspan(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(start),\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(length));}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00078}00078\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1View_a315a5efe6da289d5b415d4fbd1cf0b5f}{00080}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1View_a315a5efe6da289d5b415d4fbd1cf0b5f}{subview}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base::subspan(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(start));}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00083}00083\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00084}00084\ \};}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00085}00085\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00090}00090\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ Type>}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00091}\mbox{\hyperlink{conceptNeoN_1_1hasView}{00091}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1hasView}{hasView}}\ =}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keyword}{requires}(Type\&\ inst)\ \{\ inst.view();\ \}\ ||\ \textcolor{keyword}{requires}(\textcolor{keyword}{const}\ Type\&\ inst)\ \{\ inst.view();\ \};}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00099}00099\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Types>}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{keyword}{requires}(hasView<std::remove\_reference\_t<Types>>\ \&\&\ ...)}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00101}\mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{00101}}\ auto\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(Types\&...\ args)}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00102}00102\ \{}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keywordflow}{return}\ std::tuple(args.view()...);}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00104}00104\ \}}
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00105}00105\ }
-\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00106}00106\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View_a47737a308b5ee947e194a13884aab8f9}{failureIndex}}\ =\ index;}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}Index\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ throwing\ from\ a\ device\ function\ does\ not\ work}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ throw\ std::invalid\_argument("{}Index\ is\ out\ of\ range"{});}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classNeoN_1_1View_a47737a308b5ee947e194a13884aab8f9}{failureIndex}}\ ==\ 0)}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View_a47737a308b5ee947e194a13884aab8f9}{failureIndex}}\ =\ index;}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::span<ValueType>::operator[](\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(index));}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00070}00070\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::span<ValueType>::operator[](\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(index));}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00072}00072\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{00074}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(base::size());\ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1View_aed1371714ed30af7361e8a5bd2689104}{00076}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1View_aed1371714ed30af7361e8a5bd2689104}{subview}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ length)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00077}00077\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base::subspan(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(start),\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(length));}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00079}00079\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1View_a315a5efe6da289d5b415d4fbd1cf0b5f}{00081}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1View_a315a5efe6da289d5b415d4fbd1cf0b5f}{subview}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00082}00082\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base::subspan(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(start));}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00084}00084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00085}00085\ \};}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00091}00091\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ Type>}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00092}\mbox{\hyperlink{conceptNeoN_1_1hasView}{00092}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1hasView}{hasView}}\ =}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{keyword}{requires}(Type\&\ inst)\ \{\ inst.view();\ \}\ ||\ \textcolor{keyword}{requires}(\textcolor{keyword}{const}\ Type\&\ inst)\ \{\ inst.view();\ \};}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00100}00100\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Types>}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keyword}{requires}(hasView<std::remove\_reference\_t<Types>>\ \&\&\ ...)}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00102}\mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{00102}}\ auto\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(Types\&...\ args)}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00103}00103\ \{}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{return}\ std::tuple(args.view()...);}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00105}00105\ \}}
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{view_8hpp_source_l00107}00107\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
