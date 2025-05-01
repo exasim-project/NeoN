@@ -5,6 +5,7 @@
 
 #include <Kokkos_Core.hpp>
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 

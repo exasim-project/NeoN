@@ -180,9 +180,8 @@ public:
      * @param rhs The field to subtract from this field.
      * @returns The result of the multiply.
      */
-    template<typename VType = ValueType>
-        requires requires(VType a, VType b) { a* b; }
     [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
+        requires requires(ValueType a, ValueType b) { a* b; }
     {
         validateOtherVector(rhs);
         Vector<ValueType> result(exec_, size_);
@@ -197,9 +196,8 @@ public:
      * @param rhs The scalar to multiply with the field.
      * @returns The result of the multiplication.
      */
-    template<typename VType = ValueType>
-        requires requires(VType a, VType b) { a* b; }
     [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs)
+        requires requires(ValueType a, ValueType b) { a* b; }
     {
         Vector<ValueType> result(exec_, size_);
         result = *this;

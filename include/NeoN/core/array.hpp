@@ -10,7 +10,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
-#include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 
 #include <variant>
 #include <vector>
@@ -224,9 +224,8 @@ public:
      */
     void operator=(const ValueType& rhs)
     {
-        // FIXME:
         NF_ERROR_EXIT("Not implemented");
-        // (*this, rhs);
+        fill(*this, rhs);
     }
 
     /**
@@ -237,13 +236,12 @@ public:
      */
     void operator=(const Array<ValueType>& rhs)
     {
-        // FIXME:
         NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
-        // if (this->size() != rhs.size())
-        // {
-        //     this->resize(rhs.size());
-        // }
-        // setVector(*this, rhs.view());
+        if (this->size() != rhs.size())
+        {
+            this->resize(rhs.size());
+        }
+        setContainer(*this, rhs.view());
     }
 
     /**

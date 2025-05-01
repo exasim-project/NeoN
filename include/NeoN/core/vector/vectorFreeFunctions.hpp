@@ -12,7 +12,8 @@ template<typename ValueType>
 class Vector;
 
 template<typename ValueType>
-void scalarMul(Vector<ValueType>& a, const ValueType value);
+void scalarMul(Vector<ValueType>& a, const ValueType value)
+    requires requires(ValueType a, ValueType b) { a* b; };
 
 namespace detail
 {
@@ -31,6 +32,7 @@ template<typename ValueType>
 void sub(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b);
 
 template<typename ValueType>
-void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b);
+void mul(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
+    requires requires(ValueType a, ValueType b) { a* b; };
 
 } // namespace NeoN

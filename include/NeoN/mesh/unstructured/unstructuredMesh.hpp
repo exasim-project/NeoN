@@ -5,6 +5,7 @@
 
 #include "Kokkos_Sort.hpp"
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"

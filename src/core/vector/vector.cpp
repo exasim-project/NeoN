@@ -5,7 +5,7 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
-
+#include "NeoN/core/containerFreeFunctions.hpp"
 
 namespace NeoN
 {
@@ -141,7 +141,7 @@ void Vector<ValueType>::operator=(const Vector<ValueType>& rhs)
     {
         this->resize(rhs.size());
     }
-    setVector(*this, rhs.view());
+    setContainer(*this, rhs.view());
 }
 
 template<typename ValueType>

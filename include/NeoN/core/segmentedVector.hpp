@@ -3,6 +3,7 @@
 #pragma once
 
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector/vector.hpp"
 

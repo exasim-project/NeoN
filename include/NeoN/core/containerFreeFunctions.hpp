@@ -6,8 +6,9 @@
 #include <tuple>
 #include <Kokkos_Core.hpp>
 
-#include "NeoN/core/view.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/view.hpp"
 
 namespace NeoN
 {
