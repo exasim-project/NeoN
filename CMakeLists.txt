@@ -46,6 +46,7 @@ option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support [currently required]" ON)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
+option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
