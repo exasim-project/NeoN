@@ -41,6 +41,7 @@ public:
 
     /* Constructor from existing std::span
      */
+    KOKKOS_INLINE_FUNCTION
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
     constexpr ValueType& operator[](localIdx index) const
@@ -70,13 +71,16 @@ public:
         return std::span<ValueType>::operator[](static_cast<size_t>(index));
     }
 
+    KOKKOS_INLINE_FUNCTION
     localIdx size() const { return static_cast<localIdx>(base::size()); }
 
+    KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start, localIdx length) const
     {
         return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
     }
 
+    KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start) const
     {
         return base::subspan(static_cast<size_t>(start));
