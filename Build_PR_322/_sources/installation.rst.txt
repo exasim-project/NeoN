@@ -84,13 +84,14 @@ Next we create a development environment for NeoN and add NeoN to it.
     spack env create  -d NeoN-env
     spack env activate NeoN-env
     cd NeoN-env
-    spack develop --path /home/greole/data/code/NeoN NeoN
+    spack develop --path /home/greole/data/code/NeoN neon
 
 Next we install clang 17 as a compiler into our environment
 
    .. code-block:: bash
 
     spack add llvm@17
+    spack install
     spack compiler add "$(spack location -i llvm)"
 
 
