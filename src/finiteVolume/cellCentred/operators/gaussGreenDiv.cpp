@@ -185,7 +185,7 @@ void computeDivImp(
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = sFaceFlux[facei];
-            
+
             scalar weight = sWeights[facei];
             ValueType value = zero<ValueType>();
             auto own = owner[facei];
@@ -215,12 +215,13 @@ void computeDivImp(
         }
     );
 
-    auto [bweights, refGradient, value, valueFraction, refValue] = views(
+    auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs] = views(
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),
-        phi.boundaryData().refValue()
+        phi.boundaryData().refValue(),
+        mesh.boundaryMesh().deltaCoeffs()
     );
 
     parallelFor(
@@ -228,17 +229,20 @@ void computeDivImp(
         {nInternalFaces, sFaceFlux.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
             auto bcfacei = facei - nInternalFaces;
-            scalar flux = bweights[facei] * sFaceFlux[facei];
+            scalar flux = bweights[bcfacei] * sFaceFlux[facei];
 
             auto own = surfFaceCells[bcfacei];
             auto rowOwnStart = matrix.rowOffs[own];
             scalar operatorScalingOwn = operatorScaling[own];
 
+            scalar valFrac1 = valueFraction[bcfacei];
+            scalar valFrac2 = 1.0 - valFrac1;
+
             matrix.values[rowOwnStart + diagOffs[own]] +=
-                flux * operatorScalingOwn * (1.0 - valueFraction[bcfacei]) * one<ValueType>();
-            // TODO fix bc values
-            rhs[own] -= (flux * operatorScalingOwn * (valueFraction[bcfacei] * refValue[bcfacei]));
-            // + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei] / deltaCoeffs[facei]));
+                flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+
+            rhs[own] -= (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                      + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
         }
     );
 };
