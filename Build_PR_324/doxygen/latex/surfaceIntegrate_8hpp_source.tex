@@ -1,0 +1,94 @@
+\doxysection{surface\+Integrate.\+hpp}
+\hypertarget{surfaceIntegrate_8hpp_source}{}\label{surfaceIntegrate_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp}}
+\mbox{\hyperlink{surfaceIntegrate_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{input_8hpp}{NeoN/core/input.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operator_8hpp}{NeoN/dsl/operator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00016}00016\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{00017}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surfaceIntegrate}}(}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00018}00018\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00019}00019\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nInternalFaces,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00020}00020\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ int>}}\ neighbour,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00021}00021\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ int>}}\ owner,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00022}00022\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ int>}}\ faceCells,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00023}00023\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\ flux,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00024}00024\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ scalar>}}\ v,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00025}00025\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ res,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00027}00027\ );}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00029}00029\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate}{00030}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate}{SurfaceIntegrate}}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00031}00031\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00033}00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a7cf6e5b06185173edf3482145e41de6d}{00035}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a7cf6e5b06185173edf3482145e41de6d}{VectorValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a033f760870b404638d56d2015d40851c}{00037}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a033f760870b404638d56d2015d40851c}{SurfaceIntegrate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ flux)}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ :\ flux\_(flux),\ type\_(dsl::Operator::Type::Explicit),\ coeffs\_(1.0)\ \{\};}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a71393b48c572e749ec32c47415f41f8c}{00040}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a71393b48c572e749ec32c47415f41f8c}{SurfaceIntegrate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate}{SurfaceIntegrate}}\&\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surfaceIntegrate}})}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ :\ flux\_(\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surfaceIntegrate}}.flux\_),\ type\_(\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surfaceIntegrate}}.type\_),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ coeffs\_(\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surfaceIntegrate}}.coeffs\_)\ \{\};}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00045}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a7521f2c01cea48b5f44328c04183a17d}{00045}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a7521f2c01cea48b5f44328c04183a17d}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&)\ \{\}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a59ac788d0e9ab43dfd8f3a2e9ae336dc}{00047}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a59ac788d0e9ab43dfd8f3a2e9ae336dc}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00048}00048\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<ValueType>}}\ tmpsource(source.exec(),\ source.size(),\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a4791f13355fd85a542a49735566dc54d}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ flux\_.mesh();}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_abd60ac286bc26dde697977833c807dc8}{exec}}\ =\ flux\_.exec();}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a56a4ae9f82c769e4ce85e2d7804f2b42}{nInternalFaces}}();}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ surfaceIntegrate<ValueType>(}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_abd60ac286bc26dde697977833c807dc8}{exec}},}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ nInternalFaces,}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_aad1fe630accee6b96de2f76c1865acfa}{faceNeighbour}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ad3274dbaf58fe30d569dea6a5f366274}{faceOwner}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aae76ed2a48eb7c003c982762d366b04a}{faceCells}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>flux\_.internalVector().view(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a2bfdd3e60fd2916c0e35beebe83d6ee7}{cellVolumes}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ tmpsource.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ operatorScaling}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ source\ +=\ tmpsource;}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00068}00068\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_abd60ac286bc26dde697977833c807dc8}{00070}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_abd60ac286bc26dde697977833c807dc8}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ flux\_.exec();\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a4791f13355fd85a542a49735566dc54d}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a4791f13355fd85a542a49735566dc54d}{getCoefficient}}()\ \{\ \textcolor{keywordflow}{return}\ coeffs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a8eace2fa9b7dd5ceda405c002b5c15c8}{00074}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a8eace2fa9b7dd5ceda405c002b5c15c8}{getCoefficient}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ coeffs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_af711f3dd489d0b51daa10abaf59e5cb3}{00076}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_af711f3dd489d0b51daa10abaf59e5cb3}{getType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ type\_;\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a4c57a300cc7cd41cf7f5ad5b46e93157}{00078}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate_a4c57a300cc7cd41cf7f5ad5b46e93157}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SurfaceIntegrate"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00080}00080\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ flux\_;}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00083}00083\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ type\_;}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00084}00084\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ coeffs\_;}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00085}00085\ \};}
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{surfaceIntegrate_8hpp_source_l00088}00088\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}

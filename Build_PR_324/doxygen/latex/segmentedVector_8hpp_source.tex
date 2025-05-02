@@ -1,0 +1,151 @@
+\doxysection{segmented\+Vector.\+hpp}
+\hypertarget{segmentedVector_8hpp_source}{}\label{segmentedVector_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/segmentedVector.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/segmentedVector.hpp}}
+\mbox{\hyperlink{segmentedVector_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00009}00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00010}00010\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00024}00024\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_a6ae1b9a7ec028b25e69bbbe4f3f32753}{00025}}\ IndexType\ \mbox{\hyperlink{namespaceNeoN_a6ae1b9a7ec028b25e69bbbe4f3f32753}{segmentsFromIntervals}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ intervals,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ offsets)}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00027}00027\ \ \ \ \ IndexType\ finalValue\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ inView\ =\ intervals.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{comment}{//\ skip\ the\ first\ element\ of\ the\ offsets}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ assumed\ to\ be\ zero}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{auto}\ offsView\ =\ offsets.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}().subview(1);}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ NOTE\ avoid\ compiler\ warning\ by\ static\_casting\ to\ localIdx\ since\ offsView}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ is\ a\ View}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00034}00034\ \ \ \ \ \mbox{\hyperlink{error_8hpp_a40409dec4da3178309a1b0f662496159}{NF\_ASSERT\_EQUAL}}(inView.size(),\ offsView.size());}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ade792a6b242e4bbe2d8882be6928a75a}{NeoN::parallelScan}}(}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ intervals.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \{0,\ offsView.size()\},}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ IndexType\&\ update,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \textcolor{keyword}{final})\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ update\ +=\ inView[i];}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{final})}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ offView\ is\ a\ view,\ thus\ []\ takes\ unsigned\ idx}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offsView[i]\ =\ update;}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ finalValue}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00047}00047\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keywordflow}{return}\ finalValue;}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00049}00049\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00056}00056\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType\ =\ NeoN::localIdx>}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{00057}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{SegmentedVectorView}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00059}00059\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00077}00077\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ae951634d8f5ebd5fb95d7e165af78ccc}{00078}}\ \ \ \ \ Kokkos::pair<IndexType,\ IndexType>\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ae951634d8f5ebd5fb95d7e165af78ccc}{bounds}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ segI)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00079}00079\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::pair<IndexType,\ IndexType>\ \{\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[segI],\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[segI\ +\ 1]\};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00081}00081\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00089}00089\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a5d4df24eed300290e90a89a5ee590826}{00090}}\ \ \ \ \ Kokkos::pair<IndexType,\ IndexType>\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a5d4df24eed300290e90a89a5ee590826}{range}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ segI)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00091}00091\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::pair<IndexType,\ IndexType>\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[segI],\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[segI\ +\ 1]\ -\/\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[segI]}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00095}00095\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00104}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a540204ab62d925577ce4792b1d67bf91}{00104}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a540204ab62d925577ce4792b1d67bf91}{view}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ segI)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00105}00105\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [start,\ length]\ =\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a5d4df24eed300290e90a89a5ee590826}{range}}(segI);}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}}.subview(start,\ length);}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00108}00108\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00116}00116\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00117}\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a9313fe2ecf9d4a4e0b045294ae84f88e}{00117}}\ \ \ \ \ IndexType\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a9313fe2ecf9d4a4e0b045294ae84f88e}{operator[]}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_a0e101da590fc55027c7a0d0e986d27d3}{segments}}[i];\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00118}00118\ \};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00126}00126\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{00127}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector}}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00128}00128\ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00129}00129\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00138}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a9a3ac89703e3e49cc5519d71a4bca87f}{00138}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a9a3ac89703e3e49cc5519d71a4bca87f}{SegmentedVector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}},\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_aef98325f9fdf4c401f2b570300b9da34}{size}},\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab1d369f26e798fbf72e160f876b41158}{numSegments}})}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ :\ values\_(\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}},\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_aef98325f9fdf4c401f2b570300b9da34}{size}}),\ segments\_(\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}},\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab1d369f26e798fbf72e160f876b41158}{numSegments}}\ +\ 1)}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00140}00140\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00143}00143\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Create\ a\ segmented\ field\ from\ intervals.}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00144}00144\ \textcolor{comment}{\ \ \ \ \ *\ @param\ intervals\ The\ intervals\ to\ create\ the\ segmented\ field\ from.}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00145}00145\ \textcolor{comment}{\ \ \ \ \ *\ @note\ The\ intervals\ are\ the\ lengths\ of\ each\ segment}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00146}00146\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00147}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a1245b2584d931e92f5ec68e04cf60335}{00147}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a1245b2584d931e92f5ec68e04cf60335}{SegmentedVector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ intervals)}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ :\ values\_(intervals.\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}}(),\ 0),}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ segments\_(intervals.\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}}(),\ intervals.\mbox{\hyperlink{classNeoN_1_1SegmentedVector_aef98325f9fdf4c401f2b570300b9da34}{size}}()\ +\ 1,\ IndexType(0))}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00150}00150\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ IndexType\ valueSize\ =\ \mbox{\hyperlink{namespaceNeoN_a6ae1b9a7ec028b25e69bbbe4f3f32753}{segmentsFromIntervals}}(intervals,\ segments\_);}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ values\_\ =\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}(intervals.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ valueSize,\ ValueType(0));}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00153}00153\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00154}00154\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00161}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a0282e4e49eee8c5e95323285daf113c1}{00161}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a0282e4e49eee8c5e95323285daf113c1}{SegmentedVector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}})}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ :\ values\_(\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}}),\ segments\_(\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}})}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00163}00163\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}}.exec()\ ==\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}}.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same."{}});}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00165}00165\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00172}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{00172}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab3bf007f9c5e2daea16b5b527392f6c4}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ values\_.exec();\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00178}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_aef98325f9fdf4c401f2b570300b9da34}{00178}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_aef98325f9fdf4c401f2b570300b9da34}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ values\_.size();\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00184}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab1d369f26e798fbf72e160f876b41158}{00184}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ab1d369f26e798fbf72e160f876b41158}{numSegments}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ segments\_.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}()\ -\/\ 1;\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00190}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a4014af569b7d37a55fba805695bd6ee8}{00190}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a4014af569b7d37a55fba805695bd6ee8}{copyToHost}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00191}00191\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00192}00192\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<ValueType,\ IndexType>}}\ result(}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ values\_.copyToHost(),\ segments\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}()}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00196}00196\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00198}00198\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00203}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a65ac70e2c929e0a4b1464b5ed65771ea}{00203}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{SegmentedVectorView<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a65ac70e2c929e0a4b1464b5ed65771ea}{view}}()\ \&}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00204}00204\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{SegmentedVectorView<ValueType,\ IndexType>}}\ \{values\_.view(),\ segments\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}()\};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00206}00206\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00208}00208\ \ \ \ \ \textcolor{comment}{//\ ensures\ no\ return\ a\ view\ of\ a\ temporary\ object\ -\/-\/>\ invalid\ memory\ access}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00209}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_ac9d2855d356fb70363abef6d5c39825e}{00209}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{SegmentedVectorView<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_ac9d2855d356fb70363abef6d5c39825e}{view}}()\ \&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00215}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a17b17c60f95220e492f90ded9e064e64}{00215}}\ \ \ \ \ [[nodiscard]]\ std::pair<View<ValueType>,\ \mbox{\hyperlink{classNeoN_1_1View}{View<IndexType>}}>\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a17b17c60f95220e492f90ded9e064e64}{views}}()\ \&}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00216}00216\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{values\_.view(),\ segments\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}()\};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00218}00218\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00221}00221\ \ \ \ \ \textcolor{comment}{//\ ensures\ not\ to\ return\ a\ view\ of\ a\ temporary\ object\ -\/-\/>\ invalid\ memory\ access}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00222}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a593a281b45a6cf4a167fa7aeda1daf9d}{00222}}\ \ \ \ \ [[nodiscard]]\ std::pair<View<ValueType>,\ \mbox{\hyperlink{classNeoN_1_1View}{View<IndexType>}}>\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a593a281b45a6cf4a167fa7aeda1daf9d}{views}}()\ \&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00223}00223\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00224}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{00224}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a044063583040d7cb80450839982dcaf0}{values}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ values\_;\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00225}00225\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00226}\mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{00226}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ \mbox{\hyperlink{classNeoN_1_1SegmentedVector_a3f62069e4d69e8a6b667929a3a0bb11f}{segments}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ segments\_;\ \}}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00228}00228\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00229}00229\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00230}00230\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ values\_;}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00231}00231\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\ segments\_;\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00232}00232\ \};}
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{segmentedVector_8hpp_source_l00234}00234\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}
