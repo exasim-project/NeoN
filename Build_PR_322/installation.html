@@ -334,9 +334,9 @@ cmake<span class="w"> </span>--build<span class="w"> </span>--preset<span class=
 <h2>Building with Spack<a class="headerlink" href="#building-with-spack" title="Link to this heading">¶</a></h2>
 <p>A good way to simplify the process of building NeoN is by using spack.
 Here is a short tutorial on how to build NeoN with spack for development.
-First clone spack from  <a class="reference external" href="https://github.com/spack/spack">https://github.com/spack/spack</a>.</p>
+First clone spack from  <a class="reference external" href="https://github.com/exasim-project/spack">https://github.com/exasim-project/spack</a> (until neon is fully merged into spack).</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w">  </span>https://github.com/spack/spack
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/exasim-project/spack<span class="w"> </span>-b<span class="w"> </span>neofoam
 <span class="nb">source</span><span class="w"> </span>spack/share/spack/setup-env.sh
 </pre></div>
 </div>
@@ -359,12 +359,9 @@ spack<span class="w"> </span>compiler<span class="w"> </span>add<span class="w">
 </pre></div>
 </div>
 </div></blockquote>
-<p>Here is the current package.py. Edit spack/var/spack/repos/builtin/packages/NeoN/package.py accordingly</p>
-<blockquote>
-<div></div></blockquote>
 <p>Next, we add NeoN with the required dependencies.</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>spack<span class="w"> </span>add<span class="w"> </span>NeoN+test++cuda<span class="w"> </span>^kokkos<span class="w"> </span><span class="nv">cuda_arch</span><span class="o">=</span><span class="m">80</span><span class="w"> </span><span class="nv">cxxstd</span><span class="o">=</span><span class="m">20</span><span class="w">  </span>^ginkgo<span class="w"> </span><span class="nv">cuda_arch</span><span class="o">=</span><span class="m">80</span><span class="w">   </span>%llvm@17
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>spack<span class="w"> </span>add<span class="w"> </span>neon+test++cuda<span class="w"> </span>^kokkos<span class="w"> </span><span class="nv">cuda_arch</span><span class="o">=</span><span class="m">80</span><span class="w"> </span><span class="nv">cxxstd</span><span class="o">=</span><span class="m">20</span><span class="w">  </span>^ginkgo<span class="w"> </span><span class="nv">cuda_arch</span><span class="o">=</span><span class="m">80</span><span class="w">   </span>%llvm@17
 spack<span class="w"> </span>install
 </pre></div>
 </div>
