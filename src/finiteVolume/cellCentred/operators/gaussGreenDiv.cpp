@@ -157,6 +157,7 @@ void computeDivImp(
     la::LinearSystem<ValueType, localIdx>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
+    const SurfaceInterpolation<ValueType>& surfInterp,
     const dsl::Coeff operatorScaling,
     const SparsityPattern& sparsityPattern
 )
@@ -164,16 +165,19 @@ void computeDivImp(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
+    const auto weights = surfInterp.weight(faceFlux, phi);
 
-    const auto [sFaceFlux, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
-        faceFlux.internalVector(),
-        mesh.faceOwner(),
-        mesh.faceNeighbour(),
-        mesh.boundaryMesh().faceCells(),
-        sparsityPattern.diagOffset(),
-        sparsityPattern.ownerOffset(),
-        sparsityPattern.neighbourOffset()
-    );
+    const auto [sFaceFlux, sWeights, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] =
+        views(
+            faceFlux.internalVector(),
+            weights.internalVector(),
+            mesh.faceOwner(),
+            mesh.faceNeighbour(),
+            mesh.boundaryMesh().faceCells(),
+            sparsityPattern.diagOffset(),
+            sparsityPattern.ownerOffset(),
+            sparsityPattern.neighbourOffset()
+        );
     auto [matrix, rhs] = ls.view();
 
     parallelFor(
@@ -181,8 +185,8 @@ void computeDivImp(
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
             scalar flux = sFaceFlux[facei];
-            // scalar weight = 0.5;
-            scalar weight = flux >= 0 ? 1 : 0;
+            
+            scalar weight = sWeights[facei];
             ValueType value = zero<ValueType>();
             auto own = owner[facei];
             auto nei = neighbour[facei];
@@ -211,7 +215,8 @@ void computeDivImp(
         }
     );
 
-    auto [refGradient, value, valueFraction, refValue] = views(
+    auto [bweights, refGradient, value, valueFraction, refValue] = views(
+        weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),
@@ -223,7 +228,7 @@ void computeDivImp(
         {nInternalFaces, sFaceFlux.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
             auto bcfacei = facei - nInternalFaces;
-            scalar flux = sFaceFlux[facei];
+            scalar flux = bweights[facei] * sFaceFlux[facei];
 
             auto own = surfFaceCells[bcfacei];
             auto rowOwnStart = matrix.rowOffs[own];
@@ -239,8 +244,14 @@ void computeDivImp(
 };
 
 #define NF_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
-    template void computeDivImp<                                                                   \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
+    template void computeDivImp<TYPENAME>(                                                         \
+        la::LinearSystem<TYPENAME, localIdx>&,                                                     \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceInterpolation<TYPENAME>&,                                                     \
+        const dsl::Coeff,                                                                          \
+        const SparsityPattern&                                                                     \
+    )
 
 NF_DECLARE_COMPUTE_IMP_DIV(scalar);
 NF_DECLARE_COMPUTE_IMP_DIV(Vec3);

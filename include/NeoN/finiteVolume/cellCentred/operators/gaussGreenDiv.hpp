@@ -27,6 +27,7 @@ void computeDivImp(
     la::LinearSystem<ValueType, localIdx>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
+    const SurfaceInterpolation<ValueType>& surfInterp,
     const dsl::Coeff operatorScaling,
     const SparsityPattern& sparsityPattern
 );
@@ -66,7 +67,7 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        computeDivImp(ls, faceFlux, phi, operatorScaling, *sparsityPattern_.get());
+        computeDivImp(ls, faceFlux, phi,surfaceInterpolation_, operatorScaling, *sparsityPattern_.get());
     };
 
     virtual void

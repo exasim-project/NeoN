@@ -35,6 +35,15 @@ void computeUpwindInterpolation(
     SurfaceField<ValueType>& dst
 );
 
+
+template<typename ValueType>
+void computeUpwindInterpolationWeights(
+    const SurfaceField<scalar>& flux,
+    const VolumeField<ValueType>& src,
+    SurfaceField<scalar>& weights
+);
+
+
 template<typename ValueType>
 class Upwind : public SurfaceInterpolationFactory<ValueType>::template Register<Upwind<ValueType>>
 {
@@ -70,17 +79,18 @@ public:
     }
 
     // src weight
-    void weight(const VolumeField<ValueType>&, SurfaceField<scalar>&) const override
+    void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weights) const override
     {
         NF_ERROR_EXIT("limited scheme require a faceFlux");
     }
 
     // flux, src, weight
-    void weight(const SurfaceField<scalar>&, const VolumeField<ValueType>&, SurfaceField<scalar>&)
+    void weight(const SurfaceField<scalar>& faceFlux, const VolumeField<ValueType>& src, SurfaceField<scalar>& weights)
         const override
     {
-        // TODO should that be implemented?
-        // geometryScheme_->weights(flux, src, weight);
+        computeUpwindInterpolationWeights(
+            faceFlux, src, weights
+        );
     }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
