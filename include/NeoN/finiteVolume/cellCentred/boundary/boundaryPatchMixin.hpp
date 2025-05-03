@@ -45,7 +45,9 @@ public:
 
     localIdx patchID() const { return patchID_; }
 
-    std::pair<localIdx, localIdx> range() { return {start_, end_}; }
+    std::pair<localIdx, localIdx> range() const { return {start_, end_}; }
+
+
 
 protected:
 

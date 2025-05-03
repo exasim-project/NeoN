@@ -25,15 +25,28 @@ public:
     static std::string name() { return "VolumeBoundaryFactory"; }
 
     VolumeBoundaryFactory(
-        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, localIdx patchID
+        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary& dict, localIdx patchID
     )
-        : BoundaryPatchMixin(mesh, patchID) {};
+        : BoundaryPatchMixin(mesh, patchID), attributes_(
+                                                 {{"type", dict.get<std::string>("type")},
+                                                  {"assignable", true},
+                                                  {"fixesValue", false},
+                                                  {"coupled", false}}
+                                             ) {};
 
     virtual ~VolumeBoundaryFactory() = default;
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
+
+    const Dictionary& attributes() const { return attributes_; }
+
+    Dictionary& attributes() { return attributes_; }
+
+protected:
+
+    Dictionary attributes_; ///< The attributes of the patch
 };
 
 
@@ -49,13 +62,15 @@ public:
 
     VolumeBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : BoundaryPatchMixin(
-            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID)],
-            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID) + 1],
-            patchID
-        ),
-          boundaryCorrectionStrategy_(VolumeBoundaryFactory<ValueType>::create(
-              dict.get<std::string>("type"), mesh, dict, patchID
-          ))
+              mesh.boundaryMesh().offset()[static_cast<size_t>(patchID)],
+              mesh.boundaryMesh().offset()[static_cast<size_t>(patchID) + 1],
+              patchID
+          ),
+          boundaryCorrectionStrategy_(
+              VolumeBoundaryFactory<ValueType>::create(
+                  dict.get<std::string>("type"), mesh, dict, patchID
+              )
+          )
     {}
 
     VolumeBoundary(const VolumeBoundary& other)
@@ -67,6 +82,11 @@ public:
     {
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
+
+    const Dictionary& attributes() const { return boundaryCorrectionStrategy_->attributes(); }
+
+    Dictionary& attributes() { return boundaryCorrectionStrategy_->attributes(); }
+
 
 private:
 

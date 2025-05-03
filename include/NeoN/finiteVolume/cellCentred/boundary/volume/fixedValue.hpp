@@ -53,7 +53,10 @@ public:
 
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
-    {}
+    {
+        this->attributes()["assignable"] = false;
+        this->attributes()["fixesValue"] = true;
+    }
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
