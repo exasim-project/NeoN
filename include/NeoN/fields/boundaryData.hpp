@@ -53,7 +53,7 @@ public:
     BoundaryData(const Executor& exec, const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(exec, rhs.value_), refValue_(exec, rhs.refValue_),
           valueFraction_(exec, rhs.valueFraction_), refGrad_(exec, rhs.refGrad_),
-          boundaryTypes_(exec, rhs.boundaryTypes_), offset_(exec, rhs.offset_),
+          boundaryTypes_(exec, rhs.boundaryTypes_), offset_(SerialExecutor{}, rhs.offset_),
           nBoundaries_(rhs.nBoundaries_), nBoundaryFaces_(rhs.nBoundaryFaces_)
     {}
 
@@ -67,7 +67,7 @@ public:
     BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
         : exec_(exec), value_(exec, nBoundaryFaces), refValue_(exec, nBoundaryFaces),
           valueFraction_(exec, nBoundaryFaces), refGrad_(exec, nBoundaryFaces),
-          boundaryTypes_(exec, nBoundaryTypes), offset_(exec, nBoundaryTypes + 1),
+          boundaryTypes_(exec, nBoundaryTypes), offset_(SerialExecutor{}, nBoundaryTypes + 1),
           nBoundaries_(nBoundaryTypes), nBoundaryFaces_(nBoundaryFaces)
     {}
 
@@ -80,7 +80,7 @@ public:
     BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
         : BoundaryData(exec, offsets.back(), static_cast<localIdx>(offsets.size() - 1))
     {
-        offset_ = Vector(exec, offsets);
+        offset_ = Vector(SerialExecutor{}, offsets);
     }
 
 
@@ -144,6 +144,15 @@ public:
      * @return The number of boundary faces.
      */
     localIdx nBoundaryFaces() const { return nBoundaryFaces_; }
+
+    /**
+     * @brief Get the number of boundary faces for this patch.
+     * @return The number of boundary faces for this patch.
+     */
+    localIdx nBoundaryFaces(localIdx patchId) const
+    {
+        return offset_.data()[patchId + 1] - offset_.data()[patchId];
+    }
 
     const Executor& exec() { return exec_; }
 
