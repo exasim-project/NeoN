@@ -31,8 +31,11 @@ class petscSolverContext
     Executor exec_;
     Mat Amat_;
     KSP ksp_;
+    PC pc_;
 
     Vec sol_, rhs_;
+
+    Dictionary solverDict_;
 
 public:
 
@@ -40,9 +43,9 @@ public:
     // Constructors
 
     //- Default construct
-    petscSolverContext(Executor exec)
-        : init_(false), updated_(false), exec_(exec), Amat_(nullptr), sol_(nullptr), rhs_(nullptr),
-          ksp_(nullptr)
+    petscSolverContext(Executor exec, Dictionary solverDict)
+        : init_(false), updated_(false), exec_(exec), solverDict_(solverDict), Amat_(nullptr),
+          sol_(nullptr), rhs_(nullptr), ksp_(nullptr), pc_(nullptr)
     {}
 
 
@@ -62,7 +65,7 @@ public:
     bool initialized() const noexcept { return init_; }
 
 
-    //- Return value of initialized
+    //- Return value of updated
     bool updated() const noexcept { return updated_; }
 
     //- Create auxiliary rows for calculation purposes
@@ -143,6 +146,11 @@ public:
 
 
         init_ = true;
+
+        // PetscOptions options;
+        // PetscOptionsCreate(&options);
+        PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
+        PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
@@ -155,6 +163,8 @@ public:
     [[nodiscard]] Vec& sol() { return sol_; }
 
     [[nodiscard]] KSP& ksp() { return ksp_; }
+
+    [[nodiscard]] PC& pc() { return pc_; }
 };
 
 
