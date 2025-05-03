@@ -159,20 +159,30 @@ void computeLaplacianImpl(
             auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
-            values[rowOwnStart + diagOffs[own]] -= flux * operatorScalingOwn
-                                                 * valueFraction[bcfacei] * deltaCoeffs[facei]
-                                                 * one<ValueType>();
-            rhs[own] -=
+            Kokkos::atomic_sub(
+                &values[rowOwnStart + diagOffs[own]],
+                flux * operatorScalingOwn * valueFraction[bcfacei] * deltaCoeffs[facei]
+                    * one<ValueType>()
+            );
+            Kokkos::atomic_sub(
+                &rhs[own],
                 (flux * operatorScalingOwn
                  * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
-                    + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]));
+                    + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]))
+            );
         }
     );
 }
 
 #define NF_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
-    template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
+    template void computeLaplacianImpl<TYPENAME>(                                                  \
+        la::LinearSystem<TYPENAME, localIdx>&,                                                     \
+        const SurfaceField<scalar>&,                                                               \
+        VolumeField<TYPENAME>&,                                                                    \
+        const dsl::Coeff,                                                                          \
+        const SparsityPattern&,                                                                    \
+        const FaceNormalGradient<TYPENAME>&                                                        \
+    )
 
 NF_DECLARE_COMPUTE_IMP_LAP(scalar);
 NF_DECLARE_COMPUTE_IMP_LAP(Vec3);

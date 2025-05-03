@@ -238,11 +238,16 @@ void computeDivImp(
             scalar valFrac1 = valueFraction[bcfacei];
             scalar valFrac2 = 1.0 - valFrac1;
 
-            matrix.values[rowOwnStart + diagOffs[own]] +=
-                flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+            Kokkos::atomic_add(
+                &matrix.values[rowOwnStart + diagOffs[own]],
+                flux * operatorScalingOwn * valFrac2 * one<ValueType>()
+            );
 
-            rhs[own] -= (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                      + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+            Kokkos::atomic_sub(
+                &rhs[own],
+                (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                    + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei])
+            );
         }
     );
 };
