@@ -224,6 +224,13 @@ void computeDivImp(
         mesh.boundaryMesh().deltaCoeffs()
     );
 
+    auto& bcCoeffs =
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficents<ValueType, localIdx>>(
+            "boundaryCoefficients"
+        );
+
+    auto [mValue, rhsValue] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
+
     parallelFor(
         exec,
         {nInternalFaces, sFaceFlux.size()},
@@ -238,16 +245,23 @@ void computeDivImp(
             scalar valFrac1 = valueFraction[bcfacei];
             scalar valFrac2 = 1.0 - valFrac1;
 
+            ValueType valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+
             Kokkos::atomic_add(
                 &matrix.values[rowOwnStart + diagOffs[own]],
-                flux * operatorScalingOwn * valFrac2 * one<ValueType>()
+                valueMat
             );
+            mValue[bcfacei] = valueMat;
+
+            ValueType valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                               + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
             Kokkos::atomic_sub(
                 &rhs[own],
-                (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                    + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei])
+                valueRhs
             );
+
+            rhsValue[bcfacei] = valueRhs;
         }
     );
 };
