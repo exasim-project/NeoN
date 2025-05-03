@@ -53,7 +53,6 @@ public:
         {
             Kokkos::fence();
         }
-        oldSolutionVector.internalVector() = solutionVector.internalVector();
     };
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
