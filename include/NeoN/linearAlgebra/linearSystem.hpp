@@ -32,7 +32,7 @@ struct LinearSystemView
 };
 
 template<typename ValueType, typename IndexType>
-struct BoundaryCoefficents
+struct BoundaryCoefficients
 {
     Vector<ValueType> matrixValues;
     Vector<IndexType> matrixIdxs;
@@ -147,7 +147,7 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& s
     const auto [diagOffset, rowOffs, faceCells] =
         views(sparsity.diagOffset(), sparsity.rowOffs(), mesh.boundaryMesh().faceCells());
 
-    BoundaryCoefficents<ValueType, IndexType> bcCoeffs {
+    BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
         Vector<ValueType>(exec, nBoundaryFaces),
         Vector<IndexType>(exec, nBoundaryFaces),
         Vector<ValueType>(exec, nBoundaryFaces),

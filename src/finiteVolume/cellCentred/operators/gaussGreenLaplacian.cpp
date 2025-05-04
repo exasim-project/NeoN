@@ -148,7 +148,7 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto& bcCoeffs = ls.auxiliaryCoefficients().template get<la::BoundaryCoefficents<ValueType, localIdx>>(
+    auto& bcCoeffs = ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
         "boundaryCoefficients"
     );
 

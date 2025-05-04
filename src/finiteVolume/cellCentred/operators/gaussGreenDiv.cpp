@@ -225,7 +225,7 @@ void computeDivImp(
     );
 
     auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficents<ValueType, localIdx>>(
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
             "boundaryCoefficients"
         );
 
