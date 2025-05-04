@@ -87,7 +87,7 @@ void parallelFor(
     auto view = container.view();
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (localIdx i = 0; i < container.size(); i++)
+        for (localIdx i = 0; i < view.size(); i++)
         {
             view[i] = kernel(i);
         }
@@ -97,7 +97,7 @@ void parallelFor(
         using runOn = typename Executor::exec;
         Kokkos::parallel_for(
             name,
-            Kokkos::RangePolicy<runOn>(0, container.size()),
+            Kokkos::RangePolicy<runOn>(0, view.size()),
             KOKKOS_LAMBDA(const localIdx i) { view[i] = kernel(i); }
         );
     }
@@ -230,6 +230,5 @@ void parallelScan(
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel, returnValue); }, exec);
 }
-
 
 } // namespace NeoN

@@ -43,21 +43,21 @@ auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
 /**
  * @brief Map a field using a specific executor.
  *
- * @param a The field to map.
+ * @param cont The container to map.
  * @param inner The function to apply to each element of the field.
  * @param range The range to map the field in. If not provided, the whole field is mapped.
  */
 template<template<typename> class ContType, typename ValueType, typename Inner>
-void map(ContType<ValueType>& a, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
+void map(ContType<ValueType>& cont, const Inner inner, std::pair<localIdx, localIdx> range = {0, 0})
 {
     auto [start, end] = range;
     if (end == 0)
     {
-        end = a.size();
+        end = cont.size();
     }
-    auto viewA = a.view();
+    auto contView = cont.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = inner(i); }
+        cont.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { contView[i] = inner(i); }
     );
 }
 
@@ -90,27 +90,27 @@ void fill(
 
 
 /**
- * @brief Set the vector with a view of values using a specific executor.
+ * @brief Set the container with a view of values using a specific executor.
  *
- * @param a The vector to set.
- * @param b The view of values to set the vector with.
- * @param range The range to set the vector in. If not provided, the whole vector is set.
+ * @param cont The container to set.
+ * @param view The view of values to set the container with.
+ * @param range The range to set the container in. If not provided, the whole container is set.
  */
 template<template<typename> class ContType, typename ValueType>
 void setContainer(
-    ContType<ValueType>& a,
-    const View<const std::type_identity_t<ValueType>> b,
+    ContType<ValueType>& cont,
+    const View<const std::type_identity_t<ValueType>> view,
     std::pair<localIdx, localIdx> range = {0, 0}
 )
 {
     auto [start, end] = range;
     if (end == 0)
     {
-        end = a.size();
+        end = cont.size();
     }
-    auto viewA = a.view();
+    auto contView = cont.view();
     parallelFor(
-        a.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = b[i]; }
+        cont.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { contView[i] = view[i]; }
     );
 }
 

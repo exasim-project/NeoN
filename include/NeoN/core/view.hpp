@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
+#include <Kokkos_Core.hpp>
+
 #include <limits>
 #include <span>
 #include <type_traits>
