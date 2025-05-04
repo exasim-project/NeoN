@@ -47,6 +47,14 @@ TEST_CASE("SolverContext - Petsc")
         }};
 
 
+        ;
+
+        NeoN::Dictionary subDict;
+        subDict.insert("pc_type", std::string("bjacobi"));
+        subDict.insert("sub_pc_type", std::string("ilu"));
+        solverDict.insert("options", subDict);
+
+
         Vector<NeoN::scalar> values(exec, {10.0, 4.0, 7.0, 2.0, 10.0, 8.0, 3.0, 6.0, 10.0});
         // TODO work on support for unsingned types
         Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});

@@ -71,6 +71,9 @@ public:
     //- Create auxiliary rows for calculation purposes
     void initialize(const LinearSystem<scalar, localIdx>& sys)
     {
+
+        setOption(solverDict_);
+
         std::size_t size = sys.matrix().values().size();
         std::size_t nrows = sys.rhs().size();
         PetscInt colIdx[size];
@@ -149,12 +152,26 @@ public:
 
         // PetscOptions options;
         // PetscOptionsCreate(&options);
-        PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
+        // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
         PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
     void update() { NF_ERROR_EXIT("Mesh changes not supported"); }
+
+    void setOption(Dictionary solverDict_)
+    {
+
+        NeoN::Dictionary subDict = solverDict_.subDict("options");
+
+        for (auto key : solverDict_.subDict("options").keys())
+        {
+
+            std::string petscOptionKey = std::string("-") + key;
+            std::string petscOptionVal = subDict.get<std::string>(key);
+            PetscOptionsSetValue(NULL, petscOptionKey.c_str(), petscOptionVal.c_str());
+        }
+    }
 
     [[nodiscard]] Mat& AMat() { return Amat_; }
 
