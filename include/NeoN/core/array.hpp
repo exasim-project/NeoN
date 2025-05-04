@@ -20,10 +20,10 @@ namespace NeoN
 {
 
 /**
- * @class Vector
+ * @class Array
  * @brief A class to contain the data and executors for a field and define some basic operations.
  *
- * @ingroup Vectors
+ * @ingroup Arrays
  */
 template<typename ValueType>
 class Array
@@ -34,7 +34,7 @@ public:
     using ArrayValueType = ValueType;
 
     /**
-     * @brief Create an uninitialized Vector with a given size on an executor
+     * @brief Create an uninitialized Array with a given size on an executor
      * @param exec  Executor associated to the field
      * @param size  size of the field
      */
@@ -50,7 +50,7 @@ public:
     }
 
     /**
-     * @brief Create a Vector with a given size from existing memory on an executor
+     * @brief Create a Array with a given size from existing memory on an executor
      * @param exec  Executor associated to the field
      * @param in    Pointer to existing data
      * @param size  size of the field
@@ -76,7 +76,7 @@ public:
 
 
     /**
-     * @brief Create a Vector with a given size on an executor and uniform value
+     * @brief Create a Array with a given size on an executor and uniform value
      * @param exec  Executor associated to the field
      * @param size  size of the field
      * @param value  the  default value
@@ -95,9 +95,9 @@ public:
     }
 
     /**
-     * @brief Create a Vector from a given vector of values on an executor
+     * @brief Create a Array from a given Array of values on an executor
      * @param exec  Executor associated to the field
-     * @param in a vector of elements to copy over
+     * @param in a Array of elements to copy over
      */
     Array(const Executor& exec, std::vector<ValueType> in)
         : Array(exec, in.data(), static_cast<localIdx>(in.size()))
@@ -105,9 +105,9 @@ public:
 
 
     /**
-     * @brief Create a Vector as a copy of a Vector on a specified executor
+     * @brief Create a Array as a copy of a Array on a specified executor
      * @param exec  Executor associated to the field
-     * @param in a Vector of elements to copy over
+     * @param in a Array of elements to copy over
      */
     Array(const Executor& exec, const Array<ValueType>& in)
         : Array(exec, in.data(), in.size(), in.exec())
@@ -131,7 +131,7 @@ public:
     };
 
     /**
-     * @brief Destroy the Vector object.
+     * @brief Destroy the Array object.
      */
     ~Array()
     {
@@ -182,7 +182,7 @@ public:
     void copyToHost(Array<ValueType>& result)
     {
         NF_DEBUG_ASSERT(
-            result.size() == size_, "Parsed Vector size not the same as current field size"
+            result.size() == size_, "Parsed Array size not the same as current field size"
         );
         result = copyToExecutor(SerialExecutor());
     }

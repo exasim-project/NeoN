@@ -62,14 +62,7 @@ TEST_CASE("Vector Constructors")
 
 TEST_CASE("Vector Operator Overloads")
 {
-
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
-
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     SECTION("Vector Operator+= " + execName)
     {
@@ -143,11 +136,7 @@ TEST_CASE("Vector Operator Overloads")
 
 TEST_CASE("Vector Container Operations")
 {
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
 
@@ -211,13 +200,7 @@ TEST_CASE("Vector Container Operations")
 
 TEST_CASE("Vector Operations")
 {
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
-
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     SECTION("Vector_" + execName)
     {
@@ -258,11 +241,7 @@ TEST_CASE("Vector Operations")
 
 TEST_CASE("getViews")
 {
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     NeoN::Vector<NeoN::scalar> a(exec, 3, 1.0);
     NeoN::Vector<NeoN::scalar> b(exec, 3, 2.0);
