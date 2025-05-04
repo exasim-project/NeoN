@@ -57,7 +57,7 @@ struct CSRMatrixView
             if (colIdxs[localCol] > j) break;
         }
         Kokkos::abort("Memory not allocated for CSR matrix component.");
-        return values[values.size()]; // compiler warning suppression.
+        return values[0]; // compiler warning suppression.
     }
 
     /**

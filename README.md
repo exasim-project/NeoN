@@ -1,6 +1,6 @@
 **[Requirements](#requirements)** |
 **[Compilation](#Compilation)** |
-**[Integration](#integration-with-openfoam)** |
+**[Integration](#integration-with-other-cfd-frameworks)** |
 **[Documentation](https://exasim-project.com/NeoN/latest)** |
 **[Roadmap](https://github.com/orgs/exasim-project/projects/1/views/8)** |
 
@@ -64,9 +64,9 @@ We provide a set of unit tests which can be executed via ctest or
 
 ## Integration with other CFD Frameworks
 
-Currently, NeoN is not a standalone CFD Framework.
+Currently, NeoN is not a standalone CFD framework.
 It is designed to be used with other CFD Frameworks.
-Examples how to integrate NeoN into Frmeworks and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
+Examples how to integrate NeoN into CFD frameworks and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
 
 ## Documentation
 

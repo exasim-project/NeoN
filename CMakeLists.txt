@@ -7,7 +7,7 @@ project(
   NeoN
   LANGUAGES C CXX
   VERSION 0.1.0
-  DESCRIPTION "An implementation of FOAM")
+  DESCRIPTION "A framework for CFD software")
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)

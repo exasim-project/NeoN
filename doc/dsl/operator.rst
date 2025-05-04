@@ -29,7 +29,6 @@ To fit the specification of the Expression (storage in a vector), the Operator n
         auto constantScaledTerm = 2.0 * customTerm; // A constant scaling factor of 2 for the term.
         auto fieldScaledTerm = scalingVector * customTerm; // scalingVector is used to scale the term.
 
-        // Operator also supports a similar syntax as OpenFOAM
         auto multiScaledTerm = (scale + scale + scale + scale) * customTerm;
 
         // Operator also supports the use of a lambda as scaling function to reduce the number of temporaries generated

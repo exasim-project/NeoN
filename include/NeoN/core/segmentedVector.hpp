@@ -150,7 +150,7 @@ public:
           segments_(intervals.exec(), intervals.size() + 1, IndexType(0))
     {
         IndexType valueSize = segmentsFromIntervals(intervals, segments_);
-        values_ = Vector<ValueType>(intervals.exec(), valueSize);
+        values_ = Vector<ValueType>(intervals.exec(), valueSize, ValueType(0));
     }
 
 
@@ -184,6 +184,18 @@ public:
      */
     localIdx numSegments() const { return segments_.size() - 1; }
 
+    /**
+     * @brief Returns a copy of the segmentedVector on the host
+     * @return copy of the segmentedVector on the host
+     */
+    SegmentedVector<ValueType, IndexType> copyToHost() const
+    {
+        SegmentedVector<ValueType, IndexType> result(
+            values_.copyToHost(), segments_.copyToHost()
+        );
+        return result;
+    }
+
 
     /**
      * @brief get a view of the segmented vector
@@ -205,6 +217,7 @@ public:
     {
         return {values_.view(), segments_.view()};
     }
+
 
     // ensures not to return a view of a temporary object --> invalid memory access
     [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() && = delete;
