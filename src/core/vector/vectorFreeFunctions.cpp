@@ -29,6 +29,17 @@ namespace detail
 
 template<typename ValueType, typename BinaryOp>
 void fieldBinaryOp(
+    Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value, BinaryOp op
+)
+{
+    auto view = vect.view();
+    parallelFor(
+        vect, KOKKOS_LAMBDA(const localIdx i) { return op(view[i], value); }
+    );
+}
+
+template<typename ValueType, typename BinaryOp>
+void fieldBinaryOp(
     Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2, BinaryOp op
 )
 {
@@ -43,6 +54,14 @@ void fieldBinaryOp(
 }
 
 template<typename ValueType>
+void add(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
+{
+    detail::fieldBinaryOp(
+        vect, value, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
+    );
+}
+
+template<typename ValueType>
 void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
 {
     detail::fieldBinaryOp(
@@ -51,10 +70,27 @@ void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 }
 
 template<typename ValueType>
+void sub(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
+{
+    detail::fieldBinaryOp(
+        vect, value, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va - vb; }
+    );
+}
+
+template<typename ValueType>
 void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
 {
     detail::fieldBinaryOp(
         vect1, vect2, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va - vb; }
+    );
+}
+
+template<typename ValueType>
+void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
+    requires requires(ValueType a, ValueType b) { a* b; }
+{
+    detail::fieldBinaryOp(
+        vect, value, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va * vb; }
     );
 }
 
@@ -71,13 +107,18 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 #define OPERATOR_INSTANTIATION(Type)                                                               \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type> & vector, const Type value);                        \
+    template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
 #define OPERATOR_INSTANTIATION_VECT(Type)                                                          \
     /* free function operator with additional requirements  */                                     \
+    template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
 OPERATOR_INSTANTIATION(uint32_t);

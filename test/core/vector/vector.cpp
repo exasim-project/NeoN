@@ -138,8 +138,6 @@ TEST_CASE("Vector Container Operations")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-
     SECTION("empty, size, range" + execName)
     {
         NeoN::localIdx size = 10;
