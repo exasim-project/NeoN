@@ -4,24 +4,39 @@
 message(STATUS "Auto detecting accelerator devices")
 include(CheckLanguage)
 
-if(NOT DEFINED Kokkos_ENABLE_OPENMP AND NOT DEFINED Kokkos_ENABLE_THREADS)
-  find_package(Threads QUIET)
+if(NeoN_WITH_OMP AND NeoN_WITH_THREADS)
+  message(FATAL_ERROR "NeoN_WITH_OMP and NeoN_WITH_THREADS are mutally exclusive")
+endif()
 
+if(NeoN_WITH_OMP)
+  find_package(OpenMP REQUIRED)
+  if(OpenMP_FOUND)
+    message(STATUS "Set Kokkos_ENABLE_OPENMP=ON")
+    set(Kokkos_ENABLE_OPENMP
+        ON
+        CACHE INTERNAL "")
+    set(Kokkos_ENABLE_THREADS
+        OFF
+        CACHE INTERNAL "")
+  endif()
+elseif(NeoN_WITH_THREADS)
+  find_package(Threads QUIET)
   if(Threads_FOUND)
     message(STATUS "Set Kokkos_ENABLE_Threads=ON")
     set(Kokkos_ENABLE_THREADS
         ON
         CACHE INTERNAL "")
-  else()
-    find_package(OpenMP QUIET)
-
-    if(OpenMP_FOUND)
-      message(STATUS "Set Kokkos_ENABLE_OPENMP=ON")
-      set(Kokkos_ENABLE_OPENMP
-          ON
-          CACHE INTERNAL "")
-    endif()
+    set(Kokkos_ENABLE_OPENMP
+        OFF
+        CACHE INTERNAL "")
   endif()
+else()
+  set(Kokkos_ENABLE_THREADS
+      OFF
+      CACHE INTERNAL "")
+  set(Kokkos_ENABLE_OPENMP
+      OFF
+      CACHE INTERNAL "")
 endif()
 
 if(NOT DEFINED Kokkos_ENABLE_CUDA)
