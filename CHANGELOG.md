@@ -10,6 +10,7 @@
 - Adds a minimal implementation linear algebra functionality [#219](https://github.com/exasim-project/NeoN/pull/219)
 - Add Ginkgo solver interface and config solver support [#250](https://github.com/exasim-project/NeoN/pull/250), [#272
 (https://github.com/exasim-project/NeoN/pull/272)
+- specify petsc option in solverdict in subdict option [#326](https://github.com/exasim-project/NeoN/pull/326)
 ### Misc
 - removed subscript operators from Field for improved safety. [#225](https://github.com/exasim-project/NeoN/pull/285)
 - Templated Expression and Operator on ValueType [#268](https://github.com/exasim-project/NeoN/pull/268)
