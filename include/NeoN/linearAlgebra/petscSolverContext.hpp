@@ -153,7 +153,7 @@ public:
         // PetscOptions options;
         // PetscOptionsCreate(&options);
         // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
-        // PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
+        PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
