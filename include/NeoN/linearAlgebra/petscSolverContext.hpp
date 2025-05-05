@@ -153,7 +153,7 @@ public:
         // PetscOptions options;
         // PetscOptionsCreate(&options);
         // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
-        PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
+        // PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
@@ -171,6 +171,21 @@ public:
             std::string petscOptionVal = subDict.get<std::string>(key);
             PetscOptionsSetValue(NULL, petscOptionKey.c_str(), petscOptionVal.c_str());
         }
+    }
+
+    std::string getOption(std::string optionName)
+    {
+        char optionValue[PETSC_MAX_PATH_LEN];
+        PetscBool set;
+        PetscOptionsGetString(
+            NULL, NULL, optionName.c_str(), optionValue, sizeof(optionValue), &set
+        );
+
+        std::string optionValueStr(optionValue);
+
+        // TODO: Decide what to do (error or warning) if set is FALSE
+
+        return optionValueStr;
     }
 
     [[nodiscard]] Mat& AMat() { return Amat_; }

@@ -70,6 +70,9 @@ TEST_CASE("SolverContext - Petsc")
         std::size_t nrows = linearSystem.rhs().size();
 
         petsctx.initialize(linearSystem);
+
+        REQUIRE(petsctx.getOption("-pc_type") == "bjacobi");
+        REQUIRE(petsctx.getOption("-sub_pc_type") == "ilu");
     }
 }
 
