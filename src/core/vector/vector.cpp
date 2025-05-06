@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoN authors
+// SPDX-FileCopyrightText: 2025 NeoN authors
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
@@ -236,7 +236,7 @@ template class Vector<double>;
 template class Vector<Vec3>;
 
 // operator instantiation
-#define OPERATOR_INSTANTIATION(Type)                                                               \
+#define NN_DECLARE_VECTOR_OPERATOR(Type)                                                               \
     /* free function opperators with additional requirements  */                                   \
     template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
     template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);

@@ -10,7 +10,6 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/view.hpp"
 
-#include <variant>
 #include <vector>
 
 
