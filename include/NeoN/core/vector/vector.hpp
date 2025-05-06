@@ -162,31 +162,41 @@ public:
      * @brief Arithmetic multiply operator, multiply by a second field.
      * @param rhs The field to subtract from this field.
      * @returns The result of the multiply.
+     *
+     * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
+     *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
         requires requires(ValueType a, ValueType b) { a* b; };
 
     /**
-     * @brief Arithmetic multiply operator, multiplies every cell in the field
-     * by a scalar.
+     * @brief Arithmetic multiply operator, multiplies every cell in the field by a scalar.
      * @param rhs The scalar to multiply with the field.
      * @returns The result of the multiplication.
+     *
+     * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
+     *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs)
         requires requires(ValueType a, ValueType b) { a* b; };
 
     /**
-     * @brief Arithmetic multiply operator, multiplies this field by another field element-wise.
+     * @brief Assignment multiply operator, multiplies this field by another field element-wise.
      * @param rhs The field to multiply with this field.
      * @returns The result of the element-wise multiplication.
+     *
+     * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
+     *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     Vector<ValueType>& operator*=(const Vector<ValueType>& rhs)
         requires requires(ValueType a, ValueType b) { a *= b; };
 
     /**
-     * @brief Arithmetic multiply-assignment operator, multiplies every cell in the field
-     * by a scalar and updates the field in place.
+     * @brief Assignment multiply operator, multiplies every cell in the field by a scalar.
      * @param rhs The scalar to multiply with the field.
+     *
+     * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
+     *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     Vector<ValueType>& operator*=(const ValueType rhs)
         requires requires(ValueType a, ValueType b) { a *= b; };
