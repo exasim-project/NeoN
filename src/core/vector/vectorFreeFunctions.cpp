@@ -104,7 +104,7 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 }
 
 // operator instantiation
-#define OPERATOR_INSTANTIATION(Type)                                                               \
+#define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type> & vector, const Type value);                        \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -114,19 +114,19 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
-#define OPERATOR_INSTANTIATION_VECT(Type)                                                          \
+#define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
-OPERATOR_INSTANTIATION(uint32_t);
-OPERATOR_INSTANTIATION(uint64_t);
-OPERATOR_INSTANTIATION(int32_t);
-OPERATOR_INSTANTIATION(int64_t);
-OPERATOR_INSTANTIATION(float);
-OPERATOR_INSTANTIATION(double);
-OPERATOR_INSTANTIATION_VECT(Vec3);
+NN_VECTOR_OPERATOR_INSTANTIATION(uint32_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(uint64_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(int32_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(int64_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(float);
+NN_VECTOR_OPERATOR_INSTANTIATION(double);
+NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Vec3);
 
 } // namespace NeoN

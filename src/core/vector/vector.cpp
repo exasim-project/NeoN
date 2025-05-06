@@ -236,18 +236,18 @@ template class Vector<double>;
 template class Vector<Vec3>;
 
 // operator instantiation
-#define NN_DECLARE_VECTOR_OPERATOR(Type)                                                               \
+#define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function opperators with additional requirements  */                                   \
     template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
     template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);
 
-OPERATOR_INSTANTIATION(uint32_t);
-OPERATOR_INSTANTIATION(uint64_t);
-OPERATOR_INSTANTIATION(int32_t);
-OPERATOR_INSTANTIATION(int64_t);
-OPERATOR_INSTANTIATION(float);
-OPERATOR_INSTANTIATION(double);
-OPERATOR_INSTANTIATION(Vec3);
+NN_VECTOR_OPERATOR_INSTANTIATION(uint32_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(uint64_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(int32_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(int64_t);
+NN_VECTOR_OPERATOR_INSTANTIATION(float);
+NN_VECTOR_OPERATOR_INSTANTIATION(double);
+NN_VECTOR_OPERATOR_INSTANTIATION(Vec3);
 
 
 } // namespace NeoN
