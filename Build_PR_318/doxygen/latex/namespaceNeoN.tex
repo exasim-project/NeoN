@@ -21,7 +21,7 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{time\+Integration}}
 class \mbox{\hyperlink{classNeoN_1_1ArgList}{Arg\+List}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1Array}{Array}}
-\item 
+\begin{DoxyCompactList}\small\item\em A class to contain the data and executors for a field and define some basic operations. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1BaseClassData}{Base\+Class\+Data}}
 \begin{DoxyCompactList}\small\item\em Represents the data for a base class. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1BaseClassDocumentation}{Base\+Class\+Documentation}}
@@ -125,12 +125,12 @@ using \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a063c3e7c92e872c9b9746eacc479d800}{map}} (Cont\+Type$<$ Value\+Type $>$ \&a, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
+{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}{map}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
 \begin{DoxyCompactList}\small\item\em Map a field using a specific executor. \end{DoxyCompactList}\item 
 {\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
 \begin{DoxyCompactList}\small\item\em Fill the field with a vector value using a specific executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a133980f3244951b9075ba9336b727f96}{set\+Container}} (Cont\+Type$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ b, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
-\begin{DoxyCompactList}\small\item\em Set the vector with a view of values using a specific executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0}{set\+Container}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ view, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
+\begin{DoxyCompactList}\small\item\em Set the container with a view of values using a specific executor. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_a811ed2574204e6c20fde99a7f7d6fa52}{copy\+To\+Hosts}} (Args \&... cont)
 \item 
 {\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ }\\bool \mbox{\hyperlink{namespaceNeoN_a9b0c419e52f96e9aa46b7a87151d863c}{equal}} (Cont\+Type$<$ Value\+Type $>$ \&cont, Value\+Type value)
@@ -222,9 +222,16 @@ void \mbox{\hyperlink{namespaceNeoN_a32239764f88da7b65079e346a5f3c1f8}{log\+Out\
 {\footnotesize template$<$typename Value\+Type $>$ \newline
 requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a6d907276a52d700b1cd18019cdf94de7}{scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const Value\+Type value)
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a3d9148833016bbd426f887c34a25d527}{add}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
+\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41}{add}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
+\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777}{sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ \newline
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ \newline
 requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
@@ -401,10 +408,17 @@ Definition at line \mbox{\hyperlink{time_8hpp_source_l00015}{15}} of file \mbox{
 
 
 \doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_a3d9148833016bbd426f887c34a25d527}\label{namespaceNeoN_a3d9148833016bbd426f887c34a25d527} 
+\index{NeoN@{NeoN}!add@{add}}
+\index{add@{add}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
+
 \Hypertarget{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41}\label{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41} 
 \index{NeoN@{NeoN}!add@{add}}
 \index{add@{add}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{add()}{add()}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
 
@@ -565,12 +579,12 @@ Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00020}{20}} of file \mbo
 
 Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a063c3e7c92e872c9b9746eacc479d800}\label{namespaceNeoN_a063c3e7c92e872c9b9746eacc479d800} 
+\Hypertarget{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}\label{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b} 
 \index{NeoN@{NeoN}!map@{map}}
 \index{map@{map}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{map()}{map()}}
 {\footnotesize\ttfamily template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , typename Inner $>$ \\
-void Neo\+N\+::map (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{a,  }\item[{const Inner}]{inner,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range = {\ttfamily \{0,~0\}} }\end{DoxyParamCaption})}
+void Neo\+N\+::map (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{cont,  }\item[{const Inner}]{inner,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range = {\ttfamily \{0,~0\}} }\end{DoxyParamCaption})}
 
 
 
@@ -578,7 +592,7 @@ Map a field using a specific executor.
 
 
 \begin{DoxyParams}{Parameters}
-{\em a} & The field to map. \\
+{\em cont} & The container to map. \\
 \hline
 {\em inner} & The function to apply to each element of the field. \\
 \hline
@@ -589,10 +603,18 @@ Map a field using a specific executor.
 
 Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c}\label{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c} 
+\index{NeoN@{NeoN}!mul@{mul}}
+\index{mul@{mul}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{mul()}{mul()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \newline
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}\\
+void Neo\+N\+::mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
+
 \Hypertarget{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}\label{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70} 
 \index{NeoN@{NeoN}!mul@{mul}}
 \index{mul@{mul}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{mul()}{mul()}}
+\doxysubsubsection{\texorpdfstring{mul()}{mul()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \newline
 requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}\\
 void Neo\+N\+::mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
@@ -974,34 +996,41 @@ The offsets are computed by a prefix sum of the input values. So, with given inp
 
 Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a133980f3244951b9075ba9336b727f96}\label{namespaceNeoN_a133980f3244951b9075ba9336b727f96} 
+\Hypertarget{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0}\label{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0} 
 \index{NeoN@{NeoN}!setContainer@{setContainer}}
 \index{setContainer@{setContainer}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{setContainer()}{setContainer()}}
 {\footnotesize\ttfamily template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ \\
-void Neo\+N\+::set\+Container (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{a,  }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$}]{b,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range = {\ttfamily \{0,~0\}} }\end{DoxyParamCaption})}
+void Neo\+N\+::set\+Container (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{cont,  }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$}]{view,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range = {\ttfamily \{0,~0\}} }\end{DoxyParamCaption})}
 
 
 
-Set the vector with a view of values using a specific executor. 
+Set the container with a view of values using a specific executor. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em a} & The vector to set. \\
+{\em cont} & The container to set. \\
 \hline
-{\em b} & The view of values to set the vector with. \\
+{\em view} & The view of values to set the container with. \\
 \hline
-{\em range} & The range to set the vector in. If not provided, the whole vector is set. \\
+{\em range} & The range to set the container in. If not provided, the whole container is set. \\
 \hline
 \end{DoxyParams}
 
 
 Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_a037265804e35c82302cc863186ac1f29}\label{namespaceNeoN_a037265804e35c82302cc863186ac1f29} 
+\index{NeoN@{NeoN}!sub@{sub}}
+\index{sub@{sub}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
+
 \Hypertarget{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777}\label{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777} 
 \index{NeoN@{NeoN}!sub@{sub}}
 \index{sub@{sub}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{sub()}{sub()}}
+\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
 
@@ -1059,7 +1088,7 @@ Tuple containing the unpacked views (use structured bindings).
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{view_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{view_8hpp_source}{view.\+hpp}}.
+Definition at line \mbox{\hyperlink{view_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{view_8hpp_source}{view.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4beedab28f9499a108fea579a833f101}\label{namespaceNeoN_a4beedab28f9499a108fea579a833f101} 
 \index{NeoN@{NeoN}!zero@{zero}}

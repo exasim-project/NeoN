@@ -263,7 +263,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="namespaceNeoN_1a063c3e7c92e872c9b9746eacc479d800" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1a6ac6b06f3fb6b3ff13e6d51c5ccc030b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>template&lt; typename &gt; class</type>
@@ -279,12 +279,12 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::map</definition>
-        <argsstring>(ContType&lt; ValueType &gt; &amp;a, const Inner inner, std::pair&lt; localIdx, localIdx &gt; range={0, 0})</argsstring>
+        <argsstring>(ContType&lt; ValueType &gt; &amp;cont, const Inner inner, std::pair&lt; localIdx, localIdx &gt; range={0, 0})</argsstring>
         <name>map</name>
         <qualifiedname>NeoN::map</qualifiedname>
         <param>
           <type>ContType&lt; ValueType &gt; &amp;</type>
-          <declname>a</declname>
+          <declname>cont</declname>
         </param>
         <param>
           <type>const Inner</type>
@@ -301,10 +301,10 @@
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>a</parametername>
+<parametername>cont</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to map. </para>
+<para>The container to map. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -394,7 +394,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="73" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" bodystart="73" bodyend="89"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1a133980f3244951b9075ba9336b727f96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1aadca37c3aeefc2c64c59b7b8c9b624c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>template&lt; typename &gt; class</type>
@@ -407,16 +407,16 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::setContainer</definition>
-        <argsstring>(ContType&lt; ValueType &gt; &amp;a, const View&lt; const std::type_identity_t&lt; ValueType &gt; &gt; b, std::pair&lt; localIdx, localIdx &gt; range={0, 0})</argsstring>
+        <argsstring>(ContType&lt; ValueType &gt; &amp;cont, const View&lt; const std::type_identity_t&lt; ValueType &gt; &gt; view, std::pair&lt; localIdx, localIdx &gt; range={0, 0})</argsstring>
         <name>setContainer</name>
         <qualifiedname>NeoN::setContainer</qualifiedname>
         <param>
           <type>ContType&lt; ValueType &gt; &amp;</type>
-          <declname>a</declname>
+          <declname>cont</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const std::type_identity_t&lt; ValueType &gt; &gt;</type>
-          <declname>b</declname>
+          <declname>view</declname>
         </param>
         <param>
           <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
@@ -424,23 +424,23 @@
           <defval>{0, 0}</defval>
         </param>
         <briefdescription>
-<para>Set the vector with a view of values using a specific executor. </para>
+<para>Set the container with a view of values using a specific executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>a</parametername>
+<parametername>cont</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The vector to set. </para>
+<para>The container to set. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>b</parametername>
+<parametername>view</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The view of values to set the vector with. </para>
+<para>The view of values to set the container with. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -448,7 +448,7 @@
 <parametername>range</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The range to set the vector in. If not provided, the whole vector is set. </para>
+<para>The range to set the container in. If not provided, the whole container is set. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1780,7 +1780,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="315" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" declline="315" declcolumn="9"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="314" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" declline="314" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a44e55549c34b75c79d8e9ce48fc3600a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1828,7 +1828,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="324" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" declline="324" declcolumn="9"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="323" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" declline="323" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a6d907276a52d700b1cd18019cdf94de7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1856,7 +1856,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="15" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="15" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="14" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="14" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a3d9148833016bbd426f887c34a25d527" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::add</definition>
+        <argsstring>(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)</argsstring>
+        <name>add</name>
+        <qualifiedname>NeoN::add</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>vect</declname>
+        </param>
+        <param>
+          <type>const std::type_identity_t&lt; ValueType &gt; &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="28" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="28" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1ae255d4cb51b4cf5413b9aa3dff5c3f41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1883,7 +1910,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="29" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="29" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="31" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="31" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a037265804e35c82302cc863186ac1f29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::sub</definition>
+        <argsstring>(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)</argsstring>
+        <name>sub</name>
+        <qualifiedname>NeoN::sub</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>vect</declname>
+        </param>
+        <param>
+          <type>const std::type_identity_t&lt; ValueType &gt; &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="34" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="34" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1aae5ddb58ac2b4264a756d55de4fcc777" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1910,7 +1964,35 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="32" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="32" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="37" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="37" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a4c2ec1eca1c5dc5f7756d47e9baad38c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::mul</definition>
+        <argsstring>(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)</argsstring>
+        <name>mul</name>
+        <qualifiedname>NeoN::mul</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>vect</declname>
+        </param>
+        <param>
+          <type>const std::type_identity_t&lt; ValueType &gt; &amp;</type>
+          <declname>value</declname>
+        </param>
+    <requiresclause>requires(ValueType a, ValueType b) { a* b; }    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="40" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="40" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a6ab1b2ea6d003b9225b4975421295b70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1938,7 +2020,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="35" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="35" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="44" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="44" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1977,7 +2059,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="102" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="102" bodyend="105"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="108" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="108" bodyend="111"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a8e4ff733c9dc00a516d09fbdacb127f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>
@@ -2028,6 +2110,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/array.hpp" line="19" column="1"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/array.hpp" line="18" column="1"/>
   </compounddef>
 </doxygen>

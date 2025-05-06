@@ -37,16 +37,16 @@
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00041}00041\ }
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00042}00042\ }
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00050}00050\ \textcolor{keyword}{template}<\textcolor{keyword}{template}<\textcolor{keyword}{typename}>\ \textcolor{keyword}{class\ }ContType,\ \textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ Inner>}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00051}\mbox{\hyperlink{namespaceNeoN_a063c3e7c92e872c9b9746eacc479d800}{00051}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a063c3e7c92e872c9b9746eacc479d800}{map}}(ContType<ValueType>\&\ a,\ \textcolor{keyword}{const}\ Inner\ inner,\ std::pair<localIdx,\ localIdx>\ range\ =\ \{0,\ 0\})}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00051}\mbox{\hyperlink{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}{00051}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}{map}}(ContType<ValueType>\&\ cont,\ \textcolor{keyword}{const}\ Inner\ inner,\ std::pair<localIdx,\ localIdx>\ range\ =\ \{0,\ 0\})}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00052}00052\ \{}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{auto}\ [start,\ end]\ =\ range;}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (end\ ==\ 0)}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00055}00055\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ end\ =\ a.size();}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ end\ =\ cont.size();}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00057}00057\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{auto}\ viewA\ =\ a.view();}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{auto}\ contView\ =\ cont.view();}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00059}00059\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ a.exec(),\ \{start,\ end\},\ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ viewA[i]\ =\ inner(i);\ \}}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ cont.exec(),\ \{start,\ end\},\ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ contView[i]\ =\ inner(i);\ \}}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00061}00061\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00062}00062\ \}}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00063}00063\ }
@@ -72,20 +72,20 @@
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00090}00090\ }
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00091}00091\ }
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00099}00099\ \textcolor{keyword}{template}<\textcolor{keyword}{template}<\textcolor{keyword}{typename}>\ \textcolor{keyword}{class\ }ContType,\ \textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00100}\mbox{\hyperlink{namespaceNeoN_a133980f3244951b9075ba9336b727f96}{00100}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a133980f3244951b9075ba9336b727f96}{setContainer}}(}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00101}00101\ \ \ \ \ ContType<ValueType>\&\ a,}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1View}{View}}<\textcolor{keyword}{const}\ std::type\_identity\_t<ValueType>>\ b,}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00100}\mbox{\hyperlink{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0}{00100}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0}{setContainer}}(}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00101}00101\ \ \ \ \ ContType<ValueType>\&\ cont,}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1View}{View}}<\textcolor{keyword}{const}\ std::type\_identity\_t<ValueType>>\ view,}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00103}00103\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range\ =\ \{0,\ 0\}}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00104}00104\ )}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00105}00105\ \{}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keyword}{auto}\ [start,\ end]\ =\ range;}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{keywordflow}{if}\ (end\ ==\ 0)}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00108}00108\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ end\ =\ a.size();}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ end\ =\ cont.size();}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00110}00110\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{auto}\ viewA\ =\ a.view();}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{auto}\ contView\ =\ cont.view();}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00112}00112\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ a.exec(),\ \{start,\ end\},\ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ viewA[i]\ =\ b[i];\ \}}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ cont.exec(),\ \{start,\ end\},\ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ contView[i]\ =\ view[i];\ \}}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00114}00114\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00115}00115\ \}}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00116}00116\ }
@@ -137,7 +137,7 @@
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00162}00162\ \{}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keyword}{auto}\ hostView\ =\ cont.copyToHost().view();}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00164}00164\ }
-\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView.size()\ !=\ view2.\mbox{\hyperlink{classNeoN_1_1View_a3869dd0414ada3a29e665d982c48dcbb}{size}}())}
+\DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keywordflow}{if}\ (hostView.size()\ !=\ view2.\mbox{\hyperlink{classNeoN_1_1View_ab06e71e3f5df85b5e97af95b7dd68298}{size}}())}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00166}00166\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
 \DoxyCodeLine{\Hypertarget{containerFreeFunctions_8hpp_source_l00168}00168\ \ \ \ \ \}}

@@ -2,6 +2,11 @@
 \hypertarget{classNeoN_1_1Array}{}\label{classNeoN_1_1Array}\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
 
 
+A class to contain the data and executors for a field and define some basic operations.  
+
+
+
+
 {\ttfamily \#include $<$array.\+hpp$>$}
 
 \doxysubsubsection*{Public Types}
@@ -13,21 +18,21 @@ using \mbox{\hyperlink{classNeoN_1_1Array_a703c735cebf9426e49cbf87af892f203}{Arr
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{classNeoN_1_1Array_a43736b7f297035903604682cce147975}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}})
-\begin{DoxyCompactList}\small\item\em Create an uninitialized \doxylink{classNeoN_1_1Vector}{Vector} with a given size on an executor. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Create an uninitialized \doxylink{classNeoN_1_1Array}{Array} with a given size on an executor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, const Value\+Type \texorpdfstring{$\ast$}{*}in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}}, \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} host\+Exec=\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}())
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size from existing memory on an executor. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Array}{Array} with a given size from existing memory on an executor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}}, Value\+Type value)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size on an executor and uniform value. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Array}{Array} with a given size on an executor and uniform value. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, std\+::vector$<$ Value\+Type $>$ in)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Vector}{Vector} from a given vector of values on an executor. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Array}{Array} from a given \doxylink{classNeoN_1_1Array}{Array} of values on an executor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&in)
-\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Vector}{Vector} as a copy of a \doxylink{classNeoN_1_1Vector}{Vector} on a specified executor. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Create a \doxylink{classNeoN_1_1Array}{Array} as a copy of a \doxylink{classNeoN_1_1Array}{Array} on a specified executor. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f}{Array}} (const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&rhs)
 \begin{DoxyCompactList}\small\item\em Copy constructor, creates a new field with the same size and data as the parsed field. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf}{Array}} (\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&\&rhs) noexcept
 \begin{DoxyCompactList}\small\item\em Move constructor, moves the data from the parsed field to the new field. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4}{\texorpdfstring{$\sim$}{\string~}\+Array}} ()
-\begin{DoxyCompactList}\small\item\em Destroy the \doxylink{classNeoN_1_1Vector}{Vector} object. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Destroy the \doxylink{classNeoN_1_1Array}{Array} object. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename func $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Array_aef8b781ed35a0af921248cbd451313bf}{apply}} (func f)
 \begin{DoxyCompactList}\small\item\em applies a functor, transformation, to the field \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
@@ -81,9 +86,9 @@ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}
 \doxysubsection{Detailed Description}
 \subsubsection*{template$<$typename Value\+Type$>$\newline
 class Neo\+N\+::\+Array$<$ Value\+Type $>$}
+A class to contain the data and executors for a field and define some basic operations. 
 
-
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 
 
@@ -97,7 +102,7 @@ using \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>
 
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 
 
@@ -111,7 +116,7 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00034}{34}} of file \mbox
 
 
 
-Create an uninitialized \doxylink{classNeoN_1_1Vector}{Vector} with a given size on an executor. 
+Create an uninitialized \doxylink{classNeoN_1_1Array}{Array} with a given size on an executor. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -122,7 +127,7 @@ Create an uninitialized \doxylink{classNeoN_1_1Vector}{Vector} with a given size
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00040}{40}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092}\label{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -133,7 +138,7 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00041}{41}} of file \mbox
 
 
 
-Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size from existing memory on an executor. 
+Create a \doxylink{classNeoN_1_1Array}{Array} with a given size from existing memory on an executor. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -148,7 +153,7 @@ Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size from existing 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00059}{59}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16}\label{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -159,7 +164,7 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00059}{59}} of file \mbox
 
 
 
-Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size on an executor and uniform value. 
+Create a \doxylink{classNeoN_1_1Array}{Array} with a given size on an executor and uniform value. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -172,7 +177,7 @@ Create a \doxylink{classNeoN_1_1Vector}{Vector} with a given size on an executor
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c}\label{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -183,18 +188,18 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00084}{84}} of file \mbox
 
 
 
-Create a \doxylink{classNeoN_1_1Vector}{Vector} from a given vector of values on an executor. 
+Create a \doxylink{classNeoN_1_1Array}{Array} from a given \doxylink{classNeoN_1_1Array}{Array} of values on an executor. 
 
 
 \begin{DoxyParams}{Parameters}
 {\em exec} & Executor associated to the field \\
 \hline
-{\em in} & a vector of elements to copy over \\
+{\em in} & a \doxylink{classNeoN_1_1Array}{Array} of elements to copy over \\
 \hline
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9}\label{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -205,18 +210,18 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00102}{102}} of file \mbo
 
 
 
-Create a \doxylink{classNeoN_1_1Vector}{Vector} as a copy of a \doxylink{classNeoN_1_1Vector}{Vector} on a specified executor. 
+Create a \doxylink{classNeoN_1_1Array}{Array} as a copy of a \doxylink{classNeoN_1_1Array}{Array} on a specified executor. 
 
 
 \begin{DoxyParams}{Parameters}
 {\em exec} & Executor associated to the field \\
 \hline
-{\em in} & a \doxylink{classNeoN_1_1Vector}{Vector} of elements to copy over \\
+{\em in} & a \doxylink{classNeoN_1_1Array}{Array} of elements to copy over \\
 \hline
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00111}{111}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f}\label{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -236,7 +241,7 @@ Copy constructor, creates a new field with the same size and data as the parsed 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00120}{120}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf}\label{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
@@ -256,7 +261,7 @@ Move constructor, moves the data from the parsed field to the new field.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00127}{127}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4}\label{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!````~Array@{\texorpdfstring{$\sim$}{\string~}Array}}
@@ -267,11 +272,11 @@ Definition at line \mbox{\hyperlink{array_8hpp_source_l00127}{127}} of file \mbo
 
 
 
-Destroy the \doxylink{classNeoN_1_1Vector}{Vector} object. 
+Destroy the \doxylink{classNeoN_1_1Array}{Array} object. 
 
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00136}{136}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 
 
@@ -298,7 +303,7 @@ Ideally the f should be a KOKKOS\+\_\+\+LAMBA
 \end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00148}{148}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00147}{147}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133}\label{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToExecutor@{copyToExecutor}}
@@ -321,7 +326,7 @@ A copy of the field on the host.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00157}{157}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a2f6d531ad5afd6c76a32c6ab9d819839}\label{classNeoN_1_1Array_a2f6d531ad5afd6c76a32c6ab9d819839} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToHost@{copyToHost}}
@@ -339,7 +344,7 @@ A copy of the field on the host.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00172}{172}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00171}{171}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a31837fdb0cf05b95234a75964dcd141a}\label{classNeoN_1_1Array_a31837fdb0cf05b95234a75964dcd141a} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToHost@{copyToHost}}
@@ -362,7 +367,7 @@ exits if the size of the result field is not the same as the source field.
 \end{DoxyWarning}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00182}{182}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00181}{181}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_afc980daee8c101771b614cc63bb4cd26}\label{classNeoN_1_1Array_afc980daee8c101771b614cc63bb4cd26} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!data@{data}}
@@ -380,7 +385,7 @@ Pointer to the first cell data in the field.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00253}{253}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00252}{252}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a11ce7e13bf9bf9b132948219b0eb24fa}\label{classNeoN_1_1Array_a11ce7e13bf9bf9b132948219b0eb24fa} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!data@{data}}
@@ -398,7 +403,7 @@ Pointer to the first cell data in the field.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00259}{259}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00258}{258}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a7f9394128c34e9f1785eb2f2af90191a}\label{classNeoN_1_1Array_a7f9394128c34e9f1785eb2f2af90191a} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!empty@{empty}}
@@ -416,7 +421,7 @@ True if the field is empty, false otherwise.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00283}{283}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00282}{282}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}\label{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!exec@{exec}}
@@ -434,7 +439,7 @@ Reference to the executor.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00265}{265}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00264}{264}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_ac1c4a13738703fe6e514ebe51cc9d822}\label{classNeoN_1_1Array_ac1c4a13738703fe6e514ebe51cc9d822} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator=@{operator=}}
@@ -457,7 +462,7 @@ This field will be sized to the size of the parsed field.
 \end{DoxyWarning}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00212}{212}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00211}{211}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a60191b4699dbc021c6411f7f8534f03e}\label{classNeoN_1_1Array_a60191b4699dbc021c6411f7f8534f03e} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator=@{operator=}}
@@ -477,7 +482,7 @@ Assignment operator, Sets the field values to that of the passed value.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00200}{200}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00199}{199}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a61186cad32f71dd9bc9d0340c1a83c36}\label{classNeoN_1_1Array_a61186cad32f71dd9bc9d0340c1a83c36} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
@@ -509,7 +514,7 @@ The range of the field \{0, \doxylink{classNeoN_1_1Array_a724b44f0930b2af455ca56
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00341}{341}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00340}{340}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_adae762a549262c56fb922acb850d70e3}\label{classNeoN_1_1Array_adae762a549262c56fb922acb850d70e3} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!resize@{resize}}
@@ -529,7 +534,7 @@ Resizes the field to a new size.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00226}{226}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00225}{225}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}\label{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!size@{size}}
@@ -547,7 +552,7 @@ The size of the field.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00270}{270}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a5734c9aa61db833dd685290a46dc9277}\label{classNeoN_1_1Array_a5734c9aa61db833dd685290a46dc9277} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!ssize@{ssize}}
@@ -565,7 +570,7 @@ The size of the field.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00277}{277}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00276}{276}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_aae640dc1b6f3ba143f417bc3bfc1da51}\label{classNeoN_1_1Array_aae640dc1b6f3ba143f417bc3bfc1da51} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
@@ -583,7 +588,7 @@ Gets the field as a view.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00295}{295}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00294}{294}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a22f7000fe0f4474f3a74441b0929ebe3}\label{classNeoN_1_1Array_a22f7000fe0f4474f3a74441b0929ebe3} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
@@ -608,7 +613,7 @@ Gets the field as a view.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00304}{304}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00303}{303}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_a86efccbe4371606aa4ed67941bc715c2}\label{classNeoN_1_1Array_a86efccbe4371606aa4ed67941bc715c2} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
@@ -633,7 +638,7 @@ Gets a sub view of the field as a view.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00319}{319}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00318}{318}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_ac1804522103d418476b150d9e359d9bc}\label{classNeoN_1_1Array_ac1804522103d418476b150d9e359d9bc} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
@@ -658,7 +663,7 @@ Gets a sub view of the field as a view.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{array_8hpp_source_l00330}{330}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00329}{329}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Array_ac1ec5e4c41b4b069c48c2c2676c2f6fe}\label{classNeoN_1_1Array_ac1ec5e4c41b4b069c48c2c2676c2f6fe} 
 \index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
