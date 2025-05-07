@@ -4,6 +4,7 @@
 #include <limits>
 
 #include "NeoN/core/info.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"

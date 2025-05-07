@@ -5,7 +5,7 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/fields/field.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/fields/boundaryData.hpp"
 

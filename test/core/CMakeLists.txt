@@ -5,15 +5,17 @@ if(NeoN_ENABLE_MPI_SUPPORT)
   add_subdirectory(mpi)
 endif()
 
-add_subdirectory(primitives)
 add_subdirectory(database)
-
+add_subdirectory(primitives)
+add_subdirectory(vector)
+neon_unit_test(array)
 neon_unit_test(dictionary)
 neon_unit_test(tokenList)
 neon_unit_test(input)
 neon_unit_test(executor)
 neon_unit_test(parallelAlgorithms)
 neon_unit_test(view)
+neon_unit_test(segmentedVector)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace

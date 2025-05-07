@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
+#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 
 namespace NeoN::finiteVolume::cellCentred

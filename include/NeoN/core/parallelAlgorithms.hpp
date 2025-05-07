@@ -65,25 +65,29 @@ void parallelFor(
 
 // Concept to check if a callable is compatible with ValueType(const size_t)
 template<typename Kernel, typename ValueType>
-concept parallelForVectorKernel = requires(Kernel t, ValueType val, size_t i) {
+concept parallelForContainerKernel = requires(Kernel t, ValueType val, size_t i) {
     {
         t(i)
     } -> std::same_as<ValueType>;
 };
 
-template<typename Executor, typename ValueType, parallelForVectorKernel<ValueType> Kernel>
+template<
+    typename Executor,
+    template<typename>
+    class ContType,
+    typename ValueType,
+    parallelForContainerKernel<ValueType> Kernel>
 void parallelFor(
     [[maybe_unused]] const Executor& exec,
-    Vector<ValueType>& field,
+    ContType<ValueType>& container,
     Kernel kernel,
     std::string name = "parallelFor"
 )
 {
-    auto view = field.view();
+    auto view = container.view();
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        localIdx fieldSize = field.size();
-        for (localIdx i = 0; i < fieldSize; i++)
+        for (localIdx i = 0; i < view.size(); i++)
         {
             view[i] = kernel(i);
         }
@@ -93,16 +97,20 @@ void parallelFor(
         using runOn = typename Executor::exec;
         Kokkos::parallel_for(
             name,
-            Kokkos::RangePolicy<runOn>(0, field.size()),
+            Kokkos::RangePolicy<runOn>(0, view.size()),
             KOKKOS_LAMBDA(const localIdx i) { view[i] = kernel(i); }
         );
     }
 }
 
-template<typename ValueType, parallelForVectorKernel<ValueType> Kernel>
-void parallelFor(Vector<ValueType>& field, Kernel kernel, std::string name = "parallelFor")
+template<
+    template<typename>
+    class ContType,
+    typename ValueType,
+    parallelForContainerKernel<ValueType> Kernel>
+void parallelFor(ContType<ValueType>& cont, Kernel kernel, std::string name = "parallelFor")
 {
-    std::visit([&](const auto& e) { parallelFor(e, field, kernel, name); }, field.exec());
+    std::visit([&](const auto& e) { parallelFor(e, cont, kernel, name); }, cont.exec());
 }
 
 template<typename Executor, typename Kernel, typename T>
@@ -222,6 +230,5 @@ void parallelScan(
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel, returnValue); }, exec);
 }
-
 
 } // namespace NeoN
