@@ -3,6 +3,7 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/macros.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/vector/vector.hpp"
 
@@ -226,28 +227,18 @@ template<typename ValueType>
     return lhs;
 }
 
-// template class instantiation
-template class Vector<uint32_t>;
-template class Vector<uint64_t>;
-template class Vector<int32_t>;
-template class Vector<int64_t>;
-template class Vector<float>;
-template class Vector<double>;
-template class Vector<Vec3>;
+#define NN_VECTOR_CLASS_INSTANTIATION(Type) template class Vector<Type>
+
+NN_FOR_ALL_VALUE_TYPES(NN_VECTOR_CLASS_INSTANTIATION);
+NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_CLASS_INSTANTIATION);
 
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function opperators with additional requirements  */                                   \
     template Vector<Type> operator+(Vector<Type> lhs, const Vector<Type>& rhs);                    \
-    template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs);
+    template Vector<Type> operator-(Vector<Type> lhs, const Vector<Type>& rhs)
 
-NN_VECTOR_OPERATOR_INSTANTIATION(uint32_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(uint64_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(int32_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(int64_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(float);
-NN_VECTOR_OPERATOR_INSTANTIATION(double);
-NN_VECTOR_OPERATOR_INSTANTIATION(Vec3);
-
+NN_FOR_ALL_VALUE_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
+NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 
 } // namespace NeoN

@@ -97,7 +97,6 @@ void VolumeField<ValueType>::correctBoundaryConditions()
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
 
-NN_DECLARE_FIELD(scalar);
-NN_DECLARE_FIELD(Vec3);
+NN_FOR_ALL_SCALAR_TYPES(NN_DECLARE_FIELD);
 
 }
