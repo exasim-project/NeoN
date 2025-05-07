@@ -154,8 +154,8 @@ Vector<ValueType> Vector<ValueType>::operator*(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
-Vector<ValueType> Vector<ValueType>::operator*(const ValueType rhs)
-    requires requires(ValueType a, ValueType b) { a* b; }
+Vector<ValueType> Vector<ValueType>::operator*(const scalar rhs)
+    requires requires(ValueType a, scalar b) { a* b; }
 {
     Vector<ValueType> result(exec_, size_);
     result = *this;
@@ -174,8 +174,8 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
-Vector<ValueType>& Vector<ValueType>::operator*=(const ValueType rhs)
-    requires requires(ValueType a, ValueType b) { a *= b; }
+Vector<ValueType>& Vector<ValueType>::operator*=(const scalar rhs)
+    requires requires(ValueType a, scalar b) { a *= b; }
 {
     Vector<ValueType>& result = *this;
     scalarMul(result, rhs);

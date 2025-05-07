@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
+#include "NeoN/core/primitives/scalar.hpp"
+
 #include <type_traits>
 
 namespace NeoN
@@ -11,8 +13,8 @@ template<typename ValueType>
 class Vector;
 
 template<typename ValueType>
-void scalarMul(Vector<ValueType>& vect, const ValueType value)
-    requires requires(ValueType a, ValueType b) { a* b; };
+void scalarMul(Vector<ValueType>& vect, const scalar value)
+    requires requires(ValueType a, scalar b) { a* b; };
 
 namespace detail
 {
