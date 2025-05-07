@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 NeoN authors
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/macros.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
