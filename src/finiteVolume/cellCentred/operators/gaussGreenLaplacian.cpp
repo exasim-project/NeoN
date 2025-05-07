@@ -108,7 +108,7 @@ void computeLaplacianImpl(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
-            scalar flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
+            auto flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
 
             auto own = owner[facei];
             auto nei = neighbour[facei];
@@ -117,8 +117,8 @@ void computeLaplacianImpl(
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
-            scalar operatorScalingNei = operatorScaling[nei];
-            scalar operatorScalingOwn = operatorScaling[own];
+            auto operatorScalingNei = operatorScaling[nei];
+            auto operatorScalingOwn = operatorScaling[own];
 
             // scalar valueNei = (1 - weight) * flux;
             values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
@@ -132,7 +132,8 @@ void computeLaplacianImpl(
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
             );
-        }
+        },
+        "computeLocalLaplacianCoefficients"
     );
 
     auto [refGradient, value, valueFraction, refValue] = views(
@@ -170,7 +171,8 @@ void computeLaplacianImpl(
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
             Kokkos::atomic_sub(&rhs[own], valueRhs);
             rhsBoundValues[bcfacei] = valueRhs;
-        }
+        },
+        "computeInterfaceLaplacianCoefficients"
     );
 }
 

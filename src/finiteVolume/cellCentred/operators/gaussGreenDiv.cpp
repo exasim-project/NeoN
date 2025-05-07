@@ -167,7 +167,7 @@ void computeDivImp(
     const auto exec = phi.exec();
     const auto weights = surfInterp.weight(faceFlux, phi);
 
-    const auto [sFaceFlux, sWeights, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] =
+    const auto [faceFluxV, weightsV, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] =
         views(
             faceFlux.internalVector(),
             weights.internalVector(),
@@ -184,10 +184,9 @@ void computeDivImp(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
-            scalar flux = sFaceFlux[facei];
-
-            scalar weight = sWeights[facei];
-            ValueType value = zero<ValueType>();
+            auto flux = faceFluxV[facei];
+            auto weight = weightsV[facei];
+            auto value = zero<ValueType>();
             auto own = owner[facei];
             auto nei = neighbour[facei];
 
@@ -195,8 +194,8 @@ void computeDivImp(
             auto rowNeiStart = matrix.rowOffs[nei];
             auto rowOwnStart = matrix.rowOffs[own];
 
-            scalar operatorScalingNei = operatorScaling[nei];
-            scalar operatorScalingOwn = operatorScaling[own];
+            auto operatorScalingNei = operatorScaling[nei];
+            auto operatorScalingOwn = operatorScaling[own];
 
             value = -weight * flux * one<ValueType>();
             // scalar valueNei = (1 - weight) * flux;
@@ -212,7 +211,8 @@ void computeDivImp(
             Kokkos::atomic_sub(
                 &matrix.values[rowNeiStart + diagOffs[nei]], value * operatorScalingNei
             );
-        }
+        },
+        "computeLocalGaussGreenDivCoefficients"
     );
 
     auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs] = views(
@@ -229,54 +229,43 @@ void computeDivImp(
             "boundaryCoefficients"
         );
 
-    auto [mValue, rhsValue] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
+    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsBoundValues);
 
     parallelFor(
         exec,
-        {nInternalFaces, sFaceFlux.size()},
+        {nInternalFaces, faceFluxV.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
             auto bcfacei = facei - nInternalFaces;
-            scalar flux = bweights[bcfacei] * sFaceFlux[facei];
+            auto flux = bweights[bcfacei] * faceFluxV[facei];
 
             auto own = surfFaceCells[bcfacei];
             auto rowOwnStart = matrix.rowOffs[own];
-            scalar operatorScalingOwn = operatorScaling[own];
+            auto operatorScalingOwn = operatorScaling[own];
 
-            scalar valFrac1 = valueFraction[bcfacei];
-            scalar valFrac2 = 1.0 - valFrac1;
+            auto valFrac1 = valueFraction[bcfacei];
+            auto valFrac2 = 1.0 - valFrac1;
 
-            ValueType valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+            auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
-            Kokkos::atomic_add(
-                &matrix.values[rowOwnStart + diagOffs[own]],
-                valueMat
-            );
-            mValue[bcfacei] = valueMat;
+            Kokkos::atomic_add(&matrix.values[rowOwnStart + diagOffs[own]], valueMat);
+            boundValues[bcfacei] = valueMat;
 
-            ValueType valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                               + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+            auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                          + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
-            Kokkos::atomic_sub(
-                &rhs[own],
-                valueRhs
-            );
+            Kokkos::atomic_sub(&rhs[own], valueRhs);
 
-            rhsValue[bcfacei] = valueRhs;
-        }
+            rhsBoundValues[bcfacei] = valueRhs;
+        },
+        "computeInterfaceGaussGreenDivCoefficients"
     );
 };
 
-#define NF_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
-    template void computeDivImp<TYPENAME>(                                                         \
-        la::LinearSystem<TYPENAME, localIdx>&,                                                     \
-        const SurfaceField<scalar>&,                                                               \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
-        const dsl::Coeff,                                                                          \
-        const SparsityPattern&                                                                     \
-    )
+#define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
+    template void computeDivImp<                                                                   \
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const SurfaceInterpolation<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
 
-NF_DECLARE_COMPUTE_IMP_DIV(scalar);
-NF_DECLARE_COMPUTE_IMP_DIV(Vec3);
+NN_DECLARE_COMPUTE_IMP_DIV(scalar);
+NN_DECLARE_COMPUTE_IMP_DIV(Vec3);
 
 };
