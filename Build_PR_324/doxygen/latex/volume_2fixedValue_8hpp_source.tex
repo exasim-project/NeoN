@@ -57,29 +57,32 @@
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00053}00053\ }
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ab5c62ca19f89f2a843b2d71b5bce7313}{00054}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ab5c62ca19f89f2a843b2d71b5bce7313}{FixedValue}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID),\ fixedValue\_(dict.get<ValueType>(\textcolor{stringliteral}{"{}fixedValue"{}}))}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00056}00056\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a4b9f9dfc246ffdf3568eb5bcb34cf8ec}{00058}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a4b9f9dfc246ffdf3568eb5bcb34cf8ec}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00059}00059\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{detail::setFixedValue}}(domainVector,\ this-\/>range(),\ fixedValue\_);}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00061}00061\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00062}00062\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_afef3ea3db480582fa54b4f55969f7c78}{00063}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_afef3ea3db480582fa54b4f55969f7c78}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fixedValue"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00064}00064\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ae7b06ed504499c470bb4b22e60c19e96}{00065}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ae7b06ed504499c470bb4b22e60c19e96}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Set\ a\ fixed\ value\ on\ the\ boundary"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_af89a1abef69d223e968f4ebcfa49d6b0}{00067}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_af89a1abef69d223e968f4ebcfa49d6b0}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a06f07501b9dd47f398d8f1e8de8f4d4b}{00069}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a06f07501b9dd47f398d8f1e8de8f4d4b}{clone}}()\ const\ final}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00070}00070\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FixedValue>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00072}00072\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00074}00074\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00076}00076\ \ \ \ \ ValueType\ fixedValue\_;}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00077}00077\ \};}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00056}00056\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ this-\/>attributes()[\textcolor{stringliteral}{"{}assignable"{}}]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ this-\/>attributes()[\textcolor{stringliteral}{"{}fixesValue"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00059}00059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a4b9f9dfc246ffdf3568eb5bcb34cf8ec}{00061}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a4b9f9dfc246ffdf3568eb5bcb34cf8ec}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00062}00062\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{detail::setFixedValue}}(domainVector,\ this-\/>range(),\ fixedValue\_);}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00064}00064\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_afef3ea3db480582fa54b4f55969f7c78}{00066}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_afef3ea3db480582fa54b4f55969f7c78}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fixedValue"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ae7b06ed504499c470bb4b22e60c19e96}{00068}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_ae7b06ed504499c470bb4b22e60c19e96}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Set\ a\ fixed\ value\ on\ the\ boundary"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_af89a1abef69d223e968f4ebcfa49d6b0}{00070}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_af89a1abef69d223e968f4ebcfa49d6b0}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a06f07501b9dd47f398d8f1e8de8f4d4b}{00072}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_a06f07501b9dd47f398d8f1e8de8f4d4b}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00073}00073\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FixedValue>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00075}00075\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00077}00077\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00078}00078\ }
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00079}00079\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00079}00079\ \ \ \ \ ValueType\ fixedValue\_;}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00080}00080\ \};}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00082}00082\ \}}
 
 \end{DoxyCode}

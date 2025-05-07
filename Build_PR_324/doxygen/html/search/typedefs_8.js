@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['label_0',['label',['../namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416',1,'NeoN']]],
-  ['labelvector_1',['labelVector',['../namespaceNeoN.html#a6389e1f6465846887d6bc01ec8ea818d',1,'NeoN']]],
-  ['localidx_2',['localIdx',['../namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc',1,'NeoN']]],
-  ['localidxvector_3',['localIdxVector',['../namespaceNeoN.html#a345d64e8263d03609fc24b88fed965be',1,'NeoN']]],
-  ['lookuptable_4',['lookuptable',['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable'],['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable']]]
+  ['kvector_0',['kvector',['../classNeoN_1_1sundials_1_1SKVectorSerial.html#ab521117638773d83b83f6ef73465bb37',1,'NeoN::sundials::SKVectorSerial::KVector'],['../classNeoN_1_1sundials_1_1SKVectorHostDefault.html#af67061fb545b5437d51cf0cc41d1df2f',1,'NeoN::sundials::SKVectorHostDefault::KVector'],['../classNeoN_1_1sundials_1_1SKVectorDefault.html#a0d4dc1c9b766d3214b8af9093b31bf91',1,'NeoN::sundials::SKVectorDefault::KVector']]]
 ];
