@@ -21,7 +21,7 @@ void scalarMul(Vector<ValueType>& vect, const scalar value)
 {
     auto viewA = vect.view();
     parallelFor(
-        vect, KOKKOS_LAMBDA(const localIdx i) { return viewA[i] * value; }
+        vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
     );
 }
 
@@ -107,7 +107,7 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
-    template void scalarMul<Type>(Vector<Type> & vector, const scalar value);                      \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -117,6 +117,7 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
