@@ -29,10 +29,11 @@ if(${NeoN_WITH_PETSC})
   set(Kokkos_ROOT ${PETSc_PREFIX})
   set(CMAKE_CUDA_STANDARD 17)
   include(cmake/AutoEnableDevice.cmake)
+
+  set(Kokkos_ROOT_DIR ${PETSc_PREFIX})
+  message("${PETSc_PREFIX}")
 endif()
 
-set(Kokkos_ROOT_DIR ${PETSc_PREFIX})
-message("${PETSc_PREFIX}")
 find_package(Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION} QUIET)
 
 if(NOT ${Kokkos_FOUND})
