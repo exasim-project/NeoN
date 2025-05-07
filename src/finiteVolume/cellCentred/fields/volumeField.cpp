@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 NeoN authors
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/macros.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -97,6 +98,6 @@ void VolumeField<ValueType>::correctBoundaryConditions()
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
 
-NN_FOR_ALL_SCALAR_TYPES(NN_DECLARE_FIELD);
+NN_FOR_ALL_VALUE_TYPES(NN_DECLARE_FIELD);
 
 }
