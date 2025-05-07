@@ -101,12 +101,7 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
-    // FIXME: what if order changes
     auto [values, colIdxs, rowOffs] = ls.matrix().view();
-
-    // const auto rowOffs = ls.matrix().rowOffs();
-    // const auto colIdxs = ls.matrix().colIdxs();
-    // auto values = ls.matrix().values().view();
     auto rhs = ls.rhs().view();
 
     parallelFor(
@@ -132,7 +127,6 @@ void computeLaplacianImpl(
             );
 
             // upper triangular part
-
             // add owner contribution lower
             values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
             Kokkos::atomic_sub(
@@ -148,11 +142,12 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto& bcCoeffs = ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
-        "boundaryCoefficients"
-    );
+    auto& bcCoeffs =
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
+            "boundaryCoefficients"
+        );
 
-    auto [mValue, rhsValue] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
+    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
 
     parallelFor(
         exec,
@@ -165,37 +160,25 @@ void computeLaplacianImpl(
             auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
-            ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei] * deltaCoeffs[facei]
-                * one<ValueType>();
-            Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]],
-                valueMat
-            );
-            mValue[bcfacei] = valueMat;
+            ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
+                               * deltaCoeffs[facei] * one<ValueType>();
+            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+            boundValues[bcfacei] = valueMat;
 
             ValueType valueRhs = flux * operatorScalingOwn
-                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
-                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-            Kokkos::atomic_sub(
-                &rhs[own],
-                valueRhs
-            );
-            rhsValue[bcfacei] = valueRhs;
+                               * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
+                                  + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
+            Kokkos::atomic_sub(&rhs[own], valueRhs);
+            rhsBoundValues[bcfacei] = valueRhs;
         }
     );
 }
 
-#define NF_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
-    template void computeLaplacianImpl<TYPENAME>(                                                  \
-        la::LinearSystem<TYPENAME, localIdx>&,                                                     \
-        const SurfaceField<scalar>&,                                                               \
-        VolumeField<TYPENAME>&,                                                                    \
-        const dsl::Coeff,                                                                          \
-        const SparsityPattern&,                                                                    \
-        const FaceNormalGradient<TYPENAME>&                                                        \
-    )
+#define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
+    template void computeLaplacianImpl<                                                            \
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
-NF_DECLARE_COMPUTE_IMP_LAP(scalar);
-NF_DECLARE_COMPUTE_IMP_LAP(Vec3);
+NN_DECLARE_COMPUTE_IMP_LAP(scalar);
+NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
 
 };

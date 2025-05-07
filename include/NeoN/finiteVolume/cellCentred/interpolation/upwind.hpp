@@ -79,18 +79,19 @@ public:
     }
 
     // src weight
-    void weight(const VolumeField<ValueType>& src, SurfaceField<scalar>& weights) const override
+    void weight(const VolumeField<ValueType>&, SurfaceField<scalar>&) const override
     {
-        NF_ERROR_EXIT("limited scheme require a faceFlux");
+        NF_ERROR_EXIT("upwind interpolation scheme requires a faceFlux");
     }
 
     // flux, src, weight
-    void weight(const SurfaceField<scalar>& faceFlux, const VolumeField<ValueType>& src, SurfaceField<scalar>& weights)
-        const override
+    void weight(
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<ValueType>& src,
+        SurfaceField<scalar>& weights
+    ) const override
     {
-        computeUpwindInterpolationWeights(
-            faceFlux, src, weights
-        );
+        computeUpwindInterpolationWeights(faceFlux, src, weights);
     }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
