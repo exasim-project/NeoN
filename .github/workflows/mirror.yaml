@@ -12,6 +12,4 @@ jobs:
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-             git@gitlab-ce.lrz.de:00000000014C1EBA/neon.git
-          ssh_private_key:
-            ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
+            https://greole:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
