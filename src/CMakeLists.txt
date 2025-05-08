@@ -34,7 +34,7 @@ target_sources(
           "linearAlgebra/ginkgo.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
-          "finiteVolume/cellCentred/linearAlgebra/sparsityPattern.cpp"
+          "linearAlgebra/sparsityPattern.cpp"
           "finiteVolume/cellCentred/stencil/stencilDataBase.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/basicGeometryScheme.cpp"

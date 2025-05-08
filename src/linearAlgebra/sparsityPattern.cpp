@@ -3,9 +3,9 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/segmentedVector.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
-namespace NeoN::finiteVolume::cellCentred
+namespace NeoN::la
 {
 
 SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
@@ -28,10 +28,8 @@ const std::shared_ptr<SparsityPattern> SparsityPattern::readOrCreate(const Unstr
     return stencilDb.get<std::shared_ptr<SparsityPattern>>("SparsityPattern");
 }
 
-void SparsityPattern::update()
+void updateSparsityPattern(const Unstructured& mesh, SparsityPattern sp)
 {
-    const auto exec = mesh_.exec();
-    const auto nCells = mesh_.nCells();
     const auto faceOwner = mesh_.faceOwner().view();
     const auto faceNeighbour = mesh_.faceNeighbour().view();
     // const auto faceFaceCells = mesh_.boundaryMesh().faceCells().view();
@@ -60,8 +58,8 @@ void SparsityPattern::update()
 
     // get number of total non-zeros
     segmentsFromIntervals(nFacesPerCell, rowOffs_);
-    auto rowOffs = rowOffs_.view();
-    View<localIdx> sColIdx = colIdxs_.view();
+    auto rowOffs = sp.rowOffs().view();
+    View<localIdx> sColIdx = colIdxs().view();
     fill(nFacesPerCell, 0); // reset nFacesPerCell
 
     // compute the lower triangular part of the matrix
@@ -116,6 +114,17 @@ void SparsityPattern::update()
     );
 }
 
+SparsityPattern createSparsity(const Unstructured& mesh)
+{
+    const auto exec = mesh_.exec();
+    const auto nCells = mesh_.nCells();
+    const auto nnzs = 2 * mesh_.nInternalFaces() + nCells;
+
+    auto ret = SparstityPattern(exec, nCells, nnzs);
+
+    updateSparsityPattern(exec, nCells, nnzs);
+    return ret;
+}
 
 const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
@@ -123,4 +132,4 @@ const NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() const { return ne
 
 const NeoN::Array<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
 
-} // namespace NeoN::finiteVolume::cellCentred
+} // namespace NeoN::la

@@ -3,11 +3,11 @@
 
 #pragma once
 
-
 #include "NeoN/core/array.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoN::finiteVolume::cellCentred
+namespace NeoN::la
 {
 
 /* @class SparsityPattern
@@ -21,35 +21,40 @@ class SparsityPattern
 {
 public:
 
-    // TODO implement ctor copying all members
-    SparsityPattern(const UnstructuredMesh& mesh);
+    /* @brief create an "empty" SparsityPattern with a given size  */
+    SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs);
 
-    void update();
+    SparsityPattern(
+        Array<uint8_t>&& rowOffs,
+        Array<uint8_t>&& colIdxs,
+        Array<uint8_t>&& ownerOffset,
+        Vector<localIdx>&& neighbourOffset,
+        Vector<localIdx>&& diagOffset
+    );
 
-    // TODO: rename upperOffset
+    /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
 
-    // TODO: rename lowerOffset
+    /*@brief getter for neighbourOffset */
     const Array<uint8_t>& neighbourOffset() const;
 
+    /*@brief getter for diagOffset */
     const Array<uint8_t>& diagOffset() const;
 
-    const UnstructuredMesh& mesh() const { return mesh_; };
-
+    /*@brief getter for colIdxs */
     [[nodiscard]] const Vector<localIdx>& colIdxs() const { return colIdxs_; };
 
+    /*@brief getter for rowOffs */
     [[nodiscard]] const Vector<localIdx>& rowOffs() const { return rowOffs_; };
 
     [[nodiscard]] localIdx rows() const { return diagOffset_.size(); };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
-    // add selection mechanism via dictionary later
+    // TODO add selection mechanism via dictionary later
     static const std::shared_ptr<SparsityPattern> readOrCreate(const UnstructuredMesh& mesh);
 
 private:
-
-    const UnstructuredMesh& mesh_;
 
     Vector<localIdx> rowOffs_; //! rowOffs map from row to start index in values
 
@@ -61,5 +66,9 @@ private:
 
     Array<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
 };
+
+SparsityPattern createSparsity(const UnstructuredMesh& mesh);
+
+SparsityPattern updateSparsity(const UnstructuredMesh& mesh, SparsityPattern in);
 
 } // namespace NeoN::finiteVolume::cellCentred

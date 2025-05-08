@@ -9,11 +9,8 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/dsl/solver.hpp"
-
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-
-// TODO decouple from fvcc
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::timeIntegration

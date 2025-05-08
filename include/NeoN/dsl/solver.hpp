@@ -8,8 +8,8 @@
 #include <utility>
 #include <concepts>
 
-#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/dsl/expression.hpp"
@@ -17,9 +17,7 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
-
-// FIXME
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::dsl
