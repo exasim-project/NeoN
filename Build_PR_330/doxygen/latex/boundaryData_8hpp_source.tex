@@ -1,0 +1,140 @@
+\doxysection{boundary\+Data.\+hpp}
+\hypertarget{boundaryData_8hpp_source}{}\label{boundaryData_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp}}
+\mbox{\hyperlink{boundaryData_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00031}00031\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1BoundaryData}{00032}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00035}00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00041}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a101f3b65d6af8463caab01ee954b7692}{00041}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a101f3b65d6af8463caab01ee954b7692}{BoundaryData}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ :\ exec\_(rhs.exec\_),\ value\_(rhs.value\_),\ refValue\_(rhs.refValue\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ valueFraction\_(rhs.valueFraction\_),\ refGrad\_(rhs.refGrad\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ boundaryTypes\_(rhs.boundaryTypes\_),\ offset\_(rhs.offset\_),\ nBoundaries\_(rhs.nBoundaries\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ nBoundaryFaces\_(rhs.nBoundaryFaces\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00046}00046\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a511013efddae95937965d5c4c88983ec}{00053}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a511013efddae95937965d5c4c88983ec}{BoundaryData}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ :\ exec\_(rhs.exec\_),\ value\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.value\_),\ refValue\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.refValue\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ valueFraction\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.valueFraction\_),\ refGrad\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.refGrad\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ boundaryTypes\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.boundaryTypes\_),\ offset\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ rhs.offset\_),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ nBoundaries\_(rhs.nBoundaries\_),\ nBoundaryFaces\_(rhs.nBoundaryFaces\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00058}00058\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a1dea4ea23b79ff66a039026f7700f47f}{00067}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a1dea4ea23b79ff66a039026f7700f47f}{BoundaryData}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}},\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nBoundaryTypes)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}),\ value\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}}),\ refValue\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}}),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ valueFraction\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}}),\ refGrad\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}}),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ boundaryTypes\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ nBoundaryTypes),\ offset\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ nBoundaryTypes\ +\ 1),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ nBoundaries\_(nBoundaryTypes),\ nBoundaryFaces\_(\mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}})}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00072}00072\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a7ddc0754967ebbf2f8ad82c82f58b1d4}{00080}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7ddc0754967ebbf2f8ad82c82f58b1d4}{BoundaryData}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ \textcolor{keyword}{const}\ std::vector<localIdx>\&\ offsets)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData}}(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ offsets.back(),\ static\_cast<\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}>(offsets.size()\ -\/\ 1))}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00082}00082\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ offset\_\ =\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}(\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}},\ offsets);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00084}00084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{00088}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ value\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1BoundaryData_aeaf47d468b8573eae09ef99e990c6f85}{00095}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_aeaf47d468b8573eae09ef99e990c6f85}{value}}()\ \{\ \textcolor{keywordflow}{return}\ value\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00098}\mbox{\hyperlink{classNeoN_1_1BoundaryData_ac9cdc3476319a4dfd80a32e6702850f4}{00098}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ac9cdc3476319a4dfd80a32e6702850f4}{refValue}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ refValue\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00104}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a050115ea5a508720ab6a371c2e2fc40a}{00104}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a050115ea5a508720ab6a371c2e2fc40a}{refValue}}()\ \{\ \textcolor{keywordflow}{return}\ refValue\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00107}\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{00107}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ valueFraction\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00113}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a358cbb227b3b4bbb535de710fb45080b}{00113}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a358cbb227b3b4bbb535de710fb45080b}{valueFraction}}()\ \{\ \textcolor{keywordflow}{return}\ valueFraction\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00116}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{00116}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ refGrad\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00122}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a2f2d825d37a92f9f3de2390a330659cc}{00122}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a2f2d825d37a92f9f3de2390a330659cc}{refGrad}}()\ \{\ \textcolor{keywordflow}{return}\ refGrad\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00128}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a60a1ed15ef5cadb62c0512a285ed8629}{00128}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<int>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a60a1ed15ef5cadb62c0512a285ed8629}{boundaryTypes}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryTypes\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00134}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a7b726391a9629070b2cd2a7fcec29f59}{00134}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a7b726391a9629070b2cd2a7fcec29f59}{offset}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ offset\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00140}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a43dd63100a240f03820bd1dd56329bd3}{00140}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a43dd63100a240f03820bd1dd56329bd3}{nBoundaries}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nBoundaries\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00146}\mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{00146}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ae02127156206dae46c11bf1d84c25a21}{nBoundaryFaces}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nBoundaryFaces\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00147}00147\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00148}\mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{00148}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_aa90fa38463e69059c9c8ad7b717d73cf}{exec}}()\ \{\ \textcolor{keywordflow}{return}\ exec\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00149}00149\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00150}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a756dd1f45f542b2b12efa511871ad8a8}{00150}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a756dd1f45f542b2b12efa511871ad8a8}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00151}00151\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ maybe\ dont\ overwrite\ nBoundaries\ and\ nBoundaryFaces}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ use\ them\ for\ a\ sanity\ check}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ nBoundaries\_\ =\ rhs.nBoundaries\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ nBoundaryFaces\_\ =\ rhs.nBoundaryFaces\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ value\_\ =\ rhs.value\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ refValue\_\ =\ rhs.refValue\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ valueFraction\_\ =\ rhs.valueFraction\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ refGrad\_\ =\ rhs.refGrad\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ boundaryTypes\_\ =\ rhs.boundaryTypes\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ offset\_\ =\ rhs.offset\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00165}00165\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00167}\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad45bbd0eeb993923bf2264fc34a98ebd}{00167}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_ad45bbd0eeb993923bf2264fc34a98ebd}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<T>}}\&\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00168}00168\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ maybe\ dont\ overwrite\ nBoundaries\ and\ nBoundaryFaces}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ use\ them\ for\ a\ sanity\ check}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ nBoundaries\_\ =\ rhs.nBoundaries\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ nBoundaryFaces\_\ =\ rhs.nBoundaryFaces\_;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ value\_\ =\ std::move(rhs.value\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ refValue\_\ =\ std::move(rhs.refValue\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ valueFraction\_\ =\ std::move(rhs.valueFraction\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ refGrad\_\ =\ std::move(rhs.refGrad\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ boundaryTypes\_\ =\ std::move(rhs.boundaryTypes\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00180}00180\ \ \ \ \ \ \ \ \ offset\_\ =\ std::move(rhs.offset\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00182}00182\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00188}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a4611b34b97e77105f477f52beb1c621d}{00188}}\ \ \ \ \ std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a4611b34b97e77105f477f52beb1c621d}{range}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchId)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00189}00189\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{offset\_.\mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{data}}()[patchId],\ offset\_.\mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{data}}()[patchId\ +\ 1]\};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00191}00191\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00193}00193\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00195}00195\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00196}00196\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\ value\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00198}00198\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\ refValue\_;\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00199}00199\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ valueFraction\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00201}00201\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<T>}}\ refGrad\_;\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00202}00202\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<int>}}\ boundaryTypes\_;\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00203}00203\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ offset\_;\ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00204}00204\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nBoundaries\_;\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00205}00205\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nBoundaryFaces\_;\ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00206}00206\ \};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00208}00208\ \}}
+
+\end{DoxyCode}
