@@ -229,7 +229,7 @@ void computeDivImp(
             "boundaryCoefficients"
         );
 
-    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsBoundValues);
+    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
 
     parallelFor(
         exec,
