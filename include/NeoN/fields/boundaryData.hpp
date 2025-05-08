@@ -53,23 +53,11 @@ public:
     BoundaryData(const Executor& exec, const BoundaryData<T>& rhs)
         : exec_(rhs.exec_), value_(exec, rhs.value_), refValue_(exec, rhs.refValue_),
           valueFraction_(exec, rhs.valueFraction_), refGrad_(exec, rhs.refGrad_),
-          boundaryTypes_(exec, rhs.boundaryTypes_), offset_(exec, rhs.offset_),
+          boundaryTypes_(exec, rhs.boundaryTypes_), offset_(rhs.offset_),
           nBoundaries_(rhs.nBoundaries_), nBoundaryFaces_(rhs.nBoundaryFaces_)
     {}
 
 
-    /**
-     * @brief constructor with default initialized Vectors from sizes.
-     * @param exec - The executor
-     * @param nBoundaryFaces - The total number of boundary faces
-     * @param nBoundaryType - The total number of boundary patches
-     */
-    BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
-        : exec_(exec), value_(exec, nBoundaryFaces), refValue_(exec, nBoundaryFaces),
-          valueFraction_(exec, nBoundaryFaces), refGrad_(exec, nBoundaryFaces),
-          boundaryTypes_(exec, nBoundaryTypes), offset_(exec, nBoundaryTypes + 1),
-          nBoundaries_(nBoundaryTypes), nBoundaryFaces_(nBoundaryFaces)
-    {}
 
     /**
      * @brief constructor from a given offsets vector
@@ -78,9 +66,11 @@ public:
      * @param offsets - The total number of boundary faces
      */
     BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
-        : BoundaryData(exec, offsets.back(), static_cast<localIdx>(offsets.size() - 1))
+        : exec_(exec), value_(exec, offsets.back()), refValue_(exec, offsets.back()),
+          valueFraction_(exec, offsets.back()), refGrad_(exec, offsets.back()),
+          boundaryTypes_(exec, offsets.size() - 1), offset_(offsets),
+          nBoundaries_(offsets.size() - 1), nBoundaryFaces_(offsets.back())
     {
-        offset_ = Vector(exec, offsets);
     }
 
 
@@ -131,7 +121,7 @@ public:
      * @brief Get the view storing the offsets of each boundary.
      * @return The view storing the offsets of each boundary.
      */
-    const Vector<localIdx>& offset() const { return offset_; }
+    const std::vector<localIdx>& offset() const { return offset_; }
 
     /**
      * @brief Get the number of boundaries.
@@ -192,17 +182,17 @@ public:
 
 private:
 
-    Executor exec_;                ///< The executor on which the field is stored
-    Vector<T> value_;              ///< The Vector storing the computed values from the
-                                   ///< boundary condition.
-    Vector<T> refValue_;           ///< The Vector storing the Dirichlet boundary values.
-    Vector<scalar> valueFraction_; ///< The Vector storing the fraction of
-                                   ///< the boundary value.
-    Vector<T> refGrad_;            ///< The Vector storing the Neumann boundary values.
-    Vector<int> boundaryTypes_;    ///< The Vector storing the boundary types.
-    Vector<localIdx> offset_;      ///< The Vector storing the offsets of each boundary.
-    localIdx nBoundaries_;         ///< The number of boundaries.
-    localIdx nBoundaryFaces_;      ///< The number of boundary faces.
+    Executor exec_;                     ///< The executor on which the field is stored
+    Vector<T> value_;                   ///< The Vector storing the computed values from the
+                                        ///< boundary condition.
+    Vector<T> refValue_;                ///< The Vector storing the Dirichlet boundary values.
+    Vector<scalar> valueFraction_;      ///< The Vector storing the fraction of
+                                        ///< the boundary value.
+    Vector<T> refGrad_;                 ///< The Vector storing the Neumann boundary values.
+    Vector<int> boundaryTypes_;         ///< The Vector storing the boundary types.
+    std::vector<localIdx> offset_;      ///< The Vector storing the offsets of each boundary.
+    size_t nBoundaries_;                ///< The number of boundaries.
+    size_t nBoundaryFaces_;             ///< The number of boundary faces.
 };
 
 }

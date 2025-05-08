@@ -64,7 +64,14 @@ public:
             tmpsource.view(),
             operatorScaling
         );
-        source += tmpsource;
+        // TODO: scaling with += operator
+        auto tmpsourceView = tmpsource.view();
+        auto sourceView = source.view();
+        NeoN::parallelFor(
+            exec,
+            {0, source.size()},
+            KOKKOS_LAMBDA(const size_t celli) { sourceView[celli] += tmpsourceView[celli]; }
+        );
     }
 
     const Executor& exec() const { return flux_.exec(); }
