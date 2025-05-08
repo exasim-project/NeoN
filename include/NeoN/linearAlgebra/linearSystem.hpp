@@ -31,6 +31,7 @@ struct LinearSystemView
     View<ValueType> rhs;
 };
 
+// TODO move to fvcc
 template<typename ValueType, typename IndexType>
 struct BoundaryCoefficients
 {
@@ -106,6 +107,7 @@ public:
 
     const Executor& exec() const { return matrix_.exec(); }
 
+    // TODO move to fvcc
     [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
 
     [[nodiscard]] Dictionary& auxiliaryCoefficients() { return auxiliaryCoefficients_; }
