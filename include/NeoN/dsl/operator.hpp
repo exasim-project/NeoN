@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2023-2024 NeoN authors
 #pragma once
 
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/dsl/coeff.hpp"
 
 namespace NeoN::dsl
@@ -33,7 +34,6 @@ public:
 
     OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
-
 
     Operator::Type getType() const { return type_; }
 

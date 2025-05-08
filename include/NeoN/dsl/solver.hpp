@@ -8,8 +8,8 @@
 #include <utility>
 #include <concepts>
 
-#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/dsl/expression.hpp"
@@ -17,9 +17,7 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
-
-// TODO move sparsity to linearAlgebra from fvcc
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::dsl
@@ -63,11 +61,8 @@ void solve(
         // solve sparse matrix system
         using ValueType = typename VectorType::ElementType;
 
-        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solution.mesh());
-        auto ls = la::createEmptyLinearSystem<
-            ValueType,
-            localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sparsity);
+        auto sparsity = la::SparsityPattern(solution.mesh());
+        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(solution.mesh(), sparsity);
 
         exp.implicitOperation(ls);
         auto expTmp = exp.explicitOperation(solution.mesh().nCells());
@@ -81,7 +76,7 @@ void solve(
             KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
         );
 
-        auto solver = NeoN::la::Solver(solution.exec(), fvSolution);
+        auto solver = la::Solver(solution.exec(), fvSolution);
         solver.solve(ls, solution.internalVector());
     }
 }

@@ -24,7 +24,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 
     const NeoN::localIdx nCells = 10;
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto sp = finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = la::SparsityPattern {mesh};
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
@@ -85,10 +85,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             }
         }
 
-        auto ls = la::
-            createEmptyLinearSystem<TestType, localIdx, finiteVolume::cellCentred::SparsityPattern>(
-                sp
-            );
+        auto ls = la::createEmptyLinearSystem<TestType, localIdx>(mesh, sp);
 
         SECTION("implicit laplacian operator of constant field on " + execName)
         {

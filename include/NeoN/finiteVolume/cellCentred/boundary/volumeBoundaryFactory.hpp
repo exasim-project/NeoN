@@ -86,10 +86,10 @@ public:
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
-    const Dictionary& attributes() const { return boundaryCorrectionStrategy_->attributes(); }
-
-    Dictionary& attributes() { return boundaryCorrectionStrategy_->attributes(); }
-
+    const BoundaryAttributes& attributes() const
+    {
+        return boundaryCorrectionStrategy_->attributes();
+    }
 
 private:
 

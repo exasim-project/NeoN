@@ -45,11 +45,8 @@ TEST_CASE("LinearSystem")
         auto mesh = create1DUniformMesh(exec, nCells);
 
         // TODO improve structure here
-        auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<
-            scalar,
-            localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
+        auto sp = NeoN::la::SparsityPattern {mesh};
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(mesh, sp);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);

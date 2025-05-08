@@ -8,12 +8,11 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
-
 
 template<typename ValueType>
 class DdtOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
@@ -31,11 +30,14 @@ public:
 
     void read(const Input&) {}
 
+    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+
     std::string getName() const { return "DdtOperator"; }
 
 private:
 
-    const std::shared_ptr<SparsityPattern> sparsityPattern_;
+    // NOTE ddtOperator does not have a FactoryClass
+    const la::SparsityPattern& sparsityPattern_;
 };
 
 

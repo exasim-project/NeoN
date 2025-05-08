@@ -3,44 +3,33 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/segmentedVector.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
-namespace NeoN::finiteVolume::cellCentred
+namespace NeoN::la
 {
 
-SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
-    : mesh_(mesh), rowOffs_(mesh_.exec(), mesh.nCells() + 1, 0),
-      colIdxs_(mesh_.exec(), mesh.nCells() + 2 * mesh.nInternalFaces(), 0),
-      ownerOffset_(mesh_.exec(), mesh_.nInternalFaces(), 0),
-      neighbourOffset_(mesh_.exec(), mesh_.nInternalFaces(), 0),
-      diagOffset_(mesh_.exec(), mesh_.nCells(), 0)
-{
-    update();
-}
-
-const std::shared_ptr<SparsityPattern> SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
+const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
 {
     StencilDataBase& stencilDb = mesh.stencilDB();
     if (!stencilDb.contains("SparsityPattern"))
     {
-        stencilDb.insert(std::string("SparsityPattern"), std::make_shared<SparsityPattern>(mesh));
+        stencilDb.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
     }
-    return stencilDb.get<std::shared_ptr<SparsityPattern>>("SparsityPattern");
+    return stencilDb.get<SparsityPattern>("SparsityPattern");
 }
 
-void SparsityPattern::update()
+void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)
 {
-    const auto exec = mesh_.exec();
-    const auto nCells = mesh_.nCells();
-    const auto faceOwner = mesh_.faceOwner().view();
-    const auto faceNeighbour = mesh_.faceNeighbour().view();
-    // const auto faceFaceCells = mesh_.boundaryMesh().faceCells().view();
-    const auto nInternalFaces = mesh_.nInternalFaces();
+    const auto faceOwner = mesh.faceOwner().view();
+    const auto faceNeiV = mesh.faceNeighbour().view();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto exec = mesh.exec();
+    auto nCells = mesh.nCells();
 
     // start with one to include the diagonal
-    Vector<localIdx> nFacesPerCell(exec, nCells, 1);
+    auto nFacesPerCell = Vector<localIdx>(exec, nCells, 1);
     auto [nFacesPerCellView, neighbourOffsetView, ownerOffsetView, diagOffsetView] =
-        views(nFacesPerCell, neighbourOffset_, ownerOffset_, diagOffset_);
+        views(nFacesPerCell, sp.neighbourOffset(), sp.ownerOffset(), sp.diagOffset());
 
     // accumulate number non-zeros per row
     // only the internalfaces define the sparsity pattern
@@ -51,7 +40,7 @@ void SparsityPattern::update()
         KOKKOS_LAMBDA(const localIdx facei) {
             // hit on performance on serial
             auto owner = faceOwner[facei];
-            auto neighbour = faceNeighbour[facei];
+            auto neighbour = faceNeiV[facei];
 
             Kokkos::atomic_increment(&nFacesPerCellView[owner]);
             Kokkos::atomic_increment(&nFacesPerCellView[neighbour]);
@@ -59,9 +48,9 @@ void SparsityPattern::update()
     );
 
     // get number of total non-zeros
-    segmentsFromIntervals(nFacesPerCell, rowOffs_);
-    auto rowOffs = rowOffs_.view();
-    View<localIdx> sColIdx = colIdxs_.view();
+    auto rowOffs = sp.rowOffs().view();
+    segmentsFromIntervals(nFacesPerCell, sp.rowOffs());
+    auto colIdxV = sp.colIdxs().view();
     fill(nFacesPerCell, 0); // reset nFacesPerCell
 
     // compute the lower triangular part of the matrix
@@ -69,7 +58,7 @@ void SparsityPattern::update()
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
-            auto neighbour = faceNeighbour[facei];
+            auto neighbour = faceNeiV[facei];
             auto owner = faceOwner[facei];
 
             // return the oldValues
@@ -80,7 +69,7 @@ void SparsityPattern::update()
             auto startSegNei = rowOffs[neighbour];
             // neighbour --> current cell
             // colIdx --> needs to be store the owner
-            Kokkos::atomic_assign(&sColIdx[startSegNei + segIdxNei], owner);
+            Kokkos::atomic_assign(&colIdxV[startSegNei + segIdxNei], owner);
         }
     );
 
@@ -89,7 +78,7 @@ void SparsityPattern::update()
         KOKKOS_LAMBDA(const localIdx celli) {
             auto nFaces = nFacesPerCellView[celli];
             diagOffsetView[celli] = static_cast<uint8_t>(nFaces);
-            sColIdx[rowOffs[celli] + nFaces] = celli;
+            colIdxV[rowOffs[celli] + nFaces] = celli;
             return nFaces + 1;
         }
     );
@@ -99,7 +88,7 @@ void SparsityPattern::update()
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
-            auto neighbour = faceNeighbour[facei];
+            auto neighbour = faceNeiV[facei];
             auto owner = faceOwner[facei];
 
             // return the oldValues
@@ -111,11 +100,37 @@ void SparsityPattern::update()
             auto startSegOwn = rowOffs[owner];
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
-            Kokkos::atomic_assign(&sColIdx[startSegOwn + segIdxOwn], neighbour);
+            Kokkos::atomic_assign(&colIdxV[startSegOwn + segIdxOwn], neighbour);
         }
     );
 }
 
+SparsityPattern createSparsity(const UnstructuredMesh& mesh)
+{
+    const auto exec = mesh.exec();
+    const auto nCells = mesh.nCells();
+    const auto nnzs = 2 * mesh.nInternalFaces() + nCells;
+    auto ret = SparsityPattern(exec, nCells, nnzs);
+    updateSparsityPattern(mesh, ret);
+    return ret;
+}
+
+SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
+    : rowOffs_(mesh.exec(), mesh.nCells() + 1, 0),
+      colIdxs_(mesh.exec(), mesh.nCells() + 2 * mesh.nInternalFaces(), 0),
+      ownerOffset_(mesh.exec(), mesh.nInternalFaces(), 0),
+      neighbourOffset_(mesh.exec(), mesh.nInternalFaces(), 0),
+      diagOffset_(mesh.exec(), mesh.nCells(), 0)
+{
+    updateSparsityPattern(mesh, *this);
+}
+
+
+SparsityPattern::SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs)
+    : rowOffs_(exec, nRows + 1, 0), colIdxs_(exec, nnzs, 0),
+      ownerOffset_(exec, (nnzs - nRows) / 2, 0), neighbourOffset_(exec, (nnzs - nRows) / 2, 0),
+      diagOffset_(exec, nRows, 0)
+{}
 
 const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
@@ -123,4 +138,10 @@ const NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() const { return ne
 
 const NeoN::Array<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
 
-} // namespace NeoN::finiteVolume::cellCentred
+NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() { return ownerOffset_; }
+
+NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() { return neighbourOffset_; }
+
+NeoN::Array<uint8_t>& SparsityPattern::diagOffset() { return diagOffset_; }
+
+} // namespace NeoN::la
