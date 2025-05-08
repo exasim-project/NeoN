@@ -6,7 +6,5 @@ jobs:
   to_gitlab:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: git push --mirror https://project_834_bot_6df5c61167fece4c7545b40648a987cb:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
+      - run: git clone --bare https://github.com/exasim-project/neon.git
+      - run: cd neon.git && git push --mirror https://project_834_bot_6df5c61167fece4c7545b40648a987cb:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
