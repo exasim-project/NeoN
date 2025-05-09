@@ -132,6 +132,23 @@ TEST_CASE("Vector Operator Overloads")
             REQUIRE(value == -5.0);
         }
     }
+
+    SECTION("Vector Operator*=" + execName)
+    {
+        NeoN::localIdx size = 10;
+        NeoN::Vector<NeoN::Vec3> a(exec, size);
+        NeoN::fill(a, NeoN::Vec3 {5.0, 10.0, 15.0});
+
+        a *= 2;
+
+        auto hostA = a.copyToHost();
+        for (auto value : hostA.view())
+        {
+            REQUIRE(value[0] == 10.0);
+            REQUIRE(value[1] == 20.0);
+            REQUIRE(value[2] == 30.0);
+        }
+    }
 }
 
 TEST_CASE("Vector Container Operations")
