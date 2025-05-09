@@ -3,7 +3,7 @@
   <compounddef id="coeff_8hpp" kind="file" language="C++">
     <compoundname>coeff.hpp</compoundname>
     <includes refid="scalar_8hpp" local="yes">NeoN/core/primitives/scalar.hpp</includes>
-    <includes refid="vector_8hpp" local="yes">NeoN/core/vector.hpp</includes>
+    <includes refid="vector_8hpp" local="yes">NeoN/core/vector/vector.hpp</includes>
     <includedby refid="operator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/operator.hpp</includedby>
     <includedby refid="spatialOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/spatialOperator.hpp</includedby>
     <includedby refid="temporalOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/temporalOperator.hpp</includedby>
@@ -62,18 +62,6 @@
         <label>info.hpp</label>
         <link refid="info_8hpp"/>
       </node>
-      <node id="27">
-        <label>NeoN/core/parallelAlgorithms.hpp</label>
-        <link refid="parallelAlgorithms_8hpp"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
       <node id="18">
         <label>NeoN/core/primitives/label.hpp</label>
         <link refid="label_8hpp"/>
@@ -96,20 +84,8 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="29">
-        <label>NeoN/core/primitives/vec3.hpp</label>
-        <link refid="vec3_8hpp"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
       <node id="5">
-        <label>NeoN/core/vector.hpp</label>
+        <label>NeoN/core/vector/vector.hpp</label>
         <link refid="vector_8hpp"/>
         <childnode refid="3" relation="include">
         </childnode>
@@ -119,27 +95,29 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
         <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>NeoN/core/view.hpp</label>
-        <link refid="view_8hpp"/>
-        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>NeoN/core/vector/vectorFreeFunctions.hpp</label>
+        <link refid="vectorFreeFunctions_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>NeoN/core/view.hpp</label>
+        <link refid="view_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
         <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
@@ -150,38 +128,6 @@
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="24">
-        <label>NeoN/fields/fieldFreeFunctions.hpp</label>
-        <link refid="fieldFreeFunctions_8hpp"/>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
-      <node id="28">
-        <label>NeoN/fields/fieldTypeDefs.hpp</label>
-        <link refid="fieldTypeDefs_8hpp"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="26">
-        <label>NeoN/helpers/exceptions.hpp</label>
-        <link refid="exceptions_8hpp"/>
-        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -199,10 +145,10 @@
       <node id="9">
         <label>iostream</label>
       </node>
-      <node id="21">
+      <node id="23">
         <label>limits</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>span</label>
       </node>
       <node id="11">
@@ -211,16 +157,13 @@
       <node id="10">
         <label>string</label>
       </node>
-      <node id="25">
-        <label>tuple</label>
-      </node>
-      <node id="23">
+      <node id="21">
         <label>type_traits</label>
       </node>
       <node id="14">
         <label>variant</label>
       </node>
-      <node id="30">
+      <node id="25">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -388,7 +331,7 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="scalar_8hpp" kindref="compound">NeoN/core/primitives/scalar.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vector_8hpp" kindref="compound">NeoN/core/vector.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vector_8hpp" kindref="compound">NeoN/core/vector/vector.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
 <codeline lineno="8" refid="namespaceNeoN_1_1dsl" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl" kindref="compound">NeoN::dsl</ref></highlight></codeline>
 <codeline lineno="9"><highlight class="normal">{</highlight></codeline>
