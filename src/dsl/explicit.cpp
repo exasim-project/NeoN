@@ -26,6 +26,13 @@ laplacian(const fvcc::SurfaceField<NeoN::scalar>& gamma, fvcc::VolumeField<NeoN:
     );
 }
 
+SpatialOperator<Vec3>
+laplacian(const fvcc::SurfaceField<NeoN::scalar>& gamma, fvcc::VolumeField<NeoN::Vec3>& phi)
+{
+    return SpatialOperator<Vec3>(fvcc::LaplacianOperator(dsl::Operator::Type::Explicit, gamma, phi)
+    );
+}
+
 SpatialOperator<scalar>
 source(fvcc::VolumeField<NeoN::scalar>& coeff, fvcc::VolumeField<NeoN::scalar>& phi)
 {
