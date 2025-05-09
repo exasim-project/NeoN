@@ -3,18 +3,10 @@
 Database
 ========
 
-OpenFOAM stores objects in the ``objectRegistry`` and they can be accessed by their name and type.
-In modern software development, best practices emphasize modularity, testability, and loosely coupled components.
-While the ``objectRegistry`` of OpenFOAM offers convenience and simple approach for managing objects, its inherent design conflicts with these principles by:
-
-- Encouraging reliance on a central container.
-- Making the codebase less flexible for testing, refactoring, or adopting new architectural patterns.
-- Introducing potential performance bottlenecks and debugging challenges.
-
-In contrast, NeoN adopts a document-based database approach, where data is stored as a collection of documents.
+NeoN adopts a document-based database approach, where data is stored as a collection of documents.
 Each document consists of a pair of strings and values, validated using a custom validator function to ensure data integrity.
 The validation ensures that the data stored in the documents adheres to predefined rules and formats, preventing errors and inconsistencies in the database.
-The database is not tightly coupled to the ``fvMesh`` or ``Time`` classes, making it more flexible and easier to test.
+The database is a standalone datastructure not tightly coupled to other  classes, making it more flexible and easier to test.
 
 The following class diagram illustrates the relationships between the ``Database``, ``Collection``, and ``Document`` components:
 

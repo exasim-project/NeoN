@@ -25,19 +25,6 @@ The discretized version of the divergence term can be written as
    \int \nabla \phi dV = \int dS\cdot\phi = \sum_f S_f\cdot\phi_f
 
 
-and the internal field part is implemented in OpenFOAM as
-
-.. code-block:: cpp
-
-    forAll(owner, facei)
-    {
-        const GradType Sfssf = Sf[facei]*issf[facei];
-
-        igGrad[owner[facei]] += Sfssf;
-        igGrad[neighbour[facei]] -= Sfssf;
-    }
-
-
 the corresponding NeoN version is implemented as
 
 .. code-block:: cpp

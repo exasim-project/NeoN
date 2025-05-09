@@ -7,7 +7,7 @@
 Boundary Conditions
 ===================
 
-In contrast to OpenFOAM, the boundary conditions do not store the underlying  data but instead modify the data provided by ``Field``.  A basic NoOp implementation is provided by  the ``VolumeBoundary`` and ``SurfaceBoundary`` classes.
+In NeoN the boundary conditions do not store the underlying  data but instead modify the data provided by ``Field``.  A basic NoOp implementation is provided by  the ``VolumeBoundary`` and ``SurfaceBoundary`` classes.
 To apply boundary conditions for both Surface and Volume Vectors, a virtual base class member function ``correctBoundaryConditions`` is used. The member acts as an interface and is responsible for updating the actual boundary data contained within an ``InternalVector`` (an attribute of the ``Field``).
 
 .. doxygenclass:: NeoN::finiteVolume::cellCentred::VolumeBoundary

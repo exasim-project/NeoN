@@ -14,7 +14,7 @@ namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \item 
 concept \mbox{\hyperlink{conceptNeoN_1_1parallelForKernel}{Neo\+N\+::parallel\+For\+Kernel}}
 \item 
-concept \mbox{\hyperlink{conceptNeoN_1_1parallelForVectorKernel}{Neo\+N\+::parallel\+For\+Vector\+Kernel}}
+concept \mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{Neo\+N\+::parallel\+For\+Container\+Kernel}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -23,9 +23,9 @@ concept \mbox{\hyperlink{conceptNeoN_1_1parallelForVectorKernel}{Neo\+N\+::paral
 \item 
 {\footnotesize template$<$parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a44f27717687a4b73cc58ec9918530f05}{Neo\+N\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Value\+Type , parallel\+For\+Vector\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a8102905ff0f590304600227d4fb072bf}{Neo\+N\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_ad159397b740c7143932f44f43cf04cbf}{Neo\+N\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, Cont\+Type$<$ Value\+Type $>$ \&container, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
-{\footnotesize template$<$typename Value\+Type , parallel\+For\+Vector\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a8df765eb52ac2f842d3a7ff423638e5d}{Neo\+N\+::parallel\+For}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a998b4b2db7ab2fb275c20a76cf323a49}{Neo\+N\+::parallel\+For}} (Cont\+Type$<$ Value\+Type $>$ \&cont, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
 {\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a9d445616a96928bbb015212516721784}{Neo\+N\+::parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, T \&value)
 \item 

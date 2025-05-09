@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['oldtimecollection_2ehpp_0',['oldTimeCollection.hpp',['../oldTimeCollection_8hpp.html',1,'']]],
-  ['operator_2ehpp_1',['operator.hpp',['../operator_8hpp.html',1,'']]],
-  ['operators_2ehpp_2',['operators.hpp',['../operators_8hpp.html',1,'']]]
+  ['label_2ehpp_0',['label.hpp',['../label_8hpp.html',1,'']]],
+  ['laplacianoperator_2ehpp_1',['laplacianOperator.hpp',['../laplacianOperator_8hpp.html',1,'']]],
+  ['linear_2ehpp_2',['linear.hpp',['../linear_8hpp.html',1,'']]],
+  ['linearsystem_2ehpp_3',['linearSystem.hpp',['../linearSystem_8hpp.html',1,'']]]
 ];

@@ -3,6 +3,7 @@
   <compounddef id="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kind="namespace" language="C++">
     <compoundname>NeoN::finiteVolume::cellCentred</compoundname>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme" prot="public">NeoN::finiteVolume::cellCentred::BasicGeometryScheme</innerclass>
+    <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes" prot="public">NeoN::finiteVolume::cellCentred::BoundaryAttributes</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" prot="public">NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil" prot="public">NeoN::finiteVolume::cellCentred::CellToFaceStencil</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector" prot="public">NeoN::finiteVolume::cellCentred::CreateFromExistingVector</innerclass>
@@ -10,6 +11,7 @@
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator" prot="public">NeoN::finiteVolume::cellCentred::DivOperator</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory" prot="public">NeoN::finiteVolume::cellCentred::DivOperatorFactory</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin" prot="public">NeoN::finiteVolume::cellCentred::DomainMixin</innerclass>
+    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression" prot="public">NeoN::finiteVolume::cellCentred::Expression</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" prot="public">NeoN::finiteVolume::cellCentred::FaceNormalGradient</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory" prot="public">NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv" prot="public">NeoN::finiteVolume::cellCentred::GaussGreenDiv</innerclass>
@@ -244,6 +246,37 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="41" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="41" bodyend="51"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad79364c9fe8d6543256bec59bdae00a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+          <param>
+            <type>typename IndexType</type>
+            <defval>localIdx</defval>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt;</type>
+        <definition>VolumeField&lt; ValueType &gt; NeoN::finiteVolume::cellCentred::operator&amp;</definition>
+        <argsstring>(const Expression&lt; ValueType, IndexType &gt; expr, const VolumeField&lt; ValueType &gt; &amp;x)</argsstring>
+        <name>operator&amp;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::operator&amp;</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType, IndexType &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp" line="193" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/dsl/expression.hpp" bodystart="193" bodyend="200"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad5c0aa904c7545c5c4ba1b1a833261c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -341,6 +374,37 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" line="31" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" declline="31" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a097f320c9bd5c29ce0f05c1de7ea047f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::computeUpwindInterpolationWeights</definition>
+        <argsstring>(const SurfaceField&lt; scalar &gt; &amp;flux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; scalar &gt; &amp;weights)</argsstring>
+        <name>computeUpwindInterpolationWeights</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::computeUpwindInterpolationWeights</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>flux</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" line="40" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" declline="40" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aa9517eb3622009c5522170f69d265c59" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -419,7 +483,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="17" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" declline="17" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a7a3a44ea47cbf3acf755e508dfe9b504" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5fb84558accffe6cd22b728664f8f4d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -427,7 +491,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeDivImp</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling, const SparsityPattern &amp;sparsityPattern)</argsstring>
+        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const SurfaceInterpolation&lt; ValueType &gt; &amp;surfInterp, const dsl::Coeff operatorScaling, const SparsityPattern &amp;sparsityPattern)</argsstring>
         <name>computeDivImp</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeDivImp</qualifiedname>
         <param>
@@ -441,6 +505,10 @@
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
           <declname>phi</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>surfInterp</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>

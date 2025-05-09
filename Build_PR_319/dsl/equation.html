@@ -285,30 +285,12 @@
 Its core responsibility lies in the answering of the following questions:</p>
 <blockquote>
 <div><ul class="simple">
-<li><dl class="simple">
-<dt>How to discretize the spatial terms?</dt><dd><ul>
-<li><p>In OpenFOAM this information is provided in <strong>fvSchemes</strong></p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>How to integrate the system in time?</dt><dd><ul>
-<li><p>In OpenFOAM this information is provided in <strong>fvSchemes</strong></p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>How to solve the system?</dt><dd><ul>
-<li><p>In OpenFOAM this information is provided in <strong>fvSolution</strong></p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p>How to discretize the spatial terms?</p></li>
+<li><p>How to integrate the system in time?</p></li>
+<li><p>How to solve the system?</p></li>
 </ul>
 </div></blockquote>
-<p>The main difference between NeoN and OpenFOAM is that the DSL is evaluated lazily, i.e. evaluation is not performed on construction by default.
+<p>A core feature of NeoN is that the DSL is evaluated lazily, i.e. evaluation is not performed on construction by default.
 Since, the evaluation is not tied to the construction but rather delayed, other numerical integration strategies (e.g. RK methods or even sub-stepping within an the equation) are possible.</p>
 <p>To implement lazy evaluation, the <cite>Expression</cite> stores 3 vectors:</p>
 <pre  class="mermaid">
