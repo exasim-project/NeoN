@@ -13,10 +13,12 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-struct Attributes
+/* collects attributes of a boundary for simple queries
+ *
+ */
+struct BoundaryAttributes
 {
-
-    bool assignable;
+    bool assignable; ///< whether values can be assigned to the boundary patch
     // bool fixesValue;
 };
 
@@ -35,7 +37,7 @@ public:
         const UnstructuredMesh& mesh,
         [[maybe_unused]] const Dictionary& dict,
         localIdx patchID,
-        Attributes attributes
+        BoundaryAttributes attributes
     )
         : BoundaryPatchMixin(mesh, patchID), attributes_(attributes) {};
 
@@ -45,11 +47,11 @@ public:
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
 
-    Attributes attributes() const { return attributes_; }
+    BoundaryAttributes attributes() const { return attributes_; }
 
 protected:
 
-    Attributes attributes_; ///< The attributes of the patch
+    BoundaryAttributes attributes_; ///< The attributes of the patch
 };
 
 
