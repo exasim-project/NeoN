@@ -13,6 +13,15 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+/* collects attributes of a boundary for simple queries
+ *
+ */
+struct BoundaryAttributes
+{
+    bool assignable; ///< whether values can be assigned to the boundary patch
+    // bool fixesValue;
+};
+
 template<typename ValueType>
 class VolumeBoundaryFactory :
     public NeoN::RuntimeSelectionFactory<
@@ -25,15 +34,24 @@ public:
     static std::string name() { return "VolumeBoundaryFactory"; }
 
     VolumeBoundaryFactory(
-        const UnstructuredMesh& mesh, [[maybe_unused]] const Dictionary&, localIdx patchID
+        const UnstructuredMesh& mesh,
+        [[maybe_unused]] const Dictionary& dict,
+        localIdx patchID,
+        BoundaryAttributes attributes
     )
-        : BoundaryPatchMixin(mesh, patchID) {};
+        : BoundaryPatchMixin(mesh, patchID), attributes_(attributes) {};
 
     virtual ~VolumeBoundaryFactory() = default;
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
+
+    BoundaryAttributes attributes() const { return attributes_; }
+
+protected:
+
+    BoundaryAttributes attributes_; ///< The attributes of the patch
 };
 
 
@@ -67,6 +85,11 @@ public:
     {
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
+
+    const Dictionary& attributes() const { return boundaryCorrectionStrategy_->attributes(); }
+
+    Dictionary& attributes() { return boundaryCorrectionStrategy_->attributes(); }
+
 
 private:
 

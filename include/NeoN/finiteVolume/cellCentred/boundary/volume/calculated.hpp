@@ -21,7 +21,7 @@ public:
     using CalculatedType = Calculated<ValueType>;
 
     Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID)
+        : Base(mesh, dict, patchID, {.assignable = false})
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}

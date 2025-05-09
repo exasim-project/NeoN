@@ -190,9 +190,7 @@ public:
      */
     SegmentedVector<ValueType, IndexType> copyToHost() const
     {
-        SegmentedVector<ValueType, IndexType> result(
-            values_.copyToHost(), segments_.copyToHost()
-        );
+        SegmentedVector<ValueType, IndexType> result(values_.copyToHost(), segments_.copyToHost());
         return result;
     }
 

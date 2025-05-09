@@ -101,19 +101,14 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
-    // FIXME: what if order changes
     auto [values, colIdxs, rowOffs] = ls.matrix().view();
-
-    // const auto rowOffs = ls.matrix().rowOffs();
-    // const auto colIdxs = ls.matrix().colIdxs();
-    // auto values = ls.matrix().values().view();
     auto rhs = ls.rhs().view();
 
     parallelFor(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
-            scalar flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
+            auto flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
 
             auto own = owner[facei];
             auto nei = neighbour[facei];
@@ -122,8 +117,8 @@ void computeLaplacianImpl(
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
-            scalar operatorScalingNei = operatorScaling[nei];
-            scalar operatorScalingOwn = operatorScaling[own];
+            auto operatorScalingNei = operatorScaling[nei];
+            auto operatorScalingOwn = operatorScaling[own];
 
             // scalar valueNei = (1 - weight) * flux;
             values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
@@ -132,13 +127,13 @@ void computeLaplacianImpl(
             );
 
             // upper triangular part
-
             // add owner contribution lower
             values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
             );
-        }
+        },
+        "computeLocalLaplacianCoefficients"
     );
 
     auto [refGradient, value, valueFraction, refValue] = views(
@@ -147,6 +142,13 @@ void computeLaplacianImpl(
         phi.boundaryData().valueFraction(),
         phi.boundaryData().refValue()
     );
+
+    auto& bcCoeffs =
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
+            "boundaryCoefficients"
+        );
+
+    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
 
     parallelFor(
         exec,
@@ -159,22 +161,26 @@ void computeLaplacianImpl(
             auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
-            values[rowOwnStart + diagOffs[own]] -= flux * operatorScalingOwn
-                                                 * valueFraction[bcfacei] * deltaCoeffs[facei]
-                                                 * one<ValueType>();
-            rhs[own] -=
-                (flux * operatorScalingOwn
-                 * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
-                    + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]));
-        }
+            ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
+                               * deltaCoeffs[facei] * one<ValueType>();
+            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+            boundValues[bcfacei] = valueMat;
+
+            ValueType valueRhs = flux * operatorScalingOwn
+                               * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
+                                  + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
+            Kokkos::atomic_sub(&rhs[own], valueRhs);
+            rhsBoundValues[bcfacei] = valueRhs;
+        },
+        "computeInterfaceLaplacianCoefficients"
     );
 }
 
-#define NF_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
+#define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
         TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
-NF_DECLARE_COMPUTE_IMP_LAP(scalar);
-NF_DECLARE_COMPUTE_IMP_LAP(Vec3);
+NN_DECLARE_COMPUTE_IMP_LAP(scalar);
+NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
 
 };
