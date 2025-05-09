@@ -52,11 +52,9 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 public:
 
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
-    {
-        this->attributes()["assignable"] = false;
-        this->attributes()["fixesValue"] = true;
-    }
+        : Base(mesh, dict, patchID, {.assignable = false}),
+          fixedValue_(dict.get<ValueType>("fixedValue"))
+    {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
