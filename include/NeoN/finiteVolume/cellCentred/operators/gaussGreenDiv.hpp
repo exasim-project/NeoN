@@ -67,7 +67,9 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        computeDivImp(ls, faceFlux, phi,surfaceInterpolation_, operatorScaling, *sparsityPattern_.get());
+        computeDivImp(
+            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, *sparsityPattern_.get()
+        );
     };
 
     virtual void

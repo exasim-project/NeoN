@@ -93,20 +93,15 @@ void computeUpwindInterpolationWeights(
 }
 
 #define NF_DECLARE_COMPUTE_IMP_UPW_INT(TYPENAME)                                                   \
-    template void computeUpwindInterpolation<TYPENAME>(                                            \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        SurfaceField<TYPENAME>&                                                                    \
-    )
+    template void computeUpwindInterpolation<                                                      \
+        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<scalar>&, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_UPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT(Vec3);
 
 #define NF_DECLARE_COMPUTE_IMP_UPW_INT_W(TYPENAME)                                                 \
-    template void computeUpwindInterpolationWeights<TYPENAME>(                                     \
-        const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, SurfaceField<scalar>&           \
-    )
+    template void computeUpwindInterpolationWeights<                                               \
+        TYPENAME>(const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, SurfaceField<scalar>&)
 
 NF_DECLARE_COMPUTE_IMP_UPW_INT_W(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT_W(Vec3);

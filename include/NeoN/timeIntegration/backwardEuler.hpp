@@ -53,7 +53,7 @@ public:
             localIdx,
             finiteVolume::cellCentred::SparsityPattern>(sparsity);
 
-        eqn.implicitOperation(ls); // add spatial operators
+        eqn.implicitOperation(ls);        // add spatial operators
         eqn.implicitOperation(ls, t, dt); // add temporal operators
 
         auto solver = NeoN::la::Solver(solutionVector.exec(), this->solutionDict_);
