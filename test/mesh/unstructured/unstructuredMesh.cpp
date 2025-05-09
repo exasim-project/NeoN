@@ -22,16 +22,6 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nBoundaries() == 4);
     }
 
-    // FIXME this should be a test Field
-    // SECTION("Can create domainVector from mesh " + execName)
-    // {
-
-    //     NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
-    //     NeoN::Field<NeoN::scalar> domainVector(exec, mesh.);
-
-    //     REQUIRE(domainVector.boundaryData().offset().size() == 5);
-    // }
-
     SECTION("Can create a 1D uniform mesh" + execName)
     {
         NeoN::localIdx nCells = 4;
