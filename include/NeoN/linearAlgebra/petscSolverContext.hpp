@@ -31,8 +31,11 @@ class petscSolverContext
     Executor exec_;
     Mat Amat_;
     KSP ksp_;
+    PC pc_;
 
     Vec sol_, rhs_;
+
+    Dictionary solverDict_;
 
 public:
 
@@ -40,9 +43,9 @@ public:
     // Constructors
 
     //- Default construct
-    petscSolverContext(Executor exec)
-        : init_(false), updated_(false), exec_(exec), Amat_(nullptr), sol_(nullptr), rhs_(nullptr),
-          ksp_(nullptr)
+    petscSolverContext(Executor exec, Dictionary solverDict)
+        : init_(false), updated_(false), exec_(exec), solverDict_(solverDict), Amat_(nullptr),
+          sol_(nullptr), rhs_(nullptr), ksp_(nullptr), pc_(nullptr)
     {}
 
 
@@ -62,12 +65,15 @@ public:
     bool initialized() const noexcept { return init_; }
 
 
-    //- Return value of initialized
+    //- Return value of updated
     bool updated() const noexcept { return updated_; }
 
     //- Create auxiliary rows for calculation purposes
     void initialize(const LinearSystem<scalar, localIdx>& sys)
     {
+
+        setOption(solverDict_);
+
         std::size_t size = sys.matrix().values().size();
         std::size_t nrows = sys.rhs().size();
         PetscInt colIdx[size];
@@ -143,10 +149,44 @@ public:
 
 
         init_ = true;
+
+        // PetscOptions options;
+        // PetscOptionsCreate(&options);
+        // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
+        PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
     void update() { NF_ERROR_EXIT("Mesh changes not supported"); }
+
+    void setOption(Dictionary solverDict_)
+    {
+
+        NeoN::Dictionary subDict = solverDict_.subDict("options");
+
+        for (auto key : solverDict_.subDict("options").keys())
+        {
+
+            std::string petscOptionKey = std::string("-") + key;
+            std::string petscOptionVal = subDict.get<std::string>(key);
+            PetscOptionsSetValue(NULL, petscOptionKey.c_str(), petscOptionVal.c_str());
+        }
+    }
+
+    std::string getOption(std::string optionName)
+    {
+        char optionValue[PETSC_MAX_PATH_LEN];
+        PetscBool set;
+        PetscOptionsGetString(
+            NULL, NULL, optionName.c_str(), optionValue, sizeof(optionValue), &set
+        );
+
+        std::string optionValueStr(optionValue);
+
+        // TODO: Decide what to do (error or warning) if set is FALSE
+
+        return optionValueStr;
+    }
 
     [[nodiscard]] Mat& AMat() { return Amat_; }
 
@@ -155,6 +195,8 @@ public:
     [[nodiscard]] Vec& sol() { return sol_; }
 
     [[nodiscard]] KSP& ksp() { return ksp_; }
+
+    [[nodiscard]] PC& pc() { return pc_; }
 };
 
 
