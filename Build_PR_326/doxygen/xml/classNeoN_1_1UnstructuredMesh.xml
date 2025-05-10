@@ -1,0 +1,770 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1UnstructuredMesh" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::UnstructuredMesh</compoundname>
+    <includes refid="unstructuredMesh_8hpp" local="no">unstructuredMesh.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a49453205c310748c4be6aa47b2ad8508" prot="private" static="no" mutable="no">
+        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <definition>const Executor NeoN::UnstructuredMesh::exec_</definition>
+        <argsstring></argsstring>
+        <name>exec_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::exec_</qualifiedname>
+        <briefdescription>
+<para>Executor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The executor is used to run parallel operations on the mesh. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="187" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1ae4d4c52dae0c0557db24483b5024ce86" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+        <definition>vectorVector NeoN::UnstructuredMesh::points_</definition>
+        <argsstring></argsstring>
+        <name>points_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::points_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of mesh points. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="192" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1aa95201f8644449359b60dacf86824142" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref></type>
+        <definition>scalarVector NeoN::UnstructuredMesh::cellVolumes_</definition>
+        <argsstring></argsstring>
+        <name>cellVolumes_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::cellVolumes_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of cell volumes in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="197" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a30c5b511c790b7cb5036082e4eb22f39" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+        <definition>vectorVector NeoN::UnstructuredMesh::cellCentres_</definition>
+        <argsstring></argsstring>
+        <name>cellCentres_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::cellCentres_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of cell centres in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="202" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a57a82bc76a951378906a3577d112ce06" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+        <definition>vectorVector NeoN::UnstructuredMesh::faceAreas_</definition>
+        <argsstring></argsstring>
+        <name>faceAreas_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceAreas_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of area face normals. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The area face normals are defined as the normal vector to the face with magnitude equal to the face area. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="210" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1acbb7d92ba62b6d83f9746042d5c88e53" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+        <definition>vectorVector NeoN::UnstructuredMesh::faceCentres_</definition>
+        <argsstring></argsstring>
+        <name>faceCentres_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceCentres_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of face centres. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="215" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1abbb9b0031788f0b54f86d8ff42dd83d1" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref></type>
+        <definition>scalarVector NeoN::UnstructuredMesh::magFaceAreas_</definition>
+        <argsstring></argsstring>
+        <name>magFaceAreas_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::magFaceAreas_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of magnitudes of face areas. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="220" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a79f2232d33db29303d1aa9bdef6d3da6" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
+        <definition>labelVector NeoN::UnstructuredMesh::faceOwner_</definition>
+        <argsstring></argsstring>
+        <name>faceOwner_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceOwner_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of face owner cells. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="225" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a17c65c40d0fd009f8d94857118d2a175" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
+        <definition>labelVector NeoN::UnstructuredMesh::faceNeighbour_</definition>
+        <argsstring></argsstring>
+        <name>faceNeighbour_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceNeighbour_</qualifiedname>
+        <briefdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of face neighbour cells. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="230" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="230" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a0cdd931650895b9ccb761b629c284669" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nCells_</definition>
+        <argsstring></argsstring>
+        <name>nCells_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nCells_</qualifiedname>
+        <briefdescription>
+<para>Number of cells in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="235" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a259aec376db92a16ed9fb4bb1cc00c72" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nInternalFaces_</definition>
+        <argsstring></argsstring>
+        <name>nInternalFaces_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nInternalFaces_</qualifiedname>
+        <briefdescription>
+<para>Number of internal faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="240" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a6db8cbce7985db0f4c01c62bb2f09b61" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nBoundaryFaces_</definition>
+        <argsstring></argsstring>
+        <name>nBoundaryFaces_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nBoundaryFaces_</qualifiedname>
+        <briefdescription>
+<para>Number of boundary faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="245" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="245" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a282c4c6a0948662038e490ab49dbfa49" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nBoundaries_</definition>
+        <argsstring></argsstring>
+        <name>nBoundaries_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nBoundaries_</qualifiedname>
+        <briefdescription>
+<para>Number of boundaries in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="250" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="250" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a5aa660ae80050d38d0e8f704cf755b87" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nFaces_</definition>
+        <argsstring></argsstring>
+        <name>nFaces_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nFaces_</qualifiedname>
+        <briefdescription>
+<para>Number of faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="255" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="255" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a548fbb0d3201bc95519c344c5133dc62" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref></type>
+        <definition>BoundaryMesh NeoN::UnstructuredMesh::boundaryMesh_</definition>
+        <argsstring></argsstring>
+        <name>boundaryMesh_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::boundaryMesh_</qualifiedname>
+        <briefdescription>
+<para>Boundary mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The boundary mesh is a collection of boundary patches that are used to define boundary conditions in the mesh. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="263" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="263" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1ad8370b1ce657e54da3807f4285e842ee" prot="private" static="no" mutable="yes">
+        <type><ref refid="classNeoN_1_1StencilDataBase" kindref="compound">StencilDataBase</ref></type>
+        <definition>StencilDataBase NeoN::UnstructuredMesh::stencilDataBase_</definition>
+        <argsstring></argsstring>
+        <name>stencilDataBase_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::stencilDataBase_</qualifiedname>
+        <briefdescription>
+<para>Stencil data base. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The stencil data base is used to register stencils. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="270" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="270" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1af9b03550b17abcd5b2bbdd3a01946eb8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::UnstructuredMesh::UnstructuredMesh</definition>
+        <argsstring>(vectorVector points, scalarVector cellVolumes, vectorVector cellCentres, vectorVector faceAreas, vectorVector faceCentres, scalarVector magFaceAreas, labelVector faceOwner, labelVector faceNeighbour, localIdx nCells, localIdx nInternalFaces, localIdx nBoundaryFaces, localIdx nBoundaries, localIdx nFaces, BoundaryMesh boundaryMesh)</argsstring>
+        <name>UnstructuredMesh</name>
+        <qualifiedname>NeoN::UnstructuredMesh::UnstructuredMesh</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref></type>
+          <declname>cellVolumes</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+          <declname>cellCentres</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+          <declname>faceAreas</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
+          <declname>faceCentres</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref></type>
+          <declname>magFaceAreas</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
+          <declname>faceOwner</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
+          <declname>faceNeighbour</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBoundaryFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBoundaries</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref></type>
+          <declname>boundaryMesh</declname>
+        </param>
+        <briefdescription>
+<para>Constructor for the <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of mesh points. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cellVolumes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of cell volumes in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cellCentres</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of cell centres in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faceAreas</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of area face normals. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faceCentres</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of face centres. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>magFaceAreas</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of magnitudes of face areas. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faceOwner</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of face owner cells. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faceNeighbour</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field of face neighbour cells. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nCells</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of cells in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nInternalFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of internal faces in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nBoundaryFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of boundary faces in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nBoundaries</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of boundaries in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of faces in the mesh. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>boundaryMesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The boundary mesh. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="51" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1aeac3925896acb6ab64697e80fb15fb72" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref> &amp;</type>
+        <definition>const vectorVector &amp; NeoN::UnstructuredMesh::points</definition>
+        <argsstring>() const</argsstring>
+        <name>points</name>
+        <qualifiedname>NeoN::UnstructuredMesh::points</qualifiedname>
+        <briefdescription>
+<para>Get the field of mesh points. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of mesh points. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="73" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a2bfdd3e60fd2916c0e35beebe83d6ee7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref> &amp;</type>
+        <definition>const scalarVector &amp; NeoN::UnstructuredMesh::cellVolumes</definition>
+        <argsstring>() const</argsstring>
+        <name>cellVolumes</name>
+        <qualifiedname>NeoN::UnstructuredMesh::cellVolumes</qualifiedname>
+        <briefdescription>
+<para>Get the field of cell volumes in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of cell volumes in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="80" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1aba1e910f6080643622d1efafc1f7d15b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref> &amp;</type>
+        <definition>const vectorVector &amp; NeoN::UnstructuredMesh::cellCentres</definition>
+        <argsstring>() const</argsstring>
+        <name>cellCentres</name>
+        <qualifiedname>NeoN::UnstructuredMesh::cellCentres</qualifiedname>
+        <briefdescription>
+<para>Get the field of cell centres in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of cell centres in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="87" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a4d71ef9f6fc6ac31f5555203292ef46e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref> &amp;</type>
+        <definition>const vectorVector &amp; NeoN::UnstructuredMesh::faceCentres</definition>
+        <argsstring>() const</argsstring>
+        <name>faceCentres</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceCentres</qualifiedname>
+        <briefdescription>
+<para>Get the field of face centres. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of face centres. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="94" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a7fd88e2fada64ca430133019f4ce7ce5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref> &amp;</type>
+        <definition>const vectorVector &amp; NeoN::UnstructuredMesh::faceAreas</definition>
+        <argsstring>() const</argsstring>
+        <name>faceAreas</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceAreas</qualifiedname>
+        <briefdescription>
+<para>Get the field of area face normals. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of area face normals. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="101" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a369ce0f5c16db0d73adced648021de39" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1ad4b93cc6d70df72f518f4b16fb19810f" kindref="member">scalarVector</ref> &amp;</type>
+        <definition>const scalarVector &amp; NeoN::UnstructuredMesh::magFaceAreas</definition>
+        <argsstring>() const</argsstring>
+        <name>magFaceAreas</name>
+        <qualifiedname>NeoN::UnstructuredMesh::magFaceAreas</qualifiedname>
+        <briefdescription>
+<para>Get the field of magnitudes of face areas. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of magnitudes of face areas. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="108" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1ad3274dbaf58fe30d569dea6a5f366274" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref> &amp;</type>
+        <definition>const labelVector &amp; NeoN::UnstructuredMesh::faceOwner</definition>
+        <argsstring>() const</argsstring>
+        <name>faceOwner</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceOwner</qualifiedname>
+        <briefdescription>
+<para>Get the field of face owner cells. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of face owner cells. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="115" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1aad1fe630accee6b96de2f76c1865acfa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref> &amp;</type>
+        <definition>const labelVector &amp; NeoN::UnstructuredMesh::faceNeighbour</definition>
+        <argsstring>() const</argsstring>
+        <name>faceNeighbour</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceNeighbour</qualifiedname>
+        <briefdescription>
+<para>Get the field of face neighbour cells. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The field of face neighbour cells. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="122" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a0e2245854aad317731034ac549956117" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nCells</definition>
+        <argsstring>() const</argsstring>
+        <name>nCells</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nCells</qualifiedname>
+        <briefdescription>
+<para>Get the number of cells in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of cells in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="129" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a56a4ae9f82c769e4ce85e2d7804f2b42" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nInternalFaces</definition>
+        <argsstring>() const</argsstring>
+        <name>nInternalFaces</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nInternalFaces</qualifiedname>
+        <briefdescription>
+<para>Get the number of internal faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of internal faces in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="136" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a2cc40de21a651f18026027a53f13ce24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nBoundaryFaces</definition>
+        <argsstring>() const</argsstring>
+        <name>nBoundaryFaces</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nBoundaryFaces</qualifiedname>
+        <briefdescription>
+<para>Get the number of boundary faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of boundary faces in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="143" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nBoundaries</definition>
+        <argsstring>() const</argsstring>
+        <name>nBoundaries</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nBoundaries</qualifiedname>
+        <briefdescription>
+<para>Get the number of boundaries in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of boundaries in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="150" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1aded98774706aee5d5c0fdd81147f634e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::UnstructuredMesh::nFaces</definition>
+        <argsstring>() const</argsstring>
+        <name>nFaces</name>
+        <qualifiedname>NeoN::UnstructuredMesh::nFaces</qualifiedname>
+        <briefdescription>
+<para>Get the number of faces in the mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of faces in the mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="157" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref> &amp;</type>
+        <definition>const BoundaryMesh &amp; NeoN::UnstructuredMesh::boundaryMesh</definition>
+        <argsstring>() const</argsstring>
+        <name>boundaryMesh</name>
+        <qualifiedname>NeoN::UnstructuredMesh::boundaryMesh</qualifiedname>
+        <briefdescription>
+<para>Get the boundary mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The boundary mesh. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="164" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a795bffed982d1efc2b407ba52cc6b286" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1StencilDataBase" kindref="compound">StencilDataBase</ref> &amp;</type>
+        <definition>StencilDataBase &amp; NeoN::UnstructuredMesh::stencilDB</definition>
+        <argsstring>() const</argsstring>
+        <name>stencilDB</name>
+        <qualifiedname>NeoN::UnstructuredMesh::stencilDB</qualifiedname>
+        <briefdescription>
+<para>Get the stencil data base. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The stencil data base. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="171" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a91f561927648e0d9ca68cdde17feafc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+        <definition>const Executor &amp; NeoN::UnstructuredMesh::exec</definition>
+        <argsstring>() const</argsstring>
+        <name>exec</name>
+        <qualifiedname>NeoN::UnstructuredMesh::exec</qualifiedname>
+        <briefdescription>
+<para>Get the executor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The executor. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="178" column="20"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents an unstructured mesh in <ref refid="namespaceNeoN" kindref="compound">NeoN</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> class stores the data and provides access to the properties of an unstructured mesh. It contains information such as mesh points, cell volumes, cell centres, face areas, face centres, face owner cells, face neighbour cells, and boundary information. It also provides methods to retrieve the number of cells, internal faces, boundary faces, boundaries, and faces in the mesh. Additionally, it includes a boundary mesh and a stencil data base. The executor is used to run parallel operations on the mesh. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="29" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="30" bodyend="271"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>boundaryMesh</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a548fbb0d3201bc95519c344c5133dc62" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>boundaryMesh_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1aba1e910f6080643622d1efafc1f7d15b" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>cellCentres</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a30c5b511c790b7cb5036082e4eb22f39" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>cellCentres_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a2bfdd3e60fd2916c0e35beebe83d6ee7" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>cellVolumes</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1aa95201f8644449359b60dacf86824142" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>cellVolumes_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a91f561927648e0d9ca68cdde17feafc3" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>exec</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a49453205c310748c4be6aa47b2ad8508" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>exec_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a7fd88e2fada64ca430133019f4ce7ce5" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceAreas</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a57a82bc76a951378906a3577d112ce06" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceAreas_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a4d71ef9f6fc6ac31f5555203292ef46e" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceCentres</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1acbb7d92ba62b6d83f9746042d5c88e53" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceCentres_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1aad1fe630accee6b96de2f76c1865acfa" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceNeighbour</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a17c65c40d0fd009f8d94857118d2a175" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceNeighbour_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1ad3274dbaf58fe30d569dea6a5f366274" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwner</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a79f2232d33db29303d1aa9bdef6d3da6" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwner_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a369ce0f5c16db0d73adced648021de39" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>magFaceAreas</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1abbb9b0031788f0b54f86d8ff42dd83d1" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>magFaceAreas_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaries</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a282c4c6a0948662038e490ab49dbfa49" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaries_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a2cc40de21a651f18026027a53f13ce24" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaryFaces</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a6db8cbce7985db0f4c01c62bb2f09b61" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaryFaces_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a0e2245854aad317731034ac549956117" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nCells</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a0cdd931650895b9ccb761b629c284669" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nCells_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1aded98774706aee5d5c0fdd81147f634e" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nFaces</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a5aa660ae80050d38d0e8f704cf755b87" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nFaces_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a56a4ae9f82c769e4ce85e2d7804f2b42" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nInternalFaces</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a259aec376db92a16ed9fb4bb1cc00c72" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nInternalFaces_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1aeac3925896acb6ab64697e80fb15fb72" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>points</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1ae4d4c52dae0c0557db24483b5024ce86" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>points_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1ad8370b1ce657e54da3807f4285e842ee" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>stencilDataBase_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a795bffed982d1efc2b407ba52cc6b286" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>stencilDB</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1af9b03550b17abcd5b2bbdd3a01946eb8" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>UnstructuredMesh</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
