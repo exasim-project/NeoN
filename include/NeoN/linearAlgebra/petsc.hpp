@@ -68,9 +68,10 @@ public:
 
     static std::string schema() { return "none"; }
 
+    // TODO why use a smart pointer here?
     virtual std::unique_ptr<SolverFactory> clone() const final
     {
-        // FIXME
+        NF_ERROR_EXIT("Not implemented");
         return {};
     }
 

@@ -137,7 +137,7 @@ public:
         source += tmpsource;
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

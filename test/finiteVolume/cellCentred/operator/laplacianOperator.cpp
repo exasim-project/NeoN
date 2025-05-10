@@ -18,8 +18,6 @@ namespace NeoN
 template<typename T>
 using I = std::initializer_list<T>;
 
-// FIXME: Not sure if this should still be a TEST_CASE
-// TEST_CASE("laplacianOperator fixedValue")
 TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -32,26 +30,30 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
     fill(gamma.internalVector(), 2.0);
 
-    SECTION("fixedValue")
+    auto [boundaryType, firstValue, lastValue] = GENERATE(
+        std::tuple<std::string, scalar, scalar> {"fixedValue", 0.5, 10.5},
+        std::tuple<std::string, scalar, scalar> {"fixedGradient", -10.0, 10}
+    );
+
+    SECTION(boundaryType)
     {
         std::vector<fvcc::VolumeBoundary<TestType>> bcs;
         bcs.push_back(fvcc::VolumeBoundary<TestType>(
             mesh,
             Dictionary(
-                {{"type", std::string("fixedValue")}, {"fixedValue", scalar(0.5) * one<TestType>()}}
+                {{"type", std::string(boundaryType)}, {boundaryType, firstValue * one<TestType>()}}
             ),
             0
         ));
         bcs.push_back(fvcc::VolumeBoundary<TestType>(
             mesh,
             Dictionary(
-                {{"type", std::string("fixedValue")}, {"fixedValue", scalar(10.5) * one<TestType>()}
-                }
+                {{"type", std::string(boundaryType)}, {boundaryType, lastValue * one<TestType>()}}
             ),
             1
         ));
 
-        fvcc::VolumeField<TestType> phi(exec, "phi", mesh, bcs);
+        auto phi = fvcc::VolumeField<TestType>(exec, "phi", mesh, bcs);
         parallelFor(
             phi.internalVector(),
             KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
@@ -60,6 +62,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 
         Input input =
             TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")});
+
         SECTION("Construct from Token" + execName)
         {
             fvcc::LaplacianOperator<TestType> lapOp(
@@ -67,18 +70,18 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             );
         }
 
-        fvcc::LaplacianOperator<TestType> lapOp(dsl::Operator::Type::Explicit, gamma, phi, input);
-
-        SECTION("explicit laplacian operator" + execName)
+        SECTION("explicit laplacian operator for constant field on " + execName)
         {
+            dsl::SpatialOperator lapOp = dsl::exp::laplacian(gamma, phi);
+            lapOp.read(input);
             Vector<TestType> source(exec, nCells, zero<TestType>());
             lapOp.explicitOperation(source);
             auto sourceHost = source.copyToHost();
-            auto sSource = sourceHost.view();
+            auto sourceV = sourceHost.view();
             for (NeoN::localIdx i = 0; i < nCells; i++)
             {
                 // the laplacian of a linear function is 0
-                REQUIRE(mag(sSource[i]) == Catch::Approx(0.0).margin(1e-8));
+                REQUIRE(mag(sourceV[i]) == Catch::Approx(0.0).margin(1e-8));
             }
         }
 
@@ -87,148 +90,53 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
                 sp
             );
 
-        SECTION("implicit laplacian operator" + execName)
+        SECTION("implicit laplacian operator of constant field on " + execName)
         {
-            lapOp.implicitOperation(ls);
-            // FIXME:
-            // TODO change to use the new fvcc::expression class
-            // fvcc::Expression<scalar> ls2(
-            //     phi, ls, fvcc::SparsityPattern::readOrCreate(mesh)
-            // );
+            dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+            lapOp.read(input);
+            // currently only defined for scalar types
+            if constexpr (std::is_same_v<TestType, scalar>)
+            {
+                lapOp.implicitOperation(ls);
+                auto res = Vector<scalar>(phi.internalVector());
+                fill(res, 1.0);
 
+                computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
 
-            // auto result = ls2 & phi;
-            // auto resultHost = result.internalVector().copyToHost();
-            // auto sResult = resultHost.view();
-            // for (size_t celli = 0; celli < sResult.size(); celli++)
-            // {
-            //     // the laplacian of a linear function is 0
-            //     REQUIRE(sResult[celli] == Catch::Approx(0.0).margin(1e-8));
-            // }
+                auto resHost = res.copyToHost();
+                auto resV = resHost.view();
+                for (localIdx celli = 0; celli < resV.size(); celli++)
+                {
+                    // the laplacian of a linear function is 0
+                    REQUIRE(resV[celli] == Catch::Approx(0.0).margin(1e-8));
+                }
+            }
         }
 
         SECTION("implicit laplacian operator scale" + execName)
         {
-            ls.reset();
-            dsl::SpatialOperator lapOp2 = dsl::imp::laplacian(gamma, phi);
-            lapOp2.read(input);
-            lapOp2 = dsl::Coeff(-0.5) * lapOp2;
+            if constexpr (std::is_same_v<TestType, scalar>)
+            {
+                ls.reset();
+                dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+                lapOp.read(input);
+                lapOp = dsl::Coeff(-0.5) * lapOp;
 
-            lapOp.implicitOperation(ls);
-            // FIXME:
-            // TODO change to use the new fvcc::expression class
-            // fvcc::Expression<scalar> ls2(
-            //     phi, ls, fvcc::SparsityPattern::readOrCreate(mesh)
-            // );
+                lapOp.implicitOperation(ls);
 
+                auto res = Vector<scalar>(phi.internalVector());
+                computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
 
-            // auto result = ls2 & phi;
-            // auto resultHost = result.internalVector().copyToHost();
-            // auto sResult = resultHost.view();
-            // for (size_t celli = 0; celli < sResult.size(); celli++)
-            // {
-            //     // the laplacian of a linear function is 0
-            //     REQUIRE(sResult[celli] == Catch::Approx(0.0).margin(1e-8));
-            // }
+                auto resHost = res.copyToHost();
+                auto resV = resHost.view();
+                for (localIdx celli = 0; celli < resV.size(); celli++)
+                {
+                    // the laplacian of a linear function is 0
+                    REQUIRE(resV[celli] == Catch::Approx(0.0).margin(1e-8));
+                }
+            }
         }
     }
 }
-
-// FIXME:
-// TEST_CASE("laplacianOperator fixedGradient")
-// {
-//     const size_t nCells = 10;
-//     Executor exec = GENERATE(
-//         Executor(SerialExecutor {}),
-//         Executor(CPUExecutor {}),
-//         Executor(GPUExecutor {})
-//     );
-
-//     std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-
-//     auto mesh = create1DUniformMesh(exec, nCells);
-//     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
-
-//     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
-//     fill(gamma.internalVector(), 2.0);
-
-//     SECTION("fixedGradient")
-//     {
-//         std::vector<fvcc::VolumeBoundary<scalar>> bcs;
-//         bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
-//             mesh,
-//             NeoN::Dictionary(
-//                 {{"type", std::string("fixedGradient")}, {"fixedGradient",
-//                 NeoN::scalar(-10.0)}}
-//             ),
-//             0
-//         ));
-//         bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
-//             mesh,
-//             NeoN::Dictionary(
-//                 {{"type", std::string("fixedGradient")}, {"fixedGradient",
-//                 NeoN::scalar(10.0)}}
-//             ),
-//             1
-//         ));
-
-//         fvcc::VolumeField<NeoN::scalar> phi(exec, "phi", mesh, bcs);
-//         NeoN::parallelFor(
-//             phi.internalVector(), KOKKOS_LAMBDA(const localIdx i) { return scalar(i + 1); }
-//         );
-//         phi.correctBoundaryConditions();
-
-//         SECTION("Construct from Token" + execName)
-//         {
-//             NeoN::Input input = NeoN::TokenList(
-//                 {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
-//             );
-//             fvcc::LaplacianOperator(dsl::Operator::Type::Implicit, gamma, phi, input);
-//         }
-
-//         SECTION("explicit laplacian operator" + execName)
-//         {
-//             NeoN::Input input = NeoN::TokenList(
-//                 {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
-//             );
-//             fvcc::LaplacianOperator lapOp(dsl::Operator::Type::Explicit, gamma, phi, input);
-//             Vector<NeoN::scalar> source(exec, nCells, 0.0);
-//             lapOp.explicitOperation(source);
-//             auto sourceHost = source.copyToHost();
-//             auto sSource = sourceHost.view();
-//             for (size_t i = 0; i < nCells; i++)
-//             {
-//                 // the laplacian of a linear function is 0
-//                 REQUIRE(sourceHost[i] == Catch::Approx(0.0).margin(1e-8));
-//             }
-//         }
-
-//         SECTION("implicit laplacian operator" + execName)
-//         {
-//             NeoN::Input input = NeoN::TokenList(
-//                 {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
-//             );
-//             fvcc::LaplacianOperator lapOp(dsl::Operator::Type::Explicit, gamma, phi, input);
-//             // FIXME add again
-//             // auto ls = lapOp.createEmptyLinearSystem();
-//             // lapOp.implicitOperation(ls);
-//             // TODO change to use the new fvcc::expression class
-//             // fvcc::Expression<NeoN::scalar> ls2(
-//             //     phi, ls, fvcc::SparsityPattern::readOrCreate(mesh)
-//             // );
-
-
-//             // auto result = ls2 & phi;
-//             // auto resultHost = result.internalVector().copyToHost();
-//             // auto sResult = resultHost.view();
-//             // for (size_t celli = 0; celli < sResult.size(); celli++)
-//             // {
-//             //     // the laplacian of a linear function is 0
-//             //     REQUIRE(sResult[celli] == Catch::Approx(0.0).margin(1e-8));
-//             // }
-//         }
-//     }
-// }
-
 
 } // namespace NeoN

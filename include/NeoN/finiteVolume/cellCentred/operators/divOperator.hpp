@@ -126,7 +126,7 @@ public:
           faceFlux_(faceFlux), divOperatorStrategy_(nullptr) {};
 
 
-    void explicitOperation(Vector<scalar>& source) const
+    void explicitOperation(Vector<ValueType>& source) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         NeoN::Vector<NeoN::scalar> tmpsource(source.exec(), source.size(), 0.0);
@@ -141,7 +141,7 @@ public:
         return divOperatorStrategy_->createEmptyLinearSystem();
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

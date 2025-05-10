@@ -18,7 +18,7 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
 
-// FIXME
+// TODO move sparsity to linearAlgebra from fvcc
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 

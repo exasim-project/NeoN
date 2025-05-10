@@ -27,7 +27,7 @@ public:
 
     void explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt);
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt) const;
 
     void read(const Input&) {}
 

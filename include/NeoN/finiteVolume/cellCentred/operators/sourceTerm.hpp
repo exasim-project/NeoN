@@ -21,6 +21,8 @@ class SourceTerm : public dsl::OperatorMixin<VolumeField<ValueType>>
 
 public:
 
+    using VectorValueType = ValueType;
+
     SourceTerm(
         dsl::Operator::Type termType,
         VolumeField<scalar>& coefficients,
