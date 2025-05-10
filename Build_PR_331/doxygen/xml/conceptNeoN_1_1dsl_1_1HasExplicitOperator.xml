@@ -9,11 +9,10 @@
       </param>
     </templateparamlist>
     <initializer>template&lt;typename T&gt;
-concept <ref refid="conceptNeoN_1_1dsl_1_1HasExplicitOperator" kindref="compound">NeoN::dsl::HasExplicitOperator</ref> =  requires(T t) {
-    
+concept <ref refid="conceptNeoN_1_1dsl_1_1HasExplicitOperator" kindref="compound">NeoN::dsl::HasExplicitOperator</ref> =  requires(T const t) {
     {
         t.explicitOperation(std::declval&lt;Vector&lt;typename T::VectorValueType&gt;&amp;&gt;())
-    } -&gt; std::same_as&lt;void&gt;; 
+    } -&gt; std::same_as&lt;void&gt;;
 }    </initializer>
     <briefdescription>
     </briefdescription>
