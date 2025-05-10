@@ -73,7 +73,7 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Vector<ValueType>& source)
+    void explicitOperation(NeoN::Vector<ValueType>& source) const
     {
         auto sourceView = source.view();
         auto fieldView = this->field_.internalVector().view();
@@ -85,7 +85,7 @@ public:
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
