@@ -9,7 +9,8 @@
       </param>
     </templateparamlist>
     <initializer>template&lt;typename T&gt;
-concept <ref refid="conceptNeoN_1_1dsl_1_1HasImplicitOperator" kindref="compound">NeoN::dsl::HasImplicitOperator</ref> =  requires(T const t) {
+concept <ref refid="conceptNeoN_1_1dsl_1_1HasImplicitOperator" kindref="compound">NeoN::dsl::HasImplicitOperator</ref> =  requires(T t) {
+    
     {
         t.implicitOperation(std::declval&lt;la::LinearSystem&lt;typename T::VectorValueType, localIdx&gt;&amp;&gt;()
         )

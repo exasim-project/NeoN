@@ -5,7 +5,7 @@
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\auto \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{deep\+Copy\+Visitor}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} ssize, const Value\+Type \texorpdfstring{$\ast$}{*}src\+Ptr, Value\+Type \texorpdfstring{$\ast$}{*}dst\+Ptr)
 \begin{DoxyCompactList}\small\item\em A helper function to simplify the common pattern of copying between and to executor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} Value\+Type , \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}} $>$ }\\\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{void}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ad0f7ee3320d8302617dc6bf5f86c779a}{field\+Binary\+Op}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{vect1}}, \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{const}} \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{vect2}}, \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{op}})
+{\footnotesize template$<$typename Value\+Type , typename Binary\+Op $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1detail_a42d5c869b26c6f44557a08ec765a08af}{field\+Binary\+Op}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b, Binary\+Op op)
 \end{DoxyCompactItemize}
 
 
@@ -40,12 +40,16 @@ A function that takes a source and an destination executor
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1detail_ad0f7ee3320d8302617dc6bf5f86c779a}\label{namespaceNeoN_1_1detail_ad0f7ee3320d8302617dc6bf5f86c779a} 
+\Hypertarget{namespaceNeoN_1_1detail_a42d5c869b26c6f44557a08ec765a08af}\label{namespaceNeoN_1_1detail_a42d5c869b26c6f44557a08ec765a08af} 
 \index{NeoN::detail@{NeoN::detail}!fieldBinaryOp@{fieldBinaryOp}}
 \index{fieldBinaryOp@{fieldBinaryOp}!NeoN::detail@{NeoN::detail}}
 \doxysubsubsection{\texorpdfstring{fieldBinaryOp()}{fieldBinaryOp()}}
-{\footnotesize\ttfamily template$<$\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} Value\+Type , \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{typename}} \mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}} $>$ \\
-\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{void}} Neo\+N\+::detail\+::field\+Binary\+Op (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{const}} \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2,  }\item[{\mbox{\hyperlink{namespaceNeoN_1_1detail_ac9fe2d7185e9fe7c36c8ea5f91886286}{Binary\+Op}}}]{op }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Binary\+Op $>$ \\
+void Neo\+N\+::detail\+::field\+Binary\+Op (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{a,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{b,  }\item[{Binary\+Op}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{fieldFreeFunctions_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{fieldFreeFunctions_8hpp_source}{field\+Free\+Functions.\+hpp}}.
 
