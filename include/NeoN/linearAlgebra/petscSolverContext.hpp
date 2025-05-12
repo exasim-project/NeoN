@@ -74,21 +74,24 @@ public:
 
         setOption(solverDict_);
 
-        std::size_t size = sys.matrix().values().size();
-        std::size_t nrows = sys.rhs().size();
-        PetscInt colIdx[size];
-        PetscInt rowIdx[size];
+        auto sizeMatrix = static_cast<localIdx>(sys.matrix().values().size());
+        auto nrows = sys.rhs().size();
+        PetscInt colIdx[sizeMatrix];
+        PetscInt rowIdx[sizeMatrix];
         PetscInt rhsIdx[nrows];
 
-        // colIdx = sys.matrix().colIdxs().data();
 
-        auto hostLS = sys.copyToHost();
+        // auto hostMatrix = sys.matrix().copyToHost();
 
-        // auto fieldS = field.view();
+        // auto rowPtrHost = hostMatrix.rowOffs().view();
+        // auto colIdxHost = hostMatrix.colIdxs().view();
 
-        auto rowPtrHost = hostLS.matrix().rowOffs().view();
-        auto colIdxHost = hostLS.matrix().colIdxs().view();
-        auto rhsHost = sys.rhs().copyToHost();
+        auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
+        auto rowPtrHostv = rowPtrHost.view();
+
+        auto colIdxHost = sys.matrix().colIdxs().copyToHost();
+        auto colIdxHostv = colIdxHost.view();
+
 
         for (size_t index = 0; index < nrows; ++index)
         {
@@ -97,21 +100,21 @@ public:
         // copy colidx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        for (size_t index = 0; index < size; ++index)
+        for (size_t index = 0; index < sizeMatrix; ++index)
         {
-            colIdx[index] = static_cast<PetscInt>(colIdxHost[index]);
+            colIdx[index] = static_cast<PetscInt>(colIdxHostv[index]);
         }
         // convert rowPtr to rowIdx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        size_t rowI = 0;
-        size_t rowOffset = rowPtrHost[rowI + 1];
-        for (size_t index = 0; index < size; ++index)
+        localIdx rowI = 0;
+        localIdx rowOffset = rowPtrHostv[rowI + 1];
+        for (size_t index = 0; index < sizeMatrix; ++index)
         {
             if (index == rowOffset)
             {
                 rowI++;
-                rowOffset = rowPtrHost[rowI + 1];
+                rowOffset = rowPtrHostv[rowI + 1];
             }
             rowIdx[index] = rowI;
         }
@@ -141,7 +144,7 @@ public:
         VecDuplicate(rhs_, &sol_);
 
         VecSetPreallocationCOO(rhs_, nrows, rhsIdx);
-        MatSetPreallocationCOO(Amat_, size, colIdx, rowIdx);
+        MatSetPreallocationCOO(Amat_, sizeMatrix, colIdx, rowIdx);
 
         KSPCreate(PETSC_COMM_WORLD, &ksp_);
         KSPSetFromOptions(ksp_);
@@ -154,17 +157,18 @@ public:
         // PetscOptionsCreate(&options);
         // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
         PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
+        KSPView(ksp_, PETSC_VIEWER_STDOUT_WORLD);
     }
 
     //- Create auxiliary rows for calculation purposes
     void update() { NF_ERROR_EXIT("Mesh changes not supported"); }
 
-    void setOption(Dictionary solverDict_)
+    void setOption(Dictionary& solverDict)
     {
 
-        NeoN::Dictionary subDict = solverDict_.subDict("options");
+        NeoN::Dictionary subDict = solverDict.subDict("options");
 
-        for (auto key : solverDict_.subDict("options").keys())
+        for (auto key : solverDict.subDict("options").keys())
         {
 
             std::string petscOptionKey = std::string("-") + key;

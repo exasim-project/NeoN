@@ -59,6 +59,9 @@ TEST_CASE("MatrixAssembly - Petsc")
         NeoN::Dictionary subDict;
         subDict.insert("pc_type", std::string("bjacobi"));
         subDict.insert("sub_pc_type", std::string("ilu"));
+        subDict.insert(
+            "log_view", std::string(":/home/michael/petsc/src/ksp/ksp/tutorials/test2.txt")
+        );
         solverDict.insert("options", subDict);
 
         // Create solver
