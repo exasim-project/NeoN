@@ -1,0 +1,46 @@
+\doxysection{calculated.\+hpp}
+\hypertarget{volume_2calculated_8hpp_source}{}\label{volume_2calculated_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/calculated.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/calculated.hpp}}
+\mbox{\hyperlink{volume_2calculated_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00011}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{00011}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00014}00014\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00015}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated}{00015}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated}{Calculated}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Calculated<ValueType>>}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00017}00017\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Calculated<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00019}00019\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00021}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a91bf04273cfd4fd04e56c010597e0322}{00021}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated}{CalculatedType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated}{Calculated<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a727c245e64adb4e575cc304c3aca9fae}{00023}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a727c245e64adb4e575cc304c3aca9fae}{Calculated}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{false}\})}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00025}00025\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00027}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a22e0742eb6769f3bea99e350472c4bc8}{00027}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a22e0742eb6769f3bea99e350472c4bc8}{correctBoundaryCondition}}([[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}\ \{\}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_ab83f6802d6dd7238605a40a1deea2db5}{00029}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_ab83f6802d6dd7238605a40a1deea2db5}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}calculated"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a68a39dac03c2ffd20e5b41919c364c82}{00031}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a68a39dac03c2ffd20e5b41919c364c82}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a12683d0290eabb5f2f91f65a1fff4357}{00033}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a12683d0290eabb5f2f91f65a1fff4357}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a14c5c2b9796bb958b21060dee2bcee74}{00035}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated_a14c5c2b9796bb958b21060dee2bcee74}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00036}00036\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Calculated>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00038}00038\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00039}00039\ \};}
+\DoxyCodeLine{\Hypertarget{volume_2calculated_8hpp_source_l00040}00040\ \}}
+
+\end{DoxyCode}
