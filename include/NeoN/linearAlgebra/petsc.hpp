@@ -86,7 +86,7 @@ public:
 
         NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_, solverDict_);
 
-        std::size_t nrows = sys.rhs().size();
+        localIdx nrows = sys.rhs().size();
 
         petsctx.initialize(sys);
 

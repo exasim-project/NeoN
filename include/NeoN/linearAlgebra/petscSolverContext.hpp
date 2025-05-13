@@ -44,8 +44,8 @@ public:
 
     //- Default construct
     petscSolverContext(Executor exec, Dictionary solverDict)
-        : init_(false), updated_(false), exec_(exec), solverDict_(solverDict), Amat_(nullptr),
-          sol_(nullptr), rhs_(nullptr), ksp_(nullptr), pc_(nullptr)
+        : init_(false), updated_(false), exec_(exec), Amat_(nullptr), ksp_(nullptr), pc_(nullptr),
+          sol_(nullptr), rhs_(nullptr), solverDict_(solverDict)
     {}
 
 
@@ -74,8 +74,14 @@ public:
 
         setOption(solverDict_);
 
-        auto sizeMatrix = static_cast<localIdx>(sys.matrix().values().size());
-        auto nrows = sys.rhs().size();
+        auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
+        auto rowPtrHostv = rowPtrHost.view();
+
+        auto colIdxHost = sys.matrix().colIdxs().copyToHost();
+        auto colIdxHostv = colIdxHost.view();
+
+        localIdx sizeMatrix = static_cast<localIdx>(sys.matrix().values().size());
+        localIdx nrows = sys.rhs().size();
         PetscInt colIdx[sizeMatrix];
         PetscInt rowIdx[sizeMatrix];
         PetscInt rhsIdx[nrows];
@@ -86,21 +92,15 @@ public:
         // auto rowPtrHost = hostMatrix.rowOffs().view();
         // auto colIdxHost = hostMatrix.colIdxs().view();
 
-        auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
-        auto rowPtrHostv = rowPtrHost.view();
 
-        auto colIdxHost = sys.matrix().colIdxs().copyToHost();
-        auto colIdxHostv = colIdxHost.view();
-
-
-        for (size_t index = 0; index < nrows; ++index)
+        for (int index = 0; index < nrows; ++index)
         {
             rhsIdx[index] = static_cast<PetscInt>(index);
         }
         // copy colidx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        for (size_t index = 0; index < sizeMatrix; ++index)
+        for (int index = 0; index < sizeMatrix; ++index)
         {
             colIdx[index] = static_cast<PetscInt>(colIdxHostv[index]);
         }
@@ -109,7 +109,7 @@ public:
         //  topology changes
         localIdx rowI = 0;
         localIdx rowOffset = rowPtrHostv[rowI + 1];
-        for (size_t index = 0; index < sizeMatrix; ++index)
+        for (int index = 0; index < sizeMatrix; ++index)
         {
             if (index == rowOffset)
             {
