@@ -78,8 +78,6 @@ public:
 
         setOption(solverDict_);
 
-        std::cout << sys.matrix().rowOffs().size() << std::endl;
-        std::cout << sys.matrix().colIdxs().size() << std::endl;
         auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
         auto rowPtrHostv = rowPtrHost.view();
 
