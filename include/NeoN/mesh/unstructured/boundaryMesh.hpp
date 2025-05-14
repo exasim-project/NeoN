@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/fields/fieldTypeDefs.hpp"
+#include "NeoN/core/vector/vectorTypeDefs.hpp"
 
 namespace NeoN
 {
@@ -204,7 +204,7 @@ public:
      *
      * @return A constant reference to the offset of the boundary faces.
      */
-    // FIXME use Vector here?
+    // TODO consistent use of Vector on CPU
     const std::vector<localIdx>& offset() const;
 
 
@@ -274,7 +274,7 @@ private:
      *
      * The offset is used to access the boundary faces of each boundary.
      */
-    // FIXME use Vector here?
+    // TODO consistent use of Vector on CPU
     std::vector<localIdx> offset_;
 };
 

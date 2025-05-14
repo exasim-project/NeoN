@@ -6,7 +6,8 @@
 #include <concepts>
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/coeff.hpp"
@@ -18,16 +19,14 @@ namespace NeoN::dsl
 {
 
 template<typename T>
-concept HasExplicitOperator = requires(T t) {
-    // using ValueType = typename T::VectorValueType;
+concept HasExplicitOperator = requires(T const t) {
     {
         t.explicitOperation(std::declval<Vector<typename T::VectorValueType>&>())
-    } -> std::same_as<void>; // Adjust return type and arguments as needed
+    } -> std::same_as<void>;
 };
 
 template<typename T>
-concept HasImplicitOperator = requires(T t) {
-    // using ValueType = typename T::VectorValueType;
+concept HasImplicitOperator = requires(T const t) {
     {
         t.implicitOperation(std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>()
         )
@@ -56,9 +55,7 @@ public:
 
     using VectorValueType = ValueType;
 
-    // FIXME add again
-    // template<IsSpatialOperator T>
-    template<typename T>
+    template<IsSpatialOperator T>
     SpatialOperator(T cls) : model_(std::make_unique<OperatorModel<T>>(std::move(cls)))
     {}
 

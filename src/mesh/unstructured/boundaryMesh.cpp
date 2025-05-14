@@ -30,7 +30,7 @@ template<typename ValueType>
 View<const ValueType>
 extractSubView(const Vector<ValueType>& vec, const std::vector<localIdx>& offs, localIdx i)
 {
-    // FIXME make offset a Vector<localIdx> instead of std::vector
+    // TODO make offset a Vector<localIdx> instead of std::vector
     auto j = static_cast<std::size_t>(i);
     return vec.view({offs[j], offs[j + 1]});
 }

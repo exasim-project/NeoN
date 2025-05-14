@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 NeoN authors
 
+#include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -19,30 +21,35 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     const auto c = mesh_.cellCentres().view();
     const auto sf = mesh_.faceAreas().view();
 
-    auto w = weights.internalVector().view();
+    const auto [weightS, weightB] = views(weights.internalVector(), weights.boundaryData().value());
+    const auto nInternalFaces = mesh_.nInternalFaces();
 
     parallelFor(
         exec,
-        {0, mesh_.nInternalFaces()},
+        {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx facei) {
             scalar sfdOwn = std::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
             scalar sfdNei = std::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
 
             if (std::abs(sfdOwn + sfdNei) > ROOTVSMALL)
             {
-                w[facei] = sfdNei / (sfdOwn + sfdNei);
+                weightS[facei] = sfdNei / (sfdOwn + sfdNei);
             }
             else
             {
-                w[facei] = 0.5;
+                weightS[facei] = 0.5;
             }
         }
     );
 
     parallelFor(
         exec,
-        {mesh_.nInternalFaces(), w.size()},
-        KOKKOS_LAMBDA(const localIdx facei) { w[facei] = 1.0; }
+        {nInternalFaces, weightS.size()},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            const auto bcfacei = facei - nInternalFaces;
+            weightS[facei] = 1.0;
+            weightB[bcfacei] = 1.0;
+        }
     );
 }
 

@@ -69,11 +69,11 @@ Building with Spack
 
 A good way to simplify the process of building NeoN is by using spack.
 Here is a short tutorial on how to build NeoN with spack for development.
-First clone spack from  https://github.com/spack/spack.
+First clone spack from  https://github.com/exasim-project/spack (until neon is fully merged into spack).
 
    .. code-block:: bash
 
-    git clone  https://github.com/spack/spack
+    git clone https://github.com/exasim-project/spack -b neofoam
     source spack/share/spack/setup-env.sh
 
 Next we create a development environment for NeoN and add NeoN to it.
@@ -84,56 +84,21 @@ Next we create a development environment for NeoN and add NeoN to it.
     spack env create  -d NeoN-env
     spack env activate NeoN-env
     cd NeoN-env
-    spack develop --path /home/greole/data/code/NeoN NeoN
+    spack develop --path /home/greole/data/code/NeoN neon
 
 Next we install clang 17 as a compiler into our environment
 
    .. code-block:: bash
 
     spack add llvm@17
+    spack install
     spack compiler add "$(spack location -i llvm)"
-
-
-Here is the current package.py. Edit spack/var/spack/repos/builtin/packages/NeoN/package.py accordingly
-
-   .. code-block:: bash
-        class NeoN(CMakePackage):
-            """NeoN is a WIP prototype of a modern CFD core."""
-
-            homepage = "https://github.com/exasim-project/NeoN"
-            git = "https://github.com/exasim-project/NeoN.git"
-
-            maintainers("greole", "HenningScheufler")
-
-            license("MIT", checked_by="greole")
-            version("main", branch="main")
-
-            variant("cuda", default=False, description="Compile with CUDA support")
-            variant("hip", default=False, description="Compile with HIP support")
-            variant("ginkgo", default=True, description="Compile with Ginkgo")
-            variant("sundials", default=True, description="Compile with Sundials")
-            variant("test", default=False, description="Compile and install tutorial programs")
-
-            depends_on("c", type="build")
-            depends_on("cxx", type="build")
-            depends_on("cmake@3.26:", type="build")
-            depends_on("mpi@3")
-            depends_on("cuda@12.6", when="+cuda")
-            depends_on("kokkos@4.3.0")
-            depends_on("ginkgo", when="+ginkgo")
-
-            def cmake_args(self):
-                return [
-                    '-DNeoN_BUILD_TESTS=%s' % ('+test' in self.spec),
-                    '-DKokkos_ENABLE_CUDA=%s' % ('+cuda' in self.spec),
-                ]
-
 
 Next, we add NeoN with the required dependencies.
 
    .. code-block:: bash
 
-     spack add NeoN+test++cuda ^kokkos cuda_arch=80 cxxstd=20  ^ginkgo cuda_arch=80   %llvm@17
+     spack add neon+test++cuda ^kokkos cuda_arch=80 cxxstd=20  ^ginkgo cuda_arch=80   %llvm@17
      spack install
 
 

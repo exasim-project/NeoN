@@ -29,10 +29,11 @@ if(${NeoN_WITH_PETSC})
   set(Kokkos_ROOT ${PETSc_PREFIX})
   set(CMAKE_CUDA_STANDARD 17)
   include(cmake/AutoEnableDevice.cmake)
+
+  set(Kokkos_ROOT_DIR ${PETSc_PREFIX})
+  message("${PETSc_PREFIX}")
 endif()
 
-set(Kokkos_ROOT_DIR ${PETSc_PREFIX})
-message("${PETSc_PREFIX}")
 find_package(Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION} QUIET)
 
 if(NOT ${Kokkos_FOUND})
@@ -186,6 +187,7 @@ if(${NeoN_WITH_GINKGO})
     "GINKGO_BUILD_TESTS OFF"
     "GINKGO_BUILD_BENCHMARKS OFF"
     "GINKGO_BUILD_EXAMPLES OFF"
+    "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
     "GINKGO_ENABLE_HALF OFF"
     "GINKGO_BUILD_MPI OFF"
     "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"

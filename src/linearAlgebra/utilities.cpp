@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2024-2025 NeoN authors
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
 
 

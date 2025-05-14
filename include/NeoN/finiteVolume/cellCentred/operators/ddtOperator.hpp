@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
@@ -27,7 +27,7 @@ public:
 
     void explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt);
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt) const;
 
     void read(const Input&) {}
 

@@ -2,9 +2,6 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoN/fields/fieldTypeDefs.hpp"
-#include "NeoN/fields/field.hpp"
-
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -48,7 +45,7 @@ public:
 
     localIdx patchID() const { return patchID_; }
 
-    std::pair<localIdx, localIdx> range() { return {start_, end_}; }
+    std::pair<localIdx, localIdx> range() const { return {start_, end_}; }
 
 protected:
 

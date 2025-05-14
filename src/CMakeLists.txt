@@ -11,8 +11,10 @@ endif()
 
 target_sources(
   NeoN
-  PRIVATE "core/primitives/vector.cpp"
+  PRIVATE "core/primitives/vec3.cpp"
           "core/time.cpp"
+          "core/vector/vector.cpp"
+          "core/vector/vectorFreeFunctions.cpp"
           "core/database/database.cpp"
           "core/database/collection.cpp"
           "core/database/document.cpp"
@@ -39,7 +41,7 @@ target_sources(
           "finiteVolume/cellCentred/stencil/cellToFaceStencil.cpp"
           "finiteVolume/cellCentred/boundary/boundary.cpp"
           "finiteVolume/cellCentred/operators/ddtOperator.cpp"
-          # "finiteVolume/cellCentred/operators/expression.cpp"
+          "finiteVolume/cellCentred/fields/volumeField.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"

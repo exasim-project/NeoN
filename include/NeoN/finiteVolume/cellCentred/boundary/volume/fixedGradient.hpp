@@ -65,7 +65,7 @@ public:
     using FixedGradientType = FixedGradient<ValueType>;
 
     FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID), mesh_(mesh),
+        : Base(mesh, dict, patchID, {.assignable = false}), mesh_(mesh),
           fixedGradient_(dict.get<ValueType>("fixedGradient"))
     {}
 

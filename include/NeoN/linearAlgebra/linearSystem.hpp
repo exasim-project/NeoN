@@ -2,7 +2,8 @@
 // SPDX-FileCopyrightText: 2023 NeoN authors
 #pragma once
 
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 
 #include <string>
@@ -30,6 +31,16 @@ struct LinearSystemView
     View<ValueType> rhs;
 };
 
+// TODO move to fvcc
+template<typename ValueType, typename IndexType>
+struct BoundaryCoefficients
+{
+    Vector<ValueType> matrixValues;
+    Vector<IndexType> matrixIdxs;
+    Vector<ValueType> rhsValues;
+    Vector<IndexType> rhsIdxs;
+};
+
 /**
  * @class LinearSystem
  * @brief A class representing a linear system of equations.
@@ -43,16 +54,21 @@ class LinearSystem
 {
 public:
 
-    LinearSystem(const CSRMatrix<ValueType, IndexType>& matrix, const Vector<ValueType>& rhs)
-        : matrix_(matrix), rhs_(rhs)
+    LinearSystem(
+        const CSRMatrix<ValueType, IndexType>& matrix,
+        const Vector<ValueType>& rhs,
+        const Dictionary& aux = {}
+    )
+        : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
     {
         NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
         NF_ASSERT(matrix.nRows() == rhs.size(), "Matrix and RHS size mismatch");
     };
 
-    LinearSystem(const LinearSystem& ls) : matrix_(ls.matrix_), rhs_(ls.rhs_) {};
+    LinearSystem(const LinearSystem& ls)
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_) {};
 
-    LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0) {}
+    LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
 
     ~LinearSystem() = default;
 
@@ -91,10 +107,16 @@ public:
 
     const Executor& exec() const { return matrix_.exec(); }
 
+    // TODO move to fvcc
+    [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
+
+    [[nodiscard]] Dictionary& auxiliaryCoefficients() { return auxiliaryCoefficients_; }
+
 private:
 
     CSRMatrix<ValueType, IndexType> matrix_;
     Vector<ValueType> rhs_;
+    Dictionary auxiliaryCoefficients_;
 };
 
 
@@ -118,15 +140,47 @@ template<typename ValueType, typename IndexType, typename SparsityType>
 LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& sparsity)
 {
     const auto& exec = sparsity.mesh().exec();
-
+    const auto& mesh = sparsity.mesh();
     localIdx rows {sparsity.rows()};
     localIdx nnzs {sparsity.nnz()};
+
+    localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
+
+    const auto [diagOffset, rowOffs, faceCells] =
+        views(sparsity.diagOffset(), sparsity.rowOffs(), mesh.boundaryMesh().faceCells());
+
+    BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
+        Vector<ValueType>(exec, nBoundaryFaces),
+        Vector<IndexType>(exec, nBoundaryFaces),
+        Vector<ValueType>(exec, nBoundaryFaces),
+        Vector<IndexType>(exec, nBoundaryFaces)
+    };
+
+    auto [mValue, mColIdx, rhsValue, rhsIdx] =
+        views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
+
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        KOKKOS_LAMBDA(const localIdx bfacei) {
+            localIdx celli = faceCells[bfacei];
+
+            mValue[bfacei] = zero<ValueType>();
+            mColIdx[bfacei] = celli + diagOffset[celli];
+            rhsValue[bfacei] = zero<ValueType>();
+            rhsIdx[bfacei] = celli;
+        }
+    );
+
+    Dictionary aux;
+    aux.insert("boundaryCoefficients", bcCoeffs);
 
     return {
         CSRMatrix<ValueType, IndexType> {
             Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
         },
-        Vector<ValueType> {exec, rows, zero<ValueType>()}
+        Vector<ValueType> {exec, rows, zero<ValueType>()},
+        aux
     };
 }
 

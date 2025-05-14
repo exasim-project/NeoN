@@ -46,34 +46,23 @@ public:
     ) override
     {
         auto source = eqn.explicitOperation(solutionVector.size());
-        SolutionVectorType& oldSolutionVector = finiteVolume::cellCentred::oldTime(solutionVector);
 
-        // solutionVector.internalVector() = oldSolutionVector.internalVector() - source * dt;
-        // solutionVector.correctBoundaryConditions();
-        // solve sparse matrix system
-        // using ValueType = typename SolutionVectorType::ElementType;
-
-        // TODO decouple from fvcc specific implementation
         auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionVector.mesh());
         auto ls = la::createEmptyLinearSystem<
             ValueType,
             localIdx,
             finiteVolume::cellCentred::SparsityPattern>(sparsity);
 
-        eqn.implicitOperation(ls);
-
-        auto values = ls.matrix().values();
-        eqn.implicitOperation(ls, t, dt);
+        eqn.implicitOperation(ls);        // add spatial operators
+        eqn.implicitOperation(ls, t, dt); // add temporal operators
 
         auto solver = NeoN::la::Solver(solutionVector.exec(), this->solutionDict_);
         solver.solve(ls, solutionVector.internalVector());
-
         // check if executor is GPU
         if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
         {
             Kokkos::fence();
         }
-        oldSolutionVector.internalVector() = solutionVector.internalVector();
     };
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override

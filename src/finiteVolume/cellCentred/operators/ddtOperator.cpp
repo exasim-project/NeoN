@@ -35,7 +35,7 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 template<typename ValueType>
 void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
-)
+) const
 {
     const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();

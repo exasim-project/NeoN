@@ -3,8 +3,9 @@
 
 #pragma once
 
+
+#include "NeoN/core/array.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-// #include "NeoN/linearAlgebra/linearSystem.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -26,12 +27,12 @@ public:
     void update();
 
     // TODO: rename upperOffset
-    const Vector<uint8_t>& ownerOffset() const;
+    const Array<uint8_t>& ownerOffset() const;
 
     // TODO: rename lowerOffset
-    const Vector<uint8_t>& neighbourOffset() const;
+    const Array<uint8_t>& neighbourOffset() const;
 
-    const Vector<uint8_t>& diagOffset() const;
+    const Array<uint8_t>& diagOffset() const;
 
     const UnstructuredMesh& mesh() const { return mesh_; };
 
@@ -54,11 +55,11 @@ private:
 
     Vector<localIdx> colIdxs_; //!
 
-    Vector<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
+    Array<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
 
-    Vector<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row
+    Array<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row
 
-    Vector<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
+    Array<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
 };
 
 } // namespace NeoN::finiteVolume::cellCentred

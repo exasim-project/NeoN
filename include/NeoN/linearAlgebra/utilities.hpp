@@ -4,7 +4,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 
 

@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 NeoN authors
 #pragma once
 
+#include <Kokkos_Core.hpp>
+
 #include <limits>
 #include <span>
 #include <type_traits>
@@ -29,7 +31,7 @@ public:
     /* A flag to control whether the program should terminate on invalid memory access or throw.
      * Kokkos prefers to terminate, but for testing purpose the failureIndex is preferred
      */
-    bool abort = true;
+    bool abortOnFail = true;
 
     /* a member to store the first out of range data access. This assumes a span has
      * at least a size of 1. A value of zero signals success. This is required we cannot
@@ -47,13 +49,14 @@ public:
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index >= this->size())
+        if (index < 0 || this->size() <= index)
         {
             // TODO: currently this is failing on our AWS workflow, once we have clang>16 there
             // this should work again.
             // const std::string msg {"Index is out of range. Index: "} + to_string(index);
-            if (abort)
+            if (abortOnFail)
             {
+                failureIndex = index;
                 Kokkos::abort("Index is out of range");
             }
             else

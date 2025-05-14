@@ -5,6 +5,7 @@
 
 #include <Kokkos_Core.hpp>
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -63,7 +64,7 @@ public:
     using ExtrapolatedType = Extrapolated<ValueType>;
 
     Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID), mesh_(mesh)
+        : Base(mesh, dict, patchID, {.assignable = false}), mesh_(mesh)
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final

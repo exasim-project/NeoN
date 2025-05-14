@@ -18,9 +18,41 @@ using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
 using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
 
+/* helper struct to create a vector in the database
+ */
+struct CreateVector
+{
+    std::string name;
+    const NeoN::UnstructuredMesh& mesh;
+    NeoN::scalar value = 0;
+    std::int64_t timeIndex = 0;
+    std::int64_t iterationIndex = 0;
+    std::int64_t subCycleIndex = 0;
+
+    NeoN::Document operator()(NeoN::Database& db)
+    {
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
+        NeoN::Field<NeoN::scalar> domainVector(
+            mesh.exec(),
+            NeoN::Vector<NeoN::scalar>(mesh.exec(), mesh.nCells(), 1.0),
+            mesh.boundaryMesh().offset()
+        );
+        fvcc::VolumeField<NeoN::scalar> vf(mesh.exec(), name, mesh, domainVector, bcs, db, "", "");
+        NeoN::fill(vf.internalVector(), value);
+        return NeoN::Document(
+            {{"name", vf.name},
+             {"timeIndex", timeIndex},
+             {"iterationIndex", iterationIndex},
+             {"subCycleIndex", subCycleIndex},
+             {"field", vf}},
+            fvcc::validateVectorDoc
+        );
+    }
+};
+
+
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
-
 template<typename ValueType>
 class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 {
@@ -41,7 +73,7 @@ public:
         )
     {}
 
-    void explicitOperation(NeoN::Vector<ValueType>& source)
+    void explicitOperation(NeoN::Vector<ValueType>& source) const
     {
         auto sourceView = source.view();
         auto fieldView = this->field_.internalVector().view();
@@ -53,7 +85,7 @@ public:
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
-#include "NeoN/core/vector.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -20,6 +20,8 @@ class SourceTerm : public dsl::OperatorMixin<VolumeField<ValueType>>
 {
 
 public:
+
+    using VectorValueType = ValueType;
 
     SourceTerm(
         dsl::Operator::Type termType,
