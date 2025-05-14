@@ -50,12 +50,12 @@ jobs:
         repository: exasim-project/FoamAdapter
         ref: '${{ env.checkout }}'
 
-     - name: Checkout NeoN submodule
-       uses: actions/checkout@v4
-       with:
-        repository: exasim-project/NeoN
-        path: NeoN
-        ref: '${{ github.head_ref }}'
+     # - name: Checkout NeoN submodule
+     #   uses: actions/checkout@v4
+     #   with:
+     #    repository: exasim-project/NeoN
+     #    path: NeoN
+     #    ref: '${{ github.head_ref }}'
 
      - name: Set up OpenFOAM
        uses: gerlero/setup-openfoam@v1
@@ -90,7 +90,8 @@ jobs:
          cmake --preset develop \
            -DNeoN_DEVEL_TOOLS=OFF \
            -DNeoN_BUILD_TESTS=OFF \
-           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
+           -DFOAMADAPTER_NEON_VERSION=${{env.checkout}}
          cmake --build  --preset develop
 
      - name: Execute unit tests NeoN
