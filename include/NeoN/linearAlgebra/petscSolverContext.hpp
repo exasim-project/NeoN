@@ -93,10 +93,6 @@ public:
         PetscMalloc1(static_cast<PetscInt>(sizeMatrix), &rowIdx);
         PetscMalloc1(static_cast<PetscInt>(nrows), &rhsIdx);
 
-        // PetscInt colIdx[sizeMatrix];
-        // PetscInt rowIdx[sizeMatrix];
-        // PetscInt rhsIdx[nrows];
-
 
         for (int index = 0; index < nrows; ++index)
         {
