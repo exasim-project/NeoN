@@ -72,8 +72,14 @@ public:
     void initialize(const LinearSystem<scalar, localIdx>& sys)
     {
 
+        // move all not necessary staff to outer most scope since matrix  has
+        // to be preallocated only once every time the mesh changes
+        PetscInitialize(NULL, NULL, 0, NULL);
+
         setOption(solverDict_);
 
+        std::cout << sys.matrix().rowOffs().size() << std::endl;
+        std::cout << sys.matrix().colIdxs().size() << std::endl;
         auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
         auto rowPtrHostv = rowPtrHost.view();
 
@@ -82,15 +88,16 @@ public:
 
         localIdx sizeMatrix = static_cast<localIdx>(sys.matrix().values().size());
         localIdx nrows = sys.rhs().size();
-        PetscInt colIdx[sizeMatrix];
-        PetscInt rowIdx[sizeMatrix];
-        PetscInt rhsIdx[nrows];
 
+        PetscInt *colIdx, *rowIdx, *rhsIdx;
 
-        // auto hostMatrix = sys.matrix().copyToHost();
+        PetscMalloc1(static_cast<PetscInt>(sizeMatrix), &colIdx);
+        PetscMalloc1(static_cast<PetscInt>(sizeMatrix), &rowIdx);
+        PetscMalloc1(static_cast<PetscInt>(nrows), &rhsIdx);
 
-        // auto rowPtrHost = hostMatrix.rowOffs().view();
-        // auto colIdxHost = hostMatrix.colIdxs().view();
+        // PetscInt colIdx[sizeMatrix];
+        // PetscInt rowIdx[sizeMatrix];
+        // PetscInt rhsIdx[nrows];
 
 
         for (int index = 0; index < nrows; ++index)
@@ -119,9 +126,6 @@ public:
             rowIdx[index] = rowI;
         }
 
-        // move all not necessary staff to outer most scope since matrix  has
-        // to be preallocated only once every time the mesh changes
-        PetscInitialize(NULL, NULL, 0, NULL);
 
         MatCreate(PETSC_COMM_WORLD, &Amat_);
         MatSetSizes(Amat_, sys.matrix().nRows(), sys.rhs().size(), PETSC_DECIDE, PETSC_DECIDE);
@@ -158,6 +162,11 @@ public:
         // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
         PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
         KSPView(ksp_, PETSC_VIEWER_STDOUT_WORLD);
+
+
+        PetscFree(colIdx);
+        PetscFree(rowIdx);
+        PetscFree(rhsIdx);
     }
 
     //- Create auxiliary rows for calculation purposes
