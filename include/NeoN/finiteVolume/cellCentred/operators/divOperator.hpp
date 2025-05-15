@@ -133,7 +133,7 @@ public:
     void explicitOperation(Vector<ValueType>& source) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
-        NeoN::Vector<NeoN::scalar> tmpsource(source.exec(), source.size(), 0.0);
+        auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
         divOperatorStrategy_->div(tmpsource, faceFlux_, this->getVector(), operatorScaling);
         source += tmpsource;
