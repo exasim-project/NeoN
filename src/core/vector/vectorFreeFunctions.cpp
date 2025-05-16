@@ -8,6 +8,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 
@@ -15,12 +16,12 @@ namespace NeoN
 {
 
 template<typename ValueType>
-void scalarMul(Vector<ValueType>& vect, const ValueType value)
-    requires requires(ValueType a, ValueType b) { a* b; }
+void scalarMul(Vector<ValueType>& vect, const scalar value)
+    requires requires(ValueType a, scalar b) { a* b; }
 {
     auto viewA = vect.view();
     parallelFor(
-        vect, KOKKOS_LAMBDA(const localIdx i) { return viewA[i] * value; }
+        vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
     );
 }
 
@@ -106,7 +107,7 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
-    template void scalarMul<Type>(Vector<Type> & vector, const Type value);                        \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -116,15 +117,13 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
-NN_VECTOR_OPERATOR_INSTANTIATION(uint32_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(uint64_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(int32_t);
-NN_VECTOR_OPERATOR_INSTANTIATION(int64_t);
+NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 NN_VECTOR_OPERATOR_INSTANTIATION(float);
 NN_VECTOR_OPERATOR_INSTANTIATION(double);
 NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Vec3);

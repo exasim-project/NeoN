@@ -7,6 +7,7 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/view.hpp"
 
@@ -177,8 +178,8 @@ public:
      * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
      *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
-    [[nodiscard]] Vector<ValueType> operator*(const ValueType rhs)
-        requires requires(ValueType a, ValueType b) { a* b; };
+    [[nodiscard]] Vector<ValueType> operator*(const scalar rhs)
+        requires requires(ValueType a, scalar b) { a* b; };
 
     /**
      * @brief Assignment multiply operator, multiplies this field by another field element-wise.
@@ -198,8 +199,8 @@ public:
      * @note We exclude types where the multiplication operator is ambiguous, e.g. vec3.
      *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
-    Vector<ValueType>& operator*=(const ValueType rhs)
-        requires requires(ValueType a, ValueType b) { a *= b; };
+    Vector<ValueType>& operator*=(const scalar rhs)
+        requires requires(ValueType a, scalar b) { a *= b; };
 
     /**
      * @brief Resizes the field to a new size.
