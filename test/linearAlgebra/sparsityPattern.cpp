@@ -10,7 +10,7 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using SparsityPattern = fvcc::SparsityPattern;
+using SparsityPattern = NeoN::la::SparsityPattern;
 
 namespace NeoN
 {
@@ -23,7 +23,7 @@ TEST_CASE("SparsityPattern")
     auto nFaces = 9;
     auto mesh = create1DUniformMesh(exec, nCells);
 
-    auto sp = SparsityPattern {mesh};
+    auto sp = NeoN::la::createSparsity(mesh);
 
     SECTION("Can construct sparsity pattern " + execName)
     {
@@ -35,6 +35,7 @@ TEST_CASE("SparsityPattern")
 
     SECTION("has correct diagOffs" + execName)
     {
+        auto sp = SparsityPattern {mesh};
         auto diagOffs = sp.diagOffset().copyToHost();
         auto diagOffsS = diagOffs.view();
 

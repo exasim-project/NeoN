@@ -9,11 +9,8 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/dsl/solver.hpp"
-
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-
-// TODO decouple from fvcc
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::timeIntegration
@@ -46,12 +43,8 @@ public:
     ) override
     {
         auto source = eqn.explicitOperation(solutionVector.size());
-
-        auto sparsity = NeoN::finiteVolume::cellCentred::SparsityPattern(solutionVector.mesh());
-        auto ls = la::createEmptyLinearSystem<
-            ValueType,
-            localIdx,
-            finiteVolume::cellCentred::SparsityPattern>(sparsity);
+        auto sparsity = la::SparsityPattern(solutionVector.mesh());
+        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(solutionVector.mesh(), sparsity);
 
         eqn.implicitOperation(ls);        // add spatial operators
         eqn.implicitOperation(ls, t, dt); // add temporal operators

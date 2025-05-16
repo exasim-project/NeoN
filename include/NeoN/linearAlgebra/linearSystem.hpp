@@ -5,6 +5,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 #include <string>
 
@@ -136,11 +137,11 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
 /*@brief helper function that creates a zero initialised linear system based on given sparsity
  * pattern
  */
-template<typename ValueType, typename IndexType, typename SparsityType>
-LinearSystem<ValueType, IndexType> createEmptyLinearSystem(const SparsityType& sparsity)
+template<typename ValueType, typename IndexType>
+LinearSystem<ValueType, IndexType>
+createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
 {
-    const auto& exec = sparsity.mesh().exec();
-    const auto& mesh = sparsity.mesh();
+    const auto& exec = mesh.exec();
     localIdx rows {sparsity.rows()};
     localIdx nnzs {sparsity.nnz()};
 

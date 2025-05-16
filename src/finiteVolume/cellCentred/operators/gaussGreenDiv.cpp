@@ -159,7 +159,7 @@ void computeDivImp(
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
     const dsl::Coeff operatorScaling,
-    const SparsityPattern& sparsityPattern
+    const la::SparsityPattern& sparsityPattern
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -263,7 +263,7 @@ void computeDivImp(
 
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivImp<                                                                   \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const SurfaceInterpolation<TYPENAME>&, const dsl::Coeff, const SparsityPattern&)
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const SurfaceInterpolation<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&)
 
 NN_DECLARE_COMPUTE_IMP_DIV(scalar);
 NN_DECLARE_COMPUTE_IMP_DIV(Vec3);

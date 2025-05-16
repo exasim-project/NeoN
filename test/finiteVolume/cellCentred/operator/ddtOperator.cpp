@@ -57,7 +57,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     NeoN::Database db;
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = NeoN::la::SparsityPattern {mesh};
 
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "testVectorCollection");
@@ -88,10 +88,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     SECTION("implicit DdtOperator " + execName)
     {
-        auto ls = NeoN::la::createEmptyLinearSystem<
-            TestType,
-            NeoN::localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.implicitOperation(ls, 1.0, 0.5);

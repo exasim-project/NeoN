@@ -8,8 +8,8 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -37,10 +37,12 @@ public:
 
     std::string getName() const { return "sourceTerm"; }
 
+    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+
 private:
 
     const VolumeField<scalar>& coefficients_;
-    const std::shared_ptr<SparsityPattern> sparsityPattern_;
+    const la::SparsityPattern& sparsityPattern_;
 };
 
 

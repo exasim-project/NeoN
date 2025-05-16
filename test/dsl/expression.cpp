@@ -16,7 +16,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = NeoN::la::SparsityPattern {mesh};
 
     const size_t size {1};
     NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
@@ -59,10 +59,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(getVector(eqnF.explicitOperation(size)) == 0 * NeoN::one<TestType>());
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<
-        TestType,
-        NeoN::localIdx,
-        NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
 
     SECTION("Create equation and perform implicit Operation on " + execName)
     {

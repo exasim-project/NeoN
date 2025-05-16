@@ -15,7 +15,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = NeoN::la::SparsityPattern {mesh};
 
     auto fA = NeoN::Vector<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
     auto bf = NeoN::BoundaryData<TestType>(exec, mesh.boundaryMesh().offset());
@@ -88,10 +88,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        auto ls = NeoN::la::createEmptyLinearSystem<
-            TestType,
-            NeoN::localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
         Vector source(exec, 1, 2.0);
         c.implicitOperation(ls);
 

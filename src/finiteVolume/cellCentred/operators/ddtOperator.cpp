@@ -13,7 +13,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
-      sparsityPattern_(SparsityPattern::readOrCreate(field.mesh())) {};
+      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
@@ -23,7 +23,7 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
     auto [sourceView, field, oldVector] =
         views(source, this->field_.internalVector(), oldTime(this->field_).internalVector());
 
-    NeoN::parallelFor(
+    parallelFor(
         source.exec(),
         source.range(),
         KOKKOS_LAMBDA(const localIdx celli) {
@@ -41,10 +41,10 @@ void DdtOperator<ValueType>::implicitOperation(
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     const auto [diagOffs, oldVector] =
-        views(sparsityPattern_->diagOffset(), oldTime(this->field_).internalVector());
+        views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
-    NeoN::parallelFor(
+    parallelFor(
         ls.exec(),
         {0, oldVector.size()},
         KOKKOS_LAMBDA(const localIdx celli) {

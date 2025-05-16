@@ -19,7 +19,7 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoN::finiteVolume::cellCentred::SparsityPattern {mesh};
+    auto sp = NeoN::la::SparsityPattern {mesh};
 
     auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     fvcc::VolumeField<scalar> coeff(exec, "coeff", mesh, coeffBCs);
@@ -53,10 +53,7 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     SECTION("implicit SourceTerm" + execName)
     {
         fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi);
-        auto ls = NeoN::la::createEmptyLinearSystem<
-            TestType,
-            NeoN::localIdx,
-            NeoN::finiteVolume::cellCentred::SparsityPattern>(sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
         sTerm.implicitOperation(ls);
         auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
         const auto& volView = vol.view();

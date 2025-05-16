@@ -6,9 +6,9 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -29,7 +29,7 @@ void computeDivImp(
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
     const dsl::Coeff operatorScaling,
-    const SparsityPattern& sparsityPattern
+    const la::SparsityPattern& sparsityPattern
 );
 
 template<typename ValueType>
@@ -47,8 +47,7 @@ public:
     static std::string schema() { return "none"; }
 
     GaussGreenDiv(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
-        : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs),
-          sparsityPattern_(SparsityPattern::readOrCreate(mesh)) {};
+        : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs) {};
 
     virtual void
     div(VolumeField<ValueType>& divPhi,
@@ -68,7 +67,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         computeDivImp(
-            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, *sparsityPattern_.get()
+            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, this->getSparsityPattern()
         );
     };
 
@@ -109,9 +108,6 @@ public:
 private:
 
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
-
-    // TODO why store as shared_ptr
-    const std::shared_ptr<SparsityPattern> sparsityPattern_;
 };
 
 template class GaussGreenDiv<scalar>;

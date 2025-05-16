@@ -29,19 +29,19 @@ class LaplacianOperatorFactory :
 public:
 
     static std::unique_ptr<LaplacianOperatorFactory<ValueType>>
-    create(const Executor& exec, const UnstructuredMesh& uMesh, const Input& inputs)
+    create(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
                             ? std::get<Dictionary>(inputs).get<std::string>("LaplacianOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         LaplacianOperatorFactory<ValueType>::keyExistsOrError(key);
-        return LaplacianOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
+        return LaplacianOperatorFactory<ValueType>::table().at(key)(exec, mesh, inputs);
     }
 
     static std::string name() { return "LaplacianOperatorFactory"; }
 
     LaplacianOperatorFactory(const Executor& exec, const UnstructuredMesh& mesh)
-        : exec_(exec), mesh_(mesh) {};
+        : exec_(exec), mesh_(mesh), sparsityPattern_(la::SparsityPattern::readOrCreate(mesh)) {};
 
     virtual ~LaplacianOperatorFactory() {} // Virtual destructor
 
@@ -75,11 +75,15 @@ public:
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const = 0;
 
+    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+
 protected:
 
     const Executor exec_;
 
     const UnstructuredMesh& mesh_;
+
+    const la::SparsityPattern& sparsityPattern_;
 };
 
 template<typename ValueType>
