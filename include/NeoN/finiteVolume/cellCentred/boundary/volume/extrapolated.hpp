@@ -64,7 +64,7 @@ public:
     using ExtrapolatedType = Extrapolated<ValueType>;
 
     Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false}), mesh_(mesh)
+        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh)
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final

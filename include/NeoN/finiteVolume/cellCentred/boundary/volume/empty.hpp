@@ -19,7 +19,7 @@ class Empty : public VolumeBoundaryFactory<ValueType>::template Register<Empty<V
 public:
 
     Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false})
+        : Base(mesh, dict, patchID, {.assignable = true})
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
