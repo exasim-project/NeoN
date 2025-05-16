@@ -86,7 +86,7 @@ public:
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
-    const BoundaryAttributes& attributes() const
+    const BoundaryAttributes attributes() const
     {
         return boundaryCorrectionStrategy_->attributes();
     }

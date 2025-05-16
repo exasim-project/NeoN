@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/runtimeSelectionFactory.hpp"                            // Register
 #include "NeoN/core/dictionary.hpp"                                         // Dictionary
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp" // VolumeBoundaryFactory
