@@ -99,6 +99,8 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
@@ -109,6 +111,8 @@
       <node id="20">
         <label>NeoN/core/vector/vectorFreeFunctions.hpp</label>
         <link refid="vectorFreeFunctions_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="21" relation="include">
         </childnode>
       </node>
@@ -468,6 +472,8 @@
       <node id="41">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
         <link refid="ddtOperator_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
@@ -611,7 +617,7 @@
 <codeline lineno="53" refid="classNeoN_1_1BoundaryData_1a511013efddae95937965d5c4c88983ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData_1a511013efddae95937965d5c4c88983ec" kindref="member">BoundaryData</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(rhs.exec_),<sp/>value_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.value_),<sp/>refValue_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.refValue_),</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.valueFraction_),<sp/>refGrad_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.refGrad_),</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.boundaryTypes_),<sp/>offset_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.offset_),</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>rhs.boundaryTypes_),<sp/>offset_(<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>{},<sp/>rhs.offset_),</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_(rhs.nBoundaries_),<sp/>nBoundaryFaces_(rhs.nBoundaryFaces_)</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="59"><highlight class="normal"></highlight></codeline>
@@ -619,14 +625,14 @@
 <codeline lineno="67" refid="classNeoN_1_1BoundaryData_1a1dea4ea23b79ff66a039026f7700f47f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData_1a1dea4ea23b79ff66a039026f7700f47f" kindref="member">BoundaryData</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaryTypes)</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>exec_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>),<sp/>value_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>),<sp/>refValue_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>),</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>),<sp/>refGrad_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>),</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>nBoundaryTypes),<sp/>offset_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>nBoundaryTypes<sp/>+<sp/>1),</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>nBoundaryTypes),<sp/>offset_(<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>{},<sp/>nBoundaryTypes<sp/>+<sp/>1),</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_(nBoundaryTypes),<sp/>nBoundaryFaces_(<ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>)</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
 <codeline lineno="80" refid="classNeoN_1_1BoundaryData_1a7ddc0754967ebbf2f8ad82c82f58b1d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData_1a7ddc0754967ebbf2f8ad82c82f58b1d4" kindref="member">BoundaryData</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;localIdx&gt;&amp;<sp/>offsets)</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData</ref>(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>offsets.back(),<sp/>static_cast&lt;<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;(offsets.size()<sp/>-<sp/>1))</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>,<sp/>offsets);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>{},<sp/>offsets);</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"></highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
@@ -654,61 +660,66 @@
 <codeline lineno="141"><highlight class="normal"></highlight></codeline>
 <codeline lineno="146" refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1BoundaryData_1ae02127156206dae46c11bf1d84c25a21" kindref="member">nBoundaryFaces</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>nBoundaryFaces_;<sp/>}</highlight></codeline>
 <codeline lineno="147"><highlight class="normal"></highlight></codeline>
-<codeline lineno="148" refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>exec_;<sp/>}</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"></highlight></codeline>
-<codeline lineno="150" refid="classNeoN_1_1BoundaryData_1a756dd1f45f542b2b12efa511871ad8a8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1a756dd1f45f542b2b12efa511871ad8a8" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"></highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>maybe<sp/>dont<sp/>overwrite<sp/>nBoundaries<sp/>and<sp/>nBoundaryFaces</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>but<sp/>use<sp/>them<sp/>for<sp/>a<sp/>sanity<sp/>check</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_<sp/>=<sp/>rhs.nBoundaries_;</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaryFaces_<sp/>=<sp/>rhs.nBoundaryFaces_;</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value_<sp/>=<sp/>rhs.value_;</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue_<sp/>=<sp/>rhs.refValue_;</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_<sp/>=<sp/>rhs.valueFraction_;</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGrad_<sp/>=<sp/>rhs.refGrad_;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_<sp/>=<sp/>rhs.boundaryTypes_;</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/>rhs.offset_;</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152" refid="classNeoN_1_1BoundaryData_1ac6296db77d6f9c0136a8a9afe2e534d5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1BoundaryData_1ac6296db77d6f9c0136a8a9afe2e534d5" kindref="member">nBoundaryFaces</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchId)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="153"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId<sp/>+<sp/>1]<sp/>-<sp/>offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId];</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157" refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1aa90fa38463e69059c9c8ad7b717d73cf" kindref="member">exec</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>exec_;<sp/>}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159" refid="classNeoN_1_1BoundaryData_1a756dd1f45f542b2b12efa511871ad8a8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1a756dd1f45f542b2b12efa511871ad8a8" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>maybe<sp/>dont<sp/>overwrite<sp/>nBoundaries<sp/>and<sp/>nBoundaryFaces</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>but<sp/>use<sp/>them<sp/>for<sp/>a<sp/>sanity<sp/>check</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_<sp/>=<sp/>rhs.nBoundaries_;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaryFaces_<sp/>=<sp/>rhs.nBoundaryFaces_;</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"></highlight></codeline>
-<codeline lineno="167" refid="classNeoN_1_1BoundaryData_1ad45bbd0eeb993923bf2264fc34a98ebd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1ad45bbd0eeb993923bf2264fc34a98ebd" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;&amp;<sp/>rhs)</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>maybe<sp/>dont<sp/>overwrite<sp/>nBoundaries<sp/>and<sp/>nBoundaryFaces</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>but<sp/>use<sp/>them<sp/>for<sp/>a<sp/>sanity<sp/>check</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_<sp/>=<sp/>rhs.nBoundaries_;</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaryFaces_<sp/>=<sp/>rhs.nBoundaryFaces_;</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value_<sp/>=<sp/>std::move(rhs.value_);</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue_<sp/>=<sp/>std::move(rhs.refValue_);</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_<sp/>=<sp/>std::move(rhs.valueFraction_);</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGrad_<sp/>=<sp/>std::move(rhs.refGrad_);</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_<sp/>=<sp/>std::move(rhs.boundaryTypes_);</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/>std::move(rhs.offset_);</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value_<sp/>=<sp/>rhs.value_;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue_<sp/>=<sp/>rhs.refValue_;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_<sp/>=<sp/>rhs.valueFraction_;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGrad_<sp/>=<sp/>rhs.refGrad_;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_<sp/>=<sp/>rhs.boundaryTypes_;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/>rhs.offset_;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176" refid="classNeoN_1_1BoundaryData_1ad45bbd0eeb993923bf2264fc34a98ebd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1BoundaryData_1ad45bbd0eeb993923bf2264fc34a98ebd" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData&lt;T&gt;</ref>&amp;&amp;<sp/>rhs)</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>maybe<sp/>dont<sp/>overwrite<sp/>nBoundaries<sp/>and<sp/>nBoundaryFaces</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>but<sp/>use<sp/>them<sp/>for<sp/>a<sp/>sanity<sp/>check</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaries_<sp/>=<sp/>rhs.nBoundaries_;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nBoundaryFaces_<sp/>=<sp/>rhs.nBoundaryFaces_;</highlight></codeline>
 <codeline lineno="183"><highlight class="normal"></highlight></codeline>
-<codeline lineno="188" refid="classNeoN_1_1BoundaryData_1a4611b34b97e77105f477f52beb1c621d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;localIdx,<sp/>localIdx&gt;<sp/><ref refid="classNeoN_1_1BoundaryData_1a4611b34b97e77105f477f52beb1c621d" kindref="member">range</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchId)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="189"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId],<sp/>offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId<sp/>+<sp/>1]};</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value_<sp/>=<sp/>std::move(rhs.value_);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue_<sp/>=<sp/>std::move(rhs.refValue_);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction_<sp/>=<sp/>std::move(rhs.valueFraction_);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGrad_<sp/>=<sp/>std::move(rhs.refGrad_);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryTypes_<sp/>=<sp/>std::move(rhs.boundaryTypes_);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>offset_<sp/>=<sp/>std::move(rhs.offset_);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"></highlight></codeline>
-<codeline lineno="193"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="194"><highlight class="normal"></highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>value_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>refValue_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/>valueFraction_;<sp/></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>refGrad_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;int&gt;</ref><sp/>boundaryTypes_;<sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/>offset_;<sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaries_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaryFaces_;<sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="206"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"></highlight></codeline>
-<codeline lineno="208"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="197" refid="classNeoN_1_1BoundaryData_1a4611b34b97e77105f477f52beb1c621d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;localIdx,<sp/>localIdx&gt;<sp/><ref refid="classNeoN_1_1BoundaryData_1a4611b34b97e77105f477f52beb1c621d" kindref="member">range</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchId)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="198"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId],<sp/>offset_.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>()[patchId<sp/>+<sp/>1]};</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>value_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>refValue_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/>valueFraction_;<sp/></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;T&gt;</ref><sp/>refGrad_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;int&gt;</ref><sp/>boundaryTypes_;<sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/>offset_;<sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaries_;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaryFaces_;<sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="215"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp"/>
   </compounddef>

@@ -1,9 +1,12 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/dsl/explicit.hpp File Reference}
 \hypertarget{explicit_8hpp}{}\label{explicit_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp}}
 {\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/dsl/spatial\+Operator.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/dsl/temporal\+Operator.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/fields/volume\+Field.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/fields/surface\+Field.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/operators/ddt\+Operator.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/operators/laplacian\+Operator.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/operators/div\+Operator.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/operators/surface\+Integrate.\+hpp"{}}\newline
@@ -20,11 +23,15 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp}{Neo\+N\+::dsl\+::exp}}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{Temporal\+Operator}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae101ce9bcc7eae9e5f3acdf504196eed}{Neo\+N\+::dsl\+::exp\+::ddt}} (\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ Value\+Type $>$ \&phi)
+\item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a0e85cf6eef71a843487e860a1e6f3130}{Neo\+N\+::dsl\+::exp\+::div}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&phi)
 \item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab0a56fc4db43ca8d92ea4e2f664f2d60}{Neo\+N\+::dsl\+::exp\+::div}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&flux)
 \item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae30d0bc47e8b49cc18735a53a2c10c65}{Neo\+N\+::dsl\+::exp\+::laplacian}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&phi)
+\item 
+\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a3c7c086e17a807511740e0f7d04841c5}{Neo\+N\+::dsl\+::exp\+::laplacian}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&phi)
 \item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_af4f75aa67931b23e7662e6ff3af4b984}{Neo\+N\+::dsl\+::exp\+::source}} (\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&coeff, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&phi)
 \end{DoxyCompactItemize}

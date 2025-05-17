@@ -11,7 +11,7 @@ var searchData=
   ['solverfactory_8',['SolverFactory',['../classNeoN_1_1la_1_1SolverFactory.html',1,'NeoN::la']]],
   ['solverstats_9',['SolverStats',['../structNeoN_1_1la_1_1SolverStats.html',1,'NeoN::la']]],
   ['sourceterm_10',['SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['sparsitypattern_11',['SparsityPattern',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['sparsitypattern_11',['SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html',1,'NeoN::la']]],
   ['spatialoperator_12',['SpatialOperator',['../classNeoN_1_1dsl_1_1SpatialOperator.html',1,'NeoN::dsl']]],
   ['stencildatabase_13',['StencilDataBase',['../classNeoN_1_1StencilDataBase.html',1,'NeoN']]],
   ['surfaceboundary_14',['SurfaceBoundary',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html',1,'NeoN::finiteVolume::cellCentred']]],
