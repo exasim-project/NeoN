@@ -10,6 +10,7 @@
     <innerclass refid="classNeoN_1_1la_1_1Solver" prot="public">NeoN::la::Solver</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1SolverFactory" prot="public">NeoN::la::SolverFactory</innerclass>
     <innerclass refid="structNeoN_1_1la_1_1SolverStats" prot="public">NeoN::la::SolverStats</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1SparsityPattern" prot="public">NeoN::la::SparsityPattern</innerclass>
     <sectiondef kind="func">
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a56b0fbaebb30bd6efeb9a1fc5b6ab1bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -41,9 +42,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="125" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="125" bodyend="134"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="126" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="126" bodyend="135"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1abfb8a53aafd31aadc7ffc30c8e721dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1acb4e19af63d86d37db2eb4ec340f6c95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -51,17 +52,18 @@
           <param>
             <type>typename IndexType</type>
           </param>
-          <param>
-            <type>typename SparsityType</type>
-          </param>
         </templateparamlist>
         <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, IndexType &gt;</type>
         <definition>LinearSystem&lt; ValueType, IndexType &gt; NeoN::la::createEmptyLinearSystem</definition>
-        <argsstring>(const SparsityType &amp;sparsity)</argsstring>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const SparsityPattern &amp;sparsity)</argsstring>
         <name>createEmptyLinearSystem</name>
         <qualifiedname>NeoN::la::createEmptyLinearSystem</qualifiedname>
         <param>
-          <type>const SparsityType &amp;</type>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
           <declname>sparsity</declname>
         </param>
         <briefdescription>
@@ -70,7 +72,47 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="140" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="140" bodyend="185"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="142" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="142" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ae16c33dee67454c8eecf1d83b6ef762d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref></type>
+        <definition>SparsityPattern NeoN::la::createSparsity</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh)</argsstring>
+        <name>createSparsity</name>
+        <qualifiedname>NeoN::la::createSparsity</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp" line="92" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp" declline="92" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ac639dfd616bbcc076fb80f0965e132d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref></type>
+        <definition>SparsityPattern NeoN::la::updateSparsity</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, SparsityPattern &amp;in)</argsstring>
+        <name>updateSparsity</name>
+        <qualifiedname>NeoN::la::updateSparsity</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp" line="94" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp" declline="94" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

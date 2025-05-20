@@ -24,7 +24,6 @@
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection" prot="public">NeoN::finiteVolume::cellCentred::OldTimeCollection</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument" prot="public">NeoN::finiteVolume::cellCentred::OldTimeDocument</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm" prot="public">NeoN::finiteVolume::cellCentred::SourceTerm</innerclass>
-    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" prot="public">NeoN::finiteVolume::cellCentred::SparsityPattern</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" prot="public">NeoN::finiteVolume::cellCentred::SurfaceBoundary</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" prot="public">NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" prot="public">NeoN::finiteVolume::cellCentred::SurfaceField</innerclass>
@@ -412,7 +411,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="17" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" declline="17" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5fb84558accffe6cd22b728664f8f4d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a91df1880106d9d15a41fd75153aac3f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -420,7 +419,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeDivImp</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const SurfaceInterpolation&lt; ValueType &gt; &amp;surfInterp, const dsl::Coeff operatorScaling, const SparsityPattern &amp;sparsityPattern)</argsstring>
+        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const SurfaceInterpolation&lt; ValueType &gt; &amp;surfInterp, const dsl::Coeff operatorScaling, const la::SparsityPattern &amp;sparsityPattern)</argsstring>
         <name>computeDivImp</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeDivImp</qualifiedname>
         <param>
@@ -444,7 +443,7 @@
           <declname>operatorScaling</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &amp;</type>
           <declname>sparsityPattern</declname>
         </param>
         <briefdescription>
@@ -489,7 +488,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="18" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" declline="18" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1afc86f464f7d3c93f86ff78d55658a7be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aa599ce2e4715be7b3c55ce5f05fd0a67" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -497,7 +496,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeLaplacianImpl</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;gamma, VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling, const SparsityPattern &amp;sparsityPattern, const FaceNormalGradient&lt; ValueType &gt; &amp;faceNormalGradient)</argsstring>
+        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;gamma, VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling, const la::SparsityPattern &amp;sparsityPattern, const FaceNormalGradient&lt; ValueType &gt; &amp;faceNormalGradient)</argsstring>
         <name>computeLaplacianImpl</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeLaplacianImpl</qualifiedname>
         <param>
@@ -517,7 +516,7 @@
           <declname>operatorScaling</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &amp;</type>
           <declname>sparsityPattern</declname>
         </param>
         <param>

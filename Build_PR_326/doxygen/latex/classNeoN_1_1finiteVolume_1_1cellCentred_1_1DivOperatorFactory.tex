@@ -25,6 +25,8 @@ virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOpe
 \item 
 virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_ad3d8a1bde9b3cc2e887235ed080c35be}{div}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling) const =0
 \item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a30dd4917fa2395b6ce28e872eb64c75a}{get\+Sparsity\+Pattern}} () const
+\item 
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{Div\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_ac56521caa10142a39b90733a12707c11}{clone}} () const =0
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
@@ -40,6 +42,8 @@ static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a513f76c971b23dcb13475dc2379d22ac}{exec\+\_\+}}
 \item 
 const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a5e7ee41f33dfbf2a1dcc7c09f7c5b932}{mesh\+\_\+}}
+\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a90ff60c6f54a54e4808014b857e6ae51}{sparsity\+Pattern\+\_\+}}
 \end{DoxyCompactItemize}
 
 
@@ -124,6 +128,17 @@ virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOpe
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Div\+Operator\+Factory}}$<$ Value\+Type $>$\+::div (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{div\+Phi,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{face\+Flux,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{phi,  }\item[{const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}}}]{operator\+Scaling }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a30dd4917fa2395b6ce28e872eb64c75a}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a30dd4917fa2395b6ce28e872eb64c75a} 
+\index{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}!getSparsityPattern@{getSparsityPattern}}
+\index{getSparsityPattern@{getSparsityPattern}!NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{getSparsityPattern()}{getSparsityPattern()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Div\+Operator\+Factory}}$<$ Value\+Type $>$\+::get\+Sparsity\+Pattern (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a5d609625a905851cf068d8d7bde21b5f}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a5d609625a905851cf068d8d7bde21b5f} 
 \index{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}!name@{name}}
 \index{name@{name}!NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}}
@@ -147,7 +162,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a5e7ee41f33dfbf2a1dcc7c09f7c5b932}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a5e7ee41f33dfbf2a1dcc7c09f7c5b932} 
 \index{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}!mesh\_@{mesh\_}}
@@ -158,7 +173,18 @@ const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}\& \mb
 
 
 
-Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a90ff60c6f54a54e4808014b857e6ae51}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a90ff60c6f54a54e4808014b857e6ae51} 
+\index{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}!sparsityPattern\_@{sparsityPattern\_}}
+\index{sparsityPattern\_@{sparsityPattern\_}!NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::DivOperatorFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{sparsityPattern\_}{sparsityPattern\_}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}}\& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Div\+Operator\+Factory}}$<$ Value\+Type $>$\+::sparsity\+Pattern\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{divOperator_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{divOperator_8hpp_source}{div\+Operator.\+hpp}}.
 
 
 

@@ -330,6 +330,12 @@ cmake<span class="w"> </span>--build<span class="w"> </span>--preset<span class=
 </div></blockquote>
 <p>It should be noted that the build directory changes depending on the chosen preset. This way you can have different build directories for different presets and easily switch between them.</p>
 </section>
+<section id="building-with-petsc">
+<h2>Building with Petsc<a class="headerlink" href="#building-with-petsc" title="Link to this heading">¶</a></h2>
+<p>To build NeoN with Petsc support, currently a few additional steps have to be performed. The reason is that kokkos has to be build by Petsc rather than by the provided cmake files in order that NeoN works with Petsc. An example how to download, configure and build Petsc with kokkos support is provided in scripts/configure_petsc.sh. It is important that before configuring and building NeoN with Petsc support, Petsc is configured and build with kokkos support. This is done by the following code line:</p>
+<p>./configure –with-64-bit-indices=0 –with-precision=double –with-cuda=1 –with-cuda-dir=/usr/local/cuda-12.3 –with-mpi=1 –with-fc=0 –force –with-mpi=1 –with-32bits-pci-domain=1 –prefix=optClangkokkos4dot3dot01/petsc –with-cc=mpicc –with-cxx=mpicxx –with-debugging=no –download-kokkos –download-kokkos-kernels –with-kokkos-kernels=1 –with-kokkos=1 –download-kokkos-cmake-arguments=’-DKokkos_ENABLE_CUDA_CONSTEXPR=ON -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DKokkos_ENABLE_DEBUG=ON -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=ON -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON’ –download-kokkos-commit=4.3.01 –download-kokkos-kernels-commit=4.3.01</p>
+<p>What is essential, is that the compiler used to compile kokkos is the same as the one we want to use later to build NeoN. The kokkos compiler is set by the flag: -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 in the configure command.</p>
+</section>
 <section id="building-with-spack">
 <h2>Building with Spack<a class="headerlink" href="#building-with-spack" title="Link to this heading">¶</a></h2>
 <p>A good way to simplify the process of building NeoN is by using spack.
@@ -461,6 +467,7 @@ ms-vscode.cmake-tools
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#building-with-cmake-presets">Building with CMake Presets</a></li>
+<li><a class="reference internal" href="#building-with-petsc">Building with Petsc</a></li>
 <li><a class="reference internal" href="#building-with-spack">Building with Spack</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#workflow-with-vscode">Workflow with vscode</a></li>
