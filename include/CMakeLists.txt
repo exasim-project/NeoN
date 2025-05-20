@@ -3,15 +3,12 @@
 
 add_library(NeoN_public_api INTERFACE) # dummy target
 
-set_property(
-  TARGET NeoN_public_api
-  APPEND
-  PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}")
+# set_property( TARGET NeoN_public_api APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+# "${CMAKE_CURRENT_BINARY_DIR}")
 
-set_property(
-  TARGET NeoN_public_api
-  APPEND
-  PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories(
+  NeoN_public_api INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:.>)
 
 if(NeoN_WITH_GINKGO)
   target_link_libraries(NeoN_public_api INTERFACE Ginkgo::ginkgo)
@@ -55,7 +52,10 @@ if(NeoN_ENABLE_MPI_SUPPORT)
 endif()
 
 # Get list of some *.hpp files in folder include
-file(GLOB_RECURSE include_files *.hpp)
+file(
+  GLOB_RECURSE include_files
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/NeoN
+  *.hpp)
 
 # Convert the list of files into #includes
 foreach(include_file ${include_files})

@@ -19,7 +19,7 @@ neon_unit_test(segmentedVector)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace
-                                                      NeoN_public_api)
+                                                      NeoN)
 if(WIN32)
   set_target_properties(
     runTimeSelectionFactory

@@ -27,6 +27,7 @@ function(NeoN_unit_test TEST)
   endif()
 
   add_executable(${NeoN_COMMAND} "${TEST}.cpp")
+  install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_PETSC)
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES})

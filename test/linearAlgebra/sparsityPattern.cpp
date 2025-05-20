@@ -35,7 +35,6 @@ TEST_CASE("SparsityPattern")
 
     SECTION("has correct diagOffs" + execName)
     {
-        auto sp = SparsityPattern {mesh};
         auto diagOffs = sp.diagOffset().copyToHost();
         auto diagOffsS = diagOffs.view();
 

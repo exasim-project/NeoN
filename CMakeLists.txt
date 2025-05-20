@@ -180,3 +180,28 @@ if(NeoN_ENABLE_IWYU)
 endif()
 
 include(cmake/banner.cmake)
+
+install(
+  TARGETS NeoN NeoN_public_api
+  EXPORT NeoN
+  INCLUDES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+  EXPORT NeoN
+  FILE NeoN.cmake
+  NAMESPACE NeoN::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoN.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/NeoN.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoN.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
