@@ -54,7 +54,7 @@ endif()
 # Get list of some *.hpp files in folder include
 file(
   GLOB_RECURSE include_files
-  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/NeoN
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
   *.hpp)
 
 # Convert the list of files into #includes
