@@ -183,13 +183,13 @@ include(cmake/banner.cmake)
 
 install(
   TARGETS NeoN NeoN_public_api
-  EXPORT NeoN
+  EXPORT NeoNTargets
   INCLUDES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(
-  EXPORT NeoN
-  FILE NeoN.cmake
+  EXPORT NeoNTargets
+  FILE NeoNTargets.cmake
   NAMESPACE NeoN::
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 

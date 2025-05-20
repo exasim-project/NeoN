@@ -8,4 +8,25 @@ include("${CMAKE_CURRENT_LIST_DIR}/NeoN.cmake")
 #check_required_components(NeoN)
 
 include(CMakeFindDependencyMacro)
-#find_dependency(ZLIB REQUIRED)
+
+set(NeoN_WITH_ADIOS2 @NeoN_WITH_ADIOS2@)
+set(NeoN_WITH_GINKGO @NeoN_WITH_GINKGO@)
+set(NeoN_WITH_SUNDIALS @NeoN_WITH_SUNDIALS@)
+set(NeoN_WITH_PETSC @NeoN_WITH_PETSC@)
+
+find_dependency(Kokkos REQUIRED)
+find_dependency(cpptrace REQUIRED)
+find_dependency(nlohmann_json REQUIRED)
+find_dependency(spdlog REQUIRED)
+
+if(${NeoN_WITH_GINKGO})
+find_dependency(Ginkgo REQUIRED)
+endif()
+
+if(${NeoN_WITH_SUNDIALS})
+find_dependency(sundials REQUIRED)
+endif()
+
+if(${NeoN_WITH_ADIOS2})
+find_dependency(adios2 REQUIRED)
+endif()
