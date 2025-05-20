@@ -200,10 +200,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoN.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/NeoN.cmake"
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoN.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
 export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
