@@ -205,3 +205,15 @@ configure_package_config_file(
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoN.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+
+# install internal ginkgo version
+if(Ginkgo_POPULATED)
+  install(
+    TARGETS ginkgo
+    EXPORT GinkgoTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
+endif()
