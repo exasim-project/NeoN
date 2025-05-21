@@ -64,8 +64,8 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
                   NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options Kokkos::kokkos)
-target_link_libraries(NeoN PRIVATE Kokkos::kokkos sundials_core sundials_arkode sundials_nvecserial
-                                   cpptrace::cpptrace)
+target_link_libraries(NeoN PUBLIC Kokkos::kokkos sundials_core sundials_arkode sundials_nvecserial
+                                  cpptrace::cpptrace)
 
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
