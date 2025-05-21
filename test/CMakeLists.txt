@@ -40,8 +40,7 @@ function(NeoN_unit_test TEST)
   target_include_directories(${NeoN_COMMAND} PRIVATE "${TEST_CATCH2_DIR}")
   set_target_properties(${NeoN_COMMAND} PROPERTIES OUTPUT_NAME ${TEST})
 
-  target_link_libraries(${NeoN_COMMAND} PRIVATE NeoN_warnings NeoN_options Kokkos::kokkos NeoN
-                                                cpptrace::cpptrace)
+  target_link_libraries(${NeoN_COMMAND} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
   if(NOT NeoN_MPI_SIZE)
     target_link_libraries(${NeoN_COMMAND} PRIVATE NeoN_catch_main)
   else()

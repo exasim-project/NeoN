@@ -207,10 +207,8 @@ configure_package_config_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
-
 # install internal ginkgo version
-if(Ginkgo_POPULATED)
+if(ginkgo_POPULATED)
   install(
     TARGETS ginkgo
     EXPORT GinkgoTargets
@@ -219,11 +217,8 @@ if(Ginkgo_POPULATED)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
 endif()
 
-if(Kokkos_POPULATED)
-  install(
-    TARGETS kokkos
-    EXPORT KokkosTargets
-    INCLUDES
-    DESTINATION include)
-  install(EXPORT KokkosTargets NAMESPACE Kokkos::)
+if(NOT kokkos_POPULATED)
+  export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+else()
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos")
 endif()

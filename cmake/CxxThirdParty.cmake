@@ -36,7 +36,7 @@ endif()
 
 find_package(Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION} QUIET)
 
-if(NOT ${Kokkos_FOUND})
+if(NOT Kokkos_FOUND)
   include(FetchContent)
   include(cmake/AutoEnableDevice.cmake)
 
