@@ -218,3 +218,12 @@ if(Ginkgo_POPULATED)
     DESTINATION include)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
 endif()
+
+if(Kokkos_POPULATED)
+  install(
+    TARGETS kokkos
+    EXPORT KokkosTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT KokkosTargets NAMESPACE Kokkos::)
+endif()
