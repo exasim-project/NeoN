@@ -182,7 +182,7 @@ endif()
 include(cmake/banner.cmake)
 
 install(
-  TARGETS NeoN NeoN_public_api
+  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
   EXPORT NeoNTargets
   INCLUDES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -215,6 +215,16 @@ if(ginkgo_POPULATED)
     INCLUDES
     DESTINATION include)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
+endif()
+
+# install internal ginkgo version
+if(cpptrace_POPULATED)
+  install(
+    TARGETS cpptrace
+    EXPORT CpptraceTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
 endif()
 
 if(NOT kokkos_POPULATED)

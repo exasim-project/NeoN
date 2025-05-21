@@ -63,14 +63,8 @@ cpmaddpackage(
   0.7.3
   SYSTEM)
 
-cpmaddpackage(
-  NAME
-  nlohmann_json
-  VERSION
-  3.11.3
-  URL
-  https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip
-  SYSTEM)
+# currently unused cpmaddpackage( NAME nlohmann_json VERSION 3.11.3 URL
+# https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip SYSTEM)
 
 if(${NeoN_WITH_ADIOS2})
 
@@ -153,23 +147,11 @@ if(${NeoN_WITH_SUNDIALS})
     ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
-cpmaddpackage(
-  NAME
-  spdlog
-  URL
-  https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.zip
-  VERSION
-  1.13.0
-  SYSTEM)
+# currently not used cpmaddpackage( NAME spdlog URL
+# https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.zip VERSION 1.13.0 SYSTEM)
 
-cpmaddpackage(
-  NAME
-  cxxopts
-  URL
-  https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip
-  VERSION
-  3.2.0
-  SYSTEM)
+# currently not used cpmaddpackage( NAME cxxopts URL
+# https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip VERSION 3.2.0 SYSTEM)
 
 if(${NeoN_WITH_GINKGO})
   cpmaddpackage(
