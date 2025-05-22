@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
 add_library(NeoN_public_api INTERFACE) # dummy target
+add_library(NeoN::NeoN_public_api ALIAS NeoN_public_api) # dummy target
 
 # set_property( TARGET NeoN_public_api APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 # "${CMAKE_CURRENT_BINARY_DIR}")

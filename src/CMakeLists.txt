@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
 add_library(NeoN ${NeoN_LIB_TYPE})
+add_library(NeoN::NeoN ALIAS NeoN) # dummy target
 
 include(GNUInstallDirs)
 
