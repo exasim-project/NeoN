@@ -217,7 +217,7 @@ if(ginkgo_POPULATED)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
 endif()
 
-# install internal ginkgo version
+# install internal cpptrace version
 if(cpptrace_POPULATED)
   install(
     TARGETS cpptrace
@@ -226,6 +226,16 @@ if(cpptrace_POPULATED)
     DESTINATION include)
   install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
 endif()
+
+# install internal sundials version
+#if(sundials_POPULATED)
+#  install(
+#    TARGETS cvode nvec arkode sundials_core_shared
+#    EXPORT SundialsTargets
+#    INCLUDES
+    #    DESTINATION include)
+    #  install(EXPORT SundialsTargets NAMESPACE SUNDIALS::)
+    #  endif()
 
 if(NOT kokkos_POPULATED)
   export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")

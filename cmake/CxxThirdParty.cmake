@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
+
 set(NeoN_KOKKOS_CHECKOUT_VERSION
     "4.3.00"
     CACHE STRING "Use specific version of Kokkos")
@@ -134,17 +136,17 @@ if(${NeoN_WITH_SUNDIALS})
   endif()
 
   cpmaddpackage(
-    NAME
-    sundials
-    GITHUB_REPOSITORY
-    LLNL/sundials
-    VERSION
-    7.1.1
-    SYSTEM
-    YES
-    OPTIONS
-    ${SUNDIALS_OPTIONS}
-    ${SUNDIALS_CUDA_OPTIONS})
+     NAME
+     SUNDIALS
+     GITHUB_REPOSITORY
+     LLNL/sundials
+     VERSION
+     7.3.0
+     SYSTEM
+     YES
+     OPTIONS
+     ${SUNDIALS_OPTIONS}
+     ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
 # currently not used cpmaddpackage( NAME spdlog URL
