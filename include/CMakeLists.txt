@@ -24,7 +24,7 @@ if(NeoN_WITH_SUNDIALS)
 target_link_libraries(NeoN_public_api INTERFACE SUNDIALS::arkode SUNDIALS::nvecserial SUNDIALS::core)
 endif()
 
-target_link_libraries(NeoN_public_api INTERFACE Kokkos::kokkos)
+target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokkos)
 
 if(NeoN_WITH_PETSC)
   add_definitions(${PETSc_DEFINITIONS})
