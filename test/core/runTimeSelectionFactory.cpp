@@ -9,7 +9,8 @@
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include "NeoN/NeoN.hpp"
+//#include "NeoN/NeoN.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
 
 class BaseClass : public NeoN::RuntimeSelectionFactory<BaseClass, NeoN::Parameters<>>
 {
@@ -77,7 +78,7 @@ TEST_CASE("RunTimeSelectionFactory")
 
     SECTION("classes are registered")
     {
-        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 2);
+        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 10);
         for (const auto& it : NeoN::BaseClassDocumentation::docTable())
         {
             std::string baseClassName = it.first;
