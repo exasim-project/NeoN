@@ -3,7 +3,7 @@
 
 #include "NeoN/timeIntegration/rungeKutta.hpp"
 
-#if NF_WITH_SUNDIALS
+#if NN_WITH_SUNDIALS
 
 namespace NeoN::timeIntegration
 {

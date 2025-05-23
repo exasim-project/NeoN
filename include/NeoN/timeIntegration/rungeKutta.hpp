@@ -3,7 +3,7 @@
 
 #pragma once
 
-#if NF_WITH_SUNDIALS
+#if NN_WITH_SUNDIALS
 
 #include <functional>
 #include <memory>
