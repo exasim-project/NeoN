@@ -90,6 +90,7 @@ jobs:
          cmake --preset develop \
            -DNeoN_DEVEL_TOOLS=OFF \
            -DNeoN_BUILD_TESTS=OFF \
+           -DFOAMADAPTER_BUILD_BENCHMARKS=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
            -DFOAMADAPTER_NEON_VERSION=${{env.checkout}}
          cmake --build  --preset develop

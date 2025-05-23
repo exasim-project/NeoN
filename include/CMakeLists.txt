@@ -2,16 +2,14 @@
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
 add_library(NeoN_public_api INTERFACE) # dummy target
+add_library(NeoN::NeoN_public_api ALIAS NeoN_public_api) # dummy target
 
-set_property(
-  TARGET NeoN_public_api
-  APPEND
-  PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}")
+# set_property( TARGET NeoN_public_api APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+# "${CMAKE_CURRENT_BINARY_DIR}")
 
-set_property(
-  TARGET NeoN_public_api
-  APPEND
-  PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories(
+  NeoN_public_api INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:.>)
 
 if(NeoN_WITH_GINKGO)
   target_link_libraries(NeoN_public_api INTERFACE Ginkgo::ginkgo)
@@ -20,6 +18,16 @@ if(NeoN_WITH_GINKGO)
 else()
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_GINKGO=0)
 endif()
+
+if(NeoN_WITH_SUNDIALS)
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=1)
+  target_link_libraries(NeoN_public_api INTERFACE SUNDIALS::arkode SUNDIALS::nvecserial
+                                                  SUNDIALS::core)
+else()
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=0)
+endif()
+
+target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokkos)
 
 if(NeoN_WITH_PETSC)
   add_definitions(${PETSc_DEFINITIONS})
@@ -55,7 +63,10 @@ if(NeoN_ENABLE_MPI_SUPPORT)
 endif()
 
 # Get list of some *.hpp files in folder include
-file(GLOB_RECURSE include_files *.hpp)
+file(
+  GLOB_RECURSE include_files
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
+  *.hpp)
 
 # Convert the list of files into #includes
 foreach(include_file ${include_files})

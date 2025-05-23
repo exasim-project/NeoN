@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
 add_library(NeoN ${NeoN_LIB_TYPE})
+add_library(NeoN::NeoN ALIAS NeoN) # dummy target
 
 include(GNUInstallDirs)
 
@@ -64,8 +65,7 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
                   NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
-target_link_libraries(NeoN PUBLIC NeoN_public_api Kokkos::kokkos sundials_core sundials_arkode
-                                  sundials_nvecserial cpptrace::cpptrace)
+target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
@@ -77,5 +77,3 @@ if(WIN32)
                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<0:>
                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/$<0:>)
 endif()
-
-install(TARGETS NeoN)

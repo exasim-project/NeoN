@@ -3,6 +3,8 @@
 
 #include "NeoN/timeIntegration/rungeKutta.hpp"
 
+#if NN_WITH_SUNDIALS
+
 namespace NeoN::timeIntegration
 {
 
@@ -146,3 +148,5 @@ void RungeKutta<SolutionVectorType>::initODEMemory(const scalar t)
 
 template class RungeKutta<finiteVolume::cellCentred::VolumeField<scalar>>;
 }
+
+#endif

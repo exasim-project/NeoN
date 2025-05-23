@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
+# set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
+
 set(NeoN_KOKKOS_CHECKOUT_VERSION
     "4.3.00"
     CACHE STRING "Use specific version of Kokkos")
@@ -36,7 +38,7 @@ endif()
 
 find_package(Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION} QUIET)
 
-if(NOT ${Kokkos_FOUND})
+if(NOT Kokkos_FOUND)
   include(FetchContent)
   include(cmake/AutoEnableDevice.cmake)
 
@@ -63,14 +65,8 @@ cpmaddpackage(
   0.7.3
   SYSTEM)
 
-cpmaddpackage(
-  NAME
-  nlohmann_json
-  VERSION
-  3.11.3
-  URL
-  https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip
-  SYSTEM)
+# currently unused cpmaddpackage( NAME nlohmann_json VERSION 3.11.3 URL
+# https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip SYSTEM)
 
 if(${NeoN_WITH_ADIOS2})
 
@@ -141,11 +137,11 @@ if(${NeoN_WITH_SUNDIALS})
 
   cpmaddpackage(
     NAME
-    sundials
+    SUNDIALS
     GITHUB_REPOSITORY
     LLNL/sundials
     VERSION
-    7.1.1
+    7.3.0
     SYSTEM
     YES
     OPTIONS
@@ -153,23 +149,11 @@ if(${NeoN_WITH_SUNDIALS})
     ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
-cpmaddpackage(
-  NAME
-  spdlog
-  URL
-  https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.zip
-  VERSION
-  1.13.0
-  SYSTEM)
+# currently not used cpmaddpackage( NAME spdlog URL
+# https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.zip VERSION 1.13.0 SYSTEM)
 
-cpmaddpackage(
-  NAME
-  cxxopts
-  URL
-  https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip
-  VERSION
-  3.2.0
-  SYSTEM)
+# currently not used cpmaddpackage( NAME cxxopts URL
+# https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip VERSION 3.2.0 SYSTEM)
 
 if(${NeoN_WITH_GINKGO})
   cpmaddpackage(

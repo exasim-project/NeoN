@@ -180,3 +180,59 @@ if(NeoN_ENABLE_IWYU)
 endif()
 
 include(cmake/banner.cmake)
+
+install(
+  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+  EXPORT NeoNTargets
+  INCLUDES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+  EXPORT NeoNTargets
+  FILE NeoNTargets.cmake
+  NAMESPACE NeoN::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+# install internal ginkgo version
+if(ginkgo_POPULATED)
+  install(
+    TARGETS ginkgo
+    EXPORT GinkgoTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
+endif()
+
+# install internal cpptrace version
+if(cpptrace_POPULATED)
+  install(
+    TARGETS cpptrace
+    EXPORT CpptraceTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
+endif()
+
+# install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
+# sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
+# SundialsTargets NAMESPACE SUNDIALS::) endif()
+
+if(NOT kokkos_POPULATED)
+  export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+else()
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos")
+endif()
