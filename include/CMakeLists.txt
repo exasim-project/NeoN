@@ -20,8 +20,11 @@ else()
 endif()
 
 if(NeoN_WITH_SUNDIALS)
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=1)
   target_link_libraries(NeoN_public_api INTERFACE SUNDIALS::arkode SUNDIALS::nvecserial
                                                   SUNDIALS::core)
+else()
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=0)
 endif()
 
 target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokkos)

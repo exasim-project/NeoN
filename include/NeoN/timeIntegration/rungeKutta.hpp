@@ -3,6 +3,8 @@
 
 #pragma once
 
+#if NF_WITH_SUNDIALS
+
 #include <functional>
 #include <memory>
 
@@ -192,3 +194,5 @@ private:
 };
 
 } // namespace NeoN
+
+#endif

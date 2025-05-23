@@ -3,6 +3,8 @@
 
 #pragma once
 
+#if NF_WITH_SUNDIALS
+
 #include <concepts>
 #include <functional>
 #include <memory>
@@ -487,3 +489,5 @@ private:
     SKVectorVariant vector_; /**< Variant storing executor-specific vector implementation */
 };
 }
+
+#endif
