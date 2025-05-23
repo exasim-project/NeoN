@@ -74,100 +74,11 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">sundials.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;concepts&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;sundials/sundials_nvector.h&gt;</code><br />
-<code>#include &lt;sundials/sundials_core.hpp&gt;</code><br />
-<code>#include &lt;nvector/nvector_serial.h&gt;</code><br />
-<code>#include &lt;nvector/nvector_kokkos.hpp&gt;</code><br />
-<code>#include &lt;arkode/arkode_arkstep.h&gt;</code><br />
-<code>#include &lt;arkode/arkode_erkstep.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="error_8hpp_source.html">NeoN/core/error.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="parallelAlgorithms_8hpp_source.html">NeoN/core/parallelAlgorithms.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="field_8hpp_source.html">NeoN/fields/field.hpp</a>&quot;</code><br />
-</div>
+
 <p><a href="sundials_8hpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1sundials_1_1SKVectorSerial.html">NeoN::sundials::SKVectorSerial&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serial executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoN_1_1sundials_1_1SKVectorSerial.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1sundials_1_1SKVectorHostDefault.html">NeoN::sundials::SKVectorHostDefault&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host default executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoN_1_1sundials_1_1SKVectorHostDefault.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1sundials_1_1SKVectorDefault.html">NeoN::sundials::SKVectorDefault&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoN_1_1sundials_1_1SKVectorDefault.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1sundials_1_1SKVector.html">NeoN::sundials::SKVector&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified interface for SUNDIALS Kokkos vector management.  <a href="classNeoN_1_1sundials_1_1SKVector.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceNeoN" id="r_namespaceNeoN"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html">NeoN</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceNeoN_1_1sundials" id="r_namespaceNeoN_1_1sundials"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html">NeoN::sundials</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceNeoN_1_1sundials_1_1detail" id="r_namespaceNeoN_1_1sundials_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials_1_1detail.html">NeoN::sundials::detail</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a68a91418f8a8d589cfaccb8141c272dd" id="r_a68a91418f8a8d589cfaccb8141c272dd"><td class="memItemLeft" align="right" valign="top">ARKODE_ERKTableID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#a68a91418f8a8d589cfaccb8141c272dd">NeoN::sundials::stringToERKTable</a> (const std::string &amp;key)</td></tr>
-<tr class="memdesc:a68a91418f8a8d589cfaccb8141c272dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers.  <br /></td></tr>
-<tr class="separator:a68a91418f8a8d589cfaccb8141c272dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb4f42580c2e37db7197299d3644f459" id="r_aeb4f42580c2e37db7197299d3644f459"><td class="memTemplParams" colspan="2">template&lt;typename SKVectorType , typename ValueType &gt; </td></tr>
-<tr class="memitem:aeb4f42580c2e37db7197299d3644f459"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#aeb4f42580c2e37db7197299d3644f459">NeoN::sundials::fieldToSunNVectorImpl</a> (const <a class="el" href="classNeoN_1_1Vector.html">NeoN::Vector</a>&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</td></tr>
-<tr class="memdesc:aeb4f42580c2e37db7197299d3644f459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts <a class="el" href="namespaceNeoN.html">NeoN</a> <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> data to SUNDIALS N_Vector format.  <br /></td></tr>
-<tr class="separator:aeb4f42580c2e37db7197299d3644f459"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebaf5a75822a0239066fdbacc105af1c" id="r_aebaf5a75822a0239066fdbacc105af1c"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:aebaf5a75822a0239066fdbacc105af1c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#aebaf5a75822a0239066fdbacc105af1c">NeoN::sundials::fieldToSunNVector</a> (const <a class="el" href="classNeoN_1_1Vector.html">NeoN::Vector</a>&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</td></tr>
-<tr class="memdesc:aebaf5a75822a0239066fdbacc105af1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatcher for field to N_Vector conversion based on executor type.  <br /></td></tr>
-<tr class="separator:aebaf5a75822a0239066fdbacc105af1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a901ada90162f5694cb57621353053d5c" id="r_a901ada90162f5694cb57621353053d5c"><td class="memTemplParams" colspan="2">template&lt;typename SKVectorType , typename ValueType &gt; </td></tr>
-<tr class="memitem:a901ada90162f5694cb57621353053d5c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#a901ada90162f5694cb57621353053d5c">NeoN::sundials::sunNVectorToVectorImpl</a> (const N_Vector &amp;vector, <a class="el" href="classNeoN_1_1Vector.html">NeoN::Vector</a>&lt; ValueType &gt; &amp;field)</td></tr>
-<tr class="memdesc:a901ada90162f5694cb57621353053d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts SUNDIALS N_Vector data back to <a class="el" href="namespaceNeoN.html">NeoN</a> <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> format.  <br /></td></tr>
-<tr class="separator:a901ada90162f5694cb57621353053d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaabadce9081c9f8f4d8c231fdc7fd0c9" id="r_aaabadce9081c9f8f4d8c231fdc7fd0c9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:aaabadce9081c9f8f4d8c231fdc7fd0c9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#aaabadce9081c9f8f4d8c231fdc7fd0c9">NeoN::sundials::sunNVectorToVector</a> (const N_Vector &amp;vector, <a class="el" href="classNeoN_1_1Vector.html">NeoN::Vector</a>&lt; ValueType &gt; &amp;field)</td></tr>
-<tr class="memdesc:aaabadce9081c9f8f4d8c231fdc7fd0c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatcher for N_Vector to field conversion based on executor type.  <br /></td></tr>
-<tr class="separator:aaabadce9081c9f8f4d8c231fdc7fd0c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0950f80132f6aced171dd2a47c8ae5b8" id="r_a0950f80132f6aced171dd2a47c8ae5b8"><td class="memTemplParams" colspan="2">template&lt;typename SolutionVectorType &gt; </td></tr>
-<tr class="memitem:a0950f80132f6aced171dd2a47c8ae5b8"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#a0950f80132f6aced171dd2a47c8ae5b8">NeoN::sundials::explicitRKSolve</a> (sunrealtype t, N_Vector y, N_Vector ydot, void *userData)</td></tr>
-<tr class="memdesc:a0950f80132f6aced171dd2a47c8ae5b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a single explicit Runge-Kutta stage evaluation.  <br /></td></tr>
-<tr class="separator:a0950f80132f6aced171dd2a47c8ae5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52acc68c0e3f68ab978ecd84d90a33e8" id="r_a52acc68c0e3f68ab978ecd84d90a33e8"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoN_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:a52acc68c0e3f68ab978ecd84d90a33e8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials_1_1detail.html#a52acc68c0e3f68ab978ecd84d90a33e8">NeoN::sundials::detail::initNVector</a> (<a class="el" href="namespaceNeoN.html#a5ea7bf3a45fbcf9c6ee454474ab13c06">size_t</a> size, std::shared_ptr&lt; SUNContext &gt; context, <a class="el" href="classNeoN_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:a52acc68c0e3f68ab978ecd84d90a33e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a vector wrapper with specified size and context.  <br /></td></tr>
-<tr class="separator:a52acc68c0e3f68ab978ecd84d90a33e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a28e9139d1ccea532882e167a02ff6b" id="r_a0a28e9139d1ccea532882e167a02ff6b"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoN_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:a0a28e9139d1ccea532882e167a02ff6b"><td class="memTemplItemLeft" align="right" valign="top">const N_Vector &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials_1_1detail.html#a0a28e9139d1ccea532882e167a02ff6b">NeoN::sundials::detail::sunNVector</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:a0a28e9139d1ccea532882e167a02ff6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides const access to underlying N_Vector.  <br /></td></tr>
-<tr class="separator:a0a28e9139d1ccea532882e167a02ff6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48ef81013e482acd9a9591aa01ad3903" id="r_a48ef81013e482acd9a9591aa01ad3903"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoN_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:a48ef81013e482acd9a9591aa01ad3903"><td class="memTemplItemLeft" align="right" valign="top">N_Vector &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials_1_1detail.html#a48ef81013e482acd9a9591aa01ad3903">NeoN::sundials::detail::sunNVector</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:a48ef81013e482acd9a9591aa01ad3903"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides mutable access to underlying N_Vector.  <br /></td></tr>
-<tr class="separator:a48ef81013e482acd9a9591aa01ad3903"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a3cba60c69c27f51e31d139dde5107d4a" id="r_a3cba60c69c27f51e31d139dde5107d4a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#a3cba60c69c27f51e31d139dde5107d4a">NeoN::sundials::SUN_CONTEXT_DELETER</a></td></tr>
-<tr class="memdesc:a3cba60c69c27f51e31d139dde5107d4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deleter for SUNContext shared pointers.  <br /></td></tr>
-<tr class="separator:a3cba60c69c27f51e31d139dde5107d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca60627e32ac174ed4f8fac998408423" id="r_aca60627e32ac174ed4f8fac998408423"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1sundials.html#aca60627e32ac174ed4f8fac998408423">NeoN::sundials::SUN_ARK_DELETER</a></td></tr>
-<tr class="memdesc:aca60627e32ac174ed4f8fac998408423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deleter for explicit type RK solvers (ERK, ARK, etc) for the unique pointers.  <br /></td></tr>
-<tr class="separator:aca60627e32ac174ed4f8fac998408423"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

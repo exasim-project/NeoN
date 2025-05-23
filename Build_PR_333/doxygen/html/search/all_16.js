@@ -15,15 +15,10 @@ var searchData=
   ['_7elinearsystemview_12',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#ace528280a0ab1d8d9454cb22ac421040',1,'NeoN::la::LinearSystemView']]],
   ['_7eoperatormixin_13',['~OperatorMixin',['../classNeoN_1_1dsl_1_1OperatorMixin.html#ad735310356a0706b71373d5cebd68192',1,'NeoN::dsl::OperatorMixin']]],
   ['_7eregister_14',['~Register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a87f94b91ca326e7268cd5986cfec7cda',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
-  ['_7erungekutta_15',['~RungeKutta',['../classNeoN_1_1timeIntegration_1_1RungeKutta.html#a282ec97be7b26eb3ba282ec846810223',1,'NeoN::timeIntegration::RungeKutta']]],
-  ['_7eruntimeselectionfactory_16',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
-  ['_7eserialexecutor_17',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
-  ['_7eskvector_18',['~SKVector',['../classNeoN_1_1sundials_1_1SKVector.html#a9dd70282bf6718a25e8ad810a4f707e7',1,'NeoN::sundials::SKVector']]],
-  ['_7eskvectordefault_19',['~SKVectorDefault',['../classNeoN_1_1sundials_1_1SKVectorDefault.html#a04d67906a1df5cc9ffa70bb3353a1b5a',1,'NeoN::sundials::SKVectorDefault']]],
-  ['_7eskvectorhostdefault_20',['~SKVectorHostDefault',['../classNeoN_1_1sundials_1_1SKVectorHostDefault.html#aa86cfe4f2c9170e4049ee797e9210000',1,'NeoN::sundials::SKVectorHostDefault']]],
-  ['_7eskvectorserial_21',['~SKVectorSerial',['../classNeoN_1_1sundials_1_1SKVectorSerial.html#aa6f025e599967776ac03c72a71e648b5',1,'NeoN::sundials::SKVectorSerial']]],
-  ['_7esurfaceinterpolationfactory_22',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
-  ['_7etimeintegratorbase_23',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['_7evector_24',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
-  ['_7evolumeboundaryfactory_25',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
+  ['_7eruntimeselectionfactory_15',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
+  ['_7eserialexecutor_16',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
+  ['_7esurfaceinterpolationfactory_17',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
+  ['_7etimeintegratorbase_18',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
+  ['_7evector_19',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
+  ['_7evolumeboundaryfactory_20',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
 ];
