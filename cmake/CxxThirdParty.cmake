@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 NeoN authors
 
-set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
+# set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
 
 set(NeoN_KOKKOS_CHECKOUT_VERSION
     "4.3.00"
