@@ -9,9 +9,7 @@ add_library(NeoN::NeoN_public_api ALIAS NeoN_public_api) # dummy target
 
 target_include_directories(
   NeoN_public_api INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-			    $<INSTALL_INTERFACE:.>
-			    )
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:.>)
 
 if(NeoN_WITH_GINKGO)
   target_link_libraries(NeoN_public_api INTERFACE Ginkgo::ginkgo)
@@ -22,7 +20,8 @@ else()
 endif()
 
 if(NeoN_WITH_SUNDIALS)
-target_link_libraries(NeoN_public_api INTERFACE SUNDIALS::arkode SUNDIALS::nvecserial SUNDIALS::core)
+  target_link_libraries(NeoN_public_api INTERFACE SUNDIALS::arkode SUNDIALS::nvecserial
+                                                  SUNDIALS::core)
 endif()
 
 target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokkos)

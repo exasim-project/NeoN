@@ -136,17 +136,17 @@ if(${NeoN_WITH_SUNDIALS})
   endif()
 
   cpmaddpackage(
-     NAME
-     SUNDIALS
-     GITHUB_REPOSITORY
-     LLNL/sundials
-     VERSION
-     7.3.0
-     SYSTEM
-     YES
-     OPTIONS
-     ${SUNDIALS_OPTIONS}
-     ${SUNDIALS_CUDA_OPTIONS})
+    NAME
+    SUNDIALS
+    GITHUB_REPOSITORY
+    LLNL/sundials
+    VERSION
+    7.3.0
+    SYSTEM
+    YES
+    OPTIONS
+    ${SUNDIALS_OPTIONS}
+    ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
 # currently not used cpmaddpackage( NAME spdlog URL
