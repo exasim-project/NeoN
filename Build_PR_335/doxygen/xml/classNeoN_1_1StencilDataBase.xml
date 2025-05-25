@@ -1,0 +1,314 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1StencilDataBase" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::StencilDataBase</compoundname>
+    <includes refid="stencilDataBase_8hpp" local="no">stencilDataBase.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1StencilDataBase_1ae8be6af51982cdc518b5b9bfba460a45" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::any &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::any&gt; NeoN::StencilDataBase::stencilDB_</definition>
+        <argsstring></argsstring>
+        <name>stencilDB_</name>
+        <qualifiedname>NeoN::StencilDataBase::stencilDB_</qualifiedname>
+        <briefdescription>
+<para>The stencil database to register stencil data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="101" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" bodystart="101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1a54738d14fe7d8a7c17d8f1fb0897803b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::StencilDataBase::StencilDataBase</definition>
+        <argsstring>()=default</argsstring>
+        <name>StencilDataBase</name>
+        <qualifiedname>NeoN::StencilDataBase::StencilDataBase</qualifiedname>
+        <briefdescription>
+<para>Default constructor for <ref refid="classNeoN_1_1StencilDataBase" kindref="compound">StencilDataBase</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="26" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1aa8b4571714490242680010fa72f17e4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::StencilDataBase::insert</definition>
+        <argsstring>(const std::string &amp;key, T value)</argsstring>
+        <name>insert</name>
+        <qualifiedname>NeoN::StencilDataBase::insert</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Inserts a value into the stencil database. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the value to be inserted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key associated with the value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to be inserted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="36" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1a2352c79739276491cd41310a948fb1b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::any &amp;</type>
+        <definition>std::any &amp; NeoN::StencilDataBase::operator[]</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>NeoN::StencilDataBase::operator[]</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Retrieves a reference to the value associated with the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key associated with the value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to the value associated with the key. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="47" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1ab302ebc7cf30b250530e202d024b5380" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::any &amp;</type>
+        <definition>const std::any &amp; NeoN::StencilDataBase::operator[]</definition>
+        <argsstring>(const std::string &amp;key) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>NeoN::StencilDataBase::operator[]</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Retrieves a const reference to the value associated with the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key associated with the value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A const reference to the value associated with the key. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="56" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1afb4b56e8ffb4dbcfe468f404fe9ef401" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T &amp;</type>
+        <definition>T &amp; NeoN::StencilDataBase::get</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>get</name>
+        <qualifiedname>NeoN::StencilDataBase::get</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Retrieves a reference to the value associated with the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the value to be retrieved. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key associated with the value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to the value associated with the key. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>std::bad_any_cast</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if the value cannot be cast to type T. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="67" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" bodystart="67" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1aecfc66b9764ce81ee90d043a7d72b6b3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const T &amp;</type>
+        <definition>const T &amp; NeoN::StencilDataBase::get</definition>
+        <argsstring>(const std::string &amp;key) const</argsstring>
+        <name>get</name>
+        <qualifiedname>NeoN::StencilDataBase::get</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Retrieves a const reference to the value associated with the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the value to be retrieved. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key associated with the value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A const reference to the value associated with the key. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>std::bad_any_cast</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if the value cannot be cast to type T. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="82" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" bodystart="82" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1StencilDataBase_1a97d02654cbf75d9ebe010b6afb56bcb8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool NeoN::StencilDataBase::contains</definition>
+        <argsstring>(const std::string &amp;key) const</argsstring>
+        <name>contains</name>
+        <qualifiedname>NeoN::StencilDataBase::contains</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the stencil database contains a value associated with the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the database contains the key, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="94" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class that represents a stencil database. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The <ref refid="classNeoN_1_1StencilDataBase" kindref="compound">StencilDataBase</ref> class provides a container for storing stencil data. It allows insertion, retrieval, and checking of stencil data using string keys. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" line="19" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp" bodystart="20" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1StencilDataBase_1a97d02654cbf75d9ebe010b6afb56bcb8" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>contains</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1afb4b56e8ffb4dbcfe468f404fe9ef401" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>get</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1aecfc66b9764ce81ee90d043a7d72b6b3" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>get</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1aa8b4571714490242680010fa72f17e4b" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>insert</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1a2352c79739276491cd41310a948fb1b1" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>operator[]</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1ab302ebc7cf30b250530e202d024b5380" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>operator[]</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1a54738d14fe7d8a7c17d8f1fb0897803b" prot="public" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>StencilDataBase</name></member>
+      <member refid="classNeoN_1_1StencilDataBase_1ae8be6af51982cdc518b5b9bfba460a45" prot="private" virt="non-virtual"><scope>NeoN::StencilDataBase</scope><name>stencilDB_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
