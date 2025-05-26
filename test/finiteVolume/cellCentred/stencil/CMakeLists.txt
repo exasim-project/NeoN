@@ -1,4 +1,5 @@
+# SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoN authors
 
 neon_unit_test(cellToFaceStencil)
