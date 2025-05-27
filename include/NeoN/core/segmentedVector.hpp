@@ -222,6 +222,8 @@ public:
     // ensures not to return a view of a temporary object --> invalid memory access
     [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() && = delete;
 
+    Vector<ValueType>& values() { return values_; }
+
     const Vector<ValueType>& values() const { return values_; }
 
     const Vector<IndexType>& segments() const { return segments_; }
