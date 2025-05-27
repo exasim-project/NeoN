@@ -78,7 +78,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
     // sort face ids in stencil to be in face order
     // this might not be needed actually but for now
     // we require the values to be ordered
-    // NOTE: this implementation could be improved
+    // TODO: this implementation could be improved
     // by actually implementing the parallel sort on device
     auto [segmentH, valuesH] = copyToHosts(stencil.segments(), stencil.values());
     auto [valuesHV, segmentHV] = views(valuesH, segmentH);
