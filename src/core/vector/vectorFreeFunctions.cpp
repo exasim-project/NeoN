@@ -25,14 +25,14 @@ void scalarMul(Vector<ValueType>& vect, const scalar value)
     );
 }
 
-template<>
-void scalarMul(Vector<Vec3>& vect, const scalar value)
-{
-    auto viewA = vect.view();
-    parallelFor(
-        vect, KOKKOS_LAMBDA(const localIdx i)->Vec3 { return viewA[i] * value; }
-    );
-}
+// template<>
+// void scalarMul(Vector<Vec3>& vect, const scalar value)
+// {
+//     auto viewA = vect.view();
+//     parallelFor(
+//         vect, KOKKOS_LAMBDA(const localIdx i)->Vec3 { return viewA[i] * value; }
+//     );
+// }
 
 namespace detail
 {
