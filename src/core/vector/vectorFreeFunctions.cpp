@@ -21,10 +21,7 @@ void scalarMul(Vector<ValueType>& vect, const scalar value)
 {
     auto viewA = vect.view();
     parallelFor(
-        vect,
-        KOKKOS_LAMBDA(const localIdx i)->ValueType {
-            return viewA[i] * static_cast<ValueType>(value);
-        }
+        vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
     );
 }
 
