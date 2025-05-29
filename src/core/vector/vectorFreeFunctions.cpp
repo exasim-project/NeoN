@@ -15,27 +15,30 @@
 namespace NeoN
 {
 
+
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a* b; }
 {
-    auto viewA = vect.view();
-    parallelFor(
-        vect,
-        KOKKOS_LAMBDA(const localIdx i)->ValueType {
-            return viewA[i] * static_cast<ValueType>(value);
-        }
-    );
+    if constexpr (std::is_same_v<ValueType, Vec3>)
+    {
+        auto viewA = vect.view();
+        parallelFor(
+            vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
+        );
+    }
+    else
+    {
+        auto viewA = vect.view();
+        parallelFor(
+            vect,
+            KOKKOS_LAMBDA(const localIdx i)->ValueType {
+                return viewA[i] * static_cast<ValueType>(value);
+            }
+        );
+    }
 }
 
-template<>
-void scalarMul(Vector<Vec3>& vect, const scalar value)
-{
-    auto viewA = vect.view();
-    parallelFor(
-        vect, KOKKOS_LAMBDA(const localIdx i)->Vec3 { return viewA[i] * value; }
-    );
-}
 
 namespace detail
 {
