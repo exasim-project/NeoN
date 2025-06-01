@@ -20,6 +20,13 @@ struct SolverStats
     scalar initResNorm;
 
     scalar finalResNorm;
+
+    void print(std::string solverName) const
+    {
+        std::cout << "Solver: " << solverName << " , Initial residual = " << initResNorm
+                  << " , Final residual = " << finalResNorm
+                  << " , No Iterations = " << numIter << std::endl;
+    }
 };
 
 /* @class SolverFactory
@@ -73,7 +80,10 @@ public:
 
     SolverStats solve(const LinearSystem<scalar, localIdx>& ls, Vector<scalar>& field) const
     {
-        return solverInstance_->solve(ls, field);
+        SolverStats stats = solverInstance_->solve(ls, field);
+
+        stats.print(solverInstance_->name());
+        return stats;
     }
 
 private:
