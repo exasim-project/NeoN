@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1detail" kind="namespace" language="C++">
+    <compoundname>NeoN::detail</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto NeoN::detail::deepCopyVisitor</definition>
+        <argsstring>(localIdx ssize, const ValueType *srcPtr, ValueType *dstPtr)</argsstring>
+        <name>deepCopyVisitor</name>
+        <qualifiedname>NeoN::detail::deepCopyVisitor</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>ssize</declname>
+        </param>
+        <param>
+          <type>const ValueType *</type>
+          <declname>srcPtr</declname>
+        </param>
+        <param>
+          <type>ValueType *</type>
+          <declname>dstPtr</declname>
+        </param>
+        <briefdescription>
+<para>A helper function to simplify the common pattern of copying between and to executor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of elements to copy. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>srcPtr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the original block of memory. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dstPtr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the target block of memory. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the underlying elements. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A function that takes a source and an destination executor </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="29" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" bodystart="29" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1a799fb3ecfe37d3979c6785394c3c7134" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Executor</type>
+          </param>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">void</ref></type>
+        <definition>void NeoN::detail::parallelSort</definition>
+        <argsstring>(const Executor &amp;exec, std::pair&lt; localIdx, localIdx &gt; range, ValueType *ptr)</argsstring>
+        <name>parallelSort</name>
+        <qualifiedname>NeoN::detail::parallelSort</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">const</ref> <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>ValueType *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" line="240" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" bodystart="240" bodyend="261"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1a1d9234b807ae82980290f3dfa6fec029" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">void</ref></type>
+        <definition>void NeoN::detail::parallelSort</definition>
+        <argsstring>(const NeoN::Executor &amp;exec, std::pair&lt; localIdx, localIdx &gt; range, ValueType *ptr)</argsstring>
+        <name>parallelSort</name>
+        <qualifiedname>NeoN::detail::parallelSort</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">const</ref> <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>ValueType *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" line="264" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" bodystart="264" bodyend="267"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ad0f7ee3320d8302617dc6bf5f86c779a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+          <param>
+            <type>typename BinaryOp</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">void</ref></type>
+        <definition>void NeoN::detail::fieldBinaryOp</definition>
+        <argsstring>(Vector&lt; ValueType &gt; &amp;vect1, const Vector&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;vect2, BinaryOp op)</argsstring>
+        <name>fieldBinaryOp</name>
+        <qualifiedname>NeoN::detail::fieldBinaryOp</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>vect1</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">const</ref> <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;</type>
+          <declname>vect2</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">BinaryOp</ref></type>
+          <declname>op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="23" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="23" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="17" column="1"/>
+  </compounddef>
+</doxygen>

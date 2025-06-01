@@ -1,0 +1,362 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1SegmentedVector" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::SegmentedVector</compoundname>
+    <includes refid="segmentedVector_8hpp" local="no">segmentedVector.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ValueType</type>
+      </param>
+      <param>
+        <type>typename IndexType</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1SegmentedVector_1a5de61276b4ea78797f90e59f3146046a" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
+        <definition>Vector&lt;ValueType&gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::values_</definition>
+        <argsstring></argsstring>
+        <name>values_</name>
+        <qualifiedname>NeoN::SegmentedVector::values_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="231" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="231" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1SegmentedVector_1aed64d0256aa591cda45197166fa05f72" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt;</type>
+        <definition>Vector&lt;IndexType&gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::segments_</definition>
+        <argsstring></argsstring>
+        <name>segments_</name>
+        <qualifiedname>NeoN::SegmentedVector::segments_</qualifiedname>
+        <briefdescription>
+<para>stores the [start, end) of segment i at index i, i+1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="232" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="232" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a9a3ac89703e3e49cc5519d71a4bca87f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::SegmentedVector</definition>
+        <argsstring>(const Executor &amp;exec, localIdx size, localIdx numSegments)</argsstring>
+        <name>SegmentedVector</name>
+        <qualifiedname>NeoN::SegmentedVector::SegmentedVector</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>numSegments</declname>
+        </param>
+        <briefdescription>
+<para>Create a segmented vector with a given size and number of segments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Executor associated to the matrix </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of the matrix </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numSegments</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of segments </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="139" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="139" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a1245b2584d931e92f5ec68e04cf60335" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::SegmentedVector</definition>
+        <argsstring>(const Vector&lt; IndexType &gt; &amp;intervals)</argsstring>
+        <name>SegmentedVector</name>
+        <qualifiedname>NeoN::SegmentedVector::SegmentedVector</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+          <declname>intervals</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="148" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="148" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a0282e4e49eee8c5e95323285daf113c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::SegmentedVector</definition>
+        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, const Vector&lt; IndexType &gt; &amp;segments)</argsstring>
+        <name>SegmentedVector</name>
+        <qualifiedname>NeoN::SegmentedVector::SegmentedVector</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <briefdescription>
+<para>Constructor to create a segmentedVector from values and the segments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The values of the segmented vector. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>segments</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The segments of the segmented vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="162" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="162" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1ab3bf007f9c5e2daea16b5b527392f6c4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+        <definition>const Executor &amp; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::exec</definition>
+        <argsstring>() const</argsstring>
+        <name>exec</name>
+        <qualifiedname>NeoN::SegmentedVector::exec</qualifiedname>
+        <briefdescription>
+<para>Get the executor associated with the segmented vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Reference to the executor. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="173" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="173" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1aef98325f9fdf4c401f2b570300b9da34" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>NeoN::SegmentedVector::size</qualifiedname>
+        <briefdescription>
+<para>Get the size of the segmented vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The size of the segmented vector. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="179" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="179" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1ab1d369f26e798fbf72e160f876b41158" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::numSegments</definition>
+        <argsstring>() const</argsstring>
+        <name>numSegments</name>
+        <qualifiedname>NeoN::SegmentedVector::numSegments</qualifiedname>
+        <briefdescription>
+<para>Get the number of segments in the segmented vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The number of segments. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="185" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="185" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a4014af569b7d37a55fba805695bd6ee8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; ValueType, IndexType &gt;</type>
+        <definition>SegmentedVector&lt; ValueType, IndexType &gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::copyToHost</definition>
+        <argsstring>() const</argsstring>
+        <name>copyToHost</name>
+        <qualifiedname>NeoN::SegmentedVector::copyToHost</qualifiedname>
+        <briefdescription>
+<para>Returns a copy of the segmentedVector on the host. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>copy of the segmentedVector on the host </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="191" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="191" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a65ac70e2c929e0a4b1464b5ed65771ea" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1SegmentedVectorView" kindref="compound">SegmentedVectorView</ref>&lt; ValueType, IndexType &gt;</type>
+        <definition>SegmentedVectorView&lt; ValueType, IndexType &gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::view</definition>
+        <argsstring>() &amp;</argsstring>
+        <name>view</name>
+        <qualifiedname>NeoN::SegmentedVector::view</qualifiedname>
+        <briefdescription>
+<para>get a view of the segmented vector </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the fields </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="202" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="202" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1ac9d2855d356fb70363abef6d5c39825e" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1SegmentedVectorView" kindref="compound">SegmentedVectorView</ref>&lt; ValueType, IndexType &gt;</type>
+        <definition>SegmentedVectorView&lt; ValueType, IndexType &gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::view</definition>
+        <argsstring>() &amp;&amp;=delete</argsstring>
+        <name>view</name>
+        <qualifiedname>NeoN::SegmentedVector::view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="208" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a17b17c60f95220e492f90ded9e064e64" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
+        <type>std::pair&lt; <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;, <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; IndexType &gt; &gt;</type>
+        <definition>std::pair&lt; View&lt; ValueType &gt;, View&lt; IndexType &gt; &gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::views</definition>
+        <argsstring>() &amp;</argsstring>
+        <name>views</name>
+        <qualifiedname>NeoN::SegmentedVector::views</qualifiedname>
+        <briefdescription>
+<para>get the combined value and range views of the segmented vector </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Combined value and range views of the fields </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="214" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="214" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a593a281b45a6cf4a167fa7aeda1daf9d" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
+        <type>std::pair&lt; <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;, <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; IndexType &gt; &gt;</type>
+        <definition>std::pair&lt; View&lt; ValueType &gt;, View&lt; IndexType &gt; &gt; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::views</definition>
+        <argsstring>() &amp;&amp;=delete</argsstring>
+        <name>views</name>
+        <qualifiedname>NeoN::SegmentedVector::views</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="221" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a8c7291f56269e65e82de8019d15ce068" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+        <definition>Vector&lt; ValueType &gt; &amp; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::values</definition>
+        <argsstring>()</argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::SegmentedVector::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="223" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="223" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a044063583040d7cb80450839982dcaf0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+        <definition>const Vector&lt; ValueType &gt; &amp; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::values</definition>
+        <argsstring>() const</argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::SegmentedVector::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="225" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="225" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVector_1a3f62069e4d69e8a6b667929a3a0bb11f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+        <definition>const Vector&lt; IndexType &gt; &amp; NeoN::SegmentedVector&lt; ValueType, IndexType &gt;::segments</definition>
+        <argsstring>() const</argsstring>
+        <name>segments</name>
+        <qualifiedname>NeoN::SegmentedVector::segments</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="227" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="227" bodyend="227"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Data structure that stores a segmented fields or a vector of vectors. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="128" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="129" bodyend="233"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1SegmentedVector_1a4014af569b7d37a55fba805695bd6ee8" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>copyToHost</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1ab3bf007f9c5e2daea16b5b527392f6c4" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>exec</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1ab1d369f26e798fbf72e160f876b41158" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>numSegments</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a9a3ac89703e3e49cc5519d71a4bca87f" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>SegmentedVector</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a1245b2584d931e92f5ec68e04cf60335" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>SegmentedVector</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a0282e4e49eee8c5e95323285daf113c1" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>SegmentedVector</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a3f62069e4d69e8a6b667929a3a0bb11f" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>segments</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1aed64d0256aa591cda45197166fa05f72" prot="private" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>segments_</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1aef98325f9fdf4c401f2b570300b9da34" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>size</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a8c7291f56269e65e82de8019d15ce068" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>values</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a044063583040d7cb80450839982dcaf0" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>values</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a5de61276b4ea78797f90e59f3146046a" prot="private" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>values_</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a65ac70e2c929e0a4b1464b5ed65771ea" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>view</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1ac9d2855d356fb70363abef6d5c39825e" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>view</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a17b17c60f95220e492f90ded9e064e64" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>views</name></member>
+      <member refid="classNeoN_1_1SegmentedVector_1a593a281b45a6cf4a167fa7aeda1daf9d" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVector</scope><name>views</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
