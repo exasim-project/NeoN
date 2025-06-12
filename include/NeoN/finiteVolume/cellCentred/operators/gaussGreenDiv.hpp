@@ -67,7 +67,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         computeDivImp(
-            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, this->getSparsityPattern()
+            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, *sparsityPattern_.get()
         );
     };
 
@@ -108,6 +108,8 @@ public:
 private:
 
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    // TODO why store as shared_ptr
+    const std::shared_ptr<la::SparsityPattern> sparsityPattern_;
 };
 
 template class GaussGreenDiv<scalar>;
