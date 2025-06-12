@@ -7,10 +7,12 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
+// #include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -51,7 +53,8 @@ public:
 
     GaussGreenLaplacian(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
         : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs),
-          faceNormalGradient_(exec, mesh, inputs) {};
+          faceNormalGradient_(exec, mesh, inputs),
+          sparsityPattern_(la::SparsityPattern::readOrCreate(mesh)) {};
 
     virtual void laplacian(
         VolumeField<ValueType>& lapPhi,
@@ -104,7 +107,7 @@ public:
     ) override
     {
         computeLaplacianImpl(
-            ls, gamma, phi, operatorScaling, this->getSparsityPattern(), faceNormalGradient_
+            ls, gamma, phi, operatorScaling, *sparsityPattern_.get(), faceNormalGradient_
         );
     };
 
@@ -118,6 +121,8 @@ private:
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
 
     FaceNormalGradient<ValueType> faceNormalGradient_;
+
+    const std::shared_ptr<la::SparsityPattern> sparsityPattern_;
 };
 
 // instantiate the template class

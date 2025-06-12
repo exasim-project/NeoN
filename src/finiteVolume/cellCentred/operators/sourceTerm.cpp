@@ -37,7 +37,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] =
-        views(getSparsityPattern().diagOffset(), coefficients_.internalVector());
+        views(sparsityPattern_->diagOffset(), coefficients_.internalVector());
     auto [matrix, rhs] = ls.view();
 
     NeoN::parallelFor(

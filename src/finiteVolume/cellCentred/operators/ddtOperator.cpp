@@ -41,7 +41,7 @@ void DdtOperator<ValueType>::implicitOperation(
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     const auto [diagOffs, oldVector] =
-        views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
+        views(sparsityPattern_->diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
     parallelFor(

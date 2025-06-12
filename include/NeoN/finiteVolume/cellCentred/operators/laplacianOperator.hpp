@@ -76,7 +76,7 @@ public:
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    // const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
 protected:
 
@@ -84,7 +84,9 @@ protected:
 
     const UnstructuredMesh& mesh_;
 
-    const la::SparsityPattern& sparsityPattern_;
+    //
+    //    const la::SparsityPattern& sparsityPattern_;
+    const std::shared_ptr<la::SparsityPattern> sparsityPattern_;
 };
 
 template<typename ValueType>
