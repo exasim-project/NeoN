@@ -66,8 +66,15 @@ cpmaddpackage(
   0.7.3
   SYSTEM)
 
-# currently unused cpmaddpackage( NAME nlohmann_json VERSION 3.11.3 URL
-# https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip SYSTEM)
+# currently unused
+cpmaddpackage(
+  NAME
+  nlohmann_json
+  VERSION
+  3.11.3
+  URL
+  https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip
+  SYSTEM)
 
 if(${NeoN_WITH_ADIOS2})
 

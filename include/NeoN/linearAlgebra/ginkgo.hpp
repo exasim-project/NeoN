@@ -8,6 +8,7 @@
 
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
+#include <ginkgo/extensions/config/json_config.hpp>
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/dictionary.hpp"
