@@ -12,7 +12,7 @@ target_include_directories(
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:.>)
 
 if(NeoN_WITH_GINKGO)
-  target_link_libraries(NeoN_public_api INTERFACE Ginkgo::ginkgo)
+  target_link_libraries(NeoN_public_api INTERFACE Ginkgo::ginkgo nlohmann_json::nlohmann_json)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_GINKGO=1)
   # set_property( TARGET Ginkgo::ginkgo APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS )
 else()
