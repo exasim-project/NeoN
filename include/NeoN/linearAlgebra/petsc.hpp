@@ -111,7 +111,7 @@ public:
         // KSPSetUp(ksp);
 
 
-        PetscCallVoid(KSPSolve(ksp, rhs, sol));
+        KSPSolve(ksp, rhs, sol);
 
         auto numIter = 0;
         KSPGetIterationNumber(ksp, &numIter);
