@@ -8,6 +8,13 @@
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
 {
+    // check if an external file name is given
+    if (dict.contains("configFile"))
+    {
+        auto fn = dict.get<std::string>("configFile");
+        return gko::ext::config::parse_json_file(fn);
+    }
+
     auto parseData = [&](auto key)
     {
         auto parseAny = [&](auto blueprint)
