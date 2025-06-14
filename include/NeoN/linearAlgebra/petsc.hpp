@@ -123,7 +123,7 @@ public:
         x = x2;
 
         // TODO residual norms are missing
-        return {numIter, 0.0, 0.0};
+        return {numIter, 0.0, 0.0, 0.0};
     }
 };
 

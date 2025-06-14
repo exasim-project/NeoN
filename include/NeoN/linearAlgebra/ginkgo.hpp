@@ -5,6 +5,8 @@
 
 #if NF_WITH_GINKGO
 
+#include <chrono>
+
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
 #include <ginkgo/extensions/config/json_config.hpp>
@@ -117,6 +119,7 @@ public:
     virtual SolverStats
     solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
     {
+        auto startEval = std::chrono::steady_clock::now();
         using vec = gko::matrix::Dense<scalar>;
 
         auto retrieve = [](const auto& in)
@@ -152,7 +155,13 @@ public:
 
         auto numIter = label(logger->get_num_iterations());
 
-        return {numIter, initResNorm, finalResNorm};
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<float>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+        return {numIter, initResNorm, finalResNorm, duration};
     }
 
     // TODO why use a smart pointer here?
