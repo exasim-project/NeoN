@@ -65,16 +65,6 @@ cpmaddpackage(
   0.7.3
   SYSTEM)
 
-# currently unused
-cpmaddpackage(
-  NAME
-  nlohmann_json
-  VERSION
-  3.11.3
-  URL
-  https://github.com/nlohmann/json/releases/download/v3.11.3/include.zip
-  SYSTEM)
-
 if(${NeoN_WITH_ADIOS2})
 
   set(ADIOS2_KOKKOS_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/adios2_kokkos.patch)
@@ -163,6 +153,23 @@ endif()
 # https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip VERSION 3.2.0 SYSTEM)
 
 if(${NeoN_WITH_GINKGO})
+  # nlohmann json is only needed in combination with ginkgo. Getting the package via cpm+github
+  # takes ages. After pulling only the .zip no nlohmann_json::nlohman_json target is found. Thus we
+  # always prepare system install version of nlohmann_json if present.
+  find_package(nlohmann_json 3.11.3 QUIET)
+  if(NOT nlohmann_json_FOUND)
+    cpmaddpackage(
+      NAME
+      nlohmann_json
+      VERSION
+      3.11.3
+      GITHUB_REPOSITORY
+      nlohmann/json
+      SYSTEM
+      YES)
+
+  endif()
+
   cpmaddpackage(
     NAME
     Ginkgo
