@@ -32,6 +32,11 @@ target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokko
 if(NeoN_WITH_PETSC)
   add_definitions(${PETSc_DEFINITIONS})
   target_link_libraries(NeoN_public_api INTERFACE ${PETSc_LIBRARIES})
+  target_link_libraries(NeoN_public_api INTERFACE ${PETSc_LIBRARIES}
+                                                  ${PETSc_LIBRARY_DIRS}/libkokkoscore.so mpi)
+  target_include_directories(NeoN_public_api INTERFACE ${PETSc_INCLUDE_DIRS})
+  target_link_directories(NeoN_public_api INTERFACE ${PETSc_LIBRARY_DIRS})
+  link_directories(${PETSc_LIBRARY_DIRS})
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_PETSC=1)
 else()
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_PETSC=0)
