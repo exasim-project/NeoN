@@ -111,7 +111,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         auto solver = NeoN::la::Solver(exec, solverDict);
 
         // Solve system
-        auto [numIter, initResNorm, finalResNorm] = solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solver.solve(linearSystem, x);
 
         auto hostX = x.copyToHost();
         auto hostXS = hostX.view();

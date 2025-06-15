@@ -18,6 +18,8 @@ struct SolverStats
     scalar initResNorm;
 
     scalar finalResNorm;
+
+    scalar solveTime;
 };
 
 /* @class SolverFactory
