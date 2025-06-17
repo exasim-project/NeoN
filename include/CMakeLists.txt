@@ -13,6 +13,7 @@ target_include_directories(
 
 if(NeoN_WITH_GINKGO)
   target_link_libraries(NeoN_public_api INTERFACE nlohmann_json::nlohmann_json Ginkgo::ginkgo)
+  install(TARGETS nlohmann_json EXPORT NeoNTargets)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_GINKGO=1)
 else()
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_GINKGO=0)
