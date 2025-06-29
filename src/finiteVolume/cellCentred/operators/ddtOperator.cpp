@@ -11,6 +11,9 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
+DdtOperator<ValueType>::~DdtOperator(){}
+
+template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
       sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};

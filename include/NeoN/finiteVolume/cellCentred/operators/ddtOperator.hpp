@@ -25,6 +25,8 @@ public:
 
     DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field);
 
+    ~DdtOperator();
+
     void explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const;
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt) const;
