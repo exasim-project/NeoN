@@ -36,6 +36,8 @@ public:
         Vector<localIdx>&& diagOffset
     );
 
+    ~SparsityPattern() = default;
+
     /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
 
