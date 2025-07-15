@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2023 NeoN authors
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   neon_unit_test(fullDuplexCommBuffer MPI_SIZE 3)

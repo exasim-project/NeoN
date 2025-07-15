@@ -1,5 +1,7 @@
-// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 NeoN authors
+//
+// SPDX-License-Identifier: MIT
+
 #pragma once
 
 #include "NeoN/core/input.hpp"

@@ -1,5 +1,6 @@
+// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024 NeoN authors
 
 #pragma once
 // TODO For WIN builds, needs to be ifdef'ed out.

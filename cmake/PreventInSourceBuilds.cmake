@@ -1,6 +1,7 @@
-# SPDX-License-Identifier: Unlicense
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
 # SPDX-FileCopyrightText: 2023 Jason Turner
-# SPDX-FileCopyrightText: 2023 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
 
 # cmake-format: off
 ##############################################################################
