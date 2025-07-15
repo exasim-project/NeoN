@@ -41,7 +41,6 @@ repos:
             .cmake-format.py|
             doc/conf.py|
             scripts/package.py|
-            test/mesh/unstructured/communicator.cpp
           )$
       # For Unlicense
       - id: reuse-annotate-unlicense
@@ -57,21 +56,5 @@ repos:
             REUSE.toml|
             scripts/package.py|
             scripts/catch2json.py|
-            cmake/CPM.cmake|
-            test/CMakeLists.txt|
-            test/core/mpi/CMakeLists.txt
+            cmake/CPM.cmake
           )$
-      # exception for unlicense rule -> MIT instead
-      - id: reuse-annotate-mit-file
-        name: reuse-annotate-mit-file
-        entry: reuse annotate --license MIT --copyright 'NeoN authors' --merge-copyright
-        language: python
-        additional_dependencies: [reuse==2.1.0]
-        files: test/CMakeLists.txt|test/core/mpi/CMakeLists.txt
-      # exception for MIT rule -> Unlicense instead
-      - id: reuse-annotate-unlicense-file
-        name: reuse-annotate-unlicense-file
-        entry: reuse annotate --license Unlicense --copyright 'NeoN authors' --merge-copyright
-        language: python
-        additional_dependencies: [reuse==2.1.0]
-        files: test/mesh/unstructured/communicator.cpp
