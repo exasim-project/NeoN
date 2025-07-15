@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 Jason Turner
 # SPDX-FileCopyrightText: 2023 NeoN authors
+
 # Set a default build type if none was specified
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 NeoN authors
+
 // inspired by
 // https://develop.openfoam.com/modules/external-solver/-/blob/develop/src/petsc4Foam/utils/petscLinearSolverContext.H
 

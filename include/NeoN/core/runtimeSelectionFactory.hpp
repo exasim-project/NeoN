@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 AMR Wind Authors
 // SPDX-FileCopyrightText: 2023-2024 NeoN authors
+
 // ##############################################################################
 // # Original design taken from amr wind                                        #
 // # from here                                                                  #
@@ -314,9 +315,11 @@ public:
          */
         static bool addSubType()
         {
-            CreatorFunc func = [](Args... args) -> std::unique_ptr<Base> {
-                return static_cast<std::unique_ptr<Base>>(new derivedClass(std::forward<Args>(args
-                )...));
+            CreatorFunc func = [](Args... args) -> std::unique_ptr<Base>
+            {
+                return static_cast<std::unique_ptr<Base>>(
+                    new derivedClass(std::forward<Args>(args)...)
+                );
             };
             RuntimeSelectionFactory::table()[derivedClass::name()] = func;
 
@@ -407,7 +410,7 @@ private:
 template<class Base, class... Args>
 template<class derivedClass>
 bool RuntimeSelectionFactory<Base, Parameters<Args...>>::Register<derivedClass>::REGISTERED =
-    RuntimeSelectionFactory<Base, Parameters<Args...>>::template Register<derivedClass>::addSubType(
-    );
+    RuntimeSelectionFactory<Base, Parameters<Args...>>::template Register<
+        derivedClass>::addSubType();
 
 }; // namespace NeoN

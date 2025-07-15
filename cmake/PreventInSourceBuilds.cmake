@@ -1,11 +1,14 @@
 # SPDX-License-Identifier: Unlicense
 # SPDX-FileCopyrightText: 2023 Jason Turner
 # SPDX-FileCopyrightText: 2023 NeoN authors
+
+# cmake-format: off
 ##############################################################################
 # This function will prevent in-source builds                                #
 # from here                                                                  #
 # https://github.com/cpp-best-practices/cmake_template                       #
 ##############################################################################
+# cmake-format: on
 
 function(myproject_assure_out_of_source_builds)
   # make sure the user doesn't play dirty with symlinks
