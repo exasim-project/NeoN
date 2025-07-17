@@ -1,11 +1,15 @@
-# SPDX-License-Identifier: Unlicense
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
 # SPDX-FileCopyrightText: 2023 Jason Turner
-# SPDX-FileCopyrightText: 2023 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+
+# cmake-format: off
 ##############################################################################
 # This function will enable sanitizers                                       #
 # from here                                                                  #
 # https://github.com/cpp-best-practices/cmake_template                       #
 ##############################################################################
+# cmake-format: on
 
 function(
   enable_sanitizers

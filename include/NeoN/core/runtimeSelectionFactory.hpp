@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
 // SPDX-FileCopyrightText: 2023 AMR Wind Authors
-// SPDX-FileCopyrightText: 2023-2024 NeoN authors
+//
+// SPDX-License-Identifier: MIT
+
 // ##############################################################################
 // # Original design taken from amr wind                                        #
 // # from here                                                                  #

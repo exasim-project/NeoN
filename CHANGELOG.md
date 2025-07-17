@@ -19,6 +19,7 @@
 - Add temporal operators inside expressions and the ability to solve linear system [#259 ](https://github.com/exasim-project/NeoN/pull/259)
 - Add segmentedField to represent vector of vectors [#202](https://github.com/exasim-project/NeoN/pull/202)
 - Add courant number calculation based on parallelFor [#224](https://github.com/exasim-project/NeoN/pull/224)
+- Add license automation [#343](https://github.com/exasim-project/NeoN/pull/343)
 ## Fixes
 # Version 0.1.0
 - improve build with MSVC and Clang on Windows [#163](https://github.com/exasim-project/NeoN/pull/163)

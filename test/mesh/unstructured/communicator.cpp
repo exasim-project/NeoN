@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: Unlicense
-// SPDX-FileCopyrightText: 2023-2024 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
+// SPDX-License-Identifier: MIT
 
 // #include <source_location>
 

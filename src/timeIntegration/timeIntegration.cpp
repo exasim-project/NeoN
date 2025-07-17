@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
 //
-// SPDX-FileCopyrightText: 2023 NeoN authors
+// SPDX-License-Identifier: MIT
 
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/timeIntegration/forwardEuler.hpp"
