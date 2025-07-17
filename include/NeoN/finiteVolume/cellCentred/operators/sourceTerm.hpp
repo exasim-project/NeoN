@@ -30,6 +30,8 @@ public:
         VolumeField<ValueType>& field
     );
 
+    ~SourceTerm();
+
     void explicitOperation(Vector<ValueType>& source) const;
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
