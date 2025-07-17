@@ -35,7 +35,8 @@ repos:
         language: python
         additional_dependencies: [reuse==2.1.0]
         types_or: [c, c++, inc, python]
-        # .cmake-format.py use Unlicense
+        # .cmake-format.py, doc/conf.py use Unlicense
+        # don't have NeoN license for script/package.py
         exclude: |
           (?x)^(
             .cmake-format.py|
@@ -47,14 +48,18 @@ repos:
         name: reuse-annotate-unlicense
         entry: reuse annotate --license Unlicense --copyright 'NeoN authors' --merge-copyright
         language: python
-        require_serial: true
         additional_dependencies: [reuse==2.1.0]
-        types_or: [cmake, python, gitignore, toml]
+        types_or: [cmake, gitignore, toml]
         # CPM.cmake from others. note: the current CPM.cmake can not be parsed by reuse annotate
         exclude: |
           (?x)^(
             REUSE.toml|
-            scripts/package.py|
-            scripts/catch2json.py|
             cmake/CPM.cmake
           )$
+      # Some specific files for Unlicense
+      - id: reuse-annotate-unlicense-files
+        name: reuse-annotate-unlicense-files
+        entry: reuse annotate --license Unlicense --copyright 'NeoN authors' --merge-copyright
+        language: python
+        additional_dependencies: [reuse==2.1.0]
+        files: .cmake-format.py|doc/conf.py
