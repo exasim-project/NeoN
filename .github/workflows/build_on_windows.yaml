@@ -10,7 +10,7 @@ on:
       - synchronize
       - opened
   schedule:
-    - cron: "* 0 * * 0"
+    - cron: "0 9 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ (github.head_ref && github.ref) || github.run_id }}

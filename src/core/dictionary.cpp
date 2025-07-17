@@ -1,5 +1,6 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <numeric>
 #include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream

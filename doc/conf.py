@@ -1,5 +1,7 @@
+# SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoN authors
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:

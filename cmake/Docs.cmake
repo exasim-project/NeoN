@@ -1,5 +1,7 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoN authors
+
 find_package(Doxygen REQUIRED)
 find_package(Sphinx REQUIRED)
 

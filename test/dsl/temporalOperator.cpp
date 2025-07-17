@@ -1,5 +1,7 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoN authors
+
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 

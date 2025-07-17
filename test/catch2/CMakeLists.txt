@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023-2024 NeoN authors
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   add_library(NeoN_catch_main_mpi test_main_mpi.cpp mpiReporter.cpp mpiGlobals.cpp

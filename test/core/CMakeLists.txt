@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2024 NeoN authors
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   add_subdirectory(mpi)

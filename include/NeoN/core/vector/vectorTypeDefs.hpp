@@ -1,5 +1,7 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023-2024 NeoN authors
+
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"

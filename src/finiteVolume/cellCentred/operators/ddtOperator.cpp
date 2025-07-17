@@ -1,6 +1,6 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoN authors
-
 
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"

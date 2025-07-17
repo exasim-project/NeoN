@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 NeoN authors
+//
+// SPDX-License-Identifier: MIT
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/macros.hpp"

@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoN authors
 
 # set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
 

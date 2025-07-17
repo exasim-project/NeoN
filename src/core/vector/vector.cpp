@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 NeoN authors
+//
+// SPDX-License-Identifier: MIT
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"

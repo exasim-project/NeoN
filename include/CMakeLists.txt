@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
 # SPDX-License-Identifier: Unlicense
-# SPDX-FileCopyrightText: 2023 NeoN authors
 
 add_library(NeoN_public_api INTERFACE) # dummy target
 add_library(NeoN::NeoN_public_api ALIAS NeoN_public_api) # dummy target

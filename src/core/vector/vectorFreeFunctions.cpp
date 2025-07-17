@@ -1,5 +1,6 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2023 NeoN authors
 
 #include <Kokkos_Core.hpp>
 
@@ -15,15 +16,30 @@
 namespace NeoN
 {
 
+
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a* b; }
 {
-    auto viewA = vect.view();
-    parallelFor(
-        vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
-    );
+    if constexpr (std::is_same_v<ValueType, Vec3>)
+    {
+        auto viewA = vect.view();
+        parallelFor(
+            vect, KOKKOS_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
+        );
+    }
+    else
+    {
+        auto viewA = vect.view();
+        parallelFor(
+            vect,
+            KOKKOS_LAMBDA(const localIdx i)->ValueType {
+                return viewA[i] * static_cast<ValueType>(value);
+            }
+        );
+    }
 }
+
 
 namespace detail
 {
