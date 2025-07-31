@@ -18,7 +18,8 @@ build-project:
     # Optional: show versions of tools
     - cmake --version
     - clang++ --version || g++ --version
-    - nvidia-smi || true
+    - nvidia-smi
+    - nvcc --version
 
   script:
     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
