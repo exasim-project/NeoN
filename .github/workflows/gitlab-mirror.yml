@@ -1,0 +1,26 @@
+name: GitHub-GitLab Mirror
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  delete:
+    branches: ["**"]
+    tags: ["**"]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo as bare
+        run: |
+          git clone --bare https://github.com/exasim-project/NeoN.git
+
+      - name: Push to GitLab (mirror)
+        env:
+          GITLAB_USERNAME: ${{ secrets.GITLAB_COM_USERNAME }}
+          GITLAB_PAT: ${{ secrets.GITLAB_COM_PAT }}
+        run: |
+          cd NeoN.git
+          git push --mirror https://${GITLAB_USERNAME}:${GITLAB_PAT}@gitlab.com/neon-group/NeoN.git
