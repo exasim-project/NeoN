@@ -93,19 +93,38 @@ if(${NeoN_WITH_ADIOS2})
     list(APPEND ADIOS2_OPTIONS "BUILD_SHARED_LIBS ON")
   endif()
 
-  cpmaddpackage(
-    NAME
-    adios2
-    GITHUB_REPOSITORY
-    ornladios/ADIOS2
-    PATCH_COMMAND
-    ${ADIOS2_KOKKOS_PATCH}
-    VERSION
-    2.10.2
-    OPTIONS
-    ${ADIOS2_OPTIONS}
-    ${ADIOS2_CUDA_OPTIONS}
-    SYSTEM)
+  # Checking for patched and cached ADIOS2 will become obsolete after this issue in CPM has been
+  # fixed: https://github.com/cpm-cmake/CPM.cmake/issues/618
+  if(NOT ADIOS2_PATCHED)
+    set(ADIOS2_PATCHED
+        TRUE
+        CACHE INTERNAL "Whether ADIOS2 has been fetched and patched in CPM cache.")
+    cpmaddpackage(
+      NAME
+      adios2
+      GITHUB_REPOSITORY
+      ornladios/ADIOS2
+      PATCH_COMMAND
+      ${ADIOS2_KOKKOS_PATCH}
+      VERSION
+      2.10.2
+      OPTIONS
+      ${ADIOS2_OPTIONS}
+      ${ADIOS2_CUDA_OPTIONS}
+      SYSTEM)
+  else()
+    cpmaddpackage(
+      NAME
+      adios2
+      GITHUB_REPOSITORY
+      ornladios/ADIOS2
+      VERSION
+      2.10.2
+      OPTIONS
+      ${ADIOS2_OPTIONS}
+      ${ADIOS2_CUDA_OPTIONS}
+      SYSTEM)
+  endif()
 endif()
 
 if(${NeoN_WITH_SUNDIALS})
