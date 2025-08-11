@@ -5,6 +5,8 @@
 #pragma once
 
 #include <Kokkos_Core.hpp>
+#include <Kokkos_NestedSort.hpp>
+
 #include <type_traits>
 
 #include "NeoN/core/primitives/label.hpp"
@@ -232,5 +234,41 @@ void parallelScan(
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel, returnValue); }, exec);
 }
+
+namespace detail
+{
+
+template<typename Executor, typename ValueType>
+void parallelSort(
+    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, ValueType* ptr
+)
+{
+    auto [start, end] = range;
+    ValueType* begin = ptr + start;
+
+    using runOn = typename Executor::exec;
+    using TeamPol = Kokkos::TeamPolicy<runOn>;
+    using TeamMem = typename TeamPol::member_type;
+
+    int vectorLen = TeamPol::vector_length_max();
+    Kokkos::parallel_for(
+        TeamPol(1, Kokkos::AUTO(), vectorLen),
+        KOKKOS_LAMBDA(const TeamMem& t) {
+            auto view = Kokkos::View<ValueType*, runOn, Kokkos::MemoryTraits<Kokkos::Unmanaged>>(
+                begin, end - start
+            );
+            Kokkos::Experimental::sort_team(t, view);
+        }
+    );
+}
+
+template<typename ValueType>
+void parallelSort(const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, ValueType* ptr)
+{
+    std::visit([&](const auto& e) { parallelSort(e, range, ptr); }, exec);
+}
+
+}
+
 
 } // namespace NeoN
