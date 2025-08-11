@@ -9,6 +9,7 @@
 namespace NeoN::la
 {
 
+/*
 const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
 {
     StencilDataBase& stencilDb = mesh.stencilDB();
@@ -17,6 +18,18 @@ const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mes
         stencilDb.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
     }
     return stencilDb.get<SparsityPattern>("SparsityPattern");
+}
+*/
+
+const std::shared_ptr<la::SparsityPattern>
+SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
+{
+    StencilDataBase& stencilDb = mesh.stencilDB();
+    if (!stencilDb.contains("SparsityPattern"))
+    {
+        stencilDb.insert(std::string("SparsityPattern"), std::make_shared<SparsityPattern>(mesh));
+    }
+    return stencilDb.get<std::shared_ptr<la::SparsityPattern>>("SparsityPattern");
 }
 
 void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)

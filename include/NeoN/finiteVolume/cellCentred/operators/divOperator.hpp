@@ -70,7 +70,7 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    // const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<DivOperatorFactory<ValueType>> clone() const = 0;
@@ -81,7 +81,8 @@ protected:
 
     const UnstructuredMesh& mesh_;
 
-    const la::SparsityPattern& sparsityPattern_;
+    // const la::SparsityPattern& sparsityPattern_;
+    const std::shared_ptr<la::SparsityPattern> sparsityPattern_;
 };
 
 template<typename ValueType>
@@ -134,7 +135,7 @@ public:
     void explicitOperation(Vector<ValueType>& source) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
-        auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
+        NeoN::Vector<NeoN::scalar> tmpsource(source.exec(), source.size(), 0.0);
         const auto operatorScaling = this->getCoefficient();
         divOperatorStrategy_->div(tmpsource, faceFlux_, this->getVector(), operatorScaling);
         source += tmpsource;

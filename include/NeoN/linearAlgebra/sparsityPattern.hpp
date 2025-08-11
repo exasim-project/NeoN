@@ -73,7 +73,8 @@ public:
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
     // TODO add selection mechanism via dictionary later
-    static const SparsityPattern& readOrCreate(const UnstructuredMesh& mesh);
+    // static const SparsityPattern& readOrCreate(const UnstructuredMesh& mesh);
+    static const std::shared_ptr<la::SparsityPattern> readOrCreate(const UnstructuredMesh& mesh);
 
 private:
 

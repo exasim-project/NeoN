@@ -38,12 +38,13 @@ public:
 
     std::string getName() const { return "sourceTerm"; }
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    // const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
 private:
 
     const VolumeField<scalar>& coefficients_;
-    const la::SparsityPattern& sparsityPattern_;
+    // const la::SparsityPattern& sparsityPattern_;
+    const std::shared_ptr<la::SparsityPattern> sparsityPattern_;
 };
 
 

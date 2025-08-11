@@ -21,6 +21,7 @@
 - Add courant number calculation based on parallelFor [#224](https://github.com/exasim-project/NeoN/pull/224)
 - Add license automation [#343](https://github.com/exasim-project/NeoN/pull/343)
 ## Fixes
+- fixed linking error of unresolved reference to GPUExecutor destructor when compiling with clang [#341](https://github.com/exasim-project/NeoN/pull/341)
 # Version 0.1.0
 - improve build with MSVC and Clang on Windows [#163](https://github.com/exasim-project/NeoN/pull/163)
 - Add document based database [#155](https://github.com/exasim-project/NeoN/pull/155)
