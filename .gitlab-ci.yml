@@ -5,23 +5,36 @@
 image: greole/neon-cuda
 
 stages:
-  - build-and-test
+  - build
+  - test
+
+variables:
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 1
 
 build-project:
-  stage: build-and-test
+  stage: build
   tags: ["nvidia-gpus"]
   before_script:
-    # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
     - export PATH="$HOME/.local/bin:$PATH"
-
-    # Optional: show versions of tools
     - cmake --version
     - clang++ --version || g++ --version
     - nvidia-smi
     - nvcc --version
-
   script:
     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset develop
+  artifacts:
+    paths:
+      - build/          
+    expire_in: 1h
+
+test-project:
+  stage: test
+  tags: ["nvidia-gpus"]
+  needs: ["build-project"]  
+  script:
     - ctest --preset develop --output-on-failure
+  dependencies:
+    - build-project         
