@@ -27,14 +27,14 @@ build-project:
     - cmake --build --preset develop
   artifacts:
     paths:
-      - build/          
+      - build/
     expire_in: 1h
 
 test-project:
   stage: test
   tags: ["nvidia-gpus"]
-  needs: ["build-project"]  
+  needs: ["build-project"]
   script:
     - ctest --preset develop --output-on-failure
   dependencies:
-    - build-project         
+    - build-project
