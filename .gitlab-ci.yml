@@ -4,10 +4,21 @@
 
 image: greole/neon-cuda
 
+workflow:
+  rules:
+    # Skip pipeline if only doc or Markdown files changed
+    - changes:
+        - doc/**/*
+        - '*.md'
+      when: never
+
+    # Run pipeline for everything else
+    - when: always
+
 stages:
   - build-and-test
 
-build-project:
+build-and-test-project:
   stage: build-and-test
   tags: ["nvidia-gpus"]
   before_script:
