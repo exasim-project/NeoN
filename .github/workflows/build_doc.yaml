@@ -66,11 +66,12 @@ jobs:
       with:
         message: |
           Thank you for your PR, here are some useful tips:
+          - If this is your first PR, please add yourself to the AUTHORS.md file
           - Use labels to change the workflow behavior. Set `auto-fix` to automatically apply fixes, `full-ci` for a comprehensive set of tests and sanitizer runs, `ready-for-review` to show that you're done and need a review.
           - I deployed a test documentation to https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}
           - I deployed a test documentation to https://exasim-project.com/NeoFOAM/Build_PR_${{ env.PR_NUMBER }}
           - For `full-ci` builds benchmark results are available at https://github.com/exasim-project/NeoFOAM-BenchmarkData/${{ env.PR_NUMBER }}
-          - If this is your first PR, please add yourself to the AUTHORS.md file
+          - Also check if the GPU pipelines on https://gitlab-ce.lrz.de/greole/neon/-/jobs are successful.
         comment_tag: build_url
         mode: createIfNotExists
 
