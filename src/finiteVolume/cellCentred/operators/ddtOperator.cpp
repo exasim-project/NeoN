@@ -11,7 +11,8 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-DdtOperator<ValueType>::~DdtOperator(){}
+DdtOperator<ValueType>::~DdtOperator()
+{}
 
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)

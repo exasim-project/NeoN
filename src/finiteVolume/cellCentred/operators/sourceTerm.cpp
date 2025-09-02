@@ -9,7 +9,8 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-SourceTerm<ValueType>::~SourceTerm() {}
+SourceTerm<ValueType>::~SourceTerm()
+{}
 
 template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
