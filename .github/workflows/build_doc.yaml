@@ -52,12 +52,27 @@ jobs:
       with:
         folder: docs_build
         target-folder: latest
+
+    - name: Find Comment
+      uses: peter-evans/find-comment@v1
+      id: fc
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v2
+      if: steps.fc.outputs.comment-id == ''
       with:
         message: |
-          Deployed test documentation to https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}
+          Thank you for your PR, here are some useful tips:
+          - If this is your first PR, please add yourself to the AUTHORS.md file
+          - Use labels to change the workflow behavior. Set `auto-fix` to automatically apply fixes, `full-ci` for a comprehensive set of tests and sanitizer runs, `ready-for-review` to show that you're done and need a review.
+          - I deployed a test documentation to https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}
+          - For `full-ci` builds benchmark results are available at https://github.com/exasim-project/NeoFOAM-BenchmarkData/${{ env.PR_NUMBER }}
+          - Also check if the GPU pipelines on https://gitlab-ce.lrz.de/greole/neon/-/jobs are successful.
         comment_tag: build_url
+        mode: createIfNotExists
 
     - name: Echo Build PR URL
       run: |
