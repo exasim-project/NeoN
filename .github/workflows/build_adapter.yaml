@@ -35,7 +35,7 @@ jobs:
     steps:
      - name: Select branch to checkout
        run: |
-         if [[ $(git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter ${{ github.head_ref }}) ]]
+         if [[ -n "${{ github.head_ref }}" ]] && [[ $(git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter ${{ github.head_ref }}) ]]
          then
            echo "checkout ${{ github.head_ref }}"
            echo checkout=${{ github.head_ref }} >> $GITHUB_ENV
