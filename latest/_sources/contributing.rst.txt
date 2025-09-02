@@ -67,7 +67,8 @@ The following labels and their meaning are discussed here:
  * ``Skip-Changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``Skip-build``: Don't run any build steps, including building the compile commands database.
  * ``Skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
- * ``full-ci``: Run tests on AWS.
+ * ``full-ci``: Run tests on AWS and enable sanitizer workflows.
+ * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
 
 A full list of the labels can be found `here <https://github.com/exasim-project/NeoN/labels>`_.
 
