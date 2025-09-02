@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoFOAM: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/timeIntegration/sundials.hpp File Reference</title>
+<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">NeoFOAM
+   <div id="projectname">NeoN
    </div>
-   <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
+   <div id="projectbrief">A framework for CFD software</div>
   </td>
  </tr>
  </tbody>
@@ -70,104 +70,15 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b7d68532c5ef6a2996d1666976371b7d.html">NeoFOAM</a></li><li class="navelem"><a class="el" href="dir_15a86905956d7be1e8a48c6ce1a9d9e9.html">timeIntegration</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_4d3f939cb3e94ca2309d34727a08ae86.html">NeoN</a></li><li class="navelem"><a class="el" href="dir_d30a01042a0bcda460204e84a4b97195.html">timeIntegration</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">sundials.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;concepts&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;sundials/sundials_nvector.h&gt;</code><br />
-<code>#include &lt;sundials/sundials_core.hpp&gt;</code><br />
-<code>#include &lt;nvector/nvector_serial.h&gt;</code><br />
-<code>#include &lt;nvector/nvector_kokkos.hpp&gt;</code><br />
-<code>#include &lt;arkode/arkode_arkstep.h&gt;</code><br />
-<code>#include &lt;arkode/arkode_erkstep.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="error_8hpp_source.html">NeoFOAM/core/error.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="parallelAlgorithms_8hpp_source.html">NeoFOAM/core/parallelAlgorithms.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="field_8hpp_source.html">NeoFOAM/fields/field.hpp</a>&quot;</code><br />
-</div>
+
 <p><a href="sundials_8hpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoFOAM_1_1sundials_1_1SKVectorSerial.html">NeoFOAM::sundials::SKVectorSerial&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serial executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoFOAM_1_1sundials_1_1SKVectorSerial.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoFOAM_1_1sundials_1_1SKVectorHostDefault.html">NeoFOAM::sundials::SKVectorHostDefault&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host default executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoFOAM_1_1sundials_1_1SKVectorHostDefault.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoFOAM_1_1sundials_1_1SKVectorDefault.html">NeoFOAM::sundials::SKVectorDefault&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default executor SUNDIALS Kokkos vector wrapper.  <a href="classNeoFOAM_1_1sundials_1_1SKVectorDefault.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoFOAM_1_1sundials_1_1SKVector.html">NeoFOAM::sundials::SKVector&lt; ValueType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified interface for SUNDIALS Kokkos vector management.  <a href="classNeoFOAM_1_1sundials_1_1SKVector.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceNeoFOAM" id="r_namespaceNeoFOAM"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM.html">NeoFOAM</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceNeoFOAM_1_1sundials" id="r_namespaceNeoFOAM_1_1sundials"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html">NeoFOAM::sundials</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceNeoFOAM_1_1sundials_1_1detail" id="r_namespaceNeoFOAM_1_1sundials_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials_1_1detail.html">NeoFOAM::sundials::detail</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:af26930dad82f552ea4b35cbea9a08dcb" id="r_af26930dad82f552ea4b35cbea9a08dcb"><td class="memItemLeft" align="right" valign="top">ARKODE_ERKTableID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#af26930dad82f552ea4b35cbea9a08dcb">NeoFOAM::sundials::stringToERKTable</a> (const std::string &amp;key)</td></tr>
-<tr class="memdesc:af26930dad82f552ea4b35cbea9a08dcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers.  <br /></td></tr>
-<tr class="separator:af26930dad82f552ea4b35cbea9a08dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab47f1ccabb77326bedfdc3632a5e9990" id="r_ab47f1ccabb77326bedfdc3632a5e9990"><td class="memTemplParams" colspan="2">template&lt;typename SKVectorType , typename ValueType &gt; </td></tr>
-<tr class="memitem:ab47f1ccabb77326bedfdc3632a5e9990"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#ab47f1ccabb77326bedfdc3632a5e9990">NeoFOAM::sundials::fieldToSunNVectorImpl</a> (const <a class="el" href="classNeoFOAM_1_1Field.html">NeoFOAM::Field</a>&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</td></tr>
-<tr class="memdesc:ab47f1ccabb77326bedfdc3632a5e9990"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts <a class="el" href="namespaceNeoFOAM.html">NeoFOAM</a> <a class="el" href="classNeoFOAM_1_1Field.html" title="A class to contain the data and executors for a field and define some basic operations.">Field</a> data to SUNDIALS N_Vector format.  <br /></td></tr>
-<tr class="separator:ab47f1ccabb77326bedfdc3632a5e9990"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9703c266d77ecd315070edc5715da65f" id="r_a9703c266d77ecd315070edc5715da65f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a9703c266d77ecd315070edc5715da65f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#a9703c266d77ecd315070edc5715da65f">NeoFOAM::sundials::fieldToSunNVector</a> (const <a class="el" href="classNeoFOAM_1_1Field.html">NeoFOAM::Field</a>&lt; ValueType &gt; &amp;field, N_Vector &amp;vector)</td></tr>
-<tr class="memdesc:a9703c266d77ecd315070edc5715da65f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatcher for field to N_Vector conversion based on executor type.  <br /></td></tr>
-<tr class="separator:a9703c266d77ecd315070edc5715da65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa31219f1529a2ad5b859dccfbcbf1ce9" id="r_aa31219f1529a2ad5b859dccfbcbf1ce9"><td class="memTemplParams" colspan="2">template&lt;typename SKVectorType , typename ValueType &gt; </td></tr>
-<tr class="memitem:aa31219f1529a2ad5b859dccfbcbf1ce9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#aa31219f1529a2ad5b859dccfbcbf1ce9">NeoFOAM::sundials::sunNVectorToFieldImpl</a> (const N_Vector &amp;vector, <a class="el" href="classNeoFOAM_1_1Field.html">NeoFOAM::Field</a>&lt; ValueType &gt; &amp;field)</td></tr>
-<tr class="memdesc:aa31219f1529a2ad5b859dccfbcbf1ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts SUNDIALS N_Vector data back to <a class="el" href="namespaceNeoFOAM.html">NeoFOAM</a> <a class="el" href="classNeoFOAM_1_1Field.html" title="A class to contain the data and executors for a field and define some basic operations.">Field</a> format.  <br /></td></tr>
-<tr class="separator:aa31219f1529a2ad5b859dccfbcbf1ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24cc64a2024e6b4ac7cb816cfd54050d" id="r_a24cc64a2024e6b4ac7cb816cfd54050d"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a24cc64a2024e6b4ac7cb816cfd54050d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#a24cc64a2024e6b4ac7cb816cfd54050d">NeoFOAM::sundials::sunNVectorToField</a> (const N_Vector &amp;vector, <a class="el" href="classNeoFOAM_1_1Field.html">NeoFOAM::Field</a>&lt; ValueType &gt; &amp;field)</td></tr>
-<tr class="memdesc:a24cc64a2024e6b4ac7cb816cfd54050d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatcher for N_Vector to field conversion based on executor type.  <br /></td></tr>
-<tr class="separator:a24cc64a2024e6b4ac7cb816cfd54050d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae96a2418673b302afba9e29356d29f86" id="r_ae96a2418673b302afba9e29356d29f86"><td class="memTemplParams" colspan="2">template&lt;typename SolutionFieldType &gt; </td></tr>
-<tr class="memitem:ae96a2418673b302afba9e29356d29f86"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#ae96a2418673b302afba9e29356d29f86">NeoFOAM::sundials::explicitRKSolve</a> (sunrealtype t, N_Vector y, N_Vector ydot, void *userData)</td></tr>
-<tr class="memdesc:ae96a2418673b302afba9e29356d29f86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a single explicit Runge-Kutta stage evaluation.  <br /></td></tr>
-<tr class="separator:ae96a2418673b302afba9e29356d29f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a4b279838134e2116b0112768ab5a68" id="r_a4a4b279838134e2116b0112768ab5a68"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:a4a4b279838134e2116b0112768ab5a68"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials_1_1detail.html#a4a4b279838134e2116b0112768ab5a68">NeoFOAM::sundials::detail::initNVector</a> (<a class="el" href="namespaceNeoFOAM.html#aa8ea339f1c9a4f2232da876ead30a82c">size_t</a> size, std::shared_ptr&lt; SUNContext &gt; context, <a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:a4a4b279838134e2116b0112768ab5a68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a vector wrapper with specified size and context.  <br /></td></tr>
-<tr class="separator:a4a4b279838134e2116b0112768ab5a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68463a221b6ac58324eb5d8f1028fbdd" id="r_a68463a221b6ac58324eb5d8f1028fbdd"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:a68463a221b6ac58324eb5d8f1028fbdd"><td class="memTemplItemLeft" align="right" valign="top">const N_Vector &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials_1_1detail.html#a68463a221b6ac58324eb5d8f1028fbdd">NeoFOAM::sundials::detail::sunNVector</a> (const <a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:a68463a221b6ac58324eb5d8f1028fbdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides const access to underlying N_Vector.  <br /></td></tr>
-<tr class="separator:a68463a221b6ac58324eb5d8f1028fbdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa48890cd0db6b0c9b0c6db199c7f96c" id="r_afa48890cd0db6b0c9b0c6db199c7f96c"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &gt; </td></tr>
-<tr class="memitem:afa48890cd0db6b0c9b0c6db199c7f96c"><td class="memTemplItemLeft" align="right" valign="top">N_Vector &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials_1_1detail.html#afa48890cd0db6b0c9b0c6db199c7f96c">NeoFOAM::sundials::detail::sunNVector</a> (<a class="el" href="classNeoFOAM_1_1Vector.html">Vector</a> &amp;vec)</td></tr>
-<tr class="memdesc:afa48890cd0db6b0c9b0c6db199c7f96c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides mutable access to underlying N_Vector.  <br /></td></tr>
-<tr class="separator:afa48890cd0db6b0c9b0c6db199c7f96c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:adf0e6744d854e97d0972cdd17aa13bf7" id="r_adf0e6744d854e97d0972cdd17aa13bf7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#adf0e6744d854e97d0972cdd17aa13bf7">NeoFOAM::sundials::SUN_CONTEXT_DELETER</a></td></tr>
-<tr class="memdesc:adf0e6744d854e97d0972cdd17aa13bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deleter for SUNContext shared pointers.  <br /></td></tr>
-<tr class="separator:adf0e6744d854e97d0972cdd17aa13bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa11671597bf1deb9f45b5714f1e7a547" id="r_aa11671597bf1deb9f45b5714f1e7a547"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoFOAM_1_1sundials.html#aa11671597bf1deb9f45b5714f1e7a547">NeoFOAM::sundials::SUN_ARK_DELETER</a></td></tr>
-<tr class="memdesc:aa11671597bf1deb9f45b5714f1e7a547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deleter for explicit type RK solvers (ERK, ARK, etc) for the unique pointers.  <br /></td></tr>
-<tr class="separator:aa11671597bf1deb9f45b5714f1e7a547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

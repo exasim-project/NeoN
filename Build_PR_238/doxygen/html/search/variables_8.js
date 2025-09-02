@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['name_0',['name',['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingField.html#aa73f6f05ab155ba997395616b9f5921e',1,'NeoFOAM::finiteVolume::cellCentred::CreateFromExistingField::name'],['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin.html#a34822743f4c8549b6573fc3abae17b76',1,'NeoFOAM::finiteVolume::cellCentred::GeometricFieldMixin::name']]],
-  ['name_5f_1',['name_',['../classNeoFOAM_1_1CollectionMixin.html#a834f7380ff352406e86f80d5a395dcc0',1,'NeoFOAM::CollectionMixin']]],
-  ['nl_2',['NL',['../time_8hpp.html#a6c2bdfd6f25ccadb92fcff4173b7fec2',1,'time.hpp']]]
+  ['matrix_0',['matrix',['../structNeoN_1_1la_1_1LinearSystemView.html#a4785b4ff3e365b5a62e4edaae9fae59e',1,'NeoN::la::LinearSystemView']]],
+  ['matrixidxs_1',['matrixIdxs',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#a996e5073c82807d501192afc504b86f2',1,'NeoN::la::BoundaryCoefficients']]],
+  ['matrixvalues_2',['matrixValues',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#a1084e3e472ad8ca16a4e5c5e43e0ca86',1,'NeoN::la::BoundaryCoefficients']]],
+  ['mesh_5f_3',['mesh_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#a14f70ffb6cab9d4d3e91f0604a1388a9',1,'NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::mesh_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#ab8c17b9efb6860a6c2dde1f6b67a7c57',1,'NeoN::finiteVolume::cellCentred::DomainMixin::mesh_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#a62b36468d41b1ac0ad330aff4a4ef5ea',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::mesh_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html#a5e7ee41f33dfbf2a1dcc7c09f7c5b932',1,'NeoN::finiteVolume::cellCentred::DivOperatorFactory::mesh_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#a56d15e307ea1ef9e882d6da0ca02617f',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory::mesh_']]]
 ];

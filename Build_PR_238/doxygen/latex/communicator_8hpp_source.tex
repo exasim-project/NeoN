@@ -1,119 +1,121 @@
 \doxysection{communicator.\+hpp}
-\hypertarget{communicator_8hpp_source}{}\label{communicator_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/mesh/unstructured/communicator.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/mesh/unstructured/communicator.hpp}}
+\hypertarget{communicator_8hpp_source}{}\label{communicator_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/communicator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/communicator.hpp}}
 \mbox{\hyperlink{communicator_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00004}00004\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <vector>}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <memory>}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00009}00009\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoFOAM/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00010}00010\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00011}00011\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fullDuplexCommBuffer_8hpp}{NeoFOAM/core/mpi/fullDuplexCommBuffer.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoFOAM/core/mpi/operators.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoFOAM/core/mpi/environment.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM}{NeoFOAM}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00019}00019\ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00020}00020\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00025}00025\ \textcolor{keyword}{struct\ }NodeCommMap}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00026}00026\ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00027}00027\ \ \ \ \ \mbox{\hyperlink{namespaceNeoFOAM_a7c2c6a7a7bda94e9fb289fd81b96f745}{label}}\ local\_idx;\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00028}00028\ \};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00033}00033\ \textcolor{keyword}{using\ }RankCommMap\ =\ std::vector<NodeCommMap>;}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00034}00034\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00038}00038\ \textcolor{keyword}{using\ }CommMap\ =\ std::vector<RankCommMap>;}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00039}00039\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00047}00047\ \textcolor{keyword}{class\ }Communicator}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00048}00048\ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00049}00049\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00050}00050\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{using\ }bufferType\ =\ mpi::FullDuplexCommBuffer;}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fullDuplexCommBuffer_8hpp}{NeoN/core/mpi/fullDuplexCommBuffer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoN/core/mpi/operators.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00027}00027\ \textcolor{keyword}{struct\ }NodeCommMap}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00029}00029\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ local\_idx;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00030}00030\ \};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00035}00035\ \textcolor{keyword}{using\ }RankCommMap\ =\ std::vector<NodeCommMap>;}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00040}00040\ \textcolor{keyword}{using\ }CommMap\ =\ std::vector<RankCommMap>;}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00049}00049\ \textcolor{keyword}{class\ }Communicator}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00050}00050\ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00051}00051\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00056}00056\ \ \ \ \ Communicator()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00061}00061\ \ \ \ \ \string~Communicator()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00062}00062\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00070}00070\ \ \ \ \ Communicator(mpi::MPIEnvironment\ mpiEnviron,\ CommMap\ rankSendMap,\ CommMap\ rankReceiveMap)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ :\ mpiEnviron\_(mpiEnviron),\ sendMap\_(rankSendMap),\ receiveMap\_(rankReceiveMap)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00072}00072\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnviron\_.sizeRank()\ ==\ rankSendMap.size(),}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Size\ of\ rankSendSize\ does\ not\ match\ MPI\ size."{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnviron\_.sizeRank()\ ==\ rankReceiveMap.size(),}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Size\ of\ rankReceiveSize\ does\ not\ match\ MPI\ size."{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00081}00081\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00082}00082\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keywordtype}{void}\ startComm(Field<valueType>\&\ field,\ \textcolor{keyword}{const}\ std::string\&\ commName)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00091}00091\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ ==\ CommBuffer\_.end()\ ||\ (!CommBuffer\_[commName]),}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}There\ is\ already\ an\ ongoing\ communication\ for\ key\ "{}}\ <<\ commName\ <<\ \textcolor{stringliteral}{"{}."{}}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00096}00096\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ findDuplexBuffer();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CommBuffer\_[commName])}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ createNewDuplexBuffer();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00102}00102\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>initComm<valueType>(commName);}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getSend<valueType>(rank);}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ data\ =\ 0;\ data\ <\ sendMap\_[rank].size();\ ++data)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rankBuffer[data]\ =\ field(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(sendMap\_[rank][data].local\_idx));}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>startComm();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00111}00111\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00112}00112\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keywordtype}{bool}\ isComplete(std::string\ commName);}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keywordtype}{void}\ finaliseComm(Field<valueType>\&\ field,\ std::string\ commName)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00128}00128\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ !=\ CommBuffer\_.end()\ \&\&\ CommBuffer\_[commName],}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}No\ communication\ associated\ with\ key:\ "{}}\ <<\ commName}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00133}00133\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>waitComplete();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getReceive<valueType>(rank);}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ data\ =\ 0;\ data\ <\ receiveMap\_[rank].size();\ ++data)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(receiveMap\_[rank][data].local\_idx))\ =\ rankBuffer[data];}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>finaliseComm();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00143}00143\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00144}00144\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00145}00145\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{using\ }bufferType\ =\ mpi::FullDuplexCommBuffer;}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00058}00058\ \ \ \ \ Communicator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00063}00063\ \ \ \ \ \string~Communicator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00072}00072\ \ \ \ \ Communicator(mpi::MPIEnvironment\ mpiEnviron,\ CommMap\ rankSendMap,\ CommMap\ rankReceiveMap)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ :\ mpiEnviron\_(mpiEnviron),\ sendMap\_(rankSendMap),\ receiveMap\_(rankReceiveMap)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00074}00074\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnviron\_.sizeRank()\ ==\ rankSendMap.size(),}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Size\ of\ rankSendSize\ does\ not\ match\ MPI\ size."{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnviron\_.sizeRank()\ ==\ rankReceiveMap.size(),}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Size\ of\ rankReceiveSize\ does\ not\ match\ MPI\ size."{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00083}00083\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keywordtype}{void}\ startComm(Vector<valueType>\&\ field,\ \textcolor{keyword}{const}\ std::string\&\ commName)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00093}00093\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ ==\ CommBuffer\_.end()\ ||\ (!CommBuffer\_[commName]),}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}There\ is\ already\ an\ ongoing\ communication\ for\ key\ "{}}\ <<\ commName\ <<\ \textcolor{stringliteral}{"{}."{}}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ findDuplexBuffer();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CommBuffer\_[commName])}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ createNewDuplexBuffer();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>initComm<valueType>(commName);}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getSend<valueType>(rank);}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ data\ =\ 0;\ data\ <\ sendMap\_[rank].size();\ ++data)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rankBuffer[data]\ =\ field(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(sendMap\_[rank][data].local\_idx));}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>startComm();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00113}00113\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keywordtype}{bool}\ isComplete(std::string\ commName);}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00128}00128\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00129}00129\ \ \ \ \ \textcolor{keywordtype}{void}\ finaliseComm(Vector<valueType>\&\ field,\ std::string\ commName)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00130}00130\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ !=\ CommBuffer\_.end()\ \&\&\ CommBuffer\_[commName],}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}No\ communication\ associated\ with\ key:\ "{}}\ <<\ commName}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>waitComplete();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getReceive<valueType>(rank);}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ data\ =\ 0;\ data\ <\ receiveMap\_[rank].size();\ ++data)}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(receiveMap\_[rank][data].local\_idx))\ =\ rankBuffer[data];}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>finaliseComm();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00145}00145\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00146}00146\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00147}00147\ \ \ \ \ mpi::MPIEnvironment\ mpiEnviron\_;\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00148}00148\ \ \ \ \ CommMap\ sendMap\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00149}00149\ \ \ \ \ CommMap\ receiveMap\_;\ \ \ \ \ \ \ \ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00150}00150\ \ \ \ \ std::vector<bufferType>\ buffers;\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00151}00151\ \ \ \ \ std::unordered\_map<std::string,\ bufferType*>}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ CommBuffer\_;\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00159}00159\ \ \ \ \ bufferType*\ findDuplexBuffer();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00160}00160\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00165}00165\ \ \ \ \ bufferType*\ createNewDuplexBuffer();}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00166}00166\ \};}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00167}00167\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00168}00168\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00169}00169\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00147}00147\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00149}00149\ \ \ \ \ mpi::MPIEnvironment\ mpiEnviron\_;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00150}00150\ \ \ \ \ CommMap\ sendMap\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00151}00151\ \ \ \ \ CommMap\ receiveMap\_;\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00152}00152\ \ \ \ \ std::vector<bufferType>\ buffers;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00153}00153\ \ \ \ \ std::unordered\_map<std::string,\ bufferType*>}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ CommBuffer\_;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00161}00161\ \ \ \ \ bufferType*\ findDuplexBuffer();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00167}00167\ \ \ \ \ bufferType*\ createNewDuplexBuffer();}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00168}00168\ \};}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00169}00169\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00171}00171\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

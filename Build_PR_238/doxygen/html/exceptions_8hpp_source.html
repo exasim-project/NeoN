@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoFOAM: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/helpers/exceptions.hpp Source File</title>
+<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">NeoFOAM
+   <div id="projectname">NeoN
    </div>
-   <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
+   <div id="projectbrief">A framework for CFD software</div>
   </td>
  </tr>
  </tbody>
@@ -75,81 +75,89 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b7d68532c5ef6a2996d1666976371b7d.html">NeoFOAM</a></li><li class="navelem"><a class="el" href="dir_7c4b0cc5f23918d85b6ff7e7b4bd55bf.html">helpers</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_4d3f939cb3e94ca2309d34727a08ae86.html">NeoN</a></li><li class="navelem"><a class="el" href="dir_d62aa08d846b3af9599c0e955f183288.html">helpers</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">exceptions.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="exceptions_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023 NeoFOAM authors</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
+<a href="exceptions_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoFOAM.html">NeoFOAM</a></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1Error.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoFOAM_1_1Error.html">Error</a> : <span class="keyword">public</span> std::exception</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1Error.html#a9df5b85d215b4e57ef3240e3500773c7">   34</a></span>    <a class="code hl_function" href="classNeoFOAM_1_1Error.html#a9df5b85d215b4e57ef3240e3500773c7">Error</a>(<span class="keyword">const</span> std::string&amp; file, <span class="keywordtype">int</span> line, <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classNeoFOAM_1_1Error.html#a72ec503385bd1a3c495b06104cb0c831">what</a>)</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        : what_(file + <span class="stringliteral">&quot;:&quot;</span> + std::to_string(line) + <span class="stringliteral">&quot;: &quot;</span> + <a class="code hl_function" href="classNeoFOAM_1_1Error.html#a72ec503385bd1a3c495b06104cb0c831">what</a>)</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {}</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="label_8hpp.html">NeoN/core/primitives/label.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classNeoN_1_1Error.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1Error.html">Error</a> : <span class="keyword">public</span> std::exception</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classNeoN_1_1Error.html#a8dfebf7b6b0b7321b725272646e09868">   38</a></span>    <a class="code hl_function" href="classNeoN_1_1Error.html#a8dfebf7b6b0b7321b725272646e09868">Error</a>(<span class="keyword">const</span> std::string&amp; file, <span class="keywordtype">int</span> line, <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classNeoN_1_1Error.html#af18f627eb1d4e921582dea0238b4305b">what</a>)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        : what_(file + <span class="stringliteral">&quot;:&quot;</span> + std::to_string(line) + <span class="stringliteral">&quot;: &quot;</span> + <a class="code hl_function" href="classNeoN_1_1Error.html#af18f627eb1d4e921582dea0238b4305b">what</a>)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {}</div>
 </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1Error.html#a72ec503385bd1a3c495b06104cb0c831">   42</a></span>    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classNeoFOAM_1_1Error.html#a72ec503385bd1a3c495b06104cb0c831">what</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> what_.c_str(); }</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> std::string what_;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
-</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classNeoN_1_1Error.html#af18f627eb1d4e921582dea0238b4305b">   46</a></span>    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classNeoN_1_1Error.html#af18f627eb1d4e921582dea0238b4305b">what</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> what_.c_str(); }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1DimensionMismatch.html">   58</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoFOAM_1_1DimensionMismatch.html">DimensionMismatch</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoFOAM_1_1Error.html">Error</a></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>{</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1DimensionMismatch.html#a38f87512836ea7e323e7d42453357966">   72</a></span>    <a class="code hl_function" href="classNeoFOAM_1_1DimensionMismatch.html#a38f87512836ea7e323e7d42453357966">DimensionMismatch</a>(</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">const</span> std::string&amp; file,</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordtype">int</span> line,</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> std::string&amp; func,</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordtype">size_t</span> lengthA,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordtype">size_t</span> lengthB,</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> std::string&amp; clarification</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    )</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        : <a class="code hl_class" href="classNeoFOAM_1_1Error.html">Error</a>(</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            file,</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            line,</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            func + <span class="stringliteral">&quot;: Trying to perform binary operation &quot;</span> + <span class="stringliteral">&quot; &quot;</span> + std::to_string(lengthA) + <span class="stringliteral">&quot;, &quot;</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                + std::to_string(lengthB) + <span class="stringliteral">&quot; &quot;</span> + clarification</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        )</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    {}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">const</span> std::string what_;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
 </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classNeoN_1_1DimensionMismatch.html">   62</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1DimensionMismatch.html">DimensionMismatch</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1Error.html">Error</a></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>{</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classNeoN_1_1DimensionMismatch.html#a39c69f28efc25ac526f44d140d955817">   76</a></span>    <a class="code hl_function" href="classNeoN_1_1DimensionMismatch.html#a39c69f28efc25ac526f44d140d955817">DimensionMismatch</a>(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> std::string&amp; file,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordtype">int</span> line,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> std::string&amp; func,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> lengthA,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> lengthB,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keyword">const</span> std::string&amp; clarification</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    )</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        : <a class="code hl_class" href="classNeoN_1_1Error.html">Error</a>(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            file,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            line,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            func + <span class="stringliteral">&quot;: Trying to perform binary operation &quot;</span> + <span class="stringliteral">&quot; &quot;</span> + std::to_string(lengthA) + <span class="stringliteral">&quot;, &quot;</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                + std::to_string(lengthB) + <span class="stringliteral">&quot; &quot;</span> + clarification</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        )</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    {}</div>
 </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="foldopen" id="foldopen00096" data-start="" data-end="">
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="exceptions_8hpp.html#a466d6d559414b6d1198021e94e31545e">   96</a></span><span class="preprocessor">#define NeoFOAM_ASSERT_EQUAL_LENGTH(_op1, _op2)                                                    \</span></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">    if (_op1.size() != _op2.size())                                                                \</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">    {                                                                                              \</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">        throw ::NeoFOAM::DimensionMismatch(                                                        \</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">            __FILE__, __LINE__, __func__, _op1.size(), _op2.size(), &quot;expected equal dimensions&quot;    \</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">        );                                                                                         \</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">    }</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
 </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
-<div class="ttc" id="aclassNeoFOAM_1_1DimensionMismatch_html"><div class="ttname"><a href="classNeoFOAM_1_1DimensionMismatch.html">NeoFOAM::DimensionMismatch</a></div><div class="ttdoc">Error for handling two containers of incompatible lengths.</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00058">exceptions.hpp:59</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1DimensionMismatch_html_a38f87512836ea7e323e7d42453357966"><div class="ttname"><a href="classNeoFOAM_1_1DimensionMismatch.html#a38f87512836ea7e323e7d42453357966">NeoFOAM::DimensionMismatch::DimensionMismatch</a></div><div class="ttdeci">DimensionMismatch(const std::string &amp;file, int line, const std::string &amp;func, size_t lengthA, size_t lengthB, const std::string &amp;clarification)</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00072">exceptions.hpp:72</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1Error_html"><div class="ttname"><a href="classNeoFOAM_1_1Error.html">NeoFOAM::Error</a></div><div class="ttdoc">Base class for consistent error representation.</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00023">exceptions.hpp:24</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1Error_html_a72ec503385bd1a3c495b06104cb0c831"><div class="ttname"><a href="classNeoFOAM_1_1Error.html#a72ec503385bd1a3c495b06104cb0c831">NeoFOAM::Error::what</a></div><div class="ttdeci">virtual const char * what() const noexcept override</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00042">exceptions.hpp:42</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1Error_html_a9df5b85d215b4e57ef3240e3500773c7"><div class="ttname"><a href="classNeoFOAM_1_1Error.html#a9df5b85d215b4e57ef3240e3500773c7">NeoFOAM::Error::Error</a></div><div class="ttdeci">Error(const std::string &amp;file, int line, const std::string &amp;what)</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00034">exceptions.hpp:34</a></div></div>
-<div class="ttc" id="anamespaceNeoFOAM_html"><div class="ttname"><a href="namespaceNeoFOAM.html">NeoFOAM</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="" data-end="">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="exceptions_8hpp.html#ad5d4e37fe86567a1b588532e3d6f94e1">  100</a></span><span class="preprocessor">#define NeoN_ASSERT_EQUAL_LENGTH(_op1, _op2)                                                       \</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">    auto s1 = static_cast&lt;localIdx&gt;(_op1.size());                                                  \</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">    auto s2 = static_cast&lt;localIdx&gt;(_op2.size());                                                  \</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">    if (s1 != s2)                                                                                  \</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">    {                                                                                              \</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">        throw ::NeoN::DimensionMismatch(                                                           \</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">            __FILE__, __LINE__, __func__, s1, s2, &quot;expected equal dimensions&quot;                      \</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">        );                                                                                         \</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">    }</span></div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="ttc" id="aclassNeoN_1_1DimensionMismatch_html"><div class="ttname"><a href="classNeoN_1_1DimensionMismatch.html">NeoN::DimensionMismatch</a></div><div class="ttdoc">Error for handling two containers of incompatible lengths.</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00062">exceptions.hpp:63</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DimensionMismatch_html_a39c69f28efc25ac526f44d140d955817"><div class="ttname"><a href="classNeoN_1_1DimensionMismatch.html#a39c69f28efc25ac526f44d140d955817">NeoN::DimensionMismatch::DimensionMismatch</a></div><div class="ttdeci">DimensionMismatch(const std::string &amp;file, int line, const std::string &amp;func, localIdx lengthA, localIdx lengthB, const std::string &amp;clarification)</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00076">exceptions.hpp:76</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Error_html"><div class="ttname"><a href="classNeoN_1_1Error.html">NeoN::Error</a></div><div class="ttdoc">Base class for consistent error representation.</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00027">exceptions.hpp:28</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Error_html_a8dfebf7b6b0b7321b725272646e09868"><div class="ttname"><a href="classNeoN_1_1Error.html#a8dfebf7b6b0b7321b725272646e09868">NeoN::Error::Error</a></div><div class="ttdeci">Error(const std::string &amp;file, int line, const std::string &amp;what)</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00038">exceptions.hpp:38</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Error_html_af18f627eb1d4e921582dea0238b4305b"><div class="ttname"><a href="classNeoN_1_1Error.html#af18f627eb1d4e921582dea0238b4305b">NeoN::Error::what</a></div><div class="ttdeci">virtual const char * what() const noexcept override</div><div class="ttdef"><b>Definition</b> <a href="exceptions_8hpp_source.html#l00046">exceptions.hpp:46</a></div></div>
+<div class="ttc" id="alabel_8hpp_html"><div class="ttname"><a href="label_8hpp.html">label.hpp</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00019">array.hpp:20</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_a40785cd3c378b425dd30ae7f4d7dcabc"><div class="ttname"><a href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">NeoN::localIdx</a></div><div class="ttdeci">int32_t localIdx</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00032">label.hpp:32</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

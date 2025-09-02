@@ -4,14 +4,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="MPI Architecture" href="../mpi_architecture.html" /><link rel="prev" title="Dictionary" href="dictionary.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/datastructures/database.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/datastructures/database.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Database - NeoFOAM documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.07.19 -->
+        <title>Database - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
     
     
@@ -19,20 +19,20 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -192,8 +192,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,17 +201,15 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../basics/executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../basics/fields.html">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../basics/segmentedField.html">SegmentedField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../basics/fields.html">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../basics/algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../basics/registerclass.html">Derived class discovery at compile time</a></li>
@@ -283,18 +280,10 @@
         <article role="main" id="furo-main-content">
           <section id="database">
 <span id="basics-database"></span><h1>Database<a class="headerlink" href="#database" title="Link to this heading">¶</a></h1>
-<p>OpenFOAM stores objects in the <code class="docutils literal notranslate"><span class="pre">objectRegistry</span></code> and they can be accessed by their name and type.
-In modern software development, best practices emphasize modularity, testability, and loosely coupled components.
-While the <code class="docutils literal notranslate"><span class="pre">objectRegistry</span></code> of OpenFOAM offers convenience and simple approach for managing objects, its inherent design conflicts with these principles by:</p>
-<ul class="simple">
-<li><p>Encouraging reliance on a central container.</p></li>
-<li><p>Making the codebase less flexible for testing, refactoring, or adopting new architectural patterns.</p></li>
-<li><p>Introducing potential performance bottlenecks and debugging challenges.</p></li>
-</ul>
-<p>In contrast, NeoFOAM adopts a document-based database approach, where data is stored as a collection of documents.
+<p>NeoN adopts a document-based database approach, where data is stored as a collection of documents.
 Each document consists of a pair of strings and values, validated using a custom validator function to ensure data integrity.
 The validation ensures that the data stored in the documents adheres to predefined rules and formats, preventing errors and inconsistencies in the database.
-The database is not tightly coupled to the <code class="docutils literal notranslate"><span class="pre">fvMesh</span></code> or <code class="docutils literal notranslate"><span class="pre">Time</span></code> classes, making it more flexible and easier to test.</p>
+The database is a standalone datastructure not tightly coupled to other  classes, making it more flexible and easier to test.</p>
 <p>The following class diagram illustrates the relationships between the <code class="docutils literal notranslate"><span class="pre">Database</span></code>, <code class="docutils literal notranslate"><span class="pre">Collection</span></code>, and <code class="docutils literal notranslate"><span class="pre">Document</span></code> components:</p>
 <pre  class="mermaid">
         classDiagram
@@ -375,7 +364,7 @@ The database is not tightly coupled to the <code class="docutils literal notrans
 At the lowest level is the <code class="docutils literal notranslate"><span class="pre">Document</span></code> class, which is a Dictionary with an ID and a validator function to ensure data integrity.
 The Document container is similar to a python dictionary using key-value pairs and can be used to store any type of data.
 The following code snippet shows how to create a document and access its values:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">({{</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;value1&quot;</span><span class="p">)},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">}});</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">({{</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;value1&quot;</span><span class="p">)},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">}});</span>
 <span class="w">    </span><span class="n">REQUIRE</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">keys</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
 <span class="w">    </span><span class="n">REQUIRE</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">id</span><span class="p">().</span><span class="n">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;doc_&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="n">REQUIRE</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;value1&quot;</span><span class="p">);</span>
@@ -383,26 +372,26 @@ The following code snippet shows how to create a document and access its values:
 <span class="p">};</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">NeoFOAM::Document</span></code> mainly extends the <code class="docutils literal notranslate"><span class="pre">Dictionary</span></code> class and offers the possibility to validate the data stored in the document.
+<p><code class="docutils literal notranslate"><span class="pre">NeoN::Document</span></code> mainly extends the <code class="docutils literal notranslate"><span class="pre">Dictionary</span></code> class and offers the possibility to validate the data stored in the document.
 The following code snippet shows how to create a document with a custom validator function:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">validator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dict</span><span class="p">)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">validator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dict</span><span class="p">)</span>
 <span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">&quot;key2&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">};</span>
 
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">({{</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;value1&quot;</span><span class="p">)},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">}},</span><span class="w"> </span><span class="n">validator</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">({{</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;value1&quot;</span><span class="p">)},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">}},</span><span class="w"> </span><span class="n">validator</span><span class="p">);</span>
 <span class="n">REQUIRE_NOTHROW</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">validate</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>As stated earlier, the Documents are stored as part of a Collection which itself is stored in the central database as shown in the class diagram above.
 To enable custom functionalities the developer can create a custom collection that provides additional functionality to the document.
-This is done in the FieldCollection class that is used to store the field data in the database.</p>
-<section id="fieldcollection">
-<h2>FieldCollection<a class="headerlink" href="#fieldcollection" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> stores all fields and provides additional functionality which is stored in a document.
-The <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code> keeps a reference to field as a <code class="docutils literal notranslate"><span class="pre">std::any</span></code> and stores additional metadata like the time index, iteration index, and subcycle index.
-The following code snippet shows how to create a <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">FieldType</span><span class="o">&gt;</span>
-<span class="n">FieldDocument</span><span class="p">(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">FieldType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">,</span>
+This is done in the VectorCollection class that is used to store the field data in the database.</p>
+<section id="vectorcollection">
+<h2>VectorCollection<a class="headerlink" href="#vectorcollection" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> stores all fields and provides additional functionality which is stored in a document.
+The <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code> keeps a reference to field as a <code class="docutils literal notranslate"><span class="pre">std::any</span></code> and stores additional metadata like the time index, iteration index, and subcycle index.
+The following code snippet shows how to create a <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">VectorType</span><span class="o">&gt;</span>
+<span class="n">VectorDocument</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VectorType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">timeIndex</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">iterationIndex</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">subCycleIndex</span>
@@ -415,70 +404,70 @@ The following code snippet shows how to create a <code class="docutils literal n
 <span class="w">               </span><span class="p">{</span><span class="s">&quot;subCycleIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subCycleIndex</span><span class="p">},</span>
 <span class="w">               </span><span class="p">{</span><span class="s">&quot;field&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p">}}</span>
 <span class="w">          </span><span class="p">),</span>
-<span class="w">          </span><span class="n">validateFieldDoc</span>
+<span class="w">          </span><span class="n">validateVectorDoc</span>
 <span class="w">      </span><span class="p">)</span>
 <span class="p">{}</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldDocument</span></code> stores its data in a <code class="docutils literal notranslate"><span class="pre">Document</span></code> and provide the appropriate getters and setters for the data.
-The user will most likely not directly create FieldDocument but use the <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> to register Field.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestFieldCollection&quot;</span><span class="p">);</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorDocument</span></code> stores its data in a <code class="docutils literal notranslate"><span class="pre">Document</span></code> and provide the appropriate getters and setters for the data.
+The user will most likely not directly create VectorDocument but use the <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> to register Vector.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestVectorCollection&quot;</span><span class="p">);</span>
 
-<span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">registerField</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">CreateField</span><span class="w"> </span><span class="p">{</span>
+<span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">registerVector</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">CreateVector</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;T&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">timeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">iterationIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">subCycleIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">    </span><span class="p">});</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> has a static instance methods that returns the instance of the <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> or creates a new one if it doesn’t exist.
-registerField method is used to register fields and expects a CreateFunction that returns a FieldDocument and expects a database as an argument.
+<p>The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> has a static instance methods that returns the instance of the <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> or creates a new one if it doesn’t exist.
+registerVector method is used to register fields and expects a CreateFunction that returns a VectorDocument and expects a database as an argument.
 The createFunction could look as followed:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">CreateField</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">CreateVector</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">UnstructuredMesh</span><span class="w"> </span><span class="n">mesh</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">UnstructuredMesh</span><span class="w"> </span><span class="n">mesh</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">timeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">iterationIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">subCycleIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">)</span>
+<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="n">NeoN</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeBoundary</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">bcs</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeBoundary</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">bcs</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">patchi</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
+<span class="w">            </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Dictionary</span><span class="w"> </span><span class="n">dict</span><span class="p">;</span>
 <span class="w">            </span><span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;fixedValue&quot;</span><span class="p">));</span>
 <span class="w">            </span><span class="n">dict</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;fixedValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
-<span class="w">            </span><span class="n">bcs</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeBoundary</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">,</span><span class="w"> </span><span class="n">patchi</span><span class="p">));</span>
+<span class="w">            </span><span class="n">bcs</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeBoundary</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">dict</span><span class="p">,</span><span class="w"> </span><span class="n">patchi</span><span class="p">));</span>
 <span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="w"> </span><span class="n">internalField</span><span class="w"> </span><span class="o">=</span>
-<span class="w">            </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">nCells</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
-<span class="w">        </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vf</span><span class="p">(</span>
-<span class="w">            </span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">internalField</span><span class="p">,</span><span class="w"> </span><span class="n">bcs</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="w"> </span><span class="n">internalVector</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">nCells</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vf</span><span class="p">(</span>
+<span class="w">            </span><span class="n">mesh</span><span class="p">.</span><span class="n">exec</span><span class="p">(),</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="n">internalVector</span><span class="p">,</span><span class="w"> </span><span class="n">bcs</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span>
 <span class="w">        </span><span class="p">);</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="p">(</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="p">(</span>
 <span class="w">            </span><span class="p">{{</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">vf</span><span class="p">.</span><span class="n">name</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;timeIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">timeIndex</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;iterationIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">iterationIndex</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;subCycleIndex&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subCycleIndex</span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span><span class="s">&quot;field&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">vf</span><span class="p">}},</span>
-<span class="w">            </span><span class="n">fvcc</span><span class="o">::</span><span class="n">validateFieldDoc</span>
+<span class="w">            </span><span class="n">fvcc</span><span class="o">::</span><span class="n">validateVectorDoc</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>This design can be easily extended to create and read fields.
-The <code class="docutils literal notranslate"><span class="pre">FieldCollection</span></code> allows us to access and find fields by their name, time index, iteration index, or subcycle index.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">FieldCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestFieldCollection&quot;</span><span class="p">);</span>
+The <code class="docutils literal notranslate"><span class="pre">VectorCollection</span></code> allows us to access and find fields by their name, time index, iteration index, or subcycle index.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldCollection</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">fvcc</span><span class="o">::</span><span class="n">VectorCollection</span><span class="o">::</span><span class="n">instance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;newTestVectorCollection&quot;</span><span class="p">);</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">resName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">find</span><span class="p">([](</span><span class="k">const</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">resName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">find</span><span class="p">([](</span><span class="k">const</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span>
 <span class="w">                                </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;T&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
 
 <span class="n">REQUIRE</span><span class="p">(</span><span class="n">resName</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
 <span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fieldDoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldCollection</span><span class="p">.</span><span class="n">fieldDoc</span><span class="p">(</span><span class="n">resName</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">constVolField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldDoc</span><span class="p">.</span><span class="n">field</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeField</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">constVolVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fieldDoc</span><span class="p">.</span><span class="n">field</span><span class="o">&lt;</span><span class="n">fvcc</span><span class="o">::</span><span class="n">VolumeVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;&gt;</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>
@@ -514,7 +503,7 @@ A collection provides access to its stored documents, and the only requirement f
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">testValue</span>
 <span class="w">    </span><span class="p">)</span>
 <span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">doc_</span><span class="p">(</span>
-<span class="w">            </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="p">(</span>
+<span class="w">            </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="p">(</span>
 <span class="w">                </span><span class="p">{</span>
 <span class="w">                    </span><span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">},</span>
 <span class="w">                    </span><span class="p">{</span><span class="s">&quot;testValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">testValue</span><span class="p">}</span>
@@ -533,9 +522,9 @@ A collection provides access to its stored documents, and the only requirement f
 <span class="w">    </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">testValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;testValue&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 
 
-<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="o">&amp;</span><span class="w"> </span><span class="n">doc</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">doc_</span><span class="p">.</span><span class="n">id</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
@@ -543,7 +532,7 @@ A collection provides access to its stored documents, and the only requirement f
 
 <span class="k">private</span><span class="o">:</span>
 
-<span class="w">    </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Document</span><span class="w"> </span><span class="n">doc_</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -560,12 +549,12 @@ A collection provides access to its stored documents, and the only requirement f
 <h3>Storing Custom Documents in a Custom Collection<a class="headerlink" href="#storing-custom-documents-in-a-custom-collection" title="Link to this heading">¶</a></h3>
 <p>Collections manage a set of user-defined documents and provide operations to query and modify them.
 The CollectionMixin template simplifies creating custom collections for user-defined documents. For instance:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomCollection</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">CollectionMixin</span><span class="o">&lt;</span><span class="n">CustomDocument</span><span class="o">&gt;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomCollection</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">CollectionMixin</span><span class="o">&lt;</span><span class="n">CustomDocument</span><span class="o">&gt;</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 
-<span class="w">    </span><span class="n">CustomCollection</span><span class="p">(</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
-<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">CollectionMixin</span><span class="o">&lt;</span><span class="n">CustomDocument</span><span class="o">&gt;</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="w">    </span><span class="n">CustomCollection</span><span class="p">(</span><span class="n">NeoN</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">CollectionMixin</span><span class="o">&lt;</span><span class="n">CustomDocument</span><span class="o">&gt;</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{}</span>
 
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">contains</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">docs_</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
@@ -581,9 +570,9 @@ The CollectionMixin template simplifies creating custom collections for user-def
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">CustomCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">instance</span><span class="p">(</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">CustomCollection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">instance</span><span class="p">(</span><span class="n">NeoN</span><span class="o">::</span><span class="n">Database</span><span class="o">&amp;</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Collection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">CustomCollection</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">));</span>
+<span class="w">        </span><span class="n">NeoN</span><span class="o">::</span><span class="n">Collection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">CustomCollection</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">));</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="n">CustomCollection</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
@@ -630,7 +619,7 @@ The CollectionMixin template simplifies creating custom collections for user-def
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -657,7 +646,7 @@ The CollectionMixin template simplifies creating custom collections for user-def
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Database</a><ul>
-<li><a class="reference internal" href="#fieldcollection">FieldCollection</a></li>
+<li><a class="reference internal" href="#vectorcollection">VectorCollection</a></li>
 <li><a class="reference internal" href="#query-of-document-in-a-collection">Query of document in a collection</a></li>
 <li><a class="reference internal" href="#adding-a-new-collection-and-documents-to-the-database">Adding a new collection and documents to the database</a><ul>
 <li><a class="reference internal" href="#creating-a-custom-document">Creating a Custom Document</a></li>
@@ -678,7 +667,7 @@ The CollectionMixin template simplifies creating custom collections for user-def
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>

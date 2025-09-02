@@ -1,26 +1,27 @@
-\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+FOAM/core/primitives/vector.hpp File Reference}
-\hypertarget{vector_8hpp}{}\label{vector_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/vector.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/primitives/vector.hpp}}
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/vector/vector.hpp File Reference}
+\hypertarget{vector_8hpp}{}\label{vector_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp}}
 {\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
-{\ttfamily \#include "{}Neo\+FOAM/core/primitives/scalar.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+FOAM/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/error.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/vector/vector\+Free\+Functions.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/view.\+hpp"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Neo\+FOAM\+::\+Vector}}
-\begin{DoxyCompactList}\small\item\em A class for the representation of a 3D \doxylink{classNeoFOAM_1_1Vector}{Vector}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+class \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em A class to contain the data and executors for a field and define some basic operations. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-namespace \mbox{\hyperlink{namespaceNeoFOAM}{Neo\+FOAM}}
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoFOAM_ac48edf8d161ff1ee717e5fba3a93d770}{Neo\+FOAM\+::operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}} \&sclr, \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} rhs)
-\item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \mbox{\hyperlink{namespaceNeoFOAM_ae0612f5f17d093a87670be33b3d0608f}{Neo\+FOAM\+::operator\&}} (const \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&lhs, \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} rhs)
-\item 
-KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}} \mbox{\hyperlink{namespaceNeoFOAM_a30753699ca02c237b4081286380cabd6}{Neo\+FOAM\+::mag}} (const \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&vec)
-\item 
-std\+::ostream \& \mbox{\hyperlink{namespaceNeoFOAM_a33d4783ebbf9904dce966898f9f0abb2}{Neo\+FOAM\+::operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoFOAM_1_1Vector}{Vector}} \&vec)
-\end{DoxyCompactItemize}
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_a71603fa147569d41a7bc7869f79f1e52}{Neo\+N\+::operator+}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ lhs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Arithmetic add operator, addition of two fields. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}{Neo\+N\+::operator-\/}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ lhs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Arithmetic subtraction operator, subtraction one field from another. \end{DoxyCompactList}\end{DoxyCompactItemize}

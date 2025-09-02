@@ -3,15 +3,15 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parallel Algorithms" href="algorithms.html" /><link rel="prev" title="Fields" href="fields.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/segmentedField.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/segmentedField.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>SegmentedField - NeoFOAM documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.07.19 -->
+        <title>SegmentedVector - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
     
     
@@ -19,20 +19,20 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -192,8 +192,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -201,18 +200,16 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html">Fields</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">SegmentedField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fields.html">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="registerclass.html">Derived class discovery at compile time</a></li>
@@ -281,47 +278,47 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="segmentedfield">
-<span id="fvcc-segmentedfields"></span><h1>SegmentedField<a class="headerlink" href="#segmentedfield" title="Link to this heading">¶</a></h1>
-<p>SegmentedField is a template class that represents a field divided into multiple segments and can represent vector of vector of a defined ValueType.
+          <section id="segmentedvector">
+<span id="fvcc-segmentedvectors"></span><h1>SegmentedVector<a class="headerlink" href="#segmentedvector" title="Link to this heading">¶</a></h1>
+<p>SegmentedVector is a template class that represents a field divided into multiple segments and can represent vector of vector of a defined ValueType.
 It also allows the definition of an IndexType, so each segment of the vector can be addressed.
 It can be used to represent cell to cell stencil.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">});</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segments</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">});</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segments</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
 
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">SegmentedField</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segField</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">segments</span><span class="p">);</span>
-<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">valueSpan</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">spans</span><span class="p">();</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">segView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">NeoFOAM</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">SegmentedVector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">localIdx</span><span class="o">&gt;</span><span class="w"> </span><span class="n">segVector</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">segments</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">valueView</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">views</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">segView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">label</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
 
-<span class="n">NeoFOAM</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">resultSpan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">span</span><span class="p">();</span>
+<span class="n">NeoN</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">resultView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
 
 <span class="n">parallelFor</span><span class="p">(</span>
 <span class="w">    </span><span class="n">exec</span><span class="p">,</span>
-<span class="w">    </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">segField</span><span class="p">.</span><span class="n">numSegments</span><span class="p">()},</span>
-<span class="w">    </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">segI</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">segVector</span><span class="p">.</span><span class="n">numSegments</span><span class="p">()},</span>
+<span class="w">    </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">segI</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// check if it works with bounds</span>
 <span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">bStart</span><span class="p">,</span><span class="w"> </span><span class="n">bEnd</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segView</span><span class="p">.</span><span class="n">bounds</span><span class="p">(</span><span class="n">segI</span><span class="p">);</span>
-<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">bVals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">valueSpan</span><span class="p">.</span><span class="n">subspan</span><span class="p">(</span><span class="n">bStart</span><span class="p">,</span><span class="w"> </span><span class="n">bEnd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">bStart</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">bVals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">valueView</span><span class="p">.</span><span class="n">subview</span><span class="p">(</span><span class="n">bStart</span><span class="p">,</span><span class="w"> </span><span class="n">bEnd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">bStart</span><span class="p">);</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">bVals</span><span class="p">)</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">resultSpan</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
+<span class="w">            </span><span class="n">resultView</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 
 <span class="w">        </span><span class="c1">// check if it works with range</span>
 <span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">rStart</span><span class="p">,</span><span class="w"> </span><span class="n">rLength</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segView</span><span class="p">.</span><span class="n">range</span><span class="p">(</span><span class="n">segI</span><span class="p">);</span>
-<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">rVals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">valueSpan</span><span class="p">.</span><span class="n">subspan</span><span class="p">(</span><span class="n">rStart</span><span class="p">,</span><span class="w"> </span><span class="n">rLength</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">rVals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">valueView</span><span class="p">.</span><span class="n">subview</span><span class="p">(</span><span class="n">rStart</span><span class="p">,</span><span class="w"> </span><span class="n">rLength</span><span class="p">);</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rVals</span><span class="p">)</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">resultSpan</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
+<span class="w">            </span><span class="n">resultView</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="c1">// check with subspan</span>
-<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">vals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segView</span><span class="p">.</span><span class="n">span</span><span class="p">(</span><span class="n">segI</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// check with subview</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">vals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">segView</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">segI</span><span class="p">);</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">vals</span><span class="p">)</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">resultSpan</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
+<span class="w">            </span><span class="n">resultView</span><span class="p">[</span><span class="n">segI</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">);</span>
@@ -329,7 +326,7 @@ It can be used to represent cell to cell stencil.</p>
 </div>
 <p>In this example, each of the five segments would have a size of two.
 This data allows the representation of stencils in a continuous memory layout, which can be beneficial for performance optimization in numerical simulations especially on GPUs.</p>
-<p>The spans method return the value and segment span and it is also possible to return a view that can also be called on a device</p>
+<p>The views method return the value and segment view and it is also possible to return a view that can also be called on a device</p>
 </section>
 
         </article>
@@ -337,31 +334,13 @@ This data allows the representation of stencils in a continuous memory layout, w
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="algorithms.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Parallel Algorithms</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="fields.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Fields</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -384,6 +363,6 @@ This data allows the representation of stencils in a continuous memory layout, w
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

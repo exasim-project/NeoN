@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['schema_0',['schema',['../classNeoFOAM_1_1BaseClassData.html#a02c4e29ad81116dc694447d5149a16d6',1,'NeoFOAM::BaseClassData::schema'],['../classNeoFOAM_1_1DerivedClassDocumentation.html#a3aa5b38a6ace930938551e35d1eb0d65',1,'NeoFOAM::DerivedClassDocumentation::schema']]],
-  ['segments_1',['segments',['../classNeoFOAM_1_1SegmentedFieldView.html#a7064033d741bfcb38cf6b3b0e87545c1',1,'NeoFOAM::SegmentedFieldView']]],
-  ['start_5f_2',['start_',['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#acb68974b5b341d3e5141c2e8dcbe9cdd',1,'NeoFOAM::finiteVolume::cellCentred::BoundaryPatchMixin']]],
-  ['subcycleindex_3',['subCycleIndex',['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingField.html#a1b7138ae20bcd2ff8b5dd2fa118474d0',1,'NeoFOAM::finiteVolume::cellCentred::CreateFromExistingField']]],
-  ['sun_5fark_5fdeleter_4',['SUN_ARK_DELETER',['../namespaceNeoFOAM_1_1sundials.html#aa11671597bf1deb9f45b5714f1e7a547',1,'NeoFOAM::sundials']]],
-  ['sun_5fcontext_5fdeleter_5',['SUN_CONTEXT_DELETER',['../namespaceNeoFOAM_1_1sundials.html#adf0e6744d854e97d0972cdd17aa13bf7',1,'NeoFOAM::sundials']]]
+  ['registered_0',['registered',['../structNeoN_1_1RegisterDocumentation.html#a20d21eaef0b07bedda68a1208920b401',1,'NeoN::RegisterDocumentation::REGISTERED'],['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a62badbe3487383c000b5bd4e0f39561c',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register::REGISTERED']]],
+  ['rhs_1',['rhs',['../structNeoN_1_1la_1_1LinearSystemView.html#afb6158e5f01c9782a2fe8af27e340b50',1,'NeoN::la::LinearSystemView']]],
+  ['rhsidxs_2',['rhsIdxs',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#a1cb4cb6307f89a0afba552b2b0a59109',1,'NeoN::la::BoundaryCoefficients']]],
+  ['rhsvalues_3',['rhsValues',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#afe7ba18489335d9d2ad05107c5671573',1,'NeoN::la::BoundaryCoefficients']]],
+  ['rootvsmall_4',['ROOTVSMALL',['../namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0',1,'NeoN']]],
+  ['rowoffs_5',['rowOffs',['../structNeoN_1_1la_1_1CSRMatrixView.html#ae78e272155a2a23cfc97ab261fc44859',1,'NeoN::la::CSRMatrixView']]]
 ];

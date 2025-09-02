@@ -4,14 +4,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Case Study: The Gauss Green Div Kernel" href="case_study.html" /><link rel="prev" title="FiniteVolume" href="index.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/finiteVolume/cellCentred/boundaryConditions.html" />
+        <link rel="canonical" href="https://exasim-project.com/NeoN/finiteVolume/cellCentred/boundaryConditions.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Boundary Conditions - NeoFOAM documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.07.19 -->
+        <title>Boundary Conditions - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6a4ff913" />
     
     
@@ -19,20 +19,20 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -192,8 +192,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,17 +201,15 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../basics/index.html">Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../basics/executor.html">Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../basics/fields.html">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../basics/segmentedField.html">SegmentedField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../basics/fields.html">Vectors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../basics/algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../basics/freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../basics/freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../basics/freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../basics/registerclass.html">Derived class discovery at compile time</a></li>
@@ -287,11 +284,11 @@
 </div>
 <section id="boundary-conditions">
 <h1>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading">¶</a></h1>
-<p>In contrast to OpenFOAM, the boundary conditions do not store the underlying  data but instead modify the data provided by <code class="docutils literal notranslate"><span class="pre">DomainField</span></code>.  A basic NoOp implementation is provided by  the <code class="docutils literal notranslate"><span class="pre">VolumeBoundary</span></code> and <code class="docutils literal notranslate"><span class="pre">SurfaceBoundary</span></code> classes.
-To apply boundary conditions for both Surface and Volume Fields, a virtual base class member function <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> is used. The member acts as an interface and is responsible for updating the actual boundary data contained within an <code class="docutils literal notranslate"><span class="pre">InternalField</span></code> (an attribute of the <code class="docutils literal notranslate"><span class="pre">DomainField</span></code>).</p>
+<p>In NeoN the boundary conditions do not store the underlying  data but instead modify the data provided by <code class="docutils literal notranslate"><span class="pre">Field</span></code>.  A basic NoOp implementation is provided by  the <code class="docutils literal notranslate"><span class="pre">VolumeBoundary</span></code> and <code class="docutils literal notranslate"><span class="pre">SurfaceBoundary</span></code> classes.
+To apply boundary conditions for both Surface and Volume Vectors, a virtual base class member function <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> is used. The member acts as an interface and is responsible for updating the actual boundary data contained within an <code class="docutils literal notranslate"><span class="pre">InternalVector</span></code> (an attribute of the <code class="docutils literal notranslate"><span class="pre">Field</span></code>).</p>
 <dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred14VolumeBoundaryE">
-<span id="_CPPv3I0EN7NeoFOAM12finiteVolume11cellCentred14VolumeBoundaryE"></span><span id="_CPPv2I0EN7NeoFOAM12finiteVolume11cellCentred14VolumeBoundaryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VolumeBoundary</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">NeoFOAM</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">finiteVolume</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cellCentred</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BoundaryPatchMixin</span></span><a class="headerlink" href="#_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred14VolumeBoundaryE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE">
+<span id="_CPPv3I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE"></span><span id="_CPPv2I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VolumeBoundary</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">NeoN</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">finiteVolume</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cellCentred</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BoundaryPatchMixin</span></span><a class="headerlink" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Represents a volume boundary field for a cell-centered finite volume method. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -301,8 +298,8 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
 </dd></dl>
 
 <dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred15SurfaceBoundaryE">
-<span id="_CPPv3I0EN7NeoFOAM12finiteVolume11cellCentred15SurfaceBoundaryE"></span><span id="_CPPv2I0EN7NeoFOAM12finiteVolume11cellCentred15SurfaceBoundaryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceBoundary</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">NeoFOAM</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">finiteVolume</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cellCentred</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BoundaryPatchMixin</span></span><a class="headerlink" href="#_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred15SurfaceBoundaryE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE">
+<span id="_CPPv3I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE"></span><span id="_CPPv2I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceBoundary</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">NeoN</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">finiteVolume</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cellCentred</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BoundaryPatchMixin</span></span><a class="headerlink" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Represents a surface boundary field for a cell-centered finite volume method. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -312,31 +309,31 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
 </dd></dl>
 
 <p>The above are the base classes for the specific (derived) implementations which will ultimately provide the actual boundary conditions to both volumetric and surface fields.</p>
-<section id="boundary-conditions-for-volumefield-s">
-<h2>Boundary Conditions for VolumeField’s<a class="headerlink" href="#boundary-conditions-for-volumefield-s" title="Link to this heading">¶</a></h2>
-<p>The function <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> is responsible for modifying the data of the <code class="docutils literal notranslate"><span class="pre">boundaryField</span></code> using the visitor pattern. A possible implementation is shown below.</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">fvccScalarFixedValueBoundaryField::correctBoundaryConditions</span><span class="p">(</span>
-<span class="w">    </span><span class="n">BoundaryFields</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">bfield</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">internalField</span>
+<section id="boundary-conditions-for-volumevector-s">
+<h2>Boundary Conditions for VolumeVector’s<a class="headerlink" href="#boundary-conditions-for-volumevector-s" title="Link to this heading">¶</a></h2>
+<p>The function <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> is responsible for modifying the data of the <code class="docutils literal notranslate"><span class="pre">boundaryVector</span></code> using the visitor pattern. A possible implementation is shown below.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">fvccScalarFixedValueBoundaryVector::correctBoundaryConditions</span><span class="p">(</span>
+<span class="w">    </span><span class="n">BoundaryData</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">bfield</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">internalVector</span>
 <span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">fixedValueBCKernel</span><span class="w"> </span><span class="n">kernel_</span><span class="p">(</span><span class="n">mesh_</span><span class="p">,</span><span class="w"> </span><span class="n">patchID_</span><span class="p">,</span><span class="w"> </span><span class="n">start_</span><span class="p">,</span><span class="w"> </span><span class="n">end_</span><span class="p">,</span><span class="w"> </span><span class="n">uniformValue_</span><span class="p">);</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">visit</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">kernel_</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">bfield</span><span class="p">,</span><span class="w"> </span><span class="n">internalField</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">bfield</span><span class="p">.</span><span class="n">exec</span><span class="p">());</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">visit</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">kernel_</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">bfield</span><span class="p">,</span><span class="w"> </span><span class="n">internalVector</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">bfield</span><span class="p">.</span><span class="n">exec</span><span class="p">());</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The logic is implemented in the kernel classes:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">fixedValueBCKernel::operator</span><span class="p">()(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">GPUExecutor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryFields</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">bField</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">internalField</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">GPUExecutor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryData</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">bVector</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">scalar</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">internalVector</span>
 <span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">GPUExecutor</span><span class="o">::</span><span class="n">exec</span><span class="p">;</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">s_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bField</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">field</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">s_refValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bField</span><span class="p">.</span><span class="n">refValue</span><span class="p">().</span><span class="n">field</span><span class="p">();</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">s_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bVector</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">field</span><span class="p">();</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">s_refValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bVector</span><span class="p">.</span><span class="n">refValue</span><span class="p">().</span><span class="n">field</span><span class="p">();</span>
 <span class="w">    </span><span class="n">scalar</span><span class="w"> </span><span class="n">uniformValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uniformValue_</span><span class="p">;</span>
 <span class="w">    </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">parallel_for</span><span class="p">(</span>
-<span class="w">        </span><span class="s">&quot;fvccScalarFixedValueBoundaryField&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s">&quot;fvccScalarFixedValueBoundaryVector&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">RangePolicy</span><span class="o">&lt;</span><span class="n">executor</span><span class="o">&gt;</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span><span class="w"> </span><span class="n">end_</span><span class="p">),</span>
-<span class="w">        </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">s_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uniformValue</span><span class="p">;</span>
 <span class="w">            </span><span class="n">s_refValue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uniformValue</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
@@ -344,8 +341,8 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>As the <code class="docutils literal notranslate"><span class="pre">BoundaryFields</span></code> class stores all data in a contiguous array, the boundary condition must only update the data in the range of the boundary specified by the <cite>start_</cite> and <cite>end_</cite> index. In the above simple boundary condition, the kernel only sets the values to a uniform/fixed value. The <code class="docutils literal notranslate"><span class="pre">value</span></code> field stores the current value of the boundary condition that is used by the explicit operators and the <code class="docutils literal notranslate"><span class="pre">refValue</span></code> stores the value of the boundary condition that is used by the implicit operators.</p>
-<p>Currently, the following boundary conditions are implemented for volField for scalar:
+<p>As the <code class="docutils literal notranslate"><span class="pre">BoundaryData</span></code> class stores all data in a contiguous array, the boundary condition must only update the data in the range of the boundary specified by the <cite>start_</cite> and <cite>end_</cite> index. In the above simple boundary condition, the kernel only sets the values to a uniform/fixed value. The <code class="docutils literal notranslate"><span class="pre">value</span></code> field stores the current value of the boundary condition that is used by the explicit operators and the <code class="docutils literal notranslate"><span class="pre">refValue</span></code> stores the value of the boundary condition that is used by the implicit operators.</p>
+<p>Currently, the following boundary conditions are implemented for volVector for scalar:
 - fixedValue
 - zeroGradient
 - calculated</p>
@@ -381,7 +378,7 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -408,9 +405,9 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Boundary Conditions</a><ul>
-<li><a class="reference internal" href="#_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred14VolumeBoundaryE"><code class="docutils literal notranslate"><span class="pre">VolumeBoundary</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4I0EN7NeoFOAM12finiteVolume11cellCentred15SurfaceBoundaryE"><code class="docutils literal notranslate"><span class="pre">SurfaceBoundary</span></code></a></li>
-<li><a class="reference internal" href="#boundary-conditions-for-volumefield-s">Boundary Conditions for VolumeField’s</a></li>
+<li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::VolumeBoundary</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::SurfaceBoundary</span></code></a></li>
+<li><a class="reference internal" href="#boundary-conditions-for-volumevector-s">Boundary Conditions for VolumeVector’s</a></li>
 </ul>
 </li>
 </ul>
@@ -425,6 +422,6 @@ To apply boundary conditions for both Surface and Volume Fields, a virtual base 
 </div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>
