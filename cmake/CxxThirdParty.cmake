@@ -167,8 +167,9 @@ if(${NeoN_WITH_GINKGO})
       GITHUB_REPOSITORY
       nlohmann/json
       SYSTEM
-      YES)
-
+      YES
+      OPTIONS
+      "JSON_Install ON")
   endif()
 
   cpmaddpackage(

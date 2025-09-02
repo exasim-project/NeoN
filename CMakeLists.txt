@@ -218,6 +218,15 @@ if(ginkgo_POPULATED)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
 endif()
 
+if(nlohmann_json_POPULATED)
+  install(
+    TARGETS nlohmann_json
+    EXPORT nlohmannTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
+endif()
+
 # install internal cpptrace version
 if(cpptrace_POPULATED)
   install(
