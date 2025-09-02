@@ -23,7 +23,7 @@
   <td id="projectalign">
    <div id="projectname">NeoN
    </div>
-   <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
+   <div id="projectbrief">A framework for CFD software</div>
   </td>
  </tr>
  </tbody>
@@ -81,7 +81,8 @@ $(function() {
   <div class="headertitle"><div class="title">exceptions.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &quot;<a class="el" href="label_8hpp_source.html">NeoN/core/primitives/label.hpp</a>&quot;</code><br />
+</div>
 <p><a href="exceptions_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -129,10 +130,12 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">if</span> (_op1.size() != _op2.size())                                                                \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">auto</span> s1 = <span class="keyword">static_cast&lt;</span>localIdx<span class="keyword">&gt;</span>(_op1.size());                                                  \</div>
+<div class="line">    <span class="keyword">auto</span> s2 = <span class="keyword">static_cast&lt;</span>localIdx<span class="keyword">&gt;</span>(_op2.size());                                                  \</div>
+<div class="line">    if (s1 != s2)                                                                                  \</div>
 <div class="line">    {                                                                                              \</div>
 <div class="line">        throw ::NeoN::DimensionMismatch(                                                           \</div>
-<div class="line">            __FILE__, __LINE__, __func__, _op1.size(), _op2.size(), <span class="stringliteral">&quot;expected equal dimensions&quot;</span>    \</div>
+<div class="line">            __FILE__, __LINE__, __func__, s1, s2, <span class="stringliteral">&quot;expected equal dimensions&quot;</span>                      \</div>
 <div class="line">        );                                                                                         \</div>
 <div class="line">    }</div>
 </div><!-- fragment --><p>Asserts that <code>_op1</code> and <code>_op2</code> have the same length.</p>
@@ -143,7 +146,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="exceptions_8hpp_source.html#l00096">96</a> of file <a class="el" href="exceptions_8hpp_source.html">exceptions.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exceptions_8hpp_source.html#l00100">100</a> of file <a class="el" href="exceptions_8hpp_source.html">exceptions.hpp</a>.</p>
 
 </div>
 </div>

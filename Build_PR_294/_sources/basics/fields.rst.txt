@@ -87,7 +87,7 @@ A simplified version of the ``parallelFor`` function is shown below.
             Kokkos::parallel_for(
                 "parallelFor",
                 Kokkos::RangePolicy<runOn>(start, end),
-                KOKKOS_LAMBDA(const size_t i) { kernel(i); }
+                KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
             );
         }
     }
@@ -110,10 +110,7 @@ Both derive from the ``DomainMixin`` a mixin class which handles that all derive
 
 The ``VolumeVector`` and the ``SurfaceVector`` hold a vector of boundary conditions implemented in ``finiteVolume/cellCentred/boundary`` and a  ``correctBoundaryConditions`` member function that updates the field's boundary condition.
 
-Functionally, the ``VolumeVector`` and the ``SurfaceVector`` classes are comparable to OpenFOAM classes such as ``volScalarVector``, ``volVec3Vector``, and ``volTensorVector`` or ``surfaceScalarVector``, ``surfaceVec3Vector``, and ``surfaceTensorVector`` respectively.
-
-A difference in the SurfaceVector implementation is that the ``internalVector`` also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
-Thus the size of the ``internalVector`` in NeoN differs from that of OpenFOAM.
+The SurfaceVector implementation of ``internalVector`` also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
 
 Further details `VolumeVector  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeVector.html>`_ and `ScalarVector  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarVector.html>`_.
 

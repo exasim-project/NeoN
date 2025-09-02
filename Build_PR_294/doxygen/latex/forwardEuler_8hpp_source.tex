@@ -2,9 +2,9 @@
 \hypertarget{forwardEuler_8hpp_source}{}\label{forwardEuler_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/forwardEuler.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/forwardEuler.hpp}}
 \mbox{\hyperlink{forwardEuler_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00006}00006\ }
@@ -45,7 +45,7 @@
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00042}00042\ \ \ \ \ )\textcolor{keyword}{\ override}}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00043}00043\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ source\ =\ eqn.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae8240aab017a348962ca09477a52ab07}{explicitOperation}}(solutionVector.size());}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ source\ =\ eqn.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(solutionVector.size());}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ SolutionVectorType\&\ oldSolutionVector\ =}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{NeoN::finiteVolume::cellCentred::oldTime}}(solutionVector);}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00047}00047\ }
@@ -57,16 +57,15 @@
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::fence();}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ oldSolutionVector.internalVector()\ =\ solutionVector.internalVector();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00057}00057\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}{00059}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionVectorType>>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}{clone}}()\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00060}00060\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<ForwardEuler>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00062}00062\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00063}00063\ \};}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00056}00056\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}{00058}}\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionVectorType>>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00059}00059\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<ForwardEuler>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00061}00061\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00062}00062\ \};}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00063}00063\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00064}00064\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00066}00066\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
