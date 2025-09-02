@@ -134,14 +134,6 @@ jobs:
           | grep -F -f pattern - > files
         # run clang-tidy on all specified files
         clang-tidy-18 --fix --extra-arg=-w -p build/develop $(cat files)
-    - name: Commit clang-tidy-fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix')}}
-      run: |
-         git config user.name github-actions
-         git config user.email github-actions@github.com
-         git add .
-         git commit -m 'fix format'
-         git push origin ${{ github.ref }}
     - name: Check for fixes
       id: tidy-fixes
       run: |
