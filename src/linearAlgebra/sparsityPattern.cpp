@@ -19,10 +19,9 @@ const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mes
     return stencilDb.get<SparsityPattern>("SparsityPattern");
 }
 
-void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)
+
+void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& sp)
 {
-    // const auto faceOwnV = mesh.faceOwner().view();
-    // const auto faceNeiV = mesh.faceNeighbour().view();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = mesh.exec();
     auto nCells = mesh.nCells();
@@ -123,24 +122,99 @@ void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)
     sp.diagOffset() = diagOffsetH.copyToExecutor(exec);
     sp.colIdxs() = colIdxH.copyToExecutor(exec);
     sp.rowOffs() = rowOffsH.copyToExecutor(exec);
+}
 
+void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern& sp)
+{
+    const auto faceOwner = mesh.faceOwner().view();
+    const auto faceNeiV = mesh.faceNeighbour().view();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto exec = mesh.exec();
+    auto nCells = mesh.nCells();
 
-    // sort colIdx
-    // TODO: this implementation could be improved
-    // by actually implementing the parallel sort on device
-    // auto rowOffsH = sp.rowOffs().copyToHost();
-    // auto colIdxH = sp.colIdxs().copyToHost();
-    // auto [rowOffsHV, colIdxHV] = views(rowOffsH, colIdxH);
-    // for (auto celli = 0; celli < rowOffsHV.size() - 1; celli++)
-    // {
-    //     auto start = rowOffsHV[celli];
-    //     auto end = rowOffsHV[celli + 1];
-    //     // detail::parallelSort(exec, {start, end}, &stencilValues[0]);
-    //     auto sub = colIdxHV.subview(start, end - start);
-    //     std::sort(sub.begin(), sub.end());
-    // }
-    // auto sortedValues = Vector(exec, &colIdxHV[0], colIdxHV.size(), SerialExecutor {});
-    // sp.colIdxs() = sortedValues;
+    // start with one to include the diagonal
+    auto nFacesPerCell = Vector<localIdx>(exec, nCells, 1);
+    auto [nFacesPerCellView, neighbourOffsetView, ownerOffsetView, diagOffsetView] =
+        views(nFacesPerCell, sp.neighbourOffset(), sp.ownerOffset(), sp.diagOffset());
+
+    // accumulate number non-zeros per row
+    // only the internalfaces define the sparsity pattern
+    // get the number of faces per cell to allocate the correct size
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            // hit on performance on serial
+            auto owner = faceOwner[facei];
+            auto neighbour = faceNeiV[facei];
+
+            Kokkos::atomic_increment(&nFacesPerCellView[owner]);
+            Kokkos::atomic_increment(&nFacesPerCellView[neighbour]);
+        }
+    );
+
+    // get number of total non-zeros
+    auto rowOffs = sp.rowOffs().view();
+    segmentsFromIntervals(nFacesPerCell, sp.rowOffs());
+    auto colIdxV = sp.colIdxs().view();
+    fill(nFacesPerCell, 0); // reset nFacesPerCell
+
+    // compute the lower triangular part of the matrix
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeiV[facei];
+            auto owner = faceOwner[facei];
+
+            // return the oldValues
+            // hit on performance on serial
+            auto segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellView[neighbour], 1);
+            neighbourOffsetView[facei] = static_cast<uint8_t>(segIdxNei);
+
+            auto startSegNei = rowOffs[neighbour];
+            // neighbour --> current cell
+            // colIdx --> needs to be store the owner
+            Kokkos::atomic_assign(&colIdxV[startSegNei + segIdxNei], owner);
+        }
+    );
+
+    map(
+        nFacesPerCell,
+        KOKKOS_LAMBDA(const localIdx celli) {
+            auto nFaces = nFacesPerCellView[celli];
+            diagOffsetView[celli] = static_cast<uint8_t>(nFaces);
+            colIdxV[rowOffs[celli] + nFaces] = celli;
+            return nFaces + 1;
+        }
+    );
+
+    // compute the upper triangular part of the matrix
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto neighbour = faceNeiV[facei];
+            auto owner = faceOwner[facei];
+
+            // return the oldValues
+            // hit on performance on serial
+            auto segIdxOwn =
+                static_cast<uint8_t>(Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1));
+            ownerOffsetView[facei] = segIdxOwn;
+
+            auto startSegOwn = rowOffs[owner];
+            // owner --> current cell
+            // colIdx --> needs to be store the neighbour
+            Kokkos::atomic_assign(&colIdxV[startSegOwn + segIdxOwn], neighbour);
+        }
+    );
+}
+
+void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)
+{
+    // TODO sort pattern after creation and use parallel version
+    updateSparsityPatternSerial(mesh, sp);
 }
 
 SparsityPattern createSparsity(const UnstructuredMesh& mesh)
