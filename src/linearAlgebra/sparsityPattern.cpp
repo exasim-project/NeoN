@@ -81,7 +81,7 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
 
             auto startSegNei = rowOffsHV[nei];
             // neighbour --> current cell
-            // colIdx --> needs to be store the owner
+            // colIdx for row[neighbour] stores owner as a column entry
             Kokkos::atomic_assign(&colIdxHV[startSegNei + segIdxNei], own);
         }
     );
