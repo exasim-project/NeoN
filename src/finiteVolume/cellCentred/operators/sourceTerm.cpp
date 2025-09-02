@@ -9,6 +9,10 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
+SourceTerm<ValueType>::~SourceTerm()
+{}
+
+template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType, VolumeField<scalar>& coefficients, VolumeField<ValueType>& field
 )
