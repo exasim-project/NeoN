@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 NeoN authors
-// TODO: move to cellCenred dsl?
+//
+// SPDX-License-Identifier: MIT
 
 #pragma once
 
