@@ -49,4 +49,3 @@ trigger-foamadapter:
       curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=$CI_COMMIT_REF_NAME --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
   rules:
     - when: on_success
-
