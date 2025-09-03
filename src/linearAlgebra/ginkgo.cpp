@@ -4,10 +4,37 @@
 
 #if NF_WITH_GINKGO
 
+#include <sstream>
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
 {
+    // check if an external file name is given
+    if (dict.contains("configFile"))
+    {
+
+        std::string fn_str {};
+        auto fn = dict["configFile"];
+        if (fn.type() == typeid(std::string))
+        {
+            fn_str = std::any_cast<std::string>(fn);
+        }
+        else
+        {
+            auto token = std::any_cast<TokenList>(fn);
+            std::stringstream s;
+            for (auto i = 0; i < token.size() - 1; i++)
+            {
+                s << token.next<std::string>() << "/";
+            }
+            s << token.next<std::string>();
+            fn_str = s.str();
+        }
+
+        return gko::ext::config::parse_json_file(fn_str);
+    }
+
     auto parseData = [&](auto key)
     {
         auto parseAny = [&](auto blueprint)
