@@ -44,8 +44,6 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 
     fill(nFacesPerCell, 0); // reset nFacesPerCell
 
-    Kokkos::fence();
-
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -62,7 +60,6 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         }
     );
 
-    Kokkos::fence();
     parallelFor(
         exec,
         {nInternalFaces, nInternalFaces + faceFaceCells.size()},
