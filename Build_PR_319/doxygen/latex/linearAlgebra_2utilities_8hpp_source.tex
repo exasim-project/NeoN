@@ -2,34 +2,35 @@
 \hypertarget{linearAlgebra_2utilities_8hpp_source}{}\label{linearAlgebra_2utilities_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp}}
 \mbox{\hyperlink{linearAlgebra_2utilities_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024-\/2025\ NeoN\ authors}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00003}00003\ }
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00005}00005\ }
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{CSRMatrix_8hpp}{NeoN/linearAlgebra/CSRMatrix.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{CSRMatrix_8hpp}{NeoN/linearAlgebra/CSRMatrix.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00012}00012\ \{}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00013}00013\ }
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00014}00014\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ the\ residual\ vector}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00015}00015\ \textcolor{comment}{\ *\ Ax-\/b}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00016}00016\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ @param[in]\ mtx,\ the\ corresponding\ matrix}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ @param[in]\ b,\ rhs\ vector\ b}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ @param[in]\ x,\ initial\ guess\ vector\ x}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ @param[out]}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00021}00021\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00022}\mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{00022}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{computeResidual}}(}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<scalar,\ localIdx>}}\&\ mtx,}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ b,}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ x,}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00026}00026\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ res}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00027}00027\ );}
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00029}00029\ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00015}00015\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ the\ residual\ vector}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ Ax-\/b}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00017}00017\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ @param[in]\ mtx,\ the\ corresponding\ matrix}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ @param[in]\ b,\ rhs\ vector\ b}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ @param[in]\ x,\ initial\ guess\ vector\ x}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ @param[out]}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00022}00022\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00023}\mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{00023}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{computeResidual}}(}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<scalar,\ localIdx>}}\&\ mtx,}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ b,}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ x,}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00027}00027\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ res}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00028}00028\ );}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2utilities_8hpp_source_l00030}00030\ \}}
 
 \end{DoxyCode}

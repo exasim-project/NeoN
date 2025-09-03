@@ -26,11 +26,13 @@ virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Laplac
 virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a514e71cda76dea328bf7093933d27105}{laplacian}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)=0
 \item 
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a2b5815b84ec1fe7d17a93a09caf29f9d}{clone}} () const =0
+\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a8cb640e61803e771023e9c5917928cdb}{get\+Sparsity\+Pattern}} () const
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-static std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a3990e8045b7e5507323e5a75d054b989}{create}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&u\+Mesh, const \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} \&inputs)
+static std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a1d411ffce5054eebca2fec45affa5d1f}{create}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} \&inputs)
 \item 
 static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a972e4033c430ac9b3ba8f0b888d44226}{name}} ()
 \end{DoxyCompactItemize}
@@ -40,6 +42,8 @@ static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a782ca95362e7cd4dd1d7451851191baf}{exec\+\_\+}}
 \item 
 const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a56d15e307ea1ef9e882d6da0ca02617f}{mesh\+\_\+}}
+\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ae307ac3e4d4b0f05dca42c7e2b379231}{sparsity\+Pattern\+\_\+}}
 \end{DoxyCompactItemize}
 
 
@@ -48,7 +52,7 @@ const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \& \m
 class Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory$<$ Value\+Type $>$}
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 
 
@@ -62,7 +66,7 @@ Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00023}{23}} o
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ad19cde703ae0c82c45e3d6f4d3696395}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ad19cde703ae0c82c45e3d6f4d3696395} 
 \index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!````~LaplacianOperatorFactory@{\texorpdfstring{$\sim$}{\string~}LaplacianOperatorFactory}}
@@ -73,7 +77,7 @@ virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOp
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 
 
@@ -85,16 +89,27 @@ Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00046}{46}} o
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a3990e8045b7e5507323e5a75d054b989}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a3990e8045b7e5507323e5a75d054b989} 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a1d411ffce5054eebca2fec45affa5d1f}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a1d411ffce5054eebca2fec45affa5d1f} 
 \index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!create@{create}}
 \index{create@{create}!NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{create()}{create()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-static std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$\+::create (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{u\+Mesh,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} \&}]{inputs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$\+::create (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} \&}]{inputs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a8cb640e61803e771023e9c5917928cdb}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a8cb640e61803e771023e9c5917928cdb} 
+\index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!getSparsityPattern@{getSparsityPattern}}
+\index{getSparsityPattern@{getSparsityPattern}!NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{getSparsityPattern()}{getSparsityPattern()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$\+::get\+Sparsity\+Pattern (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ab0b01f017c839be64bcac0a2504e3177}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ab0b01f017c839be64bcac0a2504e3177} 
 \index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!laplacian@{laplacian}}
@@ -133,7 +148,7 @@ static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00042}{42}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 
 
@@ -147,7 +162,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00080}{80}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a56d15e307ea1ef9e882d6da0ca02617f}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_a56d15e307ea1ef9e882d6da0ca02617f} 
 \index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!mesh\_@{mesh\_}}
@@ -158,7 +173,18 @@ const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}\& \mb
 
 
 
-Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00082}{82}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00085}{85}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ae307ac3e4d4b0f05dca42c7e2b379231}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory_ae307ac3e4d4b0f05dca42c7e2b379231} 
+\index{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}!sparsityPattern\_@{sparsityPattern\_}}
+\index{sparsityPattern\_@{sparsityPattern\_}!NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{sparsityPattern\_}{sparsityPattern\_}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}}\& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Laplacian\+Operator\+Factory}}$<$ Value\+Type $>$\+::sparsity\+Pattern\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{laplacianOperator_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{laplacianOperator_8hpp_source}{laplacian\+Operator.\+hpp}}.
 
 
 

@@ -153,6 +153,8 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
@@ -163,6 +165,8 @@
       <node id="24">
         <label>NeoN/core/vector/vectorFreeFunctions.hpp</label>
         <link refid="vectorFreeFunctions_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="25" relation="include">
         </childnode>
       </node>
@@ -377,24 +381,25 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="surfaceField_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Calculates<sp/>courant<sp/>number<sp/>from<sp/>the<sp/>face<sp/>fluxes.</highlight></codeline>
-<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>@param<sp/>faceFlux<sp/>Scalar<sp/>surface<sp/>field<sp/>with<sp/>the<sp/>flux<sp/>values<sp/>of<sp/>all<sp/>faces.</highlight></codeline>
-<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>Size<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
-<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>@return<sp/>Maximum<sp/>courant<sp/>number.</highlight></codeline>
-<codeline lineno="15"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a372af26d53d79eeb5bde65cdfa5af52d" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a372af26d53d79eeb5bde65cdfa5af52d" kindref="member">computeCoNum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2024<sp/>-<sp/>2025<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="surfaceField_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Calculates<sp/>courant<sp/>number<sp/>from<sp/>the<sp/>face<sp/>fluxes.</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>@param<sp/>faceFlux<sp/>Scalar<sp/>surface<sp/>field<sp/>with<sp/>the<sp/>flux<sp/>values<sp/>of<sp/>all<sp/>faces.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>Size<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>@return<sp/>Maximum<sp/>courant<sp/>number.</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a372af26d53d79eeb5bde65cdfa5af52d" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a372af26d53d79eeb5bde65cdfa5af52d" kindref="member">computeCoNum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>faceFlux,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt);</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"/>
   </compounddef>

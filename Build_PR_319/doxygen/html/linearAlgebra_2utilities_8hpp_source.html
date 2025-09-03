@@ -82,39 +82,40 @@ $(document).ready(function() { init_codefold(0); });
   <div class="headertitle"><div class="title">utilities.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="linearAlgebra_2utilities_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2024-2025 NeoN authors</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="scalar_8hpp.html">NeoN/core/primitives/scalar.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="vector_8hpp.html">NeoN/core/vector/vector.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="CSRMatrix_8hpp.html">NeoN/linearAlgebra/CSRMatrix.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<a href="linearAlgebra_2utilities_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="scalar_8hpp.html">NeoN/core/primitives/scalar.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="vector_8hpp.html">NeoN/core/vector/vector.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="CSRMatrix_8hpp.html">NeoN/linearAlgebra/CSRMatrix.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1la.html">NeoN::la</a></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">/* @brief given a linear system consisting of A, b and x the operator computes the residual vector</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> * Ax-b</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> * @param[in] mtx, the corresponding matrix</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * @param[in] b, rhs vector b</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> * @param[in] x, initial guess vector x</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * @param[out]</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">computeResidual</a>(</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1CSRMatrix.html">CSRMatrix&lt;scalar, localIdx&gt;</a>&amp; mtx,</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; b,</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; x,</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; res</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1la.html">NeoN::la</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">/* @brief given a linear system consisting of A, b and x the operator computes the residual vector</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * Ax-b</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * @param[in] mtx, the corresponding matrix</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> * @param[in] b, rhs vector b</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * @param[in] x, initial guess vector x</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * @param[out]</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">computeResidual</a>(</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1CSRMatrix.html">CSRMatrix&lt;scalar, localIdx&gt;</a>&amp; mtx,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; b,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; x,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; res</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
 <div class="ttc" id="aCSRMatrix_8hpp_html"><div class="ttname"><a href="CSRMatrix_8hpp.html">CSRMatrix.hpp</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00026">vector.hpp:27</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1la_1_1CSRMatrix_html"><div class="ttname"><a href="classNeoN_1_1la_1_1CSRMatrix.html">NeoN::la::CSRMatrix</a></div><div class="ttdoc">Sparse matrix class with compact storage by row (CSR) format.</div><div class="ttdef"><b>Definition</b> <a href="CSRMatrix_8hpp_source.html#l00083">CSRMatrix.hpp:84</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1la_html"><div class="ttname"><a href="namespaceNeoN_1_1la.html">NeoN::la</a></div><div class="ttdef"><b>Definition</b> <a href="CSRMatrix_8hpp_source.html#l00009">CSRMatrix.hpp:10</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00029">vector.hpp:30</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1la_1_1CSRMatrix_html"><div class="ttname"><a href="classNeoN_1_1la_1_1CSRMatrix.html">NeoN::la::CSRMatrix</a></div><div class="ttdoc">Sparse matrix class with compact storage by row (CSR) format.</div><div class="ttdef"><b>Definition</b> <a href="CSRMatrix_8hpp_source.html#l00085">CSRMatrix.hpp:86</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1la_html"><div class="ttname"><a href="namespaceNeoN_1_1la.html">NeoN::la</a></div><div class="ttdef"><b>Definition</b> <a href="CSRMatrix_8hpp_source.html#l00011">CSRMatrix.hpp:12</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a0f2ef5235583f6df761bfcb72f6435ea"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">NeoN::la::computeResidual</a></div><div class="ttdeci">void computeResidual(const CSRMatrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
 <div class="ttc" id="avector_8hpp_html"><div class="ttname"><a href="vector_8hpp.html">vector.hpp</a></div></div>
