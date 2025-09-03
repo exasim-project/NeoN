@@ -6,10 +6,10 @@
 
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/dsl/expression.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
-
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -23,11 +23,11 @@ template<typename ValueType>
     scalar dt
 )
 {
-    auto sp = SparsityPattern(rhs.mesh());
+    auto sp = la::SparsityPattern(rhs.mesh());
     auto exec = expr.exec();
 
     la::LinearSystem<ValueType, localIdx> ls =
-        la::createEmptyLinearSystem<ValueType, localIdx, SparsityPattern>(sp);
+        la::createEmptyLinearSystem<ValueType, localIdx, la::SparsityPattern>(sp);
 
     auto nCells = rhs.size();
     Vector<ValueType> source(exec, nCells);

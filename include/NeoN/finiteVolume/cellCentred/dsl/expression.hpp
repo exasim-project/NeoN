@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/dsl/expression.hpp"
 #include "NeoN/dsl/solver.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/linearAlgebra/utilities.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
 
 namespace dsl = NeoN::dsl;
 
@@ -35,8 +35,8 @@ public:
         const Dictionary& fvSolution
     )
         : psi_(psi), expr_(expr), fvSchemes_(fvSchemes), fvSolution_(fvSolution),
-          sparsityPattern_(SparsityPattern::readOrCreate(psi.mesh())),
-          ls_(la::createEmptyLinearSystem<ValueType, localIdx, SparsityPattern>(
+          sparsityPattern_(la::SparsityPattern::readOrCreate(psi.mesh())),
+          ls_(la::createEmptyLinearSystem<ValueType, localIdx, la::SparsityPattern>(
               *sparsityPattern_.get()
           ))
     {
@@ -51,7 +51,7 @@ public:
     ~Expression() = default;
 
     [[nodiscard]] la::LinearSystem<ValueType, IndexType>& linearSystem() { return ls_; }
-    [[nodiscard]] SparsityPattern& sparsityPattern()
+    [[nodiscard]] la::SparsityPattern& sparsityPattern()
     {
         if (!sparsityPattern_)
         {
@@ -65,7 +65,7 @@ public:
     const VolumeField<ValueType>& getVector() const { return this->psi_; }
 
     [[nodiscard]] const la::LinearSystem<ValueType, IndexType>& linearSystem() const { return ls_; }
-    [[nodiscard]] const SparsityPattern& sparsityPattern() const
+    [[nodiscard]] const la::SparsityPattern& sparsityPattern() const
     {
         if (!sparsityPattern_)
         {
@@ -181,7 +181,7 @@ private:
     dsl::Expression<ValueType> expr_;
     const Dictionary& fvSchemes_;
     const Dictionary& fvSolution_;
-    std::shared_ptr<SparsityPattern> sparsityPattern_;
+    std::shared_ptr<la::SparsityPattern> sparsityPattern_;
     la::LinearSystem<ValueType, IndexType> ls_;
 };
 
