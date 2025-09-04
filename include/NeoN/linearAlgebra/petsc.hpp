@@ -86,9 +86,9 @@ public:
 
         Vec sol, rhs;
 
-        NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_);
+        NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_, solverDict_);
 
-        std::size_t nrows = sys.rhs().size();
+        localIdx nrows = sys.rhs().size();
 
         petsctx.initialize(sys);
 
@@ -111,7 +111,7 @@ public:
         // KSPSetUp(ksp);
 
 
-        PetscCallVoid(KSPSolve(ksp, rhs, sol));
+        KSPSolve(ksp, rhs, sol);
 
         auto numIter = 0;
         KSPGetIterationNumber(ksp, &numIter);
