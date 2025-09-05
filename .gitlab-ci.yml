@@ -116,8 +116,8 @@ benchmark-on-tum-coma:
     - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}
     - cd ${REPO_NAME}
     - git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    - mkdir "${RUN_IDENTIFIER}"
-    - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}"
+    - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+    - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
     - git add .
     - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     - git pull --rebase || true
