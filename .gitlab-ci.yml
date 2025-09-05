@@ -62,18 +62,38 @@ benchmark-on-tum-coma:
     # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
+    # Collect system info (CPU, GPU, compilers)
+    - mkdir ${RESULTS_DIR}
+    - |
+      {
+        echo "===== CPU INFO ====="
+        lscpu
+        echo ""
+        echo "===== GPU INFO ====="
+        nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No GPU found"
+        echo ""
+        echo "===== COMPILER INFO ====="
+        echo "CMake:"
+        cmake --version
+        echo ""
+        echo "C++ compiler:"
+        clang++ --version || g++ --version || echo "No C++ compiler found"
+        echo ""
+        echo "CUDA compiler:"
+        nvcc --version || echo "nvcc not available"
+      } > ${RESULTS_DIR}/system-info.log
+
     # Build & benchmark current branch
     - echo ">>> Build current branch"
     - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset profiling
     - echo ">>> Running benchmarks...(current branch)"
     - ctest --preset profiling
-    - mkdir -p ${RESULTS_DIR}/main
     - cd build/profiling/bin/benchmarks
     - python3 ../../../../scripts/catch2json.py
     - cd ../../../..
     - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/
-    - lscpu > ${RESULTS_DIR}/lscpu.log
+
     - rm -rf build
 
     # Build & benchmark main branch
@@ -87,8 +107,8 @@ benchmark-on-tum-coma:
     - cd build/profiling/bin/benchmarks
     - python3 ../../../../scripts/catch2json.py
     - cd ../../../..
+    - mkdir -p ${RESULTS_DIR}/main
     - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/main/
-    - lscpu > ${RESULTS_DIR}/main/lscpu.log
 
     # Push benchmark results to GitHub
     - git config --global user.email "gitlab-ci@users.noreply.github.com"
