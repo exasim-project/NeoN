@@ -7,7 +7,7 @@ image: greole/neon-cuda
 workflow:
   rules:
     # Skip pipeline if commit message contains [skip-gitlab-ci]
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip-gitlab-ci\]/i
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-gitlab-ci\]/i'
       when: never
 
     # Skip pipeline if only doc or Markdown files changed
