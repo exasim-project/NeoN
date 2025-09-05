@@ -8,12 +8,11 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/fields/field.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
-
+#include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
 
 namespace la = la;
 

@@ -83,4 +83,19 @@ TEST_CASE("volumeVector")
             REQUIRE(refValue.view()[i] == 2.0);
         }
     }
+
+    SECTION("can perform basic algebra on: " + execName)
+    {
+        fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, bcs);
+        NeoN::fill(vf.internalVector(), 2.0);
+        vf.correctBoundaryConditions();
+
+        vf -= 1.0;
+
+        auto internalValues = vf.internalVector().copyToHost();
+        for (NeoN::localIdx i = 0; i < internalValues.size(); ++i)
+        {
+            REQUIRE(internalValues.view()[i] == 1.0);
+        }
+    }
 }
