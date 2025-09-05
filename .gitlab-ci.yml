@@ -123,6 +123,9 @@ benchmark-on-tum-coma:
     - git pull --rebase || true
     - git push origin "${TARGET_BRANCH}"
 
-  # Only run benchmarks when manually triggered
-  when: manual
-  allow_failure: true
+  rules:
+    # Run automatically if commit message contains 'run-benchmark'
+    - if: '$CI_COMMIT_MESSAGE =~ /\[run-benchmark\]/i'
+      when: on_success
+    # Otherwise don't create the job at all
+    - when: never
