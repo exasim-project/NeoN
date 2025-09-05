@@ -7,9 +7,7 @@ on:
       - dev
       - main
   pull_request:
-    types:
-      - synchronize
-      - opened
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
     - cron: "0 9 * * *"
 
@@ -23,8 +21,9 @@ concurrency:
 
 jobs:
   build:
-    if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-build')}}
     name: Build NeoN on ubuntu
+    runs-on: ubuntu-latest
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +42,6 @@ jobs:
               CC: clang
               CXX: clang++
             preset: "profiling"
-    runs-on: ubuntu-latest
     steps:
      - name: Checkout to repository
        uses: actions/checkout@v4
