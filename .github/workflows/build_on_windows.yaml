@@ -6,9 +6,7 @@ on:
       - dev
       - main
   pull_request:
-    types:
-      - synchronize
-      - opened
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
     - cron: "0 9 * * *"
 
@@ -21,7 +19,7 @@ env:
 
 jobs:
   windows_msvc:
-    if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-build')}}
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     name: msvc
     runs-on: [windows-latest]
     steps:
