@@ -4,45 +4,97 @@
 
 image: greole/neon-cuda
 
-workflow:
-  rules:
-    # Skip pipeline if only doc or Markdown files changed
-    - changes:
-        - doc/**/*
-        - '*.md'
-      when: never
+# workflow:
+#   rules:
+#     # Skip pipeline if only doc or Markdown files changed
+#     - changes:
+#         - doc/**/*
+#         - '*.md'
+#       when: never
 
-    # Run pipeline for everything else
-    - when: always
+#     # Run pipeline for everything else
+#     - when: always
 
 stages:
-  - build-and-test
-  - trigger
+  # - build-and-test
+  # - trigger
+  - benchmark
 
-build-and-test-project:
-  stage: build-and-test
+# build-and-test-project:
+#   stage: build-and-test
+#   tags: ["nvidia-gpus"]
+#   before_script:
+#     # Install pre-commit
+#     - pip3 install --user --break-system-packages pre-commit
+#     - export PATH="$HOME/.local/bin:$PATH"
+
+#     # Optional: show versions of tools
+#     - cmake --version
+#     - clang++ --version || g++ --version
+#     - nvidia-smi
+#     - nvcc --version
+
+#   script:
+#     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
+#     - cmake --build --preset develop
+#     - ctest --preset develop --output-on-failure
+
+# trigger-foamadapter:
+#   stage: trigger
+#   tags: ["nvidia-gpus"]
+#   needs: ["build-and-test-project"]
+#   script:
+#     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
+#   rules:
+#     - when: on_success
+
+benchmark-on-tum-coma:
+  stage: benchmark
   tags: ["nvidia-gpus"]
-  before_script:
-    # Install pre-commit
-    - pip3 install --user --break-system-packages pre-commit
-    - export PATH="$HOME/.local/bin:$PATH"
-
-    # Optional: show versions of tools
-    - cmake --version
-    - clang++ --version || g++ --version
-    - nvidia-smi
-    - nvcc --version
-
+  # needs: ["build-and-test-project"]
+  variables:
+    RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
+    TARGET_REPO: "github.com/exasim-project/NeoFOAM-BenchmarkData.git"
   script:
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
+    # Install dependencies
+    - pip3 install --user --break-system-packages xmltodict
 
-trigger-foamadapter:
-  stage: trigger
-  tags: ["nvidia-gpus"]
-  needs: ["build-and-test-project"]
-  script:
-    - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
-  rules:
-    - when: on_success
+    # Build & benchmark current branch
+    - echo ">>> Build current branch"
+    - cmake --preset profiling
+    - cmake --build --preset profiling
+    - ctest --preset profiling
+    - mkdir -p results
+    - cd build/profiling/bin/benchmarks
+    - python3 ../../../../scripts/catch2json.py
+    - cp *.json ../../../..
+    - cd ../../../..
+    - mv *.json results/
+    - lscpu > results/lscpu.log
+    - rm -rf build
+
+    # Build & benchmark main branch
+    - echo ">>> Build main branch"
+    - git fetch origin main
+    - git checkout main
+    - cmake --preset profiling
+    - cmake --build --preset profiling
+    - ctest --preset profiling
+    - mkdir -p results/main
+    - cd build/profiling/bin/benchmarks
+    - python3 ../../../../scripts/catch2json.py
+    - cp *.json ../../../..
+    - cd ../../../..
+    - mv *.json results/main/
+
+    # Push benchmark results to GitHub
+    - git config --global user.email "gitlab-ci@users.noreply.github.com"
+    - git config --global user.name "GitLab CI"
+    - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO} gh-target
+    - cd gh-target
+    - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+    - cp -r ../results/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}/"
+    - git add .
+    - git commit -m "Benchmarks from GitLab pipeline ${CI_PIPELINE_ID}" || echo "No changes to commit"
+    - git pull --rebase || true
+    - git push origin main
