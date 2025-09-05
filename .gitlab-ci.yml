@@ -4,54 +4,54 @@
 
 image: greole/neon-cuda
 
-# workflow:
-#   rules:
-#     # Skip pipeline if only doc or Markdown files changed
-#     - changes:
-#         - doc/**/*
-#         - '*.md'
-#       when: never
+workflow:
+  rules:
+    # Skip pipeline if only doc or Markdown files changed
+    - changes:
+        - doc/**/*
+        - '*.md'
+      when: never
 
-#     # Run pipeline for everything else
-#     - when: always
+    # Run pipeline for everything else
+    - when: always
 
 stages:
-  # - build-and-test
-  # - trigger
+  - build-and-test
+  - trigger
   - benchmark
 
-# build-and-test-project:
-#   stage: build-and-test
-#   tags: ["nvidia-gpus"]
-#   before_script:
-#     # Install pre-commit
-#     - pip3 install --user --break-system-packages pre-commit
-#     - export PATH="$HOME/.local/bin:$PATH"
+build-and-test-project:
+  stage: build-and-test
+  tags: ["nvidia-gpus"]
+  before_script:
+    # Install pre-commit
+    - pip3 install --user --break-system-packages pre-commit
+    - export PATH="$HOME/.local/bin:$PATH"
 
-#     # Optional: show versions of tools
-#     - cmake --version
-#     - clang++ --version || g++ --version
-#     - nvidia-smi
-#     - nvcc --version
+    # Optional: show versions of tools
+    - cmake --version
+    - clang++ --version || g++ --version
+    - nvidia-smi
+    - nvcc --version
 
-#   script:
-#     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
-#     - cmake --build --preset develop
-#     - ctest --preset develop --output-on-failure
+  script:
+    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
+    - cmake --build --preset develop
+    - ctest --preset develop --output-on-failure
 
-# trigger-foamadapter:
-#   stage: trigger
-#   tags: ["nvidia-gpus"]
-#   needs: ["build-and-test-project"]
-#   script:
-#     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
-#   rules:
-#     - when: on_success
+trigger-foamadapter:
+  stage: trigger
+  tags: ["nvidia-gpus"]
+  needs: ["build-and-test-project"]
+  script:
+    - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
+  rules:
+    - when: on_success
 
 benchmark-on-tum-coma:
   stage: benchmark
   tags: ["nvidia-gpus"]
-  # needs: ["build-and-test-project"]
+  needs: ["trigger-foamadapter"]
   variables:
     RESULTS_DIR: "benchmark-results"
     RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
