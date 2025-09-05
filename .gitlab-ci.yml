@@ -122,3 +122,7 @@ benchmark-on-tum-coma:
     - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     - git pull --rebase || true
     - git push origin "${TARGET_BRANCH}"
+
+  # Only run benchmarks when manually triggered
+  when: manual
+  allow_failure: true
