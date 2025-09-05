@@ -61,7 +61,7 @@ benchmark-on-tum-coma:
 
     # Build & benchmark current branch
     - echo ">>> Build current branch"
-    - cmake --preset profiling
+    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset profiling
     - ctest --preset profiling
     - mkdir -p results
@@ -77,7 +77,7 @@ benchmark-on-tum-coma:
     - echo ">>> Build main branch"
     - git fetch origin main
     - git checkout main
-    - cmake --preset profiling
+    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset profiling
     - ctest --preset profiling
     - mkdir -p results/main
