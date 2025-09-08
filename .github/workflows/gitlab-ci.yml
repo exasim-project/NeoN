@@ -12,10 +12,7 @@ jobs:
         id: trigger
         run: |
           echo "Triggering LRZ GitLab pipeline..."
-          response=$(curl -s --request POST \
-            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-            --form "ref=${GITHUB_REF_NAME}" \
-            "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/trigger/pipeline")
+          response=$(curl -s --request POST --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" --form "ref=${GITHUB_REF_NAME}" "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/trigger/pipeline")
 
           echo "$response"
           pipeline_id=$(echo "$response" | jq -r '.id')
