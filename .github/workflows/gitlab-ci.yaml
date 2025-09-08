@@ -18,9 +18,8 @@ jobs:
 
           response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
 
-          echo "$response"
+          echo "$response" | jq .
 
-          # Extract pipeline ID
           pipeline_id=$(echo "$response" | jq -r '.id')
           if [ "$pipeline_id" = "null" ]; then
             echo "Failed to trigger LRZ pipeline"
