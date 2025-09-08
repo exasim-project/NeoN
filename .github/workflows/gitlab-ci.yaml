@@ -2,7 +2,11 @@ name: LRZ GitLab CI Bridge
 
 on:
   pull_request:
-  push: {}
+    branches:
+      - main   # Only PRs targeting main
+  push:
+    branches:
+      - main   # Only pushes to main
 
 jobs:
   trigger-lrz-ci:
@@ -12,11 +16,17 @@ jobs:
         id: trigger
         run: |
           echo "Triggering LRZ GitLab pipeline..."
-          response=$(curl -s --request POST --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" --form "ref=${GITHUB_REF_NAME}" "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.LRZ_GITLAB_PROJECT_ID }}/pipelines")
+
+          # Determine branch: for PR use head ref, for push use ref name
+          BRANCH=${GITHUB_REF_NAME:-${GITHUB_HEAD_REF}}
+
+          # Trigger pipeline using trigger token
+          response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
 
           echo "$response"
-          pipeline_id=$(echo "$response" | jq -r '.id')
 
+          # Extract pipeline ID
+          pipeline_id=$(echo "$response" | jq -r '.id')
           if [ "$pipeline_id" = "null" ]; then
             echo "Failed to trigger LRZ pipeline"
             exit 1
@@ -32,8 +42,8 @@ jobs:
           while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
             sleep 30
             response=$(curl -s \
-              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-              "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/pipelines/$pipeline_id")
+              --header "PRIVATE-TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id")
             status=$(echo "$response" | jq -r '.status')
             echo "LRZ pipeline status: $status"
           done
