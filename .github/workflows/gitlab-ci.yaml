@@ -1,12 +1,21 @@
-name: LRZ GitLab CI Bridge
+name: Trigger LRZ GitLab CI
 
 on:
+  push:
+    branches:
+      - dev
+      - main
   pull_request:
-  push: {}
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   trigger-lrz-ci:
     runs-on: ubuntu-latest
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     steps:
       - name: Trigger LRZ GitLab pipeline
         id: trigger
