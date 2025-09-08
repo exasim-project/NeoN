@@ -13,7 +13,7 @@ jobs:
         run: |
           echo "Triggering LRZ GitLab pipeline..."
           response=$(curl -s --request POST \
-            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
             --form "ref=${GITHUB_REF_NAME}" \
             "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/trigger/pipeline")
 
@@ -35,7 +35,7 @@ jobs:
           while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
             sleep 30
             response=$(curl -s \
-              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
               "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/pipelines/$pipeline_id")
             status=$(echo "$response" | jq -r '.status')
             echo "LRZ pipeline status: $status"
