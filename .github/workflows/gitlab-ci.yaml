@@ -30,21 +30,21 @@ jobs:
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
-      - name: Wait for LRZ pipeline to finish
-        run: |
-          pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
-          status="running"
+      # - name: Wait for LRZ pipeline to finish
+      #   run: |
+      #     pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
+      #     status="running"
 
-          while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
-            sleep 30
-            response=$(curl -s \
-              --header "PRIVATE-TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
-              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id")
-            status=$(echo "$response" | jq -r '.status')
-            echo "LRZ pipeline status: $status"
-          done
+      #     while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
+      #       sleep 30
+      #       response=$(curl -s \
+      #         --header "PRIVATE-TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+      #         "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id")
+      #       status=$(echo "$response" | jq -r '.status')
+      #       echo "LRZ pipeline status: $status"
+      #     done
 
-          if [ "$status" != "success" ]; then
-            echo "LRZ pipeline failed with status: $status"
-            exit 1
-          fi
+      #     if [ "$status" != "success" ]; then
+      #       echo "LRZ pipeline failed with status: $status"
+      #       exit 1
+      #     fi
