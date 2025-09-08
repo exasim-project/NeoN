@@ -46,19 +46,19 @@ trigger-foamadapter:
   rules:
     - when: on_success
 
-report-to-github:
-  stage: report
-  tags: ["nvidia-gpus"]
-  script:
-    - echo "Reporting LRZ CI result to GitHub..."
-    - |
-      STATUS="success"
-      if [ "$CI_JOB_STATUS" != "success" ]; then
-        STATUS="failure"
-      fi
+# report-to-github:
+#   stage: report
+#   tags: ["nvidia-gpus"]
+#   script:
+#     - echo "Reporting LRZ CI result to GitHub..."
+#     - |
+#       STATUS="success"
+#       if [ "$CI_JOB_STATUS" != "success" ]; then
+#         STATUS="failure"
+#       fi
 
-      curl -s -X POST -H "Authorization: token $API_TOKEN_GITHUB" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/<owner>/<repo>/statuses/$CI_COMMIT_SHA -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
-  when: always
+#       curl -s -X POST -H "Authorization: token $API_TOKEN_GITHUB" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/<owner>/<repo>/statuses/$CI_COMMIT_SHA -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
+#   when: always
 
 benchmark-on-tum-coma:
   stage: benchmark
