@@ -22,9 +22,13 @@ jobs:
         run: |
           echo "Triggering LRZ GitLab pipeline..."
 
-          BRANCH=${GITHUB_REF_NAME#refs/heads/}
-          BRANCH=${BRANCH:-$GITHUB_HEAD_REF}
-          BRANCH=${BRANCH:-$GITHUB_BASE_REF}  # fallback for PRs
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            BRANCH="$GITHUB_HEAD_REF"
+          else
+            BRANCH=${GITHUB_REF_NAME#refs/heads/}
+          fi
+
+          echo "Triggering branch: $BRANCH"
 
           ENCODED_BRANCH=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$BRANCH'''))")
           echo "Encoded branch: $ENCODED_BRANCH"
@@ -40,6 +44,7 @@ jobs:
           fi
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+
 
       # - name: Set GitHub commit status to "pending"
       #   run: |
