@@ -13,10 +13,9 @@ jobs:
         run: |
           echo "Triggering LRZ GitLab pipeline..."
 
-          # Determine branch: for PR use head ref, for push use ref name
-          BRANCH=${GITHUB_REF_NAME:-${GITHUB_HEAD_REF}}
+          BRANCH=${GITHUB_REF_NAME#refs/heads/}
+          BRANCH=${BRANCH:-$GITHUB_HEAD_REF}
 
-          # Trigger pipeline using trigger token
           response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
 
           echo "$response"
