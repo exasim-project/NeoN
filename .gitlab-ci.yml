@@ -6,14 +6,20 @@ image: greole/neon-cuda
 
 workflow:
   rules:
-    # Skip pipeline if only doc or Markdown files changed
-    - changes:
-        - doc/**/*
-        - '*.md'
-      when: never
+    # Run only when triggered via API
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    # Skip in all other cases (e.g. mirror sync from GitHub)
+    - when: never
 
-    # Run pipeline for everything else
-    - when: always
+    # # Skip pipeline if only doc or Markdown files changed
+    # - changes:
+    #     - doc/**/*
+    #     - '*.md'
+    #   when: never
+
+    # # Run pipeline for everything else
+    # - when: always
 
 stages:
   - build-and-test

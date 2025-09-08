@@ -1,0 +1,47 @@
+name: LRZ GitLab CI Bridge
+
+on:
+  pull_request:
+  push: {}
+
+jobs:
+  trigger-lrz-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger LRZ GitLab pipeline
+        id: trigger
+        run: |
+          echo "Triggering LRZ GitLab pipeline..."
+          response=$(curl -s --request POST \
+            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+            --form "ref=${GITHUB_REF_NAME}" \
+            "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/trigger/pipeline")
+
+          echo "$response"
+          pipeline_id=$(echo "$response" | jq -r '.id')
+
+          if [ "$pipeline_id" = "null" ]; then
+            echo "Failed to trigger LRZ pipeline"
+            exit 1
+          fi
+
+          echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+
+      - name: Wait for LRZ pipeline to finish
+        run: |
+          pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
+          status="running"
+
+          while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
+            sleep 30
+            response=$(curl -s \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+              "https://gitlab-ce.lrz.de/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/pipelines/$pipeline_id")
+            status=$(echo "$response" | jq -r '.status')
+            echo "LRZ pipeline status: $status"
+          done
+
+          if [ "$status" != "success" ]; then
+            echo "LRZ pipeline failed with status: $status"
+            exit 1
+          fi
