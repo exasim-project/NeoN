@@ -37,21 +37,7 @@ jobs:
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
-      # - name: Wait for LRZ pipeline to finish
-      #   run: |
-      #     pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
-      #     status="running"
-
-      #     while [ "$status" = "running" ] || [ "$status" = "pending" ]; do
-      #       sleep 30
-      #       response=$(curl -s \
-      #         --header "PRIVATE-TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
-      #         "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id")
-      #       status=$(echo "$response" | jq -r '.status')
-      #       echo "LRZ pipeline status: $status"
-      #     done
-
-      #     if [ "$status" != "success" ]; then
-      #       echo "LRZ pipeline failed with status: $status"
-      #       exit 1
-      #     fi
+      - name: Set GitHub commit status to "pending"
+        run: |
+          echo "Setting pending status on commit..."
+          curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
