@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   trigger-lrz-ci:
-    name;: Trigger LRZ GitLab CI
+    name: Trigger LRZ GitLab CI
     runs-on: ubuntu-latest
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     steps:
