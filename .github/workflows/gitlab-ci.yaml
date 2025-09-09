@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch full history to avoid shallow push issues
 
       - name: Push commit to LRZ GitLab
         id: push
@@ -31,20 +33,23 @@ jobs:
 
           git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
 
+          # Determine branch
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             BRANCH="$GITHUB_HEAD_REF"
           else
             BRANCH=${GITHUB_REF_NAME#refs/heads/}
           fi
-          echo "Pushing branch $BRANCH"
+          echo "Branch to push: $BRANCH"
 
-          # Make sure local branch matches GitHub
+          # Ensure local branch matches GitHub
           git fetch origin $BRANCH
+          git checkout -B $BRANCH origin/$BRANCH
           git reset --hard origin/$BRANCH
 
+          # Force push to LRZ GitLab
           git push --force lrz HEAD:refs/heads/$BRANCH
 
-          # Save branch for later step
+          # Save branch name for later steps
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Trigger LRZ GitLab pipeline
