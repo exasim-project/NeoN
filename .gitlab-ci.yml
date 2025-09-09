@@ -59,8 +59,8 @@ report-to-github:
         STATUS="failure"
       fi
 
-      # Use the GitHub commit SHA passed as a variable
-      GITHUB_COMMIT_SHA=${GITHUB_SHA:-$CI_COMMIT_SHA}
+      # Use the GitHub commit SHA passed from GitHub CI
+      GITHUB_COMMIT_SHA=${GITHUB_SHA:?Error: GitHub SHA not set}
 
       # Post status to GitHub commit
       curl -s -X POST \
