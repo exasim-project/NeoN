@@ -1,18 +1,14 @@
-name: LRZ GitLab CI
+name: Trigger LRZ GitLab CI
 
 on:
   push:
     branches:
       - dev
       - main
-
-  # Trigger on new commits to PRs (for testing PR code)
   pull_request:
-    types: [synchronize]
-
-  # Trigger on label changes (to skip or allow CI)
+    types: [opened, synchronize, reopened]
   pull_request_target:
-    types: [labeled, unlabeled]
+    types: [unlabeled]  # triggers when a label is removed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -23,82 +19,48 @@ jobs:
     name: Trigger LRZ GitLab CI
     runs-on: ubuntu-latest
 
-    # Skip if PR has Skip-build label
+    # Skip job if the PR has Skip-build
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
 
     steps:
-      # -----------------------------
-      # Checkout repository
-      # -----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # full history for safe pushes
+          fetch-depth: 0
 
-      # -----------------------------
-      # Determine branch
-      # -----------------------------
       - name: Determine branch
         id: branch
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "pull_request_target" ]]; then
             BRANCH="$GITHUB_HEAD_REF"
           else
             BRANCH=${GITHUB_REF_NAME#refs/heads/}
           fi
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
-      # -----------------------------
-      # Skip if commit already exists on LRZ GitLab
-      # -----------------------------
-      - name: Check if commit exists on LRZ GitLab
-        id: check
-        run: |
-          if git ls-remote https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git refs/heads/${{ steps.branch.outputs.branch }} | grep $GITHUB_SHA; then
-            echo "exists" > status.txt
-          else
-            echo "notfound" > status.txt
-          fi
-          cat status.txt
-        shell: bash
-
-      - name: Exit if commit already on LRZ GitLab
-        if: steps.check.outputs.status == 'exists'
-        run: |
-          echo "Commit $GITHUB_SHA already exists on LRZ GitLab; skipping push and trigger."
-          exit 0
-
-      # -----------------------------
-      # Push commit to LRZ GitLab
-      # -----------------------------
       - name: Push commit to LRZ GitLab
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
-
           git fetch origin ${{ steps.branch.outputs.branch }}
           git checkout -B ${{ steps.branch.outputs.branch }} origin/${{ steps.branch.outputs.branch }}
           git reset --hard origin/${{ steps.branch.outputs.branch }}
-
           git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
 
-      # -----------------------------
-      # Set GitHub pending status
-      # -----------------------------
-      - name: Set GitHub commit status to pending
-        run: |
-          curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_PAT }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
+      # - name: Set GitHub pending status
+      #   run: |
+      #     curl -s -X POST \
+      #       -H "Authorization: token ${{ secrets.GITHUB_PAT }}" \
+      #       -H "Accept: application/vnd.github.v3+json" \
+      #       https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+      #       -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
 
-      # -----------------------------
-      # Trigger LRZ GitLab pipeline
-      # -----------------------------
       - name: Trigger LRZ GitLab pipeline
         id: trigger
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
           response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
-
           echo "$response" | jq .
           pipeline_id=$(echo "$response" | jq -r '.id')
           if [ "$pipeline_id" = "null" ]; then
