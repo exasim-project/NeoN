@@ -49,27 +49,37 @@ trigger-foamadapter:
 report-to-github:
   stage: report
   tags: ["nvidia-h100-gpus"]
+  when: always
   script:
     - echo "Reporting LRZ GitLab CI result to GitHub..."
 
     - |
-      # Determine GitHub status
-      STATUS="success"
-      if [ "$CI_JOB_STATUS" != "success" ]; then
-        STATUS="failure"
-      fi
+      TARGET_JOB="trigger-foamadapter"
 
-      # Use the GitHub commit SHA passed from GitHub CI
+      # Query GitLab API for the target job’s status in this pipeline
+      JOB_STATUS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" \
+        | jq -r --arg JOB "$TARGET_JOB" '.[] | select(.name==$JOB) | .status' | head -n1)
+
+      echo "Status of job '$TARGET_JOB': $JOB_STATUS"
+
+      # Map GitLab job status to GitHub commit status
+      case "$JOB_STATUS" in
+        success) GH_STATE="success" ;;
+        failed)  GH_STATE="failure" ;;
+        canceled|skipped) GH_STATE="neutral" ;;
+        *) GH_STATE="error" ;;
+      esac
+
+      # Ensure GitHub SHA is set (passed from GitHub CI trigger)
       GITHUB_COMMIT_SHA=${GITHUB_SHA:?Error: GitHub SHA not set}
 
-      # Post status to GitHub commit
+      # Report status back to GitHub commit
       curl -s -X POST \
         -H "Authorization: token $GITHUB_PAT" \
         -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/exasim-project/NeoN/statuses/$GITHUB_COMMIT_SHA" \
-        -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
-
-  when: always
+        -d "{\"state\":\"$GH_STATE\",\"context\":\"LRZ GitLab CI / $TARGET_JOB\",\"description\":\"Job $TARGET_JOB finished with status: $JOB_STATUS\"}"
 
 benchmark-on-tum-coma:
   stage: benchmark
