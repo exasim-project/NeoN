@@ -6,9 +6,9 @@ on:
       - dev
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
-  pull_request_target:
-    types: [unlabeled]  # triggers when a label is removed
+    types: [opened, synchronize, reopened, unlabeled]
+  # pull_request_target:
+  #   types: [unlabeled]  # triggers when a label is removed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
