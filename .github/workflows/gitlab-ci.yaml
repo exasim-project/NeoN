@@ -31,7 +31,6 @@ jobs:
 
           git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
 
-          # Determine branch
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             BRANCH="$GITHUB_HEAD_REF"
           else
@@ -39,7 +38,10 @@ jobs:
           fi
           echo "Pushing branch $BRANCH"
 
-          # Push with full refname
+          # Make sure local branch matches GitHub
+          git fetch origin $BRANCH
+          git reset --hard origin/$BRANCH
+
           git push --force-with-lease lrz HEAD:refs/heads/$BRANCH
 
           # Save branch for later step
