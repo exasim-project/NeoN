@@ -31,15 +31,18 @@ jobs:
 
           git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
 
-          # Figure out branch
-          BRANCH=${GITHUB_REF_NAME#refs/heads/}
-          BRANCH=${BRANCH:-$GITHUB_HEAD_REF}
-          BRANCH=${BRANCH:-$GITHUB_BASE_REF}
+          # Determine branch
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            BRANCH="$GITHUB_HEAD_REF"
+          else
+            BRANCH=${GITHUB_REF_NAME#refs/heads/}
+          fi
           echo "Pushing branch $BRANCH"
 
-          git push --force-with-lease lrz HEAD:$BRANCH
+          # Push with full refname
+          git push --force-with-lease lrz HEAD:refs/heads/$BRANCH
 
-          # Save branch name for later step
+          # Save branch for later step
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Trigger LRZ GitLab pipeline
