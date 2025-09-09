@@ -15,6 +15,7 @@ workflow:
 stages:
   - build-and-test
   - trigger
+  - report
   - benchmark
 
 build-and-test-project:
@@ -44,6 +45,21 @@ trigger-foamadapter:
     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
   rules:
     - when: on_success
+
+report-to-github:
+  stage: report
+  script:
+    - echo "Reporting LRZ GitLab CI result to GitHub..."
+    - |
+      # Determine GitHub status
+      STATUS="success"
+      if [ "$CI_PIPELINE_STATUS" != "success" ]; then
+        STATUS="failure"
+      fi
+
+      # Post status to GitHub commit
+      curl -s -X POST -H "Authorization: token $GITHUB_PAT" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/greole/neon/statuses/$CI_COMMIT_SHA -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
+  when: always
 
 benchmark-on-tum-coma:
   stage: benchmark
