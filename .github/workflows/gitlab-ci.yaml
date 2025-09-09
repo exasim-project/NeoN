@@ -42,7 +42,7 @@ jobs:
           git fetch origin $BRANCH
           git reset --hard origin/$BRANCH
 
-          git push --force-with-lease lrz HEAD:refs/heads/$BRANCH
+          git push --force lrz HEAD:refs/heads/$BRANCH
 
           # Save branch for later step
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
