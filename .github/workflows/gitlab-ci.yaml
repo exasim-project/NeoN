@@ -1,0 +1,68 @@
+name: LRZ GitLab CI
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trigger-lrz-ci:
+    name: Trigger LRZ GitLab CI
+    runs-on: ubuntu-latest
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Push commit to LRZ GitLab
+        id: push
+        run: |
+          echo "Pushing commit to LRZ GitLab..."
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
+
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            BRANCH="$GITHUB_HEAD_REF"
+          else
+            BRANCH=${GITHUB_REF_NAME#refs/heads/}
+          fi
+          echo "Pushing branch $BRANCH"
+
+          # Make sure local branch matches GitHub
+          git fetch origin $BRANCH
+          git reset --hard origin/$BRANCH
+
+          git push --force lrz HEAD:refs/heads/$BRANCH
+
+          # Save branch for later step
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Trigger LRZ GitLab pipeline
+        id: trigger
+        run: |
+          echo "Triggering LRZ GitLab pipeline..."
+
+          BRANCH=${{ steps.push.outputs.branch }}
+          echo "Using branch: $BRANCH"
+
+          response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
+
+          echo "$response" | jq .
+
+          pipeline_id=$(echo "$response" | jq -r '.id')
+          if [ "$pipeline_id" = "null" ]; then
+            echo "Failed to trigger LRZ pipeline"
+            exit 1
+          fi
+
+          echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT

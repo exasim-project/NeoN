@@ -6,14 +6,11 @@ image: greole/neon-cuda
 
 workflow:
   rules:
-    # Skip pipeline if only doc or Markdown files changed
-    - changes:
-        - doc/**/*
-        - '*.md'
-      when: never
-
-    # Run pipeline for everything else
-    - when: always
+    # Run only when triggered via API
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    # Skip in all other cases
+    - when: never
 
 stages:
   - build-and-test
@@ -22,7 +19,7 @@ stages:
 
 build-and-test-project:
   stage: build-and-test
-  tags: ["nvidia-gpus"]
+  tags: ["nvidia-h100-gpus"]
   before_script:
     # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
@@ -35,7 +32,7 @@ build-and-test-project:
     - nvcc --version
 
   script:
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
+    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
 
