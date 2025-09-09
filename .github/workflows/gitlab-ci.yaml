@@ -14,13 +14,14 @@ concurrency:
 
 jobs:
   trigger-lrz-ci:
+    name;: Trigger LRZ GitLab CI
     runs-on: ubuntu-latest
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     steps:
-      - name: Trigger LRZ GitLab pipeline
+      - name: Trigger LRZ GitLab CI pipeline
         id: trigger
         run: |
-          echo "Triggering LRZ GitLab pipeline..."
+          echo "Triggering LRZ GitLab CI pipeline..."
 
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             BRANCH="$GITHUB_HEAD_REF"
@@ -44,9 +45,3 @@ jobs:
           fi
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
-
-
-      # - name: Set GitHub commit status to "pending"
-      #   run: |
-      #     echo "Setting pending status on commit..."
-      #     curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
