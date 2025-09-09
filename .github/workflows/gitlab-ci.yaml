@@ -90,6 +90,7 @@ jobs:
           response=$(curl -s --request POST \
             --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=$BRANCH" \
+            --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
             "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
 
           echo "$response" | jq .

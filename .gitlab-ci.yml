@@ -51,6 +51,7 @@ report-to-github:
   tags: ["nvidia-h100-gpus"]
   script:
     - echo "Reporting LRZ GitLab CI result to GitHub..."
+
     - |
       # Determine GitHub status
       STATUS="success"
@@ -58,8 +59,16 @@ report-to-github:
         STATUS="failure"
       fi
 
+      # Use the GitHub commit SHA passed as a variable
+      GITHUB_COMMIT_SHA=${GITHUB_SHA:-$CI_COMMIT_SHA}
+
       # Post status to GitHub commit
-      curl -s -X POST -H "Authorization: token $GITHUB_PAT" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/greole/neon/statuses/$CI_COMMIT_SHA -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
+      curl -s -X POST \
+        -H "Authorization: token $GITHUB_PAT" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/exasim-project/NeoN/statuses/$GITHUB_COMMIT_SHA" \
+        -d "{\"state\": \"$STATUS\", \"context\": \"LRZ GitLab CI\", \"description\": \"Pipeline finished with status: $STATUS\"}"
+
   when: always
 
 benchmark-on-tum-coma:
