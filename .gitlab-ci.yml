@@ -13,38 +13,38 @@ workflow:
     - when: never
 
 stages:
-  - build-and-test
+  # - build-and-test
   - trigger
   - report
-  - benchmark
+  # - benchmark
 
-build-and-test-project:
-  stage: build-and-test
-  tags: ["nvidia-h100-gpus"]
-  before_script:
-    # Install pre-commit
-    - pip3 install --user --break-system-packages pre-commit
-    - export PATH="$HOME/.local/bin:$PATH"
+# build-and-test-project:
+#   stage: build-and-test
+#   tags: ["nvidia-h100-gpus"]
+#   before_script:
+#     # Install pre-commit
+#     - pip3 install --user --break-system-packages pre-commit
+#     - export PATH="$HOME/.local/bin:$PATH"
 
-    # Optional: show versions of tools
-    - cmake --version
-    - clang++ --version || g++ --version
-    - nvidia-smi
-    - nvcc --version
+#     # Optional: show versions of tools
+#     - cmake --version
+#     - clang++ --version || g++ --version
+#     - nvidia-smi
+#     - nvcc --version
 
-  script:
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
+#   script:
+#     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+#     - cmake --build --preset develop
+#     - ctest --preset develop --output-on-failure
 
 trigger-foamadapter:
   stage: trigger
   tags: ["nvidia-h100-gpus"]
-  needs: ["build-and-test-project"]
+  # needs: ["build-and-test-project"]
   script:
     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
-  rules:
-    - when: on_success
+  # rules:
+  #   - when: on_success
 
 report-to-github:
   stage: report
@@ -53,112 +53,134 @@ report-to-github:
   script:
     - echo "Reporting LRZ GitLab CI result to GitHub..."
 
+    # Download jq binary (no root needed)
+    - curl -L -o jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
+    - chmod +x jq
+    - mv jq /usr/local/bin/
+
     - |
-      TARGET_JOB="trigger-foamadapter"
+      # List jobs to report
+      TARGET_JOBS=("build-and-test-project" "trigger-foamadapter")
 
-      # Query GitLab API for the target job’s status in this pipeline
-      JOB_STATUS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" \
-        | jq -r --arg JOB "$TARGET_JOB" '.[] | select(.name==$JOB) | .status' | head -n1)
+      # Fetch pipeline jobs from GitLab
+      curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" \
+        -o jobs.json
 
-      echo "Status of job '$TARGET_JOB': $JOB_STATUS"
+      echo "First 50 lines of GitLab API response:"
+      head -n 50 jobs.json
 
-      # Map GitLab job status to GitHub commit status
-      case "$JOB_STATUS" in
-        success) GH_STATE="success" ;;
-        failed)  GH_STATE="failure" ;;
-        canceled|skipped) GH_STATE="neutral" ;;
-        *) GH_STATE="error" ;;
-      esac
+      for TARGET_JOB in "${TARGET_JOBS[@]}"; do
+        echo "Processing job: $TARGET_JOB"
 
-      # Ensure GitHub SHA is set (passed from GitHub CI trigger)
-      GITHUB_COMMIT_SHA=${GITHUB_SHA:?Error: GitHub SHA not set}
+        JOB_STATUS=$(jq -r --arg JOB "$TARGET_JOB" '
+          if type=="array" then
+            .[] | select(.name==$JOB) | .status
+          elif has("jobs") then
+            .jobs[] | select(.name==$JOB) | .status
+          else
+            "not-found"
+          end
+        ' jobs.json | head -n1)
 
-      # Report status back to GitHub commit
-      curl -s -X POST \
-        -H "Authorization: token $GITHUB_PAT" \
-        -H "Accept: application/vnd.github.v3+json" \
-        "https://api.github.com/repos/exasim-project/NeoN/statuses/$GITHUB_COMMIT_SHA" \
-        -d "{\"state\":\"$GH_STATE\",\"context\":\"LRZ GitLab CI / $TARGET_JOB\",\"description\":\"Job $TARGET_JOB finished with status: $JOB_STATUS\"}"
+        echo "Status of job '$TARGET_JOB': $JOB_STATUS"
 
-benchmark-on-tum-coma:
-  stage: benchmark
-  tags: ["nvidia-h100-gpus"]
-  needs: ["trigger-foamadapter"]
-  variables:
-    RESULTS_DIR: "benchmark-results"
-    RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
-    REPO_NAME: "NeoFOAM-BenchmarkData"
-    TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
-    TARGET_BRANCH: "ci-benchmarks"
-  script:
-    # Install dependencies
-    - pip3 install --user --break-system-packages xmltodict
+        case "$JOB_STATUS" in
+          success) GH_STATE="success" ;;
+          failed)  GH_STATE="failure" ;;
+          canceled|skipped) GH_STATE="neutral" ;;
+          not-found) GH_STATE="error"; JOB_STATUS="not found" ;;
+          *) GH_STATE="error" ;;
+        esac
 
-    # Collect system info (CPU, GPU, compilers)
-    - mkdir ${RESULTS_DIR}
-    - |
-      {
-        echo "===== CPU INFO ====="
-        lscpu
-        echo ""
-        echo "===== GPU INFO ====="
-        nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No GPU found"
-        echo ""
-        echo "===== COMPILER INFO ====="
-        echo "CMake:"
-        cmake --version
-        echo ""
-        echo "C++ compiler:"
-        clang++ --version || g++ --version || echo "No C++ compiler found"
-        echo ""
-        echo "CUDA compiler:"
-        nvcc --version || echo "nvcc not available"
-      } > ${RESULTS_DIR}/system-info.log
+        # Use the same commit SHA as GitHub workflow
+        GITHUB_COMMIT_SHA=${GITHUB_SHA:?Error: GitHub SHA not set}
 
-    # Build & benchmark current branch
-    - echo ">>> Build current branch"
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(current branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/
+        curl -s -X POST \
+          -H "Authorization: token $GITHUB_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/exasim-project/NeoN/statuses/$GITHUB_COMMIT_SHA" \
+          -d "{\"state\":\"$GH_STATE\",\"context\":\"LRZ GitLab CI / $TARGET_JOB\",\"description\":\"Job $TARGET_JOB finished with status: $JOB_STATUS\"}"
+      done
 
-    - rm -rf build
+# benchmark-on-tum-coma:
+#   stage: benchmark
+#   tags: ["nvidia-h100-gpus"]
+#   needs: ["trigger-foamadapter"]
+#   variables:
+#     RESULTS_DIR: "benchmark-results"
+#     RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
+#     REPO_NAME: "NeoFOAM-BenchmarkData"
+#     TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
+#     TARGET_BRANCH: "ci-benchmarks"
+#   script:
+#     # Install dependencies
+#     - pip3 install --user --break-system-packages xmltodict
 
-    # Build & benchmark main branch
-    - echo ">>> Build main branch"
-    - git fetch origin main
-    - git checkout main
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(main branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - mkdir -p ${RESULTS_DIR}/main
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/main/
+#     # Collect system info (CPU, GPU, compilers)
+#     - mkdir ${RESULTS_DIR}
+#     - |
+#       {
+#         echo "===== CPU INFO ====="
+#         lscpu
+#         echo ""
+#         echo "===== GPU INFO ====="
+#         nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No GPU found"
+#         echo ""
+#         echo "===== COMPILER INFO ====="
+#         echo "CMake:"
+#         cmake --version
+#         echo ""
+#         echo "C++ compiler:"
+#         clang++ --version || g++ --version || echo "No C++ compiler found"
+#         echo ""
+#         echo "CUDA compiler:"
+#         nvcc --version || echo "nvcc not available"
+#       } > ${RESULTS_DIR}/system-info.log
 
-    # Push benchmark results to GitHub
-    - git config --global user.email "gitlab-ci@users.noreply.github.com"
-    - git config --global user.name "GitLab CI"
-    - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}
-    - cd ${REPO_NAME}
-    - git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - git add .
-    - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
-    - git pull --rebase || true
-    - git push origin "${TARGET_BRANCH}"
+#     # Build & benchmark current branch
+#     - echo ">>> Build current branch"
+#     - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+#     - cmake --build --preset profiling
+#     - echo ">>> Running benchmarks...(current branch)"
+#     - ctest --preset profiling
+#     - cd build/profiling/bin/benchmarks
+#     - python3 ../../../../scripts/catch2json.py
+#     - cd ../../../..
+#     - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/
 
-  rules:
-    # Run automatically if commit message contains 'run-benchmark'
-    - if: '$CI_COMMIT_MESSAGE =~ /\[run-benchmark\]/i'
-      when: on_success
-    # Otherwise don't create the job at all
-    - when: never
+#     - rm -rf build
+
+#     # Build & benchmark main branch
+#     - echo ">>> Build main branch"
+#     - git fetch origin main
+#     - git checkout main
+#     - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+#     - cmake --build --preset profiling
+#     - echo ">>> Running benchmarks...(main branch)"
+#     - ctest --preset profiling
+#     - cd build/profiling/bin/benchmarks
+#     - python3 ../../../../scripts/catch2json.py
+#     - cd ../../../..
+#     - mkdir -p ${RESULTS_DIR}/main
+#     - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/main/
+
+#     # Push benchmark results to GitHub
+#     - git config --global user.email "gitlab-ci@users.noreply.github.com"
+#     - git config --global user.name "GitLab CI"
+#     - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}
+#     - cd ${REPO_NAME}
+#     - git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
+#     - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+#     - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+#     - git add .
+#     - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
+#     - git pull --rebase || true
+#     - git push origin "${TARGET_BRANCH}"
+
+#   rules:
+#     # Run automatically if commit message contains 'run-benchmark'
+#     - if: '$CI_COMMIT_MESSAGE =~ /\[run-benchmark\]/i'
+#       when: on_success
+#     # Otherwise don't create the job at all
+#     - when: never
