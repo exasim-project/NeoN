@@ -8,12 +8,17 @@ on:
 
 jobs:
   trigger-lrz-ci:
-    name: Trigger and run CI on GPU
+    name: Trigger and run CI on GPU (${{ github.event.repository.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 1440   # 24 hours max runtime
 
     # Skip if PR has Skip-build label
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+
+    env:
+      LRZ_GROUP: greole
+      LRZ_HOST: gitlab-ce.lrz.de
+      REPO_NAME: ${{ github.event.repository.name }}
 
     steps:
       - name: Checkout repository
@@ -35,7 +40,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add lrz https://oauth2:${{ secrets.GITLAB_PROJECT_TOKEN }}@gitlab-ce.lrz.de/greole/neon.git
+          git remote add lrz https://oauth2:${{ secrets.GITLAB_PROJECT_TOKEN }}@${{ env.LRZ_HOST }}/${{ env.LRZ_GROUP }}/${{ env.REPO_NAME }}.git
           git fetch origin ${{ steps.branch.outputs.branch }}
           git checkout -B ${{ steps.branch.outputs.branch }} origin/${{ steps.branch.outputs.branch }}
           git reset --hard origin/${{ steps.branch.outputs.branch }}
@@ -46,10 +51,9 @@ jobs:
           BRANCH=${{ steps.branch.outputs.branch }}
           echo "Canceling running/pending pipelines for branch $BRANCH"
 
-          # Fetch pipelines
           response=$(curl -s -w "%{http_code}" -o response.json \
             --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-            "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines?ref=$BRANCH&order_by=id&sort=desc")
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
           http_code="${response:(-3)}"
 
           if [[ "$http_code" != "200" ]]; then
@@ -58,7 +62,6 @@ jobs:
             exit 1
           fi
 
-          # Check if valid JSON array
           if ! jq -e 'type=="array"' response.json >/dev/null 2>&1; then
             echo "Unexpected response from GitLab API (not a JSON array)"
             cat response.json
@@ -73,7 +76,7 @@ jobs:
               echo "Canceling pipeline $id"
               curl -s --request POST \
                 --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-                "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$id/cancel"
+                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
             done
           fi
 
@@ -87,7 +90,7 @@ jobs:
             --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=$BRANCH" \
             --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
-            "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/trigger/pipeline")
 
           echo "$response" | jq .
           pipeline_id=$(echo "$response" | jq -r '.id')
@@ -106,11 +109,10 @@ jobs:
           SUCCESS_STATUSES=("success")
           FAILURE_STATUSES=("failed" "canceled" "skipped")
 
-          # Poll every 60 seconds, up to 1440 times (24 hours)
           for i in {1..1440}; do
             status=$(curl -s \
               --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id" \
+              "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$pipeline_id" \
               | jq -r '.status')
 
             echo "[$i] Pipeline status: $status"
@@ -125,7 +127,7 @@ jobs:
                 exit 1
                 ;;
               *)
-                echo "LRZ pipeline status '$status' not recognized yet. Continuing to wait..."
+                echo "LRZ pipeline still running..."
                 ;;
             esac
 
