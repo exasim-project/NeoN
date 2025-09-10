@@ -9,6 +9,7 @@ on:
 jobs:
   trigger-lrz-ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 1440   # 24 hours max runtime
 
     # Skip if PR has Skip-build label
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
@@ -97,3 +98,33 @@ jobs:
           fi
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+
+      - name: Wait for LRZ GitLab pipeline
+        run: |
+          pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
+          echo "Waiting for LRZ pipeline $pipeline_id to finish..."
+
+          # Poll every 60 seconds, up to 1440 times (24 hours)
+          for i in {1..1440}; do
+            status=$(curl -s \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id" \
+              | jq -r '.status')
+
+            echo "[$i] Pipeline status: $status"
+
+            if [[ "$status" =~ ^(success|failed|canceled|skipped)$ ]]; then
+              if [ "$status" = "success" ]; then
+                echo "LRZ pipeline succeeded"
+                exit 0
+              else
+                echo "LRZ pipeline finished with status: $status"
+                exit 1
+              fi
+            fi
+
+            sleep 60
+          done
+
+          echo "Timed out after 24h waiting for LRZ pipeline"
+          exit 1

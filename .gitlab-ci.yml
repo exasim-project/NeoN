@@ -15,7 +15,6 @@ workflow:
 stages:
   # - build-and-test
   - trigger
-  - report
   # - benchmark
 
 # build-and-test-project:
@@ -45,64 +44,6 @@ trigger-foamadapter:
     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
   # rules:
   #   - when: on_success
-
-report-to-github:
-  stage: report
-  tags: ["nvidia-h100-gpus"]
-  when: always
-  script:
-    - echo "Reporting LRZ GitLab CI result to GitHub..."
-
-    # Download jq binary (no root needed)
-    - curl -L -o jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
-    - chmod +x jq
-    - mv jq /usr/local/bin/
-
-    - |
-      # List jobs to report
-      # TARGET_JOBS=("build-and-test-project" "trigger-foamadapter")
-      TARGET_JOBS=("trigger-foamadapter")
-
-      # Fetch pipeline jobs from GitLab
-      curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" \
-        -o jobs.json
-
-      echo "First 50 lines of GitLab API response:"
-      head -n 50 jobs.json
-
-      for TARGET_JOB in "${TARGET_JOBS[@]}"; do
-        echo "Processing job: $TARGET_JOB"
-
-        JOB_STATUS=$(jq -r --arg JOB "$TARGET_JOB" '
-          if type=="array" then
-            .[] | select(.name==$JOB) | .status
-          elif has("jobs") then
-            .jobs[] | select(.name==$JOB) | .status
-          else
-            "not-found"
-          end
-        ' jobs.json | head -n1)
-
-        echo "Status of job '$TARGET_JOB': $JOB_STATUS"
-
-        case "$JOB_STATUS" in
-          success) GH_STATE="success" ;;
-          failed)  GH_STATE="failure" ;;
-          canceled|skipped) GH_STATE="neutral" ;;
-          not-found) GH_STATE="error"; JOB_STATUS="not found" ;;
-          *) GH_STATE="error" ;;
-        esac
-
-        # Use the same commit SHA as GitHub workflow
-        GITHUB_COMMIT_SHA=${GITHUB_SHA:?Error: GitHub SHA not set}
-
-        curl -s -X POST \
-          -H "Authorization: token $GITHUB_PAT" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/exasim-project/NeoN/statuses/$GITHUB_COMMIT_SHA" \
-          -d "{\"state\":\"$GH_STATE\",\"context\":\"LRZ GitLab CI / $TARGET_JOB\",\"description\":\"Job $TARGET_JOB finished with status: $JOB_STATUS\"}"
-      done
 
 # benchmark-on-tum-coma:
 #   stage: benchmark
