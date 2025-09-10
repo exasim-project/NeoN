@@ -103,31 +103,31 @@ jobs:
           pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
           echo "Waiting for LRZ pipeline $pipeline_id to finish..."
 
+          SUCCESS_STATUSES=("success")
+          FAILURE_STATUSES=("failed" "canceled" "skipped")
+
           # Poll every 60 seconds, up to 1440 times (24 hours)
           for i in {1..1440}; do
-            resp=$(curl -s -w "%{http_code}" -o status.json \
+            status=$(curl -s \
               --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id")
-            http_code="${resp:(-3)}"
+              "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id" \
+              | jq -r '.status')
 
-            if [[ "$http_code" != "200" ]]; then
-              echo "Failed to query pipeline status (HTTP $http_code)"
-              cat status.json
-              exit 1
-            fi
-
-            status=$(jq -r '.status' status.json)
             echo "[$i] Pipeline status: $status"
 
-            if [[ "$status" =~ ^(success|failed|canceled|skipped)$ ]]; then
-              if [ "$status" = "success" ]; then
+            case "$status" in
+              ${SUCCESS_STATUSES[*]})
                 echo "LRZ pipeline succeeded"
                 exit 0
-              else
+                ;;
+              ${FAILURE_STATUSES[*]})
                 echo "LRZ pipeline finished with status: $status"
                 exit 1
-              fi
-            fi
+                ;;
+              *)
+                echo "LRZ pipeline status '$status' not recognized yet. Continuing to wait..."
+                ;;
+            esac
 
             sleep 60
           done
