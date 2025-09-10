@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
+          git remote add lrz https://oauth2:${{ secrets.GITLAB_PROJECT_TOKEN }}@gitlab-ce.lrz.de/greole/neon.git
           git fetch origin ${{ steps.branch.outputs.branch }}
           git checkout -B ${{ steps.branch.outputs.branch }} origin/${{ steps.branch.outputs.branch }}
           git reset --hard origin/${{ steps.branch.outputs.branch }}
@@ -47,7 +47,7 @@ jobs:
           echo "Canceling running/pending pipelines for branch $BRANCH"
 
           response=$(curl -s \
-            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
             "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines?ref=$BRANCH&order_by=id&sort=desc")
 
           echo "Raw response: $response"
@@ -66,7 +66,7 @@ jobs:
           for id in $pipeline_ids; do
             echo "Canceling pipeline $id"
             curl -s --request POST \
-              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
               "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$id/cancel"
           done
 
@@ -99,7 +99,7 @@ jobs:
           # Poll every 60 seconds, up to 1440 times (24 hours)
           for i in {1..1440}; do
             status=$(curl -s \
-              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PAT }}" \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
               "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/pipelines/$pipeline_id" \
               | jq -r '.status')
 
