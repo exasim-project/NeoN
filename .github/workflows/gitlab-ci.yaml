@@ -8,6 +8,7 @@ on:
 
 jobs:
   trigger-lrz-ci:
+  - name: LRZ GitLab CI (GPU)
     runs-on: ubuntu-latest
     timeout-minutes: 1440   # 24 hours max runtime
 
@@ -30,14 +31,14 @@ jobs:
           fi
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Set GitHub commit status to pending
-        run: |
-          echo "Setting commit status to pending..."
-          curl -s -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
-            -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
+      # - name: Set GitHub commit status to pending
+      #   run: |
+      #     echo "Setting commit status to pending..."
+      #     curl -s -X POST \
+      #       -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+      #       -H "Accept: application/vnd.github.v3+json" \
+      #       "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+      #       -d '{"state":"pending","context":"LRZ GitLab CI","description":"Waiting for LRZ GitLab CI..."}'
 
       - name: Push commit to LRZ GitLab
         run: |
