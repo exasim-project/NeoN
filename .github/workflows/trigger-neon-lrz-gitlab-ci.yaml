@@ -8,7 +8,7 @@ on:
 
 jobs:
   trigger-lrz-ci:
-    name: Trigger and run CI on GPU (${{ github.event.repository.name }})
+    name: Trigger and run CI on GPU
     runs-on: ubuntu-latest
     timeout-minutes: 1440   # 24 hours max runtime
 
@@ -136,3 +136,10 @@ jobs:
 
           echo "Timed out after 24h waiting for LRZ pipeline"
           exit 1
+
+      - name: Trigger FoamAdapter LRZ GitLab CI workflow
+        if: success()
+        uses: ./.github/workflows/trigger-foamAdapter-lrz-gitlab-ci.yaml
+        with:
+          branch: ${{ steps.branch.outputs.branch }}
+          commit: ${{ github.sha }}
