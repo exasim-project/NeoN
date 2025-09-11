@@ -136,10 +136,3 @@ jobs:
 
           echo "Timed out after 24h waiting for LRZ pipeline"
           exit 1
-
-      - name: Trigger FoamAdapter LRZ GitLab CI workflow
-        if: success()
-        uses: ./.github/workflows/trigger-foamAdapter-lrz-gitlab-ci.yaml
-        with:
-          branch: ${{ steps.branch.outputs.branch }}
-          commit: ${{ github.sha }}

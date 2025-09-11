@@ -1,28 +1,29 @@
-name: FoamAdapter LRZ GitLab CI
+# .github/workflows/trigger-foamadapter.yml
+name: FoamAdapter LRZ CI
 
 on:
-  workflow_call:
-    inputs:
-      branch:
-        required: true
-        type: string
-      commit:
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["NeoN LRZ GitLab CI"]   # Must match the workflow name above
+    types:
+      - completed
 
 jobs:
   trigger-foamadapter:
-    name: Trigger and run CI on GPU
+    name: Trigger FoamAdapter LRZ CI
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: Trigger FoamAdapter LRZ CI pipeline
+      - name: Trigger FoamAdapter LRZ pipeline
         run: |
-          echo "Triggering FoamAdapter CI pipeline for branch ${{ inputs.branch }} and commit ${{ inputs.commit }}"
+          GITHUB_BRANCH=${{ github.event.workflow_run.head_branch }}
+          GITHUB_COMMIT=${{ github.event.workflow_run.head_sha }}
+
+          echo "Triggering FoamAdapter pipeline for branch $GITHUB_BRANCH and commit $GITHUB_COMMIT"
 
           curl --fail --request POST \
-            --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            --form "token=${{ secrets.FOAMADAPTER_TRIGGER_TOKEN }}" \
             --form "ref=main" \
-            --form "variables[NEON_BRANCH]=${{ inputs.branch }}" \
-            --form "variables[NEON_COMMIT]=${{ inputs.commit }}" \
+            --form "variables[NEON_BRANCH]=$GITHUB_BRANCH" \
+            --form "variables[NEON_COMMIT]=$GITHUB_COMMIT" \
             "https://gitlab-ce.lrz.de/api/v4/projects/1095/trigger/pipeline"
