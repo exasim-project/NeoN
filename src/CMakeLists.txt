@@ -24,6 +24,10 @@ target_sources(
           "core/database/oldTimeCollection.cpp"
           "core/dictionary.cpp"
           "core/demangle.cpp"
+          "core/io/adiosCore.cpp"
+          "core/io/adiosConfig.cpp"
+          "core/io/dataOutput.cpp"
+          "core/io/staticIOComponents.cpp"
           "core/tokenList.cpp"
           "dsl/coeff.cpp"
           "dsl/explicit.cpp"
@@ -68,6 +72,9 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
+if(NeoN_WITH_ADIOS2)
+  target_link_libraries(NeoN PUBLIC adios2)
+endif()
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
 endif()
