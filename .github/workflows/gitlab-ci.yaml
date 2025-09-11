@@ -2,67 +2,137 @@ name: LRZ GitLab CI
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [dev, main]
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   trigger-lrz-ci:
-    name: Trigger LRZ GitLab CI
+    name: Trigger and run CI on GPU (${{ github.event.repository.name }})
     runs-on: ubuntu-latest
+    timeout-minutes: 1440   # 24 hours max runtime
+
+    # Skip if PR has Skip-build label
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+
+    env:
+      LRZ_GROUP: greole
+      LRZ_HOST: gitlab-ce.lrz.de
+      REPO_NAME: ${{ github.event.repository.name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Push commit to LRZ GitLab
-        id: push
+      - name: Determine branch
+        id: branch
         run: |
-          echo "Pushing commit to LRZ GitLab..."
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git remote add lrz https://oauth2:${{ secrets.GITLAB_PAT }}@gitlab-ce.lrz.de/greole/neon.git
-
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request"* ]]; then
             BRANCH="$GITHUB_HEAD_REF"
           else
             BRANCH=${GITHUB_REF_NAME#refs/heads/}
           fi
-          echo "Pushing branch $BRANCH"
-
-          # Make sure local branch matches GitHub
-          git fetch origin $BRANCH
-          git reset --hard origin/$BRANCH
-
-          git push --force lrz HEAD:refs/heads/$BRANCH
-
-          # Save branch for later step
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Push commit to LRZ GitLab
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add lrz https://oauth2:${{ secrets.GITLAB_PROJECT_TOKEN }}@${{ env.LRZ_HOST }}/${{ env.LRZ_GROUP }}/${{ env.REPO_NAME }}.git
+          git fetch origin ${{ steps.branch.outputs.branch }}
+          git checkout -B ${{ steps.branch.outputs.branch }} origin/${{ steps.branch.outputs.branch }}
+          git reset --hard origin/${{ steps.branch.outputs.branch }}
+          git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
+
+      - name: Cancel running/pending LRZ GitLab pipelines
+        run: |
+          BRANCH=${{ steps.branch.outputs.branch }}
+          echo "Canceling running/pending pipelines for branch $BRANCH"
+
+          response=$(curl -s -w "%{http_code}" -o response.json \
+            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
+          http_code="${response:(-3)}"
+
+          if [[ "$http_code" != "200" ]]; then
+            echo "GitLab API request failed with HTTP status $http_code"
+            cat response.json
+            exit 1
+          fi
+
+          if ! jq -e 'type=="array"' response.json >/dev/null 2>&1; then
+            echo "Unexpected response from GitLab API (not a JSON array)"
+            cat response.json
+            exit 1
+          fi
+
+          pipeline_ids=$(jq -r '.[] | select(.status=="running" or .status=="pending") | .id' response.json)
+          if [ -z "$pipeline_ids" ]; then
+            echo "No running/pending pipelines to cancel"
+          else
+            for id in $pipeline_ids; do
+              echo "Canceling pipeline $id"
+              curl -s --request POST \
+                --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
+            done
+          fi
 
       - name: Trigger LRZ GitLab pipeline
         id: trigger
         run: |
-          echo "Triggering LRZ GitLab pipeline..."
+          BRANCH=${{ steps.branch.outputs.branch }}
+          echo "Triggering new pipeline on branch $BRANCH"
 
-          BRANCH=${{ steps.push.outputs.branch }}
-          echo "Using branch: $BRANCH"
-
-          response=$(curl -s --request POST --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" --form "ref=$BRANCH" "https://gitlab-ce.lrz.de/api/v4/projects/greole%2Fneon/trigger/pipeline")
+          response=$(curl -s --request POST \
+            --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            --form "ref=$BRANCH" \
+            --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/trigger/pipeline")
 
           echo "$response" | jq .
-
           pipeline_id=$(echo "$response" | jq -r '.id')
-          if [ "$pipeline_id" = "null" ]; then
+          if [ "$pipeline_id" = "null" ] || [ -z "$pipeline_id" ]; then
             echo "Failed to trigger LRZ pipeline"
             exit 1
           fi
 
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+
+      - name: Wait for LRZ GitLab pipeline
+        run: |
+          pipeline_id=${{ steps.trigger.outputs.pipeline_id }}
+          echo "Waiting for LRZ pipeline $pipeline_id to finish..."
+
+          SUCCESS_STATUSES=("success")
+          FAILURE_STATUSES=("failed" "canceled" "skipped")
+
+          for i in {1..1440}; do
+            status=$(curl -s \
+              --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+              "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$pipeline_id" \
+              | jq -r '.status')
+
+            echo "[$i] Pipeline status: $status"
+
+            case "$status" in
+              ${SUCCESS_STATUSES[*]})
+                echo "LRZ pipeline succeeded"
+                exit 0
+                ;;
+              ${FAILURE_STATUSES[*]})
+                echo "LRZ pipeline finished with status: $status"
+                exit 1
+                ;;
+              *)
+                echo "LRZ pipeline still running..."
+                ;;
+            esac
+
+            sleep 60
+          done
+
+          echo "Timed out after 24h waiting for LRZ pipeline"
+          exit 1

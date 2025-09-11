@@ -38,7 +38,7 @@ build-and-test-project:
 
 trigger-foamadapter:
   stage: trigger
-  tags: ["nvidia-gpus"]
+  tags: ["nvidia-h100-gpus"]
   needs: ["build-and-test-project"]
   script:
     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
@@ -47,7 +47,7 @@ trigger-foamadapter:
 
 benchmark-on-tum-coma:
   stage: benchmark
-  tags: ["nvidia-gpus"]
+  tags: ["nvidia-h100-gpus"]
   needs: ["trigger-foamadapter"]
   variables:
     RESULTS_DIR: "benchmark-results"
@@ -82,7 +82,7 @@ benchmark-on-tum-coma:
 
     # Build & benchmark current branch
     - echo ">>> Build current branch"
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
+    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset profiling
     - echo ">>> Running benchmarks...(current branch)"
     - ctest --preset profiling
@@ -97,7 +97,7 @@ benchmark-on-tum-coma:
     - echo ">>> Build main branch"
     - git fetch origin main
     - git checkout main
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=89 -DNeoN_WITH_THREADS=OFF
+    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset profiling
     - echo ">>> Running benchmarks...(main branch)"
     - ctest --preset profiling
