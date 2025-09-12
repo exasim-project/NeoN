@@ -75,28 +75,28 @@ jobs:
           if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
-      - name: Wait for NeoN CI pipeline
-        id: wait-neon
-        run: |
-          wait_pipeline() {
-            local PROJECT=$1
-            local PIPELINE_ID=$2
-            for i in $(seq 1 $MAX_WAIT_MINUTES); do
-              status=$(curl -s \
-                --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${PROJECT}/pipelines/$PIPELINE_ID" \
-                | jq -r '.status')
-              echo "[$i] $PROJECT pipeline status: $status"
-              case "$status" in
-                success) return 0 ;;
-                failed|canceled|skipped) return 1 ;;
-              esac
-              sleep 60
-            done
-            return 1
-          }
+      # - name: Wait for NeoN CI pipeline
+      #   id: wait-neon
+      #   run: |
+      #     wait_pipeline() {
+      #       local PROJECT=$1
+      #       local PIPELINE_ID=$2
+      #       for i in $(seq 1 $MAX_WAIT_MINUTES); do
+      #         status=$(curl -s \
+      #           --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+      #           "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${PROJECT}/pipelines/$PIPELINE_ID" \
+      #           | jq -r '.status')
+      #         echo "[$i] $PROJECT pipeline status: $status"
+      #         case "$status" in
+      #           success) return 0 ;;
+      #           failed|canceled|skipped) return 1 ;;
+      #         esac
+      #         sleep 60
+      #       done
+      #       return 1
+      #     }
 
-          wait_pipeline "${{ env.REPO_NAME }}" "${{ steps.trigger-neon.outputs.pipeline_id }}"
+      #     wait_pipeline "${{ env.REPO_NAME }}" "${{ steps.trigger-neon.outputs.pipeline_id }}"
 
       - name: Trigger FoamAdapter LRZ CI pipeline
         if: success()
@@ -104,15 +104,21 @@ jobs:
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
 
+          # URL-encode the branch name (handles slashes and special chars)
+          ENCODED_BRANCH=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['BRANCH'], safe=''))" BRANCH="$BRANCH")
+
+          echo "Checking FoamAdapter branch: $BRANCH (encoded: $ENCODED_BRANCH)"
+
           # Check if FoamAdapter branch exists
           FOAMADAPTER_BRANCH=$(curl -s --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
-            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/repository/branches/$BRANCH" \
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/repository/branches/$ENCODED_BRANCH" \
             | jq -r '.name // empty')
 
           # Fallback to main if branch does not exist
           FOAMADAPTER_BRANCH=${FOAMADAPTER_BRANCH:-main}
 
           echo "Use FoamAdapter branch: $FOAMADAPTER_BRANCH"
+          echo "foamadapter-branch=$FOAMADAPTER_BRANCH" >> $GITHUB_OUTPUT
 
           response=$(curl -s --request POST \
             --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
