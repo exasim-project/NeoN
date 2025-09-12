@@ -37,7 +37,7 @@ jobs:
           fi
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Push commit to LRZ GitLab
+      - name: Push commit to NeoN LRZ GitLab
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -47,7 +47,7 @@ jobs:
           git reset --hard origin/${{ steps.branch.outputs.branch }}
           git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
 
-      - name: Cancel running/pending NeoN LRZ pipelines
+      - name: Cancel running/pending NeoN LRZ CI pipelines
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
           response=$(curl -s -w "%{http_code}" -o response.json \
@@ -62,7 +62,7 @@ jobs:
               "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
           done
 
-      - name: Trigger NeoN LRZ pipeline
+      - name: Trigger NeoN LRZ CI pipeline
         id: trigger-neon
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
@@ -75,7 +75,7 @@ jobs:
           if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
-      - name: Wait for pipeline
+      - name: Wait for NeoN CI pipeline
         id: wait-neon
         run: |
           wait_pipeline() {
@@ -98,7 +98,7 @@ jobs:
 
           wait_pipeline "${{ env.REPO_NAME }}" "${{ steps.trigger-neon.outputs.pipeline_id }}"
 
-      - name: Trigger FoamAdapter LRZ pipeline
+      - name: Trigger FoamAdapter LRZ CI pipeline
         if: success()
         id: trigger-foam
         run: |
@@ -116,7 +116,25 @@ jobs:
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
 
-      - name: Wait for FoamAdapter pipeline
+      - name: Wait for FoamAdapter CI pipeline
         if: success()
         run: |
+          wait_pipeline() {
+            local PROJECT=$1
+            local PIPELINE_ID=$2
+            for i in $(seq 1 $MAX_WAIT_MINUTES); do
+              status=$(curl -s \
+                --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
+                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${env.FOAMADAPTER_REPO}/pipelines/$PIPELINE_ID" \
+                | jq -r '.status')
+              echo "[$i] $PROJECT pipeline status: $status"
+              case "$status" in
+               success) return 0 ;;
+                failed|canceled|skipped) return 1 ;;
+              esac
+              sleep 60
+            done
+            return 1
+          }
+
           wait_pipeline "${{ env.FOAMADAPTER_REPO }}" "${{ steps.trigger-foam.outputs.pipeline_id }}"
