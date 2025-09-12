@@ -101,29 +101,40 @@ jobs:
       - name: Trigger FoamAdapter LRZ CI pipeline
         if: success()
         id: trigger-foam
+        # run: |
+        #   BRANCH=${{ steps.branch.outputs.branch }}
+
+        #   # URL-encode the branch name (handles slashes and special chars)
+        #   ENCODED_BRANCH=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
+
+        #   echo "Checking FoamAdapter branch: $BRANCH (encoded: $ENCODED_BRANCH)"
+
+        #   # Check if FoamAdapter branch exists
+        #   FOAMADAPTER_BRANCH=$(curl -s --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
+        #     "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/repository/branches/$ENCODED_BRANCH" \
+        #     | jq -r '.name // empty')
+
+        #   # Fallback to main if branch does not exist
+        #   FOAMADAPTER_BRANCH=${FOAMADAPTER_BRANCH:-main}
+
+        #   echo "Use FoamAdapter branch: $FOAMADAPTER_BRANCH"
+        #   echo "foamadapter-branch=$FOAMADAPTER_BRANCH" >> $GITHUB_OUTPUT
+
+
+        #   response=$(curl -s --request POST \
+        #     --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
+        #     --form "ref=$FOAMADAPTER_BRANCH" \
+        #     --form "variables[NEON_BRANCH]=$BRANCH" \
+        #     --form "variables[NEON_COMMIT]=$GITHUB_SHA" \
+        #     "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
+
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
-
-          # URL-encode the branch name (handles slashes and special chars)
-          ENCODED_BRANCH=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
-
-          echo "Checking FoamAdapter branch: $BRANCH (encoded: $ENCODED_BRANCH)"
-
-          # Check if FoamAdapter branch exists
-          FOAMADAPTER_BRANCH=$(curl -s --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
-            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/repository/branches/$ENCODED_BRANCH" \
-            | jq -r '.name // empty')
-
-          # Fallback to main if branch does not exist
-          FOAMADAPTER_BRANCH=${FOAMADAPTER_BRANCH:-main}
-
-          echo "Use FoamAdapter branch: $FOAMADAPTER_BRANCH"
-          echo "foamadapter-branch=$FOAMADAPTER_BRANCH" >> $GITHUB_OUTPUT
-
+          echo "Triggering new pipeline on branch $BRANCH"
 
           response=$(curl -s --request POST \
             --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=$FOAMADAPTER_BRANCH" \
+            --form "ref=$BRANCH" \
             --form "variables[NEON_BRANCH]=$BRANCH" \
             --form "variables[NEON_COMMIT]=$GITHUB_SHA" \
             "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
