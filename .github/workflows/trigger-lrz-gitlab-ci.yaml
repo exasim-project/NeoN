@@ -104,11 +104,12 @@ jobs:
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
           response=$(curl -s --request POST \
-            --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=main" \
             --form "variables[NEON_BRANCH]=$BRANCH" \
             --form "variables[NEON_COMMIT]=$GITHUB_SHA" \
             "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
+
           echo "$response" | jq .
           pipeline_id=$(echo "$response" | jq -r '.id')
           if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
