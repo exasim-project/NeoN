@@ -125,7 +125,7 @@ jobs:
             for i in $(seq 1 $MAX_WAIT_MINUTES); do
               status=$(curl -s \
                 --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
-                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${env.FOAMADAPTER_REPO}/pipelines/$PIPELINE_ID" \
+                "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/pipelines/$PIPELINE_ID" \
                 | jq -r '.status')
               echo "[$i] $PROJECT pipeline status: $status"
               case "$status" in
