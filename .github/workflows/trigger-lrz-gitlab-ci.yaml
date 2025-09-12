@@ -103,9 +103,20 @@ jobs:
         id: trigger-foam
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
+
+          # Check if FoamAdapter branch exists
+          FOAMADAPTER_BRANCH=$(curl -s --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
+            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/repository/branches/$BRANCH" \
+            | jq -r '.name // empty')
+
+          # Fallback to main if branch does not exist
+          FOAMADAPTER_BRANCH=${FOAMADAPTER_BRANCH:-main}
+
+          echo "Use FoamAdapter branch: $FOAMADAPTER_BRANCH"
+
           response=$(curl -s --request POST \
             --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=main" \
+            --form "ref=$FOAMADAPTER_BRANCH" \
             --form "variables[NEON_BRANCH]=$BRANCH" \
             --form "variables[NEON_COMMIT]=$GITHUB_SHA" \
             "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
