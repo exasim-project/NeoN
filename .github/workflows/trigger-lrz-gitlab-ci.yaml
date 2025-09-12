@@ -105,7 +105,7 @@ jobs:
           BRANCH=${{ steps.branch.outputs.branch }}
 
           # URL-encode the branch name (handles slashes and special chars)
-          ENCODED_BRANCH=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['BRANCH'], safe=''))" BRANCH="$BRANCH")
+          ENCODED_BRANCH=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
 
           echo "Checking FoamAdapter branch: $BRANCH (encoded: $ENCODED_BRANCH)"
 
@@ -119,6 +119,7 @@ jobs:
 
           echo "Use FoamAdapter branch: $FOAMADAPTER_BRANCH"
           echo "foamadapter-branch=$FOAMADAPTER_BRANCH" >> $GITHUB_OUTPUT
+
 
           response=$(curl -s --request POST \
             --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
