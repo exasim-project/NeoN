@@ -72,6 +72,11 @@ jobs:
             "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/trigger/pipeline")
           pipeline_id=$(echo "$response" | jq -r '.id')
           if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
+          # echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+
+          echo "$response" | jq .
+          pipeline_id=$(echo "$response" | jq -r '.id')
+          if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
             # --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
