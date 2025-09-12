@@ -134,8 +134,7 @@ jobs:
         #     "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
 
         run: |
-          # BRANCH=${{ steps.branch.outputs.branch }}
-          BRANCH=main
+          BRANCH=${{ steps.branch.outputs.branch }}
           echo "Triggering new pipeline on branch $BRANCH"
 
           response=$(curl -s --request POST \
