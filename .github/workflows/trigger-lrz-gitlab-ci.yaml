@@ -141,7 +141,6 @@ jobs:
             --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=$BRANCH" \
             --form "variables[NEON_BRANCH]=$BRANCH" \
-            --form "variables[NEON_COMMIT]= ${{ github.sha }}" \
             "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
 
           echo "$response" | jq .
