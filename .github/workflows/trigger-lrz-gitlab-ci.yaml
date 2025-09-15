@@ -108,6 +108,9 @@ jobs:
     needs: [trigger-lrz-ci]
     if: contains(toJson(github.event.pull_request.labels), 'benchmark')
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
         id: trigger-neon
         run: |
