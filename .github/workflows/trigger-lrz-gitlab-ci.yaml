@@ -69,21 +69,10 @@ jobs:
       - name: Trigger NeoN LRZ GitLab CI pipeline
         id: trigger-neon
         run: |
-          BRANCH=${{ steps.branch.outputs.branch }}
-          response=$(curl -s --request POST \
-            --form "token=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=$BRANCH" \
-            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/trigger/pipeline")
-          pipeline_id=$(echo "$response" | jq -r '.id')
-          if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
-          # echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
-
-          echo "$response" | jq .
-          pipeline_id=$(echo "$response" | jq -r '.id')
-          if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
-          echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
-
-            # --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
+          .github/scripts/trigger_pipeline.sh \
+            "${{ env.REPO_NAME }}" \
+            "${{ steps.branch.outputs.branch }}" \
+            "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -95,19 +84,11 @@ jobs:
       - name: Trigger FoamAdapter LRZ GitLab CI pipeline
         id: trigger-foam
         run: |
-          BRANCH=${{ steps.branch.outputs.branch }}
-          echo "Triggering new pipeline on branch $BRANCH"
-
-          response=$(curl -s --request POST \
-            --form "token=${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=$BRANCH" \
-            --form "variables[NEON_BRANCH]=$BRANCH" \
-            "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/trigger/pipeline")
-
-          echo "$response" | jq .
-          pipeline_id=$(echo "$response" | jq -r '.id')
-          if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
-          echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
+          .github/scripts/trigger_pipeline.sh \
+            "${{ env.FOAMADAPTER_REPO }}" \
+            "${{ steps.branch.outputs.branch }}" \
+            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
       - name: Wait for FoamAdapter LRZ GitLab CI pipeline
         run: |
