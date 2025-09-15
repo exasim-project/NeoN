@@ -79,12 +79,12 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}"
 
-      - name: Wait for NeoN LRZ GitLab CI pipeline
-        run: |
-          .github/scripts/wait_pipeline.sh \
-            "${{ env.REPO_NAME }}" \
-            "${{ steps.trigger-neon.outputs.pipeline_id }}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+      # - name: Wait for NeoN LRZ GitLab CI pipeline
+      #   run: |
+      #     .github/scripts/wait_pipeline.sh \
+      #       "${{ env.REPO_NAME }}" \
+      #       "${{ steps.trigger-neon.outputs.pipeline_id }}" \
+      #       "${{ secrets.GITLAB_PROJECT_TOKEN }}"
 
       - name: Trigger FoamAdapter LRZ GitLab CI pipeline
         id: trigger-adapter
@@ -95,18 +95,18 @@ jobs:
             "${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
-      - name: Wait for FoamAdapter LRZ GitLab CI pipeline
-        run: |
-          .github/scripts/wait_pipeline.sh \
-            "${{ env.FOAMADAPTER_REPO }}" \
-            "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
-            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
+      # - name: Wait for FoamAdapter LRZ GitLab CI pipeline
+      #   run: |
+      #     .github/scripts/wait_pipeline.sh \
+      #       "${{ env.FOAMADAPTER_REPO }}" \
+      #       "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
+      #       "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
 
   benchmark:
     name: Benchmark NeoN on GPU
     runs-on: ubuntu-latest
     needs: [trigger-lrz-ci]
-    if: contains(toJson(github.event.pull_request.labels), '"benchmark"')
+    if: contains(toJson(github.event.pull_request.labels), 'benchmark')
     steps:
       - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
         id: trigger-neon
