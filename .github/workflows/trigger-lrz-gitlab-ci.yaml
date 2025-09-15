@@ -112,6 +112,8 @@ jobs:
     if: contains(toJson(github.event.pull_request.labels), 'benchmark')
 
     env:
+      LRZ_GROUP: greole
+      LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
 
     steps:
