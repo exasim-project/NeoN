@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 1440
 
     outputs:
-      branch: ${{ steps.branch.outputs.branch_name }}
+      branch: ${{ steps.branch.outputs.branch }}
 
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
 
