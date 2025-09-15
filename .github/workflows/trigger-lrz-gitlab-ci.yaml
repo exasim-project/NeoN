@@ -6,6 +6,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   trigger-lrz-ci:
     name: Trigger NeoN + FoamAdapter CI on GPU
@@ -62,7 +66,7 @@ jobs:
               "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
           done
 
-      - name: Trigger NeoN LRZ CI pipeline
+      - name: Trigger NeoN LRZ GitLab CI pipeline
         id: trigger-neon
         run: |
           BRANCH=${{ steps.branch.outputs.branch }}
@@ -81,30 +85,44 @@ jobs:
 
             # --form "variables[GITHUB_SHA]=$GITHUB_SHA" \
 
-      - name: Wait for NeoN CI pipeline
+      - name: Wait for NeoN LRZ GitLab CI pipeline
         id: wait-neon
         run: |
           wait_pipeline() {
             local PROJECT=$1
             local PIPELINE_ID=$2
+            local SUCCESS_STATUSES=("success")
+            local FAILURE_STATUSES=("failed" "canceled" "skipped")
+
             for i in $(seq 1 $MAX_WAIT_MINUTES); do
-              status=$(curl -s \
-                --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+             status=$(curl -s \
+               --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
                 "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${PROJECT}/pipelines/$PIPELINE_ID" \
-                | jq -r '.status')
+               | jq -r '.status')
+
               echo "[$i] $PROJECT pipeline status: $status"
-              case "$status" in
-                success) return 0 ;;
-                failed|canceled|skipped) return 1 ;;
-              esac
+
+             case "$status" in
+               ${SUCCESS_STATUSES[*]})
+                  echo "$PROJECT CI pipeline succeeded"
+                 return 0
+                 ;;
+                ${FAILURE_STATUSES[*]})
+                 echo "$PROJECT CI pipeline finished with status: $status"
+                 return 1
+                  ;;
+             esac
               sleep 60
             done
+
+            echo "Timed out after $MAX_WAIT_MINUTES minutes waiting for $PROJECT CI pipeline"
             return 1
           }
 
           wait_pipeline "${{ env.REPO_NAME }}" "${{ steps.trigger-neon.outputs.pipeline_id }}"
 
-      - name: Trigger FoamAdapter LRZ CI pipeline
+
+      - name: Trigger FoamAdapter LRZ GitLab CI pipeline
         if: success()
         id: trigger-foam
         run: |
@@ -122,24 +140,37 @@ jobs:
           if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then exit 1; fi
           echo "pipeline_id=$pipeline_id" >> $GITHUB_OUTPUT
 
-      - name: Wait for FoamAdapter CI pipeline
+      - name: Wait for FoamAdapter LRZ GitLab CI pipeline
         if: success()
         run: |
           wait_pipeline() {
             local PROJECT=$1
             local PIPELINE_ID=$2
+            local SUCCESS_STATUSES=("success")
+            local FAILURE_STATUSES=("failed" "canceled" "skipped")
+
             for i in $(seq 1 $MAX_WAIT_MINUTES); do
-              status=$(curl -s \
-                --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
+             status=$(curl -s \
+               --header "PRIVATE-TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
                 "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.FOAMADAPTER_REPO }}/pipelines/$PIPELINE_ID" \
-                | jq -r '.status')
+               | jq -r '.status')
+
               echo "[$i] $PROJECT pipeline status: $status"
-              case "$status" in
-               success) return 0 ;;
-                failed|canceled|skipped) return 1 ;;
-              esac
+
+             case "$status" in
+               ${SUCCESS_STATUSES[*]})
+                  echo "$PROJECT CI pipeline succeeded"
+                 return 0
+                 ;;
+                ${FAILURE_STATUSES[*]})
+                 echo "$PROJECT CI pipeline finished with status: $status"
+                 return 1
+                  ;;
+             esac
               sleep 60
             done
+
+           echo "Timed out after $MAX_WAIT_MINUTES minutes waiting for $PROJECT CI pipeline"
             return 1
           }
 
