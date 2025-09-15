@@ -14,10 +14,9 @@ workflow:
 
 stages:
   - build-and-test
-  # - trigger
   # - benchmark
 
-build-and-test-project:
+build-and-test-neon:
   stage: build-and-test
   tags: ["nvidia-h100-gpus"]
   before_script:
@@ -35,15 +34,6 @@ build-and-test-project:
     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
-
-# trigger-foamadapter:
-#   stage: trigger
-#   tags: ["nvidia-h100-gpus"]
-#   needs: ["build-and-test-project"]
-#   script:
-#     - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
-#   rules:
-#     - when: on_success
 
 # benchmark-on-tum-coma:
 #   stage: benchmark
