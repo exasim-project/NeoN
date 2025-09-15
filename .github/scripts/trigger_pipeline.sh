@@ -34,3 +34,9 @@ fi
 echo "pipeline_id=$pipeline_id"
 # Set GitHub Actions output
 echo "pipeline_id=$pipeline_id" >> "$GITHUB_OUTPUT"
+
+# Construct pipeline URL
+pipeline_url="https://${LRZ_HOST}/${LRZ_GROUP}/${PROJECT}/-/pipelines/${pipeline_id}"
+
+# Print clickable link in GitHub Actions logs
+echo "Check the details of the triggered LRZ GitLab CI pipeline: $pipeline_url"
