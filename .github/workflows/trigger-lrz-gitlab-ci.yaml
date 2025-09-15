@@ -72,7 +72,7 @@ jobs:
       #         "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
       #     done
 
-      - name: Cancel running NeoN LRZ pipelines
+      - name: Cancel running/pending NeoN LRZ CI pipelines
         run: |
           .github/scripts/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
@@ -94,11 +94,10 @@ jobs:
       #       "${{ steps.trigger-neon.outputs.pipeline_id }}" \
       #       "${{ secrets.GITLAB_PROJECT_TOKEN }}"
 
-      - name: Cancel running FoamAdapter LRZ pipelines for benchmark PR
-        if: contains(toJson(github.event.pull_request.labels), 'benchmark')
+      - name: Cancel running/pending FoamAdapter LRZ CI pipelines
         run: |
-         .github/scripts/cancel_triggered_pipelines.sh \
-            "${{ env.FOAMADAPTER_REPO }}/FoamAdapter" \
+          .github/scripts/cancel_triggered_pipelines.sh \
+            "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
             "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
 

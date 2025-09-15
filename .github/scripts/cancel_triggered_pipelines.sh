@@ -2,22 +2,28 @@
 set -euo pipefail
 
 # Arguments
-PROJECT=$1          # GitLab project, e.g., "NeoN" or "FoamAdapter"
-BRANCH=$2           # Branch/ref to filter pipelines
-TOKEN=$3            # GitLab private token
-VARIABLES="$@"      # Optional extra variables in the form: "variables[KEY]=VALUE"
+PROJECT=$1        # GitLab project name, e.g., "NeoN" or "FoamAdapter"
+BRANCH=$2         # Branch/ref to filter pipelines
+TOKEN=$3          # GitLab private token
+
+# Read environment variables defined in GitHub workflow
+LRZ_GROUP="${LRZ_GROUP:?LRZ_GROUP is not set in environment}"
+LRZ_HOST="${LRZ_HOST:-gitlab-ce.lrz.de}"
 
 if [ -z "$PROJECT" ] || [ -z "$BRANCH" ] || [ -z "$TOKEN" ]; then
-  echo "Usage: $0 <project> <branch> <token> [optional variables]"
+  echo "Usage: $0 <project> <branch> <token>"
   exit 1
 fi
 
-echo "Fetching pipelines for project '$PROJECT' on branch '$BRANCH' triggered by NeoN GitHub CI..."
+# Combine group + project like in wait_pipeline.sh
+project_path="${LRZ_GROUP}%2F${PROJECT}"
+
+echo "Fetching pipelines for project '$PROJECT' (path: $LRZ_GROUP/$PROJECT) on branch '$BRANCH' triggered via NeoN GitHub CI..."
 
 # Fetch pipelines
 response=$(curl -s -w "%{http_code}" -o response.json \
   --header "PRIVATE-TOKEN: $TOKEN" \
-  "https://${LRZ_HOST}/api/v4/projects/${PROJECT//\//%2F}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
+  "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
 
 http_code="${response:(-3)}"
 if [[ "$http_code" != "200" ]]; then
@@ -26,7 +32,7 @@ if [[ "$http_code" != "200" ]]; then
   exit 1
 fi
 
-# Filter running/pending pipelines triggered via "trigger" source
+# Filter running/pending pipelines triggered via trigger token (NeoN GitHub CI)
 pipeline_ids=$(jq -r '.[] | select((.status=="running" or .status=="pending") and .source=="trigger") | .id' response.json)
 
 if [ -z "$pipeline_ids" ]; then
@@ -39,7 +45,7 @@ for id in $pipeline_ids; do
   echo "Cancelling pipeline $id..."
   curl -s --request POST \
     --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${PROJECT//\//%2F}/pipelines/$id/cancel"
+    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/$id/cancel"
 done
 
 echo "All applicable pipelines cancelled."
