@@ -121,9 +121,12 @@ jobs:
       - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
         id: trigger-neon
         run: |
+          echo "PROJECT=${{ env.REPO_NAME }}"
+          echo "BRANCH=${{ needs.trigger-lrz-ci.outputs.branch }}"
+          echo "TOKEN=${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}"
           .github/scripts/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
-            "${{ steps.branch.outputs.branch }}" \
+            "${{ needs.trigger-lrz-ci.outputs.branch }}" \
             "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
             "variables[BENCHMARK]=true"
 
