@@ -57,21 +57,6 @@ jobs:
           git reset --hard origin/${{ steps.branch.outputs.branch }}
           git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
 
-      # - name: Cancel running/pending NeoN LRZ CI pipelines
-      #   run: |
-      #     BRANCH=${{ steps.branch.outputs.branch }}
-      #     response=$(curl -s -w "%{http_code}" -o response.json \
-      #       --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-      #       "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
-      #     http_code="${response:(-3)}"
-      #     if [[ "$http_code" != "200" ]]; then cat response.json; exit 1; fi
-      #     pipeline_ids=$(jq -r '.[] | select(.status=="running" or .status=="pending") | .id' response.json)
-      #     for id in $pipeline_ids; do
-      #       curl -s --request POST \
-      #         --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-      #         "https://${{ env.LRZ_HOST }}/api/v4/projects/${{ env.LRZ_GROUP }}%2F${{ env.REPO_NAME }}/pipelines/$id/cancel"
-      #     done
-
       - name: Cancel running/pending NeoN LRZ CI pipelines
         run: |
           .github/scripts/cancel_triggered_pipelines.sh \
@@ -87,12 +72,12 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}"
 
-      # - name: Wait for NeoN LRZ GitLab CI pipeline
-      #   run: |
-      #     .github/scripts/wait_pipeline.sh \
-      #       "${{ env.REPO_NAME }}" \
-      #       "${{ steps.trigger-neon.outputs.pipeline_id }}" \
-      #       "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+      - name: Wait for NeoN LRZ GitLab CI pipeline
+        run: |
+          .github/scripts/wait_pipeline.sh \
+            "${{ env.REPO_NAME }}" \
+            "${{ steps.trigger-neon.outputs.pipeline_id }}" \
+            "${{ secrets.GITLAB_PROJECT_TOKEN }}"
 
       - name: Cancel running/pending FoamAdapter LRZ CI pipelines
         run: |
@@ -110,12 +95,12 @@ jobs:
             "${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
-      # - name: Wait for FoamAdapter LRZ GitLab CI pipeline
-      #   run: |
-      #     .github/scripts/wait_pipeline.sh \
-      #       "${{ env.FOAMADAPTER_REPO }}" \
-      #       "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
-      #       "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
+      - name: Wait for FoamAdapter LRZ GitLab CI pipeline
+        run: |
+          .github/scripts/wait_pipeline.sh \
+            "${{ env.FOAMADAPTER_REPO }}" \
+            "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
+            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
 
   benchmark:
     name: Benchmark NeoN on GPU

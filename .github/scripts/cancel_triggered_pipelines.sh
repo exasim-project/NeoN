@@ -15,7 +15,6 @@ if [ -z "$PROJECT" ] || [ -z "$BRANCH" ] || [ -z "$TOKEN" ]; then
   exit 1
 fi
 
-# Combine group + project like in wait_pipeline.sh
 project_path="${LRZ_GROUP}%2F${PROJECT}"
 
 echo "Fetching pipelines for project '$PROJECT' (path: $LRZ_GROUP/$PROJECT) on branch '$BRANCH' triggered via NeoN GitHub CI..."
