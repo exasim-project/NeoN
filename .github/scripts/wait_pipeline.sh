@@ -9,6 +9,12 @@ MAX_WAIT_MINUTES=${MAX_WAIT_MINUTES:-1440}
 SUCCESS_STATUSES=("success")
 FAILURE_STATUSES=("failed" "canceled" "skipped")
 
+# Construct pipeline URL
+pipeline_url="https://${LRZ_HOST}/${LRZ_GROUP}/${PROJECT}/-/pipelines/${PIPELINE_ID}"
+
+# Print clickable link
+echo "Monitoring LRZ GitLab CI pipeline: $pipeline_url"
+
 for i in $(seq 1 $MAX_WAIT_MINUTES); do
   status=$(curl -s \
     --header "PRIVATE-TOKEN: $TOKEN" \
