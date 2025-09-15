@@ -18,6 +18,7 @@ jobs:
     name: Trigger NeoN + FoamAdapter CI on GPU
     runs-on: ubuntu-latest
     timeout-minutes: 1440
+
     outputs:
       branch: ${{ steps.branch.outputs.branch_name }}
 
@@ -105,8 +106,14 @@ jobs:
   benchmark:
     name: Benchmark NeoN on GPU
     runs-on: ubuntu-latest
+    timeout-minutes: 1440 # 24 hours
+
     needs: [trigger-lrz-ci]
     if: contains(toJson(github.event.pull_request.labels), 'benchmark')
+
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
