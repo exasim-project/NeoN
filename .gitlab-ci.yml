@@ -12,12 +12,7 @@ workflow:
     # Skip in all other cases
     - when: never
 
-stages:
-  - build-and-test
-  - benchmark
-
 build-and-test-neon:
-  stage: build-and-test
   tags: ["nvidia-h100-gpus"]
   before_script:
     # Install pre-commit
@@ -36,7 +31,6 @@ build-and-test-neon:
     - ctest --preset develop --output-on-failure
 
 benchmark-on-tum-coma:
-  stage: benchmark
   tags: ["nvidia-h100-gpus"]
   rules:
     # Run only when triggered via API for benchmarking
