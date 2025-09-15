@@ -4,16 +4,15 @@
 
 image: greole/neon-cuda
 
-workflow:
+build-and-test-neon:
+  tags: ["nvidia-h100-gpus"]
   rules:
     # Run only when triggered via API
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
       when: always
     # Skip in all other cases
     - when: never
 
-build-and-test-neon:
-  tags: ["nvidia-h100-gpus"]
   before_script:
     # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
@@ -46,7 +45,7 @@ benchmark-on-tum-coma:
     TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
     TARGET_BRANCH: "ci-benchmarks"
 
-  script:
+  before_script:
     # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
@@ -71,6 +70,7 @@ benchmark-on-tum-coma:
         nvcc --version || echo "nvcc not available"
       } > ${RESULTS_DIR}/system-info.log
 
+  script:
     # Build & benchmark current branch
     - echo ">>> Build current branch"
     - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
