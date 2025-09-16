@@ -17,12 +17,12 @@ fi
 
 project_path="${LRZ_GROUP}%2F${PROJECT}"
 
-echo "Fetching pipelines for project '$PROJECT' (path: $LRZ_GROUP/$PROJECT) on branch '$BRANCH' triggered via NeoN GitHub CI..."
+echo "Fetching pipelines for project '$PROJECT' (path: ${LRZ_GROUP}/${PROJECT}) on branch '$BRANCH' triggered via NeoN GitHub CI..."
 
 # Fetch pipelines
 response=$(curl -s -w "%{http_code}" -o response.json \
   --header "PRIVATE-TOKEN: $TOKEN" \
-  "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines?ref=$BRANCH&order_by=id&sort=desc")
+  "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines?ref=${BRANCH}&order_by=id&sort=desc")
 
 http_code="${response:(-3)}"
 if [[ "$http_code" != "200" ]]; then
@@ -44,7 +44,7 @@ for id in $pipeline_ids; do
   echo "Cancelling pipeline $id..."
   curl -s --request POST \
     --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/$id/cancel"
+    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel"
 done
 
 echo "All applicable pipelines cancelled."

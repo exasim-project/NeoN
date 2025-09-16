@@ -15,10 +15,10 @@ pipeline_url="https://${LRZ_HOST}/${LRZ_GROUP}/${PROJECT}/-/pipelines/${PIPELINE
 # Print clickable link
 echo "Monitoring LRZ GitLab CI pipeline: $pipeline_url"
 
-for i in $(seq 1 $MAX_WAIT_MINUTES); do
+for i in $(seq 1 "$MAX_WAIT_MINUTES"); do
   status=$(curl -s \
     --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/pipelines/$PIPELINE_ID" \
+    "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/pipelines/${PIPELINE_ID}" \
     | jq -r '.status')
 
   echo "[$i] $PROJECT pipeline status: $status"
