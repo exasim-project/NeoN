@@ -1,3 +1,7 @@
+# This script cancels all running or pending LRZ GitLab CI pipelines on TUM COMA cluster
+# for a specified project and branch. Only pipelines triggered via the trigger token
+# (i.e., from NeoN GitHub CI) are considered.
+
 #!/usr/bin/env bash
 set -euo pipefail
 

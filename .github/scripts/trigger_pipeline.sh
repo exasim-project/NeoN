@@ -1,3 +1,6 @@
+# This script triggers a LRZ GitLab CI pipeline on TUM COMA cluster for a specified project and branch.
+# Optionally, extra variables can be passed in the form: "variables[KEY]=VALUE".
+
 #!/usr/bin/env bash
 set -euo pipefail
 
