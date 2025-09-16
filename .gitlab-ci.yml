@@ -4,22 +4,15 @@
 
 image: greole/neon-cuda
 
-workflow:
+build-and-test-neon:
+  tags: ["nvidia-h100-gpus"]
   rules:
     # Run only when triggered via API
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
       when: always
     # Skip in all other cases
     - when: never
 
-stages:
-  - build-and-test
-  - trigger
-  - benchmark
-
-build-and-test-project:
-  stage: build-and-test
-  tags: ["nvidia-h100-gpus"]
   before_script:
     # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
@@ -36,26 +29,23 @@ build-and-test-project:
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
 
-trigger-foamadapter:
-  stage: trigger
+benchmark-neon-on-gpu:
   tags: ["nvidia-h100-gpus"]
-  needs: ["build-and-test-project"]
-  script:
-    - curl --fail --request POST --form token=$FOAMADAPTER_TRIGGER_TOKEN --form ref=main --form variables[NEON_BRANCH]=$CI_COMMIT_REF_NAME --form variables[NEON_COMMIT]=$CI_COMMIT_SHA "${CI_API_V4_URL}/projects/1095/trigger/pipeline"
   rules:
-    - when: on_success
+    # Run only when triggered via API for benchmarking
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"
+      when: always
+    # Skip in all other cases
+    - when: never
 
-benchmark-on-tum-coma:
-  stage: benchmark
-  tags: ["nvidia-h100-gpus"]
-  needs: ["trigger-foamadapter"]
   variables:
     RESULTS_DIR: "benchmark-results"
     RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
     REPO_NAME: "NeoFOAM-BenchmarkData"
     TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
     TARGET_BRANCH: "ci-benchmarks"
-  script:
+
+  before_script:
     # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
@@ -80,6 +70,7 @@ benchmark-on-tum-coma:
         nvcc --version || echo "nvcc not available"
       } > ${RESULTS_DIR}/system-info.log
 
+  script:
     # Build & benchmark current branch
     - echo ">>> Build current branch"
     - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
@@ -119,10 +110,3 @@ benchmark-on-tum-coma:
     - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     - git pull --rebase || true
     - git push origin "${TARGET_BRANCH}"
-
-  rules:
-    # Run automatically if commit message contains 'run-benchmark'
-    - if: '$CI_COMMIT_MESSAGE =~ /\[run-benchmark\]/i'
-      when: on_success
-    # Otherwise don't create the job at all
-    - when: never
