@@ -19,7 +19,7 @@ fi
 # Prepare curl form data for variables
 FORM_DATA="--form ref=$BRANCH --form token=$TOKEN"
 for var in $VARIABLES; do
-  FORM_DATA="$FORM_DATA --form \"$var\""
+  FORM_DATA="$FORM_DATA --form $var"
 done
 
 # Trigger pipeline
