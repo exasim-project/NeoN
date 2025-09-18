@@ -4,8 +4,7 @@
 
 image: greole/neon-cuda
 
-build-and-test-neon:
-  tags: ["nvidia-h100-gpus"]
+.build-and-test-neon:
   rules:
     # Run only when triggered via API
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
@@ -28,6 +27,15 @@ build-and-test-neon:
     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
+
+# Run jobs on different GPUs
+build-and-test-neon-nvidia:
+  extends: .build-and-test-neon
+  tags: ["nvidia-h100-gpus"]
+
+build-and-test-neon-amd:
+  extends: .build-and-test-neon
+  tags: ["amd-gpus"]
 
 benchmark-neon-on-gpu:
   tags: ["nvidia-h100-gpus"]
