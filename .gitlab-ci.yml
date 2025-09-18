@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-image: greole/neon-cuda
-
 .build-and-test-neon:
   rules:
     # Run only when triggered via API
@@ -28,11 +26,13 @@ image: greole/neon-cuda
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
 
-# Run jobs on different GPUs
+# Run jobs on NVIDIA GPUs
 build-and-test-neon-nvidia:
   extends: .build-and-test-neon
+  image: greole/neon-cuda
   tags: ["nvidia-h100-gpus"]
 
+# Run jobs on AMD GPUs
 # build-and-test-neon-amd:
 #   extends: .build-and-test-neon
 #   tags: ["amd-gpus"]
