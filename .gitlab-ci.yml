@@ -10,7 +10,7 @@
     # Skip in all other cases
     - when: never
 
-  before_script:
+  script:
     # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
     - export PATH="$HOME/.local/bin:$PATH"
@@ -21,21 +21,28 @@
     - nvidia-smi
     - nvcc --version
 
-  script:
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
-
 # Run jobs on NVIDIA GPUs
 build-and-test-neon-nvidia:
   extends: .build-and-test-neon
   image: greole/neon-cuda
   tags: ["nvidia-h100-gpus"]
+  script:
+    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+    - cmake --build --preset develop
+    - ctest --preset develop --output-on-failure
 
 # Run jobs on AMD GPUs
-# build-and-test-neon-amd:
-#   extends: .build-and-test-neon
-#   tags: ["amd-gpus"]
+build-and-test-neon-amd:
+  extends: .build-and-test-neon
+  image: chihtaw/neon-rocm:6.4.1-complete
+  tags: ["amd-gpus"]
+  script:
+    - cmake --preset develop \
+        -DCMAKE_HIP_ARCHITECTURES=gfx90a \
+        -DKokkos_ARCH_AMD_GFX90A=ON \
+        -DNeoN_WITH_THREADS=OFF
+    - cmake --build --preset develop
+    - ctest --preset develop --output-on-failure
 
 benchmark-neon-on-gpu:
   tags: ["nvidia-h100-gpus"]
