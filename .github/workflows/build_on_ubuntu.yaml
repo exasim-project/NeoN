@@ -25,7 +25,16 @@ jobs:
   build:
     name: Build NeoN on ubuntu
     runs-on: ubuntu-latest
-    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+    if: |
+      (
+        github.event.action == 'opened' ||
+        github.event.action == 'synchronize' ||
+        github.event.action == 'reopened'
+      ) && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')
+      || (
+       github.event.action == 'unlabeled' &&
+        github.event.label.name == 'Skip-build'
+      )
     strategy:
       fail-fast: false
       matrix:

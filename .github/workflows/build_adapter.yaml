@@ -23,7 +23,16 @@ concurrency:
 
 jobs:
   build:
-    if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-build')}}
+    if: |
+      (
+        github.event.action == 'opened' ||
+        github.event.action == 'synchronize' ||
+        github.event.action == 'reopened'
+      ) && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')
+      || (
+       github.event.action == 'unlabeled' &&
+        github.event.label.name == 'Skip-build'
+      )
     name: Build FoamAdapter
     strategy:
       fail-fast: false
