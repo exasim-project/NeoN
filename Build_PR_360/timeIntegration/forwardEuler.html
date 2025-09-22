@@ -286,8 +286,8 @@ It advances the solution from time step n to n+1 using:</p>
 <div class="math notranslate nohighlight">
 \[y_{n+1} = y_n + \Delta t \cdot f(t_n, y_n)\]</div>
 </div>
-<section id="implementation">
-<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
+<p>Implementation
+_————-</p>
 <p>The implementation is entirely self-contained within NeoN, requiring no external libraries.
 The <code class="docutils literal notranslate"><span class="pre">ForwardEuler</span></code> class template inherits from <code class="docutils literal notranslate"><span class="pre">TimeIntegratorBase</span></code> and implements straightforward time-stepping functionality through its <code class="docutils literal notranslate"><span class="pre">solve</span></code> method:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">SolutionVectorType</span><span class="o">&gt;</span>
@@ -300,7 +300,6 @@ The <code class="docutils literal notranslate"><span class="pre">ForwardEuler</s
 </pre></div>
 </div>
 <p>This lightweight implementation operates directly on NeoN fields and expressions, providing a guaranteed time integration option regardless of build environment constraints.</p>
-</section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <p>To use the Forward Euler integrator, configure it through a dictionary:</p>
@@ -377,7 +376,6 @@ For GPU computations, the solver automatically handles execution space synchroni
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Forward Euler</a><ul>
-<li><a class="reference internal" href="#implementation">Implementation</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#considerations">Considerations</a></li>
 </ul>
