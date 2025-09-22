@@ -6,7 +6,7 @@ stages:
   - build-and-test
   - benchmark
 
-.build-and-test-neon: &build-and-test-neon-common
+.build-and-test-neon:
   stage: build-and-test
   rules:
     # Run only when triggered via API
@@ -26,7 +26,7 @@ stages:
 
 # On NVIDIA GPUs
 build-and-test-neon-nvidia:
-  <<: *build-and-test-neon-common
+  extends: .build-and-test-neon
   tags: ["nvidia-h100-gpus"]
   image: greole/neon-cuda
   script:
@@ -40,7 +40,7 @@ build-and-test-neon-nvidia:
 
 # On AMD GPUs
 build-and-test-neon-amd:
-  <<: *build-and-test-neon-common
+  extends: .build-and-test-neon
   image: chihtaw/neon-rocm:6.4.1-complete
   tags: ["amd-gpus"]
   script:
