@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-stage:
+stages:
 - build-and-test
 - benchmark
 
@@ -43,7 +43,6 @@ build-and-test-neon-amd:
   <<: *build-and-test-neon-common
   image: chihtaw/neon-rocm:6.4.1-complete
   tags: ["amd-gpus"]
-
   script:
     # Set ROCm environment
     - export PATH=/opt/rocm/bin:$PATH
