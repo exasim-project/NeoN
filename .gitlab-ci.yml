@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Unlicense
 
 stages:
-- build-and-test
-- benchmark
+  - build-and-test
+  - benchmark
 
 .build-and-test-neon: &build-and-test-neon-common
   stage: build-and-test
@@ -64,6 +64,7 @@ build-and-test-neon-amd:
     - ctest --preset develop --output-on-failure
 
 benchmark-neon-on-gpu:
+  stage: benchmark
   tags: ["nvidia-h100-gpus"]
   rules:
     # Run only when triggered via API for benchmarking
