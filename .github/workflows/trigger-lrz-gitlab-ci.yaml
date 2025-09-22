@@ -26,12 +26,15 @@ jobs:
       branch: ${{ steps.branch.outputs.branch }}
 
     if: |
-      (github.event.action == 'opened' \
-      || github.event.action == 'synchronize' \
-      || github.event.action == 'reopened') \
-      && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')) \
-      || (github.event.action == 'unlabeled' \
-      && (github.event.label.name == 'Skip-build'))
+      (
+        github.event.action == 'opened' ||
+        github.event.action == 'synchronize' ||
+        github.event.action == 'reopened'
+      ) && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')
+      || (
+       github.event.action == 'unlabeled' &&
+        github.event.label.name == 'Skip-build'
+      )
 
     env:
       LRZ_GROUP: greole
