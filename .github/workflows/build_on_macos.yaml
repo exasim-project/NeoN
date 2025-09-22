@@ -3,15 +3,18 @@ run-name: 'Build workflow'
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [dev, main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
-    types:
-      - synchronize
-      - opened
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   schedule:
-    - cron: "0 9 * * *"
+    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
+  workflow_dispatch:      # Optional: allows manual trigger
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
