@@ -3,13 +3,10 @@ name: Build NeoN on Windows
 on:
   push:
     branches: [dev, main]
-
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
-
   schedule:
     - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
-
   workflow_dispatch:      # Optional: allows manual trigger
 
 concurrency:
@@ -21,16 +18,7 @@ env:
 
 jobs:
   windows_msvc:
-    if: |
-      (
-        github.event.action == 'opened' ||
-        github.event.action == 'synchronize' ||
-        github.event.action == 'reopened'
-      ) && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')
-      || (
-        github.event.action == 'unlabeled' &&
-        github.event.label.name == 'Skip-build'
-      )
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     name: msvc
     runs-on: [windows-latest]
     steps:

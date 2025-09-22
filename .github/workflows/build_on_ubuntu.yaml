@@ -4,13 +4,10 @@ run-name: 'Build workflow'
 on:
   push:
     branches: [dev, main]
-
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
-
   schedule:
     - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
-
   workflow_dispatch:      # Optional: allows manual trigger
 
 env:
@@ -25,16 +22,7 @@ jobs:
   build:
     name: Build NeoN on ubuntu
     runs-on: ubuntu-latest
-    if: |
-      (
-        github.event.action == 'opened' ||
-        github.event.action == 'synchronize' ||
-        github.event.action == 'reopened'
-      ) && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')
-      || (
-       github.event.action == 'unlabeled' &&
-        github.event.label.name == 'Skip-build'
-      )
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     strategy:
       fail-fast: false
       matrix:
