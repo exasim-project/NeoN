@@ -5,7 +5,7 @@ on:
     branches: [dev, main]
 
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened, unlabeled]
 
   schedule:
     - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
@@ -25,7 +25,13 @@ jobs:
     outputs:
       branch: ${{ steps.branch.outputs.branch }}
 
-    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+    if: |
+      (github.event.action == 'opened' \
+      || github.event.action == 'synchronize' \
+      || github.event.action == 'reopened') \
+      && !contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')) \
+      || (github.event.action == 'unlabeled' \
+      && (github.event.label.name == 'Skip-build'))
 
     env:
       LRZ_GROUP: greole
