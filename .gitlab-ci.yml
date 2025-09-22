@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-.build-and-test-neon:
+.build-and-test-neon: &build-and-test-neon-common
   rules:
     # Run only when triggered via API
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
@@ -18,25 +18,23 @@
     # Optional: show versions of tools
     - cmake --version
     - clang++ --version || g++ --version
-    # - nvidia-smi
-    # - nvcc --version
 
-# # Run jobs on NVIDIA GPUs
-# build-and-test-neon-nvidia:
-#   extends: .build-and-test-neon
-#   image: greole/neon-cuda
-#   tags: ["nvidia-h100-gpus"]
-    # before_script:
-    #   - nvidia-smi
-    #   - nvcc --version
-#   script:
-#     - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-#     - cmake --build --preset develop
-#     - ctest --preset develop --output-on-failure
+# On NVIDIA GPUs
+build-and-test-neon-nvidia:
+  <<: *build-and-test-neon-common
+  image: greole/neon-cuda
+  tags: ["nvidia-h100-gpus"]
+  before_script:
+      - nvidia-smi
+      - nvcc --version
+  script:
+    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+    - cmake --build --preset develop
+    - ctest --preset develop --output-on-failure
 
-# Run jobs on AMD GPUs
+# On AMD GPUs
 build-and-test-neon-amd:
-  extends: .build-and-test-neon
+  <<: *build-and-test-neon-common
   image: chihtaw/neon-rocm:6.4.1-complete
   tags: ["amd-gpus"]
   before_script:
