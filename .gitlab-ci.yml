@@ -6,7 +6,7 @@ stages:
   - build-and-test
   - benchmark
 
-.build-and-test-neon:
+.build-and-test-neon-common:
   stage: build-and-test
   rules:
     # Run only when triggered via API
@@ -24,9 +24,9 @@ stages:
     - cmake --version
     - clang++ --version || g++ --version
 
-# On NVIDIA GPUs
+# Build and test on NVIDIA GPUs
 build-and-test-neon-nvidia:
-  extends: .build-and-test-neon
+  extends: .build-and-test-neon-common
   tags: ["nvidia-h100-gpus"]
   image: greole/neon-cuda
   script:
@@ -38,9 +38,9 @@ build-and-test-neon-nvidia:
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
 
-# On AMD GPUs
+# Build and test on AMD GPUs
 build-and-test-neon-amd:
-  extends: .build-and-test-neon
+  extends: .build-and-test-neon-common
   image: chihtaw/neon-rocm:6.4.1-complete
   tags: ["amd-gpus"]
   script:
@@ -63,9 +63,8 @@ build-and-test-neon-amd:
     - cmake --build --preset develop
     - ctest --preset develop --output-on-failure
 
-benchmark-neon-on-gpu:
+.benchmark-neon-common:
   stage: benchmark
-  tags: ["nvidia-h100-gpus"]
   rules:
     # Run only when triggered via API for benchmarking
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"
@@ -105,6 +104,9 @@ benchmark-neon-on-gpu:
         nvcc --version || echo "nvcc not available"
       } > ${RESULTS_DIR}/system-info.log
 
+benchmark-neon-nvidia:
+  extends: .benchmark-neon-common
+  tags: ["nvidia-h100-gpus"]
   script:
     # Build & benchmark current branch
     - echo ">>> Build current branch"
