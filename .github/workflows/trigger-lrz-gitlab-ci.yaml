@@ -70,7 +70,9 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}"
+            "${{ secrets.GITLAB_PROJECT_TOKEN }}" \
+            "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -92,6 +94,7 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
+            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
             "${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
@@ -125,6 +128,7 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ needs.trigger-lrz-ci.outputs.branch }}" \
+            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
             "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
             "variables[BENCHMARK]=true"
 
