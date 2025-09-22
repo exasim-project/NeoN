@@ -71,5 +71,6 @@ Examples how to integrate NeoN into CFD frameworks and how to write applications
 ## Documentation
 
 An online documentation can be found [here](https://exasim-project.com/NeoN/latest), be cautious since this repository is currently evolving the documentation might not always reflect the latest stage.
+
 For building the documentation further dependencies like doxygen and sphinx are requirement.
 The list of requirements can be found [here](https://github.com/exasim-project/NeoN/actions/workflows/build_doc.yaml)
