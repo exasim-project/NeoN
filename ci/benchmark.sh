@@ -12,16 +12,15 @@ TARGET_BRANCH=${TARGET_BRANCH:?Must set TARGET_BRANCH}
 RUN_IDENTIFIER=${RUN_IDENTIFIER:?Must set RUN_IDENTIFIER}
 API_TOKEN_GITHUB=${API_TOKEN_GITHUB:?Must set API_TOKEN_GITHUB}
 
-# Detect GPU vendor
-detect_gpu() {
-    if command -v nvidia-smi &>/dev/null; then
-        echo "nvidia"
-    elif command -v rocm-smi &>/dev/null; then
-        echo "amd"
-    else
-        echo "none"
-    fi
-}
+# Check GPU type argument
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <gpu_type>"
+    echo "  gpu_type: nvidia | amd | none"
+    exit 1
+fi
+
+GPU_VENDOR="$1"
+echo "Selected GPU vendor: ${GPU_VENDOR}"
 
 # Collect system info
 collect_system_info() {
@@ -33,11 +32,11 @@ collect_system_info() {
 
         echo "===== GPU INFO ====="
         if [[ "$1" == "nvidia" ]]; then
-            nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No NVIDIA GPU found"
+            nvidia-smi
         elif [[ "$1" == "amd" ]]; then
-            rocm-smi --showproductname --showvbios || echo "No AMD GPU found"
+            rocm-smi --showproductname --showvbios
         else
-            echo "No GPU detected"
+            echo "No GPU selected"
         fi
         echo ""
 
@@ -118,9 +117,6 @@ push_results() {
 }
 
 ### Main execution ###
-GPU_VENDOR=$(detect_gpu)
-echo "Detected GPU vendor: ${GPU_VENDOR}"
-
 collect_system_info "${GPU_VENDOR}"
 
 # Current branch

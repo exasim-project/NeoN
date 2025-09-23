@@ -19,47 +19,19 @@
     - cmake --version
     - clang++ --version || g++ --version
 
-# Build and test on NVIDIA GPUs
 build-and-test-neon-nvidia:
   extends: .build-and-test-neon-common
   tags: ["nvidia-h100-gpus"]
   image: greole/neon-cuda
   script:
-    - nvidia-smi
-    - nvcc --version
+    - ./ci/build-and-test.sh nvidia
 
-    # Configure, build, and test
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
-
-# Build and test on AMD GPUs
 build-and-test-neon-amd:
   extends: .build-and-test-neon-common
   tags: ["amd-gpus"]
   image: chihtaw/neon-rocm:6.4.1-complete
   script:
-    # Set ROCm environment
-    - export PATH=/opt/rocm/bin:$PATH
-    - export LD_LIBRARY_PATH=/opt/rocm/lib:/opt/rocm/lib64:$LD_LIBRARY_PATH
-
-    # Set host compiler for hipcc (default is Clang bundled in ROCm)
-    - export HIPCC_CXX=/usr/bin/g++
-
-    # Show GPU info
-    - rocminfo | grep "AMD"
-
-    # Configure, build, and test
-    - |
-      cmake --preset develop \
-        -DCMAKE_C_COMPILER=gcc \
-        -DCMAKE_CXX_COMPILER=hipcc \
-        -DCMAKE_HIP_ARCHITECTURES=gfx90a \
-        -DKokkos_ARCH_AMD_GFX90A=ON \
-        -DNeoN_WITH_THREADS=OFF
-
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
+    - ./ci/build-and-test.sh amd
 
 .benchmark-neon-common:
   rules:
@@ -85,11 +57,11 @@ benchmark-neon-nvidia:
   tags: ["nvidia-h100-gpus"]
   image: greole/neon-cuda
   script:
-    - bash ci/benchmark.sh
+    - ./ci/benchmark.sh nvidia
 
 benchmark-neon-amd:
   extends: .benchmark-neon-common
   tags: ["amd-gpus"]
   image: chihtaw/neon-rocm:6.4.1-complete
   script:
-    - bash ci/benchmark.sh
+    - ./ci/benchmark.sh amd
