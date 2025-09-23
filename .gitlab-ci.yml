@@ -2,6 +2,16 @@
 #
 # SPDX-License-Identifier: Unlicense
 
+# Available GPUs and corresponding Docker images
+.use-nvidia-gpu:
+  tags: ["nvidia-h100-gpus"]
+  image: greole/neon-cuda
+
+.use-amd-gpu:
+  tags: ["amd-gpus"]
+  image: chihtaw/neon-rocm:6.4.1-complete
+
+# Common configuration for all build and test jobs
 .build-and-test-neon-common:
   rules:
     # Run only when triggered via API
@@ -19,20 +29,7 @@
     - cmake --version
     - clang++ --version || g++ --version
 
-build-and-test-neon-nvidia:
-  extends: .build-and-test-neon-common
-  tags: ["nvidia-h100-gpus"]
-  image: greole/neon-cuda
-  script:
-    - ./ci/build-and-test.sh nvidia
-
-build-and-test-neon-amd:
-  extends: .build-and-test-neon-common
-  tags: ["amd-gpus"]
-  image: chihtaw/neon-rocm:6.4.1-complete
-  script:
-    - ./ci/build-and-test.sh amd
-
+# Common configuration for all benchmark jobs
 .benchmark-neon-common:
   rules:
     # Run only when triggered via API for benchmarking
@@ -52,16 +49,33 @@ build-and-test-neon-amd:
     # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
+# build and test jobs for NeoN
+build-and-test-neon-nvidia:
+  extends:
+    - .build-and-test-neon-common
+    - .use-nvidia-gpu
+  script:
+    - ./ci/build-and-test.sh nvidia
+
+build-and-test-neon-amd:
+  extends:
+    - .build-and-test-neon-common
+    - .use-amd-gpu
+  script:
+    - ./ci/build-and-test.sh amd
+
+
+# benchmark jobs for NeoN
 benchmark-neon-nvidia:
-  extends: .benchmark-neon-common
-  tags: ["nvidia-h100-gpus"]
-  image: greole/neon-cuda
+  extends:
+    - .benchmark-neon-common
+    - .use-nvidia-gpu
   script:
     - ./ci/benchmark.sh nvidia
 
 benchmark-neon-amd:
-  extends: .benchmark-neon-common
-  tags: ["amd-gpus"]
-  image: chihtaw/neon-rocm:6.4.1-complete
+  extends:
+    - .benchmark-neon-common
+    - .use-amd-gpu
   script:
     - ./ci/benchmark.sh amd
