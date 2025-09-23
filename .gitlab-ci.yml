@@ -36,8 +36,8 @@ build-and-test-neon-nvidia:
 # Build and test on AMD GPUs
 build-and-test-neon-amd:
   extends: .build-and-test-neon-common
-  image: chihtaw/neon-rocm:6.4.1-complete
   tags: ["amd-gpus"]
+  image: chihtaw/neon-rocm:6.4.1-complete
   script:
     # Set ROCm environment
     - export PATH=/opt/rocm/bin:$PATH
@@ -45,6 +45,9 @@ build-and-test-neon-amd:
 
     # Set host compiler for hipcc (default is Clang bundled in ROCm)
     - export HIPCC_CXX=/usr/bin/g++
+
+    # Show GPU info
+    - rocminfo | grep "AMD"
 
     # Configure, build, and test
     - |
@@ -77,67 +80,16 @@ build-and-test-neon-amd:
     # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
-    # Collect system info (CPU, GPU, compilers)
-    - mkdir ${RESULTS_DIR}
-    - |
-      {
-        echo "===== CPU INFO ====="
-        lscpu
-        echo ""
-        echo "===== GPU INFO ====="
-        nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No GPU found"
-        echo ""
-        echo "===== COMPILER INFO ====="
-        echo "CMake:"
-        cmake --version
-        echo ""
-        echo "C++ compiler:"
-        clang++ --version || g++ --version || echo "No C++ compiler found"
-        echo ""
-        echo "CUDA compiler:"
-        nvcc --version || echo "nvcc not available"
-      } > ${RESULTS_DIR}/system-info.log
-
 benchmark-neon-nvidia:
   extends: .benchmark-neon-common
   tags: ["nvidia-h100-gpus"]
+  image: greole/neon-cuda
   script:
-    # Build & benchmark current branch
-    - echo ">>> Build current branch"
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(current branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/
+    - bash ci/benchmark.sh
 
-    - rm -rf build
-
-    # Build & benchmark main branch
-    - echo ">>> Build main branch"
-    - git fetch origin main
-    - git checkout main
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(main branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - mkdir -p ${RESULTS_DIR}/main
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/main/
-
-    # Push benchmark results to GitHub
-    - git config --global user.email "gitlab-ci@users.noreply.github.com"
-    - git config --global user.name "GitLab CI"
-    - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}
-    - cd ${REPO_NAME}
-    - git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - git add .
-    - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
-    - git pull --rebase || true
-    - git push origin "${TARGET_BRANCH}"
+benchmark-neon-amd:
+  extends: .benchmark-neon-common
+  tags: ["amd-gpus"]
+  image: chihtaw/neon-rocm:6.4.1-complete
+  script:
+    - bash ci/benchmark.sh
