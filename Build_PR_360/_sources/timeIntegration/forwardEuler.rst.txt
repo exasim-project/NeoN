@@ -11,7 +11,7 @@ It advances the solution from time step n to n+1 using:
     y_{n+1} = y_n + \Delta t \cdot f(t_n, y_n)
 
 Implementation
-_-------------
+-------------
 
 The implementation is entirely self-contained within NeoN, requiring no external libraries.
 The ``ForwardEuler`` class template inherits from ``TimeIntegratorBase`` and implements straightforward time-stepping functionality through its ``solve`` method:
