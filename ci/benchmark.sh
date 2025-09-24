@@ -67,15 +67,11 @@ build_and_benchmark() {
     if [[ "$GPU_VENDOR" == "nvidia" ]]; then
         cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "amd" ]]; then
-        # Set ROCm environment
+        # Set up environment
         export PATH=/opt/rocm/bin:$PATH
-        export LD_LIBRARY_PATH=/opt/rocm/lib:/opt/rocm/lib64:$LD_LIBRARY_PATH
-
-        # Set host compiler for hipcc (default is Clang bundled in ROCm)
         export HIPCC_CXX=/usr/bin/g++
 
         cmake --preset profiling \
-            -DCMAKE_C_COMPILER=gcc \
             -DCMAKE_CXX_COMPILER=hipcc \
             -DCMAKE_HIP_ARCHITECTURES=gfx90a \
             -DKokkos_ARCH_AMD_GFX90A=ON \
