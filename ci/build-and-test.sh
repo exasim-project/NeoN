@@ -38,6 +38,7 @@ elif [ "$GPU_TYPE" == "amd" ]; then
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
     cmake --preset develop \
+        -DCMAKE_CXX_COMPILER=hipcc \
         -DCMAKE_HIP_ARCHITECTURES=gfx90a \
         -DKokkos_ARCH_AMD_GFX90A=ON \
         -DNeoN_WITH_THREADS=OFF
