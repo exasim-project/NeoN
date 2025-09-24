@@ -14,21 +14,18 @@
 # Common configuration for all build and test jobs
 .build-and-test-neon-common:
   rules:
-    # Run only when triggered via API
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
       when: always
     # Skip in all other cases
     - when: never
 
   before_script:
-    # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
     - export PATH="$HOME/.local/bin:$PATH"
 
 # Common configuration for all benchmark jobs
 .benchmark-neon-common:
   rules:
-    # Run only when triggered via API for benchmarking
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"
       when: always
     # Skip in all other cases
@@ -42,7 +39,6 @@
     TARGET_BRANCH: "ci-benchmarks"
 
   before_script:
-    # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
 # build and test jobs for NeoN
@@ -53,12 +49,12 @@ build-and-test-neon-nvidia:
   script:
     - ./ci/build-and-test.sh nvidia
 
-# build-and-test-neon-amd:
-#   extends:
-#     - .build-and-test-neon-common
-#     - .use-amd-gpu
-#   script:
-#     - ./ci/build-and-test.sh amd
+build-and-test-neon-amd:
+  extends:
+    - .build-and-test-neon-common
+    - .use-amd-gpu
+  script:
+    - ./ci/build-and-test.sh amd
 
 # benchmark jobs for NeoN
 benchmark-neon-nvidia:
