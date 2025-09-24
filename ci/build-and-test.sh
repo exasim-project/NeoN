@@ -30,6 +30,8 @@ if [ "$GPU_TYPE" == "nvidia" ]; then
     ctest --preset develop --output-on-failure
 
 elif [ "$GPU_TYPE" == "amd" ]; then
+    # Set up environment
+    export PATH=/opt/rocm/bin:$PATH
     export HIPCC_CXX=/usr/bin/g++
 
     echo "=== AMD GPU and compiler driver info ==="
