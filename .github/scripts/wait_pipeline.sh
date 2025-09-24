@@ -1,8 +1,10 @@
+#!/usr/bin/env bash
+#----------------------------------------------------------------------------------------
 # This script monitors the status of a LRZ GitLab CI pipeline on TUM COMA cluster
 # for a specified project and pipeline ID. It checks the status every minute until
 # the pipeline succeeds, fails, or a maximum wait time is reached.
+#----------------------------------------------------------------------------------------
 
-#!/usr/bin/env bash
 set -euo pipefail
 
 PROJECT=$1

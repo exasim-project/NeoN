@@ -1,8 +1,10 @@
+#!/usr/bin/env bash
+#----------------------------------------------------------------------------------------
 # SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
+#----------------------------------------------------------------------------------------
 
-#!/usr/bin/env bash
 set -euo pipefail
 
 # Check arguments
