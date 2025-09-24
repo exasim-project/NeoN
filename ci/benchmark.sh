@@ -45,7 +45,7 @@ collect_system_info() {
         cmake --version || echo "cmake not available"
         echo ""
         echo "C++ compiler:"
-        clang++ --version || g++ --version || echo "No C++ compiler found"
+        g++ --version || clang++ --version || echo "No C++ compiler found"
         echo ""
         echo "CUDA/ROCm compiler:"
         nvcc --version 2>/dev/null || hipcc --version 2>/dev/null || echo "No GPU compiler available"

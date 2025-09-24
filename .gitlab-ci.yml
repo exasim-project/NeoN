@@ -25,10 +25,6 @@
     - pip3 install --user --break-system-packages pre-commit
     - export PATH="$HOME/.local/bin:$PATH"
 
-    # Optional: show versions of tools
-    - cmake --version
-    - clang++ --version || g++ --version
-
 # Common configuration for all benchmark jobs
 .benchmark-neon-common:
   rules:
@@ -63,7 +59,6 @@ build-and-test-neon-amd:
     - .use-amd-gpu
   script:
     - ./ci/build-and-test.sh amd
-
 
 # benchmark jobs for NeoN
 benchmark-neon-nvidia:

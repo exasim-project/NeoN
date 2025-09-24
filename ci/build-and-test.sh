@@ -15,6 +15,10 @@ fi
 GPU_TYPE="$1"
 echo "Selected GPU type: $GPU_TYPE"
 
+echo "=== Tool versions ==="
+cmake --version
+g++ --version || clang++ --version
+
 if [ "$GPU_TYPE" == "nvidia" ]; then
     echo "=== NVIDIA GPU and compiler driver info ==="
     nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv
