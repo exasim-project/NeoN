@@ -1,14 +1,16 @@
+#!/usr/bin/env bash
+#----------------------------------------------------------------------------------------
 # This script cancels all running or pending LRZ GitLab CI pipelines on TUM COMA cluster
 # for a specified project and branch. Only pipelines triggered via the trigger token
 # (i.e., from NeoN GitHub CI) are considered.
+#----------------------------------------------------------------------------------------
 
-#!/usr/bin/env bash
 set -euo pipefail
 
 # Arguments
 PROJECT=$1        # GitLab project name, e.g., "NeoN" or "FoamAdapter"
 BRANCH=$2         # Branch/ref to filter pipelines
-TOKEN=$3          # GitLab private token
+TOKEN=$3
 
 # Read environment variables defined in GitHub workflow
 LRZ_GROUP="${LRZ_GROUP:?LRZ_GROUP is not set in environment}"
@@ -43,12 +45,23 @@ if [ -z "$pipeline_ids" ]; then
   exit 0
 fi
 
-# Cancel each pipeline
+# Cancel each pipeline only if NEON_BRANCH variable is set
 for id in $pipeline_ids; do
-  echo "Cancelling pipeline $id..."
-  curl -s --request POST \
-    --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel"
+  echo "Checking pipeline $id for NEON_BRANCH..."
+
+  vars=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
+    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/variables")
+
+  neon_branch=$(echo "$vars" | jq -r '.[] | select(.key=="NEON_BRANCH") | .value' || true)
+
+  if [[ -n "$neon_branch" && "$neon_branch" != "null" ]]; then
+    echo "Cancelling pipeline $id (NEON_BRANCH=$neon_branch)..."
+    curl -s --request POST \
+      --header "PRIVATE-TOKEN: $TOKEN" \
+      "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel"
+  else
+    echo "Skipping pipeline $id (NEON_BRANCH not set)."
+  fi
 done
 
 echo "All applicable pipelines cancelled."

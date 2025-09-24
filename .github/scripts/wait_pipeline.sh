@@ -1,17 +1,16 @@
+#!/usr/bin/env bash
+#----------------------------------------------------------------------------------------
 # This script monitors the status of a LRZ GitLab CI pipeline on TUM COMA cluster
 # for a specified project and pipeline ID. It checks the status every minute until
 # the pipeline succeeds, fails, or a maximum wait time is reached.
+#----------------------------------------------------------------------------------------
 
-#!/usr/bin/env bash
 set -euo pipefail
 
 PROJECT=$1
 PIPELINE_ID=$2
 TOKEN=$3
 MAX_WAIT_MINUTES=${MAX_WAIT_MINUTES:-1440}
-
-SUCCESS_STATUSES=("success")
-FAILURE_STATUSES=("failed" "canceled" "skipped")
 
 # Construct pipeline URL
 pipeline_url="https://${LRZ_HOST}/${LRZ_GROUP}/${PROJECT}/-/pipelines/${PIPELINE_ID}"
@@ -28,11 +27,11 @@ for i in $(seq 1 "$MAX_WAIT_MINUTES"); do
   echo "[$i] $PROJECT pipeline status: $status"
 
   case "$status" in
-    ${SUCCESS_STATUSES[*]})
+    success)
       echo "$PROJECT CI pipeline succeeded"
       exit 0
       ;;
-    ${FAILURE_STATUSES[*]})
+    failed|canceled|skipped)
       echo "$PROJECT CI pipeline finished with status: $status"
       exit 1
       ;;

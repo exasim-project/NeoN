@@ -2,37 +2,30 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-image: greole/neon-cuda
-
-build-and-test-neon:
+# Available GPUs and corresponding Docker images
+.use-nvidia-gpu:
   tags: ["nvidia-h100-gpus"]
+  image: greole/neon-cuda
+
+.use-amd-gpu:
+  tags: ["amd-gpus"]
+  image: chihtaw/neon-rocm:6.4.1-complete
+
+# Common configuration for all build and test jobs
+.build-and-test-neon-common:
   rules:
-    # Run only when triggered via API
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
       when: always
     # Skip in all other cases
     - when: never
 
   before_script:
-    # Install pre-commit
     - pip3 install --user --break-system-packages pre-commit
     - export PATH="$HOME/.local/bin:$PATH"
 
-    # Optional: show versions of tools
-    - cmake --version
-    - clang++ --version || g++ --version
-    - nvidia-smi
-    - nvcc --version
-
-  script:
-    - cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset develop
-    - ctest --preset develop --output-on-failure
-
-benchmark-neon-on-gpu:
-  tags: ["nvidia-h100-gpus"]
+# Common configuration for all benchmark jobs
+.benchmark-neon-common:
   rules:
-    # Run only when triggered via API for benchmarking
     - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"
       when: always
     # Skip in all other cases
@@ -46,67 +39,34 @@ benchmark-neon-on-gpu:
     TARGET_BRANCH: "ci-benchmarks"
 
   before_script:
-    # Install dependencies
     - pip3 install --user --break-system-packages xmltodict
 
-    # Collect system info (CPU, GPU, compilers)
-    - mkdir ${RESULTS_DIR}
-    - |
-      {
-        echo "===== CPU INFO ====="
-        lscpu
-        echo ""
-        echo "===== GPU INFO ====="
-        nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv || echo "No GPU found"
-        echo ""
-        echo "===== COMPILER INFO ====="
-        echo "CMake:"
-        cmake --version
-        echo ""
-        echo "C++ compiler:"
-        clang++ --version || g++ --version || echo "No C++ compiler found"
-        echo ""
-        echo "CUDA compiler:"
-        nvcc --version || echo "nvcc not available"
-      } > ${RESULTS_DIR}/system-info.log
-
+# build and test jobs for NeoN
+build-and-test-neon-nvidia:
+  extends:
+    - .build-and-test-neon-common
+    - .use-nvidia-gpu
   script:
-    # Build & benchmark current branch
-    - echo ">>> Build current branch"
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(current branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/
+    - ./ci/build-and-test.sh nvidia
 
-    - rm -rf build
+build-and-test-neon-amd:
+  extends:
+    - .build-and-test-neon-common
+    - .use-amd-gpu
+  script:
+    - ./ci/build-and-test.sh amd
 
-    # Build & benchmark main branch
-    - echo ">>> Build main branch"
-    - git fetch origin main
-    - git checkout main
-    - cmake --preset profiling -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
-    - cmake --build --preset profiling
-    - echo ">>> Running benchmarks...(main branch)"
-    - ctest --preset profiling
-    - cd build/profiling/bin/benchmarks
-    - python3 ../../../../scripts/catch2json.py
-    - cd ../../../..
-    - mkdir -p ${RESULTS_DIR}/main
-    - cp build/profiling/bin/benchmarks/*.json ${RESULTS_DIR}/main/
+# benchmark jobs for NeoN
+benchmark-neon-nvidia:
+  extends:
+    - .benchmark-neon-common
+    - .use-nvidia-gpu
+  script:
+    - ./ci/benchmark.sh nvidia
 
-    # Push benchmark results to GitHub
-    - git config --global user.email "gitlab-ci@users.noreply.github.com"
-    - git config --global user.name "GitLab CI"
-    - git clone https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}
-    - cd ${REPO_NAME}
-    - git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    - mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    - git add .
-    - git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
-    - git pull --rebase || true
-    - git push origin "${TARGET_BRANCH}"
+benchmark-neon-amd:
+  extends:
+    - .benchmark-neon-common
+    - .use-amd-gpu
+  script:
+    - ./ci/benchmark.sh amd

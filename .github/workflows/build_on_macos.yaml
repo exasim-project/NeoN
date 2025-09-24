@@ -3,15 +3,12 @@ run-name: 'Build workflow'
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [dev, main]
   pull_request:
-    types:
-      - synchronize
-      - opened
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
-    - cron: "0 9 * * *"
+    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
+  workflow_dispatch:      # Optional: allows manual trigger
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -23,7 +20,7 @@ concurrency:
 
 jobs:
   build:
-    if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
+    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
     name: Build NeoN on MacOs
     strategy:
       fail-fast: false
