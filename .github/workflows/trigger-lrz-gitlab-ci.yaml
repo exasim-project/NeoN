@@ -29,6 +29,10 @@ jobs:
       LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
       FOAMADAPTER_REPO: FoamAdapter
+      NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
+      NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
+      ADAPTER_PROJECT_TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}
+      ADAPTER_TRIGGER_TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}
       MAX_WAIT_MINUTES: 1440  # 24 hours
 
     steps:
@@ -51,7 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add lrz https://oauth2:${{ secrets.GITLAB_PROJECT_TOKEN }}@${{ env.LRZ_HOST }}/${{ env.LRZ_GROUP }}/${{ env.REPO_NAME }}.git
+          git remote add lrz https://oauth2:${NEON_PROJECT_TOKEN}@${{ env.LRZ_HOST }}/${{ env.LRZ_GROUP }}/${{ env.REPO_NAME }}.git
           git fetch origin ${{ steps.branch.outputs.branch }}
           git checkout -B ${{ steps.branch.outputs.branch }} origin/${{ steps.branch.outputs.branch }}
           git reset --hard origin/${{ steps.branch.outputs.branch }}
@@ -62,7 +66,7 @@ jobs:
           .github/scripts/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+            "${NEON_PROJECT_TOKEN}"
 
       - name: Trigger NeoN LRZ GitLab CI pipeline
         id: trigger-neon
@@ -70,23 +74,23 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-            "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            "${NEON_PROJECT_TOKEN}" \
+            "${NEON_TRIGGER_TOKEN}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
-      # - name: Wait for NeoN LRZ GitLab CI pipeline
-      #   run: |
-      #     .github/scripts/wait_pipeline.sh \
-      #       "${{ env.REPO_NAME }}" \
-      #       "${{ steps.trigger-neon.outputs.pipeline_id }}" \
-      #       "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+      - name: Wait for NeoN LRZ GitLab CI pipeline
+        run: |
+          .github/scripts/wait_pipeline.sh \
+            "${{ env.REPO_NAME }}" \
+            "${{ steps.trigger-neon.outputs.pipeline_id }}" \
+            "${NEON_PROJECT_TOKEN}"
 
       - name: Cancel running/pending FoamAdapter LRZ CI pipelines
         run: |
           .github/scripts/cancel_triggered_pipelines.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
+            "${ADAPTER_PROJECT_TOKEN}"
 
       - name: Trigger FoamAdapter LRZ GitLab CI pipeline
         id: trigger-adapter
@@ -94,16 +98,16 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}" \
-            "${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            "${ADAPTER_PROJECT_TOKEN}" \
+            "${ADAPTER_TRIGGER_TOKEN}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
 
-      # - name: Wait for FoamAdapter LRZ GitLab CI pipeline
-      #   run: |
-      #     .github/scripts/wait_pipeline.sh \
-      #       "${{ env.FOAMADAPTER_REPO }}" \
-      #       "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
-      #       "${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}"
+      - name: Wait for FoamAdapter LRZ GitLab CI pipeline
+        run: |
+          .github/scripts/wait_pipeline.sh \
+            "${{ env.FOAMADAPTER_REPO }}" \
+            "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
+            "${ADAPTER_PROJECT_TOKEN}"
 
   benchmark:
     name: Benchmark NeoN on GPU
@@ -118,6 +122,8 @@ jobs:
       LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
       BRANCH: ${{ needs.build-and-test-neon.outputs.branch }}
+      NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
+      NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -128,7 +134,7 @@ jobs:
           .github/scripts/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
             "${BRANCH}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+            "${NEON_PROJECT_TOKEN}"
 
       - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
         id: trigger-neon
@@ -136,8 +142,8 @@ jobs:
           .github/scripts/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${BRANCH}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}" \
-            "${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}" \
+            "${NEON_PROJECT_TOKEN}" \
+            "${NEON_TRIGGER_TOKEN}" \
             "variables[NEON_BRANCH]=${BRANCH}" \
             "variables[BENCHMARK]=true"
 
@@ -146,4 +152,4 @@ jobs:
           .github/scripts/wait_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.trigger-neon.outputs.pipeline_id }}" \
-            "${{ secrets.GITLAB_PROJECT_TOKEN }}"
+            "${NEON_PROJECT_TOKEN}"
