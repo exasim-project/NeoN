@@ -199,7 +199,7 @@ if(${NeoN_WITH_GINKGO})
     GITHUB_REPOSITORY
     ginkgo-project/ginkgo
     GIT_TAG
-    kokkos-threads
+    develop
     SYSTEM
     YES
     OPTIONS
