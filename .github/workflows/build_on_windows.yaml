@@ -2,13 +2,12 @@ name: Build NeoN on Windows
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [dev, main]
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
-    - cron: "0 9 * * *"
+    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
+  workflow_dispatch:      # Optional: allows manual trigger
 
 concurrency:
   group: ${{ github.workflow }}-${{ (github.head_ref && github.ref) || github.run_id }}
