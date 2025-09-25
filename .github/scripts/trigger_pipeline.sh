@@ -23,6 +23,7 @@ for var in $VARIABLES; do
 done
 
 # Trigger pipeline
+echo $FORM_DATA
 response=$(curl -s --request POST $FORM_DATA \
   "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/trigger/pipeline")
 
