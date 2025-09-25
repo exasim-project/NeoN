@@ -18,6 +18,7 @@ fi
 
 # Prepare curl form data for variables
 FORM_DATA="--form ref=$BRANCH --form token=$TOKEN"
+echo $VARIABLES
 for var in $VARIABLES; do
   FORM_DATA="$FORM_DATA --form $var"
 done
