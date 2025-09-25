@@ -12,6 +12,7 @@
 - Add Ginkgo solver interface and config solver support [#250](https://github.com/exasim-project/NeoN/pull/250), [#272
 (https://github.com/exasim-project/NeoN/pull/272)
 ### Misc
+- Use current Ginkgo develop version [#362](https://github.com/exasim-project/NeoN/pull/362)
 - removed subscript operators from Field for improved safety. [#225](https://github.com/exasim-project/NeoN/pull/285)
 - Templated Expression and Operator on ValueType [#268](https://github.com/exasim-project/NeoN/pull/268)
 - Ability to solve poisson equation similar required in the PISO algorithm [#267](https://github.com/exasim-project/NeoN/pull/267)
