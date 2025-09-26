@@ -7,8 +7,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
-    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
-  workflow_dispatch:      # Optional: allows manual trigger
+    - cron: '00 8 * * 0'
+  workflow_dispatch:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -32,16 +32,11 @@ jobs:
             CXX: g++
     runs-on: ubuntu-24.04
     steps:
-     - name: Select branch to checkout
+     - name: Determine branch to checkout
        run: |
-         if [[ -n "${{ github.head_ref }}" ]] && [[ $(git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter ${{ github.head_ref }}) ]]
-         then
-           echo "checkout ${{ github.head_ref }}"
-           echo checkout=${{ github.head_ref }} >> $GITHUB_ENV
-         else
-           echo "checkout main"
-           echo checkout=main >> $GITHUB_ENV
-         fi
+         # Use PR head branch if available, otherwise the branch of the push
+         BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+         echo "checkout=$BRANCH" >> $GITHUB_ENV
 
      - name: Checkout FoamAdapter
        uses: actions/checkout@v4
@@ -49,12 +44,13 @@ jobs:
         repository: exasim-project/FoamAdapter
         ref: '${{ env.checkout }}'
 
+     # Optional NeoN checkout if needed
      # - name: Checkout NeoN submodule
      #   uses: actions/checkout@v4
      #   with:
      #    repository: exasim-project/NeoN
      #    path: NeoN
-     #    ref: '${{ github.head_ref }}'
+     #    ref: '${{ env.checkout }}'
 
      - name: Set up OpenFOAM
        uses: gerlero/setup-openfoam@v1
