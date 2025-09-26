@@ -199,7 +199,7 @@ if(${NeoN_WITH_GINKGO})
     GITHUB_REPOSITORY
     ginkgo-project/ginkgo
     GIT_TAG
-    neon
+    0b50e390e15d36fe5432e6584049fd3f880584f1
     SYSTEM
     YES
     OPTIONS
