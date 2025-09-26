@@ -7,8 +7,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
-    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
-  workflow_dispatch:      # Optional: allows manual trigger
+    - cron: '00 8 * * 0'
+  workflow_dispatch:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -32,29 +32,36 @@ jobs:
             CXX: g++
     runs-on: ubuntu-24.04
     steps:
-     - name: Select branch to checkout
+     - name: Determine NeoN branch
        run: |
-         if [[ -n "${{ github.head_ref }}" ]] && [[ $(git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter ${{ github.head_ref }}) ]]
-         then
-           echo "checkout ${{ github.head_ref }}"
-           echo checkout=${{ github.head_ref }} >> $GITHUB_ENV
+         # Use PR head branch if available, otherwise the branch of the push
+         NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+         echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
+
+     - name: Check FoamAdapter branch
+       run: |
+         # Query FoamAdapter repo for branch with the same name as NeoN
+         if git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter "${{ env.NEON_BRANCH }}" >/dev/null; then
+           echo "FoamAdapter branch '${{ env.NEON_BRANCH }}' exists"
+           echo "FOAMADAPTER_BRANCH=${{ env.NEON_BRANCH }}" >> $GITHUB_ENV
          else
-           echo "checkout main"
-           echo checkout=main >> $GITHUB_ENV
+           echo "FoamAdapter branch '${{ env.NEON_BRANCH }}' does not exist, using main"
+           echo "FOAMADAPTER_BRANCH=main" >> $GITHUB_ENV
          fi
 
      - name: Checkout FoamAdapter
        uses: actions/checkout@v4
        with:
-        repository: exasim-project/FoamAdapter
-        ref: '${{ env.checkout }}'
+         repository: exasim-project/FoamAdapter
+         ref: '${{ env.FOAMADAPTER_BRANCH }}'
 
+     # Optional NeoN checkout if needed
      # - name: Checkout NeoN submodule
      #   uses: actions/checkout@v4
      #   with:
      #    repository: exasim-project/NeoN
      #    path: NeoN
-     #    ref: '${{ github.head_ref }}'
+     #    ref: '${{ env.NEON_BRANCH }}'
 
      - name: Set up OpenFOAM
        uses: gerlero/setup-openfoam@v1
@@ -91,7 +98,7 @@ jobs:
            -DNeoN_BUILD_TESTS=OFF \
            -DFOAMADAPTER_BUILD_BENCHMARKS=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
-           -DFOAMADAPTER_NEON_VERSION=${{env.checkout}}
+           -DFOAMADAPTER_NEON_VERSION=${{ env.NEON_BRANCH }}
          cmake --build  --preset develop
 
      - name: Execute unit tests NeoN
