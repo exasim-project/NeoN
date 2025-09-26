@@ -60,6 +60,8 @@ jobs:
            -DNeoN_BUILD_TESTS=ON \
            -DNeoN_DEVEL_TOOLS=OFF \
            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp/ \
+           -DNeoN_WITH_OMP=OFF \
+           -DKokkos_ENABLE_THREADS=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
          cmake --build  --preset ${{matrix.preset}}
 
