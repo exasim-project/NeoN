@@ -8,8 +8,15 @@
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
-gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
+gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
+    Dictionary dict = dictIn;
+    // remove 'solver Ginkgo;' entry
+    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    {
+        dict.remove("solver");
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {
@@ -24,7 +31,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dict)
         {
             auto token = std::any_cast<TokenList>(fn);
             std::stringstream s;
-            for (auto i = 0; i < token.size() - 1; i++)
+            for (NeoN::size_t i = 0; i < token.size() - 1; i++)
             {
                 s << token.next<std::string>() << "/";
             }

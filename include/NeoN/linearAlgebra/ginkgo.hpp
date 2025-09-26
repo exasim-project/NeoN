@@ -158,7 +158,7 @@ public:
 
         auto endEval = std::chrono::steady_clock::now();
         auto duration =
-            static_cast<float>(
+            static_cast<scalar>(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
