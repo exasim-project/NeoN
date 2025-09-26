@@ -52,7 +52,7 @@ jobs:
          ninja --version
          cmake --version
 
-     - name: Build NeoN
+     - name: Build NeoN without Ginkgo
        run: |
          CC=${{matrix.compiler.CC}} \
          CXX=${{matrix.compiler.CXX}} \
@@ -62,6 +62,7 @@ jobs:
            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp/ \
            -DNeoN_WITH_OMP=OFF \
            -DKokkos_ENABLE_THREADS=OFF \
+           -DNeoN_WITH_GINKGO=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
          cmake --build  --preset ${{matrix.preset}}
 
