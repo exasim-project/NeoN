@@ -199,7 +199,7 @@ if(${NeoN_WITH_GINKGO})
     GITHUB_REPOSITORY
     ginkgo-project/ginkgo
     GIT_TAG
-    develop
+    neon
     SYSTEM
     YES
     OPTIONS
