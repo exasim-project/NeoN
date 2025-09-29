@@ -4,10 +4,8 @@
 
 # set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/cmake_packages)
 
-set(NeoN_KOKKOS_CHECKOUT_VERSION
-    "4.3.00"
-    CACHE STRING "Use specific version of Kokkos")
-mark_as_advanced(NeoN_KOKKOS_CHECKOUT_VERSION)
+include(cmake/Versions.cmake)
+
 if(NeoN_ENABLE_MPI_SUPPORT)
   if(WIN32)
     message(FATAL_ERROR "NeoN_ENABLE_MPI_SUPPORT not supported on Windows")
@@ -45,7 +43,7 @@ if(NOT Kokkos_FOUND)
 
   FetchContent_Declare(
     Kokkos
-    SYSTEM QUITE
+    SYSTEM QUIET
     GIT_SHALLOW ON
     GIT_REPOSITORY "https://github.com/kokkos/kokkos.git"
     GIT_TAG ${NeoN_KOKKOS_CHECKOUT_VERSION})
@@ -61,9 +59,9 @@ cpmaddpackage(
   NAME
   cpptrace
   URL
-  https://github.com/jeremy-rifkin/cpptrace/archive/refs/tags/v0.7.3.zip
+  https://github.com/jeremy-rifkin/cpptrace/archive/refs/tags/v${NeoN_CPPTRACE_VERSION}.zip
   VERSION
-  0.7.3
+  ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
 if(${NeoN_WITH_ADIOS2})
@@ -90,8 +88,6 @@ if(${NeoN_WITH_ADIOS2})
     list(APPEND ADIOS2_OPTIONS "BUILD_SHARED_LIBS ON")
   endif()
 
-  # Checking for patched and cached ADIOS2 will become obsolete after this issue in CPM has been
-  # fixed: https://github.com/cpm-cmake/CPM.cmake/issues/618
   if(NOT ADIOS2_PATCHED)
     set(ADIOS2_PATCHED
         TRUE
@@ -104,7 +100,7 @@ if(${NeoN_WITH_ADIOS2})
       PATCH_COMMAND
       ${ADIOS2_KOKKOS_PATCH}
       VERSION
-      2.10.2
+      ${NeoN_ADIOS2_VERSION}
       OPTIONS
       ${ADIOS2_OPTIONS}
       ${ADIOS2_CUDA_OPTIONS}
@@ -116,7 +112,7 @@ if(${NeoN_WITH_ADIOS2})
       GITHUB_REPOSITORY
       ornladios/ADIOS2
       VERSION
-      2.10.2
+      ${NeoN_ADIOS2_VERSION}
       OPTIONS
       ${ADIOS2_OPTIONS}
       ${ADIOS2_CUDA_OPTIONS}
@@ -158,7 +154,7 @@ if(${NeoN_WITH_SUNDIALS})
     GITHUB_REPOSITORY
     LLNL/sundials
     VERSION
-    7.3.0
+    ${NeoN_SUNDIALS_VERSION}
     SYSTEM
     YES
     OPTIONS
@@ -166,23 +162,14 @@ if(${NeoN_WITH_SUNDIALS})
     ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
-# currently not used cpmaddpackage( NAME spdlog URL
-# https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.zip VERSION 1.13.0 SYSTEM)
-
-# currently not used cpmaddpackage( NAME cxxopts URL
-# https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.2.0.zip VERSION 3.2.0 SYSTEM)
-
 if(${NeoN_WITH_GINKGO})
-  # nlohmann json is only needed in combination with ginkgo. Getting the package via cpm+github
-  # takes ages. After pulling only the .zip no nlohmann_json::nlohman_json target is found. Thus we
-  # always prepare system install version of nlohmann_json if present.
-  find_package(nlohmann_json 3.11.3 QUIET)
+  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
   if(NOT nlohmann_json_FOUND)
     cpmaddpackage(
       NAME
       nlohmann_json
       VERSION
-      3.11.3
+      ${NeoN_JSON_VERSION}
       GITHUB_REPOSITORY
       nlohmann/json
       SYSTEM
@@ -195,11 +182,11 @@ if(${NeoN_WITH_GINKGO})
     NAME
     Ginkgo
     VERSION
-    1.10.0
+    ${NeoN_GINKGO_VERSION}
     GITHUB_REPOSITORY
     ginkgo-project/ginkgo
     GIT_TAG
-    0b50e390e15d36fe5432e6584049fd3f880584f1
+    ${NeoN_GINKGO_TAG}
     SYSTEM
     YES
     OPTIONS
@@ -218,9 +205,9 @@ if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
     NAME
     Catch2
     URL
-    https://github.com/catchorg/Catch2/archive/refs/tags/v3.4.0.zip
+    https://github.com/catchorg/Catch2/archive/refs/tags/v${NeoN_CATCH2_VERSION}.zip
     VERSION
-    3.4.0
+    ${NeoN_CATCH2_VERSION}
     SYSTEM
     YES)
 endif()
