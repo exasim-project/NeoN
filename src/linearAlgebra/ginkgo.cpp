@@ -101,6 +101,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     return gko::config::pnode {result};
 }
 
+
 // TODO: check if this can be replaced by Ginkgos executor mapping
 std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
 {
@@ -141,6 +142,168 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
         },
         exec
     );
+}
+
+
+namespace NeoN::la::ginkgo
+{
+
+template<typename IndexType>
+std::shared_ptr<gko::matrix::Csr<scalar, IndexType>>
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
+{
+    auto nrows = static_cast<gko::dim<2>::dimension_type>(sys.rhs().size());
+    auto mtx = sys.view().matrix;
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    // auto vals = createConstGkoArray(exec, mtx.values).copy_to_array();
+    auto vals = gko::array<scalar>::view(
+        exec, static_cast<gko::size_type>(mtx.values.size()), const_cast<scalar*>(mtx.values.data())
+    );
+    // auto col = createGkoArray(exec, mtx.colIdxs);
+    auto col = gko::array<IndexType>::view(
+        exec,
+        static_cast<gko::size_type>(mtx.colIdxs.size()),
+        const_cast<IndexType*>(mtx.colIdxs.data())
+    );
+    // auto row = createGkoArray(exec, mtx.rowOffs);
+    auto row = gko::array<IndexType>::view(
+        exec,
+        static_cast<gko::size_type>(mtx.rowOffs.size()),
+        const_cast<IndexType*>(mtx.rowOffs.data())
+    );
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
+        exec, gko::dim<2> {nrows, nrows}, vals, col, row
+    ));
+}
+
+
+SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const
+{
+    auto startEval = std::chrono::steady_clock::now();
+    using vec = gko::matrix::Dense<scalar>;
+
+    auto retrieve = [](const auto& in)
+    {
+        auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+        scalar res = host->copy_from(in)->at(0);
+        return res;
+    };
+
+    auto nrows = sys.rhs().size();
+
+    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    auto solver = factory_->generate(gkoMtx);
+
+    std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+        gko::log::Convergence<scalar>::create();
+    solver->add_logger(logger);
+
+    auto rhs = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
+    auto rhs2 = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
+    auto gkoX = detail::createGkoDense(gkoExec_, x.data(), nrows);
+
+    auto one = gko::initialize<vec>({1.0}, gkoExec_);
+    auto neg_one = gko::initialize<vec>({-1.0}, gkoExec_);
+    auto init = gko::initialize<vec>({0.0}, gkoExec_);
+    gkoMtx->apply(one, gkoX, neg_one, rhs2);
+    rhs->compute_norm2(init);
+    scalar initResNorm = retrieve(init);
+
+    solver->apply(rhs, gkoX);
+
+    scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+    auto numIter = label(logger->get_num_iterations());
+
+    auto endEval = std::chrono::steady_clock::now();
+    auto duration =
+        static_cast<scalar>(
+            std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+        )
+        / 1000.0;
+    return {numIter, initResNorm, finalResNorm, duration};
+}
+
+template<typename IndexType>
+std::shared_ptr<gko::matrix::Csr<Vec3, IndexType>>
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)
+{
+    auto nrows = static_cast<gko::dim<2>::dimension_type>(sys.rhs().size());
+    auto mtx = sys.view().matrix;
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    // auto vals = createConstGkoArray(exec, mtx.values).copy_to_array();
+    // auto vals = gko::array<Vec3>::view(
+    //     exec,
+    //     static_cast<gko::size_type>(mtx.values.size()),
+    //     const_cast<Vec3*>(mtx.values.data())
+    // );
+    // // auto col = createGkoArray(exec, mtx.colIdxs);
+    // auto col = gko::array<IndexType>::view(
+    //     exec,
+    //     static_cast<gko::size_type>(mtx.colIdxs.size()),
+    //     const_cast<IndexType*>(mtx.colIdxs.data())
+    // );
+    // // auto row = createGkoArray(exec, mtx.rowOffs);
+    // auto row = gko::array<IndexType>::view(
+    //     exec,
+    //     static_cast<gko::size_type>(mtx.rowOffs.size()),
+    //     const_cast<IndexType*>(mtx.rowOffs.data())
+    // );
+
+    // return gko::share(gko::matrix::Csr<Vec3, IndexType>::create(
+    //     exec, gko::dim<2> {nrows, nrows}, vals, col, row
+    // ));
+}
+
+SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const
+{
+    auto startEval = std::chrono::steady_clock::now();
+    using vec = gko::matrix::Dense<scalar>;
+
+    auto retrieve = [](const auto& in)
+    {
+        auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+        scalar res = host->copy_from(in)->at(0);
+        return res;
+    };
+
+    auto nrows = 3 * sys.rhs().size();
+
+    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    // auto solver = factory_->generate(gkoMtx);
+
+    // std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+    //     gko::log::Convergence<scalar>::create();
+    // solver->add_logger(logger);
+
+    // auto rhs = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
+    // auto rhs2 = detail::createGkoDense(gkoExec_, sys.rhs().data(), nrows);
+    // auto gkoX = detail::createGkoDense(gkoExec_, x.data(), nrows);
+
+    // auto one = gko::initialize<vec>({1.0}, gkoExec_);
+    // auto neg_one = gko::initialize<vec>({-1.0}, gkoExec_);
+    // auto init = gko::initialize<vec>({0.0}, gkoExec_);
+    // gkoMtx->apply(one, gkoX, neg_one, rhs2);
+    // rhs->compute_norm2(init);
+    // scalar initResNorm = retrieve(init);
+
+    // solver->apply(rhs, gkoX);
+
+    // scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+    // auto numIter = label(logger->get_num_iterations());
+
+    // auto endEval = std::chrono::steady_clock::now();
+    // auto duration =
+    //     static_cast<scalar>(
+    //         std::chrono::duration_cast<std::chrono::microseconds>(endEval -
+    //         startEval).count()
+    //     )
+    //     / 1000.0;
+    // return {numIter, initResNorm, finalResNorm, duration};
+}
+
+
 }
 
 #endif
