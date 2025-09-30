@@ -45,6 +45,7 @@ public:
 
     virtual SolverStats solve(const LinearSystem<scalar, localIdx>&, Vector<scalar>&) const = 0;
 
+    virtual SolverStats solve(const LinearSystem<Vec3, localIdx>&, Vector<Vec3>&) const = 0;
     // virtual void
     // solve(const LinearSystem<ValueType, int>&, Vector<Vec3>& ) const = 0;
 
@@ -74,6 +75,11 @@ public:
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
     SolverStats solve(const LinearSystem<scalar, localIdx>& ls, Vector<scalar>& field) const
+    {
+        return solverInstance_->solve(ls, field);
+    }
+
+    SolverStats solve(const LinearSystem<Vec3, localIdx>& ls, Vector<Vec3>& field) const
     {
         return solverInstance_->solve(ls, field);
     }
