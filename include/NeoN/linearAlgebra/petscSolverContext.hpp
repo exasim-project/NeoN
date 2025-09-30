@@ -33,8 +33,11 @@ class petscSolverContext
     Executor exec_;
     Mat Amat_;
     KSP ksp_;
+    PC pc_;
 
     Vec sol_, rhs_;
+
+    Dictionary solverDict_;
 
 public:
 
@@ -42,9 +45,9 @@ public:
     // Constructors
 
     //- Default construct
-    petscSolverContext(Executor exec)
-        : init_(false), updated_(false), exec_(exec), Amat_(nullptr), sol_(nullptr), rhs_(nullptr),
-          ksp_(nullptr)
+    petscSolverContext(Executor exec, Dictionary solverDict)
+        : init_(false), updated_(false), exec_(exec), Amat_(nullptr), ksp_(nullptr), pc_(nullptr),
+          sol_(nullptr), rhs_(nullptr), solverDict_(solverDict)
     {}
 
 
@@ -64,57 +67,61 @@ public:
     bool initialized() const noexcept { return init_; }
 
 
-    //- Return value of initialized
+    //- Return value of updated
     bool updated() const noexcept { return updated_; }
 
     //- Create auxiliary rows for calculation purposes
     void initialize(const LinearSystem<scalar, localIdx>& sys)
     {
-        std::size_t size = sys.matrix().values().size();
-        std::size_t nrows = sys.rhs().size();
-        PetscInt colIdx[size];
-        PetscInt rowIdx[size];
-        PetscInt rhsIdx[nrows];
 
-        // colIdx = sys.matrix().colIdxs().data();
+        // move all not necessary staff to outer most scope since matrix  has
+        // to be preallocated only once every time the mesh changes
+        PetscInitialize(NULL, NULL, 0, NULL);
 
-        auto hostLS = sys.copyToHost();
+        setOption(solverDict_);
 
-        // auto fieldS = field.view();
+        auto rowPtrHost = sys.matrix().rowOffs().copyToHost();
+        auto rowPtrHostv = rowPtrHost.view();
 
-        auto rowPtrHost = hostLS.matrix().rowOffs().view();
-        auto colIdxHost = hostLS.matrix().colIdxs().view();
-        auto rhsHost = sys.rhs().copyToHost();
+        auto colIdxHost = sys.matrix().colIdxs().copyToHost();
+        auto colIdxHostv = colIdxHost.view();
 
-        for (size_t index = 0; index < nrows; ++index)
+        localIdx sizeMatrix = static_cast<localIdx>(sys.matrix().values().size());
+        localIdx nrows = sys.rhs().size();
+
+        PetscInt *colIdx, *rowIdx, *rhsIdx;
+
+        PetscMalloc1(static_cast<PetscInt>(sizeMatrix), &colIdx);
+        PetscMalloc1(static_cast<PetscInt>(sizeMatrix), &rowIdx);
+        PetscMalloc1(static_cast<PetscInt>(nrows), &rhsIdx);
+
+
+        for (int index = 0; index < nrows; ++index)
         {
             rhsIdx[index] = static_cast<PetscInt>(index);
         }
         // copy colidx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        for (size_t index = 0; index < size; ++index)
+        for (int index = 0; index < sizeMatrix; ++index)
         {
-            colIdx[index] = static_cast<PetscInt>(colIdxHost[index]);
+            colIdx[index] = static_cast<PetscInt>(colIdxHostv[index]);
         }
         // convert rowPtr to rowIdx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        size_t rowI = 0;
-        size_t rowOffset = rowPtrHost[rowI + 1];
-        for (size_t index = 0; index < size; ++index)
+        localIdx rowI = 0;
+        localIdx rowOffset = rowPtrHostv[rowI + 1];
+        for (int index = 0; index < sizeMatrix; ++index)
         {
             if (index == rowOffset)
             {
                 rowI++;
-                rowOffset = rowPtrHost[rowI + 1];
+                rowOffset = rowPtrHostv[rowI + 1];
             }
             rowIdx[index] = rowI;
         }
 
-        // move all not necessary staff to outer most scope since matrix  has
-        // to be preallocated only once every time the mesh changes
-        PetscInitialize(NULL, NULL, 0, NULL);
 
         MatCreate(PETSC_COMM_WORLD, &Amat_);
         MatSetSizes(Amat_, sys.matrix().nRows(), sys.rhs().size(), PETSC_DECIDE, PETSC_DECIDE);
@@ -137,7 +144,7 @@ public:
         VecDuplicate(rhs_, &sol_);
 
         VecSetPreallocationCOO(rhs_, nrows, rhsIdx);
-        MatSetPreallocationCOO(Amat_, size, colIdx, rowIdx);
+        MatSetPreallocationCOO(Amat_, sizeMatrix, colIdx, rowIdx);
 
         KSPCreate(PETSC_COMM_WORLD, &ksp_);
         KSPSetFromOptions(ksp_);
@@ -145,10 +152,50 @@ public:
 
 
         init_ = true;
+
+        // PetscOptions options;
+        // PetscOptionsCreate(&options);
+        // PetscOptionsSetValue(NULL, "-no_signal_handler", "true");
+        PetscOptionsView(NULL, PETSC_VIEWER_STDOUT_WORLD);
+        KSPView(ksp_, PETSC_VIEWER_STDOUT_WORLD);
+
+
+        PetscFree(colIdx);
+        PetscFree(rowIdx);
+        PetscFree(rhsIdx);
     }
 
     //- Create auxiliary rows for calculation purposes
     void update() { NF_ERROR_EXIT("Mesh changes not supported"); }
+
+    void setOption(Dictionary& solverDict)
+    {
+
+        NeoN::Dictionary subDict = solverDict.subDict("options");
+
+        for (auto key : solverDict.subDict("options").keys())
+        {
+
+            std::string petscOptionKey = std::string("-") + key;
+            std::string petscOptionVal = subDict.get<std::string>(key);
+            PetscOptionsSetValue(NULL, petscOptionKey.c_str(), petscOptionVal.c_str());
+        }
+    }
+
+    std::string getOption(std::string optionName)
+    {
+        char optionValue[PETSC_MAX_PATH_LEN];
+        PetscBool set;
+        PetscOptionsGetString(
+            NULL, NULL, optionName.c_str(), optionValue, sizeof(optionValue), &set
+        );
+
+        std::string optionValueStr(optionValue);
+
+        // TODO: Decide what to do (error or warning) if set is FALSE
+
+        return optionValueStr;
+    }
 
     [[nodiscard]] Mat& AMat() { return Amat_; }
 
@@ -157,6 +204,8 @@ public:
     [[nodiscard]] Vec& sol() { return sol_; }
 
     [[nodiscard]] KSP& ksp() { return ksp_; }
+
+    [[nodiscard]] PC& pc() { return pc_; }
 };
 
 

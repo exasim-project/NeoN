@@ -64,6 +64,16 @@ To build NeoN for production use, you can use the following commands:
 
 It should be noted that the build directory changes depending on the chosen preset. This way you can have different build directories for different presets and easily switch between them.
 
+Building with Petsc
+^^^^^^^^^^^^^^^^^^^
+
+To build NeoN with Petsc support, currently a few additional steps have to be performed. The reason is that kokkos has to be build by Petsc rather than by the provided cmake files in order that NeoN works with Petsc. An example how to download, configure and build Petsc with kokkos support is provided in scripts/configure_petsc.sh. It is important that before configuring and building NeoN with Petsc support, Petsc is configured and build with kokkos support. This is done by the following code line:
+
+./configure --with-64-bit-indices=0 --with-precision=double --with-cuda=1 --with-cuda-dir=/usr/local/cuda-12.3 --with-mpi=1 --with-fc=0 --force --with-mpi=1 --with-32bits-pci-domain=1 --prefix=optClangkokkos4dot3dot01/petsc --with-cc=mpicc --with-cxx=mpicxx --with-debugging=no --download-kokkos --download-kokkos-kernels --with-kokkos-kernels=1 --with-kokkos=1 --download-kokkos-cmake-arguments='-DKokkos_ENABLE_CUDA_CONSTEXPR=ON -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DKokkos_ENABLE_DEBUG=ON -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=ON -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON' --download-kokkos-commit=4.3.01 --download-kokkos-kernels-commit=4.3.01
+
+What is essential, is that the compiler used to compile kokkos is the same as the one we want to use later to build NeoN. The kokkos compiler is set by the flag: -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 in the configure command.
+
+
 Building with Spack
 ^^^^^^^^^^^^^^^^^^^
 

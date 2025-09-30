@@ -24,4 +24,4 @@ make PETSC_DIR=$CURRENTDIR/petsc PETSC_ARCH=arch-linux-c-opt all
 #install petsc
 make PETSC_DIR=$CURRENTDIR/petsc PETSC_ARCH=arch-linux-c-opt install
 
-export PKG_CONFIG_PATH=$CURRENTDIR/opt/petsc/lib/pkgconfig
+export PKG_CONFIG_PATH=$CURRENTDIR/optClangkokkos4dot3dot01/petsc/lib/pkgconfig

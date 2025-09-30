@@ -14,4 +14,5 @@ endif()
 
 if(NeoN_WITH_PETSC)
   neon_unit_test(petsc)
+  neon_unit_test(petscSolverContext)
 endif()
