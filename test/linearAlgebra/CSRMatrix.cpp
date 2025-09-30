@@ -11,29 +11,29 @@
 
 #include <Kokkos_Core.hpp>
 
-TEST_CASE("CSRMatrix")
+TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
-    NeoN::Vector<NeoN::scalar> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
+    NeoN::Vector<TestType> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
-    NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrix(
+    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
-    const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> sparseMatrixConst(
+    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
 
     // dense matrix
-    NeoN::Vector<NeoN::scalar> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    NeoN::Vector<TestType> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     NeoN::Vector<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     NeoN::Vector<NeoN::localIdx> rowOffsDense(exec, {0, 3, 6, 9});
-    NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrix(
+    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrix(
         valuesDense, colIdxDense, rowOffsDense
     );
-    const NeoN::la::CSRMatrix<NeoN::scalar, NeoN::localIdx> denseMatrixConst(
+    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrixConst(
         valuesDense, colIdxDense, rowOffsDense
     );
 
@@ -296,5 +296,47 @@ TEST_CASE("CSRMatrix")
         {
             REQUIRE(hostrowOffsSparse.view()[i] == row[i]);
         }
+    }
+}
+
+TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    // sparse matrix
+    NeoN::Vector<TestType> valuesSparse(
+        exec, {{1.0, 1.0, 1.0}, {5.0, 5.0, 5.0}, {6.0, 6.0, 6.0}, {8.0, 8.0, 8.0}}
+    );
+    NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
+    NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
+    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
+        valuesSparse, colIdxSparse, rowOffsSparse
+    );
+    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
+        valuesSparse, colIdxSparse, rowOffsSparse
+    );
+
+    SECTION("Read entry on " + execName)
+    {
+        // Sparse
+        NeoN::Vector<NeoN::Vec3> checkSparse(exec, 4);
+        auto checkSparseView = checkSparse.view();
+        auto csrView = sparseMatrixConst.view();
+        parallelFor(
+            exec,
+            {0, 1},
+            KOKKOS_LAMBDA(const NeoN::localIdx) {
+                checkSparseView[0] = csrView.entry(0, 0);
+                checkSparseView[1] = csrView.entry(1, 1);
+                checkSparseView[2] = csrView.entry(1, 2);
+                checkSparseView[3] = csrView.entry(2, 1);
+            }
+        );
+
+        auto checkHost = checkSparse.copyToHost();
+        REQUIRE(checkHost.view()[0] == NeoN::Vec3 {1.0, 1.0, 1.0});
+        REQUIRE(checkHost.view()[1] == NeoN::Vec3 {5.0, 5.0, 5.0});
+        REQUIRE(checkHost.view()[2] == NeoN::Vec3 {6.0, 6.0, 6.0});
+        REQUIRE(checkHost.view()[3] == NeoN::Vec3 {8.0, 8.0, 8.0});
     }
 }
