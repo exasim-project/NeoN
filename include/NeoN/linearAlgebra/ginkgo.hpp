@@ -25,44 +25,6 @@ namespace NeoN::la::ginkgo
 
 std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
-namespace detail
-{
-
-template<typename T>
-gko::array<T> createGkoArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
-{
-    return gko::make_array_view(exec, values.size(), values.data());
-}
-
-// template<typename T>
-// gko::detail::const_array_view<T>
-// createConstGkoArray(std::shared_ptr<const gko::Executor> exec, const std::span<const T> values)
-// {
-//     return gko::make_const_array_view(exec, values.size(), values.data());
-// }
-
-template<typename ValueType>
-std::shared_ptr<gko::matrix::Dense<ValueType>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, ValueType* ptr, localIdx s)
-{
-    auto size = static_cast<std::size_t>(s);
-    return gko::share(gko::matrix::Dense<ValueType>::create(
-        exec, gko::dim<2> {size, 1}, createGkoArray(exec, std::span {ptr, size}), 1
-    ));
-}
-
-template<typename ValueType>
-std::shared_ptr<gko::matrix::Dense<ValueType>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, const ValueType* ptr, localIdx s)
-{
-    auto size = static_cast<std::size_t>(s);
-    auto const_array_view = gko::array<ValueType>::const_view(exec, size, ptr);
-    return gko::share(gko::matrix::Dense<ValueType>::create(
-        exec, gko::dim<2> {size, 1}, const_array_view.copy_to_array(), 1
-    ));
-}
-
-}
 gko::config::pnode parse(const Dictionary& dict);
 
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
