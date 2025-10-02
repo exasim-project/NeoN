@@ -63,7 +63,7 @@ jobs:
 
       - name: Cancel running/pending NeoN LRZ CI pipelines
         run: |
-          .github/scripts/cancel_triggered_pipelines.sh \
+          ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.branch.outputs.branch }}" \
             "${NEON_PROJECT_TOKEN}"
@@ -71,7 +71,7 @@ jobs:
       - name: Trigger NeoN LRZ GitLab CI pipeline
         id: trigger-neon
         run: |
-          .github/scripts/trigger_pipeline.sh \
+          ./ci/github/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.branch.outputs.branch }}" \
             "${NEON_PROJECT_TOKEN}" \
@@ -80,14 +80,14 @@ jobs:
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
-          .github/scripts/wait_pipeline.sh \
+          ./ci/github/wait_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.trigger-neon.outputs.pipeline_id }}" \
             "${NEON_PROJECT_TOKEN}"
 
       - name: Cancel running/pending FoamAdapter LRZ CI pipelines
         run: |
-          .github/scripts/cancel_triggered_pipelines.sh \
+          ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
             "${ADAPTER_PROJECT_TOKEN}"
@@ -95,7 +95,7 @@ jobs:
       - name: Trigger FoamAdapter LRZ GitLab CI pipeline
         id: trigger-adapter
         run: |
-          .github/scripts/trigger_pipeline.sh \
+          ./ci/github/trigger_pipeline.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
             "${ADAPTER_PROJECT_TOKEN}" \
@@ -104,7 +104,7 @@ jobs:
 
       - name: Wait for FoamAdapter LRZ GitLab CI pipeline
         run: |
-          .github/scripts/wait_pipeline.sh \
+          ./ci/github/wait_pipeline.sh \
             "${{ env.FOAMADAPTER_REPO }}" \
             "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
             "${ADAPTER_PROJECT_TOKEN}"
@@ -131,7 +131,7 @@ jobs:
 
       - name: Cancel running/pending NeoN LRZ CI pipelines
         run: |
-          .github/scripts/cancel_triggered_pipelines.sh \
+          ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
             "${BRANCH}" \
             "${NEON_PROJECT_TOKEN}"
@@ -139,7 +139,7 @@ jobs:
       - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
         id: trigger-neon
         run: |
-          .github/scripts/trigger_pipeline.sh \
+          ./ci/github/trigger_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${BRANCH}" \
             "${NEON_PROJECT_TOKEN}" \
@@ -149,7 +149,7 @@ jobs:
 
       - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking
         run: |
-          .github/scripts/wait_pipeline.sh \
+          ./ci/github/wait_pipeline.sh \
             "${{ env.REPO_NAME }}" \
             "${{ steps.trigger-neon.outputs.pipeline_id }}" \
             "${NEON_PROJECT_TOKEN}"
