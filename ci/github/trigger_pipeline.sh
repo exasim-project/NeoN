@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 #----------------------------------------------------------------------------------------
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+#----------------------------------------------------------------------------------------
 # This script triggers a LRZ GitLab CI pipeline on TUM COMA cluster for a specified project and branch.
 # Optionally, extra variables can be passed in the form: "variables[KEY]=VALUE".
 #----------------------------------------------------------------------------------------
