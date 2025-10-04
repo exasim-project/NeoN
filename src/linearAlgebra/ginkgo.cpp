@@ -163,16 +163,6 @@ createGkoDense(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx 
     ));
 }
 
-// std::shared_ptr<gko::matrix::Dense<ValueType>>
-// createGkoDense(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
-// {
-//     auto size = static_cast<std::size_t>(s);
-//     auto const_array_view = gko::array<scalar>::const_view(exec, size, ptr);
-//     return gko::share(gko::matrix::Dense<scalar>::create(
-//         exec, gko::dim<2> {size, 1}, const_array_view.copy_to_array(), 1
-//     ));
-// }
-
 std::shared_ptr<gko::matrix::Dense<scalar>>
 createGkoDense(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
 {
@@ -213,17 +203,21 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scala
 }
 
 
+template<typename InType>
+scalar retrieve(const InType& in)
+{
+    using vec = gko::matrix::Dense<scalar>;
+    auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+    scalar res = host->copy_from(in)->at(0);
+    return res;
+};
+
+
 SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const
 {
     auto startEval = std::chrono::steady_clock::now();
     using vec = gko::matrix::Dense<scalar>;
 
-    auto retrieve = [](const auto& in)
-    {
-        auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
-        scalar res = host->copy_from(in)->at(0);
-        return res;
-    };
 
     auto nrows = sys.rhs().size();
 
@@ -298,13 +292,6 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
     auto startEval = std::chrono::steady_clock::now();
     using vec = gko::matrix::Dense<scalar>;
 
-    auto retrieve = [](const auto& in)
-    {
-        auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
-        scalar res = host->copy_from(in)->at(0);
-        return res;
-    };
-
     auto nrows = 3 * sys.rhs().size();
 
     auto gkoMtx = createGkoMtx(gkoExec_, sys);
@@ -326,24 +313,6 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
     auto init = gko::initialize<vec>({0.0}, gkoExec_);
     gkoMtx->apply(one, gkoX, neg_one, rhs2);
 
-    std::cout << __FILE__ << __LINE__ << " gkoMtx: colIdx: ";
-    for (auto i = 0; i < 21; i++)
-    {
-        std::cout << gkoMtx->get_col_idxs()[i] << ", ";
-    }
-    std::cout << "\n rowIdx:  ";
-    for (auto i = 0; i < 10; i++)
-    {
-        std::cout << gkoMtx->get_row_ptrs()[i] << ", ";
-    }
-    std::cout << "\n values:  ";
-    for (auto i = 0; i < 21; i++)
-    {
-        std::cout << gkoMtx->get_values()[i] << ", ";
-    }
-    std::cout << "\n done:  ";
-
-
     rhs->compute_norm2(init);
     scalar initResNorm = retrieve(init);
 
@@ -351,15 +320,9 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
 
     pack(xCopy, x);
     // since we work on a copy we need to copy back
-
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
 
     auto numIter = label(logger->get_num_iterations());
-    std::cout << __FILE__ << __LINE__ << " numIter " << numIter << " finalResNorm " << finalResNorm
-              << " gkoX 0: " << gkoX->at(0) << " gkoX 3: " << gkoX->at(3) << " rhs 0:" << rhs->at(0)
-              << " rhs 1:" << rhs->at(1) << " rhs 3:" << rhs->at(3) << "xCopyView "
-              << xCopy.view()[0] << "\n";
-
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
         static_cast<scalar>(

@@ -150,7 +150,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},
              {"type", "solver::Cg"},
-             {"criteria", Dictionary {{{"iteration", 9}, {"relative_residual_norm", 1e-7}}}}}
+             {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
         };
 
         // Create solver
@@ -173,9 +173,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
         REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
 
-        REQUIRE(numIter == 9);
-        // REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
-        // REQUIRE(finalResNorm < 1.0e-04);
+        REQUIRE(numIter == 3);
+        REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
+        REQUIRE(finalResNorm < 1.0e-04);
     }
 }
 #endif
