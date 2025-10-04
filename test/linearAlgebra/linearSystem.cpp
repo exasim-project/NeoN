@@ -16,7 +16,7 @@ using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 
-TEST_CASE("LinearSystem")
+TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
