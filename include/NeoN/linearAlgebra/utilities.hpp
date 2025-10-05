@@ -13,15 +13,34 @@
 namespace NeoN::la
 {
 
-/* @brief given a vector a [0,1,0,1,2,1,2] this returns [0,1,2,3,4,5,0,1,2,...]
+/* @brief given a vector of column indices for vector matrices it creates the unpacked scalar
+ * version
  *
- * @param[in] in the vector to duplicate
+ * E.g.: input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see example
+ *
+ *   0 1 2       0 1 2 3 4 5 6 7 9
+ *              [x . . x . . . . . ]
+ *  [x x . ]    [. x . . x . . . . ]
+ *  [x x x ] -> [. . x . . x . . . ]
+ *  [. x x ]    [x . . x . . x . . ]
+ *              [. x . . x . . x . ]
+ *              [. . x . . x . . x ]
+ *              [. . . x . . x . . ]
+ *              [. . . . x . . x . ]
+ *              [. . . . . x . . x ]
+ *
+ *  packed      unpacked
+ *  sparsity    sparsity
+ *
+ * @param[in] in the vector of column indices for a packed Csr<Vec3> matrix
+ * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix
+ * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix
  * @return A vector containing duplicated entries
  */
-Vector<localIdx> duplicateColIdx(
+Vector<localIdx> convertColIdx(
     const Vector<localIdx>& in,
-    const Vector<localIdx>& newRowOffs,
-    const Vector<localIdx>& oldRowOffs
+    const Vector<localIdx>& unpackedRowOffs,
+    const Vector<localIdx>& packedRowOffs
 );
 
 /* @brief given a vector of rowOffs [0,3,6] this returns [0,3,6,9,12,15,18,21]
@@ -29,29 +48,23 @@ Vector<localIdx> duplicateColIdx(
  * @param[in] in the vector to duplicate
  * @return A vector containing duplicated entries
  */
-Vector<localIdx> stretchRowPtrs(const Vector<localIdx>& in);
+Vector<localIdx> unpackRowPtrs(const Vector<localIdx>& in);
 
-/* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]
+/* @brief given a vector of Vec3 (packed) this returns vector of consecutive scalars (unpacked)
  *
- * @param[in] in the vector to duplicate
- * @return A vector containing duplicated entries
- */
-Vector<scalar> flatten(const Vector<Vec3>& in);
-
-/* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]
+ * E.g. given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]
  *
- * @param[in] in the vector to duplicate
- * @return A vector containing duplicated entries
- */
-void pack(const Vector<scalar>& in, Vector<Vec3>& out);
-void pack(const Vector<scalar>& in, Vector<scalar>& out);
-
-/* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]
- *
- * @param[in] in the vector to duplicate
+ * @param[in] in the vector to unpack
  * @return A vector containing duplicated entries
  */
 Vector<scalar> unpack(const Vector<Vec3>& in);
+
+/* @brief given a vector [1,2,3,4,5,6,7,8,9] this packs it into [{1,2,3},{4,5,6},{7,8,9}]
+ *
+ * @param[in] in the vector to duplicate
+ * @param[out] out the vector to duplicate
+ */
+void pack(const Vector<scalar>& in, Vector<Vec3>& out);
 
 /* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}]
  * this returns [1,4,7,2,5,8,3,6,9]

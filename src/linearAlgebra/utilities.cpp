@@ -10,22 +10,22 @@
 namespace NeoN::la
 {
 
-Vector<localIdx> duplicateColIdx(
+Vector<localIdx> convertColIdx(
     const Vector<localIdx>& in,
-    const Vector<localIdx>& newRowOffs,
-    const Vector<localIdx>& oldRowOffs
+    const Vector<localIdx>& unpackedRowOffs,
+    const Vector<localIdx>& packedRowOffs
 )
 {
     const auto exec = in.exec();
     const auto inV = in.view();
     auto out = Vector<localIdx> {exec, 3 * in.size()};
     auto outV = out.view();
-    auto rowV = newRowOffs.view();
-    auto oldRowV = oldRowOffs.view();
+    auto rowV = unpackedRowOffs.view();
+    auto oldRowV = packedRowOffs.view();
 
     NeoN::parallelFor(
         exec,
-        {0, newRowOffs.size() - 1},
+        {0, unpackedRowOffs.size() - 1},
         KOKKOS_LAMBDA(const localIdx i) {
             auto j {rowV[i]};        // new row start
             auto l {oldRowV[i / 3]}; // original row start
@@ -44,7 +44,7 @@ Vector<localIdx> duplicateColIdx(
     return out;
 }
 
-Vector<scalar> flatten(const Vector<Vec3>& in)
+Vector<scalar> unpack(const Vector<Vec3>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
@@ -93,7 +93,7 @@ Vector<scalar> unpackMtxValues(
     return out;
 }
 
-Vector<localIdx> stretchRowPtrs(const Vector<localIdx>& in)
+Vector<localIdx> unpackRowPtrs(const Vector<localIdx>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
@@ -153,29 +153,6 @@ void pack(const Vector<scalar>& in, Vector<Vec3>& out)
             outV[i][2] = inV[j + 2];
         }
     );
-}
-
-void pack(const Vector<scalar>& in, Vector<scalar>& out) {}
-
-Vector<scalar> unpack(const Vector<Vec3>& in)
-{
-    const auto exec = in.exec();
-    const auto inV = in.view();
-    auto out = Vector<scalar> {exec, 3 * in.size()};
-    auto outV = out.view();
-
-    NeoN::parallelFor(
-        exec,
-        {0, in.size()},
-        KOKKOS_LAMBDA(const localIdx i) {
-            localIdx j = 3 * i;
-            outV[j + 0] = inV[i][0];
-            outV[j + 1] = inV[i][1];
-            outV[j + 2] = inV[i][2];
-        }
-    );
-
-    return out;
 }
 
 void computeResidual(

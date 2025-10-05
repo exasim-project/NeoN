@@ -274,25 +274,21 @@ template<typename IndexType>
 std::shared_ptr<gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)
 {
-    auto nrows = computeNRows(sys);
-
     // NOTE we get a const view of the system but need a non const view to vals and indices
     auto mtx = sys.matrix();
 
-    auto rowsCopy = stretchRowPtrs(mtx.rowOffs());
+    auto rowsCopy = unpackRowPtrs(mtx.rowOffs());
     auto rows = createGkoArray(exec, rowsCopy.view());
 
-    auto colsCopy = duplicateColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
+    auto colsCopy = convertColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     auto cols = createGkoArray(exec, colsCopy.view());
 
     auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
     auto vals = gko::array<scalar>::const_view(
-        exec,
-        static_cast<gko::size_type>(3 * mtx.values().size()),
-        // const_cast<scalar*>(&(mtx.values().view()[0][0]))
-        valuesCopy.data()
+        exec, static_cast<gko::size_type>(3 * mtx.values().size()), valuesCopy.data()
     );
 
+    auto nrows = computeNRows(sys);
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec, gko::dim<2> {nrows, nrows}, vals.copy_to_array(), std::move(cols), std::move(rows)
     ));
@@ -303,8 +299,8 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
     auto gkoMtx = createGkoMtx(gkoExec_, sys);
     auto solver = factory_->generate(gkoMtx);
 
-    auto rhsCopy = flatten(sys.rhs());
-    auto xCopy = flatten(x);
+    auto rhsCopy = unpack(sys.rhs());
+    auto xCopy = unpack(x);
 
     auto stats = solve_impl(
         gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver)

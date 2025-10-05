@@ -59,10 +59,10 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdxS(exec, {0, 1, 0, 1, 2, 1, 2});
     Vector<localIdx> rowOffsS(exec, {0, 2, 5, 7});
-    // CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+
     SECTION("Can stretchRowPtrs " + execName)
     {
-        auto res = NeoN::la::stretchRowPtrs(rowOffs);
+        auto res = NeoN::la::unpackRowPtrs(rowOffs);
         auto resHost = res.copyToHost();
 
         REQUIRE(resHost.view()[0] == 0);
@@ -75,7 +75,7 @@ TEST_CASE("Utilities")
 
     SECTION("Can stretchRowPtrs2 " + execName)
     {
-        auto res = NeoN::la::stretchRowPtrs(rowOffsS);
+        auto res = NeoN::la::unpackRowPtrs(rowOffsS);
         auto resHost = res.copyToHost();
 
         REQUIRE(resHost.view()[0] == 0);
@@ -93,7 +93,7 @@ TEST_CASE("Utilities")
 
     SECTION("Can unpack mtxValues " + execName)
     {
-        auto newRowOffs = NeoN::la::stretchRowPtrs(rowOffs);
+        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffs);
         auto res = NeoN::la::unpackMtxValues(mtxValues, rowOffs, newRowOffs);
         auto resHost = res.copyToHost();
 
@@ -114,17 +114,17 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[11] == 6.0);
     }
 
-    SECTION("Can duplicateColIdx " + execName)
+    SECTION("Can convertColIdx " + execName)
     {
-        auto newRowOffs = NeoN::la::stretchRowPtrs(rowOffsS);
-        auto res = NeoN::la::duplicateColIdx(colIdxS, newRowOffs, rowOffsS);
+        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffsS);
+        auto res = NeoN::la::convertColIdx(colIdxS, newRowOffs, rowOffsS);
         auto resHost = res.copyToHost();
 
-        REQUIRE(res.size() == 3 * colIdxS.size()); // 0
+        REQUIRE(res.size() == 3 * colIdxS.size());
 
         // row 1
-        REQUIRE(resHost.view()[0] == 0); // 0
-        REQUIRE(resHost.view()[1] == 3); // 1
+        REQUIRE(resHost.view()[0] == 0);
+        REQUIRE(resHost.view()[1] == 3);
 
         // row 2
         REQUIRE(resHost.view()[2] == 1);
@@ -162,10 +162,10 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[20] == 8);
     }
 
-    SECTION("Can duplicateColIdx " + execName)
+    SECTION("Can convertColIdx " + execName)
     {
-        auto newRowOffs = NeoN::la::stretchRowPtrs(rowOffs);
-        auto res = NeoN::la::duplicateColIdx(colIdx, newRowOffs, rowOffs);
+        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffs);
+        auto res = NeoN::la::convertColIdx(colIdx, newRowOffs, rowOffs);
         auto resHost = res.copyToHost();
 
         REQUIRE(res.size() == 3 * colIdx.size()); // 0
