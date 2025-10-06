@@ -47,14 +47,14 @@ build-and-test-neon-nvidia:
     - .build-and-test-neon-common
     - .use-nvidia-gpu
   script:
-    - ./ci/build-and-test.sh nvidia
+    - ./ci/lrz-gitlab/build-and-test.sh nvidia
 
 build-and-test-neon-amd:
   extends:
     - .build-and-test-neon-common
     - .use-amd-gpu
   script:
-    - ./ci/build-and-test.sh amd
+    - ./ci/lrz-gitlab/build-and-test.sh amd
 
 # benchmark jobs for NeoN
 benchmark-neon-nvidia:
@@ -62,11 +62,11 @@ benchmark-neon-nvidia:
     - .benchmark-neon-common
     - .use-nvidia-gpu
   script:
-    - ./ci/benchmark.sh nvidia
+    - ./ci/lrz-gitlab/benchmark.sh nvidia
 
 benchmark-neon-amd:
   extends:
     - .benchmark-neon-common
     - .use-amd-gpu
   script:
-    - ./ci/benchmark.sh amd
+    - ./ci/lrz-gitlab/benchmark.sh amd
