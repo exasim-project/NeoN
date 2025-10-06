@@ -43,6 +43,8 @@ public:
     // Pure virtual function for cloning
     virtual std::unique_ptr<TimeIntegratorBase> clone() const = 0;
 
+    virtual bool direct() const { return true; }
+
 protected:
 
     const Dictionary& schemeDict_;
@@ -77,8 +79,12 @@ public:
 
     void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
+        std::cout << __FILE__ << ":" << __LINE__ << "\n";
         timeIntegratorStrategy_->solve(eqn, sol, t, dt);
+        std::cout << __FILE__ << ":" << __LINE__ << "\n";
     }
+
+    bool direct() const { return timeIntegratorStrategy_->direct(); }
 
 private:
 

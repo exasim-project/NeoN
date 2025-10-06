@@ -17,6 +17,11 @@ namespace NeoN
 
 using Executor = std::variant<SerialExecutor, CPUExecutor, GPUExecutor>;
 
+// FIXME
+// void fence(const Executor&){
+// Kokkos::fence();
+// }
+
 /**
  * @brief Checks if two executors are equal, i.e. they are of the same type.
  * @param lhs The first executor.

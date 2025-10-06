@@ -42,26 +42,15 @@ public:
         dsl::Expression<ValueType>& eqn, SolutionVectorType& solutionVector, scalar t, scalar dt
     ) override
     {
-        auto source = eqn.explicitOperation(solutionVector.size());
-        auto sparsity = la::SparsityPattern(solutionVector.mesh());
-        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(solutionVector.mesh(), sparsity);
-
-        eqn.implicitOperation(ls);        // add spatial operators
-        eqn.implicitOperation(ls, t, dt); // add temporal operators
-
-        auto solver = NeoN::la::Solver(solutionVector.exec(), this->solutionDict_);
-        solver.solve(ls, solutionVector.internalVector());
-        // check if executor is GPU
-        if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
-        {
-            Kokkos::fence();
-        }
+        NF_ERROR_EXIT("Not implemented, use NeoN::dsl::detail::iterative_solve_impl");
     };
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {
         return std::make_unique<BackwardEuler>(*this);
     }
+
+    bool direct() const override { return false; }
 };
 
 
