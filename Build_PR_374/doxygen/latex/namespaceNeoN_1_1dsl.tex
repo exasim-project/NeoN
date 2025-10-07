@@ -18,11 +18,11 @@ class \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}
 \begin{DoxyCompactList}\small\item\em A class that represents a coefficient for the \doxylink{namespaceNeoN}{NeoN} dsl. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}
 \item 
-struct \mbox{\hyperlink{structNeoN_1_1dsl_1_1NoOpFunctor}{No\+Op\+Functor}}
-\item 
 class \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator}{Operator}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{Operator\+Mixin}}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1dsl_1_1OpFunctor}{Op\+Functor}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}
 \item 
@@ -62,7 +62,7 @@ concept \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalOperator}{Has\+Tempora
 \item 
 {\footnotesize template$<$typename left\+Operator , typename right\+Operator $>$ }\\\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename left\+Operator\+::\+Vector\+Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a590fbdffc01dc7fad7632c70e36a42a8}{operator-\/}} (left\+Operator lhs, right\+Operator rhs)
 \item 
-{\footnotesize template$<$typename Vector\+Type , typename Post\+Assembly\+Functor  = No\+Op\+Functor$<$typename Vector\+Type\+::\+Element\+Type$>$$>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_a46693c5b5e004e293630753fdc5501ff}{solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, Post\+Assembly\+Functor p=\mbox{\hyperlink{structNeoN_1_1dsl_1_1NoOpFunctor}{No\+Op\+Functor}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \{\})
+{\footnotesize template$<$typename Vector\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_affdab2eab0ea58466ed5957e6a28e7f3}{solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1dsl_1_1OpFunctor}{Op\+Functor}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ $>$ p=\{\})
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a45b8dbfdb03a75f2198ec9fc1146d424}{operator\texorpdfstring{$\ast$}{*}}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} scalar\+Coeff, \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ rhs)
 \item 
@@ -232,14 +232,14 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00211}{211}} of file
 
 Definition at line \mbox{\hyperlink{expression_8hpp_source_l00219}{219}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1dsl_a46693c5b5e004e293630753fdc5501ff}\label{namespaceNeoN_1_1dsl_a46693c5b5e004e293630753fdc5501ff} 
+\Hypertarget{namespaceNeoN_1_1dsl_affdab2eab0ea58466ed5957e6a28e7f3}\label{namespaceNeoN_1_1dsl_affdab2eab0ea58466ed5957e6a28e7f3} 
 \index{NeoN::dsl@{NeoN::dsl}!solve@{solve}}
 \index{solve@{solve}!NeoN::dsl@{NeoN::dsl}}
 \doxysubsubsection{\texorpdfstring{solve()}{solve()}}
-{\footnotesize\ttfamily template$<$typename Vector\+Type , typename Post\+Assembly\+Functor  = No\+Op\+Functor$<$typename Vector\+Type\+::\+Element\+Type$>$$>$ \\
-\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} Neo\+N\+::dsl\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&}]{exp,  }\item[{Vector\+Type \&}]{solution,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Schemes,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Solution,  }\item[{Post\+Assembly\+Functor}]{p = {\ttfamily \mbox{\hyperlink{structNeoN_1_1dsl_1_1NoOpFunctor}{No\+Op\+Functor}}$<$typename~VectorType\+:\+:ElementType$>$~\{\}} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Vector\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} Neo\+N\+::dsl\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&}]{exp,  }\item[{Vector\+Type \&}]{solution,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Schemes,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Solution,  }\item[{std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1dsl_1_1OpFunctor}{Op\+Functor}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ $>$}]{p = {\ttfamily \{\}} }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{dsl_2solver_8hpp_source_l00086}{86}} of file \mbox{\hyperlink{dsl_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{dsl_2solver_8hpp_source_l00088}{88}} of file \mbox{\hyperlink{dsl_2solver_8hpp_source}{solver.\+hpp}}.
 

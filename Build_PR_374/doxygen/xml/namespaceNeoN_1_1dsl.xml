@@ -4,9 +4,9 @@
     <compoundname>NeoN::dsl</compoundname>
     <innerclass refid="classNeoN_1_1dsl_1_1Coeff" prot="public">NeoN::dsl::Coeff</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Expression" prot="public">NeoN::dsl::Expression</innerclass>
-    <innerclass refid="structNeoN_1_1dsl_1_1NoOpFunctor" prot="public">NeoN::dsl::NoOpFunctor</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Operator" prot="public">NeoN::dsl::Operator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1OperatorMixin" prot="public">NeoN::dsl::OperatorMixin</innerclass>
+    <innerclass refid="structNeoN_1_1dsl_1_1OpFunctor" prot="public">NeoN::dsl::OpFunctor</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1SpatialOperator" prot="public">NeoN::dsl::SpatialOperator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1TemporalOperator" prot="public">NeoN::dsl::TemporalOperator</innerclass>
     <innernamespace refid="namespaceNeoN_1_1dsl_1_1detail">NeoN::dsl::detail</innernamespace>
@@ -231,19 +231,15 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="219" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="219" bodyend="226"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a46693c5b5e004e293630753fdc5501ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1affdab2eab0ea58466ed5957e6a28e7f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
           </param>
-          <param>
-            <type>typename PostAssemblyFunctor</type>
-            <defval>NoOpFunctor&lt;typename VectorType::ElementType&gt;</defval>
-          </param>
         </templateparamlist>
         <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref></type>
         <definition>la::SolverStats NeoN::dsl::solve</definition>
-        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, PostAssemblyFunctor p=NoOpFunctor&lt; typename VectorType::ElementType &gt; {})</argsstring>
+        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; OpFunctor&lt; typename VectorType::ElementType &gt; &gt; p={})</argsstring>
         <name>solve</name>
         <qualifiedname>NeoN::dsl::solve</qualifiedname>
         <param>
@@ -271,9 +267,9 @@
           <declname>fvSolution</declname>
         </param>
         <param>
-          <type>PostAssemblyFunctor</type>
+          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1OpFunctor" kindref="compound">OpFunctor</ref>&lt; typename VectorType::ElementType &gt; &gt;</type>
           <declname>p</declname>
-          <defval><ref refid="structNeoN_1_1dsl_1_1NoOpFunctor" kindref="compound">NoOpFunctor</ref>&lt; typename VectorType::ElementType &gt; {}</defval>
+          <defval>{}</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -281,7 +277,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="86" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="86" bodyend="114"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="88" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="88" bodyend="116"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a45b8dbfdb03a75f2198ec9fc1146d424" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
