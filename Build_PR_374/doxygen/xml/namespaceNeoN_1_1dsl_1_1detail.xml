@@ -25,15 +25,18 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" line="73" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" declline="73" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1a0f246d90061577639315575ce8d808b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1a0e2920f47c5c5565fed9c78509cfa5fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
           </param>
+          <param>
+            <type>typename PostAssemblyFunctor</type>
+          </param>
         </templateparamlist>
         <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref></type>
         <definition>la::SolverStats NeoN::dsl::detail::iterative_solve_impl</definition>
-        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution)</argsstring>
+        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, PostAssemblyFunctor p)</argsstring>
         <name>iterative_solve_impl</name>
         <qualifiedname>NeoN::dsl::detail::iterative_solve_impl</qualifiedname>
         <param>
@@ -60,13 +63,17 @@
           <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
           <declname>fvSolution</declname>
         </param>
+        <param>
+          <type>PostAssemblyFunctor</type>
+          <declname>p</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="32" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="32" bodyend="63"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="32" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="32" bodyend="64"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

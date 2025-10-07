@@ -82,18 +82,18 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0f246d90061577639315575ce8d808b7" id="r_a0f246d90061577639315575ce8d808b7"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a0f246d90061577639315575ce8d808b7"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl_1_1detail.html#a0f246d90061577639315575ce8d808b7">iterative_solve_impl</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> t, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSchemes, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSolution)</td></tr>
-<tr class="separator:a0f246d90061577639315575ce8d808b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e2920f47c5c5565fed9c78509cfa5fe" id="r_a0e2920f47c5c5565fed9c78509cfa5fe"><td class="memTemplParams" colspan="2">template&lt;typename VectorType , typename PostAssemblyFunctor &gt; </td></tr>
+<tr class="memitem:a0e2920f47c5c5565fed9c78509cfa5fe"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl_1_1detail.html#a0e2920f47c5c5565fed9c78509cfa5fe">iterative_solve_impl</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> t, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSchemes, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSolution, PostAssemblyFunctor p)</td></tr>
+<tr class="separator:a0e2920f47c5c5565fed9c78509cfa5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a0f246d90061577639315575ce8d808b7" name="a0f246d90061577639315575ce8d808b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f246d90061577639315575ce8d808b7">&#9670;&#160;</a></span>iterative_solve_impl()</h2>
+<a id="a0e2920f47c5c5565fed9c78509cfa5fe" name="a0e2920f47c5c5565fed9c78509cfa5fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e2920f47c5c5565fed9c78509cfa5fe">&#9670;&#160;</a></span>iterative_solve_impl()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename VectorType &gt; </div>
+template&lt;typename VectorType , typename PostAssemblyFunctor &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a> NeoN::dsl::detail::iterative_solve_impl </td>
@@ -129,7 +129,13 @@ template&lt;typename VectorType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;&#160;</td>
-          <td class="paramname"><em>fvSolution</em>&#160;</td>
+          <td class="paramname"><em>fvSolution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PostAssemblyFunctor&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
