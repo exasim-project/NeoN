@@ -58,7 +58,7 @@ la::SolverStats iterative_solve_impl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    // fence(solution.exec());
+    fence(solution.exec());
     return solver.solve(ls, solution.internalVector());
 }
 

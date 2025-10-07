@@ -48,11 +48,7 @@ public:
         solutionVector.internalVector() = oldSolutionVector.internalVector() - source * dt;
         solutionVector.correctBoundaryConditions();
 
-        // check if executor is GPU
-        if (std::holds_alternative<NeoN::GPUExecutor>(eqn.exec()))
-        {
-            Kokkos::fence();
-        }
+        fence(eqn.exec());
     };
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
