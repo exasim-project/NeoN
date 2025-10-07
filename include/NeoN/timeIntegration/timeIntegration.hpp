@@ -79,9 +79,7 @@ public:
 
     void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
-        std::cout << __FILE__ << ":" << __LINE__ << "\n";
         timeIntegratorStrategy_->solve(eqn, sol, t, dt);
-        std::cout << __FILE__ << ":" << __LINE__ << "\n";
     }
 
     bool direct() const { return timeIntegratorStrategy_->direct(); }

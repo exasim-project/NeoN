@@ -28,18 +28,17 @@ namespace NeoN::dsl
 namespace detail
 {
 
-template<typename VectorType>
+template<typename VectorType, typename PostAssemblyFunctor>
 la::SolverStats iterative_solve_impl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
-    const Dictionary& fvSolution
+    const Dictionary& fvSolution,
+    std::vector<PostAssemblyFunctor> ps
 )
 {
-
-    // solve sparse matrix system
     using ValueType = typename VectorType::ElementType;
 
     auto sparsity = la::SparsityPattern(solution.mesh());
@@ -47,6 +46,12 @@ la::SolverStats iterative_solve_impl(
 
     exp.implicitOperation(ls);        // add spatial operator
     exp.implicitOperation(ls, t, dt); // add temporal operators
+
+    // perform post assembly transformations
+    for (auto p : ps)
+    {
+        p(ls);
+    }
 
     // subtract the explicit source term from the rhs
     auto expTmp = exp.explicitOperation(solution.mesh().nCells());
@@ -61,9 +66,13 @@ la::SolverStats iterative_solve_impl(
     fence(solution.exec());
     return solver.solve(ls, solution.internalVector());
 }
-
-
 }
+
+template<typename VectorType>
+struct OpFunctor
+{
+    virtual void operator()(la::LinearSystem<VectorType, localIdx>& in) {};
+};
 
 /* @brief solve an expression
  *
@@ -73,6 +82,7 @@ la::SolverStats iterative_solve_impl(
  * @param dt - time step for the temporal integration
  * @param fvSchemes - Dictionary containing spatial operator and time  integration properties
  * @param fvSolution - Dictionary containing linear solver properties
+ * @param p - A chainable functor that performs manipulations on the assembled system
  */
 template<typename VectorType>
 la::SolverStats solve(
@@ -81,7 +91,8 @@ la::SolverStats solve(
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
-    const Dictionary& fvSolution
+    const Dictionary& fvSolution,
+    std::vector<OpFunctor<typename VectorType::ElementType>> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
@@ -100,7 +111,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterative_solve_impl(exp, solution, t, dt, fvSchemes, fvSolution);
+        return detail::iterative_solve_impl(exp, solution, t, dt, fvSchemes, fvSolution, p);
     }
 }
 
