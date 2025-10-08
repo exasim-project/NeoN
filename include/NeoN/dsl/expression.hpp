@@ -85,9 +85,10 @@ public:
         return source;
     }
 
-    // TODO: rename to assembleMatrixCoefficients ?
-    /* @brief perform all implicit operation and accumulate the result */
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    /*@brief compute matrix coefficients based on all spatial operators
+     *
+     */
+    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls)
     {
         for (auto& op : spatialOperators_)
         {
@@ -98,7 +99,10 @@ public:
         }
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
+    /*@brief compute matrix coefficients based on all temporal operators
+     * assemble directly into linear system
+     */
+    void assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
     {
         for (auto& op : temporalOperators_)
         {
@@ -133,8 +137,8 @@ public:
         std::vector<OpFunctor<ValueType>> ps
     )
     {
-        implicitOperation(ls);        // add spatial operator
-        implicitOperation(ls, t, dt); // add temporal operators
+        assembleSpatialOperator(ls);         // add spatial operator
+        assembleTemporalOperator(ls, t, dt); // add temporal operators
 
         // perform post assembly transformations
         for (auto p : ps)
