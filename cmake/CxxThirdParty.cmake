@@ -163,8 +163,10 @@ if(${NeoN_WITH_SUNDIALS})
 endif()
 
 if(${NeoN_WITH_GINKGO})
+  # --- nlohmann_json ---
   find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
   if(NOT nlohmann_json_FOUND)
+    message(STATUS "System nlohmann_json not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
       NAME
       nlohmann_json
@@ -176,28 +178,37 @@ if(${NeoN_WITH_GINKGO})
       YES
       OPTIONS
       "JSON_Install ON")
+  else()
+    message(STATUS "Using system-installed nlohmann_json (version: ${nlohmann_json_VERSION})")
   endif()
 
-  cpmaddpackage(
-    NAME
-    Ginkgo
-    VERSION
-    ${NeoN_GINKGO_VERSION}
-    GITHUB_REPOSITORY
-    ginkgo-project/ginkgo
-    GIT_TAG
-    ${NeoN_GINKGO_TAG}
-    SYSTEM
-    YES
-    OPTIONS
-    "GINKGO_BUILD_TESTS OFF"
-    "GINKGO_BUILD_BENCHMARKS OFF"
-    "GINKGO_BUILD_EXAMPLES OFF"
-    "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
-    "GINKGO_ENABLE_HALF OFF"
-    "GINKGO_BUILD_MPI OFF"
-    "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-    "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+  # --- Ginkgo ---
+  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  if(Ginkgo_FOUND)
+    message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+  else()
+    message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    cpmaddpackage(
+      NAME
+      Ginkgo
+      VERSION
+      ${NeoN_GINKGO_VERSION}
+      GITHUB_REPOSITORY
+      ginkgo-project/ginkgo
+      GIT_TAG
+      ${NeoN_GINKGO_TAG}
+      SYSTEM
+      YES
+      OPTIONS
+      "GINKGO_BUILD_TESTS OFF"
+      "GINKGO_BUILD_BENCHMARKS OFF"
+      "GINKGO_BUILD_EXAMPLES OFF"
+      "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
+      "GINKGO_ENABLE_HALF OFF"
+      "GINKGO_BUILD_MPI OFF"
+      "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
+      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+  endif()
 endif()
 
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
