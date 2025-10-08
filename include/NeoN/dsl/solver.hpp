@@ -28,7 +28,8 @@ namespace NeoN::dsl
 namespace detail
 {
 
-template<typename VectorType, typename PostAssemblyFunctor>
+// TODO VectorType not needed use ValueType
+template<typename VectorType>
 la::SolverStats iterative_solve_impl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
@@ -36,23 +37,14 @@ la::SolverStats iterative_solve_impl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyFunctor> ps
+    std::vector<OpFunctor<typename VectorType::ElementType>> ps
 )
 {
     using ValueType = typename VectorType::ElementType;
+    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
 
-    auto sparsity = la::SparsityPattern(solution.mesh());
-    auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(solution.mesh(), sparsity);
-
-    exp.implicitOperation(ls);        // add spatial operator
-    exp.implicitOperation(ls, t, dt); // add temporal operators
-
-    // perform post assembly transformations
-    for (auto p : ps)
-    {
-        p(ls);
-    }
-
+    // TODO move that to expression explicit operation or
+    // into functor ?
     // subtract the explicit source term from the rhs
     auto expTmp = exp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
@@ -67,12 +59,6 @@ la::SolverStats iterative_solve_impl(
     return solver.solve(ls, solution.internalVector());
 }
 }
-
-template<typename VectorType>
-struct OpFunctor
-{
-    virtual void operator()(la::LinearSystem<VectorType, localIdx>& in) {};
-};
 
 /* @brief solve an expression
  *

@@ -13,12 +13,19 @@
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
 
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace la = la;
 
 namespace NeoN::dsl
 {
+
+template<typename VectorType>
+struct OpFunctor
+{
+    virtual void operator()(la::LinearSystem<VectorType, localIdx>& in) {};
+};
 
 
 template<typename ValueType>
@@ -102,6 +109,39 @@ public:
         }
     }
 
+    /* @brief construct a linear system and force assembly
+     *
+     * @return the assembled linear system
+     */
+    la::LinearSystem<ValueType, localIdx> assemble(
+        const UnstructuredMesh& mesh, scalar t, scalar dt, std::vector<OpFunctor<ValueType>> ps
+    )
+    {
+        auto sparsity = la::SparsityPattern(mesh);
+        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sparsity);
+        assemble(t, dt, ls, ps);
+        return ls;
+    };
+
+    /* @brief assemble into a given linear system
+     *
+     */
+    void assemble(
+        scalar t,
+        scalar dt,
+        la::LinearSystem<ValueType, localIdx>& ls,
+        std::vector<OpFunctor<ValueType>> ps
+    )
+    {
+        implicitOperation(ls);        // add spatial operator
+        implicitOperation(ls, t, dt); // add temporal operators
+
+        // perform post assembly transformations
+        for (auto p : ps)
+        {
+            p(ls);
+        }
+    };
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
 
