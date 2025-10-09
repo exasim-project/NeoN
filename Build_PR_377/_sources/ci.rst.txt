@@ -88,6 +88,7 @@ FoamAdapter with NeoN. The procedure is as follows:
 
 **Branch Handling Rules:**
 When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:
+
 * If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.
 * Otherwise, the **main** branch is used as a fallback.
 
