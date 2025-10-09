@@ -6,16 +6,12 @@ to ensure correct builds, GPU compatibility, and automated benchmarking.
 The main repository is hosted on **GitHub**, and GPU-based workflows are delegated
 to **LRZ GitLab**, where jobs are executed on both **NVIDIA** and **AMD** GPUs.
 
-.. figure:: _static/ci_neon_architecture.svg
-   :align: center
-   :alt: Overview of the CI architecture for NeoN
-   :figwidth: 90%
+.. .. figure:: _static/ci_neon_architecture.svg
+..    :align: center
+..    :alt: Overview of the CI architecture for NeoN
+..    :figwidth: 90%
 
-   *Figure 1 – Overview of NeoN’s CI architecture integrating GitHub and LRZ GitLab.*
-
-.. contents::
-   :local:
-   :depth: 2
+..    *Figure 1 – Overview of NeoN’s CI architecture integrating GitHub and LRZ GitLab.*
 
 -------------------------------
 Continuous Integration on GitHub
@@ -44,12 +40,12 @@ The LRZ GitLab CI handles GPU-related operations.
 * Run benchmark jobs after successful build and test stages.
 * Report the status and results back to GitHub for unified monitoring.
 
-.. figure:: _static/ci_neon_layers.svg
-   :align: center
-   :alt: Two-layer CI structure for NeoN
-   :figwidth: 90%
+.. .. figure:: _static/ci_neon_layers.svg
+..    :align: center
+..    :alt: Two-layer CI structure for NeoN
+..    :figwidth: 90%
 
-   *Figure 2 – Two-layer structure of the NeoN CI pipeline.*
+..    *Figure 2 – Two-layer structure of the NeoN CI pipeline.*
 
 .. _ci-neon-workflow:
 
@@ -66,12 +62,12 @@ The CI workflow for NeoN proceeds as follows:
 #. *(Optional)* Benchmark jobs are executed after successful testing.
 #. The developer monitors all results directly on GitHub.
 
-.. figure:: _static/ci_neon_workflow.svg
-   :align: center
-   :alt: Workflow diagram of NeoN CI
-   :figwidth: 90%
+.. .. figure:: _static/ci_neon_workflow.svg
+..    :align: center
+..    :alt: Workflow diagram of NeoN CI
+..    :figwidth: 90%
 
-   *Figure 3 – Step-by-step workflow of NeoN’s CI integration.*
+..    *Figure 3 – Step-by-step workflow of NeoN’s CI integration.*
 
 .. _ci-neon-mechanism:
 
