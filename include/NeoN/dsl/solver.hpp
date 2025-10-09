@@ -41,7 +41,7 @@ la::SolverStats iterative_solve_impl(
 )
 {
     using ValueType = typename VectorType::ElementType;
-    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
+    auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?

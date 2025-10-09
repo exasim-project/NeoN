@@ -24,7 +24,7 @@ namespace NeoN::dsl
 template<typename VectorType>
 struct OpFunctor
 {
-    virtual void operator()(la::LinearSystem<VectorType, localIdx>& in) {};
+    virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
 };
 
 
@@ -88,7 +88,7 @@ public:
     /*@brief compute matrix coefficients based on all spatial operators
      *
      */
-    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls)
+    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -102,7 +102,8 @@ public:
     /*@brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    void assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
+    void
+    assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -117,14 +118,14 @@ public:
      *
      * @return the assembled linear system
      */
-    la::LinearSystem<ValueType, localIdx> assemble(
-        const UnstructuredMesh& mesh, scalar t, scalar dt, std::vector<OpFunctor<ValueType>> ps
-    )
+    std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
+        const UnstructuredMesh& mesh, scalar t, scalar dt, std::vector<OpFunctor<ValueType>> ps = {}
+    ) const
     {
-        auto sparsity = la::SparsityPattern(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sparsity);
-        assemble(t, dt, ls, ps);
-        return ls;
+        auto sp = la::SparsityPattern(mesh);
+        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sp);
+        assemble(t, dt, sp, ls, ps);
+        return {sp, ls};
     };
 
     /* @brief assemble into a given linear system
@@ -133,9 +134,10 @@ public:
     void assemble(
         scalar t,
         scalar dt,
+        const la::SparsityPattern& sp,
         la::LinearSystem<ValueType, localIdx>& ls,
-        std::vector<OpFunctor<ValueType>> ps
-    )
+        std::vector<OpFunctor<ValueType>> ps = {}
+    ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
@@ -143,7 +145,7 @@ public:
         // perform post assembly transformations
         for (auto p : ps)
         {
-            p(ls);
+            p(sp, ls);
         }
     };
 
@@ -194,9 +196,9 @@ private:
 
     const Executor exec_;
 
-    std::vector<TemporalOperator<ValueType>> temporalOperators_;
+    mutable std::vector<TemporalOperator<ValueType>> temporalOperators_;
 
-    std::vector<SpatialOperator<ValueType>> spatialOperators_;
+    mutable std::vector<SpatialOperator<ValueType>> spatialOperators_;
 };
 
 template<typename ValueType>
