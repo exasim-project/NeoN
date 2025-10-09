@@ -280,19 +280,8 @@
 to ensure correct builds, GPU compatibility, and automated benchmarking.</p>
 <p>The main repository is hosted on <strong>GitHub</strong>, and GPU-based workflows are delegated
 to <strong>LRZ GitLab</strong>, where jobs are executed on both <strong>NVIDIA</strong> and <strong>AMD</strong> GPUs.</p>
-<figure class="align-center" id="id1" style="width: 90%">
-<img alt="Overview of the CI architecture for NeoN" src="_static/ci_neon_architecture.svg" /><figcaption>
-<p><span class="caption-text"><em>Figure 1 – Overview of NeoN’s CI architecture integrating GitHub and LRZ GitLab.</em></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
-<nav class="contents local" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#continuous-integration-on-github" id="id4">Continuous Integration on GitHub</a></p></li>
-<li><p><a class="reference internal" href="#continuous-integration-on-lrz-gitlab" id="id5">Continuous Integration on LRZ GitLab</a></p></li>
-</ul>
-</nav>
 <section id="continuous-integration-on-github">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Continuous Integration on GitHub</a><a class="headerlink" href="#continuous-integration-on-github" title="Link to this heading">¶</a></h2>
+<h2>Continuous Integration on GitHub<a class="headerlink" href="#continuous-integration-on-github" title="Link to this heading">¶</a></h2>
 <p>GitHub CI is responsible for managing the overall NeoN CI workflow.</p>
 <p><strong>Responsibilities:</strong></p>
 <ul class="simple">
@@ -308,7 +297,7 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 </div>
 </section>
 <section id="continuous-integration-on-lrz-gitlab">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Continuous Integration on LRZ GitLab</a><a class="headerlink" href="#continuous-integration-on-lrz-gitlab" title="Link to this heading">¶</a></h2>
+<h2>Continuous Integration on LRZ GitLab<a class="headerlink" href="#continuous-integration-on-lrz-gitlab" title="Link to this heading">¶</a></h2>
 <p>The LRZ GitLab CI handles GPU-related operations.</p>
 <p><strong>Responsibilities:</strong></p>
 <ul class="simple">
@@ -316,11 +305,6 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <li><p>Run benchmark jobs after successful build and test stages.</p></li>
 <li><p>Report the status and results back to GitHub for unified monitoring.</p></li>
 </ul>
-<figure class="align-center" id="id2" style="width: 90%">
-<img alt="Two-layer CI structure for NeoN" src="_static/ci_neon_layers.svg" /><figcaption>
-<p><span class="caption-text"><em>Figure 2 – Two-layer structure of the NeoN CI pipeline.</em></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
 </section>
 </section>
 <section id="development-workflow">
@@ -336,11 +320,6 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing.</p></li>
 <li><p>The developer monitors all results directly on GitHub.</p></li>
 </ol>
-<figure class="align-center" id="id3" style="width: 90%">
-<img alt="Workflow diagram of NeoN CI" src="_static/ci_neon_workflow.svg" /><figcaption>
-<p><span class="caption-text"><em>Figure 3 – Step-by-step workflow of NeoN’s CI integration.</em></span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
 </section>
 <section id="detailed-mechanism">
 <span id="ci-neon-mechanism"></span><h1>Detailed Mechanism<a class="headerlink" href="#detailed-mechanism" title="Link to this heading">¶</a></h1>
