@@ -1,4 +1,4 @@
-Overview
+Continuous Integration
 ========
 The **NeoN** project uses a two-level Continuous Integration (CI) system
 to ensure correct builds, GPU compatibility, and automated benchmarking.
@@ -20,7 +20,7 @@ GitHub CI is responsible for managing the overall NeoN CI workflow.
 
 **Responsibilities:**
 
-* Build and test NeoN on **CPU** platforms.
+* Build and test NeoN on **CPU** across different platforms (Linux, macOS, Windows).
 * Push the source code and commit metadata to **LRZ GitLab**.
 * Cancel outdated pipelines on LRZ GitLab for the same branch.
 * Trigger new LRZ GitLab pipelines for GPU builds and benchmarks.
@@ -36,7 +36,7 @@ The LRZ GitLab CI handles GPU-related operations.
 
 **Responsibilities:**
 
-* Build and test NeoN on **NVIDIA** and **AMD** GPU nodes.
+* Build and test NeoN on **NVIDIA** and **AMD** GPU on Linux.
 * Run benchmark jobs after successful build and test stages.
 * Report the status and results back to GitHub for unified monitoring.
 
@@ -49,14 +49,15 @@ The LRZ GitLab CI handles GPU-related operations.
 
 .. _ci-neon-workflow:
 
+-------------------------------
 Development Workflow
-====================
-The CI workflow for NeoN proceeds as follows:
+-------------------------------
+The development workflow for NeoN proceeds as follows:
 
-#. A developer pushes a commit or pull request to GitHub.
+#. A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.
 #. GitHub CI builds and tests NeoN on CPUs.
 #. GitHub CI pushes the same branch to LRZ GitLab.
-#. Existing LRZ GitLab pipelines for that branch are canceled.
+#. All pending or running LRZ GitLab pipelines for that branch are canceled.
 #. GitHub CI triggers a **new LRZ GitLab pipeline**.
 #. LRZ GitLab CI builds and tests NeoN on GPUs.
 #. *(Optional)* Benchmark jobs are executed after successful testing.
@@ -69,20 +70,25 @@ The CI workflow for NeoN proceeds as follows:
 
 ..    *Figure 3 – Step-by-step workflow of NeoN’s CI integration.*
 
-.. _ci-neon-mechanism:
+.. _ci-integration-tests:
 
-Detailed Mechanism
-==================
-The internal triggering and coordination logic is as follows:
+-------------------------------
+Integration Tests
+-------------------------------
+**NeoN** is a CFD library that can be integrated into other frameworks. An option is to use the
+GitHub repository **FoamAdapter**, which provides an adapter to integrate NeoN with OpenFOAM.
 
-1. GitHub CI starts the pipeline on **NeoN LRZ GitLab**.
-2. The GitHub workflow checks whether the corresponding branch exists on LRZ GitLab.
-3. If successful, the LRZ GitLab pipeline performs all GPU build-and-test jobs.
-4. *(Optional)* Benchmarking is triggered on LRZ GitLab after successful validation.
+To ensure the correctness of this integration, the CI system includes jobs that build and run
+FoamAdapter with NeoN. The procedure is as follows:
+
+#. GitHub CI starts a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
+#. If the pipeline succeeds, GitHub CI triggers a new pipeline on **FoamAdapter LRZ GitLab**.
+#. The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.
+#. *(Optional)* Benchmarking is triggered on LRZ GitLab after successful integration tests.
 
 **Branch Handling Rules:**
-
-* If the branch exists on LRZ GitLab, it is used directly.
+When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:
+* If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.
 * Otherwise, the **main** branch is used as a fallback.
 
 .. tip::
@@ -90,21 +96,23 @@ The internal triggering and coordination logic is as follows:
 
 .. _ci-neon-labels:
 
+-------------------------------
 Pull Request Labels
-===================
+-------------------------------
 NeoN’s GitHub repository uses labels to control the CI behavior.
 
-**Available Labels:**
+**Relevant Labels:**
 
 * ``Skip-build`` — Skip all build-and-test jobs on both GitHub and LRZ GitLab.
-* ``benchmark`` — Enable GPU benchmarking jobs after successful builds.
+* ``benchmark`` — Enable GPU benchmarking jobs after successful build-and-test jobs and integration tests.
 
-These labels allow developers to fine-tune which stages of the CI system should run.
+These labels allow developers to customize the CI process according to their needs.
 
 .. _ci-neon-summary:
 
+-------------------------------
 Summary
-=======
+-------------------------------
 The NeoN CI system provides:
 
 * Unified GitHub-driven CI management.
@@ -116,5 +124,5 @@ The NeoN CI system provides:
 .. seealso::
 
    * :ref:`ci-neon-workflow`
-   * :ref:`ci-neon-mechanism`
+   * :ref:`ci-integration-tests`
    * :ref:`ci-neon-labels`

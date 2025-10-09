@@ -7,7 +7,7 @@
         <link rel="canonical" href="https://exasim-project.com/NeoN/ci.html">
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
-        <title>Overview - NeoN documentation</title>
+        <title>Continuous Integration - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=acfd86a5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -231,11 +231,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mpi_architecture.html">MPI Architecture</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#detailed-mechanism">Detailed Mechanism</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#pull-request-labels">Pull Request Labels</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Continuous Integration</a></li>
 </ul>
 
 </div>
@@ -274,8 +270,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h1>
+          <section id="continuous-integration">
+<h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h1>
 <p>The <strong>NeoN</strong> project uses a two-level Continuous Integration (CI) system
 to ensure correct builds, GPU compatibility, and automated benchmarking.</p>
 <p>The main repository is hosted on <strong>GitHub</strong>, and GPU-based workflows are delegated
@@ -285,7 +281,7 @@ to <strong>LRZ GitLab</strong>, where jobs are executed on both <strong>NVIDIA</
 <p>GitHub CI is responsible for managing the overall NeoN CI workflow.</p>
 <p><strong>Responsibilities:</strong></p>
 <ul class="simple">
-<li><p>Build and test NeoN on <strong>CPU</strong> platforms.</p></li>
+<li><p>Build and test NeoN on <strong>CPU</strong> across different platforms (Linux, macOS, Windows).</p></li>
 <li><p>Push the source code and commit metadata to <strong>LRZ GitLab</strong>.</p></li>
 <li><p>Cancel outdated pipelines on LRZ GitLab for the same branch.</p></li>
 <li><p>Trigger new LRZ GitLab pipelines for GPU builds and benchmarks.</p></li>
@@ -301,57 +297,58 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <p>The LRZ GitLab CI handles GPU-related operations.</p>
 <p><strong>Responsibilities:</strong></p>
 <ul class="simple">
-<li><p>Build and test NeoN on <strong>NVIDIA</strong> and <strong>AMD</strong> GPU nodes.</p></li>
+<li><p>Build and test NeoN on <strong>NVIDIA</strong> and <strong>AMD</strong> GPU on Linux.</p></li>
 <li><p>Run benchmark jobs after successful build and test stages.</p></li>
 <li><p>Report the status and results back to GitHub for unified monitoring.</p></li>
 </ul>
 </section>
-</section>
 <section id="development-workflow">
-<span id="ci-neon-workflow"></span><h1>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading">¶</a></h1>
-<p>The CI workflow for NeoN proceeds as follows:</p>
+<span id="ci-neon-workflow"></span><h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading">¶</a></h2>
+<p>The development workflow for NeoN proceeds as follows:</p>
 <ol class="arabic simple">
-<li><p>A developer pushes a commit or pull request to GitHub.</p></li>
+<li><p>A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.</p></li>
 <li><p>GitHub CI builds and tests NeoN on CPUs.</p></li>
 <li><p>GitHub CI pushes the same branch to LRZ GitLab.</p></li>
-<li><p>Existing LRZ GitLab pipelines for that branch are canceled.</p></li>
+<li><p>All pending or running LRZ GitLab pipelines for that branch are canceled.</p></li>
 <li><p>GitHub CI triggers a <strong>new LRZ GitLab pipeline</strong>.</p></li>
 <li><p>LRZ GitLab CI builds and tests NeoN on GPUs.</p></li>
 <li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing.</p></li>
 <li><p>The developer monitors all results directly on GitHub.</p></li>
 </ol>
 </section>
-<section id="detailed-mechanism">
-<span id="ci-neon-mechanism"></span><h1>Detailed Mechanism<a class="headerlink" href="#detailed-mechanism" title="Link to this heading">¶</a></h1>
-<p>The internal triggering and coordination logic is as follows:</p>
+<section id="integration-tests">
+<span id="ci-integration-tests"></span><h2>Integration Tests<a class="headerlink" href="#integration-tests" title="Link to this heading">¶</a></h2>
+<p><strong>NeoN</strong> is a CFD library that can be integrated into other frameworks. An option is to use the
+GitHub repository <strong>FoamAdapter</strong>, which provides an adapter to integrate NeoN with OpenFOAM.</p>
+<p>To ensure the correctness of this integration, the CI system includes jobs that build and run
+FoamAdapter with NeoN. The procedure is as follows:</p>
 <ol class="arabic simple">
-<li><p>GitHub CI starts the pipeline on <strong>NeoN LRZ GitLab</strong>.</p></li>
-<li><p>The GitHub workflow checks whether the corresponding branch exists on LRZ GitLab.</p></li>
-<li><p>If successful, the LRZ GitLab pipeline performs all GPU build-and-test jobs.</p></li>
-<li><p><em>(Optional)</em> Benchmarking is triggered on LRZ GitLab after successful validation.</p></li>
+<li><p>GitHub CI starts a pipeline on <strong>NeoN LRZ GitLab</strong> which builds and tests NeoN.</p></li>
+<li><p>If the pipeline succeeds, GitHub CI triggers a new pipeline on <strong>FoamAdapter LRZ GitLab</strong>.</p></li>
+<li><p>The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.</p></li>
+<li><p><em>(Optional)</em> Benchmarking is triggered on LRZ GitLab after successful integration tests.</p></li>
 </ol>
-<p><strong>Branch Handling Rules:</strong></p>
-<ul class="simple">
-<li><p>If the branch exists on LRZ GitLab, it is used directly.</p></li>
-<li><p>Otherwise, the <strong>main</strong> branch is used as a fallback.</p></li>
-</ul>
+<p><strong>Branch Handling Rules:</strong>
+When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:
+* If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.
+* Otherwise, the <strong>main</strong> branch is used as a fallback.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> label on a NeoN pull request to trigger benchmarking jobs.</p>
 </div>
 </section>
 <section id="pull-request-labels">
-<span id="ci-neon-labels"></span><h1>Pull Request Labels<a class="headerlink" href="#pull-request-labels" title="Link to this heading">¶</a></h1>
+<span id="ci-neon-labels"></span><h2>Pull Request Labels<a class="headerlink" href="#pull-request-labels" title="Link to this heading">¶</a></h2>
 <p>NeoN’s GitHub repository uses labels to control the CI behavior.</p>
-<p><strong>Available Labels:</strong></p>
+<p><strong>Relevant Labels:</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Skip-build</span></code> — Skip all build-and-test jobs on both GitHub and LRZ GitLab.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">benchmark</span></code> — Enable GPU benchmarking jobs after successful builds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">benchmark</span></code> — Enable GPU benchmarking jobs after successful build-and-test jobs and integration tests.</p></li>
 </ul>
-<p>These labels allow developers to fine-tune which stages of the CI system should run.</p>
+<p>These labels allow developers to customize the CI process according to their needs.</p>
 </section>
 <section id="summary">
-<span id="ci-neon-summary"></span><h1>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h1>
+<span id="ci-neon-summary"></span><h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>The NeoN CI system provides:</p>
 <ul class="simple">
 <li><p>Unified GitHub-driven CI management.</p></li>
@@ -364,10 +361,11 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <p class="admonition-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#ci-neon-workflow"><span class="std std-ref">Development Workflow</span></a></p></li>
-<li><p><a class="reference internal" href="#ci-neon-mechanism"><span class="std std-ref">Detailed Mechanism</span></a></p></li>
+<li><p><a class="reference internal" href="#ci-integration-tests"><span class="std std-ref">Integration Tests</span></a></p></li>
 <li><p><a class="reference internal" href="#ci-neon-labels"><span class="std std-ref">Pull Request Labels</span></a></p></li>
 </ul>
 </div>
+</section>
 </section>
 
         </article>
@@ -417,15 +415,15 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#">Continuous Integration</a><ul>
 <li><a class="reference internal" href="#continuous-integration-on-github">Continuous Integration on GitHub</a></li>
 <li><a class="reference internal" href="#continuous-integration-on-lrz-gitlab">Continuous Integration on LRZ GitLab</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
-<li><a class="reference internal" href="#detailed-mechanism">Detailed Mechanism</a></li>
+<li><a class="reference internal" href="#integration-tests">Integration Tests</a></li>
 <li><a class="reference internal" href="#pull-request-labels">Pull Request Labels</a></li>
 <li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
 </ul>
 
           </div>
