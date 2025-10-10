@@ -5,13 +5,12 @@ to ensure correct builds, GPU compatibility, and automated benchmarking.
 
 The main repository is hosted on **GitHub**, and GPU-based workflows are delegated
 to **LRZ GitLab**, where jobs are executed on both **NVIDIA** and **AMD** GPUs.
+The setup of the NeoN CI system is illustrated below.
 
-.. .. figure:: _static/ci_neon_architecture.svg
-..    :align: center
-..    :alt: Overview of the CI architecture for NeoN
-..    :figwidth: 90%
-
-..    *Figure 1 – Overview of NeoN’s CI architecture integrating GitHub and LRZ GitLab.*
+.. figure:: _static/ci/ci_setup_overview.png
+   :align: center
+   :alt: Overview of the CI architecture for NeoN
+   :width: 90%
 
 -------------------------------
 Continuous Integration on GitHub
