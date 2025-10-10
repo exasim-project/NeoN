@@ -16,6 +16,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
 
@@ -42,6 +43,8 @@ laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<scalar>& ph
 
 SpatialOperator<Vec3>
 laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<Vec3>& phi);
+
+SpatialOperator<Vec3> grad(fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
 
