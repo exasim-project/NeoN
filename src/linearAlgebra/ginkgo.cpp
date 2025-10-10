@@ -20,7 +20,6 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     // check if an external file name is given
     if (dict.contains("configFile"))
     {
-
         std::string fn_str {};
         auto fn = dict["configFile"];
         if (fn.type() == typeid(std::string))

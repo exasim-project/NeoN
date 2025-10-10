@@ -83,7 +83,6 @@ public:
 
     std::string getName() const { return model_->getName(); }
 
-
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }

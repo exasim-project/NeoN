@@ -27,14 +27,18 @@ public:
  * in NeoNs dsl
  *
  * @ingroup dsl
+ * @tparam VectorType the type of the resulting field after evaluation
+ * @tparam VectorInType the type of the input field
  */
-template<typename VectorType>
+template<typename VectorType, typename VectorInType = VectorType>
 class OperatorMixin
 {
 
 public:
 
-    OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
+    OperatorMixin(
+        const Executor exec, const Coeff& coeffs, VectorInType& field, Operator::Type type
+    )
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
     Operator::Type getType() const { return type_; }
@@ -47,9 +51,9 @@ public:
 
     const Coeff& getCoefficient() const { return coeffs_; }
 
-    VectorType& getVector() { return field_; }
+    VectorInType& getVector() { return field_; }
 
-    const VectorType& getVector() const { return field_; }
+    const VectorInType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
     void read([[maybe_unused]] const Input& input) {}
@@ -60,7 +64,7 @@ protected:
 
     Coeff coeffs_;
 
-    VectorType& field_;
+    VectorInType& field_;
 
     Operator::Type type_;
 };
