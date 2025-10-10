@@ -67,7 +67,7 @@ To ensure the correctness of this integration, the CI system includes jobs that 
 FoamAdapter with NeoN. The integration tests are executed on CPUs and GPUs.
 
 The integration tests on CPUs are executed directly by GitHub CI, while
-the integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab.
+the integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab CI.
 The procedure is as follows:
 
 #. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
