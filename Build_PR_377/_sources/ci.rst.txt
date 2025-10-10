@@ -47,11 +47,11 @@ Development Workflow
 The development workflow for NeoN proceeds as follows:
 
 #. A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.
-#. GitHub CI builds and tests NeoN on CPUs.
-#. GitHub CI pushes the same branch to LRZ GitLab.
+#. GitHub CI builds and tests NeoN on CPUs, and pushes the same branch to LRZ GitLab.
 #. GitHub CI cancels all pending or running LRZ GitLab pipelines for that branch.
 #. GitHub CI triggers a **new LRZ GitLab pipeline**.
 #. LRZ GitLab CI builds and tests NeoN on GPUs.
+#. If the tests pass, GitHub CI triggers integration tests with the **FoamAdapter** on GPUs (see below).
 #. *(Optional)* Benchmark jobs are executed after successful testing, including integration testing.
 #. The developer monitors all results directly on GitHub.
 
@@ -64,14 +64,20 @@ Integration Tests
 GitHub repository **FoamAdapter**, which provides an adapter to integrate NeoN with OpenFOAM.
 
 To ensure the correctness of this integration, the CI system includes jobs that build and run
-FoamAdapter with NeoN. The integration tests are executed on CPUs and GPUs.
+FoamAdapter with NeoN. The integration tests are executed on CPUs by GitHub CI, while the integration
+tests on GPUs are executed by LRZ GitLab CI as described below.
 
-The integration tests on CPUs are executed directly by GitHub CI, while
-the integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab CI.
-The procedure is as follows:
+.. mermaid::
+
+   flowchart TD
+       A[GitHub CI] --> B[NeoN LRZ GitLab Pipeline]
+       B -->|Build & Test NeoN| C{Pipeline Success?}
+       C -->|Yes| D[FoamAdapter LRZ GitLab Pipeline]
+       D -->|Build & Test FoamAdapter using same NeoN version| E[End]
+       C -->|No| F[Stop]
 
 #. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
-#. If the pipeline succeeds, GitHub CI triggers a new pipeline on **FoamAdapter LRZ GitLab**.
+#. If the pipeline succeeds, GitHub CI triggers a pipeline on **FoamAdapter LRZ GitLab**.
 #. The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.
 
 This ensures that any changes in NeoN do not break the integration with FoamAdapter.

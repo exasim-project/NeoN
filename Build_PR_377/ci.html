@@ -311,11 +311,11 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <p>The development workflow for NeoN proceeds as follows:</p>
 <ol class="arabic simple">
 <li><p>A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.</p></li>
-<li><p>GitHub CI builds and tests NeoN on CPUs.</p></li>
-<li><p>GitHub CI pushes the same branch to LRZ GitLab.</p></li>
+<li><p>GitHub CI builds and tests NeoN on CPUs, and pushes the same branch to LRZ GitLab.</p></li>
 <li><p>GitHub CI cancels all pending or running LRZ GitLab pipelines for that branch.</p></li>
 <li><p>GitHub CI triggers a <strong>new LRZ GitLab pipeline</strong>.</p></li>
 <li><p>LRZ GitLab CI builds and tests NeoN on GPUs.</p></li>
+<li><p>If the tests pass, GitHub CI triggers integration tests with the <strong>FoamAdapter</strong> on GPUs (see below).</p></li>
 <li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing, including integration testing.</p></li>
 <li><p>The developer monitors all results directly on GitHub.</p></li>
 </ol>
@@ -325,13 +325,18 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <p><strong>NeoN</strong> is a CFD library that can be integrated into other frameworks. An option is to use the
 GitHub repository <strong>FoamAdapter</strong>, which provides an adapter to integrate NeoN with OpenFOAM.</p>
 <p>To ensure the correctness of this integration, the CI system includes jobs that build and run
-FoamAdapter with NeoN. The integration tests are executed on CPUs and GPUs.</p>
-<p>The integration tests on CPUs are executed directly by GitHub CI, while
-the integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab CI.
-The procedure is as follows:</p>
-<ol class="arabic simple">
+FoamAdapter with NeoN. The integration tests are executed on CPUs by GitHub CI, while the integration
+tests on GPUs are executed by LRZ GitLab CI as described below.</p>
+<pre  class="mermaid">
+        flowchart TD
+    A[GitHub CI] --&gt; B[NeoN LRZ GitLab Pipeline]
+    B --&gt;|Build &amp; Test NeoN| C{Pipeline Success?}
+    C --&gt;|Yes| D[FoamAdapter LRZ GitLab Pipeline]
+    D --&gt;|Build &amp; Test FoamAdapter using same NeoN version| E[End]
+    C --&gt;|No| F[Stop]
+    </pre><ol class="arabic simple">
 <li><p>GitHub CI triggers a pipeline on <strong>NeoN LRZ GitLab</strong> which builds and tests NeoN.</p></li>
-<li><p>If the pipeline succeeds, GitHub CI triggers a new pipeline on <strong>FoamAdapter LRZ GitLab</strong>.</p></li>
+<li><p>If the pipeline succeeds, GitHub CI triggers a pipeline on <strong>FoamAdapter LRZ GitLab</strong>.</p></li>
 <li><p>The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.</p></li>
 </ol>
 <p>This ensures that any changes in NeoN do not break the integration with FoamAdapter.</p>
@@ -446,5 +451,13 @@ When triggering the FoamAdapter pipeline, the following rules apply to determine
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     </body>
 </html>
