@@ -70,6 +70,7 @@ The integration tests on CPUs are executed directly by GitHub CI.
 
 The integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab.
 The procedure is as follows:
+
 #. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
 #. If the pipeline succeeds, GitHub CI triggers a new pipeline on **FoamAdapter LRZ GitLab**.
 #. The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.
