@@ -49,7 +49,7 @@ The development workflow for NeoN proceeds as follows:
 #. A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.
 #. GitHub CI builds and tests NeoN on CPUs.
 #. GitHub CI pushes the same branch to LRZ GitLab.
-#. All pending or running LRZ GitLab pipelines for that branch are canceled.
+#. GitHub CI cancels all pending or running LRZ GitLab pipelines for that branch.
 #. GitHub CI triggers a **new LRZ GitLab pipeline**.
 #. LRZ GitLab CI builds and tests NeoN on GPUs.
 #. *(Optional)* Benchmark jobs are executed after successful testing, including integration testing.
