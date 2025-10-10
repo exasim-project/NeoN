@@ -316,7 +316,7 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 <li><p>All pending or running LRZ GitLab pipelines for that branch are canceled.</p></li>
 <li><p>GitHub CI triggers a <strong>new LRZ GitLab pipeline</strong>.</p></li>
 <li><p>LRZ GitLab CI builds and tests NeoN on GPUs.</p></li>
-<li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing.</p></li>
+<li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing, including integration testing.</p></li>
 <li><p>The developer monitors all results directly on GitHub.</p></li>
 </ol>
 </section>
@@ -333,10 +333,8 @@ The procedure is as follows:</p>
 <li><p>GitHub CI triggers a pipeline on <strong>NeoN LRZ GitLab</strong> which builds and tests NeoN.</p></li>
 <li><p>If the pipeline succeeds, GitHub CI triggers a new pipeline on <strong>FoamAdapter LRZ GitLab</strong>.</p></li>
 <li><p>The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.</p></li>
-<li><p><em>(Optional)</em> Benchmarking is triggered on LRZ GitLab after successful integration tests.</p></li>
 </ol>
-<p>This ensures that any changes in NeoN do not break the integration with FoamAdapter.
-The procedure is illustrated below.</p>
+<p>This ensures that any changes in NeoN do not break the integration with FoamAdapter.</p>
 <p><strong>Branch Handling Rules:</strong>
 When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:</p>
 <ul class="simple">
