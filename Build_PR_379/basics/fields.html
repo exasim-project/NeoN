@@ -1,0 +1,429 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Parallel Algorithms" href="algorithms.html"><link rel="prev" title="Executor" href="executor.html">
+        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html">
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
+        <title>Vectors - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">NeoN  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input aria-label="Toggle navigation of Basics" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vectors</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input aria-label="Toggle navigation of Parallel Algorithms" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="registerclass.html">Derived class discovery at compile time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macro Definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dsl/index.html">Domain Specific Language (DSL)</a><input aria-label="Toggle navigation of Domain Specific Language (DSL)" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dsl/equation.html">Expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dsl/operator.html">Operator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../timeIntegration/index.html">Time Integration</a><input aria-label="Toggle navigation of Time Integration" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../timeIntegration/forwardEuler.html">Forward Euler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../timeIntegration/rungeKutta.html">Runge Kutta</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../finiteVolume/cellCentred/index.html">FiniteVolume</a><input aria-label="Toggle navigation of FiniteVolume" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/boundaryConditions.html">Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/case_study.html">Case Study: The Gauss Green Div Kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datastructures/index.html">Datastructures</a><input aria-label="Toggle navigation of Datastructures" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/unstructuredMesh.html">UnstructuredMesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/dictionary.html">Dictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/database.html">Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mpi_architecture.html">MPI Architecture</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/basics/fields.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="vectors">
+<span id="fvcc-fields"></span><h1>Vectors<a class="headerlink" href="#vectors" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The API of the classes probably will change in the future as currently parallelization is not supported.</p>
+</div>
+<p>NeoN implements several field classes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Vector&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BoundaryData&lt;ValueType&gt;</span></code> A GPU friendly datastructure storing boundary data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> The combination of an internal field and its corresponding boundary data.</p></li>
+</ul>
+<p>Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">DomainMixin&lt;ValueType&gt;</span></code> Mixin class combining a <code class="docutils literal notranslate"><span class="pre">Field</span></code> and the corresponding mesh.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VolumeVector&lt;ValueType&gt;</span></code> Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SurfaceVector&lt;ValueType&gt;</span></code> The surface field equivalent to <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code></p></li>
+</ul>
+</section>
+<section id="the-vector-valuetype-class">
+<h2>The Vector&lt;ValueType&gt; class<a class="headerlink" href="#the-vector-valuetype-class" title="Link to this heading">¶</a></h2>
+<p>The Vector class is the basic container class and is the central component for implementing a platform portable CFD framework.
+One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Vector</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
+This is to prevent accidental access to device memory from the host.
+The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Vector</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
+.. code-block:: cpp</p>
+<blockquote>
+<div><p>// Host Vectors
+Vector&lt;T&gt; hostVector(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
+auto hostVectorView = hostVector.view();
+hostVectorView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
+<p>// Device Vectors
+Vector&lt;T&gt; deviceVector(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
+auto deviceVectorOnHost = deviceVector.copyToHost();
+auto deviceVectorOnHostView = deviceVectorOnHost.view();
+deviceVectorOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
+</div></blockquote>
+<p>Vectors support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
+In the following, some implementation details of the field operations are detailed using the additions operator as an example.
+The block of code below shows an example implementation of the addition operator.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec_</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Besides creating a temporary for the result it mainly calls the free standing <code class="docutils literal notranslate"><span class="pre">add</span></code> function which is implemented in <code class="docutils literal notranslate"><span class="pre">include/NeoN/field/fieldFreeFunctions.hpp</span></code>.
+This, in turn, dispatches to the <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code> function, passing the actual kernel as lambda.
+The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code>  is implemented using our parallelFor implementations which ultimately dispatch to the <code class="docutils literal notranslate"><span class="pre">Kokkos::parallel_for</span></code> function, see <a class="reference external" href="https://kokkos.org/kokkos-core-wiki/API/core/parallel-dispatch/parallel_for.html">Kokkos documentation</a> for more details.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_identity_t</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">detail</span><span class="o">::</span><span class="n">fieldBinaryOp</span><span class="p">(</span>
+<span class="w">      </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="n">ValueType</span><span class="w"> </span><span class="n">va</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="w"> </span><span class="n">vb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">va</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">vb</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A simplified version of the <code class="docutils literal notranslate"><span class="pre">parallelFor</span></code> function is shown below.</p>
+<p>The code snippet highlights another important aspect, the executor.
+The executor defines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy</span></code>, see  <a class="reference external" href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md">Kokkos Programming Model</a>.
+Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
+See our <a class="reference external" href="https://exasim-project.com/NeoN/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
+<p>Further <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Vector.html">Details</a>.</p>
+</section>
+<section id="cell-centred-specific-vectors">
+<h2>Cell Centred Specific Vectors<a class="headerlink" href="#cell-centred-specific-vectors" title="Link to this heading">¶</a></h2>
+<p>Within in the <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred</span></code> folder and the namespace
+<code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> are implemented.
+Both derive from the <code class="docutils literal notranslate"><span class="pre">DomainMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">Field</span></code> data member.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Field</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryVectors</span></code> data structure holding actual boundary data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
+<p>The SurfaceVector implementation of <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.</p>
+<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeVector.html">VolumeVector</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarVector.html">ScalarVector</a>.</p>
+<span class="target" id="api-fields"></span></section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="algorithms.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Parallel Algorithms</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="executor.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Executor</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, NeoN authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Vectors</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#the-vector-valuetype-class">The Vector&lt;ValueType&gt; class</a></li>
+<li><a class="reference internal" href="#cell-centred-specific-vectors">Cell Centred Specific Vectors</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

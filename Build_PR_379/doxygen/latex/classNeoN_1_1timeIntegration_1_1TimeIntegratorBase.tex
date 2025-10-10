@@ -1,0 +1,172 @@
+\doxysection{NeoN\+::time\+Integration\+::Time\+Integrator\+Base\texorpdfstring{$<$}{<} Solution\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+
+
+{\ttfamily \#include $<$time\+Integration.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::time\+Integration\+::Time\+Integrator\+Base\texorpdfstring{$<$}{<} Solution\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.499331cm]{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{Value\+Type}} = typename Solution\+Type\+::\+Vector\+Value\+Type
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}{Expression}} = \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{Value\+Type}} $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aef92fda8dab4d1a50e91fb63c9114395}{Time\+Integrator\+Base}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&scheme\+Dict, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&solution\+Dict)
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}{\texorpdfstring{$\sim$}{\string~}\+Time\+Integrator\+Base}} ()
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_ad227b119cbf38ec8b1ef7f004f1fe887}{solve}} (\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}{Expression}} \&eqn, Solution\+Type \&sol, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)=0
+\item 
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}} $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}{clone}} () const =0
+\item 
+virtual bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a17d3985ff00b8b8e43c2b84345b5e09b}{direct}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}{name}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5}{scheme\+Dict\+\_\+}}
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{solution\+Dict\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Solution\+Type$>$\newline
+class Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base$<$ Solution\+Type $>$}
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!Expression@{Expression}}
+\index{Expression@{Expression}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{Expression}{Expression}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::\+Expression =  \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{Value\+Type}}$>$}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!ValueType@{ValueType}}
+\index{ValueType@{ValueType}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{ValueType}{ValueType}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::\+Value\+Type =  typename Solution\+Type\+::\+Vector\+Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aef92fda8dab4d1a50e91fb63c9114395}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aef92fda8dab4d1a50e91fb63c9114395} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!TimeIntegratorBase@{TimeIntegratorBase}}
+\index{TimeIntegratorBase@{TimeIntegratorBase}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{TimeIntegratorBase()}{TimeIntegratorBase()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::\+Time\+Integrator\+Base (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{scheme\+Dict,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{solution\+Dict }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!````~TimeIntegratorBase@{\texorpdfstring{$\sim$}{\string~}TimeIntegratorBase}}
+\index{````~TimeIntegratorBase@{\texorpdfstring{$\sim$}{\string~}TimeIntegratorBase}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}TimeIntegratorBase()}{\string~TimeIntegratorBase()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+virtual \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!clone@{clone}}
+\index{clone@{clone}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}} $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a17d3985ff00b8b8e43c2b84345b5e09b}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a17d3985ff00b8b8e43c2b84345b5e09b} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!direct@{direct}}
+\index{direct@{direct}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{direct()}{direct()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+virtual bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::direct (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!name@{name}}
+\index{name@{name}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_ad227b119cbf38ec8b1ef7f004f1fe887}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_ad227b119cbf38ec8b1ef7f004f1fe887} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!solve@{solve}}
+\index{solve@{solve}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}{Expression}} \&}]{eqn,  }\item[{Solution\+Type \&}]{sol,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!schemeDict\_@{schemeDict\_}}
+\index{schemeDict\_@{schemeDict\_}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{schemeDict\_}{schemeDict\_}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::scheme\+Dict\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}\label{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a} 
+\index{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}!solutionDict\_@{solutionDict\_}}
+\index{solutionDict\_@{solutionDict\_}!NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$@{NeoN::timeIntegration::TimeIntegratorBase$<$ SolutionType $>$}}
+\doxysubsubsection{\texorpdfstring{solutionDict\_}{solutionDict\_}}
+{\footnotesize\ttfamily template$<$typename Solution\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\& \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Neo\+N\+::time\+Integration\+::\+Time\+Integrator\+Base}}$<$ Solution\+Type $>$\+::solution\+Dict\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/time\+Integration/\mbox{\hyperlink{timeIntegration_8hpp}{time\+Integration.\+hpp}}\end{DoxyCompactItemize}

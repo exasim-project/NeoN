@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['_7earray_0',['~Array',['../classNeoN_1_1Array.html#aa95d39f2a20cea2dcdcf81cc2c4968a4',1,'NeoN::Array']]],
+  ['_7eboundarypatchmixin_1',['~BoundaryPatchMixin',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a33e0e460fb4a0acdb198a0153ffd84f6',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
+  ['_7ecpuexecutor_2',['~CPUExecutor',['../classNeoN_1_1CPUExecutor.html#aa6533b93eed68e0d81d28c72755a0d69',1,'NeoN::CPUExecutor']]],
+  ['_7ecsrmatrix_3',['~CSRMatrix',['../classNeoN_1_1la_1_1CSRMatrix.html#afd83705fad7e5f93ebfcc7103d52222b',1,'NeoN::la::CSRMatrix']]],
+  ['_7ecsrmatrixview_4',['~CSRMatrixView',['../structNeoN_1_1la_1_1CSRMatrixView.html#ad4cd6056d037ef4961af88f6c0125031',1,'NeoN::la::CSRMatrixView']]],
+  ['_7eddtoperator_5',['~DdtOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator.html#af27778cbc6eee6a89f848d83be9108c2',1,'NeoN::finiteVolume::cellCentred::DdtOperator']]],
+  ['_7edivoperatorfactory_6',['~DivOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html#a2d95257c1740c7d7e550af3438bc450b',1,'NeoN::finiteVolume::cellCentred::DivOperatorFactory']]],
+  ['_7efacenormalgradientfactory_7',['~FaceNormalGradientFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#adf47039f42dbf5f20633c46a8199e9d3',1,'NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory']]],
+  ['_7egeometryscheme_8',['~GeometryScheme',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a75d9956b7a646f496858a5e81f81d5a9',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
+  ['_7egeometryschemefactory_9',['~GeometrySchemeFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory.html#add6a20e43e79b8b09730c16cf6181774',1,'NeoN::finiteVolume::cellCentred::GeometrySchemeFactory']]],
+  ['_7egpuexecutor_10',['~GPUExecutor',['../classNeoN_1_1GPUExecutor.html#adebe4dfbc231a708dbd66abea6e32abf',1,'NeoN::GPUExecutor']]],
+  ['_7egradoperatorfactory_11',['~GradOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory.html#a4ee7f1cb3599cd9d3efeeca5605cebe5',1,'NeoN::finiteVolume::cellCentred::GradOperatorFactory']]],
+  ['_7elaplacianoperatorfactory_12',['~LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#ad19cde703ae0c82c45e3d6f4d3696395',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory']]],
+  ['_7elinearsystem_13',['~LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html#a8c24b8b0b48f97c7a91bd884dfa5b019',1,'NeoN::la::LinearSystem']]],
+  ['_7elinearsystemview_14',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#ace528280a0ab1d8d9454cb22ac421040',1,'NeoN::la::LinearSystemView']]],
+  ['_7eoperatormixin_15',['~OperatorMixin',['../classNeoN_1_1dsl_1_1OperatorMixin.html#ad735310356a0706b71373d5cebd68192',1,'NeoN::dsl::OperatorMixin']]],
+  ['_7eregister_16',['~Register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a87f94b91ca326e7268cd5986cfec7cda',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
+  ['_7eruntimeselectionfactory_17',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
+  ['_7eserialexecutor_18',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
+  ['_7esourceterm_19',['~SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#ad71d1b4885f9e3600f61cab08513839b',1,'NeoN::finiteVolume::cellCentred::SourceTerm']]],
+  ['_7esparsitypattern_20',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a1aaaaf579a4b30d38a616351deae7a37',1,'NeoN::la::SparsityPattern']]],
+  ['_7esurfaceinterpolationfactory_21',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
+  ['_7etimeintegratorbase_22',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
+  ['_7evector_23',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
+  ['_7evolumeboundaryfactory_24',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
+];
