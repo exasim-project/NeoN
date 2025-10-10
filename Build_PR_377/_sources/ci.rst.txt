@@ -5,7 +5,7 @@ to ensure correct builds, GPU compatibility, and automated benchmarking.
 
 The main repository is hosted on **GitHub**, and GPU-based workflows are delegated
 to **LRZ GitLab**, where jobs are executed on both **NVIDIA** and **AMD** GPUs.
-The setup of the NeoN CI system is illustrated below.
+The CI architecture for NeoN is illustrated below.
 
 .. figure:: _static/ci/ci_setup_overview.png
    :align: center
@@ -39,13 +39,6 @@ The LRZ GitLab CI handles GPU-related operations.
 * Run benchmark jobs after successful build and test stages.
 * Report the status and results back to GitHub for unified monitoring.
 
-.. .. figure:: _static/ci_neon_layers.svg
-..    :align: center
-..    :alt: Two-layer CI structure for NeoN
-..    :figwidth: 90%
-
-..    *Figure 2 – Two-layer structure of the NeoN CI pipeline.*
-
 .. _ci-neon-workflow:
 
 -------------------------------
@@ -62,13 +55,6 @@ The development workflow for NeoN proceeds as follows:
 #. *(Optional)* Benchmark jobs are executed after successful testing.
 #. The developer monitors all results directly on GitHub.
 
-.. .. figure:: _static/ci_neon_workflow.svg
-..    :align: center
-..    :alt: Workflow diagram of NeoN CI
-..    :figwidth: 90%
-
-..    *Figure 3 – Step-by-step workflow of NeoN’s CI integration.*
-
 .. _ci-integration-tests:
 
 -------------------------------
@@ -78,12 +64,19 @@ Integration Tests
 GitHub repository **FoamAdapter**, which provides an adapter to integrate NeoN with OpenFOAM.
 
 To ensure the correctness of this integration, the CI system includes jobs that build and run
-FoamAdapter with NeoN. The procedure is as follows:
+FoamAdapter with NeoN. The integration tests are executed on CPUs and GPUs.
 
-#. GitHub CI starts a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
+The integration tests on CPUs are executed directly by GitHub CI.
+
+The integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab.
+The procedure is as follows:
+#. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
 #. If the pipeline succeeds, GitHub CI triggers a new pipeline on **FoamAdapter LRZ GitLab**.
 #. The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.
 #. *(Optional)* Benchmarking is triggered on LRZ GitLab after successful integration tests.
+
+This ensures that any changes in NeoN do not break the integration with FoamAdapter.
+The procedure is illustrated below.
 
 **Branch Handling Rules:**
 When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:
