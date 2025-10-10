@@ -55,6 +55,9 @@ The development workflow for NeoN proceeds as follows:
 #. *(Optional)* Benchmark jobs are executed after successful testing, including integration testing.
 #. The developer monitors all results directly on GitHub.
 
+.. tip::
+   Use the ``benchmark`` label on a NeoN pull request to trigger benchmarking jobs.
+
 .. _ci-integration-tests:
 
 -------------------------------
@@ -87,9 +90,6 @@ When triggering the FoamAdapter pipeline, the following rules apply to determine
 
 * If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.
 * Otherwise, the **main** branch is used as a fallback.
-
-.. tip::
-   Use the ``benchmark`` label on a NeoN pull request to trigger benchmarking jobs.
 
 .. _ci-neon-labels:
 
