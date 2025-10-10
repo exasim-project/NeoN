@@ -64,9 +64,13 @@ Integration Tests
 GitHub repository **FoamAdapter**, which provides an adapter to integrate NeoN with OpenFOAM.
 
 To ensure the correctness of this integration, the CI system includes jobs that build and run
-FoamAdapter with NeoN. The procedure is as follows:
+FoamAdapter with NeoN. The integration tests are executed on CPUs and GPUs.
 
-#. GitHub CI starts a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
+The integration tests on CPUs are executed directly by GitHub CI.
+
+The integration tests on GPUs are handled by GitHub CI, but executed on GPUs by LRZ GitLab.
+The procedure is as follows:
+#. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
 #. If the pipeline succeeds, GitHub CI triggers a new pipeline on **FoamAdapter LRZ GitLab**.
 #. The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.
 #. *(Optional)* Benchmarking is triggered on LRZ GitLab after successful integration tests.
