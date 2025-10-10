@@ -68,7 +68,7 @@ GitHub repository **FoamAdapter**, which provides an adapter to integrate NeoN w
 
 To ensure the correctness of this integration, the CI system includes jobs that build and run
 FoamAdapter with NeoN. The integration tests are executed on CPUs by GitHub CI, while the integration
-tests on GPUs are executed by LRZ GitLab CI as described below.
+tests on GPUs are executed by LRZ GitLab CI as illustrated below.
 
 .. mermaid::
 
