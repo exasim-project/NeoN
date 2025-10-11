@@ -14,9 +14,12 @@ namespace NeoN::la
 {
 
 /* @brief given a vector of column indices for vector matrices it creates the unpacked scalar
- * version
- *
- * E.g.: input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see example
+ * version.
+ * @param[in] in the vector of column indices for a packed Csr<Vec3> matrix
+ * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix
+ * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix
+ * @return A vector containing duplicated entries
+ * @details Example input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see example
  *
  *   0 1 2       0 1 2 3 4 5 6 7 9
  *              [x . . x . . . . . ]
@@ -31,11 +34,7 @@ namespace NeoN::la
  *
  *  packed      unpacked
  *  sparsity    sparsity
- *
- * @param[in] in the vector of column indices for a packed Csr<Vec3> matrix
- * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix
- * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix
- * @return A vector containing duplicated entries
+ */
  */
 Vector<localIdx> convertColIdx(
     const Vector<localIdx>& in,
@@ -77,7 +76,7 @@ Vector<scalar> unpackMtxValues(
 );
 
 
-/* @brief given a linear system consisting of A, b and x the operator computes the residual vector *
+/* @brief given a linear system consisting of A, b and x the operator computes the residual vector
  * Ax-b
  *
  * @param[in] mtx, the corresponding matrix

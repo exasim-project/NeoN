@@ -185,17 +185,14 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scala
     auto nrows = computeNRows(sys);
     auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
-    // auto vals = createConstGkoArray(exec, mtx.values).copy_to_array();
     auto vals = gko::array<scalar>::view(
         exec, static_cast<gko::size_type>(mtx.values.size()), const_cast<scalar*>(mtx.values.data())
     );
-    // auto col = createGkoArray(exec, mtx.colIdxs);
     auto col = gko::array<IndexType>::view(
         exec,
         static_cast<gko::size_type>(mtx.colIdxs.size()),
         const_cast<IndexType*>(mtx.colIdxs.data())
     );
-    // auto row = createGkoArray(exec, mtx.rowOffs);
     auto row = gko::array<IndexType>::view(
         exec,
         static_cast<gko::size_type>(mtx.rowOffs.size()),

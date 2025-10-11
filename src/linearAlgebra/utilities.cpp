@@ -27,10 +27,10 @@ Vector<localIdx> convertColIdx(
         exec,
         {0, unpackedRowOffs.size() - 1},
         KOKKOS_LAMBDA(const localIdx i) {
-            auto j {rowV[i]};        // new row start
-            auto l {oldRowV[i / 3]}; // original row start
-            auto length {rowV[i + 1] - rowV[i]};
-            auto offs = i % 3;
+           const auto j {rowV[i]};        // new row start
+           const auto l {oldRowV[i / 3]}; // original row start
+           const auto length {rowV[i + 1] - rowV[i]};
+           const auto offs = i % 3;
             // iterate all entries of the row
             // every column is shifted by a factor of 3
             // plus an offset based on the dimension 0,1,2
@@ -80,7 +80,7 @@ Vector<scalar> unpackMtxValues(
         exec,
         {0, rowOffs.size() - 1},
         KOKKOS_LAMBDA(const localIdx i) {
-            auto length {rowV[i + 1] - rowV[i]};
+            const auto length {rowV[i + 1] - rowV[i]};
             for (auto k = 0; k < length; k++)
             {
                 outV[newRowV[3 * i + 0] + k] = inV[rowV[i] + k][0];
@@ -110,7 +110,7 @@ Vector<localIdx> unpackRowPtrs(const Vector<localIdx>& in)
         {0, in.size() - 1},
         KOKKOS_LAMBDA(const localIdx i) {
             localIdx j = 3 * i;
-            auto val = inV[i + 1] - inV[i];
+            const auto val = inV[i + 1] - inV[i];
             lengthV[j + 0] = val;
             lengthV[j + 1] = val;
             lengthV[j + 2] = val;
