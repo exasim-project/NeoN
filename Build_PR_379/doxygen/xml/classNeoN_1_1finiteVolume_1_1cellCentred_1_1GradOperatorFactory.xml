@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="84" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="84" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="70" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae31ec604c4c376767e79c3c30a4e7f14" prot="protected" static="no" mutable="no">
         <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
@@ -36,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="86" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="86" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="72" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="72" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a3cfd1beb6d7f276c96b761a5ffe21c75" prot="protected" static="no" mutable="no">
         <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &amp;</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="88" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="88" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="74" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="74" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -132,22 +132,18 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="45" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="45" bodyend="45"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a693c7f6b60bacb307a25937d4d48e87a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a5d918a0f3e07e4749121be972062168f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
         <definition>virtual void NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::grad</definition>
-        <argsstring>(VolumeField&lt; ValueType &gt; &amp;gradPhi, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
+        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
-          <declname>gradPhi</declname>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>ls</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>faceFlux</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -162,40 +158,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="50" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae443a648155ed8415d37966c245e884b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1abda67f89621215bcec12275b7ae50820" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
         <definition>virtual void NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::grad</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
-        <name>grad</name>
-        <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
-        <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>ls</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>faceFlux</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
-          <declname>phi</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
-          <declname>operatorScaling</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="57" column="18"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a122eefc06a4a0dd8632bd4f940b7505b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>void</type>
-        <definition>virtual void NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::grad</definition>
-        <argsstring>(Vector&lt; ValueType &gt; &amp;gradPhi, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
+        <argsstring>(Vector&lt; ValueType &gt; &amp;gradPhi, const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
         <param>
@@ -203,11 +169,7 @@
           <declname>gradPhi</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>faceFlux</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -220,20 +182,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="64" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="56" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a2c900ece1efc11aac53ce15a2fae5448" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ab48a77d3ce3b1d49a299bded320bbbcc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt;</type>
         <definition>virtual VolumeField&lt; ValueType &gt; NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::grad</definition>
-        <argsstring>(const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
+        <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>faceFlux</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -246,7 +204,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="71" column="25"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="61" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae010cc354896f2424c3f3e4880a62fb4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &amp;</type>
@@ -260,7 +218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="77" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="77" bodyend="77"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="63" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="63" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a1c1cb19fc919dbc0429ee91cf8f492cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" kindref="compound">GradOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
@@ -274,7 +232,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="80" column="29"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="66" column="29"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -319,16 +277,15 @@
         <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="22" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="26" bodyend="89"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="22" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="26" bodyend="75"/>
     <listofallmembers>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a1c1cb19fc919dbc0429ee91cf8f492cf" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>clone</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a217945b9c46929fa56dcbddd201c9c4f" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>create</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ac594dc3a7e6def8f10162bc6bec89c6c" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>exec_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae010cc354896f2424c3f3e4880a62fb4" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>getSparsityPattern</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a693c7f6b60bacb307a25937d4d48e87a" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae443a648155ed8415d37966c245e884b" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a122eefc06a4a0dd8632bd4f940b7505b" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a2c900ece1efc11aac53ce15a2fae5448" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a5d918a0f3e07e4749121be972062168f" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1abda67f89621215bcec12275b7ae50820" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ab48a77d3ce3b1d49a299bded320bbbcc" prot="public" virt="pure-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>grad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ad69e8a6c56980eb97e2c98203e1c63e0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>GradOperatorFactory</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ae31ec604c4c376767e79c3c30a4e7f14" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>mesh_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1aa4385eb4014bbb179891594ae704b8a2" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GradOperatorFactory</scope><name>name</name></member>
