@@ -32,15 +32,6 @@ jobs:
           - CC: gcc
             CXX: g++
         preset: ["develop", "profiling", "production"]
-        exclude:
-          - compiler:
-              CC: gcc
-              CXX: g++
-            preset: "develop"
-          - compiler:
-              CC: clang
-              CXX: clang++
-            preset: "profiling"
     steps:
      - name: Checkout to repository
        uses: actions/checkout@v4
@@ -90,6 +81,7 @@ jobs:
          CXX=${{matrix.compiler.CXX}} \
          cmake --preset ${{matrix.preset}} \
            -DNeoN_BUILD_TESTS=ON \
+           -DNeoN_BUILD_BENCHMARKS=OFF \
            -DNeoN_DEVEL_TOOLS=OFF \
            -DNeoN_WITH_GINKGO=OFF \
            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
