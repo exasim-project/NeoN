@@ -152,29 +152,32 @@ label computeNRows(const LinearSystem<Vec3, localIdx>& sys) { return 3 * sys.rhs
 
 label computeNRows(const LinearSystem<scalar, localIdx>& sys) { return sys.rhs().size(); }
 
+/*@brief create a array non const view into data given by ptr*/
 template<typename T>
-gko::array<T> createGkoArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
+gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
 {
     return gko::make_array_view(exec, values.size(), values.data());
 }
 
+/*@brief create a dense non const view into data given by ptr*/
 std::shared_ptr<gko::matrix::Dense<scalar>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
+gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
 {
     auto size = static_cast<std::size_t>(s);
     return gko::share(gko::matrix::Dense<scalar>::create(
-        exec, gko::dim<2> {size, 1}, createGkoArray(exec, std::span {ptr, size}), 1
+        exec, gko::dim<2> {size, 1}, gkoArrayView(exec, std::span {ptr, size}), 1
     ));
 }
 
+/*@brief create a dense const view into data given by ptr*/
 std::shared_ptr<gko::matrix::Dense<scalar>>
-createGkoDense(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
+gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
 {
     auto size = static_cast<std::size_t>(s);
     auto const_array_view = gko::array<scalar>::const_view(exec, size, ptr);
-    return gko::share(gko::matrix::Dense<scalar>::create(
-        exec, gko::dim<2> {size, 1}, const_array_view.copy_to_array(), 1
-    ));
+    return gko::share(
+        gko::matrix::Dense<scalar>::create(exec, gko::dim<2> {size, 1}, const_array_view, 1)
+    );
 }
 
 
@@ -205,6 +208,7 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scala
 }
 
 
+/*@brief helper function to get a scalar dense value from a device back to the host*/
 template<typename InType>
 scalar retrieve(const InType& in)
 {
@@ -216,31 +220,36 @@ scalar retrieve(const InType& in)
 SolverStats solve_impl(
     std::shared_ptr<const gko::Executor> exec,
     const Vector<scalar>& rhs,
-    Vector<scalar>& x,
+    Vector<scalar>& xIn,
     std::shared_ptr<gko::matrix::Csr<scalar, label>> mtx,
     std::unique_ptr<gko::LinOp> solver
 )
 {
     auto startEval = std::chrono::steady_clock::now();
+
     using vec = gko::matrix::Dense<scalar>;
     label nrows = rhs.size();
-    auto rhs2 = Vector<scalar>(rhs);
-    auto b = createGkoDense(exec, rhs.data(), nrows);
-    auto b2 = createGkoDense(exec, rhs2.data(), nrows);
-    auto gkoX = createGkoDense(exec, x.data(), nrows);
+    auto b = gkoVecView(exec, rhs.data(), nrows);
+    auto x = gkoVecView(exec, xIn.data(), nrows);
 
+    // create a copy of rhs so that we can inline compute
+    // the residual
+    auto rhsCopy = Vector<scalar>(rhs);
+    auto res = gkoVecView(exec, rhsCopy.data(), nrows);
+
+    // compute Ax-b -> res
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    auto init = gko::initialize<vec>({0.0}, exec);
-    mtx->apply(one, gkoX, neg_one, b2);
+    mtx->apply(one, x, neg_one, res);
 
-    b->compute_norm2(init);
+    auto init = gko::initialize<vec>({0.0}, exec);
+    res->compute_norm2(init);
     scalar initResNorm = retrieve(init);
 
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, gkoX);
+    solver->apply(b, x);
 
     // since we work on a copy we need to copy back
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
@@ -274,11 +283,11 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
     // NOTE we get a const view of the system but need a non const view to vals and indices
     auto mtx = sys.matrix();
 
-    auto rowsCopy = unpackRowPtrs(mtx.rowOffs());
-    auto rows = createGkoArray(exec, rowsCopy.view());
+    auto rowsCopy = unpackRowOffs(mtx.rowOffs());
+    auto rows = gkoArrayView(exec, rowsCopy.view());
 
     auto colsCopy = convertColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
-    auto cols = createGkoArray(exec, colsCopy.view());
+    auto cols = gkoArrayView(exec, colsCopy.view());
 
     auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
     auto vals = gko::array<scalar>::const_view(
