@@ -1,0 +1,83 @@
+\doxysection{environment.\+hpp}
+\hypertarget{environment_8hpp_source}{}\label{environment_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/environment.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/environment.hpp}}
+\mbox{\hyperlink{environment_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <mpi.h>}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{info_8hpp}{NeoN/core/info.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }mpi}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00027}00027\ \textcolor{keyword}{struct\ }MPIInit}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00035}00035\ \ \ \ \ MPIInit(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}**\ argv)}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00036}00036\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00037}00037\ \textcolor{preprocessor}{\#ifdef\ NF\_REQUIRE\_MPI\_THREAD\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ provided;}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ MPI\_Init\_thread(\&argc,\ \&argv,\ MPI\_THREAD\_MULTIPLE,\ \&provided);}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ provided\ ==\ MPI\_THREAD\_MULTIPLE,\ \textcolor{stringliteral}{"{}The\ MPI\ library\ does\ not\ have\ full\ thread\ support"{}}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00043}00043\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ MPI\_Init(\&argc,\ \&argv);}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00045}00045\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00046}00046\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00051}00051\ \ \ \ \ \string~MPIInit()\ \{\ MPI\_Finalize();\ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00052}00052\ \};}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00059}00059\ \textcolor{keyword}{class\ }MPIEnvironment}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00060}00060\ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00061}00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00068}00068\ \ \ \ \ MPIEnvironment(MPI\_Comm\ commGroup\ =\ MPI\_COMM\_WORLD)\ :\ communicator(commGroup)}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00069}00069\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ updateRankData();}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00076}00076\ \ \ \ \ \string~MPIEnvironment()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ sizeRank()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(mpi\_size);\ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ rank()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(mpi\_rank);\ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00097}00097\ \ \ \ \ MPI\_Comm\ comm()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ communicator;\ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00099}00099\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00101}00101\ \ \ \ \ MPI\_Comm\ communicator\ \{MPI\_COMM\_NULL\};\ \textcolor{comment}{//\ MPI\ communicator}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordtype}{int}\ mpi\_rank\ \{-\/1\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Index\ of\ this\ rank}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keywordtype}{int}\ mpi\_size\ \{-\/1\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Number\ of\ ranks\ in\ this\ communicator\ group.}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keywordtype}{void}\ updateRankData()}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00109}00109\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(communicator\ !=\ MPI\_COMM\_NULL,\ \textcolor{stringliteral}{"{}Invalid\ communicator,\ is\ null."{}});}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ MPI\_Comm\_rank(communicator,\ \&mpi\_rank);}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ MPI\_Comm\_size(communicator,\ \&mpi\_size);}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00113}00113\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00114}00114\ \};}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00116}00116\ \}\ \textcolor{comment}{//\ namespace\ mpi}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00118}00118\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{environment_8hpp_source_l00120}00120\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}
