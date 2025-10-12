@@ -5,7 +5,7 @@ var searchData=
   ['underlyingexec_2',['underlyingexec',['../classNeoN_1_1CPUExecutor.html#a45988fe8dd99e92612b1c4c97dd2384b',1,'NeoN::CPUExecutor::underlyingExec()'],['../classNeoN_1_1GPUExecutor.html#ac3ebe1e680bf1e69f70930c7f21c5261',1,'NeoN::GPUExecutor::underlyingExec()'],['../classNeoN_1_1SerialExecutor.html#ae48dc86dfa9dea8457fe1d2a8b02e9ba',1,'NeoN::SerialExecutor::underlyingExec()']]],
   ['unpack_3',['unpack',['../namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee',1,'NeoN::la']]],
   ['unpackmtxvalues_4',['unpackMtxValues',['../namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3',1,'NeoN::la']]],
-  ['unpackrowptrs_5',['unpackRowPtrs',['../namespaceNeoN_1_1la.html#a65e42ce1f5f29c08f8a0fa18e5d3e40b',1,'NeoN::la']]],
+  ['unpackrowoffs_5',['unpackRowOffs',['../namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493',1,'NeoN::la']]],
   ['unstructuredmesh_6',['unstructuredmesh',['../classNeoN_1_1UnstructuredMesh.html',1,'NeoN::UnstructuredMesh'],['../classNeoN_1_1UnstructuredMesh.html#af9b03550b17abcd5b2bbdd3a01946eb8',1,'NeoN::UnstructuredMesh::UnstructuredMesh()']]],
   ['unstructuredmesh_2ehpp_7',['unstructuredMesh.hpp',['../unstructuredMesh_8hpp.html',1,'']]],
   ['update_8',['update',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab67d199285124264e5183829810892a3',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],

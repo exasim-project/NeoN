@@ -246,56 +246,70 @@
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>packedRowOffs</highlight></codeline>
 <codeline lineno="44"><highlight class="normal">);</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>of<sp/>rowOffs<sp/>[0,3,6]<sp/>this<sp/>returns<sp/>[0,3,6,9,12,15,18,21]</highlight></codeline>
-<codeline lineno="47"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>containing<sp/>duplicated<sp/>entries</highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="51" refid="namespaceNeoN_1_1la_1a65e42ce1f5f29c08f8a0fa18e5d3e40b" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a65e42ce1f5f29c08f8a0fa18e5d3e40b" kindref="member">unpackRowPtrs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>in);</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"></highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>of<sp/>Vec3<sp/>(packed)<sp/>this<sp/>returns<sp/>vector<sp/>of<sp/>consecutive<sp/>scalars<sp/>(unpacked)</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>E.g.<sp/>given<sp/>a<sp/>vector<sp/>[{1,2,3},{4,5,6},{7,8,9}]<sp/>this<sp/>returns<sp/>[1,2,3,4,5,6,7,8,9]</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>computed<sp/>unpacked<sp/>rowOffs<sp/>from<sp/>packed<sp/>rowOffs</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/>*<sp/>@details<sp/>given<sp/>a<sp/>sparsity<sp/>pattern<sp/>every<sp/>row<sp/>with<sp/>Vec3<sp/>entries<sp/>is<sp/>unpacked</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/>*<sp/>by<sp/>copying<sp/>its<sp/>y<sp/>and<sp/>z<sp/>components<sp/>after<sp/>the<sp/>initial<sp/>row.<sp/>For</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/>*<sp/>example<sp/>[{x,y,z}]<sp/>will<sp/>result<sp/>in</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>[x<sp/>.<sp/>.]</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>[.<sp/>y<sp/>.]</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/>[.<sp/>.<sp/>z]</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>Thus,<sp/>each<sp/>row<sp/>with<sp/>given<sp/>length<sp/>will<sp/>result<sp/>2<sp/>new<sp/>entries<sp/>of<sp/>the<sp/>same<sp/>length</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>in<sp/>the<sp/>unpacked<sp/>vector.<sp/>E.g.<sp/>a<sp/>vector<sp/>of<sp/>packed<sp/>rowOffs<sp/>[0,2,5,7]<sp/>returns</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>[0,2,4,6,9,12,15,17,19,21]<sp/>where<sp/>the<sp/>last<sp/>entries<sp/>is<sp/>the<sp/>total<sp/>number<sp/>of<sp/>rows</highlight></codeline>
 <codeline lineno="56"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>unpack</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>containing<sp/>duplicated<sp/>entries</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>rowPtrs<sp/>to<sp/>unpack</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>containing<sp/>unpacked<sp/>rowPtrs</highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60" refid="namespaceNeoN_1_1la_1a1b1da04815bdcfa4abbda941e0c8c9ee" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a1b1da04815bdcfa4abbda941e0c8c9ee" kindref="member">unpack</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>in);</highlight></codeline>
+<codeline lineno="60" refid="namespaceNeoN_1_1la_1adfdc10cb52098688762e13b2d0af4493" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1adfdc10cb52098688762e13b2d0af4493" kindref="member">unpackRowOffs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>in);</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>[1,2,3,4,5,6,7,8,9]<sp/>this<sp/>packs<sp/>it<sp/>into<sp/>[{1,2,3},{4,5,6},{7,8,9}]</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>of<sp/>Vec3<sp/>(packed)<sp/>this<sp/>returns<sp/>vector<sp/>of<sp/>consecutive<sp/>scalars<sp/>(unpacked)</highlight></codeline>
 <codeline lineno="63"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/>*<sp/>@param[out]<sp/>out<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67" refid="namespaceNeoN_1_1la_1a6fb21baf50a2aa09ba38bbe4e97be8b5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a6fb21baf50a2aa09ba38bbe4e97be8b5" kindref="member">pack</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>in,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>out);</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>[{1,2,3},{4,5,6},{7,8,9}]</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/>*<sp/>this<sp/>returns<sp/>[1,4,7,2,5,8,3,6,9]</highlight></codeline>
-<codeline lineno="71"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="72"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
-<codeline lineno="73"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>containing<sp/>duplicated<sp/>entries</highlight></codeline>
-<codeline lineno="74"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75" refid="namespaceNeoN_1_1la_1a30676e1fef51ed16b5e6b46e71ef6ed3" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a30676e1fef51ed16b5e6b46e71ef6ed3" kindref="member">unpackMtxValues</ref>(</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>rowOffs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>newRowOffs</highlight></codeline>
-<codeline lineno="77"><highlight class="normal">);</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>linear<sp/>system<sp/>consisting<sp/>of<sp/>A,<sp/>b<sp/>and<sp/>x<sp/>the<sp/>operator<sp/>computes<sp/>the<sp/>residual<sp/>vector</highlight></codeline>
-<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>Ax-b</highlight></codeline>
-<codeline lineno="82"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>mtx,<sp/>the<sp/>corresponding<sp/>matrix</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>b,<sp/>rhs<sp/>vector<sp/>b</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>x,<sp/>initial<sp/>guess<sp/>vector<sp/>x</highlight></codeline>
-<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>@param[out]</highlight></codeline>
-<codeline lineno="87"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="88" refid="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" kindref="member">computeResidual</ref>(</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;scalar, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>b,</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>x,</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>res</highlight></codeline>
-<codeline lineno="93"><highlight class="normal">);</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>E.g.<sp/>given<sp/>a<sp/>vector<sp/>[{1,2,3},{4,5,6},{7,8,9}]<sp/>this<sp/>returns<sp/>[1,2,3,4,5,6,7,8,9]</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>unpack</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>containing<sp/>duplicated<sp/>entries</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="namespaceNeoN_1_1la_1a1b1da04815bdcfa4abbda941e0c8c9ee" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a1b1da04815bdcfa4abbda941e0c8c9ee" kindref="member">unpack</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>in);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>[1,2,3,4,5,6,7,8,9]<sp/>this<sp/>packs<sp/>it<sp/>into<sp/>[{1,2,3},{4,5,6},{7,8,9}]</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/>*<sp/>@param[out]<sp/>out<sp/>the<sp/>vector<sp/>to<sp/>duplicate</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="namespaceNeoN_1_1la_1a6fb21baf50a2aa09ba38bbe4e97be8b5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a6fb21baf50a2aa09ba38bbe4e97be8b5" kindref="member">pack</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>in,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>out);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>vector<sp/>of<sp/>packed<sp/>matrix<sp/>values<sp/>this<sp/>returns<sp/>unpacked<sp/>matrix<sp/>values</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/>*<sp/>@details</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>Given<sp/>an<sp/>input<sp/>row<sp/>[{1,2,3},{4,5,6},{7,8,9}]</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/>*<sp/>this<sp/>returns<sp/>[1,4,7,2,5,8,3,6,9]</highlight></codeline>
+<codeline lineno="83"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>in<sp/>vector<sp/>of<sp/>packed<sp/>matrix<sp/>values</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>rowOffs<sp/>the<sp/>rowOffs<sp/>of<sp/>the<sp/>packed<sp/>packed<sp/>matrix</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>newRowOffs<sp/>the<sp/>rowOffs<sp/>of<sp/>the<sp/>unpacked<sp/>matrix</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>@return<sp/>A<sp/>vector<sp/>of<sp/>the<sp/>unpacked<sp/>matrix<sp/>values</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="namespaceNeoN_1_1la_1a30676e1fef51ed16b5e6b46e71ef6ed3" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a30676e1fef51ed16b5e6b46e71ef6ed3" kindref="member">unpackMtxValues</ref>(</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>rowOffs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref>&amp;<sp/>newRowOffs</highlight></codeline>
+<codeline lineno="91"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>a<sp/>linear<sp/>system<sp/>consisting<sp/>of<sp/>A,<sp/>b<sp/>and<sp/>x<sp/>the<sp/>operator<sp/>computes<sp/>the<sp/>residual<sp/>vector</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/>*<sp/>Ax-b</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="97"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>mtx,<sp/>the<sp/>corresponding<sp/>matrix</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>b,<sp/>rhs<sp/>vector<sp/>b</highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/>*<sp/>@param[in]<sp/>x,<sp/>initial<sp/>guess<sp/>vector<sp/>x</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/>*<sp/>@param[out]</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" kindref="member">computeResidual</ref>(</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;scalar, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>x,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>res</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp"/>
   </compounddef>
