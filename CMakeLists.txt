@@ -41,6 +41,7 @@ option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
+option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
 # Third party dependencies
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
@@ -122,6 +123,29 @@ add_subdirectory(src)
 if(NeoN_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
+endif()
+
+if(NeoN_BUILD_PYTHON_BINDINGS)
+  if(CMAKE_VERSION VERSION_LESS 3.18)
+    set(DEV_MODULE Development)
+  else()
+    set(DEV_MODULE Development.Module)
+  endif()
+
+  find_package(
+    Python 3.8
+    COMPONENTS Interpreter ${DEV_MODULE}
+    REQUIRED)
+
+  if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE
+        Release
+        CACHE STRING "Choose the type of build." FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
+                                                 "RelWithDebInfo")
+    nanobind_add_module(my_ext my_ext.cpp)
+  endif()
+
 endif()
 
 if(NeoN_BUILD_BENCHMARKS)
