@@ -98,28 +98,28 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">/* @brief given a vector of column indices for vector matrices it creates the unpacked scalar</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> * version</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> * E.g.: input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see example</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> *   0 1 2       0 1 2 3 4 5 6 7 9</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> *              [x . . x . . . . . ]</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> *  [x x . ]    [. x . . x . . . . ]</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> *  [x x x ] -&gt; [. . x . . x . . . ]</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> *  [. x x ]    [x . . x . . x . . ]</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *              [. x . . x . . x . ]</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> *              [. . x . . x . . x ]</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> *              [. . . x . . x . . ]</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> *              [. . . . x . . x . ]</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> *              [. . . . . x . . x ]</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> *  packed      unpacked</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> *  sparsity    sparsity</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"> * @param[in] in the vector of column indices for a packed Csr&lt;Vec3&gt; matrix</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> * @return A vector containing duplicated entries</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> * version.</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * @param[in] in the vector of column indices for a packed Csr&lt;Vec3&gt; matrix</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * @return A vector containing new unpacked column indices</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> * @details Example input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> * example</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> * Example:</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *   0 1 2       0 1 2 3 4 5 6 7 9     column index</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> *              [x . . x . . . . . ]</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> *  [x x . ]    [. x . . x . . . . ]</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> *  [x x x ] -&gt; [. . x . . x . . . ]</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> *  [. x x ]    [x . . x . . x . . ]</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> *              [. x . . x . . x . ]</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> *              [. . x . . x . . x ]</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> *              [. . . x . . x . . ]</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> *              [. . . . x . . x . ]</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"> *              [. . . . . x . . x ]</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> *  packed      unpacked</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> *  sparsity    sparsity</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#ae107a839dab897cd257efc73c3d55326">   40</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#ae107a839dab897cd257efc73c3d55326">convertColIdx</a>(</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; in,</div>
@@ -127,56 +127,70 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; packedRowOffs</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment">/* @brief given a vector of rowOffs [0,3,6] this returns [0,3,6,9,12,15,18,21]</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment"> * @param[in] in the vector to duplicate</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment"> * @return A vector containing duplicated entries</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a65e42ce1f5f29c08f8a0fa18e5d3e40b">   51</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a65e42ce1f5f29c08f8a0fa18e5d3e40b">unpackRowPtrs</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; in);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">/* @brief given a vector of Vec3 (packed) this returns vector of consecutive scalars (unpacked)</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"> * E.g. given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment">/* @brief computed unpacked rowOffs from packed rowOffs</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment"> * @details given a sparsity pattern every row with Vec3 entries is unpacked</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment"> * by copying its y and z components after the initial row. For</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment"> * example [{x,y,z}] will result in</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"> * [x . .]</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment"> * [. y .]</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment"> * [. . z]</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment"> * Thus, each row with given length will result 2 new entries of the same length</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment"> * in the unpacked vector. E.g. a vector of packed rowOffs [0,2,5,7] returns</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"> * [0,2,4,6,9,12,15,17,19,21] where the last entries is the total number of rows</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment"> * @param[in] in the vector to unpack</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment"> * @return A vector containing duplicated entries</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment"> * @param[in] in the vector rowPtrs to unpack</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment"> * @return A vector containing unpacked rowPtrs</span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee">   60</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee">unpack</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; in);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493">   60</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493">unpackRowOffs</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; in);</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">/* @brief given a vector [1,2,3,4,5,6,7,8,9] this packs it into [{1,2,3},{4,5,6},{7,8,9}]</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">/* @brief given a vector of Vec3 (packed) this returns vector of consecutive scalars (unpacked)</span></div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment"> * @param[in] in the vector to duplicate</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment"> * @param[out] out the vector to duplicate</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a6fb21baf50a2aa09ba38bbe4e97be8b5">   67</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a6fb21baf50a2aa09ba38bbe4e97be8b5">pack</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; in, <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; out);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment">/* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}]</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment"> * this returns [1,4,7,2,5,8,3,6,9]</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment"> * @param[in] in the vector to duplicate</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment"> * @return A vector containing duplicated entries</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3">   75</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3">unpackMtxValues</a>(</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; in, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; rowOffs, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; newRowOffs</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment">/* @brief given a linear system consisting of A, b and x the operator computes the residual vector *</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment"> * Ax-b</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="comment"> * @param[in] mtx, the corresponding matrix</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="comment"> * @param[in] b, rhs vector b</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="comment"> * @param[in] x, initial guess vector x</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment"> * @param[out]</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">   88</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">computeResidual</a>(</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1CSRMatrix.html">CSRMatrix&lt;scalar, localIdx&gt;</a>&amp; mtx,</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; b,</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; x,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; res</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment"> * E.g. given a vector [{1,2,3},{4,5,6},{7,8,9}] this returns [1,2,3,4,5,6,7,8,9]</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment"> * @param[in] in the vector to unpack</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment"> * @return A vector containing duplicated entries</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee">   69</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee">unpack</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; in);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment">/* @brief given a vector [1,2,3,4,5,6,7,8,9] this packs it into [{1,2,3},{4,5,6},{7,8,9}]</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment"> * @param[in] in the vector to duplicate</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment"> * @param[out] out the vector to duplicate</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a6fb21baf50a2aa09ba38bbe4e97be8b5">   76</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a6fb21baf50a2aa09ba38bbe4e97be8b5">pack</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; in, <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; out);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">/* @brief given a vector of packed matrix values this returns unpacked matrix values</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment"> * @details</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment"> * Given an input row [{1,2,3},{4,5,6},{7,8,9}]</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment"> * this returns [1,4,7,2,5,8,3,6,9]</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="comment"> * @param[in] in vector of packed matrix values</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="comment"> * @param[in] rowOffs the rowOffs of the packed packed matrix</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment"> * @param[in] newRowOffs the rowOffs of the unpacked matrix</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment"> * @return A vector of the unpacked matrix values</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3">   89</a></span><a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3">unpackMtxValues</a>(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; in, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; rowOffs, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; newRowOffs</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="comment">/* @brief given a linear system consisting of A, b and x the operator computes the residual vector</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="comment"> * Ax-b</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="comment"> * @param[in] mtx, the corresponding matrix</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="comment"> * @param[in] b, rhs vector b</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment"> * @param[in] x, initial guess vector x</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment"> * @param[out]</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">computeResidual</a>(</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1CSRMatrix.html">CSRMatrix&lt;scalar, localIdx&gt;</a>&amp; mtx,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; b,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; x,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; res</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
 <div class="ttc" id="aCSRMatrix_8hpp_html"><div class="ttname"><a href="CSRMatrix_8hpp.html">CSRMatrix.hpp</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00029">vector.hpp:30</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1la_1_1CSRMatrix_html"><div class="ttname"><a href="classNeoN_1_1la_1_1CSRMatrix.html">NeoN::la::CSRMatrix</a></div><div class="ttdoc">Sparse matrix class with compact storage by row (CSR) format.</div><div class="ttdef"><b>Definition</b> <a href="CSRMatrix_8hpp_source.html#l00085">CSRMatrix.hpp:86</a></div></div>
@@ -184,8 +198,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a0f2ef5235583f6df761bfcb72f6435ea"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a0f2ef5235583f6df761bfcb72f6435ea">NeoN::la::computeResidual</a></div><div class="ttdeci">void computeResidual(const CSRMatrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a1b1da04815bdcfa4abbda941e0c8c9ee"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a1b1da04815bdcfa4abbda941e0c8c9ee">NeoN::la::unpack</a></div><div class="ttdeci">Vector&lt; scalar &gt; unpack(const Vector&lt; Vec3 &gt; &amp;in)</div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a30676e1fef51ed16b5e6b46e71ef6ed3"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a30676e1fef51ed16b5e6b46e71ef6ed3">NeoN::la::unpackMtxValues</a></div><div class="ttdeci">Vector&lt; scalar &gt; unpackMtxValues(const Vector&lt; Vec3 &gt; &amp;in, const Vector&lt; localIdx &gt; &amp;rowOffs, const Vector&lt; localIdx &gt; &amp;newRowOffs)</div></div>
-<div class="ttc" id="anamespaceNeoN_1_1la_html_a65e42ce1f5f29c08f8a0fa18e5d3e40b"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a65e42ce1f5f29c08f8a0fa18e5d3e40b">NeoN::la::unpackRowPtrs</a></div><div class="ttdeci">Vector&lt; localIdx &gt; unpackRowPtrs(const Vector&lt; localIdx &gt; &amp;in)</div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a6fb21baf50a2aa09ba38bbe4e97be8b5"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a6fb21baf50a2aa09ba38bbe4e97be8b5">NeoN::la::pack</a></div><div class="ttdeci">void pack(const Vector&lt; scalar &gt; &amp;in, Vector&lt; Vec3 &gt; &amp;out)</div></div>
+<div class="ttc" id="anamespaceNeoN_1_1la_html_adfdc10cb52098688762e13b2d0af4493"><div class="ttname"><a href="namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493">NeoN::la::unpackRowOffs</a></div><div class="ttdeci">Vector&lt; localIdx &gt; unpackRowOffs(const Vector&lt; localIdx &gt; &amp;in)</div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_ae107a839dab897cd257efc73c3d55326"><div class="ttname"><a href="namespaceNeoN_1_1la.html#ae107a839dab897cd257efc73c3d55326">NeoN::la::convertColIdx</a></div><div class="ttdeci">Vector&lt; localIdx &gt; convertColIdx(const Vector&lt; localIdx &gt; &amp;in, const Vector&lt; localIdx &gt; &amp;unpackedRowOffs, const Vector&lt; localIdx &gt; &amp;packedRowOffs)</div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
 <div class="ttc" id="avec3_8hpp_html"><div class="ttname"><a href="vec3_8hpp.html">vec3.hpp</a></div></div>
