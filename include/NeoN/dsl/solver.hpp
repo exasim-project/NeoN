@@ -30,7 +30,7 @@ namespace detail
 
 // TODO VectorType not needed use ValueType
 template<typename VectorType>
-la::SolverStats iterative_solve_impl(
+la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
     scalar t,
@@ -97,7 +97,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterative_solve_impl(exp, solution, t, dt, fvSchemes, fvSolution, p);
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSchemes, fvSolution, p);
     }
 }
 

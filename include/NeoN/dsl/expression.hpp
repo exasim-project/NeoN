@@ -85,9 +85,7 @@ public:
         return source;
     }
 
-    /*@brief compute matrix coefficients based on all spatial operators
-     *
-     */
+    /*@brief compute matrix coefficients based on all spatial operators */
     void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         for (auto& op : spatialOperators_)
@@ -116,7 +114,8 @@ public:
 
     /* @brief construct a linear system and force assembly
      *
-     * @return the assembled linear system
+     * @param ps a vector of functor performing transformation on the created linear system
+     * @return a tuple of the sparsity pattern and the assembled linear system
      */
     std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
         const UnstructuredMesh& mesh, scalar t, scalar dt, std::vector<OpFunctor<ValueType>> ps = {}
@@ -130,6 +129,7 @@ public:
 
     /* @brief assemble into a given linear system
      *
+     * @param ps a vector of functor performing transformation on the created linear system
      */
     void assemble(
         scalar t,
