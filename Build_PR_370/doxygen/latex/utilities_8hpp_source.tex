@@ -22,79 +22,80 @@
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ of\ column\ indices\ for\ a\ packed\ Csr<Vec3>\ matrix}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ @param[in]\ unpackedRowOffs\ corresponding\ rowOffsets\ of\ the\ unpacked\ matrix}}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ @param[in]\ packedRowOffs\ corresponding\ rowOffsets\ of\ the\ packed\ matrix}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ @details\ Example\ input\ [0,1,0,1,2,1,2]\ this\ function\ returns\ [0,3,1,4,2,5,0,3,6,1,4,7\ ...]\ see\ example}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00023}00023\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ \ \ 0\ 1\ 2\ \ \ \ \ \ \ 0\ 1\ 2\ 3\ 4\ 5\ 6\ 7\ 9}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00025}00025\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [x\ .\ .\ x\ .\ .\ .\ .\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00026}00026\ \textcolor{comment}{\ *\ \ [x\ x\ .\ ]\ \ \ \ [.\ x\ .\ .\ x\ .\ .\ .\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00027}00027\ \textcolor{comment}{\ *\ \ [x\ x\ x\ ]\ -\/>\ [.\ .\ x\ .\ .\ x\ .\ .\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00028}00028\ \textcolor{comment}{\ *\ \ [.\ x\ x\ ]\ \ \ \ [x\ .\ .\ x\ .\ .\ x\ .\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00029}00029\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ x\ .\ .\ x\ .\ .\ x\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00030}00030\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ x\ .\ .\ x\ .\ .\ x\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00031}00031\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ x\ .\ .\ x\ .\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00032}00032\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ .\ x\ .\ .\ x\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00033}00033\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ .\ .\ x\ .\ .\ x\ ]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00034}00034\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00035}00035\ \textcolor{comment}{\ *\ \ packed\ \ \ \ \ \ unpacked}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00036}00036\ \textcolor{comment}{\ *\ \ sparsity\ \ \ \ sparsity}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00037}00037\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00038}00038\ \ */}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00039}\mbox{\hyperlink{namespaceNeoN_1_1la_ab5128657ab8ee768a5aa5b35248cf290}{00039}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_ab5128657ab8ee768a5aa5b35248cf290}{convertColIdx}}(}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ in,}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ unpackedRowOffs,}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ packedRowOffs}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00043}00043\ );}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00044}00044\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00045}00045\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ of\ rowOffs\ [0,3,6]\ this\ returns\ [0,3,6,9,12,15,18,21]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00046}00046\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00047}00047\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00049}00049\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00050}\mbox{\hyperlink{namespaceNeoN_1_1la_a65e42ce1f5f29c08f8a0fa18e5d3e40b}{00050}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a65e42ce1f5f29c08f8a0fa18e5d3e40b}{unpackRowPtrs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ in);}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00051}00051\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00052}00052\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ of\ Vec3\ (packed)\ this\ returns\ vector\ of\ consecutive\ scalars\ (unpacked)}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00053}00053\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00054}00054\ \textcolor{comment}{\ *\ E.g.\ given\ a\ vector\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]\ this\ returns\ [1,2,3,4,5,6,7,8,9]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00055}00055\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00056}00056\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ unpack}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00057}00057\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00058}00058\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00059}\mbox{\hyperlink{namespaceNeoN_1_1la_a1b1da04815bdcfa4abbda941e0c8c9ee}{00059}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a1b1da04815bdcfa4abbda941e0c8c9ee}{unpack}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ in);}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00061}00061\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ [1,2,3,4,5,6,7,8,9]\ this\ packs\ it\ into\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00062}00062\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00063}00063\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00064}00064\ \textcolor{comment}{\ *\ @param[out]\ out\ the\ vector\ to\ duplicate}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00065}00065\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00066}\mbox{\hyperlink{namespaceNeoN_1_1la_a6fb21baf50a2aa09ba38bbe4e97be8b5}{00066}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a6fb21baf50a2aa09ba38bbe4e97be8b5}{pack}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ in,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ out);}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00068}00068\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00069}00069\ \textcolor{comment}{\ *\ this\ returns\ [1,4,7,2,5,8,3,6,9]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00070}00070\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00071}00071\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00072}00072\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00073}00073\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00074}\mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{00074}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{unpackMtxValues}}(}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ in,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ rowOffs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ newRowOffs}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00076}00076\ );}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ new\ unpacked\ column\ indices}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ @details\ Example\ input\ [0,1,0,1,2,1,2]\ this\ function\ returns\ [0,3,1,4,2,5,0,3,6,1,4,7\ ...]\ see}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ example}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00024}00024\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00025}00025\ \textcolor{comment}{\ *\ Example:}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00026}00026\ \textcolor{comment}{\ *\ \ \ 0\ 1\ 2\ \ \ \ \ \ \ 0\ 1\ 2\ 3\ 4\ 5\ 6\ 7\ 9\ \ \ \ \ column\ index}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00027}00027\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [x\ .\ .\ x\ .\ .\ .\ .\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00028}00028\ \textcolor{comment}{\ *\ \ [x\ x\ .\ ]\ \ \ \ [.\ x\ .\ .\ x\ .\ .\ .\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00029}00029\ \textcolor{comment}{\ *\ \ [x\ x\ x\ ]\ -\/>\ [.\ .\ x\ .\ .\ x\ .\ .\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00030}00030\ \textcolor{comment}{\ *\ \ [.\ x\ x\ ]\ \ \ \ [x\ .\ .\ x\ .\ .\ x\ .\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00031}00031\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ x\ .\ .\ x\ .\ .\ x\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00032}00032\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ x\ .\ .\ x\ .\ .\ x\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00033}00033\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ x\ .\ .\ x\ .\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00034}00034\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ .\ x\ .\ .\ x\ .\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00035}00035\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ [.\ .\ .\ .\ .\ x\ .\ .\ x\ ]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00036}00036\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ \ packed\ \ \ \ \ \ unpacked}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00038}00038\ \textcolor{comment}{\ *\ \ sparsity\ \ \ \ sparsity}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00039}00039\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00040}\mbox{\hyperlink{namespaceNeoN_1_1la_ae107a839dab897cd257efc73c3d55326}{00040}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_ae107a839dab897cd257efc73c3d55326}{convertColIdx}}(}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ in,}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ unpackedRowOffs,}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ packedRowOffs}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00044}00044\ );}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00046}00046\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ of\ rowOffs\ [0,3,6]\ this\ returns\ [0,3,6,9,12,15,18,21]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00047}00047\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00049}00049\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00050}00050\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00051}\mbox{\hyperlink{namespaceNeoN_1_1la_a65e42ce1f5f29c08f8a0fa18e5d3e40b}{00051}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a65e42ce1f5f29c08f8a0fa18e5d3e40b}{unpackRowPtrs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ in);}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00053}00053\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ of\ Vec3\ (packed)\ this\ returns\ vector\ of\ consecutive\ scalars\ (unpacked)}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00054}00054\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ E.g.\ given\ a\ vector\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]\ this\ returns\ [1,2,3,4,5,6,7,8,9]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00056}00056\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00057}00057\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ unpack}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00058}00058\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00059}00059\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00060}\mbox{\hyperlink{namespaceNeoN_1_1la_a1b1da04815bdcfa4abbda941e0c8c9ee}{00060}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a1b1da04815bdcfa4abbda941e0c8c9ee}{unpack}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ in);}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00062}00062\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ [1,2,3,4,5,6,7,8,9]\ this\ packs\ it\ into\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00063}00063\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00064}00064\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00065}00065\ \textcolor{comment}{\ *\ @param[out]\ out\ the\ vector\ to\ duplicate}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00066}00066\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00067}\mbox{\hyperlink{namespaceNeoN_1_1la_a6fb21baf50a2aa09ba38bbe4e97be8b5}{00067}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a6fb21baf50a2aa09ba38bbe4e97be8b5}{pack}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ in,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ out);}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00069}00069\ \textcolor{comment}{/*\ @brief\ given\ a\ vector\ [\{1,2,3\},\{4,5,6\},\{7,8,9\}]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00070}00070\ \textcolor{comment}{\ *\ this\ returns\ [1,4,7,2,5,8,3,6,9]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00071}00071\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00072}00072\ \textcolor{comment}{\ *\ @param[in]\ in\ the\ vector\ to\ duplicate}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00073}00073\ \textcolor{comment}{\ *\ @return\ A\ vector\ containing\ duplicated\ entries}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00074}00074\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00075}\mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{00075}}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{unpackMtxValues}}(}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ in,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ rowOffs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ newRowOffs}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00077}00077\ );}
 \DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00078}00078\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00079}00079\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ the\ residual\ vector}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00080}00080\ \textcolor{comment}{\ *\ Ax-\/b}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00081}00081\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00082}00082\ \textcolor{comment}{\ *\ @param[in]\ mtx,\ the\ corresponding\ matrix}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00083}00083\ \textcolor{comment}{\ *\ @param[in]\ b,\ rhs\ vector\ b}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00084}00084\ \textcolor{comment}{\ *\ @param[in]\ x,\ initial\ guess\ vector\ x}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00085}00085\ \textcolor{comment}{\ *\ @param[out]}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00086}00086\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00087}\mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{00087}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{computeResidual}}(}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<scalar,\ localIdx>}}\&\ mtx,}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ b,}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ x,}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00091}00091\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ res}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00092}00092\ );}
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00094}00094\ \}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00080}00080\ \textcolor{comment}{/*\ @brief\ given\ a\ linear\ system\ consisting\ of\ A,\ b\ and\ x\ the\ operator\ computes\ the\ residual\ vector}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00081}00081\ \textcolor{comment}{\ *\ Ax-\/b}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00082}00082\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00083}00083\ \textcolor{comment}{\ *\ @param[in]\ mtx,\ the\ corresponding\ matrix}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00084}00084\ \textcolor{comment}{\ *\ @param[in]\ b,\ rhs\ vector\ b}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00085}00085\ \textcolor{comment}{\ *\ @param[in]\ x,\ initial\ guess\ vector\ x}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00086}00086\ \textcolor{comment}{\ *\ @param[out]}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00087}00087\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00088}\mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{00088}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{computeResidual}}(}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<scalar,\ localIdx>}}\&\ mtx,}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ b,}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ x,}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00092}00092\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ res}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00093}00093\ );}
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{utilities_8hpp_source_l00095}00095\ \}}
 
 \end{DoxyCode}
