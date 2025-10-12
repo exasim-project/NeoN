@@ -43,12 +43,21 @@ Vector<localIdx> convertColIdx(
     const Vector<localIdx>& packedRowOffs
 );
 
-/* @brief given a vector of rowOffs [0,3,6] this returns [0,3,6,9,12,15,18,21]
+/* @brief computed unpacked rowOffs from packed rowOffs
+ * @details given a sparsity pattern every row with Vec3 entries is unpacked
+ * by copying its y and z components after the initial row. For
+ * example [{x,y,z}] will result in
+ * [x . .]
+ * [. y .]
+ * [. . z]
+ * Thus, each row with given length will result 2 new entries of the same length
+ * in the unpacked vector. E.g. a vector of packed rowOffs [0,2,5,7] returns
+ * [0,2,4,6,9,12,15,17,19,21] where the last entries is the total number of rows
  *
- * @param[in] in the vector to duplicate
- * @return A vector containing duplicated entries
+ * @param[in] in the vector rowPtrs to unpack
+ * @return A vector containing unpacked rowPtrs
  */
-Vector<localIdx> unpackRowPtrs(const Vector<localIdx>& in);
+Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in);
 
 /* @brief given a vector of Vec3 (packed) this returns vector of consecutive scalars (unpacked)
  *
@@ -66,11 +75,16 @@ Vector<scalar> unpack(const Vector<Vec3>& in);
  */
 void pack(const Vector<scalar>& in, Vector<Vec3>& out);
 
-/* @brief given a vector [{1,2,3},{4,5,6},{7,8,9}]
+/* @brief given a vector of packed matrix values this returns unpacked matrix values
+ * @details
+ *
+ * Given an input row [{1,2,3},{4,5,6},{7,8,9}]
  * this returns [1,4,7,2,5,8,3,6,9]
  *
- * @param[in] in the vector to duplicate
- * @return A vector containing duplicated entries
+ * @param[in] in vector of packed matrix values
+ * @param[in] rowOffs the rowOffs of the packed packed matrix
+ * @param[in] newRowOffs the rowOffs of the unpacked matrix
+ * @return A vector of the unpacked matrix values
  */
 Vector<scalar> unpackMtxValues(
     const Vector<Vec3>& in, const Vector<localIdx>& rowOffs, const Vector<localIdx>& newRowOffs

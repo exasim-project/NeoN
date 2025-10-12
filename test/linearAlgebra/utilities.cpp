@@ -22,9 +22,9 @@ TEST_CASE("Utilities")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // Dense matrix
-    // [ 1 2 3 ]   [1]   [2]   [6]     [2]
-    // [ 4 5 6 ] x [1] - [2] = [15]  - [2]
-    // [ 7 8 9 ]   [1]   [2]   [24]    [2]
+    // [ 1 2 3 ]
+    // [ 4 5 6 ]  - where in Vec3 variant each value is a Vec 3
+    // [ 7 8 9 ]    e.g. 1 -> {1, 1, 1}
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<Vec3> mtxValues(
         exec,
@@ -42,7 +42,8 @@ TEST_CASE("Utilities")
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
     CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
-    // Sparse matrix
+    // Sparse matrix variant of the above, i.e, not all rows contain
+    // 3 entries
     // [ 1 2 0 ]
     // [ 4 5 6 ]
     // [ 0 8 9 ]
@@ -60,9 +61,9 @@ TEST_CASE("Utilities")
     Vector<localIdx> colIdxS(exec, {0, 1, 0, 1, 2, 1, 2});
     Vector<localIdx> rowOffsS(exec, {0, 2, 5, 7});
 
-    SECTION("Can stretchRowPtrs " + execName)
+    SECTION("Can unpackhRowOffs " + execName)
     {
-        auto res = NeoN::la::unpackRowPtrs(rowOffs);
+        auto res = NeoN::la::unpackRowOffs(rowOffs);
         auto resHost = res.copyToHost();
 
         REQUIRE(resHost.view()[0] == 0);
@@ -73,9 +74,9 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[5] == 15);
     }
 
-    SECTION("Can stretchRowPtrs2 " + execName)
+    SECTION("Can unpackRowOffs2 " + execName)
     {
-        auto res = NeoN::la::unpackRowPtrs(rowOffsS);
+        auto res = NeoN::la::unpackRowOffs(rowOffsS);
         auto resHost = res.copyToHost();
 
         REQUIRE(resHost.view()[0] == 0);
@@ -93,7 +94,7 @@ TEST_CASE("Utilities")
 
     SECTION("Can unpack mtxValues " + execName)
     {
-        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffs);
+        auto newRowOffs = NeoN::la::unpackRowOffs(rowOffs);
         auto res = NeoN::la::unpackMtxValues(mtxValues, rowOffs, newRowOffs);
         auto resHost = res.copyToHost();
 
@@ -116,7 +117,7 @@ TEST_CASE("Utilities")
 
     SECTION("Can convertColIdx " + execName)
     {
-        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffsS);
+        auto newRowOffs = NeoN::la::unpackRowOffs(rowOffsS);
         auto res = NeoN::la::convertColIdx(colIdxS, newRowOffs, rowOffsS);
         auto resHost = res.copyToHost();
 
@@ -164,7 +165,7 @@ TEST_CASE("Utilities")
 
     SECTION("Can convertColIdx " + execName)
     {
-        auto newRowOffs = NeoN::la::unpackRowPtrs(rowOffs);
+        auto newRowOffs = NeoN::la::unpackRowOffs(rowOffs);
         auto res = NeoN::la::convertColIdx(colIdx, newRowOffs, rowOffs);
         auto resHost = res.copyToHost();
 
@@ -216,6 +217,10 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[26] == 8);
     }
 
+    // Residual of scalar matrix
+    // [ 1 2 3 ]   [1]   [2]   [6]     [2]   [ 4]
+    // [ 4 5 6 ] x [1] - [2] = [15]  - [2] = [13]
+    // [ 7 8 9 ]   [1]   [2]   [24]    [2]   [22]
     SECTION("Can compute residual on " + execName)
     {
         Vector<scalar> rhs(exec, 3, 2.0);

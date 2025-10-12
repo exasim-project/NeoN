@@ -27,10 +27,10 @@ Vector<localIdx> convertColIdx(
         exec,
         {0, unpackedRowOffs.size() - 1},
         KOKKOS_LAMBDA(const localIdx i) {
-           const auto j {rowV[i]};        // new row start
-           const auto l {oldRowV[i / 3]}; // original row start
-           const auto length {rowV[i + 1] - rowV[i]};
-           const auto offs = i % 3;
+            const auto j {rowV[i]};        // new row start
+            const auto l {oldRowV[i / 3]}; // original row start
+            const auto length {rowV[i + 1] - rowV[i]};
+            const auto offs = i % 3;
             // iterate all entries of the row
             // every column is shifted by a factor of 3
             // plus an offset based on the dimension 0,1,2
@@ -93,7 +93,7 @@ Vector<scalar> unpackMtxValues(
     return out;
 }
 
-Vector<localIdx> unpackRowPtrs(const Vector<localIdx>& in)
+Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
