@@ -21,40 +21,31 @@
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00017}00017\ }
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00018}\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{00018}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ =\ std::variant<SerialExecutor,\ CPUExecutor,\ GPUExecutor>;}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00019}00019\ }
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00020}\mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{00020}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00021}00021\ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{comment}{//\ check\ if\ executor\ is\ GPU}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::GPUExecutor>(exec))}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00024}00024\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ Kokkos::fence();}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00026}00026\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00027}00027\ \}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00035}\mbox{\hyperlink{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}{00035}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}{operator==}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00036}00036\ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit(}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ []<\textcolor{keyword}{typename}\ ExecLhs,}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ ExecRhs>([[maybe\_unused]]\ \textcolor{keyword}{const}\ ExecLhs\&,\ [[maybe\_unused]]\ \textcolor{keyword}{const}\ ExecRhs\&)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<ExecLhs,\ ExecRhs>)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{typename}\ ExecLhs::exec()\ ==\ \textcolor{keyword}{typename}\ ExecRhs::exec();}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ lhs,}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ rhs}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00052}00052\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00053}00053\ \};}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00054}00054\ }
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00062}\mbox{\hyperlink{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}{00062}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}{operator!=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00063}00063\ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keywordflow}{return}\ !(lhs\ ==\ rhs);}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00065}00065\ \};}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00067}00067\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}{00026}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}{operator==}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit(}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ []<\textcolor{keyword}{typename}\ ExecLhs,}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ ExecRhs>([[maybe\_unused]]\ \textcolor{keyword}{const}\ ExecLhs\&,\ [[maybe\_unused]]\ \textcolor{keyword}{const}\ ExecRhs\&)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<ExecLhs,\ ExecRhs>)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{typename}\ ExecLhs::exec()\ ==\ \textcolor{keyword}{typename}\ ExecRhs::exec();}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ lhs,}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ rhs}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00043}00043\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00044}00044\ \};}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00053}\mbox{\hyperlink{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}{00053}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}{operator!=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00054}00054\ \{}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keywordflow}{return}\ !(lhs\ ==\ rhs);}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00056}00056\ \};}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00058}00058\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
