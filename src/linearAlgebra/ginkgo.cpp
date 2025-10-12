@@ -159,6 +159,14 @@ gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<
     return gko::make_array_view(exec, values.size(), values.data());
 }
 
+/*@brief create a new array by copying from view into ptr*/
+template<typename T>
+auto gkoCopyArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
+{
+    return gko::make_const_array_view(exec, values.size(), values.data()).copy_to_array();
+}
+
+
 /*@brief create a dense non const view into data given by ptr*/
 std::shared_ptr<gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
@@ -170,40 +178,35 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
 }
 
 /*@brief create a dense const view into data given by ptr*/
-std::shared_ptr<gko::matrix::Dense<scalar>>
+std::shared_ptr<const gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
 {
     auto size = static_cast<std::size_t>(s);
-    auto const_array_view = gko::array<scalar>::const_view(exec, size, ptr);
-    return gko::share(
-        gko::matrix::Dense<scalar>::create(exec, gko::dim<2> {size, 1}, const_array_view, 1)
-    );
+    return gko::share(gko::matrix::Dense<scalar>::create_const(
+        exec, gko::dim<2> {size, 1}, gko::array<scalar>::const_view(exec, size, ptr), 1
+    ));
 }
 
 
 template<typename IndexType>
-std::shared_ptr<gko::matrix::Csr<scalar, IndexType>>
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
 {
-    auto mtx = sys.view().matrix;
+    const auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
-    auto vals = gko::array<scalar>::view(
-        exec, static_cast<gko::size_type>(mtx.values.size()), const_cast<scalar*>(mtx.values.data())
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(mtx.values.size()), mtx.values.data()
     );
-    auto col = gko::array<IndexType>::view(
-        exec,
-        static_cast<gko::size_type>(mtx.colIdxs.size()),
-        const_cast<IndexType*>(mtx.colIdxs.data())
+    auto col = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(mtx.colIdxs.size()), mtx.colIdxs.data()
     );
-    auto row = gko::array<IndexType>::view(
-        exec,
-        static_cast<gko::size_type>(mtx.rowOffs.size()),
-        const_cast<IndexType*>(mtx.rowOffs.data())
+    auto row = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(mtx.rowOffs.size()), mtx.rowOffs.data()
     );
 
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
-    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
-        exec, gko::dim<2> {nrows, nrows}, vals, col, row
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
     ));
 }
 
@@ -221,7 +224,7 @@ SolverStats solve_impl(
     std::shared_ptr<const gko::Executor> exec,
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
-    std::shared_ptr<gko::matrix::Csr<scalar, label>> mtx,
+    std::shared_ptr<const gko::matrix::Csr<scalar, label>> mtx,
     std::unique_ptr<gko::LinOp> solver
 )
 {
@@ -229,7 +232,7 @@ SolverStats solve_impl(
 
     using vec = gko::matrix::Dense<scalar>;
     label nrows = rhs.size();
-    auto b = gkoVecView(exec, rhs.data(), nrows);
+    const auto b = gkoVecView(exec, rhs.data(), nrows);
     auto x = gkoVecView(exec, xIn.data(), nrows);
 
     // create a copy of rhs so that we can inline compute
@@ -270,48 +273,40 @@ SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vecto
 {
     auto gkoMtx = createGkoMtx(gkoExec_, sys);
     auto solver = factory_->generate(gkoMtx);
-    return solve_impl(
-        gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver)
-
-    );
+    return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver));
 }
 
+/*
+ *
+ */
 template<typename IndexType>
-std::shared_ptr<gko::matrix::Csr<scalar, IndexType>>
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)
 {
     // NOTE we get a const view of the system but need a non const view to vals and indices
-    auto mtx = sys.matrix();
-
-    auto rowsCopy = unpackRowOffs(mtx.rowOffs());
-    auto rows = gkoArrayView(exec, rowsCopy.view());
-
-    auto colsCopy = convertColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
-    auto cols = gkoArrayView(exec, colsCopy.view());
-
-    auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
-    auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(3 * mtx.values().size()), valuesCopy.data()
-    );
-
+    const auto mtx = sys.matrix();
+    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
+    const auto colsCopy = convertColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
+    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
-        exec, gko::dim<2> {nrows, nrows}, vals.copy_to_array(), std::move(cols), std::move(rows)
+        exec,
+        gko::dim<2> {nrows, nrows},
+        gkoCopyArray(exec, valuesCopy.view()),
+        gkoCopyArray(exec, colsCopy.view()),
+        gkoCopyArray(exec, rowsCopy.view())
     ));
 }
 
 SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const
 {
-    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    const auto gkoMtx = createGkoMtx(gkoExec_, sys);
     auto solver = factory_->generate(gkoMtx);
 
     auto rhsCopy = unpack(sys.rhs());
     auto xCopy = unpack(x);
 
-    auto stats = solve_impl(
-        gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver)
-
-    );
+    auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
 
     pack(xCopy, x);
     return stats;
