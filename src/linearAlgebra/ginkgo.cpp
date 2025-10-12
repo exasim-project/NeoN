@@ -182,7 +182,6 @@ template<typename IndexType>
 std::shared_ptr<gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
 {
-    auto nrows = computeNRows(sys);
     auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
     auto vals = gko::array<scalar>::view(
@@ -199,6 +198,7 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scala
         const_cast<IndexType*>(mtx.rowOffs.data())
     );
 
+    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec, gko::dim<2> {nrows, nrows}, vals, col, row
     ));
@@ -285,7 +285,7 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
         exec, static_cast<gko::size_type>(3 * mtx.values().size()), valuesCopy.data()
     );
 
-    auto nrows = computeNRows(sys);
+    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec, gko::dim<2> {nrows, nrows}, vals.copy_to_array(), std::move(cols), std::move(rows)
     ));

@@ -18,10 +18,12 @@ namespace NeoN::la
  * @param[in] in the vector of column indices for a packed Csr<Vec3> matrix
  * @param[in] unpackedRowOffs corresponding rowOffsets of the unpacked matrix
  * @param[in] packedRowOffs corresponding rowOffsets of the packed matrix
- * @return A vector containing duplicated entries
- * @details Example input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see example
+ * @return A vector containing new unpacked column indices
+ * @details Example input [0,1,0,1,2,1,2] this function returns [0,3,1,4,2,5,0,3,6,1,4,7 ...] see
+ * example
  *
- *   0 1 2       0 1 2 3 4 5 6 7 9
+ * Example:
+ *   0 1 2       0 1 2 3 4 5 6 7 9     column index
  *              [x . . x . . . . . ]
  *  [x x . ]    [. x . . x . . . . ]
  *  [x x x ] -> [. . x . . x . . . ]
@@ -34,7 +36,6 @@ namespace NeoN::la
  *
  *  packed      unpacked
  *  sparsity    sparsity
- */
  */
 Vector<localIdx> convertColIdx(
     const Vector<localIdx>& in,
