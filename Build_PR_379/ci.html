@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Basics" href="basics/index.html"><link rel="prev" title="Installation" href="installation.html">
-        <link rel="canonical" href="https://exasim-project.com/NeoN/contributing.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="MPI Architecture" href="mpi_architecture.html">
+        <link rel="canonical" href="https://exasim-project.com/NeoN/ci.html">
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
-        <title>Contributing - NeoN documentation</title>
+        <title>Continuous Integration - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=acfd86a5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -196,7 +196,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="basics/index.html">Basics</a><input aria-label="Toggle navigation of Basics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="basics/executor.html">Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basics/fields.html">Vectors</a></li>
@@ -231,7 +231,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mpi_architecture.html">MPI Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ci.html">Continuous Integration</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Continuous Integration</a></li>
 </ul>
 
 </div>
@@ -252,7 +252,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/contributing.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/ci.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -270,104 +270,115 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
-<p>Contributions are highly welcome. Here is some information getting you started.</p>
-<section id="neon-code-style-guide">
-<h2>NeoN Code Style Guide<a class="headerlink" href="#neon-code-style-guide" title="Link to this heading">¶</a></h2>
-<p>To simplify coding and code reviews you should adhere to the following code style. However, most
-of NeoNs code style guide is checked via automated tools.
-For example, formatting and non-format related code style is enforced via clang-format and clang-tidy.
-Corresponding configuration files are <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format">.clang-format</a>
-and <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format/.clang-tidy">.clang-tidy</a>.
-Furthermore, adequate licensing of the source code is checked via the reuse linter and typos checks for obvious spelling issues.
-Thus, this style guide doesn’t list all stylistic rules explicitly but rather gives advice for ambiguous situations and mentions the rational for some decisions.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>We generally try to comply with the <a class="reference external" href="https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines">C++ core guidelines</a>.</p></li>
-<li><p>Use <cite>camelCase</cite> for functions and members and capitalized <cite>CamelCase</cite> for classes</p></li>
-<li><p>Use descriptive template parameter names.
-For example, prefer <code class="docutils literal notranslate"><span class="pre">template</span> <span class="pre">&lt;class</span> <span class="pre">ValueType&gt;</span></code> over <code class="docutils literal notranslate"><span class="pre">template</span> <span class="pre">&lt;class</span> <span class="pre">T&gt;</span></code> if the type can be a float or double.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">[[nodiscard]]</span></code> except for getters.
-To indicate that a function simply returns a value instead of performing expensive computations, <code class="docutils literal notranslate"><span class="pre">[[nodiscard]]</span></code> can be omitted.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">final</span></code> except for abstract classes.
-NeoNs aims at having a rather flat inheritance hierarchy and composition is generally preferred.
-To avoid unintended inheritance, using <cite>final</cite> is advised.</p></li>
-<li><p>Avoid storing references as data members in classes.
-An exception might be a <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">Unstructured&amp;</span> <span class="pre">mesh</span></code> as it will most likely outlive any other objects.</p></li>
-<li><p>Private member variables should be suffixed with <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
-<li><p>Order of parameters to functions should be in, in-out, out.
-E.g. <code class="docutils literal notranslate"><span class="pre">foo(const</span> <span class="pre">Type&amp;</span> <span class="pre">in,</span> <span class="pre">Type&amp;</span> <span class="pre">inOut,</span> <span class="pre">Type&amp;</span> <span class="pre">out)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">foo(Type&amp;</span> <span class="pre">inOut,</span>&#160; <span class="pre">Type&amp;</span> <span class="pre">out,</span> <span class="pre">const</span> <span class="pre">Type&amp;</span> <span class="pre">in)</span></code> or some other variation.</p></li>
-<li><p>Use US spelling</p></li>
+          <section id="continuous-integration">
+<h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h1>
+<p>The <strong>NeoN</strong> project uses a two-level Continuous Integration (CI) system
+to ensure correct builds, GPU compatibility, and automated benchmarking.</p>
+<p>The main repository is hosted on <strong>GitHub</strong>, and GPU-based workflows are delegated
+to <strong>LRZ GitLab</strong>, where jobs are executed on both <strong>NVIDIA</strong> and <strong>AMD</strong> GPUs.
+The CI architecture for NeoN is illustrated below.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/ci_setup_overview.png"><img alt="Overview of the CI architecture for NeoN" src="_images/ci_setup_overview.png" style="width: 90%;" /></a>
+</figure>
+<section id="continuous-integration-on-github">
+<h2>Continuous Integration on GitHub<a class="headerlink" href="#continuous-integration-on-github" title="Link to this heading">¶</a></h2>
+<p>GitHub CI is responsible for managing the overall NeoN CI workflow.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul class="simple">
+<li><p>Build and test NeoN on <strong>CPU</strong> across different platforms (Linux, macOS, Windows).</p></li>
+<li><p>Push the source code and commit metadata to <strong>LRZ GitLab</strong>.</p></li>
+<li><p>Cancel outdated pipelines on LRZ GitLab for the same branch.</p></li>
+<li><p>Trigger new LRZ GitLab pipelines for GPU builds and benchmarks.</p></li>
 </ul>
-</div></blockquote>
-<p>Folder structure and file names:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Use <cite>camelCase</cite> for files and folder names</p></li>
-<li><p>The location of implementation and header files should be consistent.
-i.e. a file <code class="docutils literal notranslate"><span class="pre">src/model/a.cpp</span></code> should have a header file in <code class="docutils literal notranslate"><span class="pre">include/NeoN/model/a.hpp</span></code> and the corresponding test implementation in <code class="docutils literal notranslate"><span class="pre">test/model/a.cpp</span></code></p></li>
-<li><p>File and folder names should not be redundant. Ie. <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/geometryModel/finiteVolumecellCentredgeometryModel.hpp</span></code> should be
-<code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/geometryModel/model.hpp</span></code>.</p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="collaboration-via-pull-requests">
-<h2>Collaboration via Pull Requests<a class="headerlink" href="#collaboration-via-pull-requests" title="Link to this heading">¶</a></h2>
-<p>If you want to contribute a specific feature or fix, please don’t hesitate to open a PR. After creating the PR, the following process is applied.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Request a review by a given person or set the Ready-for-Review label.</p></li>
-<li><p>At least one (ideally two) approval(s) is/are required before a PR can be merged.</p></li>
-<li><p>Make sure that all required pipelines succeed.</p></li>
-<li><p>If you add new features, make sure to provide sufficient unit tests.
-Also at some point before merging you can add the <code class="docutils literal notranslate"><span class="pre">full-ci</span></code> label to include build and tests on GPU hardware.</p></li>
-<li><p>If you add a new feature or bug-fix, please add an entry to the <code class="docutils literal notranslate"><span class="pre">Changelog.md</span></code> file.
-For pure refactor PRs, the <code class="docutils literal notranslate"><span class="pre">Skip-Changelog</span></code> label can be set.</p></li>
-<li><p>If the PR should be merged in a specific order or if you don’t have the permission to merge, add the <code class="docutils literal notranslate"><span class="pre">ready-to-merge</span></code> label.</p></li>
-<li><p>Before merging, make sure to rebase your PR on to the latest state of <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
-<li><p>Make sure to add yourself to the <code class="docutils literal notranslate"><span class="pre">Authors.md</span></code> file.</p></li>
-<li><p>To simplify the review process, small to medium sized PRs are preferred.
-If your PR exceeds 1000 lines of code changes, consider to break the PR up into smaller PRs which can be merged via <a class="reference external" href="https://graphite.dev/blog/stacked-prs">stacked PRs</a>.</p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="github-workflows-and-labels">
-<h2>Github Workflows and Labels<a class="headerlink" href="#github-workflows-and-labels" title="Link to this heading">¶</a></h2>
-<p>In order to influence the workflow pipeline and to structure the review process, several labels exist.
-The following labels and their meaning are discussed here:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ready-for-review</span></code>: Signal that the PR is ready for review.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ready-to-merge</span></code>: Signal that the work on this PR has been finished and can be merged.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Skip-Changelog</span></code>: Don’t check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Skip-build</span></code>: Don’t run any build steps, including building the compile commands database.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Skip-cache</span></code>: Don’t cache the build folders. Forces to rebuild the build folder after every push to GitHub.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">full-ci</span></code>: Run tests on AWS and enable sanitizer workflows.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auto-fix</span></code>: Apply changes from pre-commit and clang-tidy.</p></li>
-</ul>
-</div></blockquote>
-<p>A full list of the labels can be found <a class="reference external" href="https://github.com/exasim-project/NeoN/labels">here</a>.</p>
-</section>
-<section id="building-the-documentation">
-<h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h2>
-<p>NeoN’s documentation can be found <a class="reference external" href="https://exasim-project.com/NeoN/latest/index.html">main</a>  and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/">doxygen</a> documentation can be found online. However, if you want to build the documentation locally, you can do so by executing the following steps.
-First, make sure that Sphinx and Doxygen are installed on your system. Second, execute the following commands:</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DNeoN_BUILD_DOC<span class="o">=</span>ON<span class="w"> </span><span class="c1"># configure the build</span>
-cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>sphinx<span class="w"> </span><span class="c1"># build the documentation</span>
-<span class="c1"># or</span>
-sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>./doc<span class="w"> </span>./docs_build
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The GitHub CI acts as the <em>control layer</em> for all NeoN CI operations.
+Developers interact only with GitHub — all LRZ GitLab pipelines are triggered automatically.</p>
 </div>
-</div></blockquote>
-<p>The documentation will be built in the <code class="docutils literal notranslate"><span class="pre">docs_build</span></code> directory and can be viewed by opening the <code class="docutils literal notranslate"><span class="pre">index.html</span></code> file in a web browser.</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>firefox<span class="w"> </span>docs_build/index.html
-</pre></div>
+</section>
+<section id="continuous-integration-on-lrz-gitlab">
+<h2>Continuous Integration on LRZ GitLab<a class="headerlink" href="#continuous-integration-on-lrz-gitlab" title="Link to this heading">¶</a></h2>
+<p>The LRZ GitLab CI handles GPU-related operations.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul class="simple">
+<li><p>Build and test NeoN on <strong>NVIDIA</strong> and <strong>AMD</strong> GPU on Linux.</p></li>
+<li><p>Run benchmark jobs after successful build and test stages.</p></li>
+<li><p>Report the status and results back to GitHub for unified monitoring.</p></li>
+</ul>
+</section>
+<section id="development-workflow">
+<span id="ci-neon-workflow"></span><h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading">¶</a></h2>
+<p>The development workflow for NeoN proceeds as follows:</p>
+<ol class="arabic simple">
+<li><p>A developer opens a pull request (PR) or pushes a commit to an existing PR on GitHub.</p></li>
+<li><p>GitHub CI builds and tests NeoN on CPUs, and pushes the same branch to LRZ GitLab.</p></li>
+<li><p>GitHub CI cancels all pending or running LRZ GitLab pipelines for that branch.</p></li>
+<li><p>GitHub CI triggers a <strong>new LRZ GitLab pipeline</strong>.</p></li>
+<li><p>LRZ GitLab CI builds and tests NeoN on GPUs.</p></li>
+<li><p>If the tests pass, GitHub CI triggers integration tests with the <strong>FoamAdapter</strong> on GPUs (see below).</p></li>
+<li><p><em>(Optional)</em> Benchmark jobs are executed after successful testing, including integration testing.</p></li>
+<li><p>The developer monitors all results directly on GitHub.</p></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> label on a NeoN pull request to trigger benchmarking jobs.</p>
 </div>
-</div></blockquote>
-<p>Alternatively, the documentation can be built by just adding the <code class="docutils literal notranslate"><span class="pre">-DNeoN_BUILD_DOC=ON</span></code> to the configuration step of the build process and then building the documentation using the <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> target.</p>
+</section>
+<section id="integration-tests">
+<span id="ci-integration-tests"></span><h2>Integration Tests<a class="headerlink" href="#integration-tests" title="Link to this heading">¶</a></h2>
+<p><strong>NeoN</strong> is a CFD library that can be integrated into other frameworks. An option is to use the
+GitHub repository <strong>FoamAdapter</strong>, which provides an adapter to integrate NeoN with OpenFOAM.</p>
+<p>To ensure the correctness of this integration, the CI system includes jobs that build and run
+FoamAdapter with NeoN. The integration tests are executed on CPUs by GitHub CI, while the integration
+tests on GPUs are executed by LRZ GitLab CI as illustrated below.</p>
+<pre  class="mermaid">
+        flowchart TD
+    A[GitHub CI] --&gt; B[NeoN LRZ GitLab Pipeline]
+    B --&gt;|Build &amp; Test NeoN| C{Pipeline Success?}
+    C --&gt;|Yes| D[FoamAdapter LRZ GitLab Pipeline]
+    D --&gt;|Build &amp; Test FoamAdapter using same NeoN version| E[End]
+    C --&gt;|No| F[Stop]
+    </pre><ol class="arabic simple">
+<li><p>GitHub CI triggers a pipeline on <strong>NeoN LRZ GitLab</strong> which builds and tests NeoN.</p></li>
+<li><p>If the pipeline succeeds, GitHub CI triggers a pipeline on <strong>FoamAdapter LRZ GitLab</strong>.</p></li>
+<li><p>The FoamAdapter pipeline builds and tests FoamAdapter with the NeoN version triggering the pipeline.</p></li>
+</ol>
+<p>This ensures that any changes in NeoN do not break the integration with FoamAdapter.</p>
+<p><strong>Branch Handling Rules:</strong>
+When triggering the FoamAdapter pipeline, the following rules apply to determine which FoamAdapter branch to use:</p>
+<ul class="simple">
+<li><p>If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.</p></li>
+<li><p>Otherwise, the <strong>main</strong> branch is used as a fallback.</p></li>
+</ul>
+</section>
+<section id="pull-request-labels">
+<span id="ci-neon-labels"></span><h2>Pull Request Labels<a class="headerlink" href="#pull-request-labels" title="Link to this heading">¶</a></h2>
+<p>NeoN’s GitHub repository uses labels to control the CI behavior.</p>
+<p><strong>Relevant Labels:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Skip-build</span></code> — Skip all build-and-test jobs on both GitHub and LRZ GitLab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">benchmark</span></code> — Enable GPU benchmarking jobs after successful build-and-test jobs and integration tests.</p></li>
+</ul>
+<p>These labels allow developers to customize the CI process according to their needs.</p>
+</section>
+<section id="summary">
+<span id="ci-neon-summary"></span><h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>The NeoN CI system provides:</p>
+<ul class="simple">
+<li><p>Unified GitHub-driven CI management.</p></li>
+<li><p>Transparent CPU and GPU build workflows.</p></li>
+<li><p>Automatic synchronization between GitHub and LRZ GitLab.</p></li>
+<li><p>Branch-aware pipeline handling and cancellation.</p></li>
+<li><p>On-demand GPU benchmarking via PR labels.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ci-neon-workflow"><span class="std std-ref">Development Workflow</span></a></p></li>
+<li><p><a class="reference internal" href="#ci-integration-tests"><span class="std std-ref">Integration Tests</span></a></p></li>
+<li><p><a class="reference internal" href="#ci-neon-labels"><span class="std std-ref">Pull Request Labels</span></a></p></li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -376,23 +387,15 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="basics/index.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Basics</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="installation.html">
+          
+          <a class="prev-page" href="mpi_architecture.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Installation</div>
+                <div class="title">MPI Architecture</div>
                 
               </div>
             </a>
@@ -426,11 +429,13 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Contributing</a><ul>
-<li><a class="reference internal" href="#neon-code-style-guide">NeoN Code Style Guide</a></li>
-<li><a class="reference internal" href="#collaboration-via-pull-requests">Collaboration via Pull Requests</a></li>
-<li><a class="reference internal" href="#github-workflows-and-labels">Github Workflows and Labels</a></li>
-<li><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
+<li><a class="reference internal" href="#">Continuous Integration</a><ul>
+<li><a class="reference internal" href="#continuous-integration-on-github">Continuous Integration on GitHub</a></li>
+<li><a class="reference internal" href="#continuous-integration-on-lrz-gitlab">Continuous Integration on LRZ GitLab</a></li>
+<li><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
+<li><a class="reference internal" href="#integration-tests">Integration Tests</a></li>
+<li><a class="reference internal" href="#pull-request-labels">Pull Request Labels</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -446,5 +451,13 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     </body>
 </html>
