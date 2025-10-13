@@ -101,6 +101,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     return gko::config::pnode {result};
 }
 
+
 // TODO: check if this can be replaced by Ginkgos executor mapping
 std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
 {
@@ -141,6 +142,177 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
         },
         exec
     );
+}
+
+
+namespace NeoN::la::ginkgo
+{
+
+label computeNRows(const LinearSystem<Vec3, localIdx>& sys) { return 3 * sys.rhs().size(); }
+
+label computeNRows(const LinearSystem<scalar, localIdx>& sys) { return sys.rhs().size(); }
+
+/*@brief create a array non const view into data given by ptr*/
+template<typename T>
+gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
+{
+    return gko::make_array_view(exec, values.size(), values.data());
+}
+
+/*@brief create a new array by copying from view into ptr*/
+template<typename T>
+auto gkoCopyArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
+{
+    return gko::make_const_array_view(exec, values.size(), values.data()).copy_to_array();
+}
+
+
+/*@brief create a dense non const view into data given by ptr*/
+std::shared_ptr<gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
+{
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(gko::matrix::Dense<scalar>::create(
+        exec, gko::dim<2> {size, 1}, gkoArrayView(exec, std::span {ptr, size}), 1
+    ));
+}
+
+/*@brief create a dense const view into data given by ptr*/
+std::shared_ptr<const gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s)
+{
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(gko::matrix::Dense<scalar>::create_const(
+        exec, gko::dim<2> {size, 1}, gko::array<scalar>::const_view(exec, size, ptr), 1
+    ));
+}
+
+
+template<typename IndexType>
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
+{
+    const auto mtx = sys.view().matrix;
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(mtx.values.size()), mtx.values.data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(mtx.colIdxs.size()), mtx.colIdxs.data()
+    );
+    auto row = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(mtx.rowOffs.size()), mtx.rowOffs.data()
+    );
+
+    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+    ));
+}
+
+
+/*@brief helper function to get a scalar dense value from a device back to the host*/
+template<typename InType>
+scalar retrieve(const InType& in)
+{
+    using vec = gko::matrix::Dense<scalar>;
+    auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+    return host->copy_from(in)->at(0);
+};
+
+SolverStats solve_impl(
+    std::shared_ptr<const gko::Executor> exec,
+    const Vector<scalar>& rhs,
+    Vector<scalar>& xIn,
+    std::shared_ptr<const gko::matrix::Csr<scalar, label>> mtx,
+    std::unique_ptr<gko::LinOp> solver
+)
+{
+    auto startEval = std::chrono::steady_clock::now();
+
+    using vec = gko::matrix::Dense<scalar>;
+    label nrows = rhs.size();
+    const auto b = gkoVecView(exec, rhs.data(), nrows);
+    auto x = gkoVecView(exec, xIn.data(), nrows);
+
+    // create a copy of rhs so that we can inline compute
+    // the residual
+    auto rhsCopy = Vector<scalar>(rhs);
+    auto res = gkoVecView(exec, rhsCopy.data(), nrows);
+
+    // compute Ax-b -> res
+    auto one = gko::initialize<vec>({1.0}, exec);
+    auto neg_one = gko::initialize<vec>({-1.0}, exec);
+    mtx->apply(one, x, neg_one, res);
+
+    auto init = gko::initialize<vec>({0.0}, exec);
+    res->compute_norm2(init);
+    scalar initResNorm = retrieve(init);
+
+    std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+        gko::log::Convergence<scalar>::create();
+    solver->add_logger(logger);
+    solver->apply(b, x);
+
+    // since we work on a copy we need to copy back
+    scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+    auto numIter = label(logger->get_num_iterations());
+    auto endEval = std::chrono::steady_clock::now();
+    auto duration =
+        static_cast<scalar>(
+            std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+        )
+        / 1000.0;
+
+    return {numIter, initResNorm, finalResNorm, duration};
+}
+
+
+SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const
+{
+    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    auto solver = factory_->generate(gkoMtx);
+    return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver));
+}
+
+/*
+ *
+ */
+template<typename IndexType>
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)
+{
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    const auto mtx = sys.matrix();
+    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
+    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
+    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        gkoCopyArray(exec, valuesCopy.view()),
+        gkoCopyArray(exec, colsCopy.view()),
+        gkoCopyArray(exec, rowsCopy.view())
+    ));
+}
+
+SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const
+{
+    const auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    auto solver = factory_->generate(gkoMtx);
+
+    auto rhsCopy = unpackVecValues(sys.rhs());
+    auto xCopy = unpackVecValues(x);
+
+    auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+
+    packVecValues(xCopy, x);
+    return stats;
+}
+
+
 }
 
 #endif

@@ -12,7 +12,6 @@
 namespace dsl = NeoN::dsl;
 
 
-// TEST_CASE("Expression")
 TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());

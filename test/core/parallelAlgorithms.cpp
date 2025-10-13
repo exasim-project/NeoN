@@ -77,12 +77,7 @@ TEST_CASE("parallelFor")
 
 TEST_CASE("parallelReduce")
 {
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     SECTION("parallelReduce_" + execName)
     {
@@ -161,12 +156,7 @@ TEST_CASE("parallelReduce")
 
 TEST_CASE("parallelScan")
 {
-    NeoN::Executor exec = GENERATE(NeoN::Executor(NeoN::SerialExecutor {})
-                                   // NeoN::Executor(NeoN::CPUExecutor {}),
-                                   // NeoN::Executor(NeoN::GPUExecutor {})
-    );
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     SECTION("parallelScan_withoutReturn" + execName)
     {
