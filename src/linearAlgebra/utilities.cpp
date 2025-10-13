@@ -10,7 +10,7 @@
 namespace NeoN::la
 {
 
-Vector<localIdx> convertColIdx(
+Vector<localIdx> unpackColIdx(
     const Vector<localIdx>& in,
     const Vector<localIdx>& unpackedRowOffs,
     const Vector<localIdx>& packedRowOffs
@@ -44,7 +44,7 @@ Vector<localIdx> convertColIdx(
     return out;
 }
 
-Vector<scalar> unpack(const Vector<Vec3>& in)
+Vector<scalar> unpackVecValues(const Vector<Vec3>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
@@ -137,7 +137,7 @@ Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in)
 }
 
 
-void pack(const Vector<scalar>& in, Vector<Vec3>& out)
+void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
 {
     const auto exec = in.exec();
     const auto inV = in.view();

@@ -115,10 +115,10 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[11] == 6.0);
     }
 
-    SECTION("Can convertColIdx " + execName)
+    SECTION("Can unpackColIdx " + execName)
     {
         auto newRowOffs = NeoN::la::unpackRowOffs(rowOffsS);
-        auto res = NeoN::la::convertColIdx(colIdxS, newRowOffs, rowOffsS);
+        auto res = NeoN::la::unpackColIdx(colIdxS, newRowOffs, rowOffsS);
         auto resHost = res.copyToHost();
 
         REQUIRE(res.size() == 3 * colIdxS.size());
@@ -163,10 +163,10 @@ TEST_CASE("Utilities")
         REQUIRE(resHost.view()[20] == 8);
     }
 
-    SECTION("Can convertColIdx " + execName)
+    SECTION("Can unpackColIdx " + execName)
     {
         auto newRowOffs = NeoN::la::unpackRowOffs(rowOffs);
-        auto res = NeoN::la::convertColIdx(colIdx, newRowOffs, rowOffs);
+        auto res = NeoN::la::unpackColIdx(colIdx, newRowOffs, rowOffs);
         auto resHost = res.copyToHost();
 
         REQUIRE(res.size() == 3 * colIdx.size()); // 0

@@ -37,7 +37,7 @@ namespace NeoN::la
  *  packed      unpacked
  *  sparsity    sparsity
  */
-Vector<localIdx> convertColIdx(
+Vector<localIdx> unpackColIdx(
     const Vector<localIdx>& in,
     const Vector<localIdx>& unpackedRowOffs,
     const Vector<localIdx>& packedRowOffs
@@ -66,14 +66,14 @@ Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in);
  * @param[in] in the vector to unpack
  * @return A vector containing duplicated entries
  */
-Vector<scalar> unpack(const Vector<Vec3>& in);
+Vector<scalar> unpackVecValues(const Vector<Vec3>& in);
 
 /* @brief given a vector [1,2,3,4,5,6,7,8,9] this packs it into [{1,2,3},{4,5,6},{7,8,9}]
  *
  * @param[in] in the vector to duplicate
  * @param[out] out the vector to duplicate
  */
-void pack(const Vector<scalar>& in, Vector<Vec3>& out);
+void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out);
 
 /* @brief given a vector of packed matrix values this returns unpacked matrix values
  * @details
@@ -82,7 +82,7 @@ void pack(const Vector<scalar>& in, Vector<Vec3>& out);
  * this returns [1,4,7,2,5,8,3,6,9]
  *
  * @param[in] in vector of packed matrix values
- * @param[in] rowOffs the rowOffs of the packed packed matrix
+ * @param[in] rowOffs the rowOffs of the packed matrix
  * @param[in] newRowOffs the rowOffs of the unpacked matrix
  * @return A vector of the unpacked matrix values
  */

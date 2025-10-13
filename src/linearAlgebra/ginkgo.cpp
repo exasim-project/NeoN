@@ -286,7 +286,7 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
     // NOTE we get a const view of the system but need a non const view to vals and indices
     const auto mtx = sys.matrix();
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
-    const auto colsCopy = convertColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
+    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
@@ -303,12 +303,12 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
     const auto gkoMtx = createGkoMtx(gkoExec_, sys);
     auto solver = factory_->generate(gkoMtx);
 
-    auto rhsCopy = unpack(sys.rhs());
-    auto xCopy = unpack(x);
+    auto rhsCopy = unpackVecValues(sys.rhs());
+    auto xCopy = unpackVecValues(x);
 
     auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
 
-    pack(xCopy, x);
+    packVecValues(xCopy, x);
     return stats;
 }
 
