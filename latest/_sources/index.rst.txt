@@ -31,6 +31,7 @@ Table of Contents
    finiteVolume/cellCentred/index
    datastructures/index
    mpi_architecture
+   ci
 
 .. toctree::
    :maxdepth: 2
