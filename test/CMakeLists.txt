@@ -91,3 +91,5 @@ add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)
 add_subdirectory(mesh)
 add_subdirectory(timeIntegration)
+
+add_subdirectory(bindings)
