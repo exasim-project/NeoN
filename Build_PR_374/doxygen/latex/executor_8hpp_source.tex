@@ -21,9 +21,9 @@
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00017}00017\ }
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00018}\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{00018}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ =\ std::variant<SerialExecutor,\ CPUExecutor,\ GPUExecutor>;}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00019}00019\ }
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00020}\mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{00020}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec)}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00021}00021\ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{comment}{//\ check\ if\ executor\ is\ GPU}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00020}00020\ \textcolor{comment}{/*\ @brief\ calls\ Kokkos::fence\ to\ wait\ for\ GPU\ kernels\ to\ be\ finished\ */}}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00021}\mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{00021}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00022}00022\ \{}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::GPUExecutor>(exec))}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00024}00024\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ Kokkos::fence();}
