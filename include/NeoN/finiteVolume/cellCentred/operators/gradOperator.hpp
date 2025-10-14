@@ -15,7 +15,7 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-/* @class Factory class to create gradergence operators by a given name using
+/* @class Factory class to create gradient operators by a given name using
  * using NeoNs runTimeFactory mechanism
  */
 template<typename ValueType>
@@ -127,13 +127,14 @@ public:
 
     la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const
     {
+        NF_ERROR_EXIT("Not implemented");
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         return gradOperatorStrategy_->createEmptyLinearSystem();
     }
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
-        // FIXME not implemented
+        NF_ERROR_EXIT("Not implemented");
     }
 
     void grad(Vector<ValueType>& gradPhi) const
