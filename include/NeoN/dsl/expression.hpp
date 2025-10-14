@@ -22,7 +22,7 @@ namespace NeoN::dsl
 {
 
 template<typename VectorType>
-struct OpFunctor
+struct PostAssemblyBase
 {
     virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
 };
@@ -118,7 +118,10 @@ public:
      * @return a tuple of the sparsity pattern and the assembled linear system
      */
     std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
-        const UnstructuredMesh& mesh, scalar t, scalar dt, std::vector<OpFunctor<ValueType>> ps = {}
+        const UnstructuredMesh& mesh,
+        scalar t,
+        scalar dt,
+        std::vector<PostAssemblyBase<ValueType>> ps = {}
     ) const
     {
         auto sp = la::SparsityPattern(mesh);
@@ -136,7 +139,7 @@ public:
         scalar dt,
         const la::SparsityPattern& sp,
         la::LinearSystem<ValueType, localIdx>& ls,
-        std::vector<OpFunctor<ValueType>> ps = {}
+        std::vector<PostAssemblyBase<ValueType>> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator

@@ -37,7 +37,7 @@ la::SolverStats iterativeSolveImpl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<OpFunctor<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
 )
 {
     using ValueType = typename VectorType::ElementType;
@@ -78,7 +78,7 @@ la::SolverStats solve(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<OpFunctor<typename VectorType::ElementType>> p = {}
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
