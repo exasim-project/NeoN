@@ -28,7 +28,6 @@ namespace NeoN::dsl
 namespace detail
 {
 
-// TODO VectorType not needed use ValueType
 template<typename VectorType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
@@ -40,7 +39,6 @@ la::SolverStats iterativeSolveImpl(
     std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
 )
 {
-    using ValueType = typename VectorType::ElementType;
     auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
 
     // TODO move that to expression explicit operation or
@@ -89,7 +87,7 @@ la::SolverStats solve(
     auto integrator =
         timeIntegration::TimeIntegration<VectorType>(fvSchemes.subDict("ddtSchemes"), fvSolution);
 
-    if (exp.temporalOperators().size() > 0 && integrator.direct())
+    if (exp.temporalOperators().size() > 0 && integrator.explicitIntegration())
     {
         // integrate equations in time
         integrator.solve(exp, solution, t, dt);

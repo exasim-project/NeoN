@@ -43,7 +43,7 @@ public:
     // Pure virtual function for cloning
     virtual std::unique_ptr<TimeIntegratorBase> clone() const = 0;
 
-    virtual bool direct() const { return true; }
+    virtual bool explicitIntegration() const { return true; }
 
 protected:
 
@@ -82,7 +82,7 @@ public:
         timeIntegratorStrategy_->solve(eqn, sol, t, dt);
     }
 
-    bool direct() const { return timeIntegratorStrategy_->direct(); }
+    bool explicitIntegration() const { return timeIntegratorStrategy_->explicitIntegration(); }
 
 private:
 

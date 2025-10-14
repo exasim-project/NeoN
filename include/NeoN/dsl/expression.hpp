@@ -16,14 +16,13 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
-namespace la = la;
-
 namespace NeoN::dsl
 {
 
 template<typename VectorType>
 struct PostAssemblyBase
 {
+    virtual ~PostAssemblyBase() = default;
     virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
 };
 
@@ -121,7 +120,7 @@ public:
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
-        std::vector<PostAssemblyBase<ValueType>> ps = {}
+        std::span<const PostAssemblyBase<ValueType>> ps = {}
     ) const
     {
         auto sp = la::SparsityPattern(mesh);
@@ -139,7 +138,7 @@ public:
         scalar dt,
         const la::SparsityPattern& sp,
         la::LinearSystem<ValueType, localIdx>& ls,
-        std::vector<PostAssemblyBase<ValueType>> ps = {}
+        std::span<const PostAssemblyBase<ValueType>> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
@@ -199,9 +198,9 @@ private:
 
     const Executor exec_;
 
-    mutable std::vector<TemporalOperator<ValueType>> temporalOperators_;
+    std::vector<TemporalOperator<ValueType>> temporalOperators_;
 
-    mutable std::vector<SpatialOperator<ValueType>> spatialOperators_;
+    std::vector<SpatialOperator<ValueType>> spatialOperators_;
 };
 
 template<typename ValueType>

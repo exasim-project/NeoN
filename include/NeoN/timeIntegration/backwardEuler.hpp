@@ -38,9 +38,7 @@ public:
 
     static std::string schema() { return "none"; }
 
-    void solve(
-        dsl::Expression<ValueType>& eqn, SolutionVectorType& solutionVector, scalar t, scalar dt
-    ) override
+    void solve(dsl::Expression<ValueType>&, SolutionVectorType&, scalar, scalar) override
     {
         NF_ERROR_EXIT("Not implemented, use NeoN::dsl::detail::iterative_solve_impl");
     };
@@ -50,7 +48,7 @@ public:
         return std::make_unique<BackwardEuler>(*this);
     }
 
-    bool direct() const override { return false; }
+    bool explicitIntegration() const override { return false; }
 };
 
 
