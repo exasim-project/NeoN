@@ -12,10 +12,12 @@
 #include "boundary/volume/extrapolated.hpp"
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
+#include "boundary/volume/symmetry.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
 #include "boundary/surface/fixedValue.hpp"
+#include "boundary/surface/symmetry.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -76,6 +78,9 @@ template class fvcc::volumeBoundary::Extrapolated<Vec3>;
 template class fvcc::volumeBoundary::Empty<scalar>;
 template class fvcc::volumeBoundary::Empty<Vec3>;
 
+template class fvcc::volumeBoundary::Symmetry<scalar>;
+template class fvcc::volumeBoundary::Symmetry<Vec3>;
+
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;
 
@@ -87,5 +92,8 @@ template class fvcc::surfaceBoundary::Calculated<Vec3>;
 
 template class fvcc::surfaceBoundary::Empty<scalar>;
 template class fvcc::surfaceBoundary::Empty<Vec3>;
+
+template class fvcc::surfaceBoundary::Symmetry<scalar>;
+template class fvcc::surfaceBoundary::Symmetry<Vec3>;
 
 }
