@@ -13,12 +13,18 @@
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
 
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-
-namespace la = la;
 
 namespace NeoN::dsl
 {
+
+template<typename VectorType>
+struct PostAssemblyBase
+{
+    virtual ~PostAssemblyBase() = default;
+    virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
+};
 
 
 template<typename ValueType>
@@ -78,9 +84,8 @@ public:
         return source;
     }
 
-    // TODO: rename to assembleMatrixCoefficients ?
-    /* @brief perform all implicit operation and accumulate the result */
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    /*@brief compute matrix coefficients based on all spatial operators */
+    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -91,7 +96,11 @@ public:
         }
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
+    /*@brief compute matrix coefficients based on all temporal operators
+     * assemble directly into linear system
+     */
+    void
+    assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -102,6 +111,45 @@ public:
         }
     }
 
+    /* @brief construct a linear system and force assembly
+     *
+     * @param ps a vector of functor performing transformation on the created linear system
+     * @return a tuple of the sparsity pattern and the assembled linear system
+     */
+    std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
+        const UnstructuredMesh& mesh,
+        scalar t,
+        scalar dt,
+        std::span<const PostAssemblyBase<ValueType>> ps = {}
+    ) const
+    {
+        auto sp = la::SparsityPattern(mesh);
+        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sp);
+        assemble(t, dt, sp, ls, ps);
+        return {sp, ls};
+    };
+
+    /* @brief assemble into a given linear system
+     *
+     * @param ps a vector of functor performing transformation on the created linear system
+     */
+    void assemble(
+        scalar t,
+        scalar dt,
+        const la::SparsityPattern& sp,
+        la::LinearSystem<ValueType, localIdx>& ls,
+        std::span<const PostAssemblyBase<ValueType>> ps = {}
+    ) const
+    {
+        assembleSpatialOperator(ls);         // add spatial operator
+        assembleTemporalOperator(ls, t, dt); // add temporal operators
+
+        // perform post assembly transformations
+        for (auto p : ps)
+        {
+            p(sp, ls);
+        }
+    };
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
 

@@ -43,7 +43,6 @@ TEST_CASE("TimeIntegration")
         double dt {2.0};
         double time {1.0};
 
-
         // int(ddt(U)) + f = 0
         // (U^1-U^0)/dt = -f
         // U^1 = - f * dt + U^0, where dt = 2, f = 2, U^0=2.0 -> U^1=-2.0

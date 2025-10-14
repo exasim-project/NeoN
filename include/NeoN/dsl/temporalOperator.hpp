@@ -74,7 +74,7 @@ public:
         model_->explicitOperation(source, t, dt);
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt)
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
     {
         model_->implicitOperation(ls, t, dt);
     }

@@ -22,9 +22,12 @@ public:
 
     std::string getName() const { return "TimeOperator"; }
 
-    void explicitOperation(Vector<scalar>&, scalar, scalar) { NF_ERROR_EXIT("Not implemented"); }
+    void explicitOperation(Vector<scalar>&, scalar, scalar) const
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
 
-    void implicitOperation(la::LinearSystem<scalar, localIdx>&, scalar, scalar)
+    void implicitOperation(la::LinearSystem<scalar, localIdx>&, scalar, scalar) const
     {
         NF_ERROR_EXIT("Not implemented");
     }

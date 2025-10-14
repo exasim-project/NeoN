@@ -73,7 +73,7 @@ public:
 
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls)
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
         model_->implicitOperation(ls);
     }
@@ -104,9 +104,9 @@ private:
     {
         virtual ~OperatorConcept() = default;
 
-        virtual void explicitOperation(Vector<ValueType>& source) = 0;
+        virtual void explicitOperation(Vector<ValueType>& source) const = 0;
 
-        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) = 0;
+        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -140,7 +140,7 @@ private:
         /* returns the name of the operator */
         std::string getName() const override { return concreteOp_.getName(); }
 
-        virtual void explicitOperation(Vector<ValueType>& source) override
+        virtual void explicitOperation(Vector<ValueType>& source) const override
         {
             if constexpr (HasExplicitOperator<ConcreteOperatorType>)
             {
@@ -148,7 +148,7 @@ private:
             }
         }
 
-        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) override
+        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const override
         {
             if constexpr (HasImplicitOperator<ConcreteOperatorType>)
             {

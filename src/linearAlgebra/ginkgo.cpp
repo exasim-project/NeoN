@@ -188,6 +188,7 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localId
 }
 
 
+/* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
@@ -276,9 +277,7 @@ SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vecto
     return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver));
 }
 
-/*
- *
- */
+/* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
 createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)

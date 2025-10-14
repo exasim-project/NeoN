@@ -209,10 +209,7 @@ int explicitRKSolve([[maybe_unused]] sunrealtype t, N_Vector y, N_Vector ydot, v
     auto size = static_cast<localIdx>(N_VGetLength(y));
     // Copy initial value from y to source.
     NeoN::Vector<NeoN::scalar> source = pdeExpre->explicitOperation(size) * -1.0; // compute spatial
-    if (std::holds_alternative<NeoN::GPUExecutor>(pdeExpre->exec()))
-    {
-        Kokkos::fence();
-    }
+    fence(pdeExpre->exec());
     NeoN::sundials::fieldToSunNVector(source, ydot); // assign rhs to ydot.
     return 0;
 }

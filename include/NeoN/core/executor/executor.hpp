@@ -17,6 +17,15 @@ namespace NeoN
 
 using Executor = std::variant<SerialExecutor, CPUExecutor, GPUExecutor>;
 
+/* @brief calls Kokkos::fence to wait for GPU kernels to be finished */
+inline void fence(const Executor& exec)
+{
+    if (std::holds_alternative<NeoN::GPUExecutor>(exec))
+    {
+        Kokkos::fence();
+    }
+}
+
 /**
  * @brief Checks if two executors are equal, i.e. they are of the same type.
  * @param lhs The first executor.
