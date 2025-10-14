@@ -16,13 +16,14 @@ var searchData=
   ['_7elinearsystem_13',['~LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html#a8c24b8b0b48f97c7a91bd884dfa5b019',1,'NeoN::la::LinearSystem']]],
   ['_7elinearsystemview_14',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#ace528280a0ab1d8d9454cb22ac421040',1,'NeoN::la::LinearSystemView']]],
   ['_7eoperatormixin_15',['~OperatorMixin',['../classNeoN_1_1dsl_1_1OperatorMixin.html#a032ed6c8488139f88e3f8c23909b4c71',1,'NeoN::dsl::OperatorMixin']]],
-  ['_7eregister_16',['~Register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a87f94b91ca326e7268cd5986cfec7cda',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
-  ['_7eruntimeselectionfactory_17',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
-  ['_7eserialexecutor_18',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
-  ['_7esourceterm_19',['~SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#ad71d1b4885f9e3600f61cab08513839b',1,'NeoN::finiteVolume::cellCentred::SourceTerm']]],
-  ['_7esparsitypattern_20',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a1aaaaf579a4b30d38a616351deae7a37',1,'NeoN::la::SparsityPattern']]],
-  ['_7esurfaceinterpolationfactory_21',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
-  ['_7etimeintegratorbase_22',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['_7evector_23',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
-  ['_7evolumeboundaryfactory_24',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
+  ['_7epostassemblybase_16',['~PostAssemblyBase',['../structNeoN_1_1dsl_1_1PostAssemblyBase.html#a0775654af984618f01d144f2effb6e19',1,'NeoN::dsl::PostAssemblyBase']]],
+  ['_7eregister_17',['~Register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a87f94b91ca326e7268cd5986cfec7cda',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
+  ['_7eruntimeselectionfactory_18',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
+  ['_7eserialexecutor_19',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
+  ['_7esourceterm_20',['~SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#ad71d1b4885f9e3600f61cab08513839b',1,'NeoN::finiteVolume::cellCentred::SourceTerm']]],
+  ['_7esparsitypattern_21',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a1aaaaf579a4b30d38a616351deae7a37',1,'NeoN::la::SparsityPattern']]],
+  ['_7esurfaceinterpolationfactory_22',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
+  ['_7etimeintegratorbase_23',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
+  ['_7evector_24',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
+  ['_7evolumeboundaryfactory_25',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
 ];
