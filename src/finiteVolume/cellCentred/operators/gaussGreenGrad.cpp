@@ -17,19 +17,17 @@ namespace NeoN::finiteVolume::cellCentred
 ** @param[in,out] out - Vector to hold the result
 */
 void computeGrad(
-    const VolumeField<scalar>& in,
-    const SurfaceInterpolation<scalar>& surfInterp,
-    VolumeField<Vec3>& out
+    const VolumeField<scalar>& in, const SurfaceInterpolation<scalar>& surfInterp, Vector<Vec3>& out
 )
 {
-    const UnstructuredMesh& mesh = out.mesh();
+    const UnstructuredMesh& mesh = in.mesh();
     const auto exec = out.exec();
     SurfaceField<scalar> phif(
         exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
     );
     surfInterp.interpolate(in, phif);
 
-    auto surfGradPhi = out.internalVector().view();
+    auto surfGradPhi = out.view();
 
     const auto [surfFaceCells, sBSf, surfPhif, surfOwner, surfNeighbour, faceAreaS, surfV] = views(
         mesh.boundaryMesh().faceCells(),
@@ -72,22 +70,32 @@ void computeGrad(
 }
 
 GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh)
-    : mesh_(mesh), surfaceInterpolation_(
-                       exec, mesh, std::make_unique<Linear<scalar>>(exec, mesh, Dictionary())
-                   ) {};
+    : Base(exec, mesh), surfaceInterpolation_(
+                            exec, mesh, std::make_unique<Linear<scalar>>(exec, mesh, Dictionary())
+                        ) {};
 
 
-void GaussGreenGrad::grad(const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi)
+void GaussGreenGrad::grad(const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi) const
 {
     computeGrad(phi, surfaceInterpolation_, gradPhi);
 };
+
+// void GaussGreenGrad::grad(
+//         const VolumeField<scalar>& phi,
+//         Vector<Vec3>& gradPhi
+//             ) const
+// {
+//     computeGrad(
+//          phi, surfaceInterpolation_, gradPhi
+//         );
+// };
 
 VolumeField<Vec3> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
 {
     auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
-    computeGrad(phi, surfaceInterpolation_, gradPhi);
+    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector());
     return gradPhi;
 }
 

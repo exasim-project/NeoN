@@ -22,7 +22,7 @@ template<typename ValueType>
 class GradOperatorFactory :
     public RuntimeSelectionFactory<
         GradOperatorFactory<ValueType>,
-        Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
+        Parameters<const Executor&, const UnstructuredMesh&>>
 {
 
 public:
@@ -34,7 +34,7 @@ public:
                             ? std::get<Dictionary>(inputs).get<std::string>("GradOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         GradOperatorFactory<ValueType>::keyExistsOrError(key);
-        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
+        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh);
     }
 
     static std::string name() { return "GradOperatorFactory"; }
@@ -53,8 +53,11 @@ public:
         const dsl::Coeff operatorScaling
     ) const = 0;
 
+    virtual void grad(const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi) const = 0;
+
+
     virtual void grad(
-        Vector<ValueType>& gradPhi, const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling
+        VolumeField<Vec3>& gradPhi, const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling
     ) const = 0;
 
     virtual VolumeField<ValueType>
@@ -121,7 +124,8 @@ public:
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         auto tmpsource = Vector<Vec3>(source.exec(), source.size(), zero<Vec3>());
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(tmpsource, this->getVector(), operatorScaling);
+        gradOperatorStrategy_->grad(this->getVector(),
+                                    tmpsource); //, operatorScaling);
         source += tmpsource;
     }
 

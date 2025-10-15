@@ -12,9 +12,12 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::timeIntegration
 {
+
+namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 template<typename SolutionVectorType>
 class BackwardEuler :
@@ -50,6 +53,5 @@ public:
 
     bool explicitIntegration() const override { return false; }
 };
-
 
 } // namespace NeoN
