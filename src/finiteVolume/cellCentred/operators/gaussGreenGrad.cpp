@@ -17,7 +17,10 @@ namespace NeoN::finiteVolume::cellCentred
 ** @param[in,out] out - Vector to hold the result
 */
 void computeGrad(
-    const VolumeField<scalar>& in, const SurfaceInterpolation<scalar>& surfInterp, Vector<Vec3>& out
+    const VolumeField<scalar>& in,
+    const SurfaceInterpolation<scalar>& surfInterp,
+    Vector<Vec3>& out,
+    const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = in.mesh();
@@ -65,7 +68,9 @@ void computeGrad(
     parallelFor(
         exec,
         {0, mesh.nCells()},
-        KOKKOS_LAMBDA(const localIdx celli) { surfGradPhi[celli] *= 1 / surfV[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) {
+            surfGradPhi[celli] *= operatorScaling[celli] / surfV[celli];
+        }
     );
 }
 
@@ -75,27 +80,20 @@ GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mes
                         ) {};
 
 
-void GaussGreenGrad::grad(const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi) const
+void GaussGreenGrad::grad(
+    const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+) const
 {
-    computeGrad(phi, surfaceInterpolation_, gradPhi);
+    computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
 };
 
-// void GaussGreenGrad::grad(
-//         const VolumeField<scalar>& phi,
-//         Vector<Vec3>& gradPhi
-//             ) const
-// {
-//     computeGrad(
-//          phi, surfaceInterpolation_, gradPhi
-//         );
-// };
-
-VolumeField<Vec3> GaussGreenGrad::grad(const VolumeField<scalar>& phi)
+VolumeField<Vec3>
+GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const
 {
     auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector());
+    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
     return gradPhi;
 }
 

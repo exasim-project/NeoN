@@ -32,8 +32,6 @@ public:
 
     // virtual void grad(const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi) const;
 
-    virtual VolumeField<Vec3> grad(const VolumeField<scalar>& phi);
-
     virtual void grad(
         la::LinearSystem<Vec3, localIdx>& ls,
         const VolumeField<scalar>& phi,
@@ -43,20 +41,19 @@ public:
         NF_ERROR_EXIT("Not implemented");
     };
 
-    virtual void grad(const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi) const;
+    virtual void grad(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+    ) const;
 
     virtual void grad(
-        VolumeField<Vec3>& gradPhi, const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, VolumeField<Vec3>& gradPhi
     ) const
     {
         NF_ERROR_EXIT("Not implemented");
     };
 
-    virtual VolumeField<Vec3>
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const
-    {
-        NF_ERROR_EXIT("Not implemented");
-    }
+    VolumeField<Vec3>
+    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const
     {

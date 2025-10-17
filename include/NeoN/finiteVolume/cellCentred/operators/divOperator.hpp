@@ -44,9 +44,6 @@ public:
 
     virtual ~DivOperatorFactory() {} // Virtual destructor
 
-    // NOTE currently simple overloading is used here, because templating the virtual function
-    // does not work and we cant template the entire class because the static create function
-    // cannot access keyExistsOrError and table anymore.
     virtual void
     div(VolumeField<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
@@ -153,22 +150,12 @@ public:
         divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    void div(Vector<ValueType>& divPhi) const
+    [[deprecated("use explicit or implicit operation")]] void div(auto&&... args) const
     {
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
-    }
-
-    void div(la::LinearSystem<ValueType, localIdx>& ls) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
-    };
-
-    void div(VolumeField<ValueType>& divPhi) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
+        divOperatorStrategy_->div(
+            std::forward<decltype(args)>(args)..., faceFlux_, this->getVector(), operatorScaling
+        );
     }
 
     void read(const Input& input)

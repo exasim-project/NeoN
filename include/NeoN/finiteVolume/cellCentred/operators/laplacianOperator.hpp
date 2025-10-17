@@ -149,23 +149,13 @@ public:
         laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
-    // void laplacian(Vector<scalar>& lapPhi)
-    // {
-    //     laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, getVector());
-    // }
-
-    // void laplacian(la::LinearSystem<scalar, localIdx>& ls)
-    // {
-    //     laplacianOperatorStrategy_->laplacian(ls, gamma_, getVector());
-    // };
-
-    void laplacian(VolumeField<scalar>& lapPhi)
+    [[deprecated("use explicit or implicit operation")]] void laplacian(VolumeField<scalar>& lapPhi)
     {
         const auto operatorScaling = this->getCoefficient();
         laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getVector(), operatorScaling);
     }
 
-    VolumeField<scalar> laplacian()
+    [[deprecated("use explicit or implicit operation")]] VolumeField<scalar> laplacian()
     {
         const auto operatorScaling = this->getCoefficient();
         std::string name = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
