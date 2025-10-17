@@ -53,11 +53,8 @@ public:
         const dsl::Coeff operatorScaling
     ) const = 0;
 
-    virtual void grad(const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi) const = 0;
-
-
     virtual void grad(
-        VolumeField<Vec3>& gradPhi, const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling
+        const VolumeField<scalar>& phi, Vector<Vec3>& gradPhi, const dsl::Coeff operatorScaling
     ) const = 0;
 
     virtual VolumeField<ValueType>
@@ -124,8 +121,7 @@ public:
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         auto tmpsource = Vector<Vec3>(source.exec(), source.size(), zero<Vec3>());
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(this->getVector(),
-                                    tmpsource); //, operatorScaling);
+        gradOperatorStrategy_->grad(this->getVector(), tmpsource, operatorScaling);
         source += tmpsource;
     }
 
@@ -141,22 +137,12 @@ public:
         NF_ERROR_EXIT("Not implemented");
     }
 
-    void grad(Vector<ValueType>& gradPhi) const
+    [[deprecated("use explicit or implicit operation")]] void grad(auto&&... args) const
     {
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(gradPhi, this->getVector(), operatorScaling);
-    }
-
-    void grad(la::LinearSystem<ValueType, localIdx>& ls) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(ls, this->getVector(), operatorScaling);
-    };
-
-    void grad(VolumeField<ValueType>& gradPhi) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(gradPhi, this->getVector(), operatorScaling);
+        gradOperatorStrategy_->grad(
+            std::forward<decltype(args)>(args)..., this->getVector(), operatorScaling
+        );
     }
 
     void read(const Input& input)
