@@ -57,8 +57,8 @@
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00054}00054\ \ \ \ \ )\ \textcolor{keyword}{const}\ =\ 0;}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_ae57034d6ca2c396858ac07f1e0e718b6}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_ae57034d6ca2c396858ac07f1e0e718b6}{grad}}(}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ gradPhi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a3067c0516545619d0c7068bdd107da86}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a3067c0516545619d0c7068bdd107da86}{grad}}(}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ gradPhi}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00058}00058\ \ \ \ \ )\ \textcolor{keyword}{const}\ =\ 0;}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00059}00059\ }
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}}
@@ -125,7 +125,7 @@
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(gradOperatorStrategy\_,\ \textcolor{stringliteral}{"{}GradOperatorStrategy\ not\ initialized"{}});}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tmpsource\ =\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}(source.exec(),\ source.size(),\ \mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{zero<Vec3>}}());}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ac0f0ede32e2866ca444063caf8bfdf9b}{getCoefficient}}();}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ gradOperatorStrategy\_-\/>grad(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}(),\ tmpsource,\ operatorScaling);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ gradOperatorStrategy\_-\/>grad(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}(),\ operatorScaling,\ tmpsource);}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ source\ +=\ tmpsource;}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00126}00126\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00127}00127\ }
@@ -141,41 +141,42 @@
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00138}00138\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00139}00139\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00140}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a55426a6e7455aeeded5479ff8ab08a98}{00140}}\ \ \ \ \ [[deprecated(\textcolor{stringliteral}{"{}use\ explicit\ or\ implicit\ operation"{}})]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a55426a6e7455aeeded5479ff8ab08a98}{grad}}(\textcolor{keyword}{auto}\&\&...\ args)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00141}00141\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ac0f0ede32e2866ca444063caf8bfdf9b}{getCoefficient}}();}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ gradOperatorStrategy\_-\/>grad(}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ std::forward<\textcolor{keyword}{decltype}(args)>(args)...,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}(),\ operatorScaling}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00146}00146\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00147}00147\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00148}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a8b0b6282bfcc1be1e85c4208412e1a28}{00148}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a8b0b6282bfcc1be1e85c4208412e1a28}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00149}00149\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::Dictionary>(input))}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<NeoN::Dictionary>(input);}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ schemeName\ =\ \textcolor{stringliteral}{"{}grad("{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{})"{}};}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}gradSchemes"{}}).get<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(schemeName);}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ gradOperatorStrategy\_\ =}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a217945b9c46929fa56dcbddd201c9c4f}{GradOperatorFactory<ValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a3afa7dc6adc7477564dfa183fa2a5da4}{exec}}(),\ mesh,\ tokens);}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =\ std::get<NeoN::TokenList>(input);}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ gradOperatorStrategy\_\ =}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a217945b9c46929fa56dcbddd201c9c4f}{GradOperatorFactory<ValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a3afa7dc6adc7477564dfa183fa2a5da4}{exec}}(),\ mesh,\ tokens);}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00165}00165\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00166}00166\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00167}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a80b4da8dbeefe72237d547deb4889f83}{00167}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a80b4da8dbeefe72237d547deb4889f83}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GradOperator"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00168}00168\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00169}00169\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00170}00170\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00171}00171\ \ \ \ \ std::unique\_ptr<GradOperatorFactory<ValueType>>\ gradOperatorStrategy\_;}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00172}00172\ \};}
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00140}00140\ \ \ \ \ \textcolor{comment}{/*\ @brief\ forwards\ to\ \ gradOperatorStrategy\_-\/>grad()\ with\ arguments\ */}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00141}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a55426a6e7455aeeded5479ff8ab08a98}{00141}}\ \ \ \ \ [[deprecated(\textcolor{stringliteral}{"{}use\ explicit\ or\ implicit\ operation"{}})]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a55426a6e7455aeeded5479ff8ab08a98}{grad}}(\textcolor{keyword}{auto}\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00142}00142\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ac0f0ede32e2866ca444063caf8bfdf9b}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ gradOperatorStrategy\_-\/>grad(}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ std::forward<\textcolor{keyword}{decltype}(args)>(args)...,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}(),\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00147}00147\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00149}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a8b0b6282bfcc1be1e85c4208412e1a28}{00149}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a8b0b6282bfcc1be1e85c4208412e1a28}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00150}00150\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::Dictionary>(input))}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<NeoN::Dictionary>(input);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ schemeName\ =\ \textcolor{stringliteral}{"{}grad("{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_afda087768667f5877afd210ee83d0aeb}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{})"{}};}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}gradSchemes"{}}).get<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(schemeName);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ gradOperatorStrategy\_\ =}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a217945b9c46929fa56dcbddd201c9c4f}{GradOperatorFactory<ValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a3afa7dc6adc7477564dfa183fa2a5da4}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =\ std::get<NeoN::TokenList>(input);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ gradOperatorStrategy\_\ =}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_a217945b9c46929fa56dcbddd201c9c4f}{GradOperatorFactory<ValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a3afa7dc6adc7477564dfa183fa2a5da4}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00166}00166\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00168}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a80b4da8dbeefe72237d547deb4889f83}{00168}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_a80b4da8dbeefe72237d547deb4889f83}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GradOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00170}00170\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00172}00172\ \ \ \ \ std::unique\_ptr<GradOperatorFactory<ValueType>>\ gradOperatorStrategy\_;}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00173}00173\ \};}
 \DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00174}00174\ }
-\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00175}00175\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{gradOperator_8hpp_source_l00176}00176\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
