@@ -91,7 +91,7 @@ public:
               gradOp.gradOperatorStrategy_ ? gradOp.gradOperatorStrategy_->clone() : nullptr
           ) {};
 
-    GradOperator(dsl::Operator::Type termType, VolumeField<scalar>& phi, Input input)
+    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi, Input input)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
             phi.exec(), dsl::Coeff(1.0), phi, termType
         ),
@@ -101,7 +101,7 @@ public:
 
     GradOperator(
         dsl::Operator::Type termType,
-        VolumeField<scalar>& phi,
+        const VolumeField<scalar>& phi,
         std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy
     )
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
@@ -109,7 +109,7 @@ public:
         ),
           gradOperatorStrategy_(std::move(gradOperatorStrategy)) {};
 
-    GradOperator(dsl::Operator::Type termType, VolumeField<scalar>& phi)
+    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
             phi.exec(), dsl::Coeff(1.0), phi, termType
         ),

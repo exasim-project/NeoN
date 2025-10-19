@@ -37,7 +37,7 @@ class OperatorMixin
 public:
 
     OperatorMixin(
-        const Executor exec, const Coeff& coeffs, VectorInType& field, Operator::Type type
+        const Executor exec, const Coeff& coeffs, const VectorInType& field, Operator::Type type
     )
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
@@ -51,8 +51,6 @@ public:
 
     const Coeff& getCoefficient() const { return coeffs_; }
 
-    VectorInType& getVector() { return field_; }
-
     const VectorInType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
@@ -64,7 +62,7 @@ protected:
 
     Coeff coeffs_;
 
-    VectorInType& field_;
+    const VectorInType& field_;
 
     Operator::Type type_;
 };

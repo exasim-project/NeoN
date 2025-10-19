@@ -1,6 +1,5 @@
 Expression
----------
-
+----------
 
 The `Expression` class in NeoN holds a set of operators to express an expression and ultimately helps to formulate equations.
 Its core responsibility lies in the answering of the following questions:

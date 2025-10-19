@@ -49,27 +49,27 @@ public:
     virtual void laplacian(
         VolumeField<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     virtual VolumeField<ValueType> laplacian(
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) const = 0;
 
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     virtual void laplacian(
         la::LinearSystem<ValueType, localIdx>& ls,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
