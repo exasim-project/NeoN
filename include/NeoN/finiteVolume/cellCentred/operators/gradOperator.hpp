@@ -125,16 +125,19 @@ public:
         source += tmpsource;
     }
 
-    la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const
+    [[deprecated("This function will be removed")]] la::LinearSystem<ValueType, localIdx>
+    createEmptyLinearSystem() const
     {
-        NF_ERROR_EXIT("Not implemented");
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         return gradOperatorStrategy_->createEmptyLinearSystem();
     }
 
+    /* @brief forwards to implicit gradOperatorStrategy_->grad() with arguments */
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
-        NF_ERROR_EXIT("Not implemented");
+        NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        gradOperatorStrategy_->grad(ls, this->getVector(), operatorScaling);
     }
 
     /* @brief forwards to  gradOperatorStrategy_->grad() with arguments */

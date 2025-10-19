@@ -65,7 +65,6 @@ la::SolverStats iterativeSolveImpl(
     VectorType& solution,
     scalar t,
     scalar dt,
-    const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
     std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
 )
@@ -126,7 +125,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSchemes, fvSolution, p);
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
     }
 }
 
