@@ -3,7 +3,9 @@ Operator
 
 Overview
 ^^^^^^^^
-An `Operator` is an essential building block to represent expressions in NeoNs dsl. Here is an example of combining multiple `Operator` to an expression:
+
+An `Operator` is an essential building block to represent expressions in NeoNs dsl.
+Here is an example of combining multiple `Operator` to an expression:
     .. code-block:: cpp
 
         dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U)
@@ -17,6 +19,16 @@ Additionally, since expressions are evaluated lazily, a simple instantiation of 
 
 Implementation
 ^^^^^^^^^^^^^^
+
+Operators are implemented via multiple functions and classes:
+1. `dsl/implicit.hpp` and `dsl/explicit.hpp` implement free standing functions such as `dsl::imp::div(phi, U)` or `dsl::exp::grad(p)` or which act as factories to construct the operator instance.
+2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in `spatialOperator.hpp` and `temporalOperator.hpp`.
+3. The Operator holder classes `spatialOperator` and `temporalOperator` implement an interface which expression trigger evaluation of the operator via the `explicitOperation` and `implicitOperation` member function. These function forward the operation call to the concrete model.
+4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
+
+
+Details
+^^^^^^^
 
 An `Operator` is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
 The `Operator` implementation uses Type Erasure (more details `[1] <https://medium.com/@gealleh/type-erasure-idiom-in-c-0d1cb4f61cf0>`_ `[2] <https://www.youtube.com/watch?v=4eeESJQk-mw>`_ `[3] <https://www.youtube.com/watch?v=qn6OqefuH08>`_) to achieve polymorphism without inheritance. Consequently, the class needs only to implement the interface which is used in the DSL and which is shown in the below example:

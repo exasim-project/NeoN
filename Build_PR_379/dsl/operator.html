@@ -274,12 +274,13 @@
 <h1>Operator<a class="headerlink" href="#operator" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<dl>
-<dt>An <cite>Operator</cite> is an essential building block to represent expressions in NeoNs dsl. Here is an example of combining multiple <cite>Operator</cite> to an expression:</dt><dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">ddt</span><span class="p">(</span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">laplacian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
+<p>An <cite>Operator</cite> is an essential building block to represent expressions in NeoNs dsl.
+Here is an example of combining multiple <cite>Operator</cite> to an expression:</p>
+<blockquote>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">ddt</span><span class="p">(</span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">laplacian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd>
-</dl>
+</div></blockquote>
 <p>NeoN’s implements explicit (<cite>exp</cite>) and implicit (<cite>imp</cite>) of operator in the <cite>dsl</cite> namespace.
 Note that, temporal operators are currently, part of the implicit (<cite>imp</cite>) namespace eventhough an explicit time integration can be selected at runtime.</p>
 <p>An <cite>Operator</cite> can be instantiated on fields of different value types, e.g.   <cite>VolumeField&lt;scalar&gt;</cite> or <cite>VolumeField&lt;Vec3&gt;</cite>, thus <cite>Operator</cite> are templated over the field <cite>ValueType</cite>.
@@ -288,6 +289,14 @@ Additionally, since expressions are evaluated lazily, a simple instantiation of 
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
+<p>Operators are implemented via multiple functions and classes:
+1. <cite>dsl/implicit.hpp</cite> and <cite>dsl/explicit.hpp</cite> implement free standing functions such as <cite>dsl::imp::div(phi, U)</cite> or <cite>dsl::exp::grad(p)</cite> or which act as factories to construct the operator instance.
+2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in <cite>spatialOperator.hpp</cite> and <cite>temporalOperator.hpp</cite>.
+3. The Operator holder classes <cite>spatialOperator</cite> and <cite>temporalOperator</cite> implement an interface which expression trigger evaluation of the operator via the <cite>explicitOperation</cite> and <cite>implicitOperation</cite> member function. These function forward the operation call to the concrete model.
+4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in <cite>divOperator.hpp</cite> for which concrete implementation an its kernels are implemented in <cite>gaussGreenDiv.hpp</cite></p>
+</section>
+<section id="details">
+<h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
 <p>An <cite>Operator</cite> is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
 The <cite>Operator</cite> implementation uses Type Erasure (more details <a class="reference external" href="https://medium.com/&#64;gealleh/type-erasure-idiom-in-c-0d1cb4f61cf0">[1]</a> <a class="reference external" href="https://www.youtube.com/watch?v=4eeESJQk-mw">[2]</a> <a class="reference external" href="https://www.youtube.com/watch?v=qn6OqefuH08">[3]</a>) to achieve polymorphism without inheritance. Consequently, the class needs only to implement the interface which is used in the DSL and which is shown in the below example:</p>
 <dl>
@@ -394,6 +403,7 @@ The <cite>Operator</cite> implementation uses Type Erasure (more details <a clas
 <li><a class="reference internal" href="#">Operator</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#implementation">Implementation</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
 </ul>
 </li>
 </ul>
