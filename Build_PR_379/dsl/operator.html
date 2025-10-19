@@ -175,7 +175,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -265,15 +265,28 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
           <section id="operator">
 <h1>Operator<a class="headerlink" href="#operator" title="Link to this heading">¶</a></h1>
-<p>The <cite>Operator</cite> class represents a term in an equation and can be instantiated with different value types.
-An <cite>Operator</cite> is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>An <cite>Operator</cite> is an essential building block to represent expressions in NeoNs dsl.</p>
+<dl class="simple">
+<dt>Here is nn example of combining multiple <cite>Operator</cite> to an expression:</dt><dd></dd>
+</dl>
+<p>NeoN’s implements explicit (<cite>exp</cite>) and implicit (<cite>imp</cite>) of operator in the <cite>dsl</cite> namespace.
+Note that, temporal operators are currently, part of the implicit (<cite>imp</cite>) namespace eventhough an explicit time integration can be selected at runtime.</p>
+<p>An <cite>Operator</cite> can be instantiated on fields of different value types, e.g.   <cite>VolumeField&lt;scalar&gt;</cite> or <cite>VolumeField&lt;Vec3&gt;</cite>, thus <cite>Operator</cite> are templated over the field <cite>ValueType</cite>.
+Since the purpose of an <cite>Operator</cite> is to encode an expression, an <cite>Operator</cite> merely stores constant references to the field(s) it operates on and provides a connection to kernel which are executed at runtime when an expression is solved and operators are evaluated.
+Additionally, since expressions are evaluated lazily, a simple instantiation of an operator does not execute any computational kernel.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
+<p>An <cite>Operator</cite> is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
 The <cite>Operator</cite> implementation uses Type Erasure (more details <a class="reference external" href="https://medium.com/&#64;gealleh/type-erasure-idiom-in-c-0d1cb4f61cf0">[1]</a> <a class="reference external" href="https://www.youtube.com/watch?v=4eeESJQk-mw">[2]</a> <a class="reference external" href="https://www.youtube.com/watch?v=qn6OqefuH08">[3]</a>) to achieve polymorphism without inheritance. Consequently, the class needs only to implement the interface which is used in the DSL and which is shown in the below example:</p>
 <dl>
 <dt>Example:</dt><dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NeoN</span><span class="o">::</span><span class="n">dsl</span><span class="o">::</span><span class="n">Operator</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">scalar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">divTerm</span><span class="w"> </span><span class="o">=</span>
@@ -319,6 +332,7 @@ The <cite>Operator</cite> implementation uses Type Erasure (more details <a clas
 <p>An example can be found in <cite>test/dsl/operator.cpp</cite>.</p>
 <p>The required scaling of the term is handled by the <cite>Coeff</cite> type which can be retrieved by the <cite>getCoefficient</cite> function of <cite>Operator</cite>.</p>
 </section>
+</section>
 
         </article>
       </div>
@@ -363,8 +377,28 @@ The <cite>Operator</cite> implementation uses Type Erasure (more details <a clas
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Operator</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
