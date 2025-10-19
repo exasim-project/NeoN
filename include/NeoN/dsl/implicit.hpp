@@ -21,7 +21,7 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN::dsl::imp
 {
 
-
+// TODO all arguments could be const
 template<typename ValueType>
 TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
 {
