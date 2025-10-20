@@ -30,15 +30,15 @@ public:
 
     // fvcc::VolumeField<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
-    /* @brief compute gradient for implicit operator
+    /* @brief compute implicit gradient operator contribution
      *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
      * @param ls [in,out] - assemble gradient operator into the given linear system
-     * @param phi [in] -
-     * @param operatorScaling [in] -
      */
-    virtual void grad(
-        la::LinearSystem<Vec3, localIdx>&, const VolumeField<scalar>&, const dsl::Coeff
-    ) const override
+    virtual void
+    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3, localIdx>&)
+        const override
     {
         NF_ERROR_EXIT("Not implemented");
     };
@@ -49,8 +49,8 @@ public:
 
     /* @brief compute grad
      *
-     * @param phi [in]
-     * @param operatorScaling [in]
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
      * @param gradPhi [in,out] - resulting gradient field
      */
     virtual void grad(const VolumeField<scalar>&, const dsl::Coeff, VolumeField<Vec3>&) const
@@ -58,6 +58,12 @@ public:
         NF_ERROR_EXIT("Not implemented");
     };
 
+    /* @brief compute explicit gradient operator and return result
+     *
+     * @param phi [in]
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @return gradPhi - resulting gradient field
+     */
     VolumeField<Vec3>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 

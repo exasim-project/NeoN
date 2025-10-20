@@ -44,23 +44,42 @@ public:
 
     virtual ~GradOperatorFactory() {} // Virtual destructor
 
-    // NOTE currently simple overloading is used here, because templating the virtual function
-    // does not work and we cant template the entire class because the static create function
-    // cannot access keyExistsOrError and table anymore.
+    /* @brief compute implicit gradient operator contribution
+     *
+     * @param [in] phi
+     * @param [in] operatorScaling
+     * @param [in,out] ls the linear system to assemble into
+     */
     virtual void grad(
-        la::LinearSystem<ValueType, localIdx>& ls,
         const VolumeField<scalar>& phi,
-        const dsl::Coeff operatorScaling
+        const dsl::Coeff operatorScaling,
+        la::LinearSystem<ValueType, localIdx>& ls
     ) const = 0;
 
+    /* @brief compute explicit gradient operator
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @param gradPhi [in,out] - resulting gradient field
+     */
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
     ) const = 0;
 
+    /* @brief compute explicit gradient operator and return result
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @return gradPhi - resulting gradient field
+     */
     virtual VolumeField<ValueType>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    [[deprecated("This function will be removed")]] const la::SparsityPattern&
+    getSparsityPattern() const
+    {
+        return sparsityPattern_;
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<GradOperatorFactory<ValueType>> clone() const = 0;
@@ -91,7 +110,7 @@ public:
               gradOp.gradOperatorStrategy_ ? gradOp.gradOperatorStrategy_->clone() : nullptr
           ) {};
 
-    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi, Input input)
+    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi, const Input& input)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
             phi.exec(), dsl::Coeff(1.0), phi, termType
         ),
@@ -137,7 +156,7 @@ public:
     {
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(ls, this->getVector(), operatorScaling);
+        gradOperatorStrategy_->grad(this->getVector(), operatorScaling, ls);
     }
 
     /* @brief forwards to  gradOperatorStrategy_->grad() with arguments */

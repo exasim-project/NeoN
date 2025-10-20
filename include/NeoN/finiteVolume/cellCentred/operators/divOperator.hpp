@@ -67,7 +67,11 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    [[deprecated("This function will be removed")]] const la::SparsityPattern&
+    getSparsityPattern() const
+    {
+        return sparsityPattern_;
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<DivOperatorFactory<ValueType>> clone() const = 0;
