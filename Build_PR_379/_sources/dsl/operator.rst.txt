@@ -27,6 +27,15 @@ Operators are implemented via multiple functions and classes:
     3. The Operator holder classes `spatialOperator` and `temporalOperator` implement an interface which expression trigger evaluation of the operator via the `explicitOperation` and `implicitOperation` member function. These function forward the operation call to the concrete model.
     4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
 
+.. mermaid::
+    flowchart TD
+        n2["dsl/implicit.hpp"]
+        -- imp::div
+        --> n3["spatialOperator&lt;&gt; <br> spatialOperator.hpp"] n3
+        --> n5["divOperator"]
+        --> n6["gaussGreenDiv"]
+        n2@{ shape: text}
+        n3@{ shape: proc}
 
 Details
 ^^^^^^^
