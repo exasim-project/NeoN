@@ -42,7 +42,7 @@ public:
     GradOperatorFactory(const Executor& exec, const UnstructuredMesh& mesh)
         : exec_(exec), mesh_(mesh), sparsityPattern_(la::SparsityPattern::readOrCreate(mesh)) {};
 
-    virtual ~GradOperatorFactory() {} // Virtual destructor
+    virtual ~GradOperatorFactory()  = default;  // Virtual destructor
 
     /* @brief compute implicit gradient operator contribution
      *
