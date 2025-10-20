@@ -21,10 +21,11 @@ Implementation
 ^^^^^^^^^^^^^^
 
 Operators are implemented via multiple functions and classes:
-1. `dsl/implicit.hpp` and `dsl/explicit.hpp` implement free standing functions such as `dsl::imp::div(phi, U)` or `dsl::exp::grad(p)` or which act as factories to construct the operator instance.
-2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in `spatialOperator.hpp` and `temporalOperator.hpp`.
-3. The Operator holder classes `spatialOperator` and `temporalOperator` implement an interface which expression trigger evaluation of the operator via the `explicitOperation` and `implicitOperation` member function. These function forward the operation call to the concrete model.
-4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
+
+    1. `dsl/implicit.hpp` and `dsl/explicit.hpp` implement free standing functions such as `dsl::imp::div(phi, U)` or `dsl::exp::grad(p)` or which act as factories to construct the operator instance.
+    2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in `spatialOperator.hpp` and `temporalOperator.hpp`.
+    3. The Operator holder classes `spatialOperator` and `temporalOperator` implement an interface which expression trigger evaluation of the operator via the `explicitOperation` and `implicitOperation` member function. These function forward the operation call to the concrete model.
+    4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
 
 
 Details

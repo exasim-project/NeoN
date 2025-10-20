@@ -289,11 +289,15 @@ Additionally, since expressions are evaluated lazily, a simple instantiation of 
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
-<p>Operators are implemented via multiple functions and classes:
-1. <cite>dsl/implicit.hpp</cite> and <cite>dsl/explicit.hpp</cite> implement free standing functions such as <cite>dsl::imp::div(phi, U)</cite> or <cite>dsl::exp::grad(p)</cite> or which act as factories to construct the operator instance.
-2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in <cite>spatialOperator.hpp</cite> and <cite>temporalOperator.hpp</cite>.
-3. The Operator holder classes <cite>spatialOperator</cite> and <cite>temporalOperator</cite> implement an interface which expression trigger evaluation of the operator via the <cite>explicitOperation</cite> and <cite>implicitOperation</cite> member function. These function forward the operation call to the concrete model.
-4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in <cite>divOperator.hpp</cite> for which concrete implementation an its kernels are implemented in <cite>gaussGreenDiv.hpp</cite></p>
+<p>Operators are implemented via multiple functions and classes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><cite>dsl/implicit.hpp</cite> and <cite>dsl/explicit.hpp</cite> implement free standing functions such as <cite>dsl::imp::div(phi, U)</cite> or <cite>dsl::exp::grad(p)</cite> or which act as factories to construct the operator instance.</p></li>
+<li><p>The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in <cite>spatialOperator.hpp</cite> and <cite>temporalOperator.hpp</cite>.</p></li>
+<li><p>The Operator holder classes <cite>spatialOperator</cite> and <cite>temporalOperator</cite> implement an interface which expression trigger evaluation of the operator via the <cite>explicitOperation</cite> and <cite>implicitOperation</cite> member function. These function forward the operation call to the concrete model.</p></li>
+<li><p>The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in <cite>divOperator.hpp</cite> for which concrete implementation an its kernels are implemented in <cite>gaussGreenDiv.hpp</cite></p></li>
+</ol>
+</div></blockquote>
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
