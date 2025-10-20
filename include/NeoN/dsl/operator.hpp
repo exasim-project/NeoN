@@ -24,19 +24,26 @@ public:
 
 /* @class OperatorMixin
  * @brief A mixin class to simplify implementations of concrete operators
- * in NeoNs dsl
+ * in NeoNs dsl.
+ *
+ * @detail Operators perform either an explicit or implicit operation on a field or vector.
  *
  * @ingroup dsl
+ * @tparam OutType the type of the resulting field after evaluation
+ * @tparam InType the type of the input field
  */
-template<typename VectorType>
+template<typename OutType, typename InType = OutType>
 class OperatorMixin
 {
 
 public:
 
-    OperatorMixin(const Executor exec, const Coeff& coeffs, VectorType& field, Operator::Type type)
+    OperatorMixin(
+        const Executor exec, const Coeff& coeffs, const InType& field, Operator::Type type
+    )
         : exec_(exec), coeffs_(coeffs), field_(field), type_(type) {};
 
+    /*@brief return the type of the operator i.e. Implicit or Explicit */
     Operator::Type getType() const { return type_; }
 
     virtual ~OperatorMixin() = default;
@@ -47,9 +54,7 @@ public:
 
     const Coeff& getCoefficient() const { return coeffs_; }
 
-    VectorType& getVector() { return field_; }
-
-    const VectorType& getVector() const { return field_; }
+    const InType& getVector() const { return field_; }
 
     /* @brief Given an input this function reads required coeffs */
     void read([[maybe_unused]] const Input& input) {}
@@ -60,7 +65,7 @@ protected:
 
     Coeff coeffs_;
 
-    VectorType& field_;
+    const InType& field_;
 
     Operator::Type type_;
 };

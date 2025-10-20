@@ -19,7 +19,7 @@ template<typename ValueType>
 void computeLaplacianExp(
     const FaceNormalGradient<ValueType>&,
     const SurfaceField<scalar>&,
-    VolumeField<ValueType>&,
+    const VolumeField<ValueType>&,
     Vector<ValueType>&,
     const dsl::Coeff
 );
@@ -28,7 +28,7 @@ template<typename ValueType>
 void computeLaplacianImpl(
     la::LinearSystem<ValueType, localIdx>& ls,
     const SurfaceField<scalar>& gamma,
-    VolumeField<ValueType>& phi,
+    const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
     const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
@@ -56,7 +56,7 @@ public:
     virtual void laplacian(
         VolumeField<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) override
     {
@@ -67,7 +67,7 @@ public:
 
     virtual VolumeField<ValueType> laplacian(
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) const override
     {
@@ -89,7 +89,7 @@ public:
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) override
     {
@@ -99,7 +99,7 @@ public:
     virtual void laplacian(
         la::LinearSystem<ValueType, localIdx>& ls,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) override
     {

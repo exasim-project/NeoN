@@ -49,34 +49,38 @@ public:
     virtual void laplacian(
         VolumeField<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     virtual VolumeField<ValueType> laplacian(
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) const = 0;
 
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     virtual void laplacian(
         la::LinearSystem<ValueType, localIdx>& ls,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    [[deprecated("This function will be removed")]] const la::SparsityPattern&
+    getSparsityPattern() const
+    {
+        return sparsityPattern_;
+    }
 
 protected:
 
@@ -149,23 +153,13 @@ public:
         laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
-    // void laplacian(Vector<scalar>& lapPhi)
-    // {
-    //     laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, getVector());
-    // }
-
-    // void laplacian(la::LinearSystem<scalar, localIdx>& ls)
-    // {
-    //     laplacianOperatorStrategy_->laplacian(ls, gamma_, getVector());
-    // };
-
-    void laplacian(VolumeField<scalar>& lapPhi)
+    [[deprecated("use explicit or implicit operation")]] void laplacian(VolumeField<scalar>& lapPhi)
     {
         const auto operatorScaling = this->getCoefficient();
         laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getVector(), operatorScaling);
     }
 
-    VolumeField<scalar> laplacian()
+    [[deprecated("use explicit or implicit operation")]] VolumeField<scalar> laplacian()
     {
         const auto operatorScaling = this->getCoefficient();
         std::string name = "laplacian(" + gamma_.name + "," + this->field_.name + ")";

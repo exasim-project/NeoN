@@ -22,8 +22,8 @@ SpatialOperator<scalar> div(const fvcc::SurfaceField<NeoN::scalar>& flux)
 SpatialOperator<scalar>
 laplacian(const fvcc::SurfaceField<NeoN::scalar>& gamma, fvcc::VolumeField<NeoN::scalar>& phi)
 {
-    return SpatialOperator<scalar>(
-        fvcc::LaplacianOperator(dsl::Operator::Type::Explicit, gamma, phi)
+    return SpatialOperator<NeoN::scalar>(
+        fvcc::LaplacianOperator<NeoN::scalar>(dsl::Operator::Type::Explicit, gamma, phi)
     );
 }
 
@@ -31,6 +31,13 @@ SpatialOperator<Vec3>
 laplacian(const fvcc::SurfaceField<NeoN::scalar>& gamma, fvcc::VolumeField<NeoN::Vec3>& phi)
 {
     return SpatialOperator<Vec3>(fvcc::LaplacianOperator(dsl::Operator::Type::Explicit, gamma, phi)
+    );
+}
+
+SpatialOperator<NeoN::Vec3> grad(fvcc::VolumeField<NeoN::scalar>& phi)
+{
+    return SpatialOperator<NeoN::Vec3>(
+        fvcc::GradOperator<NeoN::Vec3>(dsl::Operator::Type::Explicit, phi)
     );
 }
 

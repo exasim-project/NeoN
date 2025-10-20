@@ -12,7 +12,7 @@ template<typename ValueType>
 void computeLaplacianExp(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const SurfaceField<scalar>&, // gamma,
-    VolumeField<ValueType>& phi,
+    const VolumeField<ValueType>& phi,
     Vector<ValueType>& lapPhi,
     const dsl::Coeff operatorScaling
 )
@@ -64,7 +64,7 @@ void computeLaplacianExp(
     template void computeLaplacianExp<TYPENAME>(                                                   \
         const FaceNormalGradient<TYPENAME>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
-        VolumeField<TYPENAME>&,                                                                    \
+        const VolumeField<TYPENAME>&,                                                              \
         Vector<TYPENAME>&,                                                                         \
         const dsl::Coeff                                                                           \
     )
@@ -77,7 +77,7 @@ template<typename ValueType>
 void computeLaplacianImpl(
     la::LinearSystem<ValueType, localIdx>& ls,
     const SurfaceField<scalar>& gamma,
-    VolumeField<ValueType>& phi,
+    const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
     const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
@@ -178,7 +178,7 @@ void computeLaplacianImpl(
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, VolumeField<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);

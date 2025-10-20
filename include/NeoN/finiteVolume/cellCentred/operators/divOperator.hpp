@@ -44,9 +44,6 @@ public:
 
     virtual ~DivOperatorFactory() {} // Virtual destructor
 
-    // NOTE currently simple overloading is used here, because templating the virtual function
-    // does not work and we cant template the entire class because the static create function
-    // cannot access keyExistsOrError and table anymore.
     virtual void
     div(VolumeField<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
@@ -70,7 +67,11 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    [[deprecated("This function will be removed")]] const la::SparsityPattern&
+    getSparsityPattern() const
+    {
+        return sparsityPattern_;
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<DivOperatorFactory<ValueType>> clone() const = 0;
@@ -105,7 +106,7 @@ public:
     DivOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& faceFlux,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         Input input
     )
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
@@ -116,7 +117,7 @@ public:
     DivOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& faceFlux,
-        VolumeField<ValueType>& phi,
+        const VolumeField<ValueType>& phi,
         std::unique_ptr<DivOperatorFactory<ValueType>> divOperatorStrategy
     )
         : dsl::OperatorMixin<VolumeField<scalar>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
@@ -125,7 +126,7 @@ public:
     DivOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& faceFlux,
-        VolumeField<ValueType>& phi
+        const VolumeField<ValueType>& phi
     )
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
           faceFlux_(faceFlux), divOperatorStrategy_(nullptr) {};
@@ -153,22 +154,12 @@ public:
         divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    void div(Vector<ValueType>& divPhi) const
+    [[deprecated("use explicit or implicit operation")]] void div(auto&&... args) const
     {
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
-    }
-
-    void div(la::LinearSystem<ValueType, localIdx>& ls) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
-    };
-
-    void div(VolumeField<ValueType>& divPhi) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(divPhi, faceFlux_, this->getVector(), operatorScaling);
+        divOperatorStrategy_->div(
+            std::forward<decltype(args)>(args)..., faceFlux_, this->getVector(), operatorScaling
+        );
     }
 
     void read(const Input& input)

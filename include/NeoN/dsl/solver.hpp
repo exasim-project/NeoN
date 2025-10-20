@@ -27,6 +27,37 @@ namespace NeoN::dsl
 
 namespace detail
 {
+template<typename VectorType>
+la::SolverStats iterativeSolveImpl(
+    Expression<typename VectorType::ElementType>& exp,
+    const la::SparsityPattern& sp,
+    la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
+    VectorType& solution,
+    scalar t,
+    scalar dt,
+    const Dictionary& fvSchemes,
+    const Dictionary& fvSolution,
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+)
+{
+    exp.read(fvSchemes);
+    exp.assemble(t, dt, sp, ls, ps);
+
+    // TODO move that to expression explicit operation or
+    // into functor ?
+    // subtract the explicit source term from the rhs
+    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
+    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
+    parallelFor(
+        solution.exec(),
+        {0, rhs.size()},
+        KOKKOS_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+    );
+
+    auto solver = la::Solver(solution.exec(), fvSolution);
+    fence(solution.exec());
+    return solver.solve(ls, solution.internalVector());
+}
 
 template<typename VectorType>
 la::SolverStats iterativeSolveImpl(
@@ -34,7 +65,6 @@ la::SolverStats iterativeSolveImpl(
     VectorType& solution,
     scalar t,
     scalar dt,
-    const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
     std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
 )
@@ -95,7 +125,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSchemes, fvSolution, p);
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
     }
 }
 

@@ -12,7 +12,9 @@ namespace NeoN::timeIntegration
 {
 
 template class ForwardEuler<fvcc::VolumeField<scalar>>;
+template class ForwardEuler<fvcc::VolumeField<Vec3>>;
 
 template class BackwardEuler<fvcc::VolumeField<scalar>>;
+template class BackwardEuler<fvcc::VolumeField<Vec3>>;
 
 } // namespace NeoN::dsl
