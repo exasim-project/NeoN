@@ -34,15 +34,15 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00030}00030\ }
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ fvcc::VolumeField<Vec3>\ grad(const\ fvcc::VolumeField<scalar>\&\ phi);}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00032}00032\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{/*\ @brief\ compute\ gradient\ for\ implicit\ operator}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{/*\ @brief\ compute\ implicit\ gradient\ operator\ contribution}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00034}00034\ \textcolor{comment}{\ \ \ \ \ *}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00035}00035\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ls\ [in,out]\ -\/\ assemble\ gradient\ operator\ into\ the\ given\ linear\ system}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00036}00036\ \textcolor{comment}{\ \ \ \ \ *\ @param\ phi\ [in]\ -\/}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00037}00037\ \textcolor{comment}{\ \ \ \ \ *\ @param\ operatorScaling\ [in]\ -\/}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00035}00035\ \textcolor{comment}{\ \ \ \ \ *\ @param\ phi\ [in]\ -\/\ field\ for\ which\ the\ gradient\ is\ computed}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00036}00036\ \textcolor{comment}{\ \ \ \ \ *\ @param\ operatorScaling\ [in]\ -\/\ scales\ operator\ by\ a\ coefficient}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00037}00037\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ls\ [in,out]\ -\/\ assemble\ gradient\ operator\ into\ the\ given\ linear\ system}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00038}00038\ \textcolor{comment}{\ \ \ \ \ */}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_afedd8287f6fa037bf619676b4635c2e7}{00039}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_afedd8287f6fa037bf619676b4635c2e7}{grad}}(}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3,\ localIdx>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00041}00041\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_a295ef0dcce4802aa8eddebcfd7732ab4}{00040}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_a295ef0dcce4802aa8eddebcfd7732ab4}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3,\ localIdx>}}\&)\textcolor{keyword}{}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00041}00041\ \textcolor{keyword}{\ \ \ \ \ \ \ \ const\ override}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00042}00042\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00044}00044\ \ \ \ \ \};}
@@ -53,8 +53,8 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00049}00049\ }
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{comment}{/*\ @brief\ compute\ grad}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00051}00051\ \textcolor{comment}{\ \ \ \ \ *}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00052}00052\ \textcolor{comment}{\ \ \ \ \ *\ @param\ phi\ [in]}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00053}00053\ \textcolor{comment}{\ \ \ \ \ *\ @param\ operatorScaling\ [in]}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00052}00052\ \textcolor{comment}{\ \ \ \ \ *\ @param\ phi\ [in]\ -\/\ field\ for\ which\ the\ gradient\ is\ computed}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00053}00053\ \textcolor{comment}{\ \ \ \ \ *\ @param\ operatorScaling\ [in]\ -\/\ scales\ operator\ by\ a\ coefficient}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00054}00054\ \textcolor{comment}{\ \ \ \ \ *\ @param\ gradPhi\ [in,out]\ -\/\ resulting\ gradient\ field}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00055}00055\ \textcolor{comment}{\ \ \ \ \ */}}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_a3ef36512a1a6e632ae1a188849d6bfcb}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_a3ef36512a1a6e632ae1a188849d6bfcb}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}},\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&)\textcolor{keyword}{\ const}}
@@ -62,19 +62,25 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00059}00059\ \ \ \ \ \};}
 \DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00061}00061\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ac3f35af0b681d9c7792a019f61f0c4aa}{00062}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ac3f35af0b681d9c7792a019f61f0c4aa}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ \{\})\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ad90090e19c0e9eae353438aa8338df86}{00064}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<GradOperatorFactory<Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ad90090e19c0e9eae353438aa8338df86}{clone}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00065}00065\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00067}00067\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00069}00069\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00071}00071\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{SurfaceInterpolation<scalar>}}\ surfaceInterpolation\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00072}00072\ \};}
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00074}00074\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{comment}{/*\ @brief\ compute\ explicit\ gradient\ operator\ and\ return\ result}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00062}00062\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00063}00063\ \textcolor{comment}{\ \ \ \ \ *\ @param\ phi\ [in]}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00064}00064\ \textcolor{comment}{\ \ \ \ \ *\ @param\ operatorScaling\ [in]\ -\/\ scales\ operator\ by\ a\ coefficient}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00065}00065\ \textcolor{comment}{\ \ \ \ \ *\ @return\ gradPhi\ -\/\ resulting\ gradient\ field}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00066}00066\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00067}00067\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ac3f35af0b681d9c7792a019f61f0c4aa}{00068}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ac3f35af0b681d9c7792a019f61f0c4aa}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ \{\})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ad90090e19c0e9eae353438aa8338df86}{00070}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<GradOperatorFactory<Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_ad90090e19c0e9eae353438aa8338df86}{clone}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00071}00071\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00073}00073\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00075}00075\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00077}00077\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{SurfaceInterpolation<scalar>}}\ surfaceInterpolation\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00078}00078\ \};}
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenGrad_8hpp_source_l00080}00080\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
