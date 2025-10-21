@@ -324,11 +324,19 @@ Most relevant build flags are:</p>
 <p>To browse the full list of build options it is recommended to use a build tool like <code class="docutils literal notranslate"><span class="pre">ccmake</span></code>.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
 NeoN specific build flags are prefixed by <code class="docutils literal notranslate"><span class="pre">NeoN_</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<section id="building-for-gpus">
+<h2>Building for GPUs<a class="headerlink" href="#building-for-gpus" title="Link to this heading">¶</a></h2>
 <p>NeoN will automatically enable <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_CUDA</span></code> or <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_HIP</span></code> if either of this is available on
 the system. This can be prevented by setting both options explicitly.</p>
-</div>
+<p>If NeoN does not detect the GPU backend automatically, you can set some relevant flags to enable GPU support
+during the configure step.</p>
+<dl class="simple">
+<dt>For NVIDIA GPUs, specifying the GPU architecture via <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_ARCHITECTURES</span></code> should be sufficient.</dt><dd></dd>
+<dt>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</dt><dd></dd>
+<dt>Then you can enable HIP during the configure step with the following flags.</dt><dd></dd>
+</dl>
+<p>After configuring for GPU support, you can continue to build NeoN.</p>
+</section>
 <section id="building-with-cmake-presets">
 <h2>Building with CMake Presets<a class="headerlink" href="#building-with-cmake-presets" title="Link to this heading">¶</a></h2>
 <p>Additionally, we provide several CMake presets to set commonly required flags if you compile NeoN in combination with Kokkos.</p>
@@ -476,6 +484,7 @@ ms-vscode.cmake-tools
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#building-for-gpus">Building for GPUs</a></li>
 <li><a class="reference internal" href="#building-with-cmake-presets">Building with CMake Presets</a></li>
 <li><a class="reference internal" href="#building-with-spack">Building with Spack</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
