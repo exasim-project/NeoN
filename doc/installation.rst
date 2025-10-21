@@ -51,19 +51,25 @@ If NeoN does not detect the GPU backend automatically, you can set some relevant
 during the configure step.
 
 For NVIDIA GPUs, specifying the GPU architecture via ``CMAKE_CUDA_ARCHITECTURES`` should be sufficient.
-   .. code-block:: bash
-    -DCMAKE_CUDA_ARCHITECTURES=<GPU_ARCH>
+
+.. code-block:: bash
+
+   -DCMAKE_CUDA_ARCHITECTURES=<GPU_ARCH>
 
 For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.
-   .. code-block:: bash
-    export PATH=/opt/rocm/bin:$PATH
-    export HIPCC_CXX=/usr/bin/g++ # If you want to use g++ as the host compiler
+
+.. code-block:: bash
+
+   export PATH=/opt/rocm/bin:$PATH
+   export HIPCC_CXX=/usr/bin/g++  # If you want to use g++ as the host compiler
 
 Then you can enable HIP during the configure step with the following flags.
-   .. code-block:: bash
-    -DCMAKE_CXX_COMPILER=hipcc
-    -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
-    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
+
+.. code-block:: bash
+
+   -DCMAKE_CXX_COMPILER=hipcc
+   -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
+   -DKokkos_ARCH_AMD_<GPU_ARCH>=ON  # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
 
 After configuring for GPU support, you can continue to build NeoN.
 
