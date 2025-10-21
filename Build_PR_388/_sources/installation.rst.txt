@@ -25,16 +25,17 @@ NeoN uses CMake to build, thus the standard CMake procedure should work, however
         cmake --build .
         cmake --install .
 
-The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command most and most relevant build flags are:
+The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
+Most relevant build flags are:
 
 +---------------------------+-----------------------------------+---------+
 | Flag                      | Description                       | Default |
 +===========================+===================================+=========+
 | CMAKE_BUILD_TYPE          | Build in debug or release mode    | Debug   |
 +---------------------------+-----------------------------------+---------+
-| NeoN_BUILD_DOC         | Build NeoN with documentation  | ON      |
+| NeoN_BUILD_DOC            | Build NeoN with documentation     | ON      |
 +---------------------------+-----------------------------------+---------+
-| NeoN_BUILD_TESTS       | Build NeoN with tests          | OFF     |
+| NeoN_BUILD_TESTS          | Build NeoN with tests             | OFF     |
 +---------------------------+-----------------------------------+---------+
 
 To browse the full list of build options it is recommended to use a build tool like ``ccmake``.
