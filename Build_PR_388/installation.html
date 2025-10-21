@@ -330,11 +330,21 @@ NeoN specific build flags are prefixed by <code class="docutils literal notransl
 the system. This can be prevented by setting both options explicitly.</p>
 <p>If NeoN does not detect the GPU backend automatically, you can set some relevant flags to enable GPU support
 during the configure step.</p>
-<dl class="simple">
-<dt>For NVIDIA GPUs, specifying the GPU architecture via <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_ARCHITECTURES</span></code> should be sufficient.</dt><dd></dd>
-<dt>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</dt><dd></dd>
-<dt>Then you can enable HIP during the configure step with the following flags.</dt><dd></dd>
-</dl>
+<p>For NVIDIA GPUs, specifying the GPU architecture via <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_ARCHITECTURES</span></code> should be sufficient.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_ARCHITECTURES<span class="o">=</span>&lt;GPU_ARCH&gt;
+</pre></div>
+</div>
+<p>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/opt/rocm/bin:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># If you want to use g++ as the host compiler</span>
+</pre></div>
+</div>
+<p>Then you can enable HIP during the configure step with the following flags.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>hipcc
+-DCMAKE_HIP_ARCHITECTURES<span class="o">=</span>&lt;GPU_ARCH&gt;
+-DKokkos_ARCH_AMD_&lt;GPU_ARCH&gt;<span class="o">=</span>ON<span class="w">  </span><span class="c1"># e.g., -DKokkos_ARCH_AMD_GFX90A=ON</span>
+</pre></div>
+</div>
 <p>After configuring for GPU support, you can continue to build NeoN.</p>
 </section>
 <section id="building-with-cmake-presets">
