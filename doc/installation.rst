@@ -42,10 +42,30 @@ To browse the full list of build options it is recommended to use a build tool l
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
 NeoN specific build flags are prefixed by ``NeoN_``.
 
-.. note::
+Building for GPUs
+^^^^^^^^^^^^^^^^^^
+NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
+the system. This can be prevented by setting both options explicitly.
 
-   NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
-   the system. This can be prevented by setting both options explicitly.
+If NeoN does not detect the GPU backend automatically, you can set some relevant flags to enable GPU support
+during the configure step.
+
+For NVIDIA GPUs, specifying the GPU architecture via ``CMAKE_CUDA_ARCHITECTURES`` should be sufficient.
+   .. code-block:: bash
+    -DCMAKE_CUDA_ARCHITECTURES=<GPU_ARCH>
+
+For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.
+   .. code-block:: bash
+    export PATH=/opt/rocm/bin:$PATH
+    export HIPCC_CXX=/usr/bin/g++ # If you want to use g++ as the host compiler
+
+Then you can enable HIP during the configure step with the following flags.
+   .. code-block:: bash
+    -DCMAKE_CXX_COMPILER=hipcc
+    -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
+    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
+
+After configuring for GPU support, you can continue to build NeoN.
 
 Building with CMake Presets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
