@@ -24,8 +24,9 @@ NeoN has the following requirements
 *  _gcc >= 10_ or  _clang >= 16_
 *  _Kokkos 4.3.0_
 
-For NVIDIA GPU support
-* cuda _12+_
+For GPU support
+* NVIDIA: CUDA _12+_
+* AMD: ROCm _6.4.1_
 
 For development it is required to use [pre-commit](https://pre-commit.com/).
 
