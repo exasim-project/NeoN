@@ -41,6 +41,7 @@ option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
+option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
 # Third party dependencies
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
@@ -122,6 +123,10 @@ add_subdirectory(src)
 if(NeoN_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
+endif()
+
+if(NeoN_BUILD_PYTHON_BINDINGS)
+  add_subdirectory(src/bindings)
 endif()
 
 if(NeoN_BUILD_BENCHMARKS)
