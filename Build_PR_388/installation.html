@@ -295,9 +295,9 @@ cmake<span class="w"> </span>--install<span class="w"> </span>.
 </pre></div>
 </div>
 </div></blockquote>
-<p>By default, the command <cite>cmake –build .</cite> will use all the CPU cores available. It can consume a significant
+<p>By default, the command <cite>cmake –build . -j</cite> will use all the CPU cores available. It can consume a significant
 amount of memory when building with many cores. If you want to limit the number of cores used during the build,
-you can specify it with the <cite>-j</cite> flag as shown above.</p>
+you can specify the number of CPU cores as shown above.</p>
 <p>The following can be chained with -D&lt;DesiredBuildFlags&gt;=&lt;Value&gt; to the CMake command.
 Most relevant build flags are:</p>
 <div class="table-wrapper docutils container">
@@ -339,7 +339,7 @@ during the configure step.</p>
 </div>
 <p>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/opt/rocm/bin:<span class="nv">$PATH</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># If you want to use g++ as the host compiler</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># Optional: If you want to use g++ as the host compiler</span>
 </pre></div>
 </div>
 <p>Then you can enable HIP during the configure step with the following flags.</p>

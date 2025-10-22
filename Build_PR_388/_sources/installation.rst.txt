@@ -25,9 +25,9 @@ NeoN uses CMake to build, thus the standard CMake procedure should work, however
         cmake --build . -j<the number of CPU cores>
         cmake --install .
 
-By default, the command `cmake --build .` will use all the CPU cores available. It can consume a significant
+By default, the command `cmake --build . -j` will use all the CPU cores available. It can consume a significant
 amount of memory when building with many cores. If you want to limit the number of cores used during the build,
-you can specify it with the `-j` flag as shown above.
+you can specify the number of CPU cores as shown above.
 
 The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
 Most relevant build flags are:
@@ -65,7 +65,7 @@ For AMD GPUs, you may need to set up some relevant HIP environment variables bef
 .. code-block:: bash
 
    export PATH=/opt/rocm/bin:$PATH
-   export HIPCC_CXX=/usr/bin/g++  # If you want to use g++ as the host compiler
+   export HIPCC_CXX=/usr/bin/g++  # Optional: If you want to use g++ as the host compiler
 
 Then you can enable HIP during the configure step with the following flags.
 
