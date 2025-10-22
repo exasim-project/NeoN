@@ -290,11 +290,14 @@
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
 cmake<span class="w"> </span>&lt;DesiredBuildFlags&gt;<span class="w"> </span>..
-cmake<span class="w"> </span>--build<span class="w"> </span>.
+cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </span>-j&lt;the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>CPU<span class="w"> </span>cores&gt;
 cmake<span class="w"> </span>--install<span class="w"> </span>.
 </pre></div>
 </div>
 </div></blockquote>
+<p>By default, the command <cite>cmake –build .</cite> will use all the CPU cores available. It can consume a significant
+amount of memory when building with many cores. If you want to limit the number of cores used during the build,
+you can specify it with the <cite>-j</cite> flag as shown above.</p>
 <p>The following can be chained with -D&lt;DesiredBuildFlags&gt;=&lt;Value&gt; to the CMake command.
 Most relevant build flags are:</p>
 <div class="table-wrapper docutils container">
