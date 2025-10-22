@@ -22,8 +22,12 @@ NeoN uses CMake to build, thus the standard CMake procedure should work, however
         mkdir build
         cd build
         cmake <DesiredBuildFlags> ..
-        cmake --build .
+        cmake --build . -j<the number of CPU cores>
         cmake --install .
+
+By default, the command `cmake --build .` will use all the CPU cores available. It can consume a significant
+amount of memory when building with many cores. If you want to limit the number of cores used during the build,
+you can specify it with the `-j` flag as shown above.
 
 The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
 Most relevant build flags are:
