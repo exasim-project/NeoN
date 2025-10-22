@@ -10,8 +10,9 @@
 - Support for implicit operators in the DSL [#246](https://github.com/exasim-project/NeoN/pull/246)
 ### Linear Algebra Capabilities
 - Adds a minimal implementation linear algebra functionality [#219](https://github.com/exasim-project/NeoN/pull/219)
-- Add Ginkgo solver interface and config solver support [#250](https://github.com/exasim-project/NeoN/pull/250), [#272
+- Add Ginkgo solver interface and config solver support [#250](https://github.com/exasim-project/NeoN/pull/250), [#272]
 (https://github.com/exasim-project/NeoN/pull/272)
+- Add Ginkgo SYCL support [#384](https://github.com/exasim-project/NeoN/pull/384)
 ### Misc
 - Use current Ginkgo develop version [#362](https://github.com/exasim-project/NeoN/pull/362)
 - removed subscript operators from Field for improved safety. [#225](https://github.com/exasim-project/NeoN/pull/285)

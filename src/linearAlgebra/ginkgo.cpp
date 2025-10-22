@@ -130,6 +130,10 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
                 return gko::HipExecutor::create(
                     Kokkos::device_id(), gko::ReferenceExecutor::create()
                 );
+#elif defined(KOKKOS_ENABLE_SYCL)
+                return gko::DpcppExecutor::create(
+                    Kokkos::device_id(), gko::ReferenceExecutor::create()
+                );
 #endif
                 throw std::runtime_error("No valid GPU executor mapping available");
             }
