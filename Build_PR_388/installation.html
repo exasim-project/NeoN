@@ -285,7 +285,7 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below <a class="reference external" href="BuildingwithCMakePresets">below</a>. From a build directory, you can execute:</p>
+<p>NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below <a class="reference external" href="BuildingwithCMakePresets">BuildingwithCMakePresets</a>. From a build directory, you can execute:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
@@ -296,7 +296,7 @@ cmake<span class="w"> </span>--install<span class="w"> </span>.
 </div>
 </div></blockquote>
 <p>By default, the command <cite>cmake –build . -j</cite> will use all the CPU cores available. It can consume a significant
-amount of memory when building with many cores. If you want to limit the number of cores used during the build,
+amount of memory when building with many cores. If you want to limit the number of cores used during the build step,
 you can specify the number of CPU cores as shown above.</p>
 <p>The following can be chained with -D&lt;DesiredBuildFlags&gt;=&lt;Value&gt; to the CMake command.
 Most relevant build flags are:</p>
@@ -339,7 +339,7 @@ during the configure step.</p>
 </div>
 <p>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/opt/rocm/bin:<span class="nv">$PATH</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># Optional: If you want to use g++ as the host compiler</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># If you want to use g++ as the host compiler</span>
 </pre></div>
 </div>
 <p>Then you can enable HIP during the configure step with the following flags.</p>
