@@ -15,7 +15,7 @@ Navigate to the NeoN directory:
 
       cd NeoN
 
-NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below `below <Building with CMake Presets>`_. From a build directory, you can execute:
+NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below `<Building with CMake Presets>`_. From a build directory, you can execute:
 
    .. code-block:: bash
 
@@ -25,22 +25,22 @@ NeoN uses CMake to build, thus the standard CMake procedure should work, however
         cmake --build . -j<the number of CPU cores>
         cmake --install .
 
-By default, the command `cmake --build .` will use all the CPU cores available. It can consume a significant
-amount of memory when building with many cores. If you want to limit the number of cores used during the build,
-you can specify it with the `-j` flag as shown above.
+By default, the command `cmake --build . -j` will use all the CPU cores available. It can consume a significant
+amount of memory when building with many cores. If you want to limit the number of cores used during the build step,
+you can specify the number of CPU cores as shown above.
 
 The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
 Most relevant build flags are:
 
-+---------------------------+-----------------------------------+---------+
-| Flag                      | Description                       | Default |
-+===========================+===================================+=========+
-| CMAKE_BUILD_TYPE          | Build in debug or release mode    | Debug   |
-+---------------------------+-----------------------------------+---------+
-| NeoN_BUILD_DOC            | Build NeoN with documentation     | ON      |
-+---------------------------+-----------------------------------+---------+
-| NeoN_BUILD_TESTS          | Build NeoN with tests             | OFF     |
-+---------------------------+-----------------------------------+---------+
++------------------+--------------------------------+---------+
+| Flag             | Description                    | Default |
++==================+================================+=========+
+| CMAKE_BUILD_TYPE | Build in debug or release mode | Debug   |
++------------------+--------------------------------+---------+
+| NeoN_BUILD_DOC   | Build NeoN with documentation  | ON      |
++------------------+--------------------------------+---------+
+| NeoN_BUILD_TESTS | Build NeoN with tests          | OFF     |
++------------------+--------------------------------+---------+
 
 To browse the full list of build options it is recommended to use a build tool like ``ccmake``.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
