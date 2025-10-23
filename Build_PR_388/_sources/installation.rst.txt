@@ -15,7 +15,7 @@ Navigate to the NeoN directory:
 
       cd NeoN
 
-NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below `<Building with CMake Presets>`_. From a build directory, you can execute:
+NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below in :ref:`Building with CMake Presets`. From a build directory, you can execute:
 
    .. code-block:: bash
 
@@ -76,6 +76,8 @@ Then you can enable HIP during the configure step with the following flags.
    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON  # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
 
 After configuring for GPU support, you can continue to build NeoN.
+
+.. _Building with CMake Presets:
 
 Building with CMake Presets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
