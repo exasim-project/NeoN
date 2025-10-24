@@ -327,6 +327,8 @@
         </childnode>
         <childnode refid="54" relation="include">
         </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
         <childnode refid="55" relation="include">
         </childnode>
       </node>
@@ -667,6 +669,7 @@
     </invincdepgraph>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1dsl">NeoN::dsl</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1dsl_1_1detail">NeoN::dsl::detail</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -699,65 +702,111 @@
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl" kindref="compound">NeoN::dsl</ref></highlight></codeline>
 <codeline lineno="26"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>solve<sp/>an<sp/>expression</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"><sp/>*<sp/>@param<sp/>exp<sp/>-<sp/>Expression<sp/>which<sp/>is<sp/>to<sp/>be<sp/>solved/updated.</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"><sp/>*<sp/>@param<sp/>solution<sp/>-<sp/>Solution<sp/>field,<sp/>where<sp/>the<sp/>solution<sp/>will<sp/>be<sp/>&apos;written<sp/>to&apos;.</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>@param<sp/>t<sp/>-<sp/>the<sp/>time<sp/>at<sp/>the<sp/>start<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>-<sp/>time<sp/>step<sp/>for<sp/>the<sp/>temporal<sp/>integration</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSchemes<sp/>-<sp/>Dictionary<sp/>containing<sp/>spatial<sp/>operator<sp/>and<sp/>time<sp/><sp/>integration<sp/>properties</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSolution<sp/>-<sp/>Dictionary<sp/>containing<sp/>linear<sp/>solver<sp/>properties</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
-<codeline lineno="38" refid="namespaceNeoN_1_1dsl_1ada71c048be641dc3b2eba2df764384b1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1ada71c048be641dc3b2eba2df764384b1" kindref="member">solve</ref>(</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution</highlight></codeline>
-<codeline lineno="45"><highlight class="normal">)</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>().size()<sp/>==<sp/>0<sp/>&amp;&amp;<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>().size()<sp/>==<sp/>0)</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>temporal<sp/>or<sp/>implicit<sp/>terms<sp/>to<sp/>solve.&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1acf0ed15b8ff8fa242d0bb385a11253f2" kindref="member">read</ref>(fvSchemes);</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>().size()<sp/>&gt;<sp/>0)</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>integrate<sp/>equations<sp/>in<sp/>time</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration" kindref="compound">timeIntegration::TimeIntegration&lt;VectorType&gt;</ref><sp/>timeIntegrator(</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fvSchemes.<ref refid="classNeoN_1_1Dictionary_1a5fba75245132842e0ad343b4fceaca39" kindref="member">subDict</ref>(</highlight><highlight class="stringliteral">&quot;ddtSchemes&quot;</highlight><highlight class="normal">),<sp/>fvSolution</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timeIntegrator.<ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ad0b7d09fb156d2ba6da0f15fcf39cd0d" kindref="member">solve</ref>(exp,<sp/>solution,<sp/>t,<sp/>dt);</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>solve<sp/>sparse<sp/>matrix<sp/>system</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType::ElementType;</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>sparsity<sp/>=<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>(solution.mesh());</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ls<sp/>=<sp/>la::createEmptyLinearSystem&lt;ValueType,<sp/>localIdx&gt;(solution.mesh(),<sp/>sparsity);</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a527d62bdba68730f6fd2e65fb6643a41" kindref="member">implicitOperation</ref>(ls);</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>expTmp<sp/>=<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" kindref="member">explicitOperation</ref>(solution.mesh().nCells());</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[vol,<sp/>expSource,<sp/>rhs]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.mesh().cellVolumes(),<sp/>expTmp,<sp/>ls.rhs());</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
+<codeline lineno="31" refid="namespaceNeoN_1_1dsl_1_1detail_1ad86b892d416822fb1be5a5f9710fe45c" refkind="member"><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ad86b892d416822fb1be5a5f9710fe45c" kindref="member">iterativeSolveImpl</ref>(</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&amp;<sp/>sp,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;typename VectorType::ElementType, localIdx&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;<ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase&lt;typename VectorType::ElementType&gt;</ref>&gt;<sp/>ps</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1acf0ed15b8ff8fa242d0bb385a11253f2" kindref="member">read</ref>(fvSchemes);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8766805a9c132e8dda737909b27ed08a" kindref="member">assemble</ref>(t,<sp/>dt,<sp/>sp,<sp/>ls,<sp/>ps);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>move<sp/>that<sp/>to<sp/>expression<sp/>explicit<sp/>operation<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>into<sp/>functor<sp/>?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>subtract<sp/>the<sp/>explicit<sp/>source<sp/>term<sp/>from<sp/>the<sp/>rhs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>expTmp<sp/>=<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" kindref="member">explicitOperation</ref>(solution.mesh().nCells());</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[vol,<sp/>expSource,<sp/>rhs]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.mesh().cellVolumes(),<sp/>expTmp,<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kindref="member">rhs</ref>());</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSource[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>solver<sp/>=<sp/><ref refid="classNeoN_1_1la_1_1Solver" kindref="compound">la::Solver</ref>(solution.exec(),<sp/>fvSolution);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" kindref="member">fence</ref>(solution.exec());</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solver.solve(ls,<sp/>solution.internalVector());</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
+<codeline lineno="63" refid="namespaceNeoN_1_1dsl_1_1detail_1a292cef046d22ee3a8d82a339144d5e7f" refkind="member"><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ad86b892d416822fb1be5a5f9710fe45c" kindref="member">iterativeSolveImpl</ref>(</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;<ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase&lt;typename VectorType::ElementType&gt;</ref>&gt;<sp/>ps</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[sparsity,<sp/>ls]<sp/>=<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8766805a9c132e8dda737909b27ed08a" kindref="member">assemble</ref>(solution.mesh(),<sp/>t,<sp/>dt,<sp/>ps);</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>subtract<sp/>the<sp/>explicit<sp/>source<sp/>term<sp/>from<sp/>the<sp/>rhs</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">parallelFor</ref>(</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSource[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>solver<sp/>=<sp/><ref refid="classNeoN_1_1la_1_1Solver" kindref="compound">la::Solver</ref>(solution.exec(),<sp/>fvSolution);</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solver.solve(ls,<sp/>solution.internalVector());</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="84"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>move<sp/>that<sp/>to<sp/>expression<sp/>explicit<sp/>operation<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>into<sp/>functor<sp/>?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>subtract<sp/>the<sp/>explicit<sp/>source<sp/>term<sp/>from<sp/>the<sp/>rhs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>expTmp<sp/>=<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a53bad3c6fc8d10ee40249fd550b091bd" kindref="member">explicitOperation</ref>(solution.mesh().nCells());</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[vol,<sp/>expSource,<sp/>rhs]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.mesh().cellVolumes(),<sp/>expTmp,<sp/>ls.rhs());</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a21e64530776182407f0f068c289adf81" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSource[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>solver<sp/>=<sp/><ref refid="classNeoN_1_1la_1_1Solver" kindref="compound">la::Solver</ref>(solution.exec(),<sp/>fvSolution);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" kindref="member">fence</ref>(solution.exec());</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solver.solve(ls,<sp/>solution.internalVector());</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>solve<sp/>an<sp/>expression</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/>*<sp/>@param<sp/>exp<sp/>-<sp/>Expression<sp/>which<sp/>is<sp/>to<sp/>be<sp/>solved/updated.</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/>*<sp/>@param<sp/>solution<sp/>-<sp/>Solution<sp/>field,<sp/>where<sp/>the<sp/>solution<sp/>will<sp/>be<sp/>&apos;written<sp/>to&apos;.</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/>*<sp/>@param<sp/>t<sp/>-<sp/>the<sp/>time<sp/>at<sp/>the<sp/>start<sp/>of<sp/>the<sp/>time<sp/>step.</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/>*<sp/>@param<sp/>dt<sp/>-<sp/>time<sp/>step<sp/>for<sp/>the<sp/>temporal<sp/>integration</highlight></codeline>
+<codeline lineno="97"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSchemes<sp/>-<sp/>Dictionary<sp/>containing<sp/>spatial<sp/>operator<sp/>and<sp/>time<sp/><sp/>integration<sp/>properties</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"><sp/>*<sp/>@param<sp/>fvSolution<sp/>-<sp/>Dictionary<sp/>containing<sp/>linear<sp/>solver<sp/>properties</highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/>*<sp/>@param<sp/>p<sp/>-<sp/>A<sp/>chainable<sp/>functor<sp/>that<sp/>performs<sp/>manipulations<sp/>on<sp/>the<sp/>assembled<sp/>system</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
+<codeline lineno="102" refid="namespaceNeoN_1_1dsl_1a8ba06394082cf5961a6c00182cde10fd" refkind="member"><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1a8ba06394082cf5961a6c00182cde10fd" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution,</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;<ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase&lt;typename VectorType::ElementType&gt;</ref>&gt;<sp/>p<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>().size()<sp/>==<sp/>0<sp/>&amp;&amp;<sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a8317117e1acfdddb07e56f55ab9f394a" kindref="member">spatialOperators</ref>().size()<sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>temporal<sp/>or<sp/>implicit<sp/>terms<sp/>to<sp/>solve.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1acf0ed15b8ff8fa242d0bb385a11253f2" kindref="member">read</ref>(fvSchemes);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>integrator<sp/>=</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timeIntegration::TimeIntegration&lt;VectorType&gt;(fvSchemes.<ref refid="classNeoN_1_1Dictionary_1a5fba75245132842e0ad343b4fceaca39" kindref="member">subDict</ref>(</highlight><highlight class="stringliteral">&quot;ddtSchemes&quot;</highlight><highlight class="normal">),<sp/>fvSolution);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>().size()<sp/>&gt;<sp/>0<sp/>&amp;&amp;<sp/>integrator.explicitIntegration())</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>integrate<sp/>equations<sp/>in<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>integrator.solve(exp,<sp/>solution,<sp/>t,<sp/>dt);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{.numIter<sp/>=<sp/>-1,<sp/>.initResNorm<sp/>=<sp/>0,<sp/>.finalResNorm<sp/>=<sp/>0,<sp/>.solveTime<sp/>=<sp/>0};</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ad86b892d416822fb1be5a5f9710fe45c" kindref="member">detail::iterativeSolveImpl</ref>(exp,<sp/>solution,<sp/>t,<sp/>dt,<sp/>fvSolution,<sp/>p);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp"/>
   </compounddef>
