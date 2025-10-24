@@ -3,3 +3,4 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_unit_test(surfFixedValue)
+neon_unit_test(surfSymmetry)
