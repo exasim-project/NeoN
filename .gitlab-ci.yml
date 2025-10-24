@@ -11,6 +11,10 @@
   tags: ["amd-gpus"]
   image: chihtaw/rocm-openfoam-ginkgo:6.4.1-v2412-arch_gfx90a
 
+.use-intel-gpu:
+  tags: ["intel-gpus"]
+  image: dheerajraghunathan/sycl-openfoam-ginkgo:arch_pvc-v2412
+
 # Common configuration for all build and test jobs
 .build-and-test-neon-common:
   rules:
@@ -55,6 +59,13 @@ build-and-test-neon-amd:
     - .use-amd-gpu
   script:
     - ./ci/lrz-gitlab/build-and-test.sh amd
+
+build-and-test-neon-intel:
+  extends:
+    - .build-and-test-neon-common
+    - .use-intel-gpu
+  script:
+    - ./ci/lrz-gitlab/build-and-test.sh intel
 
 # benchmark jobs for NeoN
 benchmark-neon-nvidia:

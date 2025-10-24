@@ -49,6 +49,25 @@ elif [ "$GPU_TYPE" == "amd" ]; then
     cmake --build --preset develop
     ctest --preset develop --output-on-failure
 
+elif [ "$GPU_TYPE" == "intel" ]; then
+    # Set up environment
+    export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
+
+    echo "=== Intel GPU and compiler driver info ==="
+    sycl-ls | grep -i intel
+    icpx --version | head -1
+
+    echo "=== Configuring, building, and testing NeoN on Intel ==="
+    cmake --preset develop \
+        -DCMAKE_CXX_COMPILER=icpx \
+        -DCMAKE_CXX_FLAGS="-fsycl" \
+        -DKokkos_ENABLE_SYCL=ON \
+        -DKokkos_ARCH_INTEL_GEN=ON \
+        -DNeoN_WITH_THREADS=OFF \
+        -DCMAKE_BUILD_TYPE="release"
+    cmake --build --preset develop
+    ctest --preset develop --output-on-failure
+
 else
     echo "Unknown GPU type: $GPU_TYPE"
     exit 1
