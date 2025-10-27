@@ -183,9 +183,29 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
+  # Try to find system-installed Ginkgo
   find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+
+    # Try to detect Git commit hash of the installed Ginkgo
+    execute_process(
+      COMMAND ${Ginkgo_DIR}/../../bin/ginkgo_version --git
+      OUTPUT_VARIABLE SYSTEM_GINKGO_COMMIT
+      OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+
+    if(NOT SYSTEM_GINKGO_COMMIT)
+      message(WARNING "Could not determine system Ginkgo commit hash. "
+                      "Ensure your Ginkgo installation provides 'ginkgo_version --git'.")
+    elseif(NOT SYSTEM_GINKGO_COMMIT STREQUAL ${NeoN_GINKGO_TAG})
+      message(
+        FATAL_ERROR
+          "System Ginkgo commit hash mismatch!\n" "  Found:    ${SYSTEM_GINKGO_COMMIT}\n"
+          "  Expected: ${NeoN_GINKGO_TAG}\n"
+          "Disable system Ginkgo or let NeoN fetch the correct version via CPM.")
+    endif()
+
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
