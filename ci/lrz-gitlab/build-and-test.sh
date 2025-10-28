@@ -62,7 +62,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-fsycl" \
         -DKokkos_ENABLE_SYCL=ON \
-        -DKokkos_ARCH_INTEL_GEN=ON \
+        -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
