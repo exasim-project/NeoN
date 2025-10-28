@@ -1,0 +1,41 @@
+name: Mirror to LRZ GitLab (main, develop)
+
+on:
+  workflow_dispatch:  # manually triggered
+
+env:
+  LRZ_GROUP: greole
+  LRZ_HOST: gitlab-ce.lrz.de
+  REPO_NAME: ${{ github.event.repository.name }}
+  NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
+  NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history required for mirroring
+
+      - name: Mirror selected branches to LRZ GitLab
+        run: |
+          set -e
+          echo "Configuring LRZ remote..."
+          # Construct LRZ GitLab project path
+          LRZ_PROJECT_PATH="${LRZ_GROUP}/${REPO_NAME}"
+
+          # Use project access token for authentication
+          git remote add lrz https://oauth2:${NEON_PROJECT_TOKEN}@${LRZ_HOST}/${LRZ_PROJECT_PATH}.git
+
+          # Branches to mirror
+          BRANCHES=("main" "develop")
+
+          for branch in "${BRANCHES[@]}"; do
+            echo "Pushing branch '$branch' to LRZ GitLab..."
+            git push lrz $branch:$branch
+          done
+
+          echo "Branch mirror completed successfully."
