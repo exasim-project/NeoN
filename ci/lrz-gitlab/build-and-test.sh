@@ -65,7 +65,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
         -DCMAKE_BUILD_TYPE="release"
-    cmake --build --preset develop
+    cmake --build --preset develop 2>/dev/null
     ctest --preset develop --output-on-failure
 
 else
