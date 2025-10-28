@@ -1,6 +1,8 @@
 name: Mirror to LRZ GitLab (main, develop)
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   workflow_dispatch:  # manually triggered
 
 env:
@@ -19,6 +21,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # full history required for mirroring
+
+      - name: Fetch main and develop branches
+        run: |
+          # Ensure the branches exist locally
+          git fetch origin main:main || echo "main branch not found in origin"
+          git fetch origin develop:develop || echo "develop branch not found in origin"
 
       - name: Mirror selected branches to LRZ GitLab
         run: |
