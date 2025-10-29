@@ -14,7 +14,7 @@
 # Common configuration for all build and test jobs
 .build-and-test-neon-common:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "false"
       when: always
     # Skip in all other cases
     - when: never

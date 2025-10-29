@@ -76,7 +76,7 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
+            "variables[BENCHMARK]=false"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -100,7 +100,9 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${ADAPTER_PROJECT_TOKEN}" \
             "${ADAPTER_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
+            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
+            "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
+            "variables[BENCHMARK]=false"
 
       - name: Wait for FoamAdapter LRZ GitLab CI pipeline
         run: |
@@ -144,7 +146,6 @@ jobs:
             "${BRANCH}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${BRANCH}" \
             "variables[BENCHMARK]=true"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking
