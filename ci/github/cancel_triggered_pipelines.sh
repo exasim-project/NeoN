@@ -8,15 +8,18 @@
 # for a specified project and branch. Only pipelines triggered via the trigger token
 # (i.e., from NeoN GitHub CI) are considered.
 #----------------------------------------------------------------------------------------
-
 set -euo pipefail
 
+# -----------------------------------------------------------------------------
 # Arguments
+# -----------------------------------------------------------------------------
 PROJECT=$1        # GitLab project name, e.g., "NeoN" or "FoamAdapter"
 BRANCH=$2         # Branch/ref to filter pipelines
 TOKEN=$3
 
-# Read environment variables defined in GitHub workflow
+# -----------------------------------------------------------------------------
+# Environment variables
+# -----------------------------------------------------------------------------
 LRZ_GROUP="${LRZ_GROUP:?LRZ_GROUP is not set in environment}"
 LRZ_HOST="${LRZ_HOST:-gitlab-ce.lrz.de}"
 
@@ -27,9 +30,11 @@ fi
 
 project_path="${LRZ_GROUP}%2F${PROJECT}"
 
-echo "Fetching pipelines for project '$PROJECT' (path: ${LRZ_GROUP}/${PROJECT}) on branch '$BRANCH' triggered via NeoN GitHub CI..."
+echo "Fetching pipelines for project '$PROJECT' (path: ${LRZ_GROUP}/${PROJECT}) on branch '$BRANCH'..."
 
+# -----------------------------------------------------------------------------
 # Fetch pipelines
+# -----------------------------------------------------------------------------
 response=$(curl -s -w "%{http_code}" -o response.json \
   --header "PRIVATE-TOKEN: $TOKEN" \
   "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines?ref=${BRANCH}&order_by=id&sort=desc")
@@ -41,30 +46,48 @@ if [[ "$http_code" != "200" ]]; then
   exit 1
 fi
 
-# Filter running/pending pipelines triggered via trigger token (NeoN GitHub CI)
-pipeline_ids=$(jq -r '.[] | select((.status=="running" or .status=="pending") and .source=="trigger") | .id' response.json)
+# -----------------------------------------------------------------------------
+# Select candidate pipelines
+# -----------------------------------------------------------------------------
+pipeline_ids=$(jq -r '.[] | select((.status=="running" or .status=="pending")) | .id' response.json)
 
 if [ -z "$pipeline_ids" ]; then
-  echo "No running/pending pipelines triggered by NeoN GitHub CI found."
+  echo "No running/pending pipelines found on branch '$BRANCH'."
   exit 0
 fi
 
-# Cancel each pipeline only if NEON_BRANCH variable is set
+echo "Found the following pipelines to inspect: $pipeline_ids"
+
+# -----------------------------------------------------------------------------
+# Cancel pipelines based on project type
+# -----------------------------------------------------------------------------
 for id in $pipeline_ids; do
-  echo "Checking pipeline $id for NEON_BRANCH..."
+  echo "Inspecting pipeline $id..."
 
-  vars=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/variables")
-
-  neon_branch=$(echo "$vars" | jq -r '.[] | select(.key=="NEON_BRANCH") | .value' || true)
-
-  if [[ -n "$neon_branch" && "$neon_branch" != "null" ]]; then
-    echo "Cancelling pipeline $id (NEON_BRANCH=$neon_branch)..."
+  if [[ "$PROJECT" == "NeoN" ]]; then
+    # Case 1: NeoN -> cancel all running/pending pipelines on the branch
+    echo "Cancelling pipeline $id (PROJECT=NeoN)..."
     curl -s --request POST \
       --header "PRIVATE-TOKEN: $TOKEN" \
-      "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel"
-  else
-    echo "Skipping pipeline $id (NEON_BRANCH not set)."
+      "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel" >/dev/null
+    continue
+  fi
+
+  if [[ "$PROJECT" == "FoamAdapter" ]]; then
+    # Case 2: FoamAdapter -> cancel only if TRIGGER_SOURCE == NeoN
+    vars=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
+      "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/variables")
+
+    trigger_source=$(echo "$vars" | jq -r '.[] | select(.key=="TRIGGER_SOURCE") | .value' || true)
+
+    if [[ "$trigger_source" == "NeoN" ]]; then
+      echo "Cancelling pipeline $id (TRIGGER_SOURCE=NeoN)..."
+      curl -s --request POST \
+        --header "PRIVATE-TOKEN: $TOKEN" \
+        "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel" >/dev/null
+    else
+      echo "Skipping pipeline $id (TRIGGER_SOURCE=$trigger_source)."
+    fi
   fi
 done
 
