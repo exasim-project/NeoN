@@ -20,22 +20,24 @@ inline void applySymmetry(
     Field<scalar>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
 )
 {
-    auto refValue = domainVector.boundaryData().refValue().view();
-    auto value = domainVector.boundaryData().value().view();
-    auto internalValues = domainVector.internalVector().view();
+    auto [refValueV, valueV, internalValuesV, faceCellsV] = views(
+        domainVector.boundaryData().refValue(),
+        domainVector.boundaryData().value(),
+        domainVector.internalVector(),
+        mesh.boundaryMesh().faceCells()
+    );
 
-    auto faceCells = mesh.boundaryMesh().faceCells().view();
     const localIdx nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCells[i];
-            const scalar v = internalValues[owner];
+            const localIdx owner = faceCellsV[i];
+            const scalar v = internalValuesV[owner];
 
-            refValue[i] = v;
-            value[i] = v;
+            refValueV[i] = v;
+            valueV[i] = v;
         }
     );
 }
@@ -45,27 +47,29 @@ inline void applySymmetry(
     Field<Vec3>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
 )
 {
-    auto refValue = domainVector.boundaryData().refValue().view();
-    auto value = domainVector.boundaryData().value().view();
-    auto internalValues = domainVector.internalVector().view();
+    auto [refValueV, valueV, internalValuesV, faceCellsV, nHatV] = views(
+        domainVector.boundaryData().refValue(),
+        domainVector.boundaryData().value(),
+        domainVector.internalVector(),
+        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().nf()
+    );
 
-    auto faceCells = mesh.boundaryMesh().faceCells().view();
-    auto nHat = mesh.boundaryMesh().nf().view(); // unit normals
     const localIdx nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCells[i];
-            const Vec3 n = nHat[i];
+            const localIdx owner = faceCellsV[i];
+            const Vec3 n = nHatV[i];
 
-            Vec3 v = internalValues[owner];
+            Vec3 v = internalValuesV[owner];
             const scalar vn = v & n; // dot product
             const auto vtan = v - n * vn;
 
-            refValue[i] = vtan;
-            value[i] = vtan;
+            refValueV[i] = vtan;
+            valueV[i] = vtan;
         }
     );
 }

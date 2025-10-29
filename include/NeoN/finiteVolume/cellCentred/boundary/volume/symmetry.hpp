@@ -33,9 +33,9 @@ inline void setSymmetryValue<NeoN::scalar>(
     std::pair<localIdx, localIdx> range
 )
 {
-    const auto internal = domainVector.internalVector().view();
+    const auto internalV = domainVector.internalVector().view();
 
-    auto [refGrad, value, valueFraction, refValue, faceCells] = views(
+    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
@@ -47,14 +47,14 @@ inline void setSymmetryValue<NeoN::scalar>(
         domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCells[i];
-            const auto v = internal[owner];
+            const localIdx owner = faceCellsV[i];
+            const auto v = internalV[owner];
 
             // Scalar symmetry → zero-gradient
-            refValue[i] = v;
-            value[i] = v;
-            valueFraction[i] = 0.0;
-            refGrad[i] = 0.0;
+            refValueV[i] = v;
+            valueV[i] = v;
+            valueFractionV[i] = 0.0;
+            refGradV[i] = 0.0;
         },
         "setSymmetryValue(scalar)"
     );
@@ -68,9 +68,9 @@ inline void setSymmetryValue<NeoN::Vec3>(
     std::pair<localIdx, localIdx> range
 )
 {
-    const auto internal = domainVector.internalVector().view();
+    const auto internalV = domainVector.internalVector().view();
 
-    auto [refGrad, value, valueFraction, refValue, faceCells, nHat] = views(
+    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV, nHatV] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
@@ -83,18 +83,18 @@ inline void setSymmetryValue<NeoN::Vec3>(
         domainVector.exec(),
         range,
         KOKKOS_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCells[i];
-            const auto v = internal[owner];
-            const auto n = nHat[i];
+            const localIdx owner = faceCellsV[i];
+            const auto v = internalV[owner];
+            const auto n = nHatV[i];
 
             // Tangential projection (remove normal component)
             const auto vn = v & n;
             const auto vtan = v - n * vn;
 
-            refValue[i] = vtan;
-            value[i] = vtan;
-            valueFraction[i] = 0.0;
-            refGrad[i] = NeoN::zero<NeoN::Vec3>();
+            refValueV[i] = vtan;
+            valueV[i] = vtan;
+            valueFractionV[i] = 0.0;
+            refGradV[i] = NeoN::zero<NeoN::Vec3>();
         },
         "setSymmetryValue(Vec3)"
     );

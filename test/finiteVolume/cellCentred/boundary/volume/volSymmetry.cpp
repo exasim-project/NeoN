@@ -35,28 +35,30 @@ TEST_CASE("symmetry_volume")
 
             boundary->correctBoundaryCondition(field);
 
-            auto refValues = field.boundaryData().refValue().copyToHost();
-            auto values = field.boundaryData().value().copyToHost();
-            auto refGrad = field.boundaryData().refGrad().copyToHost();
-            auto faceCells = mesh.boundaryMesh().faceCells().copyToHost();
-            auto internal = field.internalVector().copyToHost();
+            auto [refValuesH, valuesH, refGradH, faceCellsH, internalH] = copyToHosts(
+                field.boundaryData().refValue(),
+                field.boundaryData().value(),
+                field.boundaryData().refGrad(),
+                mesh.boundaryMesh().faceCells(),
+                field.internalVector()
+            );
 
-            for (auto& boundaryValue : refValues.view(boundary->range()))
+            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - refValues.data();
-                const auto owner = faceCells.view()[i];
-                REQUIRE(boundaryValue == Approx(internal.view()[owner]));
+                const auto i = &boundaryValueV - refValuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
 
-            for (auto& boundaryValue : values.view(boundary->range()))
+            for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - values.data();
-                const auto owner = faceCells.view()[i];
-                REQUIRE(boundaryValue == Approx(internal.view()[owner]));
+                const auto i = &boundaryValueV - valuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
 
-            for (auto& gradValue : refGrad.view(boundary->range()))
-                REQUIRE(gradValue == Approx(0.0));
+            for (auto& gradValueV : refGradH.view(boundary->range()))
+                REQUIRE(gradValueV == Approx(0.0));
         }
 
         // === vector field =====================================================
@@ -75,30 +77,32 @@ TEST_CASE("symmetry_volume")
 
             boundary->correctBoundaryCondition(field);
 
-            auto refValues = field.boundaryData().refValue().copyToHost();
-            auto values = field.boundaryData().value().copyToHost();
-            auto refGrad = field.boundaryData().refGrad().copyToHost();
-            auto nHat = mesh.boundaryMesh().nf().copyToHost();
-            auto faceCells = mesh.boundaryMesh().faceCells().copyToHost();
-            auto internal = field.internalVector().copyToHost();
+            auto [refValuesH, valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
+                field.boundaryData().refValue(),
+                field.boundaryData().value(),
+                field.boundaryData().refGrad(),
+                mesh.boundaryMesh().nf(),
+                mesh.boundaryMesh().faceCells(),
+                field.internalVector()
+            );
 
-            for (auto& boundaryValue : refValues.view(boundary->range()))
+            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - refValues.data();
-                const auto owner = faceCells.view()[i];
-                const auto n = nHat.view()[i];
-                const auto vInt = internal.view()[owner];
-                const auto vn = vInt & n;
-                const auto vExpected = vInt - n * vn; // half-symmetry
+                const auto i = &boundaryValueV - refValuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[ownerV];
+                // const auto vn = vInt & n;
+                const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
                 for (int d = 0; d < 3; ++d)
-                    REQUIRE(boundaryValue[d] == Approx(vExpected[d]));
+                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
             }
 
-            for (auto& gradValue : refGrad.view(boundary->range()))
+            for (auto& gradValueV : refGradH.view(boundary->range()))
             {
                 for (int d = 0; d < 3; ++d)
-                    REQUIRE(gradValue[d] == Approx(0.0));
+                    REQUIRE(gradValueV[d] == Approx(0.0));
             }
         }
     }

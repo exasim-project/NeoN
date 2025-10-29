@@ -33,23 +33,25 @@ TEST_CASE("symmetry_surface")
 
             boundary->correctBoundaryCondition(field);
 
-            auto refValues = field.boundaryData().refValue().copyToHost();
-            auto values = field.boundaryData().value().copyToHost();
-            auto faceCells = mesh.boundaryMesh().faceCells().copyToHost();
-            auto internal = field.internalVector().copyToHost();
+            auto [refValuesH, valuesH, faceCellsH, internalH] = copyToHosts(
+                field.boundaryData().refValue(),
+                field.boundaryData().value(),
+                mesh.boundaryMesh().faceCells(),
+                field.internalVector()
+            );
 
-            for (auto& boundaryValue : refValues.view(boundary->range()))
+            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - refValues.data();
-                const auto owner = faceCells.view()[i];
-                REQUIRE(boundaryValue == Approx(internal.view()[owner]));
+                const auto i = &boundaryValueV - refValuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
 
-            for (auto& boundaryValue : values.view(boundary->range()))
+            for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - values.data();
-                const auto owner = faceCells.view()[i];
-                REQUIRE(boundaryValue == Approx(internal.view()[owner]));
+                const auto i = &boundaryValueV - valuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
         }
 
@@ -68,36 +70,38 @@ TEST_CASE("symmetry_surface")
 
             boundary->correctBoundaryCondition(field);
 
-            auto refValues = field.boundaryData().refValue().copyToHost();
-            auto values = field.boundaryData().value().copyToHost();
-            auto faceCells = mesh.boundaryMesh().faceCells().copyToHost();
-            auto nHat = mesh.boundaryMesh().nf().copyToHost();
-            auto internal = field.internalVector().copyToHost();
+            auto [refValuesH, valuesH, faceCellsH, internalH, nHatH] = copyToHosts(
+                field.boundaryData().refValue(),
+                field.boundaryData().value(),
+                mesh.boundaryMesh().faceCells(),
+                field.internalVector(),
+                mesh.boundaryMesh().nf()
+            );
 
-            for (auto& boundaryValue : refValues.view(boundary->range()))
+            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - refValues.data();
-                const auto owner = faceCells.view()[i];
-                const auto n = nHat.view()[i];
-                const auto vInt = internal.view()[owner];
-                const auto vn = vInt & n;
-                const auto vExpected = vInt - n * vn; // half-symmetry
+                const auto i = &boundaryValueV - refValuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[ownerV];
+                // const auto vn = vInt & n;
+                const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
                 for (int d = 0; d < 3; ++d)
-                    REQUIRE(boundaryValue[d] == Approx(vExpected[d]));
+                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
             }
 
-            for (auto& boundaryValue : values.view(boundary->range()))
+            for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValue - values.data();
-                const auto owner = faceCells.view()[i];
-                const auto n = nHat.view()[i];
-                const auto vInt = internal.view()[owner];
-                const auto vn = vInt & n;
-                const auto vExpected = vInt - n * vn;
+                const auto i = &boundaryValueV - valuesH.data();
+                const auto ownerV = faceCellsH.view()[i];
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[ownerV];
+                // const auto vn = vInt & n;
+                const auto vExpected = intV - nV * (intV & nV);
 
                 for (int d = 0; d < 3; ++d)
-                    REQUIRE(boundaryValue[d] == Approx(vExpected[d]));
+                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
             }
         }
     }
