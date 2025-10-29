@@ -37,9 +37,9 @@
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00033}00033\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00034}00034\ )}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00035}00035\ \{}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internal\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00037}00037\ }
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{auto}\ [refGrad,\ value,\ valueFraction,\ refValue,\ faceCells]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV,\ faceCellsV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}(),}
@@ -51,14 +51,14 @@
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCells[i];}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ v\ =\ internal[owner];}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCellsV[i];}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ v\ =\ internalV[owner];}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00052}00052\ }
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Scalar\ symmetry\ →\ zero-\/gradient}}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ v;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ v;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 0.0;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ refGrad[i]\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ v;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ v;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ 0.0;}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \},}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setSymmetryValue(scalar)"{}}}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00060}00060\ \ \ \ \ );}
@@ -72,9 +72,9 @@
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00068}00068\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00069}00069\ )}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00070}00070\ \{}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internal\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00072}00072\ }
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{auto}\ [refGrad,\ value,\ valueFraction,\ refValue,\ faceCells,\ nHat]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV,\ faceCellsV,\ nHatV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}(),}
@@ -87,18 +87,18 @@
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCells[i];}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ v\ =\ internal[owner];}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ n\ =\ nHat[i];}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCellsV[i];}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ v\ =\ internalV[owner];}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ n\ =\ nHatV[i];}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00089}00089\ }
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Tangential\ projection\ (remove\ normal\ component)}}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ vn\ =\ v\ \&\ n;}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ vtan\ =\ v\ -\/\ n\ *\ vn;}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ vtan;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ vtan;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 0.0;}
-\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ refGrad[i]\ =\ NeoN::zero<NeoN::Vec3>();}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ vtan;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ vtan;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<NeoN::Vec3>();}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \},}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setSymmetryValue(Vec3)"{}}}
 \DoxyCodeLine{\Hypertarget{volume_2symmetry_8hpp_source_l00100}00100\ \ \ \ \ );}

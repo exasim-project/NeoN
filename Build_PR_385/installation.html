@@ -285,27 +285,73 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below <a class="reference external" href="BuildingwithCMakePresets">below</a>. From a build directory, you can execute:</p>
+<p>NeoN uses CMake to build, thus the standard CMake procedure should work, however, we recommend using one of the provided CMake presets detailed below in <a class="reference internal" href="#building-with-cmake-presets"><span class="std std-ref">Building with CMake Presets</span></a>. From a build directory, you can execute:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
 cmake<span class="w"> </span>&lt;DesiredBuildFlags&gt;<span class="w"> </span>..
-cmake<span class="w"> </span>--build<span class="w"> </span>.
+cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </span>-j&lt;the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>CPU<span class="w"> </span>cores&gt;
 cmake<span class="w"> </span>--install<span class="w"> </span>.
 </pre></div>
 </div>
 </div></blockquote>
-<p>The following can be chained with -D&lt;DesiredBuildFlags&gt;=&lt;Value&gt; to the CMake command most and most relevant build flags are:</p>
+<p>By default, the command <cite>cmake –build . -j</cite> will use all the CPU cores available. It can consume a significant
+amount of memory when building with many cores. If you want to limit the number of cores used during the build step,
+you can specify the number of CPU cores as shown above.</p>
+<p>The following can be chained with -D&lt;DesiredBuildFlags&gt;=&lt;Value&gt; to the CMake command.
+Most relevant build flags are:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CMAKE_BUILD_TYPE</p></td>
+<td><p>Build in debug or release mode</p></td>
+<td><p>Debug</p></td>
+</tr>
+<tr class="row-odd"><td><p>NeoN_BUILD_DOC</p></td>
+<td><p>Build NeoN with documentation</p></td>
+<td><p>ON</p></td>
+</tr>
+<tr class="row-even"><td><p>NeoN_BUILD_TESTS</p></td>
+<td><p>Build NeoN with tests</p></td>
+<td><p>OFF</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>To browse the full list of build options it is recommended to use a build tool like <code class="docutils literal notranslate"><span class="pre">ccmake</span></code>.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
 NeoN specific build flags are prefixed by <code class="docutils literal notranslate"><span class="pre">NeoN_</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<section id="building-for-gpus">
+<h2>Building for GPUs<a class="headerlink" href="#building-for-gpus" title="Link to this heading">¶</a></h2>
 <p>NeoN will automatically enable <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_CUDA</span></code> or <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_HIP</span></code> if either of this is available on
 the system. This can be prevented by setting both options explicitly.</p>
+<p>If NeoN does not detect the GPU backend automatically, you can set some relevant flags to enable GPU support
+during the configure step.</p>
+<p>For NVIDIA GPUs, specifying the GPU architecture via <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_ARCHITECTURES</span></code> should be sufficient.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_ARCHITECTURES<span class="o">=</span>&lt;GPU_ARCH&gt;
+</pre></div>
 </div>
+<p>For AMD GPUs, you may need to set up some relevant HIP environment variables before the configure step.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/opt/rocm/bin:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HIPCC_CXX</span><span class="o">=</span>/usr/bin/g++<span class="w">  </span><span class="c1"># If you want to use g++ as the host compiler</span>
+</pre></div>
+</div>
+<p>Then you can enable HIP during the configure step with the following flags.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>hipcc
+-DCMAKE_HIP_ARCHITECTURES<span class="o">=</span>&lt;GPU_ARCH&gt;
+-DKokkos_ARCH_AMD_&lt;GPU_ARCH&gt;<span class="o">=</span>ON<span class="w">  </span><span class="c1"># e.g., -DKokkos_ARCH_AMD_GFX90A=ON</span>
+</pre></div>
+</div>
+<p>After configuring for GPU support, you can continue to build NeoN.</p>
+</section>
 <section id="building-with-cmake-presets">
-<h2>Building with CMake Presets<a class="headerlink" href="#building-with-cmake-presets" title="Link to this heading">¶</a></h2>
+<span id="id1"></span><h2>Building with CMake Presets<a class="headerlink" href="#building-with-cmake-presets" title="Link to this heading">¶</a></h2>
 <p>Additionally, we provide several CMake presets to set commonly required flags if you compile NeoN in combination with Kokkos.</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>--list-presets<span class="w"> </span><span class="c1"># To list existing presets</span>
@@ -451,6 +497,7 @@ ms-vscode.cmake-tools
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#building-for-gpus">Building for GPUs</a></li>
 <li><a class="reference internal" href="#building-with-cmake-presets">Building with CMake Presets</a></li>
 <li><a class="reference internal" href="#building-with-spack">Building with Spack</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
