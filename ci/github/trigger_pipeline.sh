@@ -38,8 +38,8 @@ branch_exists=$(curl -s --header "PRIVATE-TOKEN: $CHECK_TOKEN" \
 if [ -n "$branch_exists" ]; then
   echo "Branch '$BRANCH' exists in $PROJECT. Using it for pipeline trigger."
 else
-  echo "Branch '$BRANCH' does not exist in $PROJECT. Falling back to 'main'."
-  BRANCH="main"
+  echo -e "\033[31mError: Branch '$BRANCH' does not exist in $PROJECT. Exiting workflow.\033[0m"
+  exit 1
 fi
 
 # Prepare curl form data for variables
