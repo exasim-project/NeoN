@@ -62,6 +62,7 @@ jobs:
           git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
 
       - name: Cancel running/pending NeoN LRZ CI pipelines
+        if: ${{ github.event_name != 'push' }}
         run: |
           ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
