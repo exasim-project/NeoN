@@ -8,7 +8,6 @@
 # for a specified project and pipeline ID. It checks the status every minute until
 # the pipeline succeeds, fails, or a maximum wait time is reached.
 #----------------------------------------------------------------------------------------
-
 set -euo pipefail
 
 PROJECT=$1
@@ -16,17 +15,31 @@ PIPELINE_ID=$2
 TOKEN=$3
 MAX_WAIT_MINUTES=${MAX_WAIT_MINUTES:-1440}
 
-# Construct pipeline URL
 pipeline_url="https://${LRZ_HOST}/${LRZ_GROUP}/${PROJECT}/-/pipelines/${PIPELINE_ID}"
-
-# Print clickable link
 echo "Monitoring LRZ GitLab CI pipeline: $pipeline_url"
 
 for i in $(seq 1 "$MAX_WAIT_MINUTES"); do
-  status=$(curl -s \
+  # Get response and HTTP code
+  response=$(curl -s -w "%{http_code}" \
     --header "PRIVATE-TOKEN: $TOKEN" \
-    "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/pipelines/${PIPELINE_ID}" \
-    | jq -r '.status')
+    "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/pipelines/${PIPELINE_ID}")
+
+  http_code="${response: -3}"
+  body="${response::-3}"
+
+  if [[ "$http_code" != "200" ]]; then
+    echo "Failed to fetch pipeline status, HTTP code: $http_code"
+    echo "Response: $body"
+    exit 1
+  fi
+
+  # Parse JSON safely
+  status=$(echo "$body" | jq -r '.status // empty')
+  if [[ -z "$status" ]]; then
+    echo "Failed to parse pipeline status from response:"
+    echo "$body"
+    exit 1
+  fi
 
   echo "[$i] $PROJECT pipeline status: $status"
 

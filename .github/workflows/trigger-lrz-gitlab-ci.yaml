@@ -2,7 +2,7 @@ name: NeoN + FoamAdapter LRZ GitLab CI
 
 on:
   push:
-    branches: [dev, main]
+    branches: [develop, main]
   pull_request:
     types: [opened, synchronize, reopened, unlabeled, labeled]
   schedule:
@@ -62,6 +62,7 @@ jobs:
           git push --force lrz HEAD:refs/heads/${{ steps.branch.outputs.branch }}
 
       - name: Cancel running/pending NeoN LRZ CI pipelines
+        if: ${{ github.event_name != 'push' }}
         run: |
           ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.REPO_NAME }}" \
@@ -76,7 +77,7 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
+            "variables[BENCHMARK]=false"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -100,7 +101,9 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${ADAPTER_PROJECT_TOKEN}" \
             "${ADAPTER_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}"
+            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
+            "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
+            "variables[BENCHMARK]=false"
 
       - name: Wait for FoamAdapter LRZ GitLab CI pipeline
         run: |
@@ -144,7 +147,6 @@ jobs:
             "${BRANCH}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${BRANCH}" \
             "variables[BENCHMARK]=true"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking

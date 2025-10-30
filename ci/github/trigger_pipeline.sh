@@ -7,10 +7,11 @@
 # This script triggers a LRZ GitLab CI pipeline on TUM COMA cluster for a specified project and branch.
 # Optionally, extra variables can be passed in the form: "variables[KEY]=VALUE".
 #----------------------------------------------------------------------------------------
-
 set -euo pipefail
 
+# -----------------------------------------------------------------------------
 # Arguments
+# -----------------------------------------------------------------------------
 PROJECT=$1
 BRANCH=$2
 CHECK_TOKEN=$3     # read_repository scope
@@ -23,32 +24,68 @@ if [ -z "$PROJECT" ] || [ -z "$BRANCH" ] || [ -z "$CHECK_TOKEN" ] || [ -z "$TRIG
   exit 1
 fi
 
-# Default LRZ host and group must be set in environment
+# -----------------------------------------------------------------------------
+# Environment setup
+# -----------------------------------------------------------------------------
 : "${LRZ_HOST:?Need to set LRZ_HOST}"
 : "${LRZ_GROUP:?Need to set LRZ_GROUP}"
 
 # URL-encode branch name
 BRANCH_ENC=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
 
-# Check if branch exists in GitLab using CHECK_TOKEN
-branch_exists=$(curl -s --header "PRIVATE-TOKEN: $CHECK_TOKEN" \
-  "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/repository/branches/${BRANCH_ENC}" \
-  | jq -r '.name // empty')
+# -----------------------------------------------------------------------------
+# Function to check if a branch exists on a given project
+# -----------------------------------------------------------------------------
+check_branch_exists() {
+  local project=$1
+  local branch_enc=$2
+  local token=$3
 
-if [ -n "$branch_exists" ]; then
-  echo "Branch '$BRANCH' exists in $PROJECT. Using it for pipeline trigger."
+  curl -s --header "PRIVATE-TOKEN: $token" \
+    "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${project}/repository/branches/${branch_enc}" \
+    | jq -r '.name // empty'
+}
+
+# -----------------------------------------------------------------------------
+# Determine branch to use for pipeline trigger
+# -----------------------------------------------------------------------------
+branch_exists=$(check_branch_exists "$PROJECT" "$BRANCH_ENC" "$CHECK_TOKEN")
+
+if [ "$PROJECT" = "NeoN" ]; then
+  if [ -n "$branch_exists" ]; then
+    echo "NeoN branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
+    TARGET_BRANCH="$BRANCH"
+  else
+    echo -e "\033[31m Error: Branch '$BRANCH' does not exist in NeoN. Exiting workflow.\033[0m"
+    exit 1
+  fi
+
+elif [ "$PROJECT" = "FoamAdapter" ]; then
+  if [ -n "$branch_exists" ]; then
+    echo "FoamAdapter branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
+    TARGET_BRANCH="$BRANCH"
+  else
+    echo -e "\033[33m️ Branch '$BRANCH' does not exist in FoamAdapter. Falling back to 'develop'.\033[0m"
+    TARGET_BRANCH="develop"
+  fi
+
 else
-  echo "Branch '$BRANCH' does not exist in $PROJECT. Falling back to 'main'."
-  BRANCH="main"
+  echo -e "\033[31m Error: Unknown project '$PROJECT'. Supported: NeoN, FoamAdapter.\033[0m"
+  exit 1
 fi
 
+# -----------------------------------------------------------------------------
 # Prepare curl form data for variables
-FORM_DATA="--form ref=$BRANCH --form token=$TRIGGER_TOKEN"
+# -----------------------------------------------------------------------------
+FORM_DATA="--form ref=$TARGET_BRANCH --form token=$TRIGGER_TOKEN"
 for var in $VARIABLES; do
   FORM_DATA="$FORM_DATA --form $var"
 done
 
+# -----------------------------------------------------------------------------
 # Trigger pipeline
+# -----------------------------------------------------------------------------
+echo "Triggering pipeline for project '$PROJECT' on branch '$TARGET_BRANCH'..."
 response=$(curl -s --request POST $FORM_DATA \
   "https://${LRZ_HOST}/api/v4/projects/${LRZ_GROUP}%2F${PROJECT}/trigger/pipeline")
 
@@ -56,10 +93,10 @@ echo "$response" | jq .
 
 pipeline_id=$(echo "$response" | jq -r '.id')
 if [ -z "$pipeline_id" ] || [ "$pipeline_id" = "null" ]; then
-  echo "Failed to trigger pipeline for project $PROJECT on branch $BRANCH"
+  echo -e "\033[31m Failed to trigger pipeline for project '$PROJECT' on branch '$TARGET_BRANCH'.\033[0m"
   exit 1
 fi
 
-echo "Triggered pipeline $pipeline_id on branch $BRANCH"
+echo "Triggered pipeline $pipeline_id on branch '$TARGET_BRANCH'."
 # Set GitHub Actions output
 echo "pipeline_id=$pipeline_id" >> "$GITHUB_OUTPUT"
