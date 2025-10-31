@@ -51,7 +51,6 @@ elif [ "$GPU_TYPE" == "amd" ]; then
 
 elif [ "$GPU_TYPE" == "intel" ]; then
     # Set up environment
-    source /opt/intel/oneapi/2024.2/oneapi-vars.sh
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 
     echo "=== Intel GPU and compiler driver info ==="
