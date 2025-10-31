@@ -51,6 +51,7 @@ elif [ "$GPU_TYPE" == "amd" ]; then
 
 elif [ "$GPU_TYPE" == "intel" ]; then
     # Set up environment
+    source /opt/intel/oneapi/2024.2/oneapi-vars.sh
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 
     echo "=== Intel GPU and compiler driver info ==="
@@ -64,8 +65,9 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DKokkos_ENABLE_SYCL=ON \
         -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
-        -DCMAKE_BUILD_TYPE="release"
-    cmake --build --preset develop 2>/dev/null
+        -DCMAKE_BUILD_TYPE="release" \
+        -Wno-deprecated
+    cmake --build --preset develop
     ctest --preset develop --output-on-failure
 
 else
