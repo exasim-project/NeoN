@@ -1,0 +1,181 @@
+\doxysection{NeoN\+::GPUExecutor Class Reference}
+\hypertarget{classNeoN_1_1GPUExecutor}{}\label{classNeoN_1_1GPUExecutor}\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+
+
+Executor for GPU offloading.  
+
+
+
+
+{\ttfamily \#include $<$GPUExecutor.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}} = Kokkos\+::\+Default\+Execution\+Space
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac8465d7ed9023aea8a808383f38550a5}{GPUExecutor}} ()
+\item 
+\mbox{\hyperlink{classNeoN_1_1GPUExecutor_adebe4dfbc231a708dbd66abea6e32abf}{\texorpdfstring{$\sim$}{\string~}\+GPUExecutor}} ()
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a4e8b672e789aa3c8cae8d56ceefaf5ec}{alloc}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab4dddd8bac64877c63dbe21b84422b47}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} new\+Size) const
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\decltype(auto) \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}{create\+Kokkos\+View}} (Value\+Type \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
+\begin{DoxyCompactList}\small\item\em create a Kokkos view for a given ptr \end{DoxyCompactList}\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a34d6f31697a447e425603b0dbfa66b88}{alloc}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
+\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad577307c108b1f5ce56cf613a6e7dcd4}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} new\+Size) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}{free}} (void \texorpdfstring{$\ast$}{*}ptr) const noexcept
+\item 
+std\+::string \mbox{\hyperlink{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}{name}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}} \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}{underlying\+Exec}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Executor for GPU offloading. 
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00018}{18}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}\label{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!exec@{exec}}
+\index{exec@{exec}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{exec}{exec}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{Neo\+N\+::\+GPUExecutor\+::exec}} =  Kokkos\+::\+Default\+Execution\+Space}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00022}{22}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1GPUExecutor_ac8465d7ed9023aea8a808383f38550a5}\label{classNeoN_1_1GPUExecutor_ac8465d7ed9023aea8a808383f38550a5} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!GPUExecutor@{GPUExecutor}}
+\index{GPUExecutor@{GPUExecutor}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{GPUExecutor()}{GPUExecutor()}}
+{\footnotesize\ttfamily Neo\+N\+::\+GPUExecutor\+::\+GPUExecutor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1GPUExecutor_adebe4dfbc231a708dbd66abea6e32abf}\label{classNeoN_1_1GPUExecutor_adebe4dfbc231a708dbd66abea6e32abf} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!````~GPUExecutor@{\texorpdfstring{$\sim$}{\string~}GPUExecutor}}
+\index{````~GPUExecutor@{\texorpdfstring{$\sim$}{\string~}GPUExecutor}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GPUExecutor()}{\string~GPUExecutor()}}
+{\footnotesize\ttfamily Neo\+N\+::\+GPUExecutor\+::\texorpdfstring{$\sim$}{\string~}\+GPUExecutor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1GPUExecutor_a4e8b672e789aa3c8cae8d56ceefaf5ec}\label{classNeoN_1_1GPUExecutor_a4e8b672e789aa3c8cae8d56ceefaf5ec} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!alloc@{alloc}}
+\index{alloc@{alloc}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+GPUExecutor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_a34d6f31697a447e425603b0dbfa66b88}\label{classNeoN_1_1GPUExecutor_a34d6f31697a447e425603b0dbfa66b88} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!alloc@{alloc}}
+\index{alloc@{alloc}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} Neo\+N\+::\+GPUExecutor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00054}{54}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}\label{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!createKokkosView@{createKokkosView}}
+\index{createKokkosView@{createKokkosView}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{createKokkosView()}{createKokkosView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+decltype(auto) Neo\+N\+::\+GPUExecutor\+::create\+Kokkos\+View (\begin{DoxyParamCaption}\item[{Value\+Type \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+create a Kokkos view for a given ptr 
+
+Based on the executor this function creates a Kokkos view into the data managed by ptr 
+\begin{DoxyParams}{Parameters}
+{\em ptr} & Pointer to data for which a view should be created \\
+\hline
+{\em size} & Number of elements this view contains \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The value type the underlying memory holds \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}\label{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!free@{free}}
+\index{free@{free}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{free()}{free()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+GPUExecutor\+::free (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}\label{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!name@{name}}
+\index{name@{name}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily std\+::string Neo\+N\+::\+GPUExecutor\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_ab4dddd8bac64877c63dbe21b84422b47}\label{classNeoN_1_1GPUExecutor_ab4dddd8bac64877c63dbe21b84422b47} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!realloc@{realloc}}
+\index{realloc@{realloc}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{realloc()}{realloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+GPUExecutor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{new\+Size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_ad577307c108b1f5ce56cf613a6e7dcd4}\label{classNeoN_1_1GPUExecutor_ad577307c108b1f5ce56cf613a6e7dcd4} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!realloc@{realloc}}
+\index{realloc@{realloc}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{realloc()}{realloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} Neo\+N\+::\+GPUExecutor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{new\+Size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}\label{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261} 
+\index{NeoN::GPUExecutor@{NeoN::GPUExecutor}!underlyingExec@{underlyingExec}}
+\index{underlyingExec@{underlyingExec}!NeoN::GPUExecutor@{NeoN::GPUExecutor}}
+\doxysubsubsection{\texorpdfstring{underlyingExec()}{underlyingExec()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}} Neo\+N\+::\+GPUExecutor\+::underlying\+Exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{GPUExecutor_8hpp_source_l00065}{65}} of file \mbox{\hyperlink{GPUExecutor_8hpp_source}{GPUExecutor.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/executor/\mbox{\hyperlink{GPUExecutor_8hpp}{GPUExecutor.\+hpp}}\end{DoxyCompactItemize}
