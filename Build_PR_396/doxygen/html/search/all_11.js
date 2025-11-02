@@ -15,8 +15,9 @@ var searchData=
   ['tokenlist_12',['tokenlist',['../classNeoN_1_1TokenList.html#aafc9278edc9dcc6db3400d69ca8a79ed',1,'NeoN::TokenList::TokenList()'],['../classNeoN_1_1TokenList.html',1,'NeoN::TokenList'],['../classNeoN_1_1TokenList.html#a8182d8f5284751acc63601d034cf878f',1,'NeoN::TokenList::TokenList()'],['../classNeoN_1_1TokenList.html#aacecba4d4ad598f8200a54b2b5902388',1,'NeoN::TokenList::TokenList(const TokenList &amp;)'],['../classNeoN_1_1TokenList.html#af1e8537d6a6b6513de5847ca41c2633a',1,'NeoN::TokenList::TokenList(const std::vector&lt; std::any &gt; &amp;data, size_t nextIndex=0)']]],
   ['tokenlist_2ehpp_13',['tokenList.hpp',['../tokenList_8hpp.html',1,'']]],
   ['tokens_14',['tokens',['../classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1',1,'NeoN::TokenList']]],
-  ['traits_2ehpp_15',['traits.hpp',['../traits_8hpp.html',1,'']]],
-  ['type_16',['type',['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator::Type'],['../classNeoN_1_1Collection.html#a783d0c07830d809064e7c9830ee2a640',1,'NeoN::Collection::type()'],['../classNeoN_1_1CollectionMixin.html#a996d80b8f25ae166443b99cae12c3497',1,'NeoN::CollectionMixin::type()']]],
-  ['type_5f_17',['type_',['../classNeoN_1_1dsl_1_1OperatorMixin.html#ae160ee6042607004df8e0c3fcb7aac1c',1,'NeoN::dsl::OperatorMixin']]],
-  ['typename_18',['typename',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument.html#a02bcbb6ce8fc27d6dc52c523b76f0bdd',1,'NeoN::finiteVolume::cellCentred::VectorDocument::typeName()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#aa925defdaedd60f3a859cab8f4782c94',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::typeName()']]]
+  ['trace_15',['Trace',['../namespaceNeoN.html#a1f15c277da2c6dcc3440ef9006ed0108a275168ed4002a57f5b14acdcf80474e5',1,'NeoN']]],
+  ['traits_2ehpp_16',['traits.hpp',['../traits_8hpp.html',1,'']]],
+  ['type_17',['type',['../classNeoN_1_1Collection.html#a783d0c07830d809064e7c9830ee2a640',1,'NeoN::Collection::type()'],['../classNeoN_1_1CollectionMixin.html#a996d80b8f25ae166443b99cae12c3497',1,'NeoN::CollectionMixin::type()'],['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator::Type']]],
+  ['type_5f_18',['type_',['../classNeoN_1_1dsl_1_1OperatorMixin.html#ae160ee6042607004df8e0c3fcb7aac1c',1,'NeoN::dsl::OperatorMixin']]],
+  ['typename_19',['typename',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument.html#a02bcbb6ce8fc27d6dc52c523b76f0bdd',1,'NeoN::finiteVolume::cellCentred::VectorDocument::typeName()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#aa925defdaedd60f3a859cab8f4782c94',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::typeName()']]]
 ];

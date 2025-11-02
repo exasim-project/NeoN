@@ -6,6 +6,7 @@
     <innerclass refid="classNeoN_1_1Array" prot="public">NeoN::Array</innerclass>
     <innerclass refid="classNeoN_1_1BaseClassData" prot="public">NeoN::BaseClassData</innerclass>
     <innerclass refid="classNeoN_1_1BaseClassDocumentation" prot="public">NeoN::BaseClassDocumentation</innerclass>
+    <innerclass refid="classNeoN_1_1BaseLogger" prot="public">NeoN::BaseLogger</innerclass>
     <innerclass refid="classNeoN_1_1BoundaryData" prot="public">NeoN::BoundaryData</innerclass>
     <innerclass refid="classNeoN_1_1BoundaryMesh" prot="public">NeoN::BoundaryMesh</innerclass>
     <innerclass refid="classNeoN_1_1Collection" prot="public">NeoN::Collection</innerclass>
@@ -19,6 +20,7 @@
     <innerclass refid="classNeoN_1_1Error" prot="public">NeoN::Error</innerclass>
     <innerclass refid="classNeoN_1_1Field" prot="public">NeoN::Field</innerclass>
     <innerclass refid="classNeoN_1_1GPUExecutor" prot="public">NeoN::GPUExecutor</innerclass>
+    <innerclass refid="classNeoN_1_1Logger" prot="public">NeoN::Logger</innerclass>
     <innerclass refid="classNeoN_1_1NeoNException" prot="public">NeoN::NeoNException</innerclass>
     <innerclass refid="structNeoN_1_1Parameters" prot="public">NeoN::Parameters</innerclass>
     <innerclass refid="structNeoN_1_1RegisterDocumentation" prot="public">NeoN::RegisterDocumentation</innerclass>
@@ -28,6 +30,7 @@
     <innerclass refid="classNeoN_1_1SegmentedVectorView" prot="public">NeoN::SegmentedVectorView</innerclass>
     <innerclass refid="classNeoN_1_1SerialExecutor" prot="public">NeoN::SerialExecutor</innerclass>
     <innerclass refid="classNeoN_1_1StencilDataBase" prot="public">NeoN::StencilDataBase</innerclass>
+    <innerclass refid="classNeoN_1_1SupportsLoggingMixin" prot="public">NeoN::SupportsLoggingMixin</innerclass>
     <innerclass refid="classNeoN_1_1Time" prot="public">NeoN::Time</innerclass>
     <innerclass refid="classNeoN_1_1TokenList" prot="public">NeoN::TokenList</innerclass>
     <innerclass refid="classNeoN_1_1UnstructuredMesh" prot="public">NeoN::UnstructuredMesh</innerclass>
@@ -39,6 +42,55 @@
     <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1la">NeoN::la</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1timeIntegration">NeoN::timeIntegration</innernamespace>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108" prot="public" static="no" strong="no">
+        <type></type>
+        <name>LogLevel</name>
+        <qualifiedname>NeoN::LogLevel</qualifiedname>
+        <enumvalue id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108a275168ed4002a57f5b14acdcf80474e5" prot="public">
+          <name>Trace</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108a72418efe98bd9fd7a091a4fd26d50545" prot="public">
+          <name>Debug</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108a714e11bd641873f7934541f0e3c2c099" prot="public">
+          <name>Info</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108a37295f850dcd22d9eb9547f6acd3dea2" prot="public">
+          <name>Warning</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1a1f15c277da2c6dcc3440ef9006ed0108ae766a6fb19c43917a2296c05d25f59cf" prot="public">
+          <name>Error</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" line="16" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" bodystart="17" bodyend="23"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespaceNeoN_1a957a55577aca9a487c3965676ad7dd12" prot="public" static="no">
         <type>std::function&lt; bool(<ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>)&gt;</type>
@@ -73,7 +125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="18" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="18" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="19" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="19" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" prot="public" static="no">
         <type>std::variant&lt; <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>, <ref refid="classNeoN_1_1TokenList" kindref="compound">TokenList</ref> &gt;</type>
@@ -857,7 +909,47 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="21" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="21" bodyend="27"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="22" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="22" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a9b663bfa0d2d732ebfb463b31cd0f237" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1BaseLogger" kindref="compound">BaseLogger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; BaseLogger &gt; NeoN::getLogger</definition>
+        <argsstring>(const Executor &amp;exec)</argsstring>
+        <name>getLogger</name>
+        <qualifiedname>NeoN::getLogger</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="31" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="31" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a1d8aa99930040dcf10250df62238410d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::setLogger</definition>
+        <argsstring>(const Executor &amp;exec, std::shared_ptr&lt; BaseLogger &gt; logger)</argsstring>
+        <name>setLogger</name>
+        <qualifiedname>NeoN::setLogger</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1BaseLogger" kindref="compound">BaseLogger</ref> &gt;</type>
+          <declname>logger</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="37" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="37" bodyend="40"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1ac649c09e3045b009af8c9a60459e823b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -900,7 +992,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="35" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="35" bodyend="53"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="49" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="49" bodyend="67"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1acac5cd47c1ca0f8520e0938d101cb3b4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -943,7 +1035,44 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="62" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="62" bodyend="65"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" line="76" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp" bodystart="76" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::initialize</definition>
+        <argsstring>(int argc, char *argv[])</argsstring>
+        <name>initialize</name>
+        <qualifiedname>NeoN::initialize</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>argv</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="16" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="16" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::finalize</definition>
+        <argsstring>()</argsstring>
+        <name>finalize</name>
+        <qualifiedname>NeoN::finalize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="24" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="24" bodyend="24"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1ae925f6aa90689fd77bdefea5cc28a5ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -967,6 +1096,76 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/input.hpp" line="18" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/input.hpp" bodystart="18" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1af56f83fad5839d223886cb9d11f550b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::setNeonDefaultPattern</definition>
+        <argsstring>()</argsstring>
+        <name>setNeonDefaultPattern</name>
+        <qualifiedname>NeoN::setNeonDefaultPattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" line="25" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" declline="25" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a31d0e34252581e08a0f0e91e79dde151" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::info</definition>
+        <argsstring>(std::string sv, std::string logName=&quot;NeoN&quot;)</argsstring>
+        <name>info</name>
+        <qualifiedname>NeoN::info</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>sv</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>logName</declname>
+          <defval>&quot;NeoN&quot;</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" line="27" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" declline="27" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1af4fc798eb5ff9e7f0b25d76edeadc14f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::log</definition>
+        <argsstring>(std::shared_ptr&lt; BaseLogger &gt; logger, std::string formatString, Args... args)</argsstring>
+        <name>log</name>
+        <qualifiedname>NeoN::log</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1BaseLogger" kindref="compound">BaseLogger</ref> &gt;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>formatString</declname>
+        </param>
+        <param>
+          <type>Args...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" line="45" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp" bodystart="45" bodyend="48"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a21e64530776182407f0f068c289adf81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
