@@ -25,6 +25,7 @@ target_sources(
           "core/dictionary.cpp"
           "core/demangle.cpp"
           "core/tokenList.cpp"
+          "core/logging.cpp"
           "dsl/coeff.cpp"
           "dsl/explicit.cpp"
           "dsl/spatialOperator.cpp"
@@ -66,6 +67,7 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
                   NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
+target_link_libraries(NeoN PRIVATE spdlog::spdlog_header_only)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
 if(NeoN_ENABLE_MPI_SUPPORT)

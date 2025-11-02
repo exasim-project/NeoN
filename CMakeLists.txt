@@ -237,6 +237,18 @@ if(cpptrace_POPULATED)
   install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
 endif()
 
+message(WARNING "spdlog_populated: ${ginkgo_POPULATED} ${spdlog_POPULATED}")
+# install internal spdlog version
+if(spdlog_POPULATED)
+  message(WARNING "Enabled Kokkos devices: ${Kokkos_DEVICES}")
+  install(
+    TARGETS spdlog
+    EXPORT SpdlogTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT SpdlogTargets NAMESPACE spdlog::)
+endif()
+
 # install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
 # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
 # SundialsTargets NAMESPACE SUNDIALS::) endif()

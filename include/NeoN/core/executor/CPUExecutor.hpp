@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/logging.hpp"
+
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
 
 namespace NeoN
@@ -16,7 +18,7 @@ namespace NeoN
  *
  * @ingroup Executor
  */
-class CPUExecutor
+class CPUExecutor : public Logging::SupportsLoggingMixin
 {
 public:
 
