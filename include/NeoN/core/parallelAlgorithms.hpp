@@ -7,6 +7,7 @@
 #include <Kokkos_Core.hpp>
 #include <type_traits>
 
+#include "NeoN/core/logging.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
@@ -34,6 +35,13 @@ void parallelFor(
     std::string name = "parallelFor"
 )
 {
+    fence(exec);
+    auto event = Logging::LogEvent {
+        std::source_location::current(),
+        Logging::Level::Info,
+        std::format("Executing parallelFor: {}", name)
+    };
+
     auto [start, end] = range;
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
@@ -51,6 +59,9 @@ void parallelFor(
             KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
         );
     }
+
+    fence(exec);
+    Logging::log(getLogger(exec), event);
 }
 
 

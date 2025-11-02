@@ -46,10 +46,10 @@ std::int64_t VectorDocument::subCycleIndex() const
 
 std::int64_t& VectorDocument::subCycleIndex() { return doc_.get<std::int64_t>("subCycleIndex"); }
 
-
-VectorCollection::VectorCollection(NeoN::Database& db, std::string name)
+VectorCollection::VectorCollection(NeoN::Database& db, std::string name, Logging::BaseLogger logger)
     : NeoN::CollectionMixin<VectorDocument>(db, name)
 {}
+
 
 bool VectorCollection::contains(const std::string& id) const { return docs_.contains(id); }
 

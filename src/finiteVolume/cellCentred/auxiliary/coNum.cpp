@@ -16,7 +16,7 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
+std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
 {
     const UnstructuredMesh& mesh = faceFlux.mesh();
     const auto exec = faceFlux.exec();
@@ -89,11 +89,8 @@ scalar computeCoNum(const SurfaceField<scalar>& faceFlux, const scalar dt)
 
     maxCoNum = maxReducer.reference() * 0.5 * dt;
     meanCoNum = 0.5 * (sumPhi.reference() / sumVol.reference()) * dt;
-    NF_INFO(
-        "Courant Number mean: " + std::to_string(meanCoNum) + " max: " + std::to_string(maxCoNum)
-    );
 
-    return maxCoNum;
+    return {maxCoNum, meanCoNum};
 }
 
 };

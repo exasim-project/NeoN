@@ -11,6 +11,7 @@
 #include "NeoN/core/demangle.hpp"
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/logging.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
@@ -206,8 +207,11 @@ using CreateFunction = std::function<VectorDocument(NeoN::Database& db)>;
  * The VectorCollection class represents a collection of field documents in a database and provides
  * additional functionality for accessing field-specific data.
  */
-class VectorCollection : public CollectionMixin<VectorDocument>
+class VectorCollection :
+    public CollectionMixin<VectorDocument>,
+    public Logging::SupportsLoggingMixin
 {
+
 public:
 
     /**
@@ -216,7 +220,7 @@ public:
      * @param db The database to create the collection in.
      * @param name The name of the collection.
      */
-    VectorCollection(NeoN::Database& db, std::string name);
+    VectorCollection(NeoN::Database& db, std::string name, Logging::BaseLogger logger = {});
 
     /**
      * @brief A VectorCollection is not copyable, but moveable
@@ -347,6 +351,14 @@ public:
         VectorType& field = fd.field<VectorType>();
         field.key = key;
         field.fieldCollectionName = name();
+
+        Logging::log(
+            this->getLogger(),
+            {std::source_location::current(),
+             Logging::Level::Info,
+             std::format("Created and registered {} in {}", key, name())}
+        );
+
         return field;
     }
 };
