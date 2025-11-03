@@ -51,7 +51,6 @@ elif [ "$GPU_TYPE" == "amd" ]; then
 
 elif [ "$GPU_TYPE" == "intel" ]; then
     # Set up environment
-    export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
     set +u
     source /opt/intel/oneapi/2024.2/oneapi-vars.sh
     set -u    
@@ -70,6 +69,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_BUILD_TYPE="release" \
         -Wno-deprecated
     cmake --build --preset develop
+    export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
     ctest --preset develop --output-on-failure
 
 else
