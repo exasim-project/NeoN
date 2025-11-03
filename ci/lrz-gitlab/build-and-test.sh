@@ -55,9 +55,15 @@ elif [ "$GPU_TYPE" == "intel" ]; then
     source /opt/intel/oneapi/2024.2/oneapi-vars.sh
     set -u    
 
-    echo "=== Intel GPU and compiler driver info ==="
-    sycl-ls | grep -i intel
-    icpx --version | head -1
+    # echo "=== Intel GPU and compiler driver info ==="
+    # sycl-ls --ignore-device-selectors | grep -i intel  || true
+    # icpx --version | head -1 || true
+    if ! sycl-ls --ignore-device-selectors 2>/dev/null | grep -qi intel; then
+        echo "No Intel GPU found or Level Zero runtime not available"
+    fi
+
+    # Compiler info (non-fatal)
+    icpx --version 2>/dev/null | head -1 || echo "icpx not found"
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
     cmake --preset develop \
