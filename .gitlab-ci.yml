@@ -13,7 +13,7 @@
 
 .use-intel-gpu:
   tags: ["intel-gpus"]
-  image: dheerajraghunathan/oneapi-hpckit-ubuntu:2024.2-24.04
+  image: dheerajraghunathan/sycl:arch_pvc-v2412
 
 # Common configuration for all build and test jobs
 .build-and-test-neon-common:
@@ -23,9 +23,9 @@
     # Skip in all other cases
     - when: never
 
-  before_script:
-    - pip3 install --user --break-system-packages pre-commit
-    - export PATH="$HOME/.local/bin:$PATH"
+  # before_script:
+  #   - pip3 install --user --break-system-packages pre-commit
+  #   - export PATH="$HOME/.local/bin:$PATH"
 
 # Common configuration for all benchmark jobs
 .benchmark-neon-common:
