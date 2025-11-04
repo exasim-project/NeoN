@@ -60,12 +60,11 @@ elif [ "$GPU_TYPE" == "intel" ]; then
     echo "=== Configuring, building, and testing NeoN on Intel ==="
     cmake --preset develop \
         -DCMAKE_CXX_COMPILER=icpx \
-        -DCMAKE_CXX_FLAGS="-fsycl" \
+        -DCMAKE_CXX_FLAGS="-fsycl -Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \
         -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
-        -DCMAKE_BUILD_TYPE="release" \
-        -Wno-deprecated
+        -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
     ctest --preset develop --output-on-failure
