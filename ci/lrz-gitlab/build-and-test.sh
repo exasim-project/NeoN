@@ -22,9 +22,6 @@ cmake --version
 g++ --version || clang++ --version
 
 if [ "$GPU_TYPE" == "nvidia" ]; then
-    pip3 install --user --break-system-packages pre-commit
-    export PATH="$HOME/.local/bin:$PATH"
-
     echo "=== NVIDIA GPU and compiler driver info ==="
     nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv
     nvcc --version
@@ -35,9 +32,6 @@ if [ "$GPU_TYPE" == "nvidia" ]; then
     ctest --preset develop --output-on-failure
 
 elif [ "$GPU_TYPE" == "amd" ]; then
-    pip3 install --user --break-system-packages pre-commit
-    export PATH="$HOME/.local/bin:$PATH"
-
     # Set up environment
     export PATH=/opt/rocm/bin:$PATH
     export HIPCC_CXX=/usr/bin/g++
