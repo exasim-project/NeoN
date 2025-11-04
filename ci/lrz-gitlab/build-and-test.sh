@@ -24,7 +24,7 @@ g++ --version || clang++ --version
 if [ "$GPU_TYPE" == "nvidia" ]; then
     pip3 install --user --break-system-packages pre-commit
     export PATH="$HOME/.local/bin:$PATH"
-    
+
     echo "=== NVIDIA GPU and compiler driver info ==="
     nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv
     nvcc --version
@@ -56,20 +56,12 @@ elif [ "$GPU_TYPE" == "amd" ]; then
     ctest --preset develop --output-on-failure
 
 elif [ "$GPU_TYPE" == "intel" ]; then
-    # Set up environment
-    # set +u
-    # source /opt/intel/oneapi/2024.2/oneapi-vars.sh
-    # set -u    
+    if ! sycl-ls --ignore-device-selectors 2>/dev/null | grep -qi intel; then
+        echo "No Intel GPU found or Level Zero runtime not available"
+    fi
 
-    echo "=== Intel GPU and compiler driver info ==="
-    sycl-ls --ignore-device-selectors | grep -i intel  || true
-    icpx --version | head -1 || true
-    # if ! sycl-ls --ignore-device-selectors 2>/dev/null | grep -qi intel; then
-    #     echo "No Intel GPU found or Level Zero runtime not available"
-    # fi
-
-    # # Compiler info (non-fatal)
-    # icpx --version 2>/dev/null | head -1 || echo "icpx not found"
+    # Compiler info (non-fatal)
+    icpx --version 2>/dev/null | head -1 || echo "icpx not found"
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
     cmake --preset develop \
