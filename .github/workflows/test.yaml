@@ -1,0 +1,72 @@
+name: Coordinated Merge for Existing PRs (NeoN + FoamAdapter)
+
+on:
+  workflow_dispatch:
+    inputs:
+      neon_pr:
+        description: "NeoN PR number (e.g. 123)"
+        required: true
+      foam_pr:
+        description: "FoamAdapter PR number (e.g. 456)"
+        required: true
+
+jobs:
+  coordinated-merge:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.MERGE_TOKEN }}
+      NEON_REPO: exasim-project/NeoN
+      FOAM_REPO: exasim-project/FoamAdapter
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check NeoN PR approval
+        run: |
+          echo "Checking approval for NeoN PR #${{ github.event.inputs.neon_pr }}..."
+          approved=$(gh pr view ${{ github.event.inputs.neon_pr }} --repo $NEON_REPO --json reviewDecision -q '.reviewDecision')
+          if [[ "$approved" != "APPROVED" ]]; then
+            echo "NeoN PR not yet approved."
+            exit 1
+          fi
+          echo "NeoN PR approved."
+
+      - name: Check FoamAdapter PR approval
+        run: |
+          echo "Checking approval for FoamAdapter PR #${{ github.event.inputs.foam_pr }}..."
+          approved=$(gh pr view ${{ github.event.inputs.foam_pr }} --repo $FOAM_REPO --json reviewDecision -q '.reviewDecision')
+          if [[ "$approved" != "APPROVED" ]]; then
+            echo "FoamAdapter PR not yet approved."
+            exit 1
+          fi
+          echo "FoamAdapter PR approved."
+
+      - name: Merge NeoN PR
+        run: |
+          echo "Merging NeoN PR..."
+          gh pr merge ${{ github.event.inputs.neon_pr }} \
+            --repo $NEON_REPO \
+            --merge \
+            --admin \
+            --delete-branch
+          echo "NeoN PR merged into develop."
+
+      - name: Merge FoamAdapter PR
+        run: |
+          echo "Merging FoamAdapter PR..."
+          gh pr merge ${{ github.event.inputs.foam_pr }} \
+            --repo $FOAM_REPO \
+            --merge \
+            --admin \
+            --delete-branch
+          echo "FoamAdapter PR merged into develop."
+
+      # - name: Trigger LRZ GitLab CI
+      #   run: |
+      #     echo "Triggering LRZ GitLab CI pipelines for both repos..."
+      #     ./scripts/trigger-lrz-ci.sh NeoN develop
+      #     ./scripts/trigger-lrz-ci.sh FoamAdapter develop
+
+      # - name: Done
+      #   run: echo "Both PRs merged and LRZ CI triggered successfully!"
