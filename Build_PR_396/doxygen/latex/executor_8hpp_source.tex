@@ -38,9 +38,9 @@
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00034}00034\ \}}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00035}00035\ }
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00036}00036\ \textcolor{comment}{/*@brief\ convenience\ function\ to\ get\ access\ to\ associated\ logger\ */}}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00037}\mbox{\hyperlink{namespaceNeoN_a1d8aa99930040dcf10250df62238410d}{00037}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a1d8aa99930040dcf10250df62238410d}{setLogger}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ std::shared\_ptr<BaseLogger>\ logger)}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00037}\mbox{\hyperlink{namespaceNeoN_a4ef6968908852a5ff94b324a82005d7e}{00037}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a4ef6968908852a5ff94b324a82005d7e}{setLogger}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ std::shared\_ptr<BaseLogger>\ logger)}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00038}00038\ \{}
-\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit([logger](\textcolor{keyword}{auto}\ e)\ \{\ \textcolor{keywordflow}{return}\ e.setLogger(logger);\ \},\ exec);}
+\DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit([logger](\textcolor{keyword}{auto}\&\ e)\ \{\ \textcolor{keywordflow}{return}\ e.setLogger(logger);\ \},\ exec);}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00040}00040\ \}}
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00041}00041\ }
 \DoxyCodeLine{\Hypertarget{executor_8hpp_source_l00042}00042\ }
