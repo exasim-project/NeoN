@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trace_0',['Trace',['../namespaceNeoN.html#a1f15c277da2c6dcc3440ef9006ed0108a275168ed4002a57f5b14acdcf80474e5',1,'NeoN']]]
+  ['file_0',['File',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299a4ea6596d8006801e5878cfe907d8ff92',1,'NeoN::Logging']]]
 ];

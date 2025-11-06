@@ -5,5 +5,5 @@ var searchData=
   ['linear_2',['Linear',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['linearsystem_3',['LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html',1,'NeoN::la']]],
   ['linearsystemview_4',['LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la']]],
-  ['logger_5',['Logger',['../classNeoN_1_1Logger.html',1,'NeoN']]]
+  ['logger_5',['Logger',['../classNeoN_1_1Logging_1_1Logger.html',1,'NeoN::Logging']]]
 ];

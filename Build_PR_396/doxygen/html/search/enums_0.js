@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loglevel_0',['LogLevel',['../namespaceNeoN.html#a1f15c277da2c6dcc3440ef9006ed0108',1,'NeoN']]]
+  ['level_0',['Level',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214',1,'NeoN::Logging']]]
 ];

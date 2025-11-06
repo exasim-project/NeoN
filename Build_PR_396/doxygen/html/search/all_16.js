@@ -1,7 +1,7 @@
 var searchData=
 [
   ['_7earray_0',['~Array',['../classNeoN_1_1Array.html#aa95d39f2a20cea2dcdcf81cc2c4968a4',1,'NeoN::Array']]],
-  ['_7ebaselogger_1',['~BaseLogger',['../classNeoN_1_1BaseLogger.html#aa35707eafbef2b538cdddcf7bfd86c43',1,'NeoN::BaseLogger']]],
+  ['_7ebaselogger_1',['~BaseLogger',['../classNeoN_1_1Logging_1_1BaseLogger.html#a81ed9a5b78f6781c923942babf3107e9',1,'NeoN::Logging::BaseLogger']]],
   ['_7eboundarypatchmixin_2',['~BoundaryPatchMixin',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a33e0e460fb4a0acdb198a0153ffd84f6',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
   ['_7ecpuexecutor_3',['~CPUExecutor',['../classNeoN_1_1CPUExecutor.html#aa6533b93eed68e0d81d28c72755a0d69',1,'NeoN::CPUExecutor']]],
   ['_7ecsrmatrix_4',['~CSRMatrix',['../classNeoN_1_1la_1_1CSRMatrix.html#afd83705fad7e5f93ebfcc7103d52222b',1,'NeoN::la::CSRMatrix']]],

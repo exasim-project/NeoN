@@ -10,7 +10,7 @@ var searchData=
   ['sparsitypattern_7',['SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html',1,'NeoN::la']]],
   ['spatialoperator_8',['SpatialOperator',['../classNeoN_1_1dsl_1_1SpatialOperator.html',1,'NeoN::dsl']]],
   ['stencildatabase_9',['StencilDataBase',['../classNeoN_1_1StencilDataBase.html',1,'NeoN']]],
-  ['supportsloggingmixin_10',['SupportsLoggingMixin',['../classNeoN_1_1SupportsLoggingMixin.html',1,'NeoN']]],
+  ['supportsloggingmixin_10',['SupportsLoggingMixin',['../classNeoN_1_1Logging_1_1SupportsLoggingMixin.html',1,'NeoN::Logging']]],
   ['surfaceboundary_11',['SurfaceBoundary',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfaceboundaryfactory_12',['SurfaceBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfacefield_13',['SurfaceField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],

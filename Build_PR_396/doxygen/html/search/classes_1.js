@@ -3,7 +3,7 @@ var searchData=
   ['backwardeuler_0',['BackwardEuler',['../classNeoN_1_1timeIntegration_1_1BackwardEuler.html',1,'NeoN::timeIntegration']]],
   ['baseclassdata_1',['BaseClassData',['../classNeoN_1_1BaseClassData.html',1,'NeoN']]],
   ['baseclassdocumentation_2',['BaseClassDocumentation',['../classNeoN_1_1BaseClassDocumentation.html',1,'NeoN']]],
-  ['baselogger_3',['BaseLogger',['../classNeoN_1_1BaseLogger.html',1,'NeoN']]],
+  ['baselogger_3',['BaseLogger',['../classNeoN_1_1Logging_1_1BaseLogger.html',1,'NeoN::Logging']]],
   ['basicgeometryscheme_4',['BasicGeometryScheme',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['boundaryattributes_5',['BoundaryAttributes',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['boundarycoefficients_6',['BoundaryCoefficients',['../structNeoN_1_1la_1_1BoundaryCoefficients.html',1,'NeoN::la']]],
