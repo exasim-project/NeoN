@@ -1,4 +1,4 @@
-name: NeoN + FoamAdapter LRZ GitLab CI
+name: NeoN LRZ GitLab CI
 
 on:
   push:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-and-test-neon:
-    name: Trigger NeoN + FoamAdapter CI on GPU
+    name: Trigger NeoN CI on GPU
     runs-on: ubuntu-latest
     timeout-minutes: 1440
 
@@ -28,11 +28,8 @@ jobs:
       LRZ_GROUP: greole
       LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
-      FOAMADAPTER_REPO: FoamAdapter
       NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
       NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
-      ADAPTER_PROJECT_TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_PROJECT_TOKEN }}
-      ADAPTER_TRIGGER_TOKEN: ${{ secrets.FOAMADAPTER_LRZ_GITLAB_TRIGGER_TOKEN }}
       MAX_WAIT_MINUTES: 1440  # 24 hours
 
     steps:
@@ -85,32 +82,6 @@ jobs:
             "${{ env.REPO_NAME }}" \
             "${{ steps.trigger-neon.outputs.pipeline_id }}" \
             "${NEON_PROJECT_TOKEN}"
-
-      - name: Cancel running/pending FoamAdapter LRZ CI pipelines
-        run: |
-          ./ci/github/cancel_triggered_pipelines.sh \
-            "${{ env.FOAMADAPTER_REPO }}" \
-            "${{ steps.branch.outputs.branch }}" \
-            "${ADAPTER_PROJECT_TOKEN}"
-
-      - name: Trigger FoamAdapter LRZ GitLab CI pipeline
-        id: trigger-adapter
-        run: |
-          ./ci/github/trigger_pipeline.sh \
-            "${{ env.FOAMADAPTER_REPO }}" \
-            "${{ steps.branch.outputs.branch }}" \
-            "${ADAPTER_PROJECT_TOKEN}" \
-            "${ADAPTER_TRIGGER_TOKEN}" \
-            "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
-            "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
-            "variables[BENCHMARK]=false"
-
-      - name: Wait for FoamAdapter LRZ GitLab CI pipeline
-        run: |
-          ./ci/github/wait_pipeline.sh \
-            "${{ env.FOAMADAPTER_REPO }}" \
-            "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
-            "${ADAPTER_PROJECT_TOKEN}"
 
   benchmark:
     name: Benchmark NeoN on GPU

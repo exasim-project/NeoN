@@ -13,7 +13,7 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 # Arguments
 # -----------------------------------------------------------------------------
-PROJECT=$1        # GitLab project name, e.g., "NeoN" or "FoamAdapter"
+PROJECT=$1        # GitLab project name, e.g., "NeoN"
 BRANCH=$2         # Branch/ref to filter pipelines
 TOKEN=$3
 
@@ -71,23 +71,6 @@ for id in $pipeline_ids; do
       --header "PRIVATE-TOKEN: $TOKEN" \
       "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel" >/dev/null
     continue
-  fi
-
-  if [[ "$PROJECT" == "FoamAdapter" ]]; then
-    # Case 2: FoamAdapter -> cancel only if TRIGGER_SOURCE == NeoN
-    vars=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
-      "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/variables")
-
-    trigger_source=$(echo "$vars" | jq -r '.[] | select(.key=="TRIGGER_SOURCE") | .value' || true)
-
-    if [[ "$trigger_source" == "NeoN" ]]; then
-      echo "Cancelling pipeline $id (TRIGGER_SOURCE=NeoN)..."
-      curl -s --request POST \
-        --header "PRIVATE-TOKEN: $TOKEN" \
-        "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/cancel" >/dev/null
-    else
-      echo "Skipping pipeline $id (TRIGGER_SOURCE=$trigger_source)."
-    fi
   fi
 done
 
