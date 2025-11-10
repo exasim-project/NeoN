@@ -1,5 +1,5 @@
-name: Adapter Integration Test
-run-name: 'Adapter Integration Test'
+name: NeoFOAM Integration Test
+run-name: 'NeoFOAM Integration Test'
 
 on:
   push:
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build:
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
-    name: Build FoamAdapter
+    name: Build NeoFOAM
     strategy:
       fail-fast: false
       matrix:
@@ -39,24 +39,24 @@ jobs:
           echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           echo "Using NeoN branch: $NEON_BRANCH"
 
-      # Determine FoamAdapter branch safely
-      - name: Determine FoamAdapter branch
+      # Determine NeoFOAM branch safely
+      - name: Determine NeoFOAM branch
         run: |
-          # Check if FoamAdapter has a branch with the same name as NeoN
-          if git ls-remote --exit-code --heads https://github.com/exasim-project/FoamAdapter "${{ env.NEON_BRANCH }}" >/dev/null 2>&1; then
-            echo "FoamAdapter branch exists: ${{ env.NEON_BRANCH }}"
-            echo "FOAMADAPTER_BRANCH=${{ env.NEON_BRANCH }}" >> $GITHUB_ENV
+          # Check if NeoFOAM has a branch with the same name as NeoN
+          if git ls-remote --exit-code --heads https://github.com/exasim-project/NeoFOAM "${{ env.NEON_BRANCH }}" >/dev/null 2>&1; then
+            echo "NeoFOAM branch exists: ${{ env.NEON_BRANCH }}"
+            echo "NEOFOAM_BRANCH=${{ env.NEON_BRANCH }}" >> $GITHUB_ENV
           else
-            echo "FoamAdapter branch does not exist, using main"
-            echo "FOAMADAPTER_BRANCH=main" >> $GITHUB_ENV
+            echo "NeoFOAM branch does not exist, using main"
+            echo "NEOFOAM_BRANCH=main" >> $GITHUB_ENV
           fi
 
-      # Checkout FoamAdapter
-      - name: Checkout FoamAdapter
+      # Checkout NeoFOAM
+      - name: Checkout NeoFOAM
         uses: actions/checkout@v4
         with:
-          repository: exasim-project/FoamAdapter
-          ref: '${{ env.FOAMADAPTER_BRANCH }}'
+          repository: exasim-project/NeoFOAM
+          ref: '${{ env.NEOFOAM_BRANCH }}'
           fetch-depth: 1
 
       # Optional NeoN checkout if needed
@@ -95,8 +95,8 @@ jobs:
           ninja --version
           cmake --version
 
-      # Build FoamAdapter
-      - name: Build FoamAdapter
+      # Build NeoFOAM
+      - name: Build NeoFOAM
         run: |
           source /usr/lib/openfoam/openfoam2406/etc/bashrc || true
           CC=${{matrix.compiler.CC}} \
@@ -104,9 +104,9 @@ jobs:
           cmake --preset develop \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_BUILD_TESTS=OFF \
-            -DFOAMADAPTER_BUILD_BENCHMARKS=OFF \
+            -DNEOFOAM_BUILD_BENCHMARKS=OFF \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
-            -DFOAMADAPTER_NEON_VERSION=${{ env.NEON_BRANCH }}
+            -DNEOFOAM_NEON_VERSION=${{ env.NEON_BRANCH }}
           cmake --build --preset develop
 
       # Run tests

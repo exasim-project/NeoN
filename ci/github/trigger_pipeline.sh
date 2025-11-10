@@ -60,17 +60,17 @@ if [ "$PROJECT" = "NeoN" ]; then
     exit 1
   fi
 
-elif [ "$PROJECT" = "FoamAdapter" ]; then
+elif [ "$PROJECT" = "NeoFOAM" ]; then
   if [ -n "$branch_exists" ]; then
-    echo "FoamAdapter branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
+    echo "NeoFOAM branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
     TARGET_BRANCH="$BRANCH"
   else
-    echo -e "\033[33m️ Branch '$BRANCH' does not exist in FoamAdapter. Falling back to 'develop'.\033[0m"
+    echo -e "\033[33m️ Branch '$BRANCH' does not exist in NeoFOAM. Falling back to 'develop'.\033[0m"
     TARGET_BRANCH="develop"
   fi
 
 else
-  echo -e "\033[31m Error: Unknown project '$PROJECT'. Supported: NeoN, FoamAdapter.\033[0m"
+  echo -e "\033[31m Error: Unknown project '$PROJECT'. Supported: NeoN, NeoFOAM.\033[0m"
   exit 1
 fi
 

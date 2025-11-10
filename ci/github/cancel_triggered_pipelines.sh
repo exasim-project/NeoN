@@ -13,7 +13,7 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 # Arguments
 # -----------------------------------------------------------------------------
-PROJECT=$1        # GitLab project name, e.g., "NeoN" or "FoamAdapter"
+PROJECT=$1        # GitLab project name, e.g., "NeoN" or "NeoFOAM"
 BRANCH=$2         # Branch/ref to filter pipelines
 TOKEN=$3
 
@@ -73,8 +73,8 @@ for id in $pipeline_ids; do
     continue
   fi
 
-  if [[ "$PROJECT" == "FoamAdapter" ]]; then
-    # Case 2: FoamAdapter -> cancel only if TRIGGER_SOURCE == NeoN
+  if [[ "$PROJECT" == "NeoFOAM" ]]; then
+    # Case 2: NeoFOAM -> cancel only if TRIGGER_SOURCE == NeoN
     vars=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" \
       "https://${LRZ_HOST}/api/v4/projects/${project_path}/pipelines/${id}/variables")
 
