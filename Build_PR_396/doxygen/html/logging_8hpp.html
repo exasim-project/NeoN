@@ -82,7 +82,9 @@ $(function() {
   <div class="headertitle"><div class="title">logging.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;format&gt;</code><br />
+<div class="textblock"><code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;source_location&gt;</code><br />
+<code>#include &lt;format&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;string_view&gt;</code><br />
@@ -91,6 +93,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Logging_1_1LogEvent.html">NeoN::Logging::LogEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Logging_1_1BaseLogger.html">NeoN::Logging::BaseLogger</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Logging_1_1Logger.html">NeoN::Logging::Logger</a></td></tr>
@@ -135,9 +139,8 @@ Functions</h2></td></tr>
 <tr class="memitem:aabd4890e490f1dc968efe839e78ac235" id="r_aabd4890e490f1dc968efe839e78ac235"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:aabd4890e490f1dc968efe839e78ac235"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html#aabd4890e490f1dc968efe839e78ac235">NeoN::Logging::warn</a> (std::string formatString, Args... args)</td></tr>
 <tr class="separator:aabd4890e490f1dc968efe839e78ac235"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61a8e5fda772ff9774c9848c3514a27a" id="r_a61a8e5fda772ff9774c9848c3514a27a"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a61a8e5fda772ff9774c9848c3514a27a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html#a61a8e5fda772ff9774c9848c3514a27a">NeoN::Logging::log</a> (std::shared_ptr&lt; <a class="el" href="classNeoN_1_1Logging_1_1BaseLogger.html">BaseLogger</a> &gt; logger, <a class="el" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214">Level</a> level, std::string formatString, Args... args)</td></tr>
-<tr class="separator:a61a8e5fda772ff9774c9848c3514a27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c323522e196eb52241cd0ecd612c64" id="r_a02c323522e196eb52241cd0ecd612c64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html#a02c323522e196eb52241cd0ecd612c64">NeoN::Logging::log</a> (std::shared_ptr&lt; <a class="el" href="classNeoN_1_1Logging_1_1BaseLogger.html">BaseLogger</a> &gt; logger, <a class="el" href="classNeoN_1_1Logging_1_1LogEvent.html">LogEvent</a> event)</td></tr>
+<tr class="separator:a02c323522e196eb52241cd0ecd612c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02663648b70255c0e7ec3fad5271a862" id="r_a02663648b70255c0e7ec3fad5271a862"><td class="memTemplParams" colspan="2">template&lt;typename CallClass &gt; </td></tr>
 <tr class="memitem:a02663648b70255c0e7ec3fad5271a862"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html#a02663648b70255c0e7ec3fad5271a862">NeoN::Logging::setLogger</a> (CallClass &amp;cls, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1Logging_1_1BaseLogger.html">BaseLogger</a> &gt; logger)</td></tr>
 <tr class="separator:a02663648b70255c0e7ec3fad5271a862"><td class="memSeparator" colspan="2">&#160;</td></tr>
