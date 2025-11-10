@@ -8,6 +8,8 @@
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/dsl/expression.hpp"
 
 namespace NeoN::timeIntegration
@@ -27,6 +29,8 @@ public:
 
     using ValueType = typename SolutionType::VectorValueType;
     using Expression = NeoN::dsl::Expression<ValueType>;
+    using VolVector = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
+    using SurfScalar = NeoN::finiteVolume::cellCentred::SurfaceField<scalar>;
 
     static std::string name() { return "timeIntegrationFactory"; }
 
@@ -44,6 +48,20 @@ public:
     virtual std::unique_ptr<TimeIntegratorBase> clone() const = 0;
 
     virtual bool explicitIntegration() const { return true; }
+
+    virtual SurfScalar ddtPhiCorr(const VolVector& U, const SurfScalar& phi, scalar dt) const
+    {
+        // construct a surface field with the same mesh & default BCs
+        auto surfaceBCs = NeoN::finiteVolume::cellCentred::createCalculatedBCs<
+            NeoN::finiteVolume::cellCentred::SurfaceBoundary<scalar>>(phi.mesh());
+        SurfScalar out(phi.exec(), std::string("ddtPhiCorr"), phi.mesh(), surfaceBCs);
+
+        // fill internal & boundary with zero
+        NeoN::fill(out.internalVector(), scalar(0));
+        NeoN::fill(out.boundaryData().value(), scalar(0));
+        NeoN::fill(out.boundaryData().refValue(), scalar(0));
+        return out;
+    }
 
 protected:
 

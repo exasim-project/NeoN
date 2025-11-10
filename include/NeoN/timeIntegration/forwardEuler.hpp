@@ -7,6 +7,7 @@
 #include "NeoN/core/database/fieldCollection.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 
 namespace NeoN::timeIntegration
@@ -23,6 +24,8 @@ public:
     using ValueType = typename SolutionVectorType::VectorValueType;
     using Base =
         TimeIntegratorBase<SolutionVectorType>::template Register<ForwardEuler<SolutionVectorType>>;
+    using VolVector = typename Base::VolVector;
+    using SurfScalar = typename Base::SurfScalar;
 
     ForwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
         : Base(schemeDict, solutionDict)
@@ -54,6 +57,43 @@ public:
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {
         return std::make_unique<ForwardEuler>(*this);
+    }
+    SurfScalar ddtPhiCorr(const VolVector& U, const SurfScalar& phi, scalar dt) const override
+    {
+        const auto& mesh = U.mesh();
+        const auto exec = phi.exec();
+        const scalar rDeltaT = 1.0 / dt;
+
+        const VolVector& U0 = NeoN::finiteVolume::cellCentred::oldTime(U);
+        const SurfScalar& phi0 = NeoN::finiteVolume::cellCentred::oldTime(phi);
+
+        NeoN::finiteVolume::cellCentred::SurfaceInterpolation<Vec3> interp(
+            exec, mesh, NeoN::TokenList({std::string("linear")})
+        );
+        auto Uf0 = interp.interpolate(U0); // SurfaceField<Vec3>
+
+        auto surfaceBCs =
+            NeoN::finiteVolume::cellCentred::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh
+            );
+        SurfScalar phiCorr(exec, std::string("ddtPhiCorr"), mesh, surfaceBCs);
+
+        auto out = phiCorr.internalVector().view();
+        auto ph0 = phi0.internalVector().view();
+        auto Uf = Uf0.internalVector().view();
+        auto Sf = mesh.boundaryMesh().sf().view();
+        const size_t N = mesh.nFaces();
+
+        NeoN::parallelFor(
+            exec,
+            {size_t(0), N},
+            KOKKOS_LAMBDA(const localIdx i) {
+                const auto d = (Sf[i] & Uf[i]); // <— dot product via operator&
+                out[i] = (ph0[i] - d) * rDeltaT;
+            }
+        );
+
+        phiCorr.correctBoundaryConditions();
+        return phiCorr;
     }
 };
 
