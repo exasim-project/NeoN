@@ -28,6 +28,8 @@ class SurfaceField : public DomainMixin<ValueType>
 
 public:
 
+    using VectorValueType = ValueType;
+
     /**
      * @brief Constructor for a surfaceVector with a given name and mesh.
      *
@@ -122,7 +124,8 @@ public:
      * @param other The surface field to copy.
      */
     SurfaceField(const SurfaceField& other)
-        : DomainMixin<ValueType>(other), boundaryConditions_(other.boundaryConditions_)
+        : DomainMixin<ValueType>(other), boundaryConditions_(other.boundaryConditions_),
+          db_(other.db_), key(other.key), fieldCollectionName(other.fieldCollectionName)
     {}
 
     /**
@@ -180,6 +183,11 @@ public:
      * @brief Returns true if the field is registered in the database, false otherwise.
      */
     bool registered() const { return key != "" && fieldCollectionName != "" && db_.has_value(); }
+
+    std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const
+    {
+        return boundaryConditions_;
+    }
 
     std::string key;                 // The key of the field in the database
     std::string fieldCollectionName; // The name of the field collection in the database
