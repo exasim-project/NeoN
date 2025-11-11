@@ -16,7 +16,7 @@ var searchData=
   ['localidx_13',['localIdx',['../namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc',1,'NeoN']]],
   ['localidxvector_14',['localIdxVector',['../namespaceNeoN.html#a345d64e8263d03609fc24b88fed965be',1,'NeoN']]],
   ['location_15',['location',['../classNeoN_1_1Logging_1_1LogEvent.html#acbcd09de99ef6864937f7367d73eafdc',1,'NeoN::Logging::LogEvent']]],
-  ['log_16',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#affc38a3e6babcaeed5bc5b7e523a1f41',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a02c323522e196eb52241cd0ecd612c64',1,'NeoN::Logging::log()']]],
+  ['log_16',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#affc38a3e6babcaeed5bc5b7e523a1f41',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a24ec16475b901eeb873385b87c041ce7',1,'NeoN::Logging::log()']]],
   ['logbadanycast_17',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
   ['logevent_18',['logevent',['../classNeoN_1_1Logging_1_1LogEvent.html',1,'NeoN::Logging::LogEvent'],['../classNeoN_1_1Logging_1_1LogEvent.html#a00e4fe59dc89defaa97251d913a15714',1,'NeoN::Logging::LogEvent::LogEvent()']]],
   ['logger_19',['logger',['../classNeoN_1_1Logging_1_1Logger.html',1,'NeoN::Logging::Logger'],['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger::Logger()']]],
