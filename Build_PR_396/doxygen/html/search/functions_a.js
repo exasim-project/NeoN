@@ -9,8 +9,9 @@ var searchData=
   ['linearsystemview_6',['linearsystemview',['../structNeoN_1_1la_1_1LinearSystemView.html#a20eb74b301c5be1975ecb438a237713b',1,'NeoN::la::LinearSystemView::LinearSystemView()=default'],['../structNeoN_1_1la_1_1LinearSystemView.html#a2af3aade30c0db33ba590682f25dc26a',1,'NeoN::la::LinearSystemView::LinearSystemView(CSRMatrixView&lt; ValueType, IndexType &gt; matrixView, View&lt; ValueType &gt; rhsView)']]],
   ['log_7',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#affc38a3e6babcaeed5bc5b7e523a1f41',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a02c323522e196eb52241cd0ecd612c64',1,'NeoN::Logging::log()']]],
   ['logbadanycast_8',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
-  ['logger_9',['Logger',['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger']]],
-  ['logimpl_10',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
-  ['logoutrange_11',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
-  ['loop_12',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]]
+  ['logevent_9',['LogEvent',['../classNeoN_1_1Logging_1_1LogEvent.html#a00e4fe59dc89defaa97251d913a15714',1,'NeoN::Logging::LogEvent']]],
+  ['logger_10',['Logger',['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger']]],
+  ['logimpl_11',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
+  ['logoutrange_12',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
+  ['loop_13',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]]
 ];
