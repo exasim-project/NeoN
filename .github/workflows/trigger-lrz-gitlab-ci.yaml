@@ -31,8 +31,8 @@ jobs:
       NEOFOAM_REPO: NeoFOAM
       NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
       NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
-      ADAPTER_PROJECT_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_PROJECT_TOKEN }}
-      ADAPTER_TRIGGER_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_TRIGGER_TOKEN }}
+      NEOFOAM_PROJECT_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_PROJECT_TOKEN }}
+      NEOFOAM_TRIGGER_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_TRIGGER_TOKEN }}
       MAX_WAIT_MINUTES: 1440  # 24 hours
 
     steps:
@@ -91,16 +91,16 @@ jobs:
           ./ci/github/cancel_triggered_pipelines.sh \
             "${{ env.NEOFOAM_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${ADAPTER_PROJECT_TOKEN}"
+            "${NEOFOAM_PROJECT_TOKEN}"
 
       - name: Trigger NeoFOAM LRZ GitLab CI pipeline
-        id: trigger-adapter
+        id: trigger-neofoam
         run: |
           ./ci/github/trigger_pipeline.sh \
             "${{ env.NEOFOAM_REPO }}" \
             "${{ steps.branch.outputs.branch }}" \
-            "${ADAPTER_PROJECT_TOKEN}" \
-            "${ADAPTER_TRIGGER_TOKEN}" \
+            "${NEOFOAM_PROJECT_TOKEN}" \
+            "${NEOFOAM_TRIGGER_TOKEN}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
             "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
             "variables[BENCHMARK]=false"
@@ -109,8 +109,8 @@ jobs:
         run: |
           ./ci/github/wait_pipeline.sh \
             "${{ env.NEOFOAM_REPO }}" \
-            "${{ steps.trigger-adapter.outputs.pipeline_id }}" \
-            "${ADAPTER_PROJECT_TOKEN}"
+            "${{ steps.trigger-neofoam.outputs.pipeline_id }}" \
+            "${NEOFOAM_PROJECT_TOKEN}"
 
   benchmark:
     name: Benchmark NeoN on GPU
