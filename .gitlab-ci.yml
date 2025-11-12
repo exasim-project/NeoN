@@ -11,6 +11,10 @@
   tags: ["amd-gpus"]
   image: chihtaw/rocm-openfoam-ginkgo:6.4.1-v2412-arch_gfx90a
 
+.use-intel-gpu:
+  tags: ["intel-gpus"]
+  image: dheerajraghunathan/oneapi-ubuntu:2024.2-22.04-arch_pvc
+
 # Common configuration for all build and test jobs
 .build-and-test-neon-common:
   rules:
@@ -18,10 +22,6 @@
       when: always
     # Skip in all other cases
     - when: never
-
-  before_script:
-    - pip3 install --user --break-system-packages pre-commit
-    - export PATH="$HOME/.local/bin:$PATH"
 
 # Common configuration for all benchmark jobs
 .benchmark-neon-common:
@@ -55,6 +55,13 @@ build-and-test-neon-amd:
     - .use-amd-gpu
   script:
     - ./ci/lrz-gitlab/build-and-test.sh amd
+
+build-and-test-neon-intel:
+  extends:
+    - .build-and-test-neon-common
+    - .use-intel-gpu
+  script:
+    - ./ci/lrz-gitlab/build-and-test.sh intel
 
 # benchmark jobs for NeoN
 benchmark-neon-nvidia:
