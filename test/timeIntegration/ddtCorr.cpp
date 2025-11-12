@@ -85,7 +85,10 @@ TEMPLATE_TEST_CASE(
             for (size_t i = 0; i < mesh.nFaces(); ++i)
             {
                 const Scalar d = (Sf[i] & UfView[i]);
-                e[i] = (ph0v[i] - d) * invDt;
+                const auto tphiCorr = (ph0v[i] - d);
+                const auto ratio = NeoN::mag(tphiCorr) / (NeoN::mag(ph0v[i]) + Scalar(1e-30));
+                const auto coeff = Scalar(1.0) - Kokkos::min(ratio, Scalar(1));
+                e[i] = coeff * invDt * tphiCorr;
             }
             return e;
         };

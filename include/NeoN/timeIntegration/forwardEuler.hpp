@@ -80,15 +80,26 @@ public:
         auto out = phiCorr.internalVector().view();
         auto ph0 = phi0.internalVector().view();
         auto Uf = Uf0.internalVector().view();
-        auto Sf = mesh.boundaryMesh().sf().view();
-        const size_t N = mesh.nFaces();
+        auto Sf = mesh.faceAreas().view(); // boundaryMesh().sf().view();
+        const size_t N = out.size();
+
+        NF_INFO(
+            "N: " + std::to_string(N) + ", ph0: " + std::to_string(ph0.size())
+            + ", Uf: " + std::to_string(Uf.size()) + ", Sf: " + std::to_string(Sf.size())
+        );
 
         NeoN::parallelFor(
             exec,
             {size_t(0), N},
             KOKKOS_LAMBDA(const localIdx i) {
                 const auto d = (Sf[i] & Uf[i]); // <— dot product via operator&
-                out[i] = (ph0[i] - d) * rDeltaT;
+                const auto tphiCorr = (ph0[i] - d);
+                const auto ratio = mag(tphiCorr) / (mag(ph0[i]) + scalar(1e-30));
+                const auto coeff = scalar(1.0)
+                                 - Kokkos::min(
+                                       ratio, scalar(1)
+                                 ); //((ratio < scalar(1.0)) ? ratio : scalar(1.0));
+                out[i] = coeff * rDeltaT * tphiCorr;
             }
         );
 
