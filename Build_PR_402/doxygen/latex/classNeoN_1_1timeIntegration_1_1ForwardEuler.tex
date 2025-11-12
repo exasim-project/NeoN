@@ -1,0 +1,187 @@
+\doxysection{NeoN\+::time\+Integration\+::Forward\+Euler\texorpdfstring{$<$}{<} Solution\+Vector\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler}{}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler}\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+
+
+{\ttfamily \#include $<$forward\+Euler.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::time\+Integration\+::Forward\+Euler\texorpdfstring{$<$}{<} Solution\+Vector\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1timeIntegration_1_1ForwardEuler}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}{Value\+Type}} = typename Solution\+Vector\+Type\+::\+Vector\+Value\+Type
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0}{Base}} = \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Vector\+Type $>$\+::template \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Forward\+Euler}}$<$ Solution\+Vector\+Type $>$ $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{Vol\+Vector}} = typename Base\+::\+Vol\+Vector
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{Surf\+Scalar}} = typename Base\+::\+Surf\+Scalar
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a07e224ca8f1b3c9176961717fddd5d73}{Forward\+Euler}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&scheme\+Dict, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&solution\+Dict)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_aa0f98b1df9ad0c08c56444339af2106e}{solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}{Value\+Type}} $>$ \&eqn, Solution\+Vector\+Type \&solution\+Vector, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) override
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Vector\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}{clone}} () const override
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{Surf\+Scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a1cd1b4c454fb8d1d156eeeb58f04ec9f}{ddt\+Phi\+Corr}} (const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{Vol\+Vector}} \&U, const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{Surf\+Scalar}} \&phi, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a435bdb35b6576eb07609dc66db6e582b}{name}} ()
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a5572d8fd9207d1ea7ec5d82bea6e7227}{doc}} ()
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_acbe99efabc71d9046cdc1c05c8d5e145}{schema}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Solution\+Vector\+Type$>$\newline
+class Neo\+N\+::time\+Integration\+::\+Forward\+Euler$<$ Solution\+Vector\+Type $>$}
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00017}{17}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!Base@{Base}}
+\index{Base@{Base}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{Base}{Base}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::\+Base =  \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$Solution\+Vector\+Type$>$\+::template \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}$<$\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Forward\+Euler}}$<$Solution\+Vector\+Type$>$ $>$}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00025}{25}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!SurfScalar@{SurfScalar}}
+\index{SurfScalar@{SurfScalar}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{SurfScalar}{SurfScalar}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::\+Surf\+Scalar =  typename Base\+::\+Surf\+Scalar}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!ValueType@{ValueType}}
+\index{ValueType@{ValueType}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{ValueType}{ValueType}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::\+Value\+Type =  typename Solution\+Vector\+Type\+::\+Vector\+Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!VolVector@{VolVector}}
+\index{VolVector@{VolVector}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{VolVector}{VolVector}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::\+Vol\+Vector =  typename Base\+::\+Vol\+Vector}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a07e224ca8f1b3c9176961717fddd5d73}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a07e224ca8f1b3c9176961717fddd5d73} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!ForwardEuler@{ForwardEuler}}
+\index{ForwardEuler@{ForwardEuler}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{ForwardEuler()}{ForwardEuler()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::\+Forward\+Euler (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{scheme\+Dict,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{solution\+Dict }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6fa3324a8f1fd041ecb377e0a6ded05d} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!clone@{clone}}
+\index{clone@{clone}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{Time\+Integrator\+Base}}$<$ Solution\+Vector\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a1cd1b4c454fb8d1d156eeeb58f04ec9f}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a1cd1b4c454fb8d1d156eeeb58f04ec9f} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!ddtPhiCorr@{ddtPhiCorr}}
+\index{ddtPhiCorr@{ddtPhiCorr}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{ddtPhiCorr()}{ddtPhiCorr()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{Surf\+Scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::ddt\+Phi\+Corr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{Vol\+Vector}} \&}]{U,  }\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{Surf\+Scalar}} \&}]{phi,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a5572d8fd9207d1ea7ec5d82bea6e7227}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a5572d8fd9207d1ea7ec5d82bea6e7227} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!doc@{doc}}
+\index{doc@{doc}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::doc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_a435bdb35b6576eb07609dc66db6e582b}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_a435bdb35b6576eb07609dc66db6e582b} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!name@{name}}
+\index{name@{name}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_acbe99efabc71d9046cdc1c05c8d5e145}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_acbe99efabc71d9046cdc1c05c8d5e145} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!schema@{schema}}
+\index{schema@{schema}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{schema()}{schema()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+static std\+::string \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::schema (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1ForwardEuler_aa0f98b1df9ad0c08c56444339af2106e}\label{classNeoN_1_1timeIntegration_1_1ForwardEuler_aa0f98b1df9ad0c08c56444339af2106e} 
+\index{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}!solve@{solve}}
+\index{solve@{solve}!NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$@{NeoN::timeIntegration::ForwardEuler$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler}{Neo\+N\+::time\+Integration\+::\+Forward\+Euler}}$<$ Solution\+Vector\+Type $>$\+::solve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}{Value\+Type}} $>$ \&}]{eqn,  }\item[{Solution\+Vector\+Type \&}]{solution\+Vector,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{forwardEuler_8hpp_source_l00040}{40}} of file \mbox{\hyperlink{forwardEuler_8hpp_source}{forward\+Euler.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/time\+Integration/\mbox{\hyperlink{forwardEuler_8hpp}{forward\+Euler.\+hpp}}\end{DoxyCompactItemize}
