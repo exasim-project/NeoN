@@ -79,12 +79,12 @@ jobs:
             "${NEON_TRIGGER_TOKEN}" \
             "variables[BENCHMARK]=false"
 
-      - name: Wait for NeoN LRZ GitLab CI pipeline
-        run: |
-          ./ci/github/wait_pipeline.sh \
-            "${{ env.REPO_NAME }}" \
-            "${{ steps.trigger-neon.outputs.pipeline_id }}" \
-            "${NEON_PROJECT_TOKEN}"
+      # - name: Wait for NeoN LRZ GitLab CI pipeline
+      #   run: |
+      #     ./ci/github/wait_pipeline.sh \
+      #       "${{ env.REPO_NAME }}" \
+      #       "${{ steps.trigger-neon.outputs.pipeline_id }}" \
+      #       "${NEON_PROJECT_TOKEN}"
 
       - name: Cancel running/pending NeoFOAM LRZ CI pipelines
         run: |
