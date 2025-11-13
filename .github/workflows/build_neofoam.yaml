@@ -32,26 +32,12 @@ jobs:
             CXX: g++
     runs-on: ubuntu-24.04
     steps:
-      # - name: Determine NeoN branch
-      #   run: |
-      #     NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-      #     echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
-      #     echo "Using NeoN branch: $NEON_BRANCH"
-
-      - name: Debug NeoFOAM branch detection
-        run: |
-         set -x
-         NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-         echo "Branch variable: '$NEON_BRANCH'"
-         git ls-remote --heads https://github.com/exasim-project/NeoFOAM "$NEON_BRANCH"
-         echo "Exit code: $?"
-
       - name: Determine branch
         run: |
 
           # Detect current branch of NeoN
           NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          echo "🔹 Using NeoN branch: $NEON_BRANCH"
+          echo "Using NeoN branch: $NEON_BRANCH"
           echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
 
           # Define remote repo URL
@@ -74,7 +60,6 @@ jobs:
           repository: exasim-project/NeoFOAM
           ref: ${{ env.NEOFOAM_BRANCH }}
           fetch-depth: 1
-          # path: NeoFOAM
 
       # Optional NeoN checkout if needed
       # - name: Checkout NeoN submodule
