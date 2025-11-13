@@ -38,6 +38,14 @@ jobs:
       #     echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
       #     echo "Using NeoN branch: $NEON_BRANCH"
 
+      - name: Debug NeoFOAM branch detection
+        run: |
+         set -x
+         NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+         echo "Branch variable: '$NEON_BRANCH'"
+         git ls-remote --heads https://github.com/exasim-project/NeoFOAM "$NEON_BRANCH"
+         echo "Exit code: $?"
+
       - name: Determine branch
         run: |
           NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
