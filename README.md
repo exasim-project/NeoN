@@ -67,7 +67,7 @@ We provide a set of unit tests which can be executed via ctest or
 
 Currently, NeoN is not a standalone CFD framework.
 It is designed to be used with other CFD Frameworks.
-Examples how to integrate NeoN into CFD frameworks and how to write applications is demonstrated in the [FoamAdapter](https://github.com/exasim-project/FoamAdapter) repository.
+Examples how to integrate NeoN into CFD frameworks and how to write applications is demonstrated in the [NeoFOAM](https://github.com/exasim-project/NeoFOAM) repository.
 
 ## Documentation
 
