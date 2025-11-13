@@ -32,20 +32,24 @@ jobs:
             CXX: g++
     runs-on: ubuntu-24.04
     steps:
-      - name: Determine NeoN branch
+      # - name: Determine NeoN branch
+      #   run: |
+      #     NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+      #     echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
+      #     echo "Using NeoN branch: $NEON_BRANCH"
+
+      - name: Determine branch
         run: |
           NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           echo "Using NeoN branch: $NEON_BRANCH"
 
-      - name: Determine NeoFOAM branch
-        run: |
           if git ls-remote --exit-code --heads https://github.com/exasim-project/NeoFOAM "$NEON_BRANCH" >/dev/null 2>&1; then
             echo "NeoFOAM branch exists: $NEON_BRANCH"
             echo "NEOFOAM_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           else
-            echo "NeoFOAM branch does not exist, using main"
-            echo "NEOFOAM_BRANCH=main" >> $GITHUB_ENV
+            echo "NeoFOAM branch does not exist, using develop"
+            echo "NEOFOAM_BRANCH=develop" >> $GITHUB_ENV
           fi
 
       - name: Checkout NeoFOAM
