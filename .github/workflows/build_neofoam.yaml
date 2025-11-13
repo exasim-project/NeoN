@@ -32,32 +32,29 @@ jobs:
             CXX: g++
     runs-on: ubuntu-24.04
     steps:
-      # Determine NeoN branch
       - name: Determine NeoN branch
         run: |
           NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           echo "Using NeoN branch: $NEON_BRANCH"
 
-      # Determine NeoFOAM branch safely
       - name: Determine NeoFOAM branch
         run: |
-          # Check if NeoFOAM has a branch with the same name as NeoN
-          if git ls-remote --exit-code --heads https://github.com/exasim-project/NeoFOAM "${{ env.NEON_BRANCH }}" >/dev/null 2>&1; then
-            echo "NeoFOAM branch exists: ${{ env.NEON_BRANCH }}"
-            echo "NEOFOAM_BRANCH=${{ env.NEON_BRANCH }}" >> $GITHUB_ENV
+          if git ls-remote --exit-code --heads https://github.com/exasim-project/NeoFOAM "$NEON_BRANCH" >/dev/null 2>&1; then
+            echo "NeoFOAM branch exists: $NEON_BRANCH"
+            echo "NEOFOAM_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           else
             echo "NeoFOAM branch does not exist, using main"
             echo "NEOFOAM_BRANCH=main" >> $GITHUB_ENV
           fi
 
-      # Checkout NeoFOAM
       - name: Checkout NeoFOAM
         uses: actions/checkout@v4
         with:
           repository: exasim-project/NeoFOAM
-          ref: '${{ env.NEOFOAM_BRANCH }}'
+          ref: ${{ env.NEOFOAM_BRANCH }}
           fetch-depth: 1
+          path: NeoFOAM
 
       # Optional NeoN checkout if needed
       # - name: Checkout NeoN submodule
@@ -67,13 +64,11 @@ jobs:
       #     path: NeoN
       #     ref: '${{ env.NEON_BRANCH }}'
 
-      # Setup OpenFOAM
       - name: Set up OpenFOAM
         uses: gerlero/setup-openfoam@v1
         with:
           openfoam-version: 2406
 
-      # Install dependencies
       - name: Install dependencies
         uses: gerlero/apt-install@v1
         with:
@@ -88,19 +83,17 @@ jobs:
             libopenmpi-dev
             openmpi-bin
 
-      # Print versions for debug
       - name: Get versions
         run: |
           clang --version
           ninja --version
           cmake --version
 
-      # Build NeoFOAM
       - name: Build NeoFOAM
         run: |
           source /usr/lib/openfoam/openfoam2406/etc/bashrc || true
-          CC=${{matrix.compiler.CC}} \
-          CXX=${{matrix.compiler.CXX}} \
+          CC=${{ matrix.compiler.CC }} \
+          CXX=${{ matrix.compiler.CXX }} \
           cmake --preset develop \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_BUILD_TESTS=OFF \
@@ -109,7 +102,6 @@ jobs:
             -DNEOFOAM_NEON_VERSION=${{ env.NEON_BRANCH }}
           cmake --build --preset develop
 
-      # Run tests
       - name: Execute unit tests NeoN
         run: |
           source /usr/lib/openfoam/openfoam2406/etc/bashrc || true
