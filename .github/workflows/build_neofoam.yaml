@@ -48,15 +48,23 @@ jobs:
 
       - name: Determine branch
         run: |
-          NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
-          echo "Using NeoN branch: $NEON_BRANCH"
 
-          if git ls-remote --exit-code --heads https://github.com/exasim-project/NeoFOAM "$NEON_BRANCH" >/dev/null 2>&1; then
+          # Detect current branch of NeoN
+          NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          echo "🔹 Using NeoN branch: $NEON_BRANCH"
+          echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
+
+          # Define remote repo URL
+          REPO_URL="https://github.com/exasim-project/NeoFOAM"
+
+          echo "Checking if branch '$NEON_BRANCH' exists in NeoFOAM..."
+
+          # Query exact match: refs/heads/<branch>
+          if git ls-remote --exit-code --heads "$REPO_URL" "refs/heads/${NEON_BRANCH}" >/dev/null 2>&1; then
             echo "NeoFOAM branch exists: $NEON_BRANCH"
             echo "NEOFOAM_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
           else
-            echo "NeoFOAM branch does not exist, using develop"
+            echo "NeoFOAM branch '$NEON_BRANCH' does not exist. Falling back to 'develop'."
             echo "NEOFOAM_BRANCH=develop" >> $GITHUB_ENV
           fi
 
