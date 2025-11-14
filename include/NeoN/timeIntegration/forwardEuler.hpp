@@ -9,6 +9,7 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/timeIntegration/ddtPhiCorrBoundary.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -72,9 +73,10 @@ public:
         );
         auto Uf0 = interp.interpolate(U0); // SurfaceField<Vec3>
 
-        auto surfaceBCs =
-            NeoN::finiteVolume::cellCentred::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh
-            );
+        // auto surfaceBCs =
+        //     NeoN::finiteVolume::cellCentred::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh
+        //     );
+        auto surfaceBCs = createPhiCorrBCsFromU(mesh, U); // Custom BC that implements OF logic
         SurfScalar phiCorr(exec, std::string("ddtPhiCorr"), mesh, surfaceBCs);
 
         auto out = phiCorr.internalVector().view();
@@ -95,15 +97,13 @@ public:
                 const auto d = (Sf[i] & Uf[i]); // <— dot product via operator&
                 const auto tphiCorr = (ph0[i] - d);
                 const auto ratio = mag(tphiCorr) / (mag(ph0[i]) + scalar(1e-30));
-                const auto coeff = scalar(1.0)
-                                 - Kokkos::min(
-                                       ratio, scalar(1)
-                                 ); //((ratio < scalar(1.0)) ? ratio : scalar(1.0));
+                const auto coeff = scalar(1.0) - Kokkos::min(ratio, scalar(1));
                 out[i] = coeff * rDeltaT * tphiCorr;
             }
         );
 
         phiCorr.correctBoundaryConditions();
+
         return phiCorr;
     }
 };

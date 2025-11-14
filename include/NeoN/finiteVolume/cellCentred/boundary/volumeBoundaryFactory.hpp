@@ -20,7 +20,7 @@ namespace NeoN::finiteVolume::cellCentred
 struct BoundaryAttributes
 {
     bool assignable; ///< whether values can be assigned to the boundary patch
-    // bool fixesValue;
+    bool fixesValue = false;
 };
 
 template<typename ValueType>
