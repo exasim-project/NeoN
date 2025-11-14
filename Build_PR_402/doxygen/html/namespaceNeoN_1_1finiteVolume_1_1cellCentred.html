@@ -230,6 +230,8 @@ Functions</h2></td></tr>
 <tr class="memitem:ae943e0d9df47132f4e227ceff274d664" id="r_ae943e0d9df47132f4e227ceff274d664"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ae943e0d9df47132f4e227ceff274d664"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ae943e0d9df47132f4e227ceff274d664">surfaceIntegrate</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; neighbour, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; owner, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; faceCells, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt; flux, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; v, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt; res, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
 <tr class="separator:ae943e0d9df47132f4e227ceff274d664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdca0e71a36557114748bf1c44d11816" id="r_afdca0e71a36557114748bf1c44d11816"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html">SurfaceBoundary</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#afdca0e71a36557114748bf1c44d11816">createPhiCorrBCsFromU</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;U)</td></tr>
+<tr class="separator:afdca0e71a36557114748bf1c44d11816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="af1c5b27f52cfe871ebc69cf0c8d11626" name="af1c5b27f52cfe871ebc69cf0c8d11626"></a>
@@ -682,6 +684,44 @@ template&lt;typename BoundaryType &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="boundary_8hpp_source.html#l00044">44</a> of file <a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>.</p>
+
+</div>
+</div>
+<a id="afdca0e71a36557114748bf1c44d11816" name="afdca0e71a36557114748bf1c44d11816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdca0e71a36557114748bf1c44d11816">&#9670;&#160;</a></span>createPhiCorrBCsFromU()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html">SurfaceBoundary</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &gt; NeoN::finiteVolume::cellCentred::createPhiCorrBCsFromU </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>U</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ddtPhiCorrBoundary_8hpp_source.html#l00016">16</a> of file <a class="el" href="ddtPhiCorrBoundary_8hpp_source.html">ddtPhiCorrBoundary.hpp</a>.</p>
 
 </div>
 </div>
