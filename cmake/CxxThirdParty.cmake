@@ -64,20 +64,30 @@ cpmaddpackage(
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
-cpmaddpackage("gh:fmtlib/fmt#12.1.0")
-
-set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL ON")
-
 cpmaddpackage(
   NAME
-  spdlog
+  fmt
   GITHUB_REPOSITORY
-  gabime/spdlog
+  fmtlib/fmt
   VERSION
-  ${NeoN_SPDLOG_VERSION}
-  OPTIONS
-  ${SPDLOG_OPTIONS}
+  ${NeoN_FMT_VERSION}
+  GIT_TAG
+  ${NeoN_FMT_TAG}
   SYSTEM)
+
+if(${NeoN_WITH_SPDLOG})
+  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL ON")
+  cpmaddpackage(
+    NAME
+    spdlog
+    GITHUB_REPOSITORY
+    gabime/spdlog
+    VERSION
+    ${NeoN_SPDLOG_VERSION}
+    OPTIONS
+    ${SPDLOG_OPTIONS}
+    SYSTEM)
+endif()
 
 if(${NeoN_WITH_ADIOS2})
 
