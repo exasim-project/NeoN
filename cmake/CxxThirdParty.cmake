@@ -64,19 +64,8 @@ cpmaddpackage(
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
-cpmaddpackage(
-  NAME
-  fmt
-  GITHUB_REPOSITORY
-  fmtlib/fmt
-  VERSION
-  ${NeoN_FMT_VERSION}
-  GIT_TAG
-  ${NeoN_FMT_TAG}
-  SYSTEM)
-
 if(${NeoN_WITH_SPDLOG})
-  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL ON")
+  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL OFF")
   cpmaddpackage(
     NAME
     spdlog
