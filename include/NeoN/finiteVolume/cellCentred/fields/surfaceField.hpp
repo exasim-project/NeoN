@@ -8,6 +8,7 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/fieldDatabase.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -23,7 +24,7 @@ namespace NeoN::finiteVolume::cellCentred
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class SurfaceField : public DomainMixin<ValueType>
+class SurfaceField : public DomainMixin<ValueType>, public FieldDatabaseMixin
 {
 
 public:
@@ -52,7 +53,7 @@ public:
                 exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
             )
         ),
-          boundaryConditions_(boundaryConditions)
+          FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
 
     /* @brief Constructor for a surfaceVector with a given internal field
@@ -68,7 +69,8 @@ public:
         const Field<ValueType>& domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, domainVector), boundaryConditions_(boundaryConditions)
+        : DomainMixin<ValueType>(exec, mesh, domainVector), FieldDatabaseMixin(),
+          boundaryConditions_(boundaryConditions)
     {}
 
     /* @brief Constructor for a surfaceVector with a given internal field
@@ -87,7 +89,7 @@ public:
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
         : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalVector, boundaryVectors}),
-          boundaryConditions_(boundaryConditions)
+          FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
 
     /* @brief Constructor for a surface field with a given internal field and database registration.
@@ -114,8 +116,8 @@ public:
         std::string collectionName
     )
         : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector),
-          boundaryConditions_(boundaryConditions), db_(&db), key(std::move(dbKey)),
-          fieldCollectionName(std::move(collectionName))
+          FieldDatabaseMixin(db, std::move(dbKey), std::move(collectionName)),
+          boundaryConditions_(boundaryConditions)
     {}
 
     /**
@@ -124,8 +126,8 @@ public:
      * @param other The surface field to copy.
      */
     SurfaceField(const SurfaceField& other)
-        : DomainMixin<ValueType>(other), boundaryConditions_(other.boundaryConditions_),
-          db_(other.db_), key(other.key), fieldCollectionName(other.fieldCollectionName)
+        : DomainMixin<ValueType>(other), FieldDatabaseMixin(other),
+          boundaryConditions_(other.boundaryConditions_)
     {}
 
     /**
@@ -142,56 +144,10 @@ public:
         }
     }
 
-    /**
-     * @brief Returns true if the field has a database, false otherwise.
-     */
-    bool hasDatabase() const { return db_.has_value(); }
-
-    /**
-     * @brief Retrieves the database.
-     *
-     * @throws std::runtime_error if the database is not set.
-     */
-    Database& db()
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error {
-                "Database not set: make sure the field is registered in the database"
-            };
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Retrieves the database (const).
-     *
-     * @throws std::runtime_error if the database is not set.
-     */
-    const Database& db() const
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error(
-                "Database not set: make sure the field is registered in the database"
-            );
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Returns true if the field is registered in the database, false otherwise.
-     */
-    bool registered() const { return key != "" && fieldCollectionName != "" && db_.has_value(); }
-
     std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const
     {
         return boundaryConditions_;
     }
-
-    std::string key;                 // The key of the field in the database
-    std::string fieldCollectionName; // The name of the field collection in the database
-
 
 private:
 
@@ -200,5 +156,21 @@ private:
     std::optional<Database*> db_; // The optional pointer to the database
 };
 
+inline SurfaceField<scalar>
+operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
+{
+    SurfaceField<scalar> result(lhs);
+    result.internalVector() *= rhs.internalVector();
+    result.boundaryData().value() *= rhs.boundaryData().value();
+    return result;
+}
+inline SurfaceField<scalar>
+operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
+{
+    SurfaceField<scalar> result(lhs);
+    result.internalVector() += rhs.internalVector();
+    result.boundaryData().value() += rhs.boundaryData().value();
+    return result;
+}
 
 } // namespace NeoN

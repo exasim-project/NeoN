@@ -20,7 +20,7 @@ VolumeField<ValueType>::VolumeField(
     : DomainMixin<ValueType>(
         exec, name, mesh, Field<ValueType>(exec, mesh.nCells(), mesh.boundaryMesh().offset())
     ),
-      key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
+      FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
 {}
 
 template<typename ValueType>
@@ -34,7 +34,7 @@ VolumeField<ValueType>::VolumeField(
     : DomainMixin<ValueType>(
         exec, name, mesh, Field<ValueType>(exec, internalVector, mesh.boundaryMesh().offset())
     ),
-      key(""), fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
+      FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
 {}
 
 template<typename ValueType>
@@ -46,8 +46,8 @@ VolumeField<ValueType>::VolumeField(
     const BoundaryData<ValueType>& boundaryVectors,
     const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
 )
-    : DomainMixin<ValueType>(exec, name, mesh, internalVector, boundaryVectors), key(""),
-      fieldCollectionName(""), boundaryConditions_(boundaryConditions), db_(std::nullopt)
+    : DomainMixin<ValueType>(exec, name, mesh, internalVector, boundaryVectors),
+      FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
 {}
 
 
@@ -62,14 +62,15 @@ VolumeField<ValueType>::VolumeField(
     std::string dbKey,
     std::string collectionName
 )
-    : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector), key(dbKey),
-      fieldCollectionName(collectionName), boundaryConditions_(boundaryConditions), db_(&db)
+    : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector),
+      FieldDatabaseMixin(db, std::move(dbKey), std::move(collectionName)),
+      boundaryConditions_(boundaryConditions)
 {}
 
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(const VolumeField& other)
-    : DomainMixin<ValueType>(other), key(other.key), fieldCollectionName(other.fieldCollectionName),
-      boundaryConditions_(other.boundaryConditions_), db_(other.db_)
+    : DomainMixin<ValueType>(other), FieldDatabaseMixin(other),
+      boundaryConditions_(other.boundaryConditions_)
 {}
 
 template<typename ValueType>
