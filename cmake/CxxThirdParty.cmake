@@ -64,6 +64,10 @@ cpmaddpackage(
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
+cpmaddpackage("gh:fmtlib/fmt#12.1.0")
+
+set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL ON")
+
 cpmaddpackage(
   NAME
   spdlog
@@ -71,6 +75,8 @@ cpmaddpackage(
   gabime/spdlog
   VERSION
   ${NeoN_SPDLOG_VERSION}
+  OPTIONS
+  ${SPDLOG_OPTIONS}
   SYSTEM)
 
 if(${NeoN_WITH_ADIOS2})
