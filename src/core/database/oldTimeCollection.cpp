@@ -20,27 +20,30 @@ OldTimeDocument::OldTimeDocument(
     ))
 {}
 
-std::string& OldTimeDocument::nextTime() { return doc_.get<std::string>("nextTime"); }
+std::string& OldTimeDocument::nextTime() { return doc_.getRef<std::string>("nextTime"); }
 
-const std::string& OldTimeDocument::nextTime() const { return doc_.get<std::string>("nextTime"); }
+const std::string& OldTimeDocument::nextTime() const
+{
+    return doc_.getRef<std::string>("nextTime");
+}
 
-std::string& OldTimeDocument::previousTime() { return doc_.get<std::string>("previousTime"); }
+std::string& OldTimeDocument::previousTime() { return doc_.getRef<std::string>("previousTime"); }
 
 const std::string& OldTimeDocument::previousTime() const
 {
-    return doc_.get<std::string>("previousTime");
+    return doc_.getRef<std::string>("previousTime");
 }
 
-std::string& OldTimeDocument::currentTime() { return doc_.get<std::string>("currentTime"); }
+std::string& OldTimeDocument::currentTime() { return doc_.getRef<std::string>("currentTime"); }
 
 const std::string& OldTimeDocument::currentTime() const
 {
-    return doc_.get<std::string>("currentTime");
+    return doc_.getRef<std::string>("currentTime");
 }
 
-int32_t& OldTimeDocument::level() { return doc_.get<int32_t>("level"); }
+int32_t& OldTimeDocument::level() { return doc_.getRef<int32_t>("level"); }
 
-const int32_t& OldTimeDocument::level() const { return doc_.get<int32_t>("level"); }
+const int32_t& OldTimeDocument::level() const { return doc_.getRef<int32_t>("level"); }
 
 Document& OldTimeDocument::doc() { return doc_; }
 

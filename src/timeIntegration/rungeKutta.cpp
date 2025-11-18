@@ -140,7 +140,7 @@ void RungeKutta<SolutionVectorType>::initODEMemory(const scalar t)
     ERKStepSetTableNum(
         ark,
         NeoN::sundials::stringToERKTable(
-            this->schemeDict_.template get<std::string>("Runge-Kutta-Method")
+            this->schemeDict_.template getRef<std::string>("Runge-Kutta-Method")
         )
     );
     ARKodeSetUserData(ark, pdeExpr_.get());

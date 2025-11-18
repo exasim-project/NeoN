@@ -27,13 +27,13 @@ public:
         : doc_(NeoN::Document({{"name", name}, {"testValue", testValue}}, validateCustomDoc))
     {}
 
-    std::string& name() { return doc_.get<std::string>("name"); }
+    std::string& name() { return doc_.getRef<std::string>("name"); }
 
-    const std::string& name() const { return doc_.get<std::string>("name"); }
+    const std::string& name() const { return doc_.getRef<std::string>("name"); }
 
-    double testValue() const { return doc_.get<double>("testValue"); }
+    double testValue() const { return doc_.getRef<double>("testValue"); }
 
-    double& testValue() { return doc_.get<double>("testValue"); }
+    double& testValue() { return doc_.getRef<double>("testValue"); }
 
     NeoN::Document& doc() { return doc_; }
 

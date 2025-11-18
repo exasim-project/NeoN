@@ -36,9 +36,9 @@ bool Document::validate() const
     return true;
 }
 
-const std::string& name(const NeoN::Document& doc) { return doc.get<std::string>("name"); }
+const std::string& name(const NeoN::Document& doc) { return doc.getRef<std::string>("name"); }
 
-std::string& name(NeoN::Document& doc) { return doc.get<std::string>("name"); }
+std::string& name(NeoN::Document& doc) { return doc.getRef<std::string>("name"); }
 
 
 } // namespace NeoN

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "NeoN/core/demangle.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 
 namespace NeoN
 {
@@ -80,7 +81,7 @@ public:
     [[nodiscard]] const std::any& operator[](const std::string& key) const;
 
     /**
-     * @brief Retrieves the value associated with the given key, casting it to
+     * @brief Retrieves a copy of the value associated with the given key, casting it to
      * the specified type.
      * @tparam T The type to cast the value to.
      * @param key The key to retrieve the value for.
@@ -88,7 +89,46 @@ public:
      * T.
      */
     template<typename T>
-    [[nodiscard]] T& get(const std::string& key)
+    [[nodiscard]] T get(const std::string& key) const
+    {
+
+        bool convertToIntFirst = false;
+        if constexpr (std::is_same_v<T, scalar>)
+        {
+            if (isType<int>(key))
+            {
+                convertToIntFirst = true;
+            }
+        }
+
+        try
+        {
+            if constexpr (std::is_same_v<T, scalar>)
+            {
+                if (convertToIntFirst)
+                {
+                    return T(std::any_cast<int>(operator[](key)));
+                }
+            }
+            return std::any_cast<T>(operator[](key));
+        }
+        catch (const std::bad_any_cast& e)
+        {
+            logBadAnyCast<T>(e, key, data_);
+            throw;
+        }
+    }
+
+    /**
+     * @brief Retrieves a copy of the value associated with the given key, casting it to
+     * the specified type.
+     * @tparam T The type to cast the value to.
+     * @param key The key to retrieve the value for.
+     * @return A reference to the value associated with the key, casted to type
+     * T.
+     */
+    template<typename T>
+    [[nodiscard]] T& getRef(const std::string& key)
     {
         try
         {
@@ -102,15 +142,15 @@ public:
     }
 
     /**
-     * @brief Retrieves the value associated with the given key, casting it to
+     * @brief Retrieves a copy of the value associated with the given key, casting it to
      * the specified type.
      * @tparam T The type to cast the value to.
      * @param key The key to retrieve the value for.
-     * @return A const reference to the value associated with the key, casted to
-     * type T.
+     * @return A reference to the value associated with the key, casted to type
+     * T.
      */
     template<typename T>
-    [[nodiscard]] const T& get(const std::string& key) const
+    [[nodiscard]] const T& getRef(const std::string& key) const
     {
         try
         {
@@ -122,6 +162,19 @@ public:
             throw;
         }
     }
+
+
+    /**
+     * @brief Checks if the value associated with the given key is a dictionary.
+     * @param key The key to check.
+     * @return True if the value is a dictionary, false otherwise.
+     */
+    template<typename T>
+    [[nodiscard]] bool isType(const std::string& key) const
+    {
+        return contains(key) && std::any_cast<T>(&data_.at(key));
+    }
+
 
     /**
      * @brief Checks if the value associated with the given key is a dictionary.

@@ -26,25 +26,28 @@ const Document& VectorDocument::doc() const { return doc_; }
 
 std::string VectorDocument::name() const { return doc_.get<std::string>("name"); }
 
-std::string& VectorDocument::name() { return doc_.get<std::string>("name"); }
+std::string& VectorDocument::name() { return doc_.getRef<std::string>("name"); }
 
 std::int64_t VectorDocument::timeIndex() const { return doc_.get<std::int64_t>("timeIndex"); }
 
-std::int64_t& VectorDocument::timeIndex() { return doc_.get<std::int64_t>("timeIndex"); }
+std::int64_t& VectorDocument::timeIndex() { return doc_.getRef<std::int64_t>("timeIndex"); }
 
 std::int64_t VectorDocument::iterationIndex() const
 {
     return doc_.get<std::int64_t>("iterationIndex");
 }
 
-std::int64_t& VectorDocument::iterationIndex() { return doc_.get<std::int64_t>("iterationIndex"); }
+std::int64_t& VectorDocument::iterationIndex()
+{
+    return doc_.getRef<std::int64_t>("iterationIndex");
+}
 
 std::int64_t VectorDocument::subCycleIndex() const
 {
     return doc_.get<std::int64_t>("subCycleIndex");
 }
 
-std::int64_t& VectorDocument::subCycleIndex() { return doc_.get<std::int64_t>("subCycleIndex"); }
+std::int64_t& VectorDocument::subCycleIndex() { return doc_.getRef<std::int64_t>("subCycleIndex"); }
 
 
 VectorCollection::VectorCollection(NeoN::Database& db, std::string name)

@@ -16,9 +16,9 @@ TEST_CASE("Dictionary operations", "[dictionary]")
         dict.insert("key2", std::string("Hello"));
 
         REQUIRE(std::any_cast<int>(dict["key1"]) == 42);
-        REQUIRE(dict.get<int>("key1") == 42);
+        REQUIRE(dict.getRef<int>("key1") == 42);
         REQUIRE(std::any_cast<std::string>(dict["key2"]) == "Hello");
-        REQUIRE(dict.get<std::string>("key2") == "Hello");
+        REQUIRE(dict.getRef<std::string>("key2") == "Hello");
     }
 
     SECTION("check values")
@@ -65,7 +65,7 @@ TEST_CASE("Dictionary operations", "[dictionary]")
         REQUIRE(sDict.get<int>("key1") == 42);
         REQUIRE(sDict.get<std::string>("key2") == "Hello");
 
-        sDict.get<int>("key1") = 100;
+        sDict.getRef<int>("key1") = 100;
 
         // check if the value is modified
         REQUIRE(dict.isDict("subDict"));

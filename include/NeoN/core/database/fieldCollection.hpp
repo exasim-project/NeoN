@@ -112,7 +112,7 @@ public:
     template<class VectorType>
     VectorType& field()
     {
-        return doc_.get<VectorType&>("field");
+        return doc_.getRef<VectorType&>("field");
     }
 
     /**
@@ -124,7 +124,7 @@ public:
     template<class VectorType>
     const VectorType& field() const
     {
-        return doc_.get<const VectorType&>("field");
+        return doc_.getRef<const VectorType&>("field");
     }
 
     /**

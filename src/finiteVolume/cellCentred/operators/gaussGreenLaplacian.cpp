@@ -144,7 +144,7 @@ void computeLaplacianImpl(
     );
 
     auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
+        ls.auxiliaryCoefficients().template getRef<la::BoundaryCoefficients<ValueType, localIdx>>(
             "boundaryCoefficients"
         );
 
