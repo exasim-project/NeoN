@@ -125,7 +125,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a2e077c76f6a45a0a9a1556e8bad5bb54">   37</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN.html#a2e077c76f6a45a0a9a1556e8bad5bb54">setLogger</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; exec, std::shared_ptr&lt;Logging::BaseLogger&gt; logger)</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> std::visit([logger](<span class="keyword">auto</span>&amp; e) { <span class="keywordflow">return</span> e.setLogger(logger); }, exec);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::visit([logger](<span class="keyword">auto</span>&amp; e) { e.setLogger(logger); }, exec);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
