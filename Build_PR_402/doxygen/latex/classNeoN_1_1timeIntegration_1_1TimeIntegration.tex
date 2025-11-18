@@ -10,6 +10,10 @@
 using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{Value\+Type}} = typename Solution\+Vector\+Type\+::\+Vector\+Value\+Type
 \item 
 using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a98088851b4dfba8cc9f9f6185c6c693e}{Expression}} = \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{Value\+Type}} $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a1a39624a8778eae74613470d94251b1e}{Vol\+Vector\+Field}} = \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}{Surf\+Scalar\+Field}} = \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
@@ -23,6 +27,8 @@ using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a98088851
 void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d}{solve}} (\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a98088851b4dfba8cc9f9f6185c6c693e}{Expression}} \&eqn, Solution\+Vector\+Type \&sol, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
 \item 
 bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}{explicit\+Integration}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}{Surf\+Scalar\+Field}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a075a4c6a2c438da7e664892bfcc4a28e}{ddt\+Phi\+Corr}} (const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a1a39624a8778eae74613470d94251b1e}{Vol\+Vector\+Field}} \&U, const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}{Surf\+Scalar\+Field}} \&phi, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const
 \end{DoxyCompactItemize}
 
 
@@ -31,7 +37,7 @@ bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f6496
 class Neo\+N\+::time\+Integration\+::\+Time\+Integration$<$ Solution\+Vector\+Type $>$}
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00082}{82}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 
 
@@ -45,7 +51,18 @@ using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00085}{85}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00088}{88}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326} 
+\index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!SurfScalarField@{SurfScalarField}}
+\index{SurfScalarField@{SurfScalarField}!NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{SurfScalarField}{SurfScalarField}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+::time\+Integration\+::\+Time\+Integration}}$<$ Solution\+Vector\+Type $>$\+::\+Surf\+Scalar\+Field =  \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae} 
 \index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!ValueType@{ValueType}}
@@ -56,7 +73,18 @@ using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a1a39624a8778eae74613470d94251b1e}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a1a39624a8778eae74613470d94251b1e} 
+\index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!VolVectorField@{VolVectorField}}
+\index{VolVectorField@{VolVectorField}!NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{VolVectorField}{VolVectorField}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+::time\+Integration\+::\+Time\+Integration}}$<$ Solution\+Vector\+Type $>$\+::\+Vol\+Vector\+Field =  \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Volume\+Field}}$<$\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}$>$}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 
 
@@ -70,7 +98,7 @@ Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00084}{84}} of 
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00092}{92}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109} 
 \index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!TimeIntegration@{TimeIntegration}}
@@ -81,7 +109,7 @@ Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00087}{87}} of 
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a396623a117d5148481f376df12090c38}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a396623a117d5148481f376df12090c38} 
 \index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!TimeIntegration@{TimeIntegration}}
@@ -92,11 +120,22 @@ Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00090}{90}} of 
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 
 
 \doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a075a4c6a2c438da7e664892bfcc4a28e}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a075a4c6a2c438da7e664892bfcc4a28e} 
+\index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!ddtPhiCorr@{ddtPhiCorr}}
+\index{ddtPhiCorr@{ddtPhiCorr}!NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}}
+\doxysubsubsection{\texorpdfstring{ddtPhiCorr()}{ddtPhiCorr()}}
+{\footnotesize\ttfamily template$<$typename Solution\+Vector\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}{Surf\+Scalar\+Field}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+::time\+Integration\+::\+Time\+Integration}}$<$ Solution\+Vector\+Type $>$\+::ddt\+Phi\+Corr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a1a39624a8778eae74613470d94251b1e}{Vol\+Vector\+Field}} \&}]{U,  }\item[{const \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a19ab573a5d77427b4d8e10593677c326}{Surf\+Scalar\+Field}} \&}]{phi,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519} 
 \index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!explicitIntegration@{explicitIntegration}}
 \index{explicitIntegration@{explicitIntegration}!NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}}
@@ -106,7 +145,7 @@ bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+:
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d}\label{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d} 
 \index{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$@{NeoN::timeIntegration::TimeIntegration$<$ SolutionVectorType $>$}!solve@{solve}}
@@ -117,7 +156,7 @@ void \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{Neo\+N\+:
 
 
 
-Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
+Definition at line \mbox{\hyperlink{timeIntegration_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{timeIntegration_8hpp_source}{time\+Integration.\+hpp}}.
 
 
 

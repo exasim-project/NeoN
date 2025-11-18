@@ -11,39 +11,78 @@
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{spatialOperator_8hpp}{NeoN/dsl/spatialOperator.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00009}00009\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00010}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal}{00010}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal}{NeoN::dsl::temporal}}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00011}00011\ \{}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00013}00013\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00014}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{00014}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{OperatorMixin}}<VectorType>}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00010}00010\ \textcolor{comment}{//\ TODO:\ check\ if\ includes\ necessary}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00011}00011\ \textcolor{comment}{//\ \#include\ "{}NeoN/core/dictionary.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{timeIntegration_8hpp}{NeoN/timeIntegration/timeIntegration.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00016}00016\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00017}00017\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00018}00018\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00019}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_a86f3cbdccf330fe8bd0381aa5e008606}{00019}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_a86f3cbdccf330fe8bd0381aa5e008606}{Ddt}}(VectorType\&\ field)}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00020}00020\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{OperatorMixin}}<VectorType>(field.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ field,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator}{Operator}}::Type::Implicit)}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00021}00021\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00022}00022\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ab951524e02dfa77670b0e0d73f92cd2f}{00023}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ab951524e02dfa77670b0e0d73f92cd2f}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TimeOperator"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00024}00024\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00025}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_acfbaa7bb41d5ea1b40d9c8ec1af4c12e}{00025}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_acfbaa7bb41d5ea1b40d9c8ec1af4c12e}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00026}00026\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00028}00028\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal}{00017}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal}{NeoN::dsl::temporal}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00020}00020\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00021}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{00021}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{OperatorMixin}}<VectorType>}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00024}00024\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_a86f3cbdccf330fe8bd0381aa5e008606}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_a86f3cbdccf330fe8bd0381aa5e008606}{Ddt}}(VectorType\&\ field)}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{OperatorMixin}}<VectorType>(field.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ field,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator}{Operator}}::Type::Implicit)}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00028}00028\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ac148a7f0229a11dc1be01545f7257a20}{00030}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ac148a7f0229a11dc1be01545f7257a20}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ localIdx>}}\&,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00031}00031\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00033}00033\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00034}00034\ \};}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00036}00036\ \textcolor{comment}{/*\ @brief\ factory\ function\ to\ create\ a\ Ddt\ term\ as\ ddt()\ */}}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00038}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal_a35f81bd2ceb8b1c8931d94a940a7b82d}{00038}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt<VectorType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal_a35f81bd2ceb8b1c8931d94a940a7b82d}{ddt}}(VectorType\&\ in)}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00039}00039\ \{}
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt}}(in);}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ab951524e02dfa77670b0e0d73f92cd2f}{00030}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ab951524e02dfa77670b0e0d73f92cd2f}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TimeOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_acfbaa7bb41d5ea1b40d9c8ec1af4c12e}{00032}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_acfbaa7bb41d5ea1b40d9c8ec1af4c12e}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00033}00033\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00035}00035\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ac148a7f0229a11dc1be01545f7257a20}{00037}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt_ac148a7f0229a11dc1be01545f7257a20}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ localIdx>}}\&,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00038}00038\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00040}00040\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00041}00041\ \};}
 \DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00042}00042\ }
-\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00043}00043\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00043}00043\ \textcolor{comment}{/*\ @brief\ factory\ function\ to\ create\ a\ Ddt\ term\ as\ ddt()\ */}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00044}00044\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00045}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal_a35f81bd2ceb8b1c8931d94a940a7b82d}{00045}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt<VectorType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1temporal_a35f81bd2ceb8b1c8931d94a940a7b82d}{ddt}}(VectorType\&\ in)}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00046}00046\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1temporal_1_1Ddt}{Ddt}}(in);}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00048}00048\ \};}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00050}00050\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00052}00052\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl}{NeoN::dsl}}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00053}00053\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00054}00054\ \textcolor{comment}{/*\ @brief\ Helper\ function\ to\ access\ ddtPhiCorr\ via\ dsl}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ @param\ U\ The\ velocity\ volume\ field}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00056}00056\ \textcolor{comment}{\ *\ @param\ phi\ The\ flux\ surface\ field}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00057}00057\ \textcolor{comment}{\ *\ @param\ dt\ The\ time\ step\ size}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00058}00058\ \textcolor{comment}{\ *\ @param\ fvSchemes\ The\ fvSchemes\ dictionary}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00059}00059\ \textcolor{comment}{\ *\ @parame\ fvSolution\ The\ fvSolution\ dictionary}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00060}00060\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00061}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ab17e230cb7284afc014da80b88d0deb6}{00061}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ab17e230cb7284afc014da80b88d0deb6}{ddtPhiCorr}}(}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00064}00064\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00067}00067\ )}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00068}00068\ \{}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{using\ }VolVector\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{using\ }TimeInt\ =\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{NeoN::timeIntegration::TimeIntegration<VolVector>}};}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{comment}{//\ Mirror\ the\ scheme\ selection\ used\ in\ solver.hpp:}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{comment}{//\ TimeIntegration\ is\ built\ from\ ddtSchemes\ +\ fvSolution.}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ ddtSchemes\ =\ fvSchemes.\mbox{\hyperlink{classNeoN_1_1Dictionary_a5fba75245132842e0ad343b4fceaca39}{subDict}}(\textcolor{stringliteral}{"{}ddtSchemes"{}});}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00076}00076\ \ \ \ \ TimeInt\ integrator(ddtSchemes,\ fvSolution);}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{comment}{//\ Delegate\ to\ scheme-\/specific\ implementation\ in\ TimeIntegratorBase\ subclasses}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{keywordflow}{return}\ integrator.ddtPhiCorr(U,\ phi,\ dt);}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00080}00080\ \}}
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{ddt_8hpp_source_l00082}00082\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
 
 \end{DoxyCode}

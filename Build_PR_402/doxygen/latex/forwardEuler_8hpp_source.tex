@@ -29,8 +29,8 @@
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00025}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}{00025}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_af623b11ec5336dc5ece3b5c276a34bd6}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionVectorType::VectorValueType;}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0}{00026}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0}{Base}}\ =}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase<SolutionVectorType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<ForwardEuler<SolutionVectorType>}}>;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{00028}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{VolVector}}\ =\ \textcolor{keyword}{typename}\ Base::VolVector;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{00029}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{SurfScalar}}\ =\ \textcolor{keyword}{typename}\ Base::SurfScalar;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a3ffaa8594bcdf2757ee1cf074f266843}{00028}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a3ffaa8594bcdf2757ee1cf074f266843}{VolVectorField}}\ =\ \textcolor{keyword}{typename}\ Base::VolVectorField;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{00029}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{SurfScalarField}}\ =\ \textcolor{keyword}{typename}\ Base::SurfScalarField;}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00030}00030\ }
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a07e224ca8f1b3c9176961717fddd5d73}{00031}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a07e224ca8f1b3c9176961717fddd5d73}{ForwardEuler}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ab249bad67b89c5fb11aeef94de4267c0}{Base}}(schemeDict,\ solutionDict)}
@@ -63,56 +63,50 @@
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00059}00059\ \textcolor{keyword}{\ \ \ \ }\{}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<ForwardEuler>(*\textcolor{keyword}{this});}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00061}00061\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a1cd1b4c454fb8d1d156eeeb58f04ec9f}{00062}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{SurfScalar}}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a1cd1b4c454fb8d1d156eeeb58f04ec9f}{ddtPhiCorr}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{VolVector}}\&\ U,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{SurfScalar}}\&\ phi,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00063}00063\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mesh\ =\ U.mesh();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ exec\ =\ phi.exec();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ rDeltaT\ =\ 1.0\ /\ dt;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ac4833e5e45a0b34f05c3f9c0aa46bddb}{VolVector}}\&\ U0\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{NeoN::finiteVolume::cellCentred::oldTime}}(U);}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{SurfScalar}}\&\ phi0\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{NeoN::finiteVolume::cellCentred::oldTime}}(phi);}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{NeoN::finiteVolume::cellCentred::SurfaceInterpolation<Vec3>}}\ interp(}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ exec,\ mesh,\ \mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}(\{std::string(\textcolor{stringliteral}{"{}linear"{}})\})}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ Uf0\ =\ interp.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation_a398f0dc209e6cc3b1ca2aaae7c74d535}{interpolate}}(U0);\ \textcolor{comment}{//\ SurfaceField<Vec3>}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ auto\ surfaceBCs\ =}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ NeoN::finiteVolume::cellCentred::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ );}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ surfaceBCs\ =\ createPhiCorrBCsFromU(mesh,\ U);\ \textcolor{comment}{//\ Custom\ BC\ that\ implements\ OF\ logic}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a6e96cffcbcdbcc61ba370b04d25ca885}{SurfScalar}}\ phiCorr(exec,\ std::string(\textcolor{stringliteral}{"{}ddtPhiCorr"{}}),\ mesh,\ surfaceBCs);}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00081}00081\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ out\ =\ phiCorr.internalVector().view();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ph0\ =\ phi0.internalVector().view();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ Uf\ =\ Uf0.internalVector().view();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ Sf\ =\ mesh.faceAreas().view();\ \textcolor{comment}{//\ boundaryMesh().sf().view();}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ N\ =\ out.size();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00087}00087\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{info_8hpp_a76c3f5a3d808363a39d4f1f21561a587}{NF\_INFO}}(}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}N:\ "{}}\ +\ std::to\_string(N)\ +\ \textcolor{stringliteral}{"{},\ ph0:\ "{}}\ +\ std::to\_string(ph0.size())}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{},\ Uf:\ "{}}\ +\ std::to\_string(Uf.size())\ +\ \textcolor{stringliteral}{"{},\ Sf:\ "{}}\ +\ std::to\_string(Sf.size())}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}(0),\ N\},}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d\ =\ (Sf[i]\ \&\ Uf[i]);\ \textcolor{comment}{//\ <—\ dot\ product\ via\ operator\&}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ tphiCorr\ =\ (ph0[i]\ -\/\ d);}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ratio\ =\ \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(tphiCorr)\ /\ (\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(ph0[i])\ +\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1e-\/30));}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ coeff\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1.0)\ -\/\ Kokkos::min(ratio,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1));}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out[i]\ =\ coeff\ *\ rDeltaT\ *\ tphiCorr;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00062}00062\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{SurfScalarField}}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ad76d7c8dff9712ebc09a1ced6c8ac21d}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_ad76d7c8dff9712ebc09a1ced6c8ac21d}{ddtPhiCorr}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a3ffaa8594bcdf2757ee1cf074f266843}{VolVectorField}}\&\ U,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{SurfScalarField}}\&\ phi,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00064}00064\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mesh\ =\ U.mesh();}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ exec\ =\ phi.exec();}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ rDeltaT\ =\ 1.0\ /\ dt;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a3ffaa8594bcdf2757ee1cf074f266843}{VolVectorField}}\&\ U0\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{NeoN::finiteVolume::cellCentred::oldTime}}(U);}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{SurfScalarField}}\&\ phi0\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{NeoN::finiteVolume::cellCentred::oldTime}}(phi);}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{NeoN::finiteVolume::cellCentred::SurfaceInterpolation<Vec3>}}\ interp(}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ exec,\ mesh,\ \mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}(\{std::string(\textcolor{stringliteral}{"{}linear"{}})\})}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ Uf0\ =\ interp.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation_a398f0dc209e6cc3b1ca2aaae7c74d535}{interpolate}}(U0);\ \textcolor{comment}{//\ SurfaceField<Vec3>}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ surfaceBCs\ =\ createPhiCorrBCsFromU(mesh,\ U);\ \textcolor{comment}{//\ Custom\ BC\ that\ implements\ OF\ logic}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1ForwardEuler_a28b3d98ff7d6d45ad8909601a7e90004}{SurfScalarField}}\ phiCorr(exec,\ std::string(\textcolor{stringliteral}{"{}ddtPhiCorr"{}}),\ mesh,\ surfaceBCs);}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [outV,\ phi0V,\ UfV,\ SfV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ phiCorr.internalVector(),\ phi0.internalVector(),\ Uf0.internalVector(),\ mesh.faceAreas()}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ N\ =\ outV.size();}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ exec,}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}(0),\ N\},}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d\ =\ (SfV[i]\ \&\ UfV[i]);\ \textcolor{comment}{//\ dot\ product\ via\ operator\&}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ tphiCorr\ =\ (phi0V[i]\ -\/\ d);}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ratio\ =\ \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(tphiCorr)}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /\ (\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(phi0V[i])\ +\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1e-\/30)}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );\ \textcolor{comment}{//\ TODO\ currently\ hardcoded\ OpenFOAM\ double\ prescision\ SMALL}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ coeff\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1.0)\ -\/\ Kokkos::min(ratio,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1));}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outV[i]\ =\ coeff\ *\ rDeltaT\ *\ tphiCorr;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ phiCorr.correctBoundaryConditions();}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ phiCorr;}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00102}00102\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00103}00103\ \};}
 \DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00104}00104\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ phiCorr.correctBoundaryConditions();}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00106}00106\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ phiCorr;}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00108}00108\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00109}00109\ \};}
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00110}00110\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00111}00111\ }
-\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00112}00112\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{forwardEuler_8hpp_source_l00106}00106\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
