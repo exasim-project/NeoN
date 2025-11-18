@@ -27,23 +27,34 @@ concept parallelForKernel = requires(Kernel t, size_t i) {
     } -> std::same_as<void>;
 };
 
-template<typename Executor, parallelForKernel Kernel>
+
+/* @brief calls fence if a logger is set */
+template<typename ExecutorType>
+void fenceIfLogger(const ExecutorType& exec)
+{
+    auto logger = getLogger(exec);
+    if (logger != nullptr)
+    {
+        fence(exec);
+    }
+}
+
+/* @brief execute parallelFor with concrete executor */
+template<typename ExecutorType, parallelForKernel Kernel>
 void parallelFor(
-    [[maybe_unused]] const Executor& exec,
-    std::pair<localIdx, localIdx> range,
-    Kernel kernel,
-    std::string name = "parallelFor"
+    const ExecutorType& exec, std::pair<localIdx, localIdx> range, Kernel kernel, std::string name
 )
 {
-    fence(exec);
+    fenceIfLogger(exec);
+
+    auto [start, end] = range;
     auto event = Logging::LogEvent {
         std::source_location::current(),
         Logging::Level::Info,
-        std::format("Executing parallelFor: {}", name)
+        std::format("Executing parallelFor: {} start {} end {}", name, start, end)
     };
 
-    auto [start, end] = range;
-    if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
+    if constexpr (std::is_same<std::remove_reference_t<ExecutorType>, SerialExecutor>::value)
     {
         for (localIdx i = start; i < end; i++)
         {
@@ -52,7 +63,7 @@ void parallelFor(
     }
     else
     {
-        using runOn = typename Executor::exec;
+        using runOn = typename ExecutorType::exec;
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(start, end),
@@ -60,11 +71,12 @@ void parallelFor(
         );
     }
 
-    fence(exec);
+    fenceIfLogger(exec);
     Logging::log(getLogger(exec), event);
 }
 
 
+/* @brief dispatch parallelFor based on executor variant type */
 template<parallelForKernel Kernel>
 void parallelFor(
     const NeoN::Executor& exec,
@@ -91,7 +103,7 @@ template<
     typename ValueType,
     parallelForContainerKernel<ValueType> Kernel>
 void parallelFor(
-    [[maybe_unused]] const Executor& exec,
+    const Executor& exec,
     ContType<ValueType>& container,
     Kernel kernel,
     std::string name = "parallelFor"

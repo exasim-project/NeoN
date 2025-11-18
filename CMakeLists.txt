@@ -237,10 +237,8 @@ if(cpptrace_POPULATED)
   install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
 endif()
 
-message(WARNING "spdlog_populated: ${ginkgo_POPULATED} ${spdlog_POPULATED}")
 # install internal spdlog version
 if(spdlog_POPULATED)
-  message(WARNING "Enabled Kokkos devices: ${Kokkos_DEVICES}")
   install(
     TARGETS spdlog
     EXPORT SpdlogTargets

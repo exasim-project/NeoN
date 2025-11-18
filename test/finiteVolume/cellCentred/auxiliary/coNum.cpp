@@ -33,7 +33,7 @@ TEST_CASE("Courant Number")
         sf.correctBoundaryConditions();
 
         // use arbitrary time step size of 0.01
-        const[maxCoNum, meanCoNum] = fvcc::computeCoNum(sf, 0.01);
+        const auto [maxCoNum, meanCoNum] = fvcc::computeCoNum(sf, 0.01);
 
         REQUIRE(maxCoNum == 0.04);
     }

@@ -52,7 +52,8 @@ void computeGrad(
             Vec3 flux = faceAreaS[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[surfOwner[i]], flux);
             Kokkos::atomic_sub(&surfGradPhi[surfNeighbour[i]], flux);
-        }
+        },
+        "computeGradInternal"
     );
 
     parallelFor(
@@ -62,7 +63,8 @@ void computeGrad(
             auto own = surfFaceCells[i - nInternalFaces];
             Vec3 valueOwn = faceAreaS[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
-        }
+        },
+        "computeGradBoundary"
     );
 
     parallelFor(
@@ -70,7 +72,8 @@ void computeGrad(
         {0, mesh.nCells()},
         KOKKOS_LAMBDA(const localIdx celli) {
             surfGradPhi[celli] *= operatorScaling[celli] / surfV[celli];
-        }
+        },
+        "computeGradCells"
     );
 }
 

@@ -36,7 +36,7 @@ inline std::shared_ptr<Logging::BaseLogger> getLogger(const Executor& exec)
 /*@brief convenience function to get access to associated logger */
 inline void setLogger(Executor& exec, std::shared_ptr<Logging::BaseLogger> logger)
 {
-    return std::visit([logger](auto& e) { return e.setLogger(logger); }, exec);
+    std::visit([logger](auto& e) { e.setLogger(logger); }, exec);
 }
 
 

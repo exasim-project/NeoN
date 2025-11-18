@@ -38,7 +38,8 @@ inline void applySymmetry(
 
             refValueV[i] = v;
             valueV[i] = v;
-        }
+        },
+        "computeSymmetryBoundaryScalar"
     );
 }
 
@@ -70,7 +71,8 @@ inline void applySymmetry(
 
             refValueV[i] = vtan;
             valueV[i] = vtan;
-        }
+        },
+        "computeSymmetryBoundaryVec3"
     );
 }
 } // namespace detail

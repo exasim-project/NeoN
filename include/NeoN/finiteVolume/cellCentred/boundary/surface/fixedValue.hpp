@@ -37,7 +37,8 @@ void setFixedValue(
             refValue[i] = fixedValue;
             value[i] = fixedValue;
             internalValues[nInternalFaces + i] = fixedValue;
-        }
+        },
+        "setFixedValueSurface"
     );
 }
 }
