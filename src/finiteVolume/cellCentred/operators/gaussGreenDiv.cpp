@@ -87,7 +87,7 @@ void computeDiv(
                 ValueType valueOwn = faceFlux[i] * phiF[i];
                 Kokkos::atomic_add(&res[own], valueOwn);
             },
-            "sumFluxesInternal"
+            "sumFluxesBoundary"
         );
 
         parallelFor(
