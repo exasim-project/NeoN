@@ -54,7 +54,8 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
 
             Kokkos::atomic_increment(&nFacesPerCellHV[own]);
             Kokkos::atomic_increment(&nFacesPerCellHV[nei]);
-        }
+        },
+        "updateSparsityPattern::accumulateNonZeros"
     );
 
     // get number of total non-zeros
@@ -83,7 +84,8 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
             // neighbour --> current cell
             // colIdx for row[neighbour] stores owner as a column entry
             Kokkos::atomic_assign(&colIdxHV[startSegNei + segIdxNei], own);
-        }
+        },
+        "updateSparsityPattern::computeLowerTriangular"
     );
 
     map(
@@ -114,7 +116,8 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
             Kokkos::atomic_assign(&colIdxHV[startSegOwn + segIdxOwn], nei);
-        }
+        },
+        "updateSparsityPattern::computeUpperTriangular"
     );
     // NOTE copy back to device
     sp.ownerOffset() = ownOffsetH.copyToExecutor(exec);
@@ -150,7 +153,8 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
 
             Kokkos::atomic_increment(&nFacesPerCellView[owner]);
             Kokkos::atomic_increment(&nFacesPerCellView[neighbour]);
-        }
+        },
+        "updateSparsityPatternParallel::accumulateNonZerojs"
     );
 
     // get number of total non-zeros
@@ -176,7 +180,8 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
             // neighbour --> current cell
             // colIdx --> needs to be store the owner
             Kokkos::atomic_assign(&colIdxV[startSegNei + segIdxNei], owner);
-        }
+        },
+        "updateSparsityPatternParallel::computeLowerTriangular"
     );
 
     map(
@@ -207,7 +212,8 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
             Kokkos::atomic_assign(&colIdxV[startSegOwn + segIdxOwn], neighbour);
-        }
+        },
+        "updateSparsityPatternParallel::computeUpperTriangular"
     );
 }
 

@@ -38,7 +38,8 @@ Vector<localIdx> unpackColIdx(
             {
                 outV[j + k] = (3 * inV[l + k]) + offs;
             }
-        }
+        },
+        "computeUnpackedColIdx"
     );
 
     return out;
@@ -59,7 +60,8 @@ Vector<scalar> unpackVecValues(const Vector<Vec3>& in)
             outV[j + 0] = inV[i][0];
             outV[j + 1] = inV[i][1];
             outV[j + 2] = inV[i][2];
-        }
+        },
+        "computeUnpackedVecValues"
     );
 
     return out;
@@ -87,7 +89,8 @@ Vector<scalar> unpackMtxValues(
                 outV[newRowV[3 * i + 1] + k] = inV[rowV[i] + k][1];
                 outV[newRowV[3 * i + 2] + k] = inV[rowV[i] + k][2];
             }
-        }
+        },
+        "computeUnpackedMtxValues"
     );
 
     return out;
@@ -114,7 +117,8 @@ Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in)
             lengthV[j + 0] = val;
             lengthV[j + 1] = val;
             lengthV[j + 2] = val;
-        }
+        },
+        "computeUnpackedRowOffs"
     );
 
     auto ret = Vector<localIdx> {exec, 3 * (in.size() - 1) + 1};
@@ -151,7 +155,8 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
             outV[i][0] = inV[j + 0];
             outV[i][1] = inV[j + 1];
             outV[i][2] = inV[j + 2];
-        }
+        },
+        "computePackedVecValues"
     );
 }
 
@@ -177,7 +182,8 @@ void computeResidual(
                 sum += coeffs[coli] * x[colIdxs[coli]];
             }
             res[rowi] = sum - b[rowi];
-        }
+        },
+        "computeResidual"
     );
 }
 

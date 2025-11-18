@@ -39,7 +39,8 @@ void setFixedValue(
             value[i] = fixedValue;
             valueFraction[i] = 1.0;      // only used refValue
             refGradient[i] = fixedValue; // not used
-        }
+        },
+        "setFixedValueVolume"
     );
 }
 

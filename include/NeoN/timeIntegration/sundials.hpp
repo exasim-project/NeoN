@@ -91,7 +91,10 @@ void fieldToSunNVectorImpl(const NeoN::Vector<ValueType>& field, N_Vector& vecto
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     auto fieldView = field.view();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { view(i) = fieldView[i]; }
+        field.exec(),
+        field.range(),
+        KOKKOS_LAMBDA(const localIdx i) { view(i) = fieldView[i]; },
+        "fieldToSunVector"
     );
 };
 
@@ -142,7 +145,10 @@ void sunNVectorToVectorImpl(const N_Vector& vector, NeoN::Vector<ValueType>& fie
     auto view = ::sundials::kokkos::GetVec<SKVectorType>(vector)->View();
     ValueType* fieldData = field.data();
     NeoN::parallelFor(
-        field.exec(), field.range(), KOKKOS_LAMBDA(const localIdx i) { fieldData[i] = view(i); }
+        field.exec(),
+        field.range(),
+        KOKKOS_LAMBDA(const localIdx i) { fieldData[i] = view(i); },
+        "sunNVectorToVectorImpl"
     );
 };
 

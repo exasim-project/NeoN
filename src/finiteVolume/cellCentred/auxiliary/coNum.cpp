@@ -42,7 +42,8 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[surfOwner[i]], flux);
             Kokkos::atomic_add(&volPhi[surfNeighbour[i]], flux);
-        }
+        },
+        "computeCoNum::fluxInternal"
     );
 
     parallelFor(
@@ -52,7 +53,8 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
             auto own = surfFaceCells[i - nInternalFaces];
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[own], flux);
-        }
+        },
+        "computeCoNum::fluxBound"
     );
 
     phi.correctBoundaryConditions();
