@@ -89,27 +89,24 @@ public:
      * T.
      */
     template<typename T>
-    [[nodiscard]] T get(const std::string& key) const
+    [[nodiscard]] T getVal(const std::string& key) const
     {
 
-        bool convertToIntFirst = false;
+        // NOTE in certain cases the expected type T
+        // might not match the stored type. For example
+        // we might expect a scalar when instead an int
+        // is stored. In that case we any_cast to int first
+        // and convert to scalar later
         if constexpr (std::is_same_v<T, scalar>)
         {
             if (isType<int>(key))
             {
-                convertToIntFirst = true;
+                return T(std::any_cast<int>(operator[](key)));
             }
         }
 
         try
         {
-            if constexpr (std::is_same_v<T, scalar>)
-            {
-                if (convertToIntFirst)
-                {
-                    return T(std::any_cast<int>(operator[](key)));
-                }
-            }
             return std::any_cast<T>(operator[](key));
         }
         catch (const std::bad_any_cast& e)

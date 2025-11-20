@@ -88,7 +88,7 @@ TEST_CASE("Database")
 
             std::vector<std::string> foundKeys =
                 collection1.find([](const NeoN::Document& doc)
-                                 { return doc.get<std::string>("name") == "doc1"; });
+                                 { return doc.getVal<std::string>("name") == "doc1"; });
 
             REQUIRE(foundKeys.size() == 1);
             REQUIRE(foundKeys[0].substr(0, 4) == "doc_");
@@ -99,7 +99,7 @@ TEST_CASE("Database")
 
             std::vector<std::string> foundKeys2 =
                 collection1.find([](const NeoN::Document& doc)
-                                 { return doc.get<int>("testValue") == 42; });
+                                 { return doc.getVal<int>("testValue") == 42; });
 
             REQUIRE(foundKeys2.size() == 2);
         }

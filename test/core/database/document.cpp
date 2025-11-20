@@ -25,16 +25,16 @@ TEST_CASE("Document")
         NeoN::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}});
         REQUIRE(doc.keys().size() == 3);
         REQUIRE(doc.id().substr(0, 4) == "doc_");
-        REQUIRE(doc.get<std::string>("key1") == "value1");
-        REQUIRE(doc.get<double>("key2") == 2.0);
+        REQUIRE(doc.getVal<std::string>("key1") == "value1");
+        REQUIRE(doc.getVal<double>("key2") == 2.0);
 
         SECTION("insert values")
         {
             doc.insert("key3", std::string("value3"));
             doc.insert("key4", 4.0);
             REQUIRE(doc.keys().size() == 5);
-            REQUIRE(doc.get<std::string>("key3") == "value3");
-            REQUIRE(doc.get<double>("key4") == 4.0);
+            REQUIRE(doc.getVal<std::string>("key3") == "value3");
+            REQUIRE(doc.getVal<double>("key4") == 4.0);
         }
     }
 
@@ -48,8 +48,8 @@ TEST_CASE("Document")
             NeoN::Document doc({{"key1", std::string("value1")}, {"key2", 2.0}}, validator);
             REQUIRE_NOTHROW(doc.validate());
             REQUIRE(doc.keys().size() == 3);
-            REQUIRE(doc.get<std::string>("key1") == "value1");
-            REQUIRE(doc.get<double>("key2") == 2.0);
+            REQUIRE(doc.getVal<std::string>("key1") == "value1");
+            REQUIRE(doc.getVal<double>("key2") == 2.0);
         }
 
         SECTION("invalid document")

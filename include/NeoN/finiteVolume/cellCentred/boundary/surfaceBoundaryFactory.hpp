@@ -53,7 +53,7 @@ public:
             patchID
         ),
           boundaryCorrectionStrategy_(SurfaceBoundaryFactory<ValueType>::create(
-              dict.get<std::string>("type"), mesh, dict, patchID
+              dict.getVal<std::string>("type"), mesh, dict, patchID
           ))
     {}
 

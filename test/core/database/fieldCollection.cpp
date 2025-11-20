@@ -192,18 +192,19 @@ TEST_CASE("VectorCollection")
         {
             auto resTimeIndex =
                 fieldCollection.find([](const NeoN::Document& doc)
-                                     { return doc.get<std::int64_t>("timeIndex") == 1; });
+                                     { return doc.getVal<std::int64_t>("timeIndex") == 1; });
 
             REQUIRE(resTimeIndex.size() == 3);
 
             auto resSubCycleIndex =
                 fieldCollection.find([](const NeoN::Document& doc)
-                                     { return doc.get<std::int64_t>("subCycleIndex") == 5; });
+                                     { return doc.getVal<std::int64_t>("subCycleIndex") == 5; });
 
             REQUIRE(resSubCycleIndex.size() == 0);
 
-            auto resName = fieldCollection.find([](const NeoN::Document& doc)
-                                                { return doc.get<std::string>("name") == "T3"; });
+            auto resName =
+                fieldCollection.find([](const NeoN::Document& doc)
+                                     { return doc.getVal<std::string>("name") == "T3"; });
 
             REQUIRE(resName.size() == 1);
 

@@ -31,7 +31,7 @@ public:
     create(const Executor& exec, const UnstructuredMesh& uMesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
-                            ? std::get<Dictionary>(inputs).get<std::string>("DivOperator")
+                            ? std::get<Dictionary>(inputs).getVal<std::string>("DivOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         DivOperatorFactory<ValueType>::keyExistsOrError(key);
         return DivOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
@@ -169,7 +169,7 @@ public:
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
-            auto tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = dict.subDict("divSchemes").getVal<NeoN::TokenList>(schemeName);
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

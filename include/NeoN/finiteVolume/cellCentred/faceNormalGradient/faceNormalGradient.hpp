@@ -34,7 +34,7 @@ public:
         // input is dictionary the key is "interpolation"
         std::string key =
             (std::holds_alternative<NeoN::Dictionary>(inputs))
-                ? std::get<NeoN::Dictionary>(inputs).get<std::string>("faceNormalGradient")
+                ? std::get<NeoN::Dictionary>(inputs).getVal<std::string>("faceNormalGradient")
                 : std::get<NeoN::TokenList>(inputs).next<std::string>();
 
         FaceNormalGradientFactory<ValueType>::keyExistsOrError(key);

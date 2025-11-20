@@ -38,7 +38,7 @@ public:
         // input is dictionary the key is "interpolation"
         std::string key =
             (std::holds_alternative<NeoN::Dictionary>(inputs))
-                ? std::get<NeoN::Dictionary>(inputs).get<std::string>("surfaceInterpolation")
+                ? std::get<NeoN::Dictionary>(inputs).getVal<std::string>("surfaceInterpolation")
                 : std::get<NeoN::TokenList>(inputs).next<std::string>();
 
         SurfaceInterpolationFactory<ValueType>::keyExistsOrError(key);

@@ -50,8 +50,8 @@ TEST_CASE("CustomDocument")
 
     REQUIRE(doc2.doc().id().find("doc_") != std::string::npos);
     REQUIRE(doc2.typeName() == "CustomDocument");
-    REQUIRE(doc2.doc().get<std::string>("name") == "doc2");
-    REQUIRE(doc2.doc().get<int>("testValue") == 42);
+    REQUIRE(doc2.doc().getVal<std::string>("name") == "doc2");
+    REQUIRE(doc2.doc().getVal<int>("testValue") == 42);
     CustomDocument doc3 = CustomDocument("doc3", 3.14);
     REQUIRE(doc3.name() == "doc3");
     REQUIRE(doc3.testValue() == 3.14);

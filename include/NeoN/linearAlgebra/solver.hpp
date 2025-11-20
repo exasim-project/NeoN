@@ -34,7 +34,7 @@ public:
 
     static std::unique_ptr<SolverFactory> create(const Executor& exec, const Dictionary& dict)
     {
-        auto key = dict.get<std::string>("solver");
+        auto key = dict.getVal<std::string>("solver");
         SolverFactory::keyExistsOrError(key);
         return SolverFactory::table().at(key)(exec, dict);
     }

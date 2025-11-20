@@ -74,7 +74,7 @@ public:
 
     TimeIntegration(const Dictionary& schemeDict, const Dictionary& solutionDict)
         : timeIntegratorStrategy_(TimeIntegratorBase<SolutionVectorType>::create(
-            schemeDict.get<std::string>("type"), schemeDict, solutionDict
+            schemeDict.getVal<std::string>("type"), schemeDict, solutionDict
         )) {};
 
     void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)

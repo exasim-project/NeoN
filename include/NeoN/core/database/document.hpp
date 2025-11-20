@@ -80,7 +80,7 @@ public:
      *
      * @return std::string The ID of the Document.
      */
-    std::string id() const { return get<std::string>("id"); }
+    std::string id() const { return getRef<std::string>("id"); }
 
 private:
 

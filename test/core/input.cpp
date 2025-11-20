@@ -17,9 +17,9 @@ struct TestInput
     static TestInput read(const NeoN::Dictionary& dict)
     {
         TestInput ti;
-        ti.label_ = dict.get<NeoN::label>("label");
-        ti.scalar_ = dict.get<NeoN::scalar>("scalar");
-        ti.string_ = dict.get<std::string>("string");
+        ti.label_ = dict.getVal<NeoN::label>("label");
+        ti.scalar_ = dict.getVal<NeoN::scalar>("scalar");
+        ti.string_ = dict.getVal<std::string>("string");
         return ti;
     }
 

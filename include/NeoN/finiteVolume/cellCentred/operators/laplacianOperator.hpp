@@ -33,7 +33,7 @@ public:
     create(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
-                            ? std::get<Dictionary>(inputs).get<std::string>("LaplacianOperator")
+                            ? std::get<Dictionary>(inputs).getVal<std::string>("LaplacianOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         LaplacianOperatorFactory<ValueType>::keyExistsOrError(key);
         return LaplacianOperatorFactory<ValueType>::table().at(key)(exec, mesh, inputs);
@@ -180,7 +180,7 @@ public:
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
-            auto tokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = dict.subDict("laplacianSchemes").getVal<NeoN::TokenList>(schemeName);
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

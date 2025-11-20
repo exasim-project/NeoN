@@ -73,7 +73,7 @@ public:
             patchID
         ),
           boundaryCorrectionStrategy_(VolumeBoundaryFactory<ValueType>::create(
-              dict.get<std::string>("type"), mesh, dict, patchID
+              dict.getRef<std::string>("type"), mesh, dict, patchID
           ))
     {}
 

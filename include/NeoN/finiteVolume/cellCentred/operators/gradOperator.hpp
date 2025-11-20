@@ -31,7 +31,7 @@ public:
     create(const Executor& exec, const UnstructuredMesh& uMesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
-                            ? std::get<Dictionary>(inputs).get<std::string>("GradOperator")
+                            ? std::get<Dictionary>(inputs).getVal<std::string>("GradOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         GradOperatorFactory<ValueType>::keyExistsOrError(key);
         return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh);
@@ -175,7 +175,7 @@ public:
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "grad(" + this->getVector().name + ")";
-            auto tokens = dict.subDict("gradSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = dict.subDict("gradSchemes").getVal<NeoN::TokenList>(schemeName);
             gradOperatorStrategy_ =
                 GradOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

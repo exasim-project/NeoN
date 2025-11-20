@@ -24,17 +24,17 @@ Document& VectorDocument::doc() { return doc_; }
 
 const Document& VectorDocument::doc() const { return doc_; }
 
-std::string VectorDocument::name() const { return doc_.get<std::string>("name"); }
+std::string VectorDocument::name() const { return doc_.getVal<std::string>("name"); }
 
 std::string& VectorDocument::name() { return doc_.getRef<std::string>("name"); }
 
-std::int64_t VectorDocument::timeIndex() const { return doc_.get<std::int64_t>("timeIndex"); }
+std::int64_t VectorDocument::timeIndex() const { return doc_.getVal<std::int64_t>("timeIndex"); }
 
 std::int64_t& VectorDocument::timeIndex() { return doc_.getRef<std::int64_t>("timeIndex"); }
 
 std::int64_t VectorDocument::iterationIndex() const
 {
-    return doc_.get<std::int64_t>("iterationIndex");
+    return doc_.getVal<std::int64_t>("iterationIndex");
 }
 
 std::int64_t& VectorDocument::iterationIndex()
@@ -44,7 +44,7 @@ std::int64_t& VectorDocument::iterationIndex()
 
 std::int64_t VectorDocument::subCycleIndex() const
 {
-    return doc_.get<std::int64_t>("subCycleIndex");
+    return doc_.getVal<std::int64_t>("subCycleIndex");
 }
 
 std::int64_t& VectorDocument::subCycleIndex() { return doc_.getRef<std::int64_t>("subCycleIndex"); }

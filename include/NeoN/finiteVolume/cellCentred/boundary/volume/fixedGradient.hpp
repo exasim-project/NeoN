@@ -67,7 +67,7 @@ public:
 
     FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh),
-          fixedGradient_(dict.get<ValueType>("fixedGradient"))
+          fixedGradient_(dict.getVal<ValueType>("fixedGradient"))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final

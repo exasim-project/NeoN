@@ -51,7 +51,7 @@ class FixedValue :
 public:
 
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID), mesh_(mesh), fixedValue_(dict.get<ValueType>("fixedValue"))
+        : Base(mesh, dict, patchID), mesh_(mesh), fixedValue_(dict.getVal<ValueType>("fixedValue"))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) override

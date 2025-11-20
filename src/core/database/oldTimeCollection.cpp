@@ -103,7 +103,8 @@ bool OldTimeCollection::insert(const OldTimeDocument& otd)
 
 std::string OldTimeCollection::findNextTime(std::string id) const
 {
-    auto keys = find([id](const Document& doc) { return doc.get<std::string>("nextTime") == id; });
+    auto keys =
+        find([id](const Document& doc) { return doc.getVal<std::string>("nextTime") == id; });
     if (keys.size() == 1)
     {
         return keys[0];
@@ -114,7 +115,7 @@ std::string OldTimeCollection::findNextTime(std::string id) const
 std::string OldTimeCollection::findPreviousTime(std::string id) const
 {
     auto keys =
-        find([id](const Document& doc) { return doc.get<std::string>("previousTime") == id; });
+        find([id](const Document& doc) { return doc.getVal<std::string>("previousTime") == id; });
     if (keys.size() == 1)
     {
         return keys[0];
