@@ -124,11 +124,23 @@ public:
     }
 
     /**
+     * @brief Checks if the value associated with the given key is of given Type T.
+     * @param key The key to check.
+     * @return True if the value is a dictionary, false otherwise.
+     */
+    template<typename T>
+    [[nodiscard]] bool isType(const std::string& key) const
+    {
+        return contains(key) && std::any_cast<T>(&data_.at(key));
+    }
+
+    /**
      * @brief Checks if the value associated with the given key is a dictionary.
      * @param key The key to check.
      * @return True if the value is a dictionary, false otherwise.
      */
     [[nodiscard]] bool isDict(const std::string& key) const;
+
 
     /**
      * @brief Retrieves a sub-dictionary associated with the given key.
