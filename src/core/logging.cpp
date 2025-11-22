@@ -5,6 +5,10 @@
 #include "NeoN/core/logging.hpp"
 
 #if NF_WITH_SPDLOG
+
+// See https://github.com/fmtlib/fmt/issues/4610
+#define FMT_ASSERT(condition, message) ;
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/basic_file_sink.h"
