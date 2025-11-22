@@ -65,6 +65,7 @@ cpmaddpackage(
   SYSTEM)
 
 if(${NeoN_WITH_SPDLOG})
+  message(WARNING "NeoN_WITH_SPDLOG")
   set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL OFF")
   cpmaddpackage(
     NAME
