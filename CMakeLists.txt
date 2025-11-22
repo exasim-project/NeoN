@@ -238,14 +238,17 @@ if(cpptrace_POPULATED)
   install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
 endif()
 
-# install internal spdlog version
-if(spdlog_POPULATED)
+# install internal spdlog version TODO why does spdlog_POPULATED not work?
+if(spdlog_ADDED)
   install(
     TARGETS spdlog spdlog_header_only
     EXPORT SpdlogTargets
     INCLUDES
     DESTINATION include)
-  install(EXPORT SpdlogTargets NAMESPACE spdlog::)
+  install(
+    EXPORT SpdlogTargets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
+    NAMESPACE spdlog::)
 endif()
 
 # install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
