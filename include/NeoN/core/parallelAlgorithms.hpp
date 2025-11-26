@@ -45,14 +45,7 @@ void parallelFor(
     const ExecutorType& exec, std::pair<localIdx, localIdx> range, Kernel kernel, std::string name
 )
 {
-    fenceIfLogger(exec);
-
     auto [start, end] = range;
-    auto event = Logging::LogEvent {
-        std::source_location::current(),
-        Logging::Level::Info,
-        std::format("Executing parallelFor: {} start {} end {}", name, start, end)
-    };
 
     if constexpr (std::is_same<std::remove_reference_t<ExecutorType>, SerialExecutor>::value)
     {
@@ -70,9 +63,6 @@ void parallelFor(
             KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
         );
     }
-
-    fenceIfLogger(exec);
-    Logging::log(getLogger(exec), event);
 }
 
 

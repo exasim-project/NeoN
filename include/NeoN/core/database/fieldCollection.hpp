@@ -207,9 +207,7 @@ using CreateFunction = std::function<VectorDocument(NeoN::Database& db)>;
  * The VectorCollection class represents a collection of field documents in a database and provides
  * additional functionality for accessing field-specific data.
  */
-class VectorCollection :
-    public CollectionMixin<VectorDocument>,
-    public Logging::SupportsLoggingMixin
+class VectorCollection : public CollectionMixin<VectorDocument>
 {
 
 public:
@@ -351,13 +349,6 @@ public:
         VectorType& field = fd.field<VectorType>();
         field.key = key;
         field.fieldCollectionName = name();
-
-        Logging::log(
-            this->getLogger(),
-            {std::source_location::current(),
-             Logging::Level::Info,
-             std::format("Created and registered {} in {}", key, name())}
-        );
 
         return field;
     }
