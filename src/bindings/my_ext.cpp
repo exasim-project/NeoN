@@ -34,11 +34,7 @@ NB_MODULE(neon, m)
             [](const NeoN::SerialExecutor&) { return std::hash<std::string> {}("SerialExecutor"); }
         )
         .def(
-            "__eq__",
-            [](const NeoN::SerialExecutor&, const NeoN::SerialExecutor&)
-            {
-                return true; // All SerialExecutors are equal
-            }
+            "__eq__", [](const NeoN::SerialExecutor&, const NeoN::SerialExecutor&) { return true; }
         );
 
     nb::class_<NeoN::CPUExecutor>(m, "CPUExecutor", "Executor for multicore CPU parallelization")
@@ -50,13 +46,7 @@ NB_MODULE(neon, m)
             "__hash__",
             [](const NeoN::CPUExecutor&) { return std::hash<std::string> {}("CPUExecutor"); }
         )
-        .def(
-            "__eq__",
-            [](const NeoN::CPUExecutor&, const NeoN::CPUExecutor&)
-            {
-                return true; // All CPUExecutors are equal
-            }
-        );
+        .def("__eq__", [](const NeoN::CPUExecutor&, const NeoN::CPUExecutor&) { return true; });
 
     nb::class_<NeoN::GPUExecutor>(m, "GPUExecutor", "Executor for GPU offloading")
         .def(nb::init<>(), "Create a GPU executor")
@@ -272,7 +262,6 @@ NB_MODULE(neon, m)
 
     // Vector<T> is a container that supports multiple execution spaces (CPU, GPU).
     // It is similar to std::vector but with support for heterogeneous computing via executors.
-
     // Vector<scalar> - for scalar fields
     nb::class_<NeoN::Vector<NeoN::scalar>>(
         m, "ScalarVector", "A vector of scalar values with executor support"
