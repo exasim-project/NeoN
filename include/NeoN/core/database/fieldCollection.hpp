@@ -218,7 +218,7 @@ public:
      * @param db The database to create the collection in.
      * @param name The name of the collection.
      */
-    VectorCollection(NeoN::Database& db, std::string name, Logging::BaseLogger logger = {});
+    VectorCollection(NeoN::Database& db, std::string name);
 
     /**
      * @brief A VectorCollection is not copyable, but moveable
