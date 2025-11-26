@@ -7,7 +7,9 @@
 #if NF_WITH_SPDLOG
 
 // See https://github.com/fmtlib/fmt/issues/4610
-#define FMT_ASSERT(condition, message) ;
+// NOTE do nothing, TODO only use for AMD clang
+auto noAssert = []() {};
+#define FMT_ASSERT(condition, message) noAssert();
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"

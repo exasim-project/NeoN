@@ -48,7 +48,7 @@ option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support [currently required]
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
-option(NeoN_WITH_SPDLOG "Use spdlog for logging" ON)
+option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
@@ -241,7 +241,7 @@ endif()
 # install internal spdlog version TODO why does spdlog_POPULATED not work?
 if(spdlog_ADDED)
   install(
-    TARGETS spdlog spdlog_header_only
+    TARGETS spdlog_header_only
     EXPORT SpdlogTargets
     INCLUDES
     DESTINATION include)
