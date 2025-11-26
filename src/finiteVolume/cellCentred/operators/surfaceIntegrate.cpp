@@ -29,7 +29,8 @@ void surfaceIntegrate(
         KOKKOS_LAMBDA(const localIdx i) {
             Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux[i]);
             Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux[i]);
-        }
+        },
+        "surfaceIntegrateInternalFaces"
     );
 
     parallelFor(
@@ -38,13 +39,15 @@ void surfaceIntegrate(
         KOKKOS_LAMBDA(const localIdx i) {
             auto own = faceCells[i - nInternalFaces];
             Kokkos::atomic_add(&res[own], flux[i]);
-        }
+        },
+        "surfaceIntegrateBoundFaces"
     );
 
     parallelFor(
         exec,
         {0, nCells},
-        KOKKOS_LAMBDA(const localIdx celli) { res[celli] *= operatorScaling[celli] / v[celli]; }
+        KOKKOS_LAMBDA(const localIdx celli) { res[celli] *= operatorScaling[celli] / v[celli]; },
+        "surfaceIntegrateInternalCells"
     );
 }
 

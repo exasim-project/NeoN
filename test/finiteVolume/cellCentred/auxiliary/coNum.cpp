@@ -33,8 +33,8 @@ TEST_CASE("Courant Number")
         sf.correctBoundaryConditions();
 
         // use arbitrary time step size of 0.01
-        const NeoN::scalar coNum = fvcc::computeCoNum(sf, 0.01);
+        const auto [maxCoNum, meanCoNum] = fvcc::computeCoNum(sf, 0.01);
 
-        REQUIRE(coNum == 0.04);
+        REQUIRE(maxCoNum == 0.04);
     }
 }

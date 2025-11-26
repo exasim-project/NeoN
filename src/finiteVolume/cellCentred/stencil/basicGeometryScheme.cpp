@@ -40,7 +40,8 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
             {
                 weightS[facei] = 0.5;
             }
-        }
+        },
+        "basicGeometricScheme::updateWeightsInternal"
     );
 
     parallelFor(
@@ -50,7 +51,8 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
             const auto bcfacei = facei - nInternalFaces;
             weightS[facei] = 1.0;
             weightB[bcfacei] = 1.0;
-        }
+        },
+        "basicGeometricScheme::updateWeightsBoundary"
     );
 }
 
@@ -72,7 +74,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         KOKKOS_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
-        }
+        },
+        "basicGeometricScheme::updateDeltaCoeffsInternal"
     );
 
     const auto nInternalFaces = mesh_.nInternalFaces();
@@ -85,7 +88,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
 
             deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
-        }
+        },
+        "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
 }
 
@@ -117,7 +121,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 
 
             nonOrthDeltaCoeff[facei] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
-        }
+        },
+        "basicGeometricScheme::updateNonOrthDeltaCoeffsInternal"
     );
 
     parallelFor(
@@ -132,7 +137,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 
 
             nonOrthDeltaCoeff[facei] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
-        }
+        },
+        "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
 }
 

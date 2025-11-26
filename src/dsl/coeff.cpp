@@ -56,7 +56,10 @@ void toVector(Coeff& coeff, Vector<scalar>& rhs)
         auto rhsView = rhs.view();
         // otherwise we are unable to capture values in the lambda
         parallelFor(
-            rhs.exec(), rhs.range(), KOKKOS_LAMBDA(const localIdx i) { rhsView[i] *= coeff[i]; }
+            rhs.exec(),
+            rhs.range(),
+            KOKKOS_LAMBDA(const localIdx i) { rhsView[i] *= coeff[i]; },
+            "coeffToVector"
         );
     }
     else
