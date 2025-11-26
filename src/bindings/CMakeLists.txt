@@ -22,3 +22,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 nanobind_add_module(my_ext my_ext.cpp)
+
+# Link against the NeoN library to access executor classes
+target_link_libraries(my_ext PRIVATE NeoN::NeoN)
