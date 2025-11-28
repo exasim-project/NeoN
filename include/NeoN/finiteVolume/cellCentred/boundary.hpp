@@ -13,6 +13,7 @@
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/symmetry.hpp"
+#include "boundary/volume/processor.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
@@ -71,6 +72,9 @@ template class fvcc::volumeBoundary::FixedGradient<Vec3>;
 
 template class fvcc::volumeBoundary::Calculated<scalar>;
 template class fvcc::volumeBoundary::Calculated<Vec3>;
+
+template class fvcc::volumeBoundary::Processor<scalar>;
+template class fvcc::volumeBoundary::Processor<Vec3>;
 
 template class fvcc::volumeBoundary::Extrapolated<scalar>;
 template class fvcc::volumeBoundary::Extrapolated<Vec3>;
