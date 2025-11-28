@@ -108,7 +108,7 @@ public:
 
     virtual ~BaseLogger() = default;
 
-    virtual void log(std::string) const {};
+    virtual void log(std::string) const = 0;
 
     Target getTarget() const { return target_; };
 };
@@ -160,7 +160,7 @@ public:
 
     void setLogger(const std::shared_ptr<BaseLogger> logger);
 
-    const std::shared_ptr<BaseLogger> getLogger();
+    std::shared_ptr<const BaseLogger> getLogger() const;
 };
 
 template<typename CallClass>

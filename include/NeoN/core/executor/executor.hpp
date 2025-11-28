@@ -28,7 +28,7 @@ inline void fence(const Executor& exec)
 }
 
 /*@brief convenience function to get access to associated logger */
-inline std::shared_ptr<Logging::BaseLogger> getLogger(const Executor& exec)
+inline std::shared_ptr<const Logging::BaseLogger> getLogger(const Executor& exec)
 {
     return std::visit([](auto e) { return e.getLogger(); }, exec);
 }
