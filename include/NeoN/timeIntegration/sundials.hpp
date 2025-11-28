@@ -94,7 +94,7 @@ void fieldToSunNVectorImpl(const NeoN::Vector<ValueType>& field, N_Vector& vecto
         field.exec(),
         field.range(),
         KOKKOS_LAMBDA(const localIdx i) { view(i) = fieldView[i]; },
-        "fieldToSunVector"
+        "fieldToSunNVector"
     );
 };
 

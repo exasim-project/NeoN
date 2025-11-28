@@ -54,7 +54,7 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
             scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
             Kokkos::atomic_add(&volPhi[own], flux);
         },
-        "computeCoNum::fluxBound"
+        "computeCoNum::fluxBoundary"
     );
 
     phi.correctBoundaryConditions();

@@ -40,7 +40,7 @@ class LogEvent
 
 public:
 
-    LogEvent(std::source_location location, Level level, std::string message)
+    LogEvent(std::source_location location, Level level, std::string_view message)
         : level(level), message(message), location(location)
     {
         creationTS = std::chrono::steady_clock::now();
@@ -55,7 +55,7 @@ public:
     std::chrono::time_point<std::chrono::steady_clock> creationTS; // store time of constructor call
 
     /* @brief convert event to a json string */
-    std::string toJson(std::string delim)
+    std::string toJson(std::string_view delim)
     {
         auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
             std::chrono::steady_clock::now() - creationTS
@@ -108,13 +108,13 @@ public:
 
     virtual ~BaseLogger() = default;
 
-    virtual void log(std::string) const {};
+    virtual void log(std::string) const = 0;
 
     Target getTarget() const { return target_; };
 };
 
 /*@brief convenience function to call log on logger with std::format */
-inline void log(std::shared_ptr<BaseLogger> logger, LogEvent event, std::string delim = ",")
+inline void log(std::shared_ptr<BaseLogger> logger, LogEvent& event, std::string_view delim = ",")
 {
     if (logger != nullptr)
     {
@@ -160,7 +160,7 @@ public:
 
     void setLogger(const std::shared_ptr<BaseLogger> logger);
 
-    const std::shared_ptr<BaseLogger> getLogger();
+    std::shared_ptr<const BaseLogger> getLogger() const;
 };
 
 template<typename CallClass>

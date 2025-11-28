@@ -24,7 +24,7 @@ namespace NeoN::Logging
 
 void SupportsLoggingMixin::setLogger(const std::shared_ptr<BaseLogger> logger) { logger_ = logger; }
 
-const std::shared_ptr<BaseLogger> SupportsLoggingMixin::getLogger() { return logger_; }
+std::shared_ptr<const BaseLogger> SupportsLoggingMixin::getLogger() const { return logger_; }
 
 void setNeonDefaultPattern()
 {

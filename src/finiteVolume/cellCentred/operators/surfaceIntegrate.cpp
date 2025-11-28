@@ -40,7 +40,7 @@ void surfaceIntegrate(
             auto own = faceCells[i - nInternalFaces];
             Kokkos::atomic_add(&res[own], flux[i]);
         },
-        "surfaceIntegrateBoundFaces"
+        "surfaceIntegrateBoundaryFaces"
     );
 
     parallelFor(
