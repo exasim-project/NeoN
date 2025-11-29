@@ -211,6 +211,18 @@ if(${NeoN_WITH_GINKGO})
   endif()
 endif()
 
+if(${NeoN_BUILD_PYTHON_BINDINGS})
+  cpmaddpackage(
+    NAME
+    nanobind
+    GITHUB_REPOSITORY
+    wjakob/nanobind
+    VERSION
+    ${NeoN_NANOBIND_VERSION}
+    SYSTEM
+    YES)
+endif()
+
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
   cpmaddpackage(
     NAME
