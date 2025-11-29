@@ -8,6 +8,9 @@ else()
   set(DEV_MODULE Development.Module)
 endif()
 
+# convention is to put bindings .so file in a project name folder
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
+
 find_package(
   Python 3.8
   COMPONENTS Interpreter ${DEV_MODULE}
@@ -21,4 +24,4 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
                                                "RelWithDebInfo")
 endif()
 
-nanobind_add_module(my_ext my_ext.cpp)
+nanobind_add_module(neon my_ext.cpp)
