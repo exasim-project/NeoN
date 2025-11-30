@@ -26,8 +26,8 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx i) {
-            Kokkos::atomic_increment(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]);
-            Kokkos::atomic_increment(&nFacesPerCellView[static_cast<size_t>(faceNeighbour[i])]);
+            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]);
+            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceNeighbour[i])]);
         },
         "countFacesPerCellInternal"
     );
@@ -36,7 +36,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         exec,
         {0, boundaryFaceCells.size()},
         KOKKOS_LAMBDA(const localIdx i) {
-            Kokkos::atomic_increment(&nFacesPerCellView[boundaryFaceCells[i]]);
+            Kokkos::atomic_inc(&nFacesPerCellView[boundaryFaceCells[i]]);
         },
         "countFacesPerCellBoundary"
     );
@@ -58,8 +58,8 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 
             auto startSegOwn = segment[owner];
             auto startSegNei = segment[neighbour];
-            Kokkos::atomic_assign(&stencilValues[startSegOwn + segIdxOwn], facei);
-            Kokkos::atomic_assign(&stencilValues[startSegNei + segIdxNei], facei);
+            Kokkos::atomic_store(&stencilValues[startSegOwn + segIdxOwn], facei);
+            Kokkos::atomic_store(&stencilValues[startSegNei + segIdxNei], facei);
         },
         "computeStencilInternal"
     );
@@ -71,7 +71,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
             localIdx owner = boundaryFaceCells[facei - nInternalFaces];
             localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1);
             localIdx startSegOwn = segment[owner];
-            Kokkos::atomic_assign(&stencilValues[startSegOwn + segIdxOwn], facei);
+            Kokkos::atomic_store(&stencilValues[startSegOwn + segIdxOwn], facei);
         },
         "computeStencilBound"
     );
