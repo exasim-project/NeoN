@@ -8,7 +8,7 @@ However, currently no construction from disc is supported, thus it is mainly use
 
 .. warning::
    - Currently no method to read meshes from disc is implemented. Thus
-     mesh data needs to be provided by the user or a converter such as FoamAdapter needs do be used.
+     mesh data needs to be provided by the user or a converter such as NeoFOAM needs to be used.
 
 Further details `unstructuredMesh  <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1UnstructuredMesh.html>`_
 
