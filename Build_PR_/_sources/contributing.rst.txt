@@ -3,14 +3,14 @@ Contributing
 
 Contributions are highly welcome. Here is some information getting you started.
 
-NeoFOAM Code Style Guide
+NeoN Code Style Guide
 """"""""""""""""""""""""
 
 To simplify coding and code reviews you should adhere to the following code style. However, most
-of NeoFOAMs code style guide is checked via automated tools.
+of NeoNs code style guide is checked via automated tools.
 For example, formatting and non-format related code style is enforced via clang-format and clang-tidy.
-Corresponding configuration files are `.clang-format <https://github.com/exasim-project/NeoFOAM/blob/main/.clang-format>`_
-and `.clang-tidy <https://github.com/exasim-project/NeoFOAM/blob/main/.clang-format/.clang-tidy>`_.
+Corresponding configuration files are `.clang-format <https://github.com/exasim-project/NeoN/blob/main/.clang-format>`_
+and `.clang-tidy <https://github.com/exasim-project/NeoN/blob/main/.clang-format/.clang-tidy>`_.
 Furthermore, adequate licensing of the source code is checked via the reuse linter and typos checks for obvious spelling issues.
 Thus, this style guide doesn't list all stylistic rules explicitly but rather gives advice for ambiguous situations and mentions the rational for some decisions.
 
@@ -21,7 +21,7 @@ Thus, this style guide doesn't list all stylistic rules explicitly but rather gi
  * Use ``[[nodiscard]]`` except for getters.
    To indicate that a function simply returns a value instead of performing expensive computations, ``[[nodiscard]]`` can be omitted.
  * Use ``final`` except for abstract classes.
-   NeoFOAMs aims at having a rather flat inheritance hierarchy and composition is generally preferred.
+   NeoNs aims at having a rather flat inheritance hierarchy and composition is generally preferred.
    To avoid unintended inheritance, using `final` is advised.
  * Avoid storing references as data members in classes.
    An exception might be a ``const Unstructured& mesh`` as it will most likely outlive any other objects.
@@ -34,7 +34,7 @@ Folder structure and file names:
 
  * Use `camelCase` for files and folder names
  * The location of implementation and header files should be consistent.
-   i.e. a file ``src/model/a.cpp`` should have a header file in ``include/NeoFOAM/model/a.hpp`` and the corresponding test implementation in ``test/model/a.cpp``
+   i.e. a file ``src/model/a.cpp`` should have a header file in ``include/NeoN/model/a.hpp`` and the corresponding test implementation in ``test/model/a.cpp``
  * File and folder names should not be redundant. Ie. ``finiteVolume/cellCentred/geometryModel/finiteVolumecellCentredgeometryModel.hpp`` should be
    ``finiteVolume/cellCentred/geometryModel/model.hpp``.
 
@@ -67,19 +67,20 @@ The following labels and their meaning are discussed here:
  * ``Skip-Changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``Skip-build``: Don't run any build steps, including building the compile commands database.
  * ``Skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
- * ``full-ci``: Run tests on AWS.
+ * ``full-ci``: Run tests on AWS and enable sanitizer workflows.
+ * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
 
-A full list of the labels can be found `here <https://github.com/exasim-project/NeoFOAM/labels>`_.
+A full list of the labels can be found `here <https://github.com/exasim-project/NeoN/labels>`_.
 
 Building the Documentation
 """"""""""""""""""""""""""
 
-NeoFOAM's documentation can be found `main <https://exasim-project.com/NeoFOAM/latest/index.html>`_  and `doxygen <https://exasim-project.com/NeoFOAM/latest/doxygen/html/>`_ documentation can be found online. However, if you want to build the documentation locally, you can do so by executing the following steps.
+NeoN's documentation can be found `main <https://exasim-project.com/NeoN/latest/index.html>`_  and `doxygen <https://exasim-project.com/NeoN/latest/doxygen/html/>`_ documentation can be found online. However, if you want to build the documentation locally, you can do so by executing the following steps.
 First, make sure that Sphinx and Doxygen are installed on your system. Second, execute the following commands:
 
    .. code-block:: bash
 
-    cmake -B build -DNEOFOAM_BUILD_DOC=ON # configure the build
+    cmake -B build -DNeoN_BUILD_DOC=ON # configure the build
     cmake --build build --target sphinx # build the documentation
     # or
     sphinx-build -b html ./doc ./docs_build
@@ -91,4 +92,4 @@ The documentation will be built in the ``docs_build`` directory and can be viewe
 
     firefox docs_build/index.html
 
-Alternatively, the documentation can be built by just adding the ``-DNEOFOAM_BUILD_DOC=ON`` to the configuration step of the build process and then building the documentation using the ``sphinx`` target.
+Alternatively, the documentation can be built by just adding the ``-DNeoN_BUILD_DOC=ON`` to the configuration step of the build process and then building the documentation using the ``sphinx`` target.

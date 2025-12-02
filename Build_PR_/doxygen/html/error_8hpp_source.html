@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoFOAM: /home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/error.hpp Source File</title>
+<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/core/error.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">NeoFOAM
+   <div id="projectname">NeoN
    </div>
-   <div id="projectbrief">WIP Prototype of a modern OpenFOAM core</div>
+   <div id="projectbrief">A framework for CFD software</div>
   </td>
  </tr>
  </tbody>
@@ -75,143 +75,147 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b7d68532c5ef6a2996d1666976371b7d.html">NeoFOAM</a></li><li class="navelem"><a class="el" href="dir_87ccb8942982d396e68958a1890f62d8.html">core</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_4d3f939cb3e94ca2309d34727a08ae86.html">NeoN</a></li><li class="navelem"><a class="el" href="dir_f2adf19220ecd655c45a5e32fe91c610.html">core</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">error.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="error_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// SPDX-FileCopyrightText: 2023-2024 NeoFOAM authors</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
+<a href="error_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// SPDX-License-Identifier: MIT</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;mpi.h&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// compiling with clang and cuda fails to</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// find source location</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">// #include &lt;source_location&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// #include &lt;experimental/source_location&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="info_8hpp.html">info.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#ifdef NF_DEBUG_MESSAGING</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;cpptrace/cpptrace.hpp&quot;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoFOAM.html">NeoFOAM</a></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;mpi.h&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// compiling with clang and cuda fails to</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// find source location</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// #include &lt;source_location&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// #include &lt;experimental/source_location&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="info_8hpp.html">info.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#ifdef NF_DEBUG_MESSAGING</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;cpptrace/cpptrace.hpp&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1NeoFOAMException.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoFOAM_1_1NeoFOAMException.html">NeoFOAMException</a> : <span class="keyword">public</span> std::exception</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1NeoFOAMException.html#a97203629bd4f1e83a2ea1010094c026a">   44</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classNeoFOAM_1_1NeoFOAMException.html#a97203629bd4f1e83a2ea1010094c026a">NeoFOAMException</a>(<span class="keyword">const</span> std::string&amp; message) : message_(message) {}</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classNeoFOAM_1_1NeoFOAMException.html#a63a96bda4d9d5c27ada373b872d10a73">   50</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classNeoFOAM_1_1NeoFOAMException.html#a63a96bda4d9d5c27ada373b872d10a73">what</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> message_.c_str(); }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    std::string message_; </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
-</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classNeoN_1_1NeoNException.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1NeoNException.html">NeoNException</a> : <span class="keyword">public</span> std::exception</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classNeoN_1_1NeoNException.html#a0c08cb41205f0c35fcd9ee9472704049">   47</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classNeoN_1_1NeoNException.html#a0c08cb41205f0c35fcd9ee9472704049">NeoNException</a>(<span class="keyword">const</span> std::string&amp; message) : message_(message) {}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classNeoN_1_1NeoNException.html#a0483098d1d92c18db89a2bb775cb052a">   53</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classNeoN_1_1NeoNException.html#a0483098d1d92c18db89a2bb775cb052a">what</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> message_.c_str(); }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>} <span class="comment">// namespace NeoFOAM</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#ifdef NF_DEBUG_MESSAGING</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#define NF_ERROR_MESSAGE(message)                                                                  \</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">    &quot;Error: &quot; &lt;&lt; message &lt;&lt; &quot;\nFile: &quot; &lt;&lt; __FILE__ &lt;&lt; &quot;\nLine: &quot; &lt;&lt; __LINE__ &lt;&lt; &quot;\n&quot;               \</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">              &lt;&lt; cpptrace::generate_trace().to_string() &lt;&lt; &quot;\n&quot;</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#else</span></div>
-<div class="foldopen" id="foldopen00084" data-start="" data-end="">
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">   84</a></span><span class="preprocessor">#define NF_ERROR_MESSAGE(message)                                                                  \</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">    &quot;Error: &quot; &lt;&lt; message &lt;&lt; &quot;\nFile: &quot; &lt;&lt; __FILE__ &lt;&lt; &quot;\nLine: &quot; &lt;&lt; __LINE__ &lt;&lt; &quot;\n&quot;</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::string message_; </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
 </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#define NF_ERROR_EXIT(message)                                                                     \</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">    do                                                                                             \</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">    {                                                                                              \</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">        std::cerr &lt;&lt; NF_ERROR_MESSAGE(message);                                                    \</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">        MPI_Abort(MPI_COMM_WORLD, 1);                                                              \</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">    }                                                                                              \</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">    while (false)</span></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#else</span></div>
-<div class="foldopen" id="foldopen00107" data-start="" data-end="">
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">  107</a></span><span class="preprocessor">#define NF_ERROR_EXIT(message)                                                                     \</span></div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">    do                                                                                             \</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">    {                                                                                              \</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="preprocessor">        std::cerr &lt;&lt; NF_ERROR_MESSAGE(message);                                                    \</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">    }                                                                                              \</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">    while (false)</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#ifdef NF_DEBUG_MESSAGING</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#define NF_ERROR_MESSAGE(message)                                                                  \</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">    &quot;Error: &quot; &lt;&lt; message &lt;&lt; &quot;\nFile: &quot; &lt;&lt; __FILE__ &lt;&lt; &quot;\nLine: &quot; &lt;&lt; __LINE__ &lt;&lt; &quot;\n&quot;               \</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">              &lt;&lt; cpptrace::generate_trace().to_string() &lt;&lt; &quot;\n&quot;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#else</span></div>
+<div class="foldopen" id="foldopen00087" data-start="" data-end="">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">   87</a></span><span class="preprocessor">#define NF_ERROR_MESSAGE(message)                                                                  \</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">    &quot;Error: &quot; &lt;&lt; message &lt;&lt; &quot;\nFile: &quot; &lt;&lt; __FILE__ &lt;&lt; &quot;\nLine: &quot; &lt;&lt; __LINE__ &lt;&lt; &quot;\n&quot;</span></div>
 </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="foldopen" id="foldopen00125" data-start="" data-end="">
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="error_8hpp.html#a01fd2dadf84a907b46bb93644bde393f">  125</a></span><span class="preprocessor">#define NF_THROW(message)                                                                          \</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">    throw NeoFOAM::NeoFOAMException((std::stringstream() &lt;&lt; NF_ERROR_MESSAGE(message)).str())</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#define NF_ERROR_EXIT(message)                                                                     \</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">    do                                                                                             \</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">    {                                                                                              \</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">        std::cerr &lt;&lt; NF_ERROR_MESSAGE(message);                                                    \</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">        MPI_Abort(MPI_COMM_WORLD, 1);                                                              \</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">    }                                                                                              \</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">    while (false)</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">#else</span></div>
+<div class="foldopen" id="foldopen00110" data-start="" data-end="">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">  110</a></span><span class="preprocessor">#define NF_ERROR_EXIT(message)                                                                     \</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">    do                                                                                             \</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">    {                                                                                              \</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">        std::cerr &lt;&lt; NF_ERROR_MESSAGE(message);                                                    \</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">        std::exit(1);                                                                              \</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="preprocessor">    }                                                                                              \</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="preprocessor">    while (false)</span></div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="foldopen" id="foldopen00140" data-start="" data-end="">
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">  140</a></span><span class="preprocessor">#define NF_ASSERT(condition, message)                                                              \</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="preprocessor">    do                                                                                             \</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="preprocessor">    {                                                                                              \</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="preprocessor">        if (!(condition)) [[unlikely]]                                                             \</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="preprocessor">        {                                                                                          \</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="preprocessor">            NF_ERROR_EXIT(&quot;Assertion `&quot; #condition &quot;` failed.\n       &quot; &lt;&lt; message);               \</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="preprocessor">        }                                                                                          \</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">    }                                                                                              \</span></div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="preprocessor">    while (false)</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="foldopen" id="foldopen00129" data-start="" data-end="">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="error_8hpp.html#a01fd2dadf84a907b46bb93644bde393f">  129</a></span><span class="preprocessor">#define NF_THROW(message)                                                                          \</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="preprocessor">    throw NeoN::NeoNException((std::stringstream() &lt;&lt; NF_ERROR_MESSAGE(std::string(message))).str())</span></div>
 </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="foldopen" id="foldopen00163" data-start="" data-end="">
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="error_8hpp.html#a5c27fa1694ed5197f9ea77dd62368d32">  163</a></span><span class="preprocessor">#define NF_ASSERT_THROW(condition, message)                                                        \</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">    do                                                                                             \</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="preprocessor">    {                                                                                              \</span></div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="preprocessor">        if (!(condition)) [[unlikely]]                                                             \</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">        {                                                                                          \</span></div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="preprocessor">            NF_THROW(&quot;Assertion `&quot; #condition &quot;` failed.\n       &quot; &lt;&lt; message);                    \</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">        }                                                                                          \</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="preprocessor">    }                                                                                              \</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="preprocessor">    while (false)</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00144" data-start="" data-end="">
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">  144</a></span><span class="preprocessor">#define NF_ASSERT(condition, message)                                                              \</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="preprocessor">    do                                                                                             \</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="preprocessor">    {                                                                                              \</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">        if (!(condition)) [[unlikely]]                                                             \</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="preprocessor">        {                                                                                          \</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">            NF_ERROR_EXIT(&quot;Assertion `&quot; #condition &quot;` failed.\n       &quot; &lt;&lt; message);               \</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="preprocessor">        }                                                                                          \</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="preprocessor">    }                                                                                              \</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">    while (false)</span></div>
 </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="preprocessor">#ifdef NF_DEBUG</span></div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="preprocessor">#define NF_DEBUG_ASSERT(condition, message) NF_ASSERT(condition, message)</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="preprocessor">#define NF_DEBUG_ASSERT_THROW(condition, message) NF_ASSERT_THROW(condition, message)</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">  209</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT(condition, message) ((void)0)</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno"><a class="line" href="error_8hpp.html#afe5d21cd87f0a611361b98328a4c0dbe">  222</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_THROW(condition, message) ((void)0)</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="error_8hpp.html#a40409dec4da3178309a1b0f662496159">  237</a></span><span class="preprocessor">#define NF_ASSERT_EQUAL(a, b) NF_ASSERT(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno"><a class="line" href="error_8hpp.html#a0cc299c0d63efd3a404c1f33f6ead1b0">  249</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_EQUAL(a, b) NF_DEBUG_ASSERT(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno"><a class="line" href="error_8hpp.html#ac8d1c67acd41932bbf7b7da3e3d1508d">  264</a></span><span class="preprocessor">#define NF_ASSERT_EQUAL_THROW(a, b) NF_ASSERT_THROW(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="foldopen" id="foldopen00276" data-start="" data-end="">
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="error_8hpp.html#a5de41c8310ae3406f3e2d1627f3dd0a1">  276</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_EQUAL_THROW(a, b)                                                          \</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">    NF_DEBUG_ASSERT_THROW(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="" data-end="">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="error_8hpp.html#a5c27fa1694ed5197f9ea77dd62368d32">  167</a></span><span class="preprocessor">#define NF_ASSERT_THROW(condition, message)                                                        \</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="preprocessor">    do                                                                                             \</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">    {                                                                                              \</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="preprocessor">        if (!(condition)) [[unlikely]]                                                             \</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="preprocessor">        {                                                                                          \</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">            NF_THROW(&quot;Assertion `&quot; #condition &quot;` failed.\n       &quot; &lt;&lt; message);                    \</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="preprocessor">        }                                                                                          \</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="preprocessor">    }                                                                                              \</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">    while (false)</span></div>
 </div>
-<div class="ttc" id="aclassNeoFOAM_1_1NeoFOAMException_html"><div class="ttname"><a href="classNeoFOAM_1_1NeoFOAMException.html">NeoFOAM::NeoFOAMException</a></div><div class="ttdoc">Custom exception class for NeoFOAM.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00036">error.hpp:37</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1NeoFOAMException_html_a63a96bda4d9d5c27ada373b872d10a73"><div class="ttname"><a href="classNeoFOAM_1_1NeoFOAMException.html#a63a96bda4d9d5c27ada373b872d10a73">NeoFOAM::NeoFOAMException::what</a></div><div class="ttdeci">const char * what() const noexcept override</div><div class="ttdoc">Returns the error message associated with the exception.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00050">error.hpp:50</a></div></div>
-<div class="ttc" id="aclassNeoFOAM_1_1NeoFOAMException_html_a97203629bd4f1e83a2ea1010094c026a"><div class="ttname"><a href="classNeoFOAM_1_1NeoFOAMException.html#a97203629bd4f1e83a2ea1010094c026a">NeoFOAM::NeoFOAMException::NeoFOAMException</a></div><div class="ttdeci">NeoFOAMException(const std::string &amp;message)</div><div class="ttdoc">Constructs a NeoFOAMException object with the given error message.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00044">error.hpp:44</a></div></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="preprocessor">#ifdef NF_DEBUG</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="preprocessor">#define NF_DEBUG_ASSERT(condition, message) NF_ASSERT(condition, message)</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="preprocessor">#define NF_DEBUG_ASSERT_THROW(condition, message) NF_ASSERT_THROW(condition, message)</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">  213</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT(condition, message) ((void)0)</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="error_8hpp.html#afe5d21cd87f0a611361b98328a4c0dbe">  226</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_THROW(condition, message) ((void)0)</span></div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="error_8hpp.html#a40409dec4da3178309a1b0f662496159">  241</a></span><span class="preprocessor">#define NF_ASSERT_EQUAL(a, b) NF_ASSERT(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno"><a class="line" href="error_8hpp.html#a0cc299c0d63efd3a404c1f33f6ead1b0">  253</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_EQUAL(a, b) NF_DEBUG_ASSERT(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno"><a class="line" href="error_8hpp.html#ac8d1c67acd41932bbf7b7da3e3d1508d">  268</a></span><span class="preprocessor">#define NF_ASSERT_EQUAL_THROW(a, b) NF_ASSERT_THROW(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="foldopen" id="foldopen00280" data-start="" data-end="">
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno"><a class="line" href="error_8hpp.html#a5de41c8310ae3406f3e2d1627f3dd0a1">  280</a></span><span class="preprocessor">#define NF_DEBUG_ASSERT_EQUAL_THROW(a, b)                                                          \</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="preprocessor">    NF_DEBUG_ASSERT_THROW(a == b, &quot;Expected &quot; &lt;&lt; b &lt;&lt; &quot;, got &quot; &lt;&lt; a)</span></div>
+</div>
+<div class="ttc" id="aclassNeoN_1_1NeoNException_html"><div class="ttname"><a href="classNeoN_1_1NeoNException.html">NeoN::NeoNException</a></div><div class="ttdoc">Custom exception class for NeoN.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00039">error.hpp:40</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1NeoNException_html_a0483098d1d92c18db89a2bb775cb052a"><div class="ttname"><a href="classNeoN_1_1NeoNException.html#a0483098d1d92c18db89a2bb775cb052a">NeoN::NeoNException::what</a></div><div class="ttdeci">const char * what() const noexcept override</div><div class="ttdoc">Returns the error message associated with the exception.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00053">error.hpp:53</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1NeoNException_html_a0c08cb41205f0c35fcd9ee9472704049"><div class="ttname"><a href="classNeoN_1_1NeoNException.html#a0c08cb41205f0c35fcd9ee9472704049">NeoN::NeoNException::NeoNException</a></div><div class="ttdeci">NeoNException(const std::string &amp;message)</div><div class="ttdoc">Constructs a NeoNException object with the given error message.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00047">error.hpp:47</a></div></div>
 <div class="ttc" id="ainfo_8hpp_html"><div class="ttname"><a href="info_8hpp.html">info.hpp</a></div></div>
-<div class="ttc" id="anamespaceNeoFOAM_html"><div class="ttname"><a href="namespaceNeoFOAM.html">NeoFOAM</a></div><div class="ttdef"><b>Definition</b> <a href="collection_8hpp_source.html#l00013">collection.hpp:14</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00019">array.hpp:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

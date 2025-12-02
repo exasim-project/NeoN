@@ -1,17 +1,17 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parallel Algorithms" href="algorithms.html" /><link rel="prev" title="Executor" href="executor.html" />
-        <link rel="canonical" href="https://exasim-project.com/NeoFOAM/basics/fields.html" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Parallel Algorithms" href="algorithms.html"><link rel="prev" title="Executor" href="executor.html">
+        <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
-        <title>Fields - NeoFOAM documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
+        <title>Vectors - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
     
     
@@ -19,8 +19,8 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -147,14 +147,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -164,17 +160,15 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">NeoFOAM  documentation</div></a>
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -182,8 +176,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -192,8 +185,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
-  <span class="sidebar-brand-text">NeoFOAM  documentation</span>
+  <span class="sidebar-brand-text">NeoN  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,44 +194,44 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoFOAM!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Basics</a><input aria-label="Toggle navigation of Basics" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="executor.html">Executor</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fields</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Parallel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vectors</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="algorithms.html">Parallel Algorithms</a><input aria-label="Toggle navigation of Parallel Algorithms" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="freeFunctions/setField.html"><code class="docutils literal notranslate"><span class="pre">setField</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="registerclass.html">Derived class discovery at compile time</a></li>
 <li class="toctree-l2"><a class="reference internal" href="macros.html">Macro Definitions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../dsl/index.html">Domain Specific Language (DSL)</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Domain Specific Language (DSL)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dsl/index.html">Domain Specific Language (DSL)</a><input aria-label="Toggle navigation of Domain Specific Language (DSL)" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../dsl/equation.html">Expression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dsl/operator.html">Operator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../timeIntegration/index.html">Time Integration</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Time Integration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../timeIntegration/index.html">Time Integration</a><input aria-label="Toggle navigation of Time Integration" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../timeIntegration/forwardEuler.html">Forward Euler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../timeIntegration/rungeKutta.html">Runge Kutta</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../finiteVolume/cellCentred/index.html">FiniteVolume</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of FiniteVolume</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../finiteVolume/cellCentred/index.html">FiniteVolume</a><input aria-label="Toggle navigation of FiniteVolume" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/boundaryConditions.html">Boundary Conditions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/case_study.html">Case Study: The Gauss Green Div Kernel</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../datastructures/index.html">Datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Datastructures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datastructures/index.html">Datastructures</a><input aria-label="Toggle navigation of Datastructures" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures/unstructuredMesh.html">UnstructuredMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures/dictionary.html">Dictionary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures/database.html">Database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mpi_architecture.html">MPI Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous Integration</a></li>
 </ul>
 
 </div>
@@ -266,8 +258,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -275,52 +266,66 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="fields">
-<span id="fvcc-fields"></span><h1>Fields<a class="headerlink" href="#fields" title="Link to this heading">¶</a></h1>
+          <section id="vectors">
+<span id="fvcc-fields"></span><h1>Vectors<a class="headerlink" href="#vectors" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The API of the classes probably will change in the future as currently parallelization is not supported.</p>
 </div>
-<p>NeoFOAM implements several field classes:</p>
+<p>NeoN implements several field classes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BoundaryFields&lt;ValueType&gt;</span></code> A GPU friendly datastructure storing boundary data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DomainField&lt;ValueType&gt;</span></code> The combination of an internal field and its corresponding boundary data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vector&lt;ValueType&gt;</span></code> the basic GPU capable container class supporting algebraic operations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BoundaryData&lt;ValueType&gt;</span></code> A GPU friendly datastructure storing boundary data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Field&lt;ValueType&gt;</span></code> The combination of an internal field and its corresponding boundary data.</p></li>
 </ul>
 <p>Besides these container like field classes several finite volume specific field classes are implemented. The corresponding classes are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">GeometricFieldMixin&lt;ValueType&gt;</span></code> Mixin class combining a <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> and the corresponding mesh.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VolumeField&lt;ValueType&gt;</span></code> Uses the GeometricFieldMixin and implements finite volume specific members, including the notion of concrete boundary condiditons</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SurfaceField&lt;ValueType&gt;</span></code> The surface field equivalent to <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DomainMixin&lt;ValueType&gt;</span></code> Mixin class combining a <code class="docutils literal notranslate"><span class="pre">Field</span></code> and the corresponding mesh.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VolumeVector&lt;ValueType&gt;</span></code> Uses the DomainMixin and implements finite volume specific members, including the notion of concrete boundary condiditons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SurfaceVector&lt;ValueType&gt;</span></code> The surface field equivalent to <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code></p></li>
 </ul>
 </section>
-<section id="the-field-valuetype-class">
-<h2>The Field&lt;ValueType&gt; class<a class="headerlink" href="#the-field-valuetype-class" title="Link to this heading">¶</a></h2>
-<p>The Field class is the basic container class and is the central elements for implementing a platform portable CFD framework.
-Fields should allow to perform basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.</p>
-<p>In the following, some implementation details of the field operations are detailed using the additions operator as an example.
+<section id="the-vector-valuetype-class">
+<h2>The Vector&lt;ValueType&gt; class<a class="headerlink" href="#the-vector-valuetype-class" title="Link to this heading">¶</a></h2>
+<p>The Vector class is the basic container class and is the central component for implementing a platform portable CFD framework.
+One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Vector</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
+This is to prevent accidental access to device memory from the host.
+The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Vector</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
+.. code-block:: cpp</p>
+<blockquote>
+<div><p>// Host Vectors
+Vector&lt;T&gt; hostVector(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
+auto hostVectorView = hostVector.view();
+hostVectorView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
+<p>// Device Vectors
+Vector&lt;T&gt; deviceVector(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
+auto deviceVectorOnHost = deviceVector.copyToHost();
+auto deviceVectorOnHostView = deviceVectorOnHost.view();
+deviceVectorOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
+</div></blockquote>
+<p>Vectors support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
+In the following, some implementation details of the field operations are detailed using the additions operator as an example.
 The block of code below shows an example implementation of the addition operator.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec_</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">exec_</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
 <span class="w">    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
 <span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Besides creating a temporary for the result it mainly calls the free standing <code class="docutils literal notranslate"><span class="pre">add</span></code> function which is implemented in <code class="docutils literal notranslate"><span class="pre">include/NeoFOAM/field/fieldFreeFunctions.hpp</span></code>.
+<p>Besides creating a temporary for the result it mainly calls the free standing <code class="docutils literal notranslate"><span class="pre">add</span></code> function which is implemented in <code class="docutils literal notranslate"><span class="pre">include/NeoN/field/fieldFreeFunctions.hpp</span></code>.
 This, in turn, dispatches to the <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code> function, passing the actual kernel as lambda.
 The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</span></code>  is implemented using our parallelFor implementations which ultimately dispatch to the <code class="docutils literal notranslate"><span class="pre">Kokkos::parallel_for</span></code> function, see <a class="reference external" href="https://kokkos.org/kokkos-core-wiki/API/core/parallel-dispatch/parallel_for.html">Kokkos documentation</a> for more details.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span>
-<span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">Field</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Field</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_identity_t</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_identity_t</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">detail</span><span class="o">::</span><span class="n">fieldBinaryOp</span><span class="p">(</span>
 <span class="w">      </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="n">ValueType</span><span class="w"> </span><span class="n">va</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="w"> </span><span class="n">vb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">va</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">vb</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -332,20 +337,18 @@ The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</
 <p>The code snippet highlights another important aspect, the executor.
 The executor defines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy</span></code>, see  <a class="reference external" href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md">Kokkos Programming Model</a>.
 Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
-See our <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
-<p>Further <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1Field.html">Details</a>.</p>
+See our <a class="reference external" href="https://exasim-project.com/NeoN/latest/basics/executor.html">documentation</a> for more details on the executor model.</p>
+<p>Further <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1Vector.html">Details</a>.</p>
 </section>
-<section id="cell-centred-specific-fields">
-<h2>Cell Centred Specific Fields<a class="headerlink" href="#cell-centred-specific-fields" title="Link to this heading">¶</a></h2>
+<section id="cell-centred-specific-vectors">
+<h2>Cell Centred Specific Vectors<a class="headerlink" href="#cell-centred-specific-vectors" title="Link to this heading">¶</a></h2>
 <p>Within in the <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred</span></code> folder and the namespace
-<code class="docutils literal notranslate"><span class="pre">NeoFOAM::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> are implemented.
-Both derive from the <code class="docutils literal notranslate"><span class="pre">GeometricFieldMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">DomainField</span></code> data member.</p>
-<p><code class="docutils literal notranslate"><span class="pre">DomainField</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryFields</span></code> data structure holding actual boundary data.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
-<p>Functionally, the <code class="docutils literal notranslate"><span class="pre">VolumeField</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceField</span></code> classes are comparable to OpenFOAM classes such as <code class="docutils literal notranslate"><span class="pre">volScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">volVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">volTensorField</span></code> or <code class="docutils literal notranslate"><span class="pre">surfaceScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">surfaceVectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">surfaceTensorField</span></code> respectively.</p>
-<p>A difference in the SurfaceField implementation is that the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.
-Thus the size of the <code class="docutils literal notranslate"><span class="pre">internalField</span></code> in NeoFOAM differs from that of OpenFOAM.</p>
-<p>Further details <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a> and <a class="reference external" href="https://exasim-project.com/NeoFOAM/latest/doxygen/html/classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1ScalarField.html">ScalarField</a>.</p>
+<code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred</span></code> two specific field types, namely the <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> are implemented.
+Both derive from the <code class="docutils literal notranslate"><span class="pre">DomainMixin</span></code> a mixin class which handles that all derived fields contain geometric information via the mesh data member and field specific data via the <code class="docutils literal notranslate"><span class="pre">Field</span></code> data member.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Field</span></code> acts as the fundamental data container within this structure, offering both read and write to the <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> and  <code class="docutils literal notranslate"><span class="pre">boundaryVectors</span></code> data structure holding actual boundary data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">VolumeVector</span></code> and the <code class="docutils literal notranslate"><span class="pre">SurfaceVector</span></code> hold a vector of boundary conditions implemented in <code class="docutils literal notranslate"><span class="pre">finiteVolume/cellCentred/boundary</span></code> and a  <code class="docutils literal notranslate"><span class="pre">correctBoundaryConditions</span></code> member function that updates the field’s boundary condition.</p>
+<p>The SurfaceVector implementation of <code class="docutils literal notranslate"><span class="pre">internalVector</span></code> also contains the boundary values, so no branches (if) are required when iterating over all cell faces.</p>
+<p>Further details <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeVector.html">VolumeVector</a> and <a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1finiteVolume_1_1cellCentred_1_1ScalarVector.html">ScalarVector</a>.</p>
 <span class="target" id="api-fields"></span></section>
 </section>
 
@@ -378,7 +381,7 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, NeoFOAM authors
+                Copyright &#169; 2024, NeoN authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -404,10 +407,10 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Fields</a><ul>
+<li><a class="reference internal" href="#">Vectors</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#the-field-valuetype-class">The Field&lt;ValueType&gt; class</a></li>
-<li><a class="reference internal" href="#cell-centred-specific-fields">Cell Centred Specific Fields</a></li>
+<li><a class="reference internal" href="#the-vector-valuetype-class">The Vector&lt;ValueType&gt; class</a></li>
+<li><a class="reference internal" href="#cell-centred-specific-vectors">Cell Centred Specific Vectors</a></li>
 </ul>
 </li>
 </ul>
@@ -422,6 +425,6 @@ Thus the size of the <code class="docutils literal notranslate"><span class="pre
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

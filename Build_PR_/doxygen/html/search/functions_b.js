@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['mag_0',['mag',['../namespaceNeoFOAM.html#a30753699ca02c237b4081286380cabd6',1,'NeoFOAM']]],
-  ['magfaceareas_1',['magFaceAreas',['../classNeoFOAM_1_1UnstructuredMesh.html#a75051ce1557fff2fcb282f25b90cf816',1,'NeoFOAM::UnstructuredMesh']]],
-  ['magsf_2',['magsf',['../classNeoFOAM_1_1BoundaryMesh.html#a440a8c36013674d9873371d13543aa05',1,'NeoFOAM::BoundaryMesh::magSf() const'],['../classNeoFOAM_1_1BoundaryMesh.html#a3ee8d38788a65bc335e566f182e60600',1,'NeoFOAM::BoundaryMesh::magSf(const localIdx i) const']]],
-  ['map_3',['map',['../namespaceNeoFOAM.html#a58f995a6ce3861bf1eb92ca1e6a36739',1,'NeoFOAM']]],
-  ['mesh_4',['mesh',['../classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin.html#a18570fe2823eff871124806028b8fe33',1,'NeoFOAM::finiteVolume::cellCentred::GeometricFieldMixin']]],
-  ['mul_5',['mul',['../namespaceNeoFOAM.html#a335407c0e359f3a30480c61fb0aa491f',1,'NeoFOAM']]]
+  ['mag_0',['mag',['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)'],['../namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd',1,'NeoN::mag(const Vec3 &amp;vec)']]],
+  ['magfaceareas_1',['magFaceAreas',['../classNeoN_1_1UnstructuredMesh.html#a369ce0f5c16db0d73adced648021de39',1,'NeoN::UnstructuredMesh']]],
+  ['magsf_2',['magsf',['../classNeoN_1_1BoundaryMesh.html#a8650bdda6efcdc3eddc7aa7124bbf53d',1,'NeoN::BoundaryMesh::magSf() const'],['../classNeoN_1_1BoundaryMesh.html#a034a854b39cc6ca44c678494f8314087',1,'NeoN::BoundaryMesh::magSf(const localIdx i) const']]],
+  ['map_3',['map',['../namespaceNeoN.html#a6ac6b06f3fb6b3ff13e6d51c5ccc030b',1,'NeoN']]],
+  ['matrix_4',['matrix',['../classNeoN_1_1la_1_1LinearSystem.html#a416fd6d5122482fcc2372590bc10b8f9',1,'NeoN::la::LinearSystem::matrix()'],['../classNeoN_1_1la_1_1LinearSystem.html#a18bd8cefa6ab9d8df2bc931fb953b633',1,'NeoN::la::LinearSystem::matrix() const']]],
+  ['mesh_5',['mesh',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#a6aee693a9887535811934a27d1892e3e',1,'NeoN::finiteVolume::cellCentred::DomainMixin']]],
+  ['mul_6',['mul',['../namespaceNeoN.html#a4c2ec1eca1c5dc5f7756d47e9baad38c',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)'],['../namespaceNeoN.html#a6ab1b2ea6d003b9225b4975421295b70',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect1, const Vector&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;vect2)']]]
 ];

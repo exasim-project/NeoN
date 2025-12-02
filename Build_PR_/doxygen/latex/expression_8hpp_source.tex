@@ -1,194 +1,283 @@
 \doxysection{expression.\+hpp}
-\hypertarget{expression_8hpp_source}{}\label{expression_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/dsl/expression.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/dsl/expression.hpp}}
+\hypertarget{expression_8hpp_source}{}\label{expression_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp}}
 \mbox{\hyperlink{expression_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023-\/2024\ NeoFOAM\ authors}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00004}00004\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <memory>}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <vector>}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <vector>}}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoFOAM/core/primitives/scalar.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoFOAM/fields/field.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operator_8hpp}{NeoFOAM/dsl/operator.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoFOAM/core/error.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00013}00013\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl}{NeoFOAM::dsl}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00015}00015\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00016}00016\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00018}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00019}00019\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00020}00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{spatialOperator_8hpp}{NeoN/dsl/spatialOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{temporalOperator_8hpp}{NeoN/dsl/temporalOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl}{NeoN::dsl}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00020}00020\ \{}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00021}00021\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00022}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_aeefc57058045a1404d849a9dd258d14e}{00022}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_aeefc57058045a1404d849a9dd258d14e}{Expression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a55331dad02254a7c6e8d727ccdd32c7c}{exec}})}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ :\ exec\_(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a55331dad02254a7c6e8d727ccdd32c7c}{exec}}),\ temporalOperators\_(),\ implicitOperators\_(),\ explicitOperators\_()}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00024}00024\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00026}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a97a88847859f6585d883e5ed72310bcc}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a97a88847859f6585d883e5ed72310bcc}{Expression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\&\ exp)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ :\ exec\_(exp.exec\_),\ temporalOperators\_(exp.temporalOperators\_),}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00028}00028\ \ \ \ \ \ \ \ \ \ \ implicitOperators\_(exp.implicitOperators\_),\ explicitOperators\_(exp.explicitOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00029}00029\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00030}00030\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00031}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ac83cc5d8919c1b5125f687b1da1f9dfe}{00031}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ac83cc5d8919c1b5125f687b1da1f9dfe}{build}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Dictionary}{NeoFOAM::Dictionary}}\&\ input)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00032}00032\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ temporalOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ op.build(input);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ implicitOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ op.build(input);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ explicitOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ op.build(input);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00045}00045\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00046}00046\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{comment}{/*\ @brief\ perform\ all\ explicit\ operation\ and\ accumulate\ the\ result\ */}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00048}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a3abb6631b7932517b2aa1728bf14f8f6}{00048}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<scalar>}}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a3abb6631b7932517b2aa1728bf14f8f6}{explicitOperation}}(\textcolor{keywordtype}{size\_t}\ nCells)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00049}00049\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<scalar>}}\ source(exec\_,\ nCells,\ 0.0);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a3abb6631b7932517b2aa1728bf14f8f6}{explicitOperation}}(source);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00052}00052\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00053}00053\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{/*\ @brief\ perform\ all\ explicit\ operation\ and\ accumulate\ the\ result\ */}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00055}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ab6687f42b67a992747377a807e280a3c}{00055}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<scalar>}}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ab6687f42b67a992747377a807e280a3c}{explicitOperation}}(\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<scalar>}}\&\ source)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00056}00056\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ explicitOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ oper.explicitOperation(source);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ source;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00062}00062\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00064}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{00064}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ oper)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00065}00065\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (oper.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_aa8c34c438914b4e6fa57c36f4eb86531}{getType}}())}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_a0744dad1cdfa671a15278a71f3557f18a19e45fa0a4406497759dbf0dd423cc83}{Operator::Type::Temporal}}:}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ temporalOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_a0744dad1cdfa671a15278a71f3557f18a07e01d7a96d9fd76cf08aa5916f7c788}{Operator::Type::Implicit}}:}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ implicitOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_a0744dad1cdfa671a15278a71f3557f18a9d71760e2dd451db2df354d0fd29cd7f}{Operator::Type::Explicit}}:}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ explicitOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00078}00078\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00080}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_af313e6ab82947b615550bd71d8050234}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_af313e6ab82947b615550bd71d8050234}{addExpression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\&\ equation)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00081}00081\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ equation.temporalOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ temporalOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ equation.implicitOperators\_)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ implicitOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ equation.explicitOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00022}00022\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00023}\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{00023}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00025}\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a0775654af984618f01d144f2effb6e19}{00025}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a0775654af984618f01d144f2effb6e19}{\string~PostAssemblyBase}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00026}\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6467262783230c5fdfbd9f7ae54608a0}{00026}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6467262783230c5fdfbd9f7ae54608a0}{operator()}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la::SparsityPattern}}\&,\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<VectorType,\ localIdx>}}\&)\ \{\};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00027}00027\ \};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{00031}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00033}00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a5cfc1aba5312d6de2130944259d189e9}{00035}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a5cfc1aba5312d6de2130944259d189e9}{Expression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}})\ :\ exec\_(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}),\ temporalOperators\_(),\ spatialOperators\_()\ \{\}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ac227f4528d618d94c0d507fe181a7bf8}{00037}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ac227f4528d618d94c0d507fe181a7bf8}{Expression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ exp)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ :\ exec\_(exp.exec\_),\ temporalOperators\_(exp.temporalOperators\_),}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ spatialOperators\_(exp.spatialOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00040}00040\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{/*\ @brief\ dispatch\ read\ call\ to\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00043}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_acf0ed15b8ff8fa242d0bb385a11253f2}{00043}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_acf0ed15b8ff8fa242d0bb385a11253f2}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00044}00044\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ temporalOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ op.read(input);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ spatialOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ op.read(input);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00053}00053\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{/*\ @brief\ perform\ all\ explicit\ operation\ and\ accumulate\ the\ result\ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{00056}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00057}00057\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ source(exec\_,\ nCells,\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(source);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00060}00060\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{comment}{/*\ @brief\ perform\ all\ explicit\ operation\ and\ accumulate\ the\ result\ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a96d6510a4d6d45d3b211ef625597d742}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a96d6510a4d6d45d3b211ef625597d742}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00064}00064\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ spatialOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (op.getType()\ ==\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{Operator::Type::Explicit}})}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ op.explicitOperation(source);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ source;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a7fe0ec56dd48458e57a5a9e0e8e4c47d}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a7fe0ec56dd48458e57a5a9e0e8e4c47d}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00076}00076\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ temporalOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (op.getType()\ ==\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{Operator::Type::Explicit}})}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ op.explicitOperation(source,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ source;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00085}00085\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{/*@brief\ compute\ matrix\ coefficients\ based\ on\ all\ spatial\ operators\ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a099db7c6200763a8fba124c816f7e108}{00088}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a099db7c6200763a8fba124c816f7e108}{assembleSpatialOperator}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00089}00089\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ spatialOperators\_)}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ explicitOperators\_.push\_back(oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00094}00094\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00096}00096\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{comment}{/*\ @brief\ getter\ for\ the\ total\ number\ of\ terms\ in\ the\ equation\ */}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00098}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a96f277edda83384dc99926c79b09ceb9}{00098}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a96f277edda83384dc99926c79b09ceb9}{size}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00099}00099\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ temporalOperators\_.size()\ +\ implicitOperators\_.size()\ +\ explicitOperators\_.size();}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00101}00101\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00102}00102\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ getters}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00104}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a1040391c27affdb4fa17d3e10d706619}{00104}}\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a1040391c27affdb4fa17d3e10d706619}{temporalOperators}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ temporalOperators\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00105}00105\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00106}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a2d726d7e7c9b22cfd39bc02be97c95e8}{00106}}\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a2d726d7e7c9b22cfd39bc02be97c95e8}{implicitOperators}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ implicitOperators\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00108}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a9f1b1c3cc8691589cfae7ae2a7a975fc}{00108}}\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a9f1b1c3cc8691589cfae7ae2a7a975fc}{explicitOperators}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ explicitOperators\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00109}00109\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00110}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ac2175f60bf038e61b9c79bfbefdf570a}{00110}}\ \ \ \ \ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_ac2175f60bf038e61b9c79bfbefdf570a}{temporalOperators}}()\ \{\ \textcolor{keywordflow}{return}\ temporalOperators\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00111}00111\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00112}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a45e4dab01abbef4880e77033ad4f6de2}{00112}}\ \ \ \ \ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a45e4dab01abbef4880e77033ad4f6de2}{implicitOperators}}()\ \{\ \textcolor{keywordflow}{return}\ implicitOperators\_;\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (op.getType()\ ==\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788}{Operator::Type::Implicit}})}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ op.implicitOperation(ls);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00097}00097\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{comment}{/*@brief\ compute\ matrix\ coefficients\ based\ on\ all\ temporal\ operators}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00100}00100\ \textcolor{comment}{\ \ \ \ \ *\ assemble\ directly\ into\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00101}00101\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a580e3642feb0c0c2c4509fa0f455e7bf}{00103}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a580e3642feb0c0c2c4509fa0f455e7bf}{assembleTemporalOperator}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00104}00104\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ op\ :\ temporalOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (op.getType()\ ==\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788}{Operator::Type::Implicit}})}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ op.implicitOperation(ls,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00112}00112\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00113}00113\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00114}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a74d5500791915dfe8d663523e5f3f117}{00114}}\ \ \ \ \ std::vector<Operator>\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a74d5500791915dfe8d663523e5f3f117}{explicitOperators}}()\ \{\ \textcolor{keywordflow}{return}\ explicitOperators\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00116}\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a55331dad02254a7c6e8d727ccdd32c7c}{00116}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a55331dad02254a7c6e8d727ccdd32c7c}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ exec\_;\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00117}00117\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00118}00118\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\ exec\_;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00121}00121\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00122}00122\ \ \ \ \ std::vector<Operator>\ temporalOperators\_;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00123}00123\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00124}00124\ \ \ \ \ std::vector<Operator>\ implicitOperators\_;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00125}00125\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00126}00126\ \ \ \ \ std::vector<Operator>\ explicitOperators\_;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00127}00127\ \};}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00128}00128\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00129}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_ac9c92e76ba5b1f41f35e04c1f240e01b}{00129}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_ac9c92e76ba5b1f41f35e04c1f240e01b}{operator+}}(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00130}00130\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00131}00131\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_af313e6ab82947b615550bd71d8050234}{addExpression}}(rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00133}00133\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00134}00134\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00135}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_a01b7ab1ca011e58077b6637cc361be3b}{00135}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_ac9c92e76ba5b1f41f35e04c1f240e01b}{operator+}}(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00136}00136\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00137}00137\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00138}00138\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00139}00139\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00140}00140\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00141}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_acbe5a97a4e0caf470783202c963dccc7}{00141}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_ac9c92e76ba5b1f41f35e04c1f240e01b}{operator+}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00142}00142\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00143}00143\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ expr(lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_af2413ddc76a4a8ac4a86fcde093aebf6}{exec}}());}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00144}00144\ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(lhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00145}00145\ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00146}00146\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00147}00147\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00148}00148\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00149}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_a5ea73088dd494171b80cdad32fefee92}{00149}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_afe10f51285498b6fc5aa951ba8df8ca6}{operator*}}(\mbox{\hyperlink{namespaceNeoFOAM_a03eba15c79160376393af407daa0fd7b}{scalar}}\ scale,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\&\ es)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00150}00150\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00151}00151\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ expr(es.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a55331dad02254a7c6e8d727ccdd32c7c}{exec}}());}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oper\ :\ es.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a1040391c27affdb4fa17d3e10d706619}{temporalOperators}}())}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00153}00153\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(scale\ *\ oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00155}00155\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00156}00156\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oper\ :\ es.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a2d726d7e7c9b22cfd39bc02be97c95e8}{implicitOperators}}())}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{comment}{/*\ @brief\ construct\ a\ linear\ system\ and\ force\ assembly}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00115}00115\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00116}00116\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ps\ a\ vector\ of\ functor\ performing\ transformation\ on\ the\ created\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00117}00117\ \textcolor{comment}{\ \ \ \ \ *\ @return\ a\ tuple\ of\ the\ sparsity\ pattern\ and\ the\ assembled\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00118}00118\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00119}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8766805a9c132e8dda737909b27ed08a}{00119}}\ \ \ \ \ std::tuple<la::SparsityPattern,\ la::LinearSystem<ValueType,\ localIdx>>\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8766805a9c132e8dda737909b27ed08a}{assemble}}(}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ std::span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<ValueType>}}>\ ps\ =\ \{\}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00124}00124\ \ \ \ \ )\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00125}00125\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sp\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la::SparsityPattern}}(mesh);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ls\ =\ la::createEmptyLinearSystem<ValueType,\ localIdx>(mesh,\ sp);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8766805a9c132e8dda737909b27ed08a}{assemble}}(t,\ dt,\ sp,\ ls,\ ps);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{sp,\ ls\};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00130}00130\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{comment}{/*\ @brief\ assemble\ into\ a\ given\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00133}00133\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00134}00134\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ps\ a\ vector\ of\ functor\ performing\ transformation\ on\ the\ created\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00135}00135\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00136}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ab67960f6173eca4721a5cf280de2a1d1}{00136}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ab67960f6173eca4721a5cf280de2a1d1}{assemble}}(}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la::SparsityPattern}}\&\ sp,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ std::span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<ValueType>}}>\ ps\ =\ \{\}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00142}00142\ \ \ \ \ )\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00143}00143\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a099db7c6200763a8fba124c816f7e108}{assembleSpatialOperator}}(ls);\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ spatial\ operator}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a580e3642feb0c0c2c4509fa0f455e7bf}{assembleTemporalOperator}}(ls,\ t,\ dt);\ \textcolor{comment}{//\ add\ temporal\ operators}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ perform\ post\ assembly\ transformations}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ p\ :\ ps)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ p(sp,\ ls);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00152}00152\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00154}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{00154}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\&\ oper)\ \{\ spatialOperators\_.push\_back(oper);\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00156}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a769ee099e363146dbff60666b62c2a6e}{00156}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a769ee099e363146dbff60666b62c2a6e}{addOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\&\ oper)}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00157}00157\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(scale\ *\ oper);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ temporalOperators\_.push\_back(oper);}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00159}00159\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oper\ :\ es.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a9f1b1c3cc8691589cfae7ae2a7a975fc}{explicitOperators}}())}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00161}00161\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(scale\ *\ oper);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00163}00163\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00165}00165\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00166}00166\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00167}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_afc428714f57df9a1de192a6c6af1c47c}{00167}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_afc428714f57df9a1de192a6c6af1c47c}{operator-\/}}(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00168}00168\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00169}00169\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_af313e6ab82947b615550bd71d8050234}{addExpression}}(-\/1.0\ *\ rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00171}00171\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00161}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a77198421f4c3765700d158f9d675264c}{00161}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a77198421f4c3765700d158f9d675264c}{addExpression}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ equation)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00162}00162\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ equation.temporalOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ temporalOperators\_.push\_back(oper);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ oper\ :\ equation.spatialOperators\_)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ spatialOperators\_.push\_back(oper);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00171}00171\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00172}00172\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00173}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_ad076f0422e627810af06821be3750b1a}{00173}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_afc428714f57df9a1de192a6c6af1c47c}{operator-\/}}(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00174}00174\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00175}00175\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(-\/1.0\ *\ rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00177}00177\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00178}00178\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00179}\mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_aa5e7279703cfb7e7bb2279a3565e57ca}{00179}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ \mbox{\hyperlink{namespaceNeoFOAM_1_1dsl_afc428714f57df9a1de192a6c6af1c47c}{operator-\/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator}{Operator}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00180}00180\ \{}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00181}00181\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression}{Expression}}\ expr(lhs.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Operator_af2413ddc76a4a8ac4a86fcde093aebf6}{exec}}());}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00182}00182\ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(lhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00183}00183\ \ \ \ \ expr.\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Expression_a0b82fd0686a5abb7c9d86621d1d14ece}{addOperator}}(\mbox{\hyperlink{classNeoFOAM_1_1dsl_1_1Coeff}{Coeff}}(-\/1)\ *\ rhs);}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00184}00184\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00185}00185\ \}}
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00186}00186\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00187}00187\ }
-\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00188}00188\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM::dsl}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{comment}{/*\ @brief\ getter\ for\ the\ total\ number\ of\ terms\ in\ the\ equation\ */}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00175}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a776feac445b6216773eaa9a9f16a265a}{00175}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a776feac445b6216773eaa9a9f16a265a}{size}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00176}00176\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(temporalOperators\_.size()\ +\ spatialOperators\_.size());}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00178}00178\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00180}00180\ \ \ \ \ \textcolor{comment}{//\ getters}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00181}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066}{00181}}\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<TemporalOperator<ValueType>>\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066}{temporalOperators}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00182}00182\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ temporalOperators\_;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00184}00184\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00186}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8317117e1acfdddb07e56f55ab9f394a}{00186}}\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<SpatialOperator<ValueType>>\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8317117e1acfdddb07e56f55ab9f394a}{spatialOperators}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00187}00187\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ spatialOperators\_;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00189}00189\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00191}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_af83cc00b92f50885174cd7a008473852}{00191}}\ \ \ \ \ std::vector<TemporalOperator<ValueType>>\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_af83cc00b92f50885174cd7a008473852}{temporalOperators}}()\ \{\ \textcolor{keywordflow}{return}\ temporalOperators\_;\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00193}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a83b1c51af4cdfd9852baeeb37c7fb14b}{00193}}\ \ \ \ \ std::vector<SpatialOperator<ValueType>>\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a83b1c51af4cdfd9852baeeb37c7fb14b}{spatialOperators}}()\ \{\ \textcolor{keywordflow}{return}\ spatialOperators\_;\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00195}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{00195}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ exec\_;\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00197}00197\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00198}00198\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00201}00201\ \ \ \ \ std::vector<TemporalOperator<ValueType>>\ temporalOperators\_;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00203}00203\ \ \ \ \ std::vector<SpatialOperator<ValueType>>\ spatialOperators\_;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00204}00204\ \};}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00206}00206\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00207}00207\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00208}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a00d1322453ebe36185dac060845db358}{00208}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a00d1322453ebe36185dac060845db358}{operator+}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00209}00209\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00210}00210\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a77198421f4c3765700d158f9d675264c}{addExpression}}(rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00211}00211\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00212}00212\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00214}00214\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00215}00215\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00216}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a03a2b36294837ab1965156992fe10ccd}{00216}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a00d1322453ebe36185dac060845db358}{operator+}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00217}00217\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00218}00218\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00219}00219\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00220}00220\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00221}00221\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00222}00222\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ leftOperator,\ \textcolor{keyword}{typename}\ rightOperator>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00223}00223\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<typename\ leftOperator::VectorValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00224}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a191f28ba2eb12e6ca3fdc7c25929048f}{00224}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a00d1322453ebe36185dac060845db358}{operator+}}(leftOperator\ lhs,\ rightOperator\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00225}00225\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00226}00226\ \ \ \ \ \textcolor{keyword}{using\ }ValueType\ =\ \textcolor{keyword}{typename}\ leftOperator::VectorValueType;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00227}00227\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ expr(lhs.exec());}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00228}00228\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(lhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00229}00229\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00230}00230\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00231}00231\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00233}00233\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00234}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a619c9712731a205faddf7f7b88457909}{00234}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ scale,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\&\ es)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00235}00235\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00236}00236\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ expr(es.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}());}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00237}00237\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oper\ :\ es.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066}{temporalOperators}}())}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00238}00238\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(scale\ *\ oper);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00240}00240\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00241}00241\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oper\ :\ es.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a8317117e1acfdddb07e56f55ab9f394a}{spatialOperators}}())}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00242}00242\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(scale\ *\ oper);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00244}00244\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00245}00245\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00246}00246\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00247}00247\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00248}00248\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00249}00249\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00250}00250\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00251}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ac3cf7631c2fa8589c6cafa380621827b}{00251}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ac3cf7631c2fa8589c6cafa380621827b}{operator-\/}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00252}00252\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00253}00253\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a77198421f4c3765700d158f9d675264c}{addExpression}}(-\/1.0\ *\ rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00254}00254\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00255}00255\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00256}00256\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00257}00257\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00258}00258\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<ValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00259}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ac6ecc9a0fd680f9e8504a39a5a0ca629}{00259}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ac3cf7631c2fa8589c6cafa380621827b}{operator-\/}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00260}00260\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00261}00261\ \ \ \ \ lhs.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(-\/1.0\ *\ rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00262}00262\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00263}00263\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00264}00264\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00265}00265\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ leftOperator,\ \textcolor{keyword}{typename}\ rightOperator>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00266}00266\ [[nodiscard]]\ \textcolor{keyword}{inline}\ Expression<typename\ leftOperator::VectorValueType>}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00267}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a590fbdffc01dc7fad7632c70e36a42a8}{00267}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ac3cf7631c2fa8589c6cafa380621827b}{operator-\/}}(leftOperator\ lhs,\ rightOperator\ rhs)}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00268}00268\ \{}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00269}00269\ \ \ \ \ \textcolor{keyword}{using\ }ValueType\ =\ \textcolor{keyword}{typename}\ leftOperator::VectorValueType;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00270}00270\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<ValueType>}}\ expr(lhs.exec());}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00271}00271\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(lhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00272}00272\ \ \ \ \ expr.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a962146977092abb074c409b5d09a16e1}{addOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}(-\/1)\ *\ rhs);}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00273}00273\ \ \ \ \ \textcolor{keywordflow}{return}\ expr;}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00274}00274\ \}}
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00275}00275\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{expression_8hpp_source_l00277}00277\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
 
 \end{DoxyCode}
