@@ -17,10 +17,11 @@ jobs:
   build-and-test-neon:
     name: Trigger NeoN + NeoFOAM CI on GPU
     runs-on: ubuntu-latest
-    timeout-minutes: 1440
+    timeout-minutes: 1440 # 24 hours
 
     outputs:
       branch: ${{ steps.branch.outputs.branch }}
+      skip-intel: ${{ steps.skip-intel.outputs.skip-intel }}
 
     if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
 
@@ -33,7 +34,7 @@ jobs:
       NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
       NEOFOAM_PROJECT_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_PROJECT_TOKEN }}
       NEOFOAM_TRIGGER_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_TRIGGER_TOKEN }}
-      MAX_WAIT_MINUTES: 1440  # 24 hours
+      MAX_WAIT_MINUTES: 1440
 
     steps:
       - name: Checkout repository
@@ -50,6 +51,15 @@ jobs:
             BRANCH=${GITHUB_REF_NAME#refs/heads/}
           fi
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Determine Skip-Intel label
+        id: skip-intel
+        run: |
+          if [[ "${{ contains(toJson(github.event.pull_request.labels.*.name), 'Skip-Intel') }}" == "true" ]]; then
+            echo "skip-intel=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip-intel=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Push commit to NeoN LRZ GitLab
         run: |
@@ -77,7 +87,8 @@ jobs:
             "${{ steps.branch.outputs.branch }}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[BENCHMARK]=false"
+            "variables[BENCHMARK]=false" \
+            "variables[SKIP_INTEL]=${{ steps.skip-intel.outputs.skip-intel }}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -103,7 +114,8 @@ jobs:
             "${NEOFOAM_TRIGGER_TOKEN}" \
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
             "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
-            "variables[BENCHMARK]=false"
+            "variables[BENCHMARK]=false" \
+            "variables[SKIP_INTEL]=${{ steps.skip-intel.outputs.skip-intel }}"
 
       - name: Wait for NeoFOAM LRZ GitLab CI pipeline
         run: |
@@ -115,9 +127,9 @@ jobs:
   benchmark:
     name: Benchmark NeoN on GPU
     runs-on: ubuntu-latest
-    timeout-minutes: 1440 # 24 hours
-
+    timeout-minutes: 1440
     needs: [build-and-test-neon]
+
     if: contains(toJson(github.event.pull_request.labels), 'benchmark')
 
     env:
@@ -125,6 +137,7 @@ jobs:
       LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
       BRANCH: ${{ needs.build-and-test-neon.outputs.branch }}
+      SKIP_INTEL: ${{ needs.build-and-test-neon.outputs.skip-intel }}
       NEON_PROJECT_TOKEN: ${{ secrets.GITLAB_PROJECT_TOKEN }}
       NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
 
@@ -147,7 +160,8 @@ jobs:
             "${BRANCH}" \
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
-            "variables[BENCHMARK]=true"
+            "variables[BENCHMARK]=true" \
+            "variables[SKIP_INTEL]=${SKIP_INTEL}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking
         run: |
