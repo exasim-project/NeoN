@@ -50,6 +50,7 @@ jobs:
           else
             BRANCH=${GITHUB_REF_NAME#refs/heads/}
           fi
+          echo "Determined NeoN branch: $BRANCH"
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Determine Skip-Intel label
