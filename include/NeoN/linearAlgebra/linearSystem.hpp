@@ -172,7 +172,8 @@ createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& spa
             mColIdx[bfacei] = celli + diagOffset[celli];
             rhsValue[bfacei] = zero<ValueType>();
             rhsIdx[bfacei] = celli;
-        }
+        },
+        "createEmptyLinearSystem"
     );
 
     Dictionary aux;

@@ -64,6 +64,20 @@ cpmaddpackage(
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
+if(${NeoN_WITH_SPDLOG})
+  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL OFF")
+  cpmaddpackage(
+    NAME
+    spdlog
+    GITHUB_REPOSITORY
+    gabime/spdlog
+    VERSION
+    ${NeoN_SPDLOG_VERSION}
+    OPTIONS
+    ${SPDLOG_OPTIONS}
+    SYSTEM)
+endif()
+
 if(${NeoN_WITH_ADIOS2})
 
   set(ADIOS2_KOKKOS_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/adios2_kokkos.patch)

@@ -32,7 +32,8 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
         source.range(),
         KOKKOS_LAMBDA(const localIdx celli) {
             sourceView[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
-        }
+        },
+        "ddtOpertator::explicitOperation"
     );
 }
 
@@ -56,7 +57,8 @@ void DdtOperator<ValueType>::implicitOperation(
             const auto commonCoef = operatorScaling[celli] * vol[celli] * dtInver;
             matrix.values[idx] += commonCoef * one<ValueType>();
             rhs[celli] += commonCoef * oldVector[celli];
-        }
+        },
+        "ddtOpertator::implicitOperation"
     );
 }
 

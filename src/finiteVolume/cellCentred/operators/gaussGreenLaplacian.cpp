@@ -38,7 +38,8 @@ void computeLaplacianExp(
             ValueType flux = faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[owner[i]], flux);
             Kokkos::atomic_sub(&result[neighbour[i]], flux);
-        }
+        },
+        "computeLaplacianExplicitInternal"
     );
 
     parallelFor(
@@ -48,7 +49,8 @@ void computeLaplacianExp(
             auto own = surfFaceCells[i - nInternalFaces];
             ValueType valueOwn = faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[own], valueOwn);
-        }
+        },
+        "computeLaplacianExplicitBoundary"
     );
 
     parallelFor(
@@ -56,7 +58,8 @@ void computeLaplacianExp(
         {0, mesh.nCells()},
         KOKKOS_LAMBDA(const localIdx celli) {
             result[celli] *= operatorScaling[celli] / vol[celli];
-        }
+        },
+        "computeLaplacianExplicitCells"
     );
 }
 

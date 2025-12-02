@@ -11,6 +11,7 @@
 #include "NeoN/core/executor/GPUExecutor.hpp"
 #include "NeoN/core/executor/CPUExecutor.hpp"
 #include "NeoN/core/error.hpp"
+#include "NeoN/core/logging.hpp"
 
 namespace NeoN
 {
@@ -25,6 +26,19 @@ inline void fence(const Executor& exec)
         Kokkos::fence();
     }
 }
+
+/*@brief convenience function to get access to associated logger */
+inline std::shared_ptr<const Logging::BaseLogger> getLogger(const Executor& exec)
+{
+    return std::visit([](auto e) { return e.getLogger(); }, exec);
+}
+
+/*@brief convenience function to get access to associated logger */
+inline void setLogger(Executor& exec, std::shared_ptr<Logging::BaseLogger> logger)
+{
+    std::visit([logger](auto& e) { e.setLogger(logger); }, exec);
+}
+
 
 /**
  * @brief Checks if two executors are equal, i.e. they are of the same type.

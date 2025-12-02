@@ -1,5 +1,6 @@
-# Version 0.2.0 (unreleased)
+# Version 0.2.0 (2025/12/03)
 ## Features
+- Add basic logging functionality [#396](https://github.com/exasim-project/NeoN/pull/396)
 - Improved support for assembling and solving expression of Field<Vec3>. [#370](https://github.com/exasim-project/NeoN/pull/370),[#374](https://github.com/exasim-project/NeoN/pull/374), [#379](https://github.com/exasim-project/NeoN/pull/379)
 ### Refactoring
 - Vector split into an generic container class, Array, and the Vector class specialized for as a mathematical operations.  [#318](https://github.com/exasim-project/NeoN/pull/318)

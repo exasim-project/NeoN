@@ -42,7 +42,8 @@ void computeLinearInterpolation(
             {
                 dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
             }
-        }
+        },
+        "computeLinearInterpolation"
     );
 }
 

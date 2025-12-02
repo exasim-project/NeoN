@@ -31,7 +31,8 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
         source.range(),
         KOKKOS_LAMBDA(const localIdx celli) {
             sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
-        }
+        },
+        "sourceTerm::explicitOperation"
     );
 }
 
@@ -51,7 +52,8 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
             localIdx idx = matrix.rowOffs[celli] + diagOffs[celli];
             matrix.values[idx] +=
                 operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
-        }
+        },
+        "sourceTerm::implicitOperation"
     );
 }
 

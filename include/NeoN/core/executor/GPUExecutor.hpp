@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/logging.hpp"
+
 #include <Kokkos_Core.hpp>
 
 namespace NeoN
@@ -15,7 +17,7 @@ namespace NeoN
  *
  * @ingroup Executor
  */
-class GPUExecutor
+class GPUExecutor : public Logging::SupportsLoggingMixin
 {
 public:
 

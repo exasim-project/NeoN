@@ -10,4 +10,5 @@ Gregor Weiss <gregor.weiss@hlrs.de>, High-Performance Computing Center Stuttgart
 Henning Scheufler <henning.scheufler@web.de>\
 Marcel Koch <marcel.koch@kit.edu>, Karlsruhe Institute of Technology\
 Roman Mishchuk <roman.mishchuk@tum.de>, Technical University of Munich\
-Yu-Hsiang Tsai <yhmtsai@gmail.com>, Technical University of Munich
+Yu-Hsiang Tsai <yhmtsai@gmail.com>, Technical University of Munich\
+Dheeraj Raghunathan <dheeraj.raghunathan@tum.de>, Technical University of Munich

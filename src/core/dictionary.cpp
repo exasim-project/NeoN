@@ -131,10 +131,7 @@ const Dictionary& Dictionary::subDict(const std::string& key) const
     return std::any_cast<const Dictionary&>(operator[](key));
 }
 
-bool Dictionary::isDict(const std::string& key) const
-{
-    return contains(key) && std::any_cast<Dictionary>(&data_.at(key));
-}
+bool Dictionary::isDict(const std::string& key) const { return isType<Dictionary>(key); }
 
 // get keys of the dictionary
 std::vector<std::string> Dictionary::keys() const

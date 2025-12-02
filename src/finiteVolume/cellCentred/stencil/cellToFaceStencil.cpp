@@ -14,7 +14,7 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 {
     const auto exec = mesh_.exec();
     const auto nCells = mesh_.nCells();
-    const auto [faceOwner, faceNeighbour, faceFaceCells] =
+    const auto [faceOwner, faceNeighbour, boundaryFaceCells] =
         views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
     const auto nInternalFaces = mesh_.nInternalFaces();
@@ -26,18 +26,19 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx i) {
-            Kokkos::atomic_increment(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]
-            ); // hit on performance on serial
+            Kokkos::atomic_increment(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]);
             Kokkos::atomic_increment(&nFacesPerCellView[static_cast<size_t>(faceNeighbour[i])]);
-        }
+        },
+        "countFacesPerCellInternal"
     );
 
     parallelFor(
         exec,
-        {0, faceFaceCells.size()},
+        {0, boundaryFaceCells.size()},
         KOKKOS_LAMBDA(const localIdx i) {
-            Kokkos::atomic_increment(&nFacesPerCellView[faceFaceCells[i]]);
-        }
+            Kokkos::atomic_increment(&nFacesPerCellView[boundaryFaceCells[i]]);
+        },
+        "countFacesPerCellBoundary"
     );
 
     SegmentedVector<localIdx, localIdx> stencil(nFacesPerCell); // guessed
@@ -52,31 +53,27 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
             localIdx owner = faceOwner[facei];
             localIdx neighbour = faceNeighbour[facei];
 
-            // return the oldValues
-            localIdx segIdxOwn = Kokkos::atomic_fetch_add(
-                &nFacesPerCellView[owner], 1
-            ); // hit on performance on serial
+            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1);
             localIdx segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellView[neighbour], 1);
 
             auto startSegOwn = segment[owner];
             auto startSegNei = segment[neighbour];
             Kokkos::atomic_assign(&stencilValues[startSegOwn + segIdxOwn], facei);
             Kokkos::atomic_assign(&stencilValues[startSegNei + segIdxNei], facei);
-        }
+        },
+        "computeStencilInternal"
     );
 
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + faceFaceCells.size()},
+        {nInternalFaces, nInternalFaces + boundaryFaceCells.size()},
         KOKKOS_LAMBDA(const localIdx facei) {
-            localIdx owner = faceFaceCells[facei - nInternalFaces];
-            // return the oldValues
-            localIdx segIdxOwn = Kokkos::atomic_fetch_add(
-                &nFacesPerCellView[owner], 1
-            ); // hit on performance on serial
+            localIdx owner = boundaryFaceCells[facei - nInternalFaces];
+            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1);
             localIdx startSegOwn = segment[owner];
             Kokkos::atomic_assign(&stencilValues[startSegOwn + segIdxOwn], facei);
-        }
+        },
+        "computeStencilBound"
     );
 
     return stencil;

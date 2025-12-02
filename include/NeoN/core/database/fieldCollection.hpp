@@ -11,6 +11,7 @@
 #include "NeoN/core/demangle.hpp"
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/logging.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
@@ -208,6 +209,7 @@ using CreateFunction = std::function<VectorDocument(NeoN::Database& db)>;
  */
 class VectorCollection : public CollectionMixin<VectorDocument>
 {
+
 public:
 
     /**
@@ -347,6 +349,7 @@ public:
         VectorType& field = fd.field<VectorType>();
         field.key = key;
         field.fieldCollectionName = name();
+
         return field;
     }
 };
