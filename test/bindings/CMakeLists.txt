@@ -16,3 +16,4 @@ function(neon_bindings_test TEST)
 endfunction()
 
 neon_bindings_test(executor)
+neon_bindings_test(mesh)
