@@ -17,7 +17,7 @@
 namespace nb = nanobind;
 using namespace nb::literals;
 
-NB_MODULE(my_ext, m)
+NB_MODULE(neon, m)
 {
     m.doc() = "NeoN Python bindings";
 
