@@ -27,6 +27,7 @@ NeoN has the following requirements
 For GPU support
 * NVIDIA: CUDA _12+_
 * AMD: ROCm _6.4.1_
+* Intel: oneAPI Base Toolkit _2024.2_
 
 For development it is required to use [pre-commit](https://pre-commit.com/).
 
