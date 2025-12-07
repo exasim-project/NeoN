@@ -85,7 +85,7 @@ In the case of Intel PVC GPUs, the following flags ensures sycl support.
    -DKokkos_ENABLE_SYCL=ON
    -DKokkos_ARCH_INTEL_PVC=ON
 
-Note that the current support for NeoN on Intel GPUs are only experimental.
+Please note that current support for NeoN on Intel GPUs is experimental.
 
 After configuring for GPU support, you can continue to build NeoN.
 
