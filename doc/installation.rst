@@ -75,7 +75,7 @@ Then you can enable HIP during the configure step with the following flags.
    -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON  # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
 
-In the case of Intel PVC GPUs, the following flags ensures sycl support.
+In the case of Intel PVC GPUs, the following flags ensure sycl support.
 
 .. code-block:: bash
 
