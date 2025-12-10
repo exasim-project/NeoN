@@ -11,12 +11,12 @@ namespace NeoN::la
 
 const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
 {
-    StencilDataBase& stencilDb = mesh.stencilDB();
-    if (!stencilDb.contains("SparsityPattern"))
+    auto& db = mesh.stencilDB();
+    if (!db.contains("SparsityPattern"))
     {
-        stencilDb.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
+        db.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
     }
-    return stencilDb.get<SparsityPattern>("SparsityPattern");
+    return db.get<SparsityPattern>("SparsityPattern");
 }
 
 
