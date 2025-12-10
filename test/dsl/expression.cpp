@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     const size_t size {1};
     NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());

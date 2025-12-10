@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     auto fA = NeoN::Vector<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
     auto bf = NeoN::BoundaryData<TestType>(exec, mesh.boundaryMesh().offset());

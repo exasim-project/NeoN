@@ -40,19 +40,19 @@ class LogEvent
 
 public:
 
-    LogEvent(std::source_location location, Level level, std::string_view message)
-        : level(level), message(message), location(location)
-    {
-        creationTS = std::chrono::steady_clock::now();
-    };
-
-    std::source_location location; // where log message was created
-
     Level level; // the level the event represents e.g. Trace, Debug, ...
 
     std::string message; // log message
 
+    std::source_location location; // where log message was created
+
     std::chrono::time_point<std::chrono::steady_clock> creationTS; // store time of constructor call
+
+    LogEvent(std::source_location locationIn, Level levelIn, std::string_view messageIn)
+        : level(levelIn), message(messageIn), location(locationIn)
+    {
+        creationTS = std::chrono::steady_clock::now();
+    };
 
     /* @brief convert event to a json string */
     std::string toJson(std::string_view delim)

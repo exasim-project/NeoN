@@ -30,7 +30,7 @@ namespace detail
 template<typename VectorType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    const la::SparsityPattern& sp,
+    std::shared_ptr<const la::SparsityPattern> sp,
     la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
     VectorType& solution,
     scalar t,

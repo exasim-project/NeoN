@@ -25,7 +25,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 
     const NeoN::localIdx nCells = 10;
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto sp = la::SparsityPattern {mesh};
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);

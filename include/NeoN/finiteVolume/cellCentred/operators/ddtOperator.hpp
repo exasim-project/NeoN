@@ -46,14 +46,11 @@ public:
 
     void read(const Input&);
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
-
     std::string getName() const { return "DdtOperator"; }
 
 private:
 
     // NOTE ddtOperator does not have a FactoryClass
-    const la::SparsityPattern& sparsityPattern_;
 
     DdtScheme scheme_ {DdtScheme::BDF1};
 };

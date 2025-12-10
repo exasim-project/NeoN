@@ -27,8 +27,6 @@ inline void applySymmetry(
         mesh.boundaryMesh().faceCells()
     );
 
-    const localIdx nInternalFaces = mesh.nInternalFaces();
-
     NeoN::parallelFor(
         domainVector.exec(),
         range,
@@ -55,8 +53,6 @@ inline void applySymmetry(
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().nf()
     );
-
-    const localIdx nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         domainVector.exec(),

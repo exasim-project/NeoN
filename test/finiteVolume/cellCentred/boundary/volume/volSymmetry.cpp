@@ -45,14 +45,14 @@ TEST_CASE("symmetry_volume")
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - refValuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
 
             for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - valuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
@@ -88,7 +88,7 @@ TEST_CASE("symmetry_volume")
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - refValuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
                 const auto intV = internalH.view()[ownerV];

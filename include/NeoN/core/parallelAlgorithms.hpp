@@ -60,7 +60,7 @@ void fenceIfLogger(const ExecutorType& exec)
 /* @brief execute parallelFor with concrete executor */
 template<typename ExecutorType, parallelForKernel Kernel>
 void parallelFor(
-    const ExecutorType& exec, std::pair<localIdx, localIdx> range, Kernel kernel, std::string name
+    const ExecutorType&, std::pair<localIdx, localIdx> range, Kernel kernel, std::string name
 )
 {
     auto [start, end] = range;
@@ -111,10 +111,7 @@ template<
     typename ValueType,
     parallelForContainerKernel<ValueType> Kernel>
 void parallelFor(
-    const Executor& exec,
-    ContType<ValueType>& container,
-    Kernel kernel,
-    std::string name = "parallelFor"
+    const Executor&, ContType<ValueType>& container, Kernel kernel, std::string name = "parallelFor"
 )
 {
     auto view = container.view();

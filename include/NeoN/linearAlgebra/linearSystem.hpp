@@ -55,6 +55,13 @@ struct BoundaryCoefficients
 template<typename ValueType, typename IndexType>
 class LinearSystem
 {
+
+    void validate()
+    {
+        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+    }
+
 public:
 
     LinearSystem(
@@ -64,12 +71,12 @@ public:
     )
         : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
     {
-        NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
-        NF_ASSERT(matrix.nRows() == rhs.size(), "Matrix and RHS size mismatch");
-    };
+        validate();
+    }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_) {};
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_)
+    {}
 
     LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
 
@@ -140,17 +147,18 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
  * pattern
  */
 template<typename ValueType, typename IndexType>
-LinearSystem<ValueType, IndexType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
+LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
+    const UnstructuredMesh& mesh, std::shared_ptr<const SparsityPattern> sparsity
+)
 {
     const auto& exec = mesh.exec();
-    localIdx rows {sparsity.rows()};
-    localIdx nnzs {sparsity.nnz()};
+    localIdx rows {sparsity->rows()};
+    localIdx nnzs {sparsity->nnz()};
 
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
     const auto [diagOffset, rowOffs, faceCells] =
-        views(sparsity.diagOffset(), sparsity.rowOffs(), mesh.boundaryMesh().faceCells());
+        views(sparsity->diagOffset(), sparsity->rowOffs(), mesh.boundaryMesh().faceCells());
 
     BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
         Vector<ValueType>(exec, nBoundaryFaces),
@@ -181,7 +189,7 @@ createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& spa
 
     return {
         CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
+            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity
         },
         Vector<ValueType> {exec, rows, zero<ValueType>()},
         aux

@@ -9,14 +9,14 @@
 namespace NeoN::la
 {
 
-const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
+std::shared_ptr<const SparsityPattern> SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
 {
     auto& db = mesh.stencilDB();
     if (!db.contains("SparsityPattern"))
     {
-        db.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
+        db.insert(std::string("SparsityPattern"), std::make_shared<const SparsityPattern>(mesh));
     }
-    return db.get<SparsityPattern>("SparsityPattern");
+    return db.get<std::shared_ptr<const SparsityPattern>>("SparsityPattern");
 }
 
 
@@ -39,7 +39,6 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
 
     auto [nFacesPerCellHV, neiOffsetHV, ownOffsetHV, diagOffsetHV, faceOwnHV, faceNeiHV] =
         views(nFacesPerCellH, neiOffsetH, ownOffsetH, diagOffsetH, faceOwnH, faceNeiH);
-
 
     // accumulate number non-zeros per row
     // only the internalfaces define the sparsity pattern
@@ -223,15 +222,6 @@ void updateSparsityPattern(const UnstructuredMesh& mesh, SparsityPattern& sp)
     updateSparsityPatternSerial(mesh, sp);
 }
 
-SparsityPattern createSparsity(const UnstructuredMesh& mesh)
-{
-    const auto exec = mesh.exec();
-    const auto nCells = mesh.nCells();
-    const auto nnzs = 2 * mesh.nInternalFaces() + nCells;
-    auto ret = SparsityPattern(exec, nCells, nnzs);
-    updateSparsityPattern(mesh, ret);
-    return ret;
-}
 
 SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
     : rowOffs_(mesh.exec(), mesh.nCells() + 1, 0),
@@ -243,11 +233,77 @@ SparsityPattern::SparsityPattern(const UnstructuredMesh& mesh)
     updateSparsityPattern(mesh, *this);
 }
 
+SparsityPattern::SparsityPattern(
+    Vector<localIdx>&& rowOffs,
+    Vector<localIdx>&& colIdx,
+    Array<uint8_t>&& ownerOffset,
+    Array<uint8_t>&& neighbourOffset,
+    Array<uint8_t>&& diagOffset
+)
+    : rowOffs_(std::move(rowOffs)), colIdxs_(std::move(colIdx)),
+      ownerOffset_(std::move(ownerOffset)), neighbourOffset_(std::move(neighbourOffset)),
+      diagOffset_(std::move(neighbourOffset)) {};
 
-SparsityPattern::SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs)
-    : rowOffs_(exec, nRows + 1, 0), colIdxs_(exec, nnzs, 0),
-      ownerOffset_(exec, (nnzs - nRows) / 2, 0), neighbourOffset_(exec, (nnzs - nRows) / 2, 0),
-      diagOffset_(exec, nRows, 0)
+/*@brief given colIdx and rowOffs this functions computes the corresponding offsets within a matrix
+ * row*/
+std::tuple<Array<uint8_t>, Array<uint8_t>, Array<uint8_t>>
+computeOffsets(const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs)
+{
+    auto exec = rowOffs.exec();
+    auto nnzs = colIdxs.size();
+
+    auto ownerOffset = Array<uint8_t>(exec, nnzs); //! mapping from faceId to lower index in a row
+    auto neighbourOffset =
+        Array<uint8_t>(exec, nnzs);               //! mapping from faceId to upper index in a row
+    auto diagOffset = Array<uint8_t>(exec, nnzs); //! mapping from faceId to column index in a row
+
+    // FIXME
+    // parallelFor(
+    //     SerialExecutor {},
+    //     {0, nInternalFaces},
+    //     KOKKOS_LAMBDA(const localIdx facei) {
+
+
+    //     },
+    //     "computeOffsets::computeOwnerOffset"
+    // );
+
+    // parallelFor(
+    //     SerialExecutor {},
+    //     {0, nInternalFaces},
+    //     KOKKOS_LAMBDA(const localIdx facei) {
+
+    //     },
+    //     "computeOffsets::computediagOffset"
+    // );
+
+    // parallelFor(
+    //     SerialExecutor {},
+    //     {0, nInternalFaces},
+    //     KOKKOS_LAMBDA(const localIdx facei) {
+    //     },
+    //     "computeOffsets::computediagOffset"
+    // );
+
+
+    return {ownerOffset, neighbourOffset, diagOffset};
+}
+
+SparsityPattern::SparsityPattern(
+    Executor exec, const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs
+)
+    : rowOffs_(rowOffs), colIdxs_(colIdxs), ownerOffset_(exec, int(1), 0),
+      neighbourOffset_(exec, int(1), 0), diagOffset_(exec, rowOffs.size(), 0)
+{
+    auto [ownOffs, neighOffs, diagOffs] = computeOffsets(colIdxs, rowOffs);
+    ownerOffset_ = ownOffs;
+    neighbourOffset_ = neighOffs;
+    diagOffset_ = diagOffs;
+}
+
+SparsityPattern::SparsityPattern(const SparsityPattern& sp)
+    : exec_(sp.exec_), rowOffs_(sp.rowOffs_), colIdxs_(sp.colIdxs_), ownerOffset_(sp.ownerOffset_),
+      neighbourOffset_(sp.neighbourOffset_), diagOffset_(sp.diagOffset_)
 {}
 
 const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
