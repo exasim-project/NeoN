@@ -16,6 +16,9 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
+    // [ 1 .  . ]
+    // [ . 5  6 ]
+    // [ . 8 .  ]
     NeoN::Vector<TestType> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
@@ -338,6 +341,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
     );
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
+
     NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowOffsSparse
     );

@@ -22,21 +22,21 @@ TEST_CASE("SparsityPattern")
 
     auto nCells = 10;
     auto nFaces = 9;
-    auto mesh = create1DUniformMesh(exec, nCells);
 
-    auto sp = NeoN::la::createSparsity(mesh);
+    auto mesh = create1DUniformMesh(exec, nCells);
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     SECTION("Can construct sparsity pattern " + execName)
     {
         // some basic sanity checks
-        REQUIRE(sp.ownerOffset().size() == nFaces);
-        REQUIRE(sp.neighbourOffset().size() == nFaces);
-        REQUIRE(sp.diagOffset().size() == nCells);
+        REQUIRE(sp->ownerOffset().size() == nFaces);
+        REQUIRE(sp->neighbourOffset().size() == nFaces);
+        REQUIRE(sp->diagOffset().size() == nCells);
     }
 
     SECTION("has correct diagOffs" + execName)
     {
-        auto diagOffs = sp.diagOffset().copyToHost();
+        auto diagOffs = sp->diagOffset().copyToHost();
         auto diagOffsS = diagOffs.view();
 
         REQUIRE(diagOffsS[0] == 0);
@@ -53,7 +53,7 @@ TEST_CASE("SparsityPattern")
 
     SECTION("Can produce rowOffs " + execName)
     {
-        auto rowPtr = sp.rowOffs().copyToHost();
+        auto rowPtr = sp->rowOffs().copyToHost();
         auto rowPtrH = rowPtr.view();
 
         REQUIRE(rowPtrH[0] == 0);
@@ -71,7 +71,7 @@ TEST_CASE("SparsityPattern")
 
     SECTION("Can produce column indices " + execName)
     {
-        auto colIdx = sp.colIdxs();
+        auto colIdx = sp->colIdxs();
         auto colIdxH = colIdx.copyToHost();
         auto colIdxHS = colIdxH.view();
 

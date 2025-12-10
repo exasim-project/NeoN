@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
+#include "sparsityPattern.hpp"
 
 #include <type_traits>
 
@@ -29,8 +30,8 @@ struct CSRMatrixView
      */
     CSRMatrixView(
         const View<ValueType>& valueView,
-        const View<IndexType>& colIdxsView,
-        const View<IndexType>& rowOffsView
+        const View<const IndexType>& colIdxsView,
+        const View<const IndexType>& rowOffsView
     )
         : values(valueView), colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 
@@ -70,9 +71,9 @@ struct CSRMatrixView
     KOKKOS_INLINE_FUNCTION
     ValueType& entry(const IndexType offset) const { return values[offset]; }
 
-    View<ValueType> values;  //!< View to the values of the CSR matrix.
-    View<IndexType> colIdxs; //!< View to the column indices of the CSR matrix.
-    View<IndexType> rowOffs; //!< View to the row offsets for the CSR matrix.
+    View<ValueType> values;        //!< View to the values of the CSR matrix.
+    View<const IndexType> colIdxs; //!< View to the column indices of the CSR matrix.
+    View<const IndexType> rowOffs; //!< View to the row offsets for the CSR matrix.
 };
 
 /**
@@ -85,7 +86,29 @@ template<typename ValueType, typename IndexType>
 class CSRMatrix
 {
 
+    void validate()
+    {
+        NF_ASSERT(
+            values_.exec() == sparsityPattern_->colIdxs().exec(), "Executors are not the same"
+        );
+        NF_ASSERT(
+            values_.exec() == sparsityPattern_->rowOffs().exec(), "Executors are not the same"
+        );
+    }
+
 public:
+
+    /**
+     * @brief Constructor for CSRMatrix.
+     * @param values The non-zero values of the matrix.
+     * @param colIdxs The column indices for each non-zero value.
+     * @param rowOffs The starting index in values/colIdxs for each row.
+     */
+    CSRMatrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern> sp)
+        : values_(values), sparsityPattern_(sp)
+    {
+        validate();
+    }
 
     /**
      * @brief Constructor for CSRMatrix.
@@ -98,13 +121,11 @@ public:
         const Vector<IndexType>& colIdxs,
         const Vector<IndexType>& rowOffs
     )
-        : values_(values), colIdxs_(colIdxs), rowOffs_(rowOffs)
+        : values_(values),
+          sparsityPattern_(std::make_shared<SparsityPattern>(values.exec(), colIdxs, rowOffs))
     {
-        NF_ASSERT(values.exec() == colIdxs_.exec(), "Executors are not the same");
-        NF_ASSERT(values.exec() == rowOffs_.exec(), "Executors are not the same");
+        validate();
     }
-
-    CSRMatrix(const Executor exec) : values_(exec, 0), colIdxs_(exec, 0), rowOffs_(exec, 0) {}
 
     /**
      * @brief Default destructor.
@@ -121,11 +142,7 @@ public:
      * @brief Get the number of rows in the matrix.
      * @return Number of rows.
      */
-    [[nodiscard]] IndexType nRows() const
-    {
-        return static_cast<IndexType>(rowOffs_.size())
-             - static_cast<IndexType>(static_cast<bool>(rowOffs_.size()));
-    }
+    [[nodiscard]] IndexType nRows() const { return sparsityPattern_->rowOffs().size() - 1; }
 
     /**
      * @brief Get the number of non-zero values in the matrix.
@@ -143,13 +160,13 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; }
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return sparsityPattern_->colIdxs(); }
 
     /**
      * @brief Get a reference to row offset vector.
-     * @return Vi containing the row pointers.
+     * @return Vector containing the row pointers.
      */
-    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; }
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return sparsityPattern_->rowOffs(); }
 
     /**
      * @brief Get a const reference to values vector.
@@ -183,11 +200,18 @@ public:
         {
             return *this;
         }
-        CSRMatrix<ValueType, IndexType> other(
-            values_.copyToHost(), colIdxs_.copyToHost(), rowOffs_.copyToHost()
-        );
-        return other;
+        return {
+            values_.copyToHost(),
+            std::make_shared<const la::SparsityPattern>(this->sparsityPattern_->copyToHost())
+        };
     }
+
+    /**
+     * @brief Get a reference to column indices vector.
+     * @return Vector containing the column indices.
+     */
+    [[nodiscard]] std::shared_ptr<const SparsityPattern> sparsity() { return sparsityPattern_; }
+
 
     /**
      * @brief Copy the matrix to the host.
@@ -204,23 +228,54 @@ public:
      */
     [[nodiscard]] CSRMatrixView<ValueType, IndexType> view()
     {
-        return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
+        return CSRMatrixView(
+            values_.view(), sparsityPattern_->colIdxs().view(), sparsityPattern_->rowOffs().view()
+        );
     }
 
     /**
      * @brief Get a const view representation of the matrix's data.
      * @return Const CSRMatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] const CSRMatrixView<const ValueType, const IndexType> view() const
+    [[nodiscard]] CSRMatrixView<const ValueType, const IndexType> view() const
     {
-        return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
+        return CSRMatrixView<const ValueType, const IndexType>(
+            View<const ValueType>(values_.view()),
+            View<const IndexType>(sparsityPattern_->colIdxs().view()),
+            View<const IndexType>(sparsityPattern_->rowOffs().view())
+        );
     }
+
+    [[nodiscard]] Vector<ValueType> diag() const
+    {
+        auto diag = Vector<ValueType>(values_.exec(), nRows(), 0.0);
+        auto [diagV, rowOffsV, colIdxV, matrixV] =
+            views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
+
+        parallelFor(
+            values_.exec(),
+            {0, nRows()},
+            KOKKOS_LAMBDA(const std::size_t rowi) {
+                for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+                {
+                    if (rowi == colIdxV[i])
+                    {
+                        diagV[rowi] = matrixV[i];
+                        break;
+                    }
+                }
+            }
+        );
+
+        return diag;
+    }
+
 
 private:
 
-    Vector<ValueType> values_;  //!< The (non-zero) values of the CSR matrix.
-    Vector<IndexType> colIdxs_; //!< The column indices of the CSR matrix.
-    Vector<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
+    Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
+
+    std::shared_ptr<const SparsityPattern> sparsityPattern_;
 };
 
 /** @brief extract the upper triangular of the matrix

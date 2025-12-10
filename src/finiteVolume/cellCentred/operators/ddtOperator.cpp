@@ -16,8 +16,7 @@ DdtOperator<ValueType>::~DdtOperator()
 
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
-    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
+    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType) {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
@@ -45,7 +44,7 @@ void DdtOperator<ValueType>::bdf1Kernel(
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     const auto [diagOffs, oldVector] =
-        views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
+        views(ls.matrix().sparsity()->diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
     const scalar a0a1 = 1.0 / dt;

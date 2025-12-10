@@ -20,7 +20,7 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     fvcc::VolumeField<scalar> coeff(exec, "coeff", mesh, coeffBCs);

@@ -52,12 +52,12 @@ TEST_CASE("tokenList")
 
     SECTION("Next Token")
     {
-        tokenList = NeoN::TokenList({1, 2.0, std::string("string")});
-        REQUIRE(tokenList.size() == 3);
-        REQUIRE(tokenList.next<NeoN::label>() == 1);
-        REQUIRE(tokenList.next<NeoN::scalar>() == 2.0);
-        REQUIRE(tokenList.next<std::string>() == "string");
-        REQUIRE_THROWS_AS(tokenList.next<NeoN::label>(), std::out_of_range);
+        auto tl = NeoN::TokenList({1, 2.0, std::string("string")});
+        REQUIRE(tl.size() == 3);
+        REQUIRE(tl.next<NeoN::label>() == 1);
+        REQUIRE(tl.next<NeoN::scalar>() == 2.0);
+        REQUIRE(tl.next<std::string>() == "string");
+        REQUIRE_THROWS_AS(tl.next<NeoN::label>(), std::out_of_range);
     }
 
     SECTION("Access out of bound index")

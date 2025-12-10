@@ -58,7 +58,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     NeoN::Database db;
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
+    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
 
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "testVectorCollection");

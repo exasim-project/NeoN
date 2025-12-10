@@ -9,6 +9,7 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
@@ -23,7 +24,9 @@ template<typename VectorType>
 struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
-    virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
+    virtual void
+    operator()(std::shared_ptr<const la::SparsityPattern>, la::LinearSystem<VectorType, localIdx>&) {
+    };
 };
 
 
@@ -120,14 +123,15 @@ public:
      * @param ps a vector of functor performing transformation on the created linear system
      * @return a tuple of the sparsity pattern and the assembled linear system
      */
-    std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
+    std::tuple<std::shared_ptr<const la::SparsityPattern>, la::LinearSystem<ValueType, localIdx>>
+    assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
         std::span<const PostAssemblyBase<ValueType>> ps = {}
     ) const
     {
-        auto sp = la::SparsityPattern(mesh);
+        auto sp = std::make_shared<const la::SparsityPattern>(mesh);
         auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sp);
         assemble(t, dt, sp, ls, ps);
         return {sp, ls};
@@ -140,7 +144,7 @@ public:
     void assemble(
         scalar t,
         scalar dt,
-        const la::SparsityPattern& sp,
+        const std::shared_ptr<const la::SparsityPattern> sp,
         la::LinearSystem<ValueType, localIdx>& ls,
         std::span<const PostAssemblyBase<ValueType>> ps = {}
     ) const
