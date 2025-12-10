@@ -250,6 +250,16 @@ SparsityPattern::SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs)
       diagOffset_(exec, nRows, 0)
 {}
 
+// FIXME half implemented
+SparsityPattern::SparsityPattern(
+    Executor exec, const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs
+)
+    : rowOffs_(exec, rowOffs.size() + 1, 0), colIdxs_(exec, colIdxs.size(), 0),
+      ownerOffset_(exec, (colIdxs.size() - rowOffs.size()) / 2, 0),
+      neighbourOffset_(exec, (colIdxs.size() - rowOffs.size()) / 2, 0),
+      diagOffset_(exec, rowOffs.size(), 0)
+{}
+
 const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
 const NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }

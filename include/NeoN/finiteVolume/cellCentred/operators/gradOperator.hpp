@@ -40,7 +40,7 @@ public:
     static std::string name() { return "GradOperatorFactory"; }
 
     GradOperatorFactory(const Executor& exec, const UnstructuredMesh& mesh)
-        : exec_(exec), mesh_(mesh), sparsityPattern_(la::SparsityPattern::readOrCreate(mesh)) {};
+        : exec_(exec), mesh_(mesh) {};
 
     virtual ~GradOperatorFactory() = default; // Virtual destructor
 
@@ -75,12 +75,6 @@ public:
     virtual VolumeField<ValueType>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const = 0;
 
-    [[deprecated("This function will be removed")]] const la::SparsityPattern&
-    getSparsityPattern() const
-    {
-        return sparsityPattern_;
-    }
-
     // Pure virtual function for cloning
     virtual std::unique_ptr<GradOperatorFactory<ValueType>> clone() const = 0;
 
@@ -89,8 +83,6 @@ protected:
     const Executor exec_;
 
     const UnstructuredMesh& mesh_;
-
-    const la::SparsityPattern& sparsityPattern_;
 };
 
 template<typename ValueType>
