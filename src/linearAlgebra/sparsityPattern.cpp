@@ -11,12 +11,12 @@ namespace NeoN::la
 
 const SparsityPattern& SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
 {
-    StencilDataBase& stencilDb = mesh.stencilDB();
-    if (!stencilDb.contains("SparsityPattern"))
+    auto& db = mesh.stencilDB();
+    if (!db.contains("SparsityPattern"))
     {
-        stencilDb.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
+        db.insert(std::string("SparsityPattern"), SparsityPattern(mesh));
     }
-    return stencilDb.get<SparsityPattern>("SparsityPattern");
+    return db.get<SparsityPattern>("SparsityPattern");
 }
 
 
@@ -248,6 +248,16 @@ SparsityPattern::SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs)
     : rowOffs_(exec, nRows + 1, 0), colIdxs_(exec, nnzs, 0),
       ownerOffset_(exec, (nnzs - nRows) / 2, 0), neighbourOffset_(exec, (nnzs - nRows) / 2, 0),
       diagOffset_(exec, nRows, 0)
+{}
+
+// FIXME half implemented
+SparsityPattern::SparsityPattern(
+    Executor exec, const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs
+)
+    : rowOffs_(exec, rowOffs.size() + 1, 0), colIdxs_(exec, colIdxs.size(), 0),
+      ownerOffset_(exec, (colIdxs.size() - rowOffs.size()) / 2, 0),
+      neighbourOffset_(exec, (colIdxs.size() - rowOffs.size()) / 2, 0),
+      diagOffset_(exec, rowOffs.size(), 0)
 {}
 
 const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }

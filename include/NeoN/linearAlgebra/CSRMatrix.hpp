@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
+#include "sparsityPattern.hpp"
 
 #include <type_traits>
 
@@ -87,7 +88,20 @@ class CSRMatrix
 
 public:
 
-    /**
+    /** FIXME for simplicity should also get an initializer from rows and cols
+     * @brief Constructor for CSRMatrix.
+     * @param values The non-zero values of the matrix.
+     * @param colIdxs The column indices for each non-zero value.
+     * @param rowOffs The starting index in values/colIdxs for each row.
+     */
+    CSRMatrix(const Vector<ValueType>& values, const SparsityPattern& sp)
+        : values_(values), sparsityPattern_(sp)
+    {
+        // NF_ASSERT(values.exec() == colIdxs_.exec(), "Executors are not the same");
+        // NF_ASSERT(values.exec() == rowOffs_.exec(), "Executors are not the same");
+    }
+
+    /** FIXME for simplicity should also get an initializer from rows and cols
      * @brief Constructor for CSRMatrix.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
@@ -98,13 +112,13 @@ public:
         const Vector<IndexType>& colIdxs,
         const Vector<IndexType>& rowOffs
     )
-        : values_(values), colIdxs_(colIdxs), rowOffs_(rowOffs)
+        : values_(values), sparsityPattern_(values.exec(), colIdxs, rowOffs)
     {
-        NF_ASSERT(values.exec() == colIdxs_.exec(), "Executors are not the same");
-        NF_ASSERT(values.exec() == rowOffs_.exec(), "Executors are not the same");
+        NF_ASSERT(values.exec() == colIdxs.exec(), "Executors are not the same");
+        NF_ASSERT(values.exec() == rowOffs.exec(), "Executors are not the same");
     }
 
-    CSRMatrix(const Executor exec) : values_(exec, 0), colIdxs_(exec, 0), rowOffs_(exec, 0) {}
+    CSRMatrix(const Executor exec) : values_(exec, 0), sparsityPattern_(exec, 0, 0) {}
 
     /**
      * @brief Default destructor.
@@ -123,8 +137,8 @@ public:
      */
     [[nodiscard]] IndexType nRows() const
     {
-        return static_cast<IndexType>(rowOffs_.size())
-             - static_cast<IndexType>(static_cast<bool>(rowOffs_.size()));
+        return static_cast<IndexType>(rowOffs().size())
+             - static_cast<IndexType>(static_cast<bool>(rowOffs().size()));
     }
 
     /**
@@ -143,13 +157,13 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; }
+    [[nodiscard]] Vector<IndexType>& colIdxs() { return sparsityPattern_.colIdxs(); }
 
     /**
      * @brief Get a reference to row offset vector.
      * @return Vi containing the row pointers.
      */
-    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; }
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return sparsityPattern_.colIdxs(); }
 
     /**
      * @brief Get a const reference to values vector.
@@ -161,13 +175,13 @@ public:
      * @brief Get a const reference to column indices vector.
      * @return Const vector containing the column indices.
      */
-    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; }
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return sparsityPattern_.colIdxs(); }
 
     /**
      * @brief Get a const reference to row offset vector.
      * @return Const vector containing the row pointers.
      */
-    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; }
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return sparsityPattern_.rowOffs(); }
 
     /**
      * @brief Copy the matrix to another executor.
@@ -180,11 +194,22 @@ public:
         {
             return *this;
         }
-        CSRMatrix<ValueType, IndexType> other(
-            values_.copyToHost(), colIdxs_.copyToHost(), rowOffs_.copyToHost()
-        );
-        return other;
+        return {                      // FIXME implement
+                values_.copyToHost(), // SparsityPattern(exec, 0, 0)
+                this->sparsityPattern_.copyToHost()
+        };
+        // CSRMatrix<ValueType, IndexType> other(
+        //     values_.copyToHost(), sparsityPattern_.copyToHost()
+        // );
+        // return other;
     }
+
+    /**
+     * @brief Get a reference to column indices vector.
+     * @return Vector containing the column indices.
+     */
+    [[nodiscard]] const SparsityPattern& sparsity() { return sparsityPattern_; }
+
 
     /**
      * @brief Copy the matrix to the host.
@@ -201,23 +226,31 @@ public:
      */
     [[nodiscard]] CSRMatrixView<ValueType, IndexType> view()
     {
-        return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
+        return CSRMatrixView(
+            values_.view(), sparsityPattern_.colIdxs().view(), sparsityPattern_.rowOffs().view()
+        );
     }
 
     /**
      * @brief Get a const view representation of the matrix's data.
      * @return Const CSRMatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] const CSRMatrixView<const ValueType, const IndexType> view() const
+    [[nodiscard]] CSRMatrixView<const ValueType, const IndexType> view() const
     {
-        return CSRMatrixView(values_.view(), colIdxs_.view(), rowOffs_.view());
+        return CSRMatrixView<const ValueType, const IndexType>(
+            View<const ValueType>(values_.view()),
+            View<const IndexType>(sparsityPattern_.colIdxs().view()),
+            View<const IndexType>(sparsityPattern_.rowOffs().view())
+        );
     }
 
 private:
 
-    Vector<ValueType> values_;  //!< The (non-zero) values of the CSR matrix.
-    Vector<IndexType> colIdxs_; //!< The column indices of the CSR matrix.
-    Vector<IndexType> rowOffs_; //!< The row offsets for the CSR matrix.
+    Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
+
+    // TODO/FIXME use a std::shared_ptr
+    // with reference so copyToHost wont work anymore
+    SparsityPattern sparsityPattern_;
 };
 
 // /* @brief given a csr matrix this function copies the matrix and converts to requested target

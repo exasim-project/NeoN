@@ -62,7 +62,7 @@ localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 
-StencilDataBase& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
+Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
 
 const Executor& UnstructuredMesh::exec() const { return exec_; }
 

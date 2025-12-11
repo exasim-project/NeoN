@@ -138,10 +138,11 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
 
 /*@brief helper function that creates a zero initialised linear system based on given sparsity
  * pattern
+ * FIXME sparsity should be const
  */
 template<typename ValueType, typename IndexType>
 LinearSystem<ValueType, IndexType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
+createEmptyLinearSystem(const UnstructuredMesh& mesh, SparsityPattern& sparsity)
 {
     const auto& exec = mesh.exec();
     localIdx rows {sparsity.rows()};
@@ -181,7 +182,7 @@ createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& spa
 
     return {
         CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
+            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity
         },
         Vector<ValueType> {exec, rows, zero<ValueType>()},
         aux

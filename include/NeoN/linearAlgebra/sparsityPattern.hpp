@@ -28,6 +28,11 @@ public:
     /* @brief create an "empty" SparsityPattern with a given size  */
     SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs);
 
+    /* @brief create an "empty" SparsityPattern with a given size  */
+    SparsityPattern(
+        Executor exec, const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs
+    );
+
     SparsityPattern(
         Array<uint8_t>&& rowOffs,
         Array<uint8_t>&& colIdxs,
@@ -35,6 +40,12 @@ public:
         Vector<localIdx>&& neighbourOffset,
         Vector<localIdx>&& diagOffset
     );
+
+    [[nodiscard]] SparsityPattern copyToHost() const
+    {
+        // FIXME implement
+        return {exec_, 0, 0};
+    }
 
     ~SparsityPattern() = default;
 
@@ -75,6 +86,7 @@ public:
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
     // TODO add selection mechanism via dictionary later
+    /*@brief checks in mesh registry whether a sparsity pattern was created */
     static const SparsityPattern& readOrCreate(const UnstructuredMesh& mesh);
 
 private:
@@ -85,6 +97,9 @@ private:
 
     Vector<localIdx> colIdxs_; //!
 
+    // NOTE The following data member store a simple mapping from face ids to offsets in the
+    // corresponding rows I.e. Assume the following row  [ . 18 . 20 d 18 . 20 . ] this yields
+    // ownerOffset[18] = 0 ownerOffset[20] = 1 and neighbourOffset[18] = 4 neighbourOffset[20] = 5
     Array<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
 
     Array<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row

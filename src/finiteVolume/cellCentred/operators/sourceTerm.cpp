@@ -17,8 +17,7 @@ SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType, VolumeField<scalar>& coefficients, VolumeField<ValueType>& field
 )
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
-      coefficients_(coefficients),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
+      coefficients_(coefficients) {};
 
 template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
@@ -42,7 +41,7 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localI
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] =
-        views(getSparsityPattern().diagOffset(), coefficients_.internalVector());
+        views(ls.matrix().sparsity().diagOffset(), coefficients_.internalVector());
     auto [matrix, rhs] = ls.view();
 
     NeoN::parallelFor(

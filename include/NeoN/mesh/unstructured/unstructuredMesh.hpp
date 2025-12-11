@@ -6,10 +6,10 @@
 
 #include "Kokkos_Sort.hpp"
 
+#include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
-#include "NeoN/finiteVolume/cellCentred/stencil/stencilDataBase.hpp"
 
 namespace NeoN
 {
@@ -169,7 +169,7 @@ public:
      *
      * @return The stencil data base.
      */
-    StencilDataBase& stencilDB() const;
+    Dictionary& stencilDB() const;
 
     /**
      * @brief Get the executor.
@@ -268,7 +268,7 @@ private:
      *
      * The stencil data base is used to register stencils.
      */
-    mutable StencilDataBase stencilDataBase_;
+    mutable Dictionary stencilDataBase_;
 };
 
 /** @brief creates a mesh containing only a single cell

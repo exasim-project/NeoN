@@ -16,12 +16,12 @@ GeometrySchemeFactory::GeometrySchemeFactory([[maybe_unused]] const Unstructured
 
 const std::shared_ptr<GeometryScheme> GeometryScheme::readOrCreate(const UnstructuredMesh& mesh)
 {
-    StencilDataBase& stencilDb = mesh.stencilDB();
-    if (!stencilDb.contains("GeometryScheme"))
+    auto& db = mesh.stencilDB();
+    if (!db.contains("GeometryScheme"))
     {
-        stencilDb.insert(std::string("GeometryScheme"), std::make_shared<GeometryScheme>(mesh));
+        db.insert(std::string("GeometryScheme"), std::make_shared<GeometryScheme>(mesh));
     }
-    return stencilDb.get<std::shared_ptr<GeometryScheme>>("GeometryScheme");
+    return db.get<std::shared_ptr<GeometryScheme>>("GeometryScheme");
 }
 
 

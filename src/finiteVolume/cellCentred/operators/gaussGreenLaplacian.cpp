@@ -82,7 +82,6 @@ void computeLaplacianImpl(
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
-    const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 )
 {
@@ -93,9 +92,9 @@ void computeLaplacianImpl(
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
-        sparsityPattern.diagOffset(),
-        sparsityPattern.ownerOffset(),
-        sparsityPattern.neighbourOffset()
+        ls.matrix().sparsity().diagOffset(),
+        ls.matrix().sparsity().ownerOffset(),
+        ls.matrix().sparsity().neighbourOffset()
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = views(
@@ -181,7 +180,7 @@ void computeLaplacianImpl(
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
