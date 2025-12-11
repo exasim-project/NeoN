@@ -1,0 +1,120 @@
+\doxysection{sparsity\+Pattern.\+hpp}
+\hypertarget{sparsityPattern_8hpp_source}{}\label{sparsityPattern_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp}}
+\mbox{\hyperlink{sparsityPattern_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{array_8hpp}{NeoN/core/array.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00014}00014\ \textcolor{comment}{/*\ @class\ SparsityPattern}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00015}00015\ \textcolor{comment}{\ *\ @brief\ row\ and\ column\ index\ representation\ of\ a\ mesh}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00016}00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ This\ class\ implements\ the\ finite\ volume\ 3/5/7\ pt\ stencil\ specific\ generation}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ of\ sparsity\ patterns\ from\ a\ given\ unstructured\ mesh}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00019}00019\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00020}00020\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00021}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{00021}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00023}00023\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{comment}{/*\ @brief\ create\ an\ SparsityPattern\ from\ existing\ mesh\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ace19b3a149b732b8bfb0f03407ad0790}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ace19b3a149b732b8bfb0f03407ad0790}{SparsityPattern}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{comment}{/*\ @brief\ create\ an\ "{}empty"{}\ SparsityPattern\ with\ a\ given\ size\ \ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ad4e08d16fad5ba55bdd586dbf7f9345b}{00029}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ad4e08d16fad5ba55bdd586dbf7f9345b}{SparsityPattern}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a6d29f1b333bd1707c73e9ccf35083458}{exec}},\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nRows,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nnzs);}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{/*\ @brief\ create\ an\ "{}empty"{}\ SparsityPattern\ with\ a\ given\ size\ \ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aaf6aa17bcf6fd0bb9eda7f4de8faceb1}{00032}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aaf6aa17bcf6fd0bb9eda7f4de8faceb1}{SparsityPattern}}(}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a6d29f1b333bd1707c73e9ccf35083458}{exec}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4b61740e644820bdffde5a83d98eb840}{colIdxs}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4d1a8def1bee369c2c70db32d998d574}{rowOffs}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00034}00034\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00036}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_afd18f433d4e9f765a27078ad85c44541}{00036}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_afd18f433d4e9f765a27078ad85c44541}{SparsityPattern}}(}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4d1a8def1bee369c2c70db32d998d574}{rowOffs}},}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4b61740e644820bdffde5a83d98eb840}{colIdxs}},}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a0019d7bba89fb63cf81a0599eacf5226}{ownerOffset}},}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4746b7e03537752efe9d33c089bd5f19}{neighbourOffset}},}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4ee305a28281ad44785f2f471e3f086e}{diagOffset}}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00042}00042\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aa8fe7b50b9d6ae68dde20badc4cbae9d}{00044}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aa8fe7b50b9d6ae68dde20badc4cbae9d}{copyToHost}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00045}00045\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ implement}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{exec\_,\ 0,\ 0\};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00048}00048\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a1aaaaf579a4b30d38a616351deae7a37}{00050}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a1aaaaf579a4b30d38a616351deae7a37}{\string~SparsityPattern}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a0019d7bba89fb63cf81a0599eacf5226}{00053}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a0019d7bba89fb63cf81a0599eacf5226}{ownerOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4746b7e03537752efe9d33c089bd5f19}{00056}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4746b7e03537752efe9d33c089bd5f19}{neighbourOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4ee305a28281ad44785f2f471e3f086e}{00059}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4ee305a28281ad44785f2f471e3f086e}{diagOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aea716064c5218e9a1a1a084b2d6c10c5}{00062}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aea716064c5218e9a1a1a084b2d6c10c5}{ownerOffset}}();}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a92fe5f570ecfd42e0c1541f2933c02cf}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a92fe5f570ecfd42e0c1541f2933c02cf}{neighbourOffset}}();}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a74465382287ceffd7c4d17204e468726}{00068}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a74465382287ceffd7c4d17204e468726}{diagOffset}}();}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a6d29f1b333bd1707c73e9ccf35083458}{00071}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a6d29f1b333bd1707c73e9ccf35083458}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ exec\_;\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ colIdxs\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4b61740e644820bdffde5a83d98eb840}{00074}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4b61740e644820bdffde5a83d98eb840}{colIdxs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ colIdxs\_;\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ad30c2c87e45dadf1506f988de798f7db}{00076}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ad30c2c87e45dadf1506f988de798f7db}{colIdxs}}()\ \{\ \textcolor{keywordflow}{return}\ colIdxs\_;\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ rowOffs\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4d1a8def1bee369c2c70db32d998d574}{00079}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a4d1a8def1bee369c2c70db32d998d574}{rowOffs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rowOffs\_;\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ rowOffs\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ae3b80db6b70b1b92c71d7c51add12f74}{00082}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ae3b80db6b70b1b92c71d7c51add12f74}{rowOffs}}()\ \{\ \textcolor{keywordflow}{return}\ rowOffs\_;\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00084}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_af9893bb3c5c0a966a0b0a3b8a7d83fd7}{00084}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_af9893bb3c5c0a966a0b0a3b8a7d83fd7}{rows}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ diagOffset\_.\mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}}();\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00086}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_abc480a3a2b330e0c825528785ccccdee}{00086}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_abc480a3a2b330e0c825528785ccccdee}{nnz}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}();\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{comment}{//\ TODO\ add\ selection\ mechanism\ via\ dictionary\ later}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{comment}{/*@brief\ checks\ in\ mesh\ registry\ whether\ a\ sparsity\ pattern\ was\ created\ */}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_acb71fc53e2301685d4fdb181234b8ce0}{00090}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_acb71fc53e2301685d4fdb181234b8ce0}{readOrCreate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00092}00092\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00094}00094\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00096}00096\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ rowOffs\_;\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00098}00098\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ colIdxs\_;\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ NOTE\ The\ following\ data\ member\ store\ a\ simple\ mapping\ from\ face\ ids\ to\ offsets\ in\ the}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ corresponding\ rows\ I.e.\ Assume\ the\ following\ row\ \ [\ .\ 18\ .\ 20\ d\ 18\ .\ 20\ .\ ]\ this\ yields}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ ownerOffset[18]\ =\ 0\ ownerOffset[20]\ =\ 1\ and\ neighbourOffset[18]\ =\ 4\ neighbourOffset[20]\ =\ 5}}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00103}00103\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ ownerOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00105}00105\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ neighbourOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00107}00107\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ diagOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00108}00108\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00110}\mbox{\hyperlink{namespaceNeoN_1_1la_ae16c33dee67454c8eecf1d83b6ef762d}{00110}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_ae16c33dee67454c8eecf1d83b6ef762d}{createSparsity}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00112}\mbox{\hyperlink{namespaceNeoN_1_1la_ac639dfd616bbcc076fb80f0965e132d5}{00112}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_ac639dfd616bbcc076fb80f0965e132d5}{updateSparsity}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern}}\&\ in);}
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{sparsityPattern_8hpp_source_l00114}00114\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+
+\end{DoxyCode}

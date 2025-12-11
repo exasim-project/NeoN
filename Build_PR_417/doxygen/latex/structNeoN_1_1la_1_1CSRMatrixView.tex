@@ -1,0 +1,191 @@
+\doxysection{NeoN\+::la\+::CSRMatrix\+View\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structNeoN_1_1la_1_1CSRMatrixView}{}\label{structNeoN_1_1la_1_1CSRMatrixView}\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+
+
+A view struct to allow easy read/write on all executors.  
+
+
+
+
+{\ttfamily \#include $<$CSRMatrix.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_a60217f9376146462dd73283267afa44c}{CSRMatrix\+View}} (const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \&value\+View, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \&col\+Idxs\+View, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \&row\+Offs\+View)
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_ad4cd6056d037ef4961af88f6c0125031}{\texorpdfstring{$\sim$}{\string~}\+CSRMatrix\+View}} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_ab8b5f2b777adf974f673ad064e0d8677}{entry}} (const Index\+Type i, const Index\+Type j) const
+\begin{DoxyCompactList}\small\item\em Retrieve a reference to the matrix element at position (i,j). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_af0fd6fdfecb9d1ddfa87e96009d13c92}{entry}} (const Index\+Type offset) const
+\begin{DoxyCompactList}\small\item\em Direct access to a value given the offset. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_a445e63fa19a49ee0aa584aba4be76a1b}{values}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1View}{View} to the values of the CSR matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_a59c85eba456c40658997c8d272042fc2}{col\+Idxs}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1View}{View} to the column indices of the CSR matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView_ae78e272155a2a23cfc97ab261fc44859}{row\+Offs}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1View}{View} to the row offsets for the CSR matrix. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Index\+Type$>$\newline
+struct Neo\+N\+::la\+::\+CSRMatrix\+View$<$ Value\+Type, Index\+Type $>$}
+A view struct to allow easy read/write on all executors. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The value type of the non-\/zero entries. \\
+\hline
+{\em Index\+Type} & The index type of the rows and columns. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_a60217f9376146462dd73283267afa44c}\label{structNeoN_1_1la_1_1CSRMatrixView_a60217f9376146462dd73283267afa44c} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!CSRMatrixView@{CSRMatrixView}}
+\index{CSRMatrixView@{CSRMatrixView}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{CSRMatrixView()}{CSRMatrixView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::\+CSRMatrix\+View (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \&}]{value\+View,  }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \&}]{col\+Idxs\+View,  }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Index\+Type $>$ \&}]{row\+Offs\+View }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for \doxylink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value\+View} & \doxylink{classNeoN_1_1View}{View} of the non-\/zero values of the matrix. \\
+\hline
+{\em col\+Idxs\+View} & \doxylink{classNeoN_1_1View}{View} of the column indices for each non-\/zero value. \\
+\hline
+{\em row\+Offs\+View} & \doxylink{classNeoN_1_1View}{View} of the starting index in values/col\+Idxs for each row. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_ad4cd6056d037ef4961af88f6c0125031}\label{structNeoN_1_1la_1_1CSRMatrixView_ad4cd6056d037ef4961af88f6c0125031} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!````~CSRMatrixView@{\texorpdfstring{$\sim$}{\string~}CSRMatrixView}}
+\index{````~CSRMatrixView@{\texorpdfstring{$\sim$}{\string~}CSRMatrixView}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CSRMatrixView()}{\string~CSRMatrixView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default destructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_ab8b5f2b777adf974f673ad064e0d8677}\label{structNeoN_1_1la_1_1CSRMatrixView_ab8b5f2b777adf974f673ad064e0d8677} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!entry@{entry}}
+\index{entry@{entry}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{entry()}{entry()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::entry (\begin{DoxyParamCaption}\item[{const Index\+Type}]{i,  }\item[{const Index\+Type}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieve a reference to the matrix element at position (i,j). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The row index. \\
+\hline
+{\em j} & The column index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the matrix element if it exists. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_af0fd6fdfecb9d1ddfa87e96009d13c92}\label{structNeoN_1_1la_1_1CSRMatrixView_af0fd6fdfecb9d1ddfa87e96009d13c92} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!entry@{entry}}
+\index{entry@{entry}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{entry()}{entry()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::entry (\begin{DoxyParamCaption}\item[{const Index\+Type}]{offset }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Direct access to a value given the offset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offset} & The offset, from 0, to the value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the matrix element if it exists. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_a59c85eba456c40658997c8d272042fc2}\label{structNeoN_1_1la_1_1CSRMatrixView_a59c85eba456c40658997c8d272042fc2} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!colIdxs@{colIdxs}}
+\index{colIdxs@{colIdxs}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{colIdxs}{colIdxs}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$Index\+Type$>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::col\+Idxs}
+
+
+
+\doxylink{classNeoN_1_1View}{View} to the column indices of the CSR matrix. 
+
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_ae78e272155a2a23cfc97ab261fc44859}\label{structNeoN_1_1la_1_1CSRMatrixView_ae78e272155a2a23cfc97ab261fc44859} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!rowOffs@{rowOffs}}
+\index{rowOffs@{rowOffs}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowOffs}{rowOffs}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$Index\+Type$>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::row\+Offs}
+
+
+
+\doxylink{classNeoN_1_1View}{View} to the row offsets for the CSR matrix. 
+
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CSRMatrixView_a445e63fa19a49ee0aa584aba4be76a1b}\label{structNeoN_1_1la_1_1CSRMatrixView_a445e63fa19a49ee0aa584aba4be76a1b} 
+\index{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}!values@{values}}
+\index{values@{values}!NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrixView$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{values}{values}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$Value\+Type$>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{Neo\+N\+::la\+::\+CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$\+::values}
+
+
+
+\doxylink{classNeoN_1_1View}{View} to the values of the CSR matrix. 
+
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{CSRMatrix_8hpp}{CSRMatrix.\+hpp}}\end{DoxyCompactItemize}
