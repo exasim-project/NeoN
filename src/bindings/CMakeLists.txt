@@ -24,7 +24,19 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
                                                "RelWithDebInfo")
 endif()
 
-nanobind_add_module(neon my_ext.cpp)
+nanobind_add_module(
+  neon
+  neon.cpp
+  executors.cpp
+  scalar.cpp
+  vec3.cpp
+  vectors.cpp
+  containerFreeFunctions.cpp
+  boundaryMesh.cpp
+  unstructuredMesh.cpp
+  database/document.cpp
+  database/collection.cpp
+  database/database.cpp)
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(neon PRIVATE NeoN::NeoN)
