@@ -1,4 +1,9 @@
+# Version 0.3.0 (unreleased)
+
+### Misc
 - Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
+- Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
+
 # Version 0.2.0 (2025/12/03)
 ## Features
 - Add basic logging functionality [#396](https://github.com/exasim-project/NeoN/pull/396)
