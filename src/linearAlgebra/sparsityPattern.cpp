@@ -52,8 +52,8 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
             auto own = faceOwnHV[facei];
             auto nei = faceNeiHV[facei];
 
-            Kokkos::atomic_increment(&nFacesPerCellHV[own]);
-            Kokkos::atomic_increment(&nFacesPerCellHV[nei]);
+            Kokkos::atomic_inc(&nFacesPerCellHV[own]);
+            Kokkos::atomic_inc(&nFacesPerCellHV[nei]);
         },
         "updateSparsityPattern::accumulateNonZeros"
     );
@@ -83,7 +83,7 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
             auto startSegNei = rowOffsHV[nei];
             // neighbour --> current cell
             // colIdx for row[neighbour] stores owner as a column entry
-            Kokkos::atomic_assign(&colIdxHV[startSegNei + segIdxNei], own);
+            Kokkos::atomic_store(&colIdxHV[startSegNei + segIdxNei], own);
         },
         "updateSparsityPattern::computeLowerTriangular"
     );
@@ -115,7 +115,7 @@ void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& 
             auto startSegOwn = rowOffsHV[own];
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
-            Kokkos::atomic_assign(&colIdxHV[startSegOwn + segIdxOwn], nei);
+            Kokkos::atomic_store(&colIdxHV[startSegOwn + segIdxOwn], nei);
         },
         "updateSparsityPattern::computeUpperTriangular"
     );
@@ -151,8 +151,8 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
             auto owner = faceOwner[facei];
             auto neighbour = faceNeiV[facei];
 
-            Kokkos::atomic_increment(&nFacesPerCellView[owner]);
-            Kokkos::atomic_increment(&nFacesPerCellView[neighbour]);
+            Kokkos::atomic_inc(&nFacesPerCellView[owner]);
+            Kokkos::atomic_inc(&nFacesPerCellView[neighbour]);
         },
         "updateSparsityPatternParallel::accumulateNonZerojs"
     );
@@ -179,7 +179,7 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
             auto startSegNei = rowOffs[neighbour];
             // neighbour --> current cell
             // colIdx --> needs to be store the owner
-            Kokkos::atomic_assign(&colIdxV[startSegNei + segIdxNei], owner);
+            Kokkos::atomic_store(&colIdxV[startSegNei + segIdxNei], owner);
         },
         "updateSparsityPatternParallel::computeLowerTriangular"
     );
@@ -211,7 +211,7 @@ void updateSparsityPatternParallel(const UnstructuredMesh& mesh, SparsityPattern
             auto startSegOwn = rowOffs[owner];
             // owner --> current cell
             // colIdx --> needs to be store the neighbour
-            Kokkos::atomic_assign(&colIdxV[startSegOwn + segIdxOwn], neighbour);
+            Kokkos::atomic_store(&colIdxV[startSegOwn + segIdxOwn], neighbour);
         },
         "updateSparsityPatternParallel::computeUpperTriangular"
     );
