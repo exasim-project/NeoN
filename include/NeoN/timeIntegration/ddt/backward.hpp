@@ -1,0 +1,37 @@
+// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+//
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "NeoN/timeIntegration/ddt/DdtScheme.hpp"
+
+namespace NeoN::timeIntegration::ddt
+{
+
+/**
+ * @brief BDF2 time-derivative scheme.
+ */
+class Backward final : public DdtScheme
+{
+public:
+    int nSteps() const override { return 2; }
+
+    scalar a0(scalar dt) const override
+    {
+        return scalar(1.5) / dt;   
+    }
+
+    scalar a1(scalar dt) const override
+    {
+        return scalar(2.0) / dt;
+    }
+
+    scalar a2(scalar dt) const override
+    {
+        return scalar(-0.5) / dt;
+    }
+};
+
+} // namespace NeoN::timeIntegration::ddt
+

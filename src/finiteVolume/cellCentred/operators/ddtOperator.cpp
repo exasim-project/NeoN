@@ -50,18 +50,38 @@ void DdtOperator<ValueType>::implicitOperation(
 
     const scalar a0 = scheme_.a0(dt);
     const scalar a1 = scheme_.a1(dt);
-
-    parallelFor(
-        ls.exec(),
-        {0, oldVector.size()},
-        KOKKOS_LAMBDA(const localIdx celli) {
-            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
-            const auto commonCoef = operatorScaling[celli] * vol[celli];
-            matrix.values[idx] += commonCoef * a0 * one<ValueType>();
-            rhs[celli] += commonCoef * a1 * oldVector[celli];
-        },
-        "ddtOpertator::implicitOperation"
-    );
+    
+    if (scheme_.nSteps() == 1)
+    {
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            KOKKOS_LAMBDA(const localIdx celli) {
+                const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                matrix.values[idx] += commonCoef * a0 * one<ValueType>();
+                rhs[celli] += commonCoef * a1 * oldVector[celli];
+            },
+            "ddtOpertator::implicitOperation<nSteps=1>"
+        );
+    }
+    else
+    {
+        const auto oldOldVector = oldTime(oldTime(this->field_)).internalVector().view();
+        const scalar a2 = scheme_.a2(dt);
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            KOKKOS_LAMBDA(const localIdx celli) {
+                const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                matrix.values[idx] += commonCoef * a0 * one<ValueType>();
+                rhs[celli] += commonCoef * a1 * oldVector[celli]
+		              + commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOpertator::implicitOperation<nSteps=2>"
+        );
+    }	
 }
 
 // instantiate the template class

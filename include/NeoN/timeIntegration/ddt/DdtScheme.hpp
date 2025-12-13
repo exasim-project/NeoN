@@ -36,6 +36,12 @@ public:
      * @brief Coefficient multiplying phi^{n}
      */
     virtual scalar a1(scalar dt) const = 0;
+
+    /**
+     * @brief Coefficient multiplying phi^{n-1}
+     * default: unused
+     */
+    virtual scalar a2(scalar) const { return scalar(0); }
 };
 
 } // namespace ddt
