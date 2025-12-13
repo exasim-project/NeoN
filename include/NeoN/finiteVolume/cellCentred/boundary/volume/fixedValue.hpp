@@ -54,7 +54,7 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 public:
 
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false}),
+        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = true}),
           fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 
