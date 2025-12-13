@@ -27,8 +27,7 @@ public:
     DdtOperator
     (
         dsl::Operator::Type termType,
-        VolumeField<ValueType>& field,
-	const timeIntegration::ddt::DdtScheme& scheme
+        VolumeField<ValueType>& field
     );
 
     ~DdtOperator();
@@ -37,7 +36,7 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt) const;
 
-    void read(const Input&) {}
+    void read(const Input&);
 
     const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
