@@ -48,7 +48,9 @@ private:
     // NOTE ddtOperator does not have a FactoryClass
     const la::SparsityPattern& sparsityPattern_;
 
-    const timeIntegration::ddt::DdtScheme& scheme_;
+    const timeIntegration::ddt::DdtScheme* scheme_{nullptr};
+    
+    mutable bool firstTimeStep_{true};
 };
 
 
