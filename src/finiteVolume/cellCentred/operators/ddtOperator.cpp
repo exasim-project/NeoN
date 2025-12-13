@@ -17,7 +17,7 @@ DdtOperator<ValueType>::~DdtOperator()
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
+      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())), scheme_(scheme) {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
@@ -42,21 +42,23 @@ void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
 ) const
 {
-    const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     const auto [diagOffs, oldVector] =
         views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
+    const scalar a0 = scheme_.a0(dt);
+    const scalar a1 = scheme_.a1(dt);
+
     parallelFor(
         ls.exec(),
         {0, oldVector.size()},
         KOKKOS_LAMBDA(const localIdx celli) {
             const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
-            const auto commonCoef = operatorScaling[celli] * vol[celli] * dtInver;
-            matrix.values[idx] += commonCoef * one<ValueType>();
-            rhs[celli] += commonCoef * oldVector[celli];
+            const auto commonCoef = operatorScaling[celli] * vol[celli];
+            matrix.values[idx] += commonCoef * a0 * one<ValueType>();
+            rhs[celli] += commonCoef * a1 * oldVector[celli];
         },
         "ddtOpertator::implicitOperation"
     );
