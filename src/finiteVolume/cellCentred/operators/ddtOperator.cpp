@@ -50,8 +50,11 @@ void DdtOperator<ValueType>::implicitOperation(
 
     const scalar a0 = scheme_.a0(dt);
     const scalar a1 = scheme_.a1(dt);
+
+    const bool useMultistep =
+    (scheme_->nSteps() > 1) && (!firstTimeStep_);
     
-    if (scheme_.nSteps() == 1)
+    if (!useMultistep)
     {
         parallelFor(
             ls.exec(),
@@ -81,8 +84,50 @@ void DdtOperator<ValueType>::implicitOperation(
             },
             "ddtOpertator::implicitOperation<nSteps=2>"
         );
-    }	
+    }
+    firstTimeStep_ = false;    
 }
+
+template<typename ValueType>
+void DdtOperator<ValueType>::read(const Input& input)
+{
+    const Dictionary dict = NeoN::read<Dictionary>(input);
+
+    if (!dict.contains("ddtSchemes"))
+    {
+        return; // keep default Euler
+    }
+
+    const Dictionary& ddtSchemes = dict.subDict("ddtSchemes");
+
+    // Default scheme
+    std::string schemeName = "Euler";
+    if (ddtSchemes.contains("default"))
+    {
+        schemeName = ddtSchemes.get<std::string>("default");
+    }
+
+    // Per-field override: ddt(fieldName)
+    const std::string fieldKey = "ddt(" + this->field_.name + ")";
+    if (ddtSchemes.contains(fieldKey))
+    {
+        schemeName = ddtSchemes.get<std::string>(fieldKey);
+    }
+
+    static timeIntegration::ddt::Euler eulerScheme;
+    static timeIntegration::ddt::Backward backwardScheme;
+    // (later: steadyState, CrankNicolson, etc.)
+
+    if (schemeName == "backward")
+    {
+        scheme_ = &backwardScheme;
+    }
+    else
+    {
+        scheme_ = &eulerScheme;
+    }
+}
+
 
 // instantiate the template class
 template class DdtOperator<scalar>;
