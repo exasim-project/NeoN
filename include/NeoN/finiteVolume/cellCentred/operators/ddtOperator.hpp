@@ -11,6 +11,7 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/timeIntegration/ddt/DdtScheme.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -23,7 +24,12 @@ public:
 
     using VectorValueType = ValueType;
 
-    DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field);
+    DdtOperator
+    (
+        dsl::Operator::Type termType,
+        VolumeField<ValueType>& field,
+	const timeIntegration::ddt::DdtScheme& scheme
+    );
 
     ~DdtOperator();
 
@@ -41,6 +47,8 @@ private:
 
     // NOTE ddtOperator does not have a FactoryClass
     const la::SparsityPattern& sparsityPattern_;
+
+    const timeIntegration::ddt::DdtScheme& scheme_;
 };
 
 
