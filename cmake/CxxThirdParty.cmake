@@ -55,6 +55,7 @@ endif()
 
 include(cmake/CPM.cmake)
 
+if(${NeoN_WITH_CPPTRACE})
 cpmaddpackage(
   NAME
   cpptrace
@@ -63,6 +64,7 @@ cpmaddpackage(
   VERSION
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
+endif()
 
 if(${NeoN_WITH_SPDLOG})
   set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL OFF")

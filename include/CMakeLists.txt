@@ -34,8 +34,10 @@ else()
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_SPDLOG=0)
 endif()
 
-target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace Kokkos::kokkos)
-
+target_link_libraries(NeoN_public_api INTERFACE Kokkos::kokkos)
+if(NeoN_WITH_CPPTRACE)
+  target_link_libraries(NeoN_public_api INTERFACE cpptrace::cpptrace)
+endif()
 if(NeoN_WITH_PETSC)
   add_definitions(${PETSc_DEFINITIONS})
   target_link_libraries(NeoN_public_api INTERFACE ${PETSc_LIBRARIES})
