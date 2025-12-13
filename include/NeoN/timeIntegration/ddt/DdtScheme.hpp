@@ -42,6 +42,10 @@ public:
      * default: unused
      */
     virtual scalar a2(scalar) const { return scalar(0); }
+
+    virtual bool hasStartup() const { return false; }
+    virtual scalar a0Startup(scalar dt) const { return a0(dt); }
+    virtual scalar a1Startup(scalar dt) const { return a1(dt); }
 };
 
 } // namespace ddt

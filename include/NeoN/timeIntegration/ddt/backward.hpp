@@ -31,6 +31,10 @@ public:
     {
         return scalar(-0.5) / dt;
     }
+
+    // Startup = Euler
+    scalar a0Startup(scalar dt) const override { return scalar(1.0) / dt; }
+    scalar a1Startup(scalar dt) const override { return scalar(1.0) / dt; }
 };
 
 } // namespace NeoN::timeIntegration::ddt

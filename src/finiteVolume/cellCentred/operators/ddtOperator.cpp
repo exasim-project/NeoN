@@ -4,8 +4,10 @@
 
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
-
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/timeIntegration/ddt/Euler.hpp"
+#include "NeoN/timeIntegration/ddt/backward.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -17,7 +19,7 @@ DdtOperator<ValueType>::~DdtOperator()
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())), scheme_(scheme) {};
+      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
@@ -48,11 +50,14 @@ void DdtOperator<ValueType>::implicitOperation(
         views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
     auto [matrix, rhs] = ls.view();
 
-    const scalar a0 = scheme_.a0(dt);
-    const scalar a1 = scheme_.a1(dt);
+    const bool useMultistep = (scheme_->nSteps() > 1) && (!firstTimeStep_);
+    const bool useStartup   = (scheme_->nSteps() > 1) && (firstTimeStep_);
 
-    const bool useMultistep =
-    (scheme_->nSteps() > 1) && (!firstTimeStep_);
+    // Select coefficients for the single-step kernel:
+    // - if startup (BDF2 first step), use a0Startup/a1Startup
+    // - else use the scheme's normal a0/a1 (covers Euler, CN, etc.)
+    const scalar a0 = useStartup ? scheme_->a0Startup(dt) : scheme_->a0(dt);
+    const scalar a1 = useStartup ? scheme_->a1Startup(dt) : scheme_->a1(dt);
     
     if (!useMultistep)
     {
@@ -71,7 +76,7 @@ void DdtOperator<ValueType>::implicitOperation(
     else
     {
         const auto oldOldVector = oldTime(oldTime(this->field_)).internalVector().view();
-        const scalar a2 = scheme_.a2(dt);
+        const scalar a2 = scheme_->a2(dt);
         parallelFor(
             ls.exec(),
             {0, oldVector.size()},
@@ -91,7 +96,12 @@ void DdtOperator<ValueType>::implicitOperation(
 template<typename ValueType>
 void DdtOperator<ValueType>::read(const Input& input)
 {
-    const Dictionary dict = NeoN::read<Dictionary>(input);
+    if (!std::holds_alternative<NeoN::Dictionary>(input))
+    {
+        return;
+    }
+
+    const NeoN::Dictionary& dict = std::get<NeoN::Dictionary>(input);
 
     if (!dict.contains("ddtSchemes"))
     {
