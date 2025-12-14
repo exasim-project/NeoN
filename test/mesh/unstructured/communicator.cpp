@@ -13,7 +13,7 @@ using namespace NeoN;
 
 TEST_CASE("Communicator Vector Synchronization")
 {
-    mpi::MPIEnvironment mpiEnviron;
+    mpi::Environment mpiEnviron;
     Communicator comm;
 
     // first block send (size rank)
