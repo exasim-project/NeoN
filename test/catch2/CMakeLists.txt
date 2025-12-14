@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   add_library(NeoN_catch_main_mpi test_main_mpi.cpp mpiReporter.cpp mpiGlobals.cpp
                                   mpiSerialization.cpp)
   target_link_libraries(NeoN_catch_main_mpi PUBLIC Catch2::Catch2 cpptrace::cpptrace Kokkos::kokkos
