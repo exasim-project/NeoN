@@ -6,9 +6,9 @@
 
 include(cmake/Versions.cmake)
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   if(WIN32)
-    message(FATAL_ERROR "NeoN_ENABLE_MPI_SUPPORT not supported on Windows")
+    message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
 endif()
