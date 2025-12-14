@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_ENABLE_MPI)
   add_subdirectory(mpi)
 endif()
 
