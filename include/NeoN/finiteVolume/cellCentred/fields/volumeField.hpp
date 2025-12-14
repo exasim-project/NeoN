@@ -7,6 +7,7 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/core/database/fieldDatabase.hpp"
 
 #include <vector>
 
@@ -24,7 +25,7 @@ namespace NeoN::finiteVolume::cellCentred
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class VolumeField : public DomainMixin<ValueType>
+class VolumeField : public DomainMixin<ValueType>, public FieldDatabaseMixin
 {
 
 public:
@@ -120,59 +121,10 @@ public:
      */
     void correctBoundaryConditions();
 
-    /**
-     * @brief Returns true if the field has a database, false otherwise.
-     *
-     * @return true if the field has a database, false otherwise.
-     */
-    bool hasDatabase() const { return db_.has_value(); }
-
-    /**
-     * @brief Retrieves the database.
-     *
-     * @return Database& A reference to the database.
-     */
-    Database& db()
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error {
-                "Database not set: make sure the field is registered in the database"
-            };
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Retrieves the database.
-     *
-     * @return const Database& A const reference to the database.
-     */
-    const Database& db() const
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error(
-                "Database not set: make sure the field is registered in the database"
-            );
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Returns true if the field is registered in the database, false otherwise.
-     *
-     * @return true if the field is registered in the database, false otherwise.
-     */
-    bool registered() const { return key != "" && fieldCollectionName != "" && db_.has_value(); }
-
     std::vector<VolumeBoundary<ValueType>> boundaryConditions() const
     {
         return boundaryConditions_;
     }
-
-    std::string key;                 // The key of the field in the database
-    std::string fieldCollectionName; // The name of the field collection in the database
 
 private:
 
