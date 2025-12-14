@@ -12,7 +12,7 @@
 
 using namespace NeoN::mpi;
 
-/* This test ensures that MPIEnvironment  can be instantiated
+/* This test ensures that mpi::Environment can be instantiated
   even if no mpi is available */
 TEST_CASE("noMPIEnvironment")
 {
