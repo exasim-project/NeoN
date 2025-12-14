@@ -64,7 +64,7 @@ target_sources(
           "timeIntegration/timeIntegration.cpp"
           "timeIntegration/rungeKutta.cpp")
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
                               "mesh/unstructured/communicator.cpp")
 endif()
@@ -81,9 +81,6 @@ target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 # target_link_libraries(NeoN PRIVATE spdlog::spdlog_header_only)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
-if(NeoN_ENABLE_MPI_SUPPORT)
-  target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
-endif()
 if(WIN32)
   set_target_properties(
     NeoN
