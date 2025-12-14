@@ -12,15 +12,14 @@
 
 using namespace NeoN::mpi;
 
-/* This test ensures that mpi::Environment can be instantiated
-  even if no mpi is available */
+/* This test uses mpi initialized in the catch_mpi_main  */
 TEST_CASE("noMPIEnvironment")
 {
     Environment mpiEnviron;
 
-    SECTION("mpiEnviron has -1 ranks")
+    SECTION("mpiEnviron has 3 ranks")
     {
-        REQUIRE(mpiEnviron.sizeRank() == -1);
-        REQUIRE(mpiEnviron.rank() == -1);
+        REQUIRE(mpiEnviron.sizeRank() == 3);
+        REQUIRE(mpiEnviron.rank() != -1);
     }
 }

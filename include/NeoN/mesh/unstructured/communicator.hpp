@@ -69,7 +69,7 @@ public:
      * @param rankSendMap The rank send map.
      * @param rankReceiveMap The rank receive map.
      */
-    Communicator(mpi::MPIEnvironment mpiEnviron, CommMap rankSendMap, CommMap rankReceiveMap)
+    Communicator(mpi::Environment mpiEnviron, CommMap rankSendMap, CommMap rankReceiveMap)
         : mpiEnviron_(mpiEnviron), sendMap_(rankSendMap), receiveMap_(rankReceiveMap)
     {
         NF_DEBUG_ASSERT(
@@ -148,7 +148,7 @@ public:
 
 private:
 
-    mpi::MPIEnvironment mpiEnviron_; /**< The MPI environment. */
+    mpi::Environment mpiEnviron_;    /**< The MPI environment. */
     CommMap sendMap_;                /**< The rank send map. */
     CommMap receiveMap_;             /**< The rank receive map. */
     std::vector<bufferType> buffers; /**< Communication buffers. */

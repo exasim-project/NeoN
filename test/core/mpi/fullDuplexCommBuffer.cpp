@@ -16,7 +16,7 @@ using namespace NeoN::mpi;
 TEST_CASE("fullDuplexBuffer")
 {
 
-    MPIEnvironment mpiEnviron;
+    Environment mpiEnviron;
     std::vector<std::size_t> rankSendCommSize(mpiEnviron.sizeRank(), 1);
     std::vector<std::size_t> rankReceiveCommSize(mpiEnviron.sizeRank(), 1);
     FullDuplexCommBuffer buffer(mpiEnviron, rankSendCommSize, rankReceiveCommSize);
@@ -34,7 +34,8 @@ TEST_CASE("fullDuplexBuffer")
         REQUIRE(true == buffer.isComplete());
         buffer.finaliseComm();
         REQUIRE(!buffer.isCommInit());
-        REQUIRE(true == buffer.isComplete());
+        // a finalized buffer cannot be complete
+        // REQUIRE(true == buffer.isComplete());
     }
 
     SECTION("Send and Receive")

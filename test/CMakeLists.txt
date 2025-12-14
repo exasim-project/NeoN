@@ -24,20 +24,22 @@ function(NeoN_unit_test TEST)
     set(NeoN_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
   endif()
   if(NOT DEFINED "NeoN_COMMAND")
-    set(NeoN_COMMAND nn_${TEST})
+    set(NeoN_COMMAND ${TEST})
+  else()
+    message(Warning "NeoN_command already defined ${NeoN_COMMAND}")
   endif()
 
   add_executable(${NeoN_COMMAND} "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_PETSC)
-    target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES})
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES}
                                                   ${PETSc_LIBRARY_DIRS}/libkokkoscore.so mpi)
     target_include_directories(${NeoN_COMMAND} PRIVATE ${PETSc_INCLUDE_DIRS})
     target_link_directories(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARY_DIRS})
     link_directories(${PETSc_LIBRARY_DIRS})
   endif()
+
   target_include_directories(${NeoN_COMMAND} PRIVATE "${TEST_CATCH2_DIR}")
   set_target_properties(${NeoN_COMMAND} PROPERTIES OUTPUT_NAME ${TEST})
 
@@ -50,8 +52,8 @@ function(NeoN_unit_test TEST)
 
   if(NeoN_WITH_SUNDIALS)
     target_link_libraries(${NeoN_COMMAND} PRIVATE SUNDIALS::arkode)
-
   endif()
+
   if(WIN32)
     set_target_properties(
       ${NeoN_COMMAND}

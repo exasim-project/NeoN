@@ -68,7 +68,7 @@ public:
      * @param mpiEnviron The MPI environment.
      * @param rankCommSize The number of nodes per rank to be communicated with.
      */
-    HalfDuplexCommBuffer(MPIEnvironment mpiEnviron, std::vector<size_t> rankCommSize)
+    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector<size_t> rankCommSize)
         : mpiEnviron_(mpiEnviron)
     {
         setCommRankSize<char>(rankCommSize);
@@ -79,7 +79,7 @@ public:
      *
      * @param mpiEnviron The MPI environment.
      */
-    inline void setMPIEnvironment(MPIEnvironment mpiEnviron) { mpiEnviron_ = mpiEnviron; }
+    inline void setEnvironment(Environment mpiEnviron) { mpiEnviron_ = mpiEnviron; }
 
     /**
      * @brief Get the communication name.
@@ -202,7 +202,7 @@ private:
     int tag_ {-1};                        /*< The tag for the communication. */
     std::string commName_ {"unassigned"}; /*< The name of the communication. */
     std::size_t typeSize_ {sizeof(char)}; /*< The data type currently stored in the buffer. */
-    MPIEnvironment mpiEnviron_;           /*< The MPI environment. */
+    Environment mpiEnviron_;              /*< The MPI environment. */
     std::vector<MPI_Request> request_;    /*< The MPI request for communication with each rank. */
     std::vector<char> rankBuffer_;        /*< The buffer data for all ranks. Never shrinks. */
     std::vector<std::size_t>
