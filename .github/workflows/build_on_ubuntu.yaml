@@ -88,7 +88,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
 
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
@@ -100,12 +99,12 @@ jobs:
           uv venv
           uv sync --no-install-project --all-extras -v
           source .venv/bin/activate
-
           cmake --preset ${{matrix.preset}} \
             -DNeoN_BUILD_TESTS=ON \
             -DNeoN_BUILD_PYTHON_BINDINGS=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_WITH_GINKGO=OFF \
+            -DMPIEXEC_MAX_NUMPROCS=3 \ 
             -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}} \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
           cmake --build --preset ${{matrix.preset}}
