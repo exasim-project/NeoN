@@ -80,7 +80,8 @@ function(NeoN_unit_test TEST)
     set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
-                      "but only <${numberOfProcessors}> are available. Disabling test " "<${TEST}>")
+                      "but only <${MPIEXEC_MAX_NUMPROCS}> are available. Disabling test "
+                      "<${TEST}>")
       set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
     endif()
   endif()
