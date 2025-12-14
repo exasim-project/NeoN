@@ -103,6 +103,7 @@ public:
         }
 
         CommBuffer_[commName]->initComm<valueType>(commName);
+        auto fieldV = field.view();
         for (size_t rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             auto rankBuffer = CommBuffer_[commName]->getSend<valueType>(rank);
@@ -135,6 +136,7 @@ public:
         );
 
         CommBuffer_[commName]->waitComplete();
+        auto fieldV = field.view();
         for (size_t rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             auto rankBuffer = CommBuffer_[commName]->getReceive<valueType>(rank);

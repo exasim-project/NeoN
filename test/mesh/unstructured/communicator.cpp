@@ -21,6 +21,7 @@ TEST_CASE("Communicator Vector Synchronization")
     // third block receive (size rank)
     Vector<int> field(SerialExecutor(), 3 * mpiEnviron.sizeRank());
 
+    auto fieldV = field.view();
     for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         // we send the rank numbers
