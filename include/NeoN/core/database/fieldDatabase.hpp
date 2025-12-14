@@ -55,6 +55,7 @@ public:
         return *db_.value();
     }
 
+    /* @brief tests whether the given object has been registred in a database */
     bool registered() const
     {
         return !key.empty() && !fieldCollectionName.empty() && db_.has_value();

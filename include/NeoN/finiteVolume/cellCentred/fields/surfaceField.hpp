@@ -8,7 +8,7 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/fieldDatabase.hpp"
+#include "NeoN/core/database/fieldDatabase.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
