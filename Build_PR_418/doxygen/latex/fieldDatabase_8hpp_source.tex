@@ -1,5 +1,5 @@
 \doxysection{field\+Database.\+hpp}
-\hypertarget{fieldDatabase_8hpp_source}{}\label{fieldDatabase_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/fieldDatabase.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/fieldDatabase.hpp}}
+\hypertarget{fieldDatabase_8hpp_source}{}\label{fieldDatabase_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/database/fieldDatabase.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/database/fieldDatabase.hpp}}
 \mbox{\hyperlink{fieldDatabase_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
@@ -51,20 +51,21 @@
 \DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{db\_}}.value();}
 \DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00056}00056\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_aca921262608116b42def85554d9b433f}{00058}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_aca921262608116b42def85554d9b433f}{registered}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00059}00059\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ !\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{key}}.empty()\ \&\&\ !\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{fieldCollectionName}}.empty()\ \&\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{db\_}}.has\_value();}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00061}00061\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00062}00062\ }
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ Keep\ names\ to\ match\ your\ existing\ API}}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{00064}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{key}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ key\ in\ DB}}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{00065}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{fieldCollectionName}};\ \textcolor{comment}{//\ collection\ name\ in\ DB}}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00067}00067\ \textcolor{keyword}{protected}:}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{00069}}\ \ \ \ \ std::optional<Database*>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{db\_}};}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00070}00070\ \};}
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00072}00072\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{/*\ @brief\ tests\ whether\ the\ given\ object\ has\ been\ registred\ in\ a\ database\ */}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_aca921262608116b42def85554d9b433f}{00059}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_aca921262608116b42def85554d9b433f}{registered}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00060}00060\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ !\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{key}}.empty()\ \&\&\ !\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{fieldCollectionName}}.empty()\ \&\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{db\_}}.has\_value();}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ Keep\ names\ to\ match\ your\ existing\ API}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{00065}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ab1ea0a9e16f0d7fdfe345d755b069d30}{key}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ key\ in\ DB}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{00066}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a08e0e8c5a92c42724988f72bb7e6cb42}{fieldCollectionName}};\ \textcolor{comment}{//\ collection\ name\ in\ DB}}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00068}00068\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{00070}}\ \ \ \ \ std::optional<Database*>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_a543278698f91c0b8d494797f628e2f88}{db\_}};}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00071}00071\ \};}
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{fieldDatabase_8hpp_source_l00073}00073\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
 
 \end{DoxyCode}
