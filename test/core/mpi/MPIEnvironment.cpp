@@ -13,12 +13,13 @@
 using namespace NeoN::mpi;
 
 /* This test uses mpi initialized in the catch_mpi_main  */
-TEST_CASE("noMPIEnvironment")
+TEST_CASE("MPIEnvironment")
 {
     Environment mpiEnviron;
 
     SECTION("mpiEnviron has 3 ranks")
     {
+        REQUIRE(mpiEnviron.isInitialized() == true);
         REQUIRE(mpiEnviron.sizeRank() == 3);
         REQUIRE(mpiEnviron.rank() != -1);
     }
