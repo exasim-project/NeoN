@@ -21,7 +21,6 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
     echo "=== NVIDIA GPU and compiler driver info ==="
     nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv
     nvcc --version
-    which mpirun
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
     export CUDA_VISIBLE_DEVICES=0
@@ -74,7 +73,6 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
     icpx --version 2>/dev/null | head -1 || echo "icpx not found"
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
-    which mpirun
     cmake --preset develop \
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
