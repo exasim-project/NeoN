@@ -31,7 +31,7 @@ function(NeoN_unit_test TEST)
     message(Warning "NeoN_command already defined ${NeoN_COMMAND}")
   endif()
 
-  add_executable("test_${TEST}" "${TEST}.cpp")
+  add_executable("${NeoN_COMMAND}" "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_PETSC)
@@ -70,16 +70,17 @@ function(NeoN_unit_test TEST)
 
   if(NOT NeoN_MPI_SIZE)
     add_test(
-      NAME test_${TEST}
+      NAME ${TEST}
       COMMAND ${NeoN_COMMAND}
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
   else()
     add_test(
-      NAME test_${TEST}
+      NAME ${TEST}
       COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ${NeoN_COMMAND}
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
-    set_tests_properties(${NeoN_COMMAND} PROPERTIES TIMEOUT 10)
-    set_tests_properties(${NeoN_COMMAND} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
+    set_tests_properties(${TEST} PROPERTIES TIMEOUT 10)
+    set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
+    # target_link_libraries(${TEST} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
                       "but only <${MPIEXEC_MAX_NUMPROCS}> are available. Disabling test "
@@ -91,6 +92,7 @@ endfunction()
 
 add_subdirectory(core)
 add_subdirectory(dsl)
+add_subdirectory(distributed)
 add_subdirectory(fields)
 add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)

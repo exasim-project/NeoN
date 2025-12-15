@@ -18,10 +18,12 @@ BoundaryMesh::BoundaryMesh(
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
-    std::vector<localIdx> offset
+    std::vector<localIdx> offset,
+    std::vector<localIdx> neighbourRank
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
-      delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset) {};
+      delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
+      neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
@@ -92,6 +94,8 @@ View<const scalar> BoundaryMesh::weights(const localIdx i) const
 }
 
 const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
+
+scalar BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
 
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
