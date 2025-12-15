@@ -25,6 +25,7 @@ if [ "$GPU_TYPE" == "nvidia" ]; then
     echo "=== NVIDIA GPU and compiler driver info ==="
     nvidia-smi --query-gpu=gpu_name,memory.total,driver_version --format=csv
     nvcc --version
+    which mpirun
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
     cmake --preset develop -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
@@ -35,6 +36,8 @@ elif [ "$GPU_TYPE" == "amd" ]; then
     # Set up environment
     export PATH=/opt/rocm/bin:$PATH
     export HIPCC_CXX=/usr/bin/g++
+    echo "=== Configuring, building, and testing NeoN on Intel ==="
+    which mpirun
 
     echo "=== AMD GPU and compiler driver info ==="
     rocminfo | grep "AMD"
@@ -58,6 +61,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
     icpx --version 2>/dev/null | head -1 || echo "icpx not found"
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
+    which mpirun
     cmake --preset develop \
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-fsycl -Wno-deprecated-declarations -Wno-sycl-2020-compat" \
