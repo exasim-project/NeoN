@@ -7,6 +7,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/distributed/matrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
@@ -58,8 +59,8 @@ class LinearSystem
 
     void validate()
     {
-        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
-        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
         NF_ASSERT(
             boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
         );
@@ -167,7 +168,7 @@ public:
 
     void reset()
     {
-        fill(matrix_.values(), zero<ValueType>());
+        fill(matrix_.local()->values(), zero<ValueType>());
         fill(rhs_, zero<ValueType>());
         fill(boundaryMatrix_.values(), zero<ValueType>());
         fill(boundaryRhs_, zero<ValueType>());
@@ -204,7 +205,7 @@ public:
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    const Executor& exec() const { return matrix_.exec(); }
+    const Executor& exec() const { return matrix_.local()->exec(); }
 
 private:
 
@@ -226,7 +227,7 @@ private:
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
 template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(const UnstructuredMesh& mesh)
+LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(const UnstructuredMesh& mesh, mpi::Environment env)
 {
     return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
 }

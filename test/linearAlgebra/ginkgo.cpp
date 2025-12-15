@@ -16,8 +16,7 @@ using NeoN::Vec3;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::SparsityPattern;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix;
 using NeoN::la::Solver;
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
@@ -89,6 +88,7 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
 
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};
@@ -110,7 +110,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
         Vector<scalar> bValues(exec, {});
-        CSRMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        CSRMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity, 
+            mpiEnviron
+			);
         Vector<scalar> bRhs(exec, {});
 
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(

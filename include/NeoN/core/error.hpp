@@ -20,6 +20,7 @@
 // #include <source_location>
 // #include <experimental/source_location>
 
+// #include "logging.hpp"
 #include "info.hpp"
 
 #ifdef NF_DEBUG_MESSAGING
@@ -102,7 +103,8 @@ private:
 #define NF_ERROR_EXIT(message)                                                                     \
     do                                                                                             \
     {                                                                                              \
-        std::cerr << NF_ERROR_MESSAGE(message);                                                    \
+        std::cout << message << "\n";                                                              \
+        cpptrace::generate_trace().print();                                                        \
         MPI_Abort(MPI_COMM_WORLD, 1);                                                              \
     }                                                                                              \
     while (false)
