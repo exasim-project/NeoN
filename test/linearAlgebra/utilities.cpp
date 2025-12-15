@@ -20,6 +20,7 @@ using NeoN::la::COOMatrix;
 
 TEST_CASE("Utilities")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // Dense matrix
@@ -146,7 +147,8 @@ TEST_CASE("Utilities")
             csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
         );
 
-        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
+        // FIXME avoid *<...>.get()
+        NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
 
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
         REQUIRE_THAT(res, Equals(residualExp, Approx(1e-15)));

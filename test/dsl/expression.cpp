@@ -14,6 +14,7 @@ namespace dsl = NeoN::dsl;
 
 TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
@@ -85,7 +86,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(getVector(eqnF.explicitOperation(size)) == 0 * NeoN::one<TestType>());
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
 
     SECTION("Create equation and perform implicit Operation on " + execName)
     {

@@ -168,6 +168,7 @@ TEST_CASE("MatrixConversion - Ginkgo")
 
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};

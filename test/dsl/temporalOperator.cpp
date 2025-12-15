@@ -14,6 +14,7 @@ namespace dsl = NeoN::dsl;
 // TEST_CASE("TemporalOperator")
 TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
@@ -84,7 +85,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
 
     SECTION("Supports Coefficients Implicit " + execName)
     {
@@ -114,7 +115,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostRhsC = ls.rhs().copyToHost();
         REQUIRE(hostRhsC.view()[0] == 4.0 * NeoN::one<TestType>());
         auto hostLsC = ls.copyToHost();
-        REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsC.matrix().local()->values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // // d= 2 * 2
         ls.reset();
@@ -122,7 +123,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostRhsD = ls.rhs().copyToHost();
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
         auto hostLsD = ls.copyToHost();
-        REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsD.matrix().local()->values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // e = - -3 * 2 * 2 = -12
         ls.reset();
@@ -130,6 +131,6 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostRhsE = ls.rhs().copyToHost();
         REQUIRE(hostRhsE.view()[0] == -12.0 * NeoN::one<TestType>());
         auto hostLsE = ls.copyToHost();
-        REQUIRE(hostLsE.matrix().values().view()[0] == -12.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsE.matrix().local()->values().view()[0] == -12.0 * NeoN::one<TestType>());
     }
 }
