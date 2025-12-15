@@ -24,12 +24,10 @@ function(NeoN_unit_test TEST)
     set(NeoN_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
   endif()
   if(NOT DEFINED "NeoN_COMMAND")
-    set(NeoN_COMMAND ${TEST})
-  else()
-    message(Warning "NeoN_command already defined ${NeoN_COMMAND}")
+    set(NeoN_COMMAND "test_${TEST}")
   endif()
 
-  add_executable(${NeoN_COMMAND} "${TEST}.cpp")
+  add_executable("test_${TEST}" "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_PETSC)
@@ -41,7 +39,7 @@ function(NeoN_unit_test TEST)
   endif()
 
   target_include_directories(${NeoN_COMMAND} PRIVATE "${TEST_CATCH2_DIR}")
-  set_target_properties(${NeoN_COMMAND} PROPERTIES OUTPUT_NAME ${TEST})
+  set_target_properties(${NeoN_COMMAND} PROPERTIES OUTPUT_NAME test_${TEST})
 
   target_link_libraries(${NeoN_COMMAND} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
   if(NOT NeoN_MPI_SIZE)
@@ -68,21 +66,21 @@ function(NeoN_unit_test TEST)
 
   if(NOT NeoN_MPI_SIZE)
     add_test(
-      NAME ${TEST}
+      NAME test_${TEST}
       COMMAND ${NeoN_COMMAND}
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
   else()
     add_test(
-      NAME ${TEST}
+      NAME test_${TEST}
       COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ${NeoN_COMMAND}
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
-    set_tests_properties(${TEST} PROPERTIES TIMEOUT 10)
-    set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
+    set_tests_properties(${NeoN_COMMAND} PROPERTIES TIMEOUT 10)
+    set_tests_properties(${NeoN_COMMAND} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
                       "but only <${MPIEXEC_MAX_NUMPROCS}> are available. Disabling test "
                       "<${TEST}>")
-      set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
+      set_tests_properties(${NeoN_COMMAND} PROPERTIES DISABLED TRUE)
     endif()
   endif()
 endfunction()
