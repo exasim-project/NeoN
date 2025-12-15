@@ -137,7 +137,9 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
+        // FIXME when to create env
+        mpi::Environment env;
+        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, env);
         assemble(t, dt, ls, ps);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };

@@ -15,10 +15,11 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix;
 
 TEST_CASE("Utilities")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // Dense matrix
@@ -40,7 +41,16 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    // FIXME
+    Matrix<scalar, localIdx> matrix(
+        Vector {values},
+        Vector {colIdx},
+        Vector {rowOffs},
+        Vector {values},
+        Vector {colIdx},
+        Vector {rowOffs},
+        mpiEnviron
+    );
 
     // Sparse matrix variant of the above, i.e, not all rows contain
     // 3 entries
@@ -230,7 +240,8 @@ TEST_CASE("Utilities")
             csrMatrix, rhs, csrMatrix, rhs, {}
         );
 
-        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
+        // FIXME avoid *<...>.get()
+        NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
 
         auto resHost = res.copyToHost();
 
