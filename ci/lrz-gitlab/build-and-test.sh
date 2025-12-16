@@ -71,7 +71,7 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
         -DKokkos_ENABLE_SYCL=ON \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_BUILD_BENCHMARKS=ON \
-        -DMPI_HOME=/usr \
+	-DMPIEXEC_EXECUTABLE="/opt/intel/oneapi/mpi/2021.17/bin/mpirun" \
 	-DMPI_CXX_COMPILER=/usr/bin/mpicxx \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
