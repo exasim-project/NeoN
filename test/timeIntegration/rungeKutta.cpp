@@ -61,6 +61,7 @@ TEST_CASE("TimeIntegration - Runge Kutta")
     NeoN::Database db;
     NeoN::Dictionary fvSchemes;
     NeoN::Dictionary ddtSchemes;
+    ddtSchemes.insert("default", std::string("Euler"));
     ddtSchemes.insert("type", std::string("Runge-Kutta"));
     ddtSchemes.insert("Runge-Kutta-Method", std::string("Forward-Euler"));
     fvSchemes.insert("ddtSchemes", ddtSchemes);
