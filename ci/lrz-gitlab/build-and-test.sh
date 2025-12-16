@@ -72,7 +72,7 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
         -DNeoN_WITH_THREADS=OFF \
         -DCMAKE_BUILD_TYPE="release" \
         -DNeoN_BUILD_BENCHMARKS=ON \
-        -DMPI_HOME=/usr \
+	-DMPIEXEC_EXECUTABLE="/opt/intel/oneapi/mpi/2021.17/bin/mpirun" \
 	-DMPI_CXX_COMPILER=/usr/bin/mpicxx \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
