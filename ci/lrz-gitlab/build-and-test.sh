@@ -64,8 +64,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \
         -DNeoN_WITH_THREADS=OFF \
-        -DMPI_HOME=/usr \
-	-DMPI_CXX_COMPILER=/usr/bin/mpicxx \
+	-DMPIEXEC_EXECUTABLE="/opt/intel/oneapi/mpi/2021.17/bin/mpirun" \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu

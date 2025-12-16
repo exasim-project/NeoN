@@ -72,7 +72,7 @@ function(NeoN_unit_test TEST)
   else()
     add_test(
       NAME test_${TEST}
-      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ${NeoN_COMMAND}
+      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ./${NeoN_COMMAND}
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
     set_tests_properties(${NeoN_COMMAND} PROPERTIES TIMEOUT 10)
     set_tests_properties(${NeoN_COMMAND} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
