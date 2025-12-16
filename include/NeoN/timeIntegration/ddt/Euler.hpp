@@ -10,25 +10,17 @@ namespace NeoN
 {
 namespace timeIntegration
 {
-namespace ddt
-{
 
 class Euler final : public DdtScheme
 {
 public:
+
     int nSteps() const override { return 1; }
 
-    scalar a0(scalar dt) const override
-    {
-        return scalar(1.0) / dt;
-    }
+    scalar a0(scalar dt) const override { return scalar(1.0) / dt; }
 
-    scalar a1(scalar dt) const override
-    {
-        return scalar(1.0) / dt;
-    }
+    scalar a1(scalar dt) const override { return scalar(1.0) / dt; }
 };
 
-} // namespace ddt
 } // namespace timeIntegration
 } // namespace NeoN

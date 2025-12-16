@@ -10,8 +10,6 @@ namespace NeoN
 {
 namespace timeIntegration
 {
-namespace ddt
-{
 
 /**
  * @brief Time-derivative discretisation policy.
@@ -22,6 +20,7 @@ namespace ddt
 class DdtScheme
 {
 public:
+
     virtual ~DdtScheme() = default;
 
     /// Number of historical time levels required
@@ -48,6 +47,5 @@ public:
     virtual scalar a1Startup(scalar dt) const { return a1(dt); }
 };
 
-} // namespace ddt
 } // namespace timeIntegration
 } // namespace NeoN

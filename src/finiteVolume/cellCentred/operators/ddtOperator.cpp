@@ -51,14 +51,14 @@ void DdtOperator<ValueType>::implicitOperation(
     auto [matrix, rhs] = ls.view();
 
     const bool useMultistep = (scheme_->nSteps() > 1) && (!firstTimeStep_);
-    const bool useStartup   = (scheme_->nSteps() > 1) && (firstTimeStep_);
+    const bool useStartup = (scheme_->nSteps() > 1) && (firstTimeStep_);
 
     // Select coefficients for the single-step kernel:
     // - if startup (BDF2 first step), use a0Startup/a1Startup
     // - else use the scheme's normal a0/a1 (covers Euler, CN, etc.)
     const scalar a0 = useStartup ? scheme_->a0Startup(dt) : scheme_->a0(dt);
     const scalar a1 = useStartup ? scheme_->a1Startup(dt) : scheme_->a1(dt);
-    
+
     if (!useMultistep)
     {
         parallelFor(
@@ -70,7 +70,7 @@ void DdtOperator<ValueType>::implicitOperation(
                 matrix.values[idx] += commonCoef * a0 * one<ValueType>();
                 rhs[celli] += commonCoef * a1 * oldVector[celli];
             },
-            "ddtOpertator::implicitOperation<nSteps=1>"
+            "ddtOperator::implicitOperation<nSteps=1>"
         );
     }
     else
@@ -84,14 +84,17 @@ void DdtOperator<ValueType>::implicitOperation(
                 const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
                 const auto commonCoef = operatorScaling[celli] * vol[celli];
                 matrix.values[idx] += commonCoef * a0 * one<ValueType>();
-                rhs[celli] += commonCoef * a1 * oldVector[celli]
-		              + commonCoef * a2 * oldOldVector[celli];
+                rhs[celli] +=
+                    commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
             },
-            "ddtOpertator::implicitOperation<nSteps=2>"
+            "ddtOperator::implicitOperation<nSteps=2>"
         );
     }
-    firstTimeStep_ = false;    
+    firstTimeStep_ = false;
 }
+
+template<typename ValueType>
+timeIntegration::Euler DdtOperator<ValueType>::defaultEulerScheme_ {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::read(const Input& input)
@@ -111,7 +114,7 @@ void DdtOperator<ValueType>::read(const Input& input)
     const Dictionary& ddtSchemes = dict.subDict("ddtSchemes");
 
     // Default scheme
-    std::string schemeName = "Euler";
+    std::string schemeName;
     if (ddtSchemes.contains("default"))
     {
         schemeName = ddtSchemes.get<std::string>("default");
@@ -124,18 +127,24 @@ void DdtOperator<ValueType>::read(const Input& input)
         schemeName = ddtSchemes.get<std::string>(fieldKey);
     }
 
-    static timeIntegration::ddt::Euler eulerScheme;
-    static timeIntegration::ddt::Backward backwardScheme;
-    // (later: steadyState, CrankNicolson, etc.)
-
+    // TODO (later: steadyState, CrankNicolson, etc.)
+    if (schemeName == "Euler")
+    {
+        scheme_ = &defaultEulerScheme_;
+        return;
+    }
+    static timeIntegration::Backward backwardScheme;
     if (schemeName == "backward")
     {
         scheme_ = &backwardScheme;
+        return;
     }
-    else
-    {
-        scheme_ = &eulerScheme;
-    }
+
+    NF_ERROR_EXIT(std::format(
+        "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: Euler, backward.",
+        schemeName,
+        this->field_.name
+    ));
 }
 
 
