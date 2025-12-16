@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['backward_0',['Backward',['../classNeoN_1_1timeIntegration_1_1ddt_1_1Backward.html',1,'NeoN::timeIntegration::ddt']]],
+  ['backward_0',['Backward',['../classNeoN_1_1timeIntegration_1_1Backward.html',1,'NeoN::timeIntegration']]],
   ['backward_2ehpp_1',['backward.hpp',['../backward_8hpp.html',1,'']]],
   ['backwardeuler_2',['backwardeuler',['../classNeoN_1_1timeIntegration_1_1BackwardEuler.html',1,'NeoN::timeIntegration::BackwardEuler&lt; SolutionVectorType &gt;'],['../classNeoN_1_1timeIntegration_1_1BackwardEuler.html#a15f1e0a0ad1950f87bb9eeeba7c0d4d8',1,'NeoN::timeIntegration::BackwardEuler::BackwardEuler()']]],
   ['backwardeuler_2ehpp_3',['backwardEuler.hpp',['../backwardEuler_8hpp.html',1,'']]],

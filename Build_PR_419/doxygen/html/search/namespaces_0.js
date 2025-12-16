@@ -15,6 +15,5 @@ var searchData=
   ['neon_3a_3afinitevolume_3a_3acellcentred_3a_3avolumeboundary_3a_3adetail_12',['detail',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html',1,'NeoN::finiteVolume::cellCentred::volumeBoundary']]],
   ['neon_3a_3ala_13',['la',['../namespaceNeoN_1_1la.html',1,'NeoN']]],
   ['neon_3a_3alogging_14',['Logging',['../namespaceNeoN_1_1Logging.html',1,'NeoN']]],
-  ['neon_3a_3atimeintegration_15',['timeIntegration',['../namespaceNeoN_1_1timeIntegration.html',1,'NeoN']]],
-  ['neon_3a_3atimeintegration_3a_3addt_16',['ddt',['../namespaceNeoN_1_1timeIntegration_1_1ddt.html',1,'NeoN::timeIntegration']]]
+  ['neon_3a_3atimeintegration_15',['timeIntegration',['../namespaceNeoN_1_1timeIntegration.html',1,'NeoN']]]
 ];

@@ -9,7 +9,7 @@ var searchData=
   ['ddt_2ehpp_6',['ddt.hpp',['../ddt_8hpp.html',1,'']]],
   ['ddtoperator_7',['ddtoperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator.html#ac840f87bfe68aced2e8cdcabe863119d',1,'NeoN::finiteVolume::cellCentred::DdtOperator::DdtOperator()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator.html',1,'NeoN::finiteVolume::cellCentred::DdtOperator&lt; ValueType &gt;']]],
   ['ddtoperator_2ehpp_8',['ddtOperator.hpp',['../ddtOperator_8hpp.html',1,'']]],
-  ['ddtscheme_9',['DdtScheme',['../classNeoN_1_1timeIntegration_1_1ddt_1_1DdtScheme.html',1,'NeoN::timeIntegration::ddt']]],
+  ['ddtscheme_9',['DdtScheme',['../classNeoN_1_1timeIntegration_1_1DdtScheme.html',1,'NeoN::timeIntegration']]],
   ['ddtscheme_2ehpp_10',['DdtScheme.hpp',['../DdtScheme_8hpp.html',1,'']]],
   ['debug_11',['Debug',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543',1,'NeoN::Logging']]],
   ['deepcopyvisitor_12',['deepCopyVisitor',['../namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286',1,'NeoN::detail']]],

@@ -7,7 +7,7 @@ var searchData=
   ['_7ecsrmatrix_4',['~CSRMatrix',['../classNeoN_1_1la_1_1CSRMatrix.html#afd83705fad7e5f93ebfcc7103d52222b',1,'NeoN::la::CSRMatrix']]],
   ['_7ecsrmatrixview_5',['~CSRMatrixView',['../structNeoN_1_1la_1_1CSRMatrixView.html#ad4cd6056d037ef4961af88f6c0125031',1,'NeoN::la::CSRMatrixView']]],
   ['_7eddtoperator_6',['~DdtOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator.html#af27778cbc6eee6a89f848d83be9108c2',1,'NeoN::finiteVolume::cellCentred::DdtOperator']]],
-  ['_7eddtscheme_7',['~DdtScheme',['../classNeoN_1_1timeIntegration_1_1ddt_1_1DdtScheme.html#a95d4df6490f0e3ebb339720f4ef88214',1,'NeoN::timeIntegration::ddt::DdtScheme']]],
+  ['_7eddtscheme_7',['~DdtScheme',['../classNeoN_1_1timeIntegration_1_1DdtScheme.html#a4482c260c205d33cc211772c4b44c80f',1,'NeoN::timeIntegration::DdtScheme']]],
   ['_7edivoperatorfactory_8',['~DivOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html#a2d95257c1740c7d7e550af3438bc450b',1,'NeoN::finiteVolume::cellCentred::DivOperatorFactory']]],
   ['_7efacenormalgradientfactory_9',['~FaceNormalGradientFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#adf47039f42dbf5f20633c46a8199e9d3',1,'NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory']]],
   ['_7egeometryscheme_10',['~GeometryScheme',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a75d9956b7a646f496858a5e81f81d5a9',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],

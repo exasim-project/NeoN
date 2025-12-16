@@ -1,0 +1,160 @@
+\doxysection{NeoN\+::time\+Integration\+::Ddt\+Scheme Class Reference}
+\hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme}{}\label{classNeoN_1_1timeIntegration_1_1DdtScheme}\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+
+
+Time-\/derivative discretisation policy.  
+
+
+
+
+{\ttfamily \#include $<$Ddt\+Scheme.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::time\+Integration\+::Ddt\+Scheme\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1timeIntegration_1_1DdtScheme}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a4482c260c205d33cc211772c4b44c80f}{\texorpdfstring{$\sim$}{\string~}\+Ddt\+Scheme}} ()=default
+\item 
+virtual int \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a21db13640f5e196d5c2ba9cde78d94db}{n\+Steps}} () const =0
+\begin{DoxyCompactList}\small\item\em Number of historical time levels required. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a7d71748bdeb797c1adece2020762ea30}{a0}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const =0
+\begin{DoxyCompactList}\small\item\em Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n+1\}. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_ac71a4273cfda2211d3c0e6383dd90c00}{a1}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const =0
+\begin{DoxyCompactList}\small\item\em Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n\}. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a1ffb962cddb5d81fe83496322b1b1d67}{a2}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}) const
+\begin{DoxyCompactList}\small\item\em Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} default\+: unused. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_ace967abf361410ce99dc47186f952700}{has\+Startup}} () const
+\item 
+virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a6b04ccf47ed435053869abeb96a0a94c}{a0\+Startup}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const
+\item 
+virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_a1dd03a4178ff465e01aaf739e2284919}{a1\+Startup}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Time-\/derivative discretisation policy. 
+
+Provides coefficients for implicit ddt assembly. Does NOT perform any loops or Kokkos execution. 
+
+Definition at line \mbox{\hyperlink{DdtScheme_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{DdtScheme_8hpp_source}{Ddt\+Scheme.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a4482c260c205d33cc211772c4b44c80f}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a4482c260c205d33cc211772c4b44c80f} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!````~DdtScheme@{\texorpdfstring{$\sim$}{\string~}DdtScheme}}
+\index{````~DdtScheme@{\texorpdfstring{$\sim$}{\string~}DdtScheme}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}DdtScheme()}{\string~DdtScheme()}}
+{\footnotesize\ttfamily virtual Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::\texorpdfstring{$\sim$}{\string~}\+Ddt\+Scheme (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a7d71748bdeb797c1adece2020762ea30}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a7d71748bdeb797c1adece2020762ea30} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!a0@{a0}}
+\index{a0@{a0}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{a0()}{a0()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::a0 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n+1\}. 
+
+
+
+Implemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a43a0394b0def8ba0c0880e11ed576c1a}{Neo\+N\+::time\+Integration\+::\+Backward}}, and \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Euler_a79635623c17b928ca6a26d67d586b28c}{Neo\+N\+::time\+Integration\+::\+Euler}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a6b04ccf47ed435053869abeb96a0a94c}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a6b04ccf47ed435053869abeb96a0a94c} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!a0Startup@{a0Startup}}
+\index{a0Startup@{a0Startup}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{a0Startup()}{a0Startup()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::a0\+Startup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a29fd66030da568c8d874f377d6a3027b}{Neo\+N\+::time\+Integration\+::\+Backward}}.
+
+
+
+Definition at line \mbox{\hyperlink{DdtScheme_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{DdtScheme_8hpp_source}{Ddt\+Scheme.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_ac71a4273cfda2211d3c0e6383dd90c00}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_ac71a4273cfda2211d3c0e6383dd90c00} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!a1@{a1}}
+\index{a1@{a1}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{a1()}{a1()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::a1 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n\}. 
+
+
+
+Implemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a2e9904bca99fc505607445e1ae2d72e7}{Neo\+N\+::time\+Integration\+::\+Backward}}, and \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Euler_a79bee5688ffb4e7b449be3f71a5c6f4f}{Neo\+N\+::time\+Integration\+::\+Euler}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a1dd03a4178ff465e01aaf739e2284919}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a1dd03a4178ff465e01aaf739e2284919} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!a1Startup@{a1Startup}}
+\index{a1Startup@{a1Startup}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{a1Startup()}{a1Startup()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::a1\+Startup (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a610feaed6acd6629d4c40cd7c443467c}{Neo\+N\+::time\+Integration\+::\+Backward}}.
+
+
+
+Definition at line \mbox{\hyperlink{DdtScheme_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{DdtScheme_8hpp_source}{Ddt\+Scheme.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a1ffb962cddb5d81fe83496322b1b1d67}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a1ffb962cddb5d81fe83496322b1b1d67} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!a2@{a2}}
+\index{a2@{a2}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{a2()}{a2()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::a2 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Coefficient multiplying phi\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} default\+: unused. 
+
+
+
+Reimplemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a3df17061fc576a076ed3e94b67812ec7}{Neo\+N\+::time\+Integration\+::\+Backward}}.
+
+
+
+Definition at line \mbox{\hyperlink{DdtScheme_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{DdtScheme_8hpp_source}{Ddt\+Scheme.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_ace967abf361410ce99dc47186f952700}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_ace967abf361410ce99dc47186f952700} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!hasStartup@{hasStartup}}
+\index{hasStartup@{hasStartup}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{hasStartup()}{hasStartup()}}
+{\footnotesize\ttfamily virtual bool Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::has\+Startup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Definition at line \mbox{\hyperlink{DdtScheme_8hpp_source_l00045}{45}} of file \mbox{\hyperlink{DdtScheme_8hpp_source}{Ddt\+Scheme.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1timeIntegration_1_1DdtScheme_a21db13640f5e196d5c2ba9cde78d94db}\label{classNeoN_1_1timeIntegration_1_1DdtScheme_a21db13640f5e196d5c2ba9cde78d94db} 
+\index{NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}!nSteps@{nSteps}}
+\index{nSteps@{nSteps}!NeoN::timeIntegration::DdtScheme@{NeoN::timeIntegration::DdtScheme}}
+\doxysubsubsection{\texorpdfstring{nSteps()}{nSteps()}}
+{\footnotesize\ttfamily virtual int Neo\+N\+::time\+Integration\+::\+Ddt\+Scheme\+::n\+Steps (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Number of historical time levels required. 
+
+
+
+Implemented in \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Backward_a3c97c5f4195bcd1e4b09a242997df298}{Neo\+N\+::time\+Integration\+::\+Backward}}, and \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1Euler_a8a666c961813b20c3fd599cd4389df48}{Neo\+N\+::time\+Integration\+::\+Euler}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/time\+Integration/ddt/\mbox{\hyperlink{DdtScheme_8hpp}{Ddt\+Scheme.\+hpp}}\end{DoxyCompactItemize}
