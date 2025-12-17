@@ -112,9 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1ffb962cddb5d81fe83496322b1b1d67" id="r_a1ffb962cddb5d81fe83496322b1b1d67"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1timeIntegration_1_1DdtScheme.html#a1ffb962cddb5d81fe83496322b1b1d67">a2</a> (<a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>) const</td></tr>
 <tr class="memdesc:a1ffb962cddb5d81fe83496322b1b1d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficient multiplying phi^{n-1} default: unused.  <br /></td></tr>
 <tr class="separator:a1ffb962cddb5d81fe83496322b1b1d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace967abf361410ce99dc47186f952700" id="r_ace967abf361410ce99dc47186f952700"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1timeIntegration_1_1DdtScheme.html#ace967abf361410ce99dc47186f952700">hasStartup</a> () const</td></tr>
-<tr class="separator:ace967abf361410ce99dc47186f952700"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b04ccf47ed435053869abeb96a0a94c" id="r_a6b04ccf47ed435053869abeb96a0a94c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1timeIntegration_1_1DdtScheme.html#a6b04ccf47ed435053869abeb96a0a94c">a0Startup</a> (<a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt) const</td></tr>
+<tr class="memdesc:a6b04ccf47ed435053869abeb96a0a94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficients for schemes using multiple time levels at the first timestep (startup phase) when the old time level phi^{n-1} is not present yet.  <br /></td></tr>
 <tr class="separator:a6b04ccf47ed435053869abeb96a0a94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dd03a4178ff465e01aaf739e2284919" id="r_a1dd03a4178ff465e01aaf739e2284919"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1timeIntegration_1_1DdtScheme.html#a1dd03a4178ff465e01aaf739e2284919">a1Startup</a> (<a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt) const</td></tr>
 <tr class="separator:a1dd03a4178ff465e01aaf739e2284919"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -205,9 +204,11 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Coefficients for schemes using multiple time levels at the first timestep (startup phase) when the old time level phi^{n-1} is not present yet. </p>
+
 <p>Reimplemented in <a class="el" href="classNeoN_1_1timeIntegration_1_1Backward.html#a29fd66030da568c8d874f377d6a3027b">NeoN::timeIntegration::Backward</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00046">46</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00050">50</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
 
 </div>
 </div>
@@ -267,7 +268,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classNeoN_1_1timeIntegration_1_1Backward.html#a610feaed6acd6629d4c40cd7c443467c">NeoN::timeIntegration::Backward</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00047">47</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00051">51</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
 
 </div>
 </div>
@@ -300,33 +301,6 @@ Public Member Functions</h2></td></tr>
 <p>Reimplemented in <a class="el" href="classNeoN_1_1timeIntegration_1_1Backward.html#a3df17061fc576a076ed3e94b67812ec7">NeoN::timeIntegration::Backward</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00043">43</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ace967abf361410ce99dc47186f952700" name="ace967abf361410ce99dc47186f952700"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace967abf361410ce99dc47186f952700">&#9670;&#160;</a></span>hasStartup()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool NeoN::timeIntegration::DdtScheme::hasStartup </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="DdtScheme_8hpp_source.html#l00045">45</a> of file <a class="el" href="DdtScheme_8hpp_source.html">DdtScheme.hpp</a>.</p>
 
 </div>
 </div>
