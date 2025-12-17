@@ -92,7 +92,8 @@ jobs:
            -DNeoN_BUILD_TESTS=ON \
            -DNeoN_DEVEL_TOOLS=OFF \
            -DNeoN_WITH_GINKGO=OFF \
-           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
+           -DMPIEXEC_MAX_NUMPROCS=3
          cmake --build  --preset ${{matrix.preset}}
 
      - name: Execute unit tests NeoN

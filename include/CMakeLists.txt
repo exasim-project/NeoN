@@ -62,11 +62,12 @@ if(NeoN_DEFINE_US_IDX)
   target_compile_definitions(NeoN_public_api INTERFACE NeoN_US_IDX=1)
 endif()
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_MPI_SUPPORT=1)
   if(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT)
     target_compile_definitions(NeoN_public_api INTERFACE NF_REQUIRE_MPI_THREAD_SUPPORT=1)
   endif()
+  target_link_libraries(NeoN_public_api INTERFACE MPI::MPI_CXX)
 endif()
 
 # Get list of some *.hpp files in folder include

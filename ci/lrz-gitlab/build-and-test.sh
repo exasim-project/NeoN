@@ -35,6 +35,7 @@ elif [ "$GPU_TYPE" == "amd" ]; then
     # Set up environment
     export PATH=/opt/rocm/bin:$PATH
     export HIPCC_CXX=/usr/bin/g++
+    echo "=== Configuring, building, and testing NeoN on Intel ==="
 
     echo "=== AMD GPU and compiler driver info ==="
     rocminfo | grep "AMD"
@@ -63,6 +64,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \
         -DNeoN_WITH_THREADS=OFF \
+	-DMPIEXEC_EXECUTABLE="/opt/intel/oneapi/mpi/2021.17/bin/mpirun" \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
