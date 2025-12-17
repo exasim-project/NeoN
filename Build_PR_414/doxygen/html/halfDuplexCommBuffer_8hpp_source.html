@@ -124,13 +124,13 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    ~HalfDuplexCommBuffer() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    HalfDuplexCommBuffer(MPIEnvironment mpiEnviron, std::vector&lt;size_t&gt; rankCommSize)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector&lt;size_t&gt; rankCommSize)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        : mpiEnviron_(mpiEnviron)</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        setCommRankSize&lt;char&gt;(rankCommSize);</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> setMPIEnvironment(MPIEnvironment mpiEnviron) { mpiEnviron_ = mpiEnviron; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> setEnvironment(Environment mpiEnviron) { mpiEnviron_ = mpiEnviron; }</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> isCommInit()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tag_ != -1; }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
@@ -200,7 +200,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">int</span> tag_ {-1};                        <span class="comment">/*&lt; The tag for the communication. */</span></div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    std::string commName_ {<span class="stringliteral">&quot;unassigned&quot;</span>}; <span class="comment">/*&lt; The name of the communication. */</span></div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    std::size_t typeSize_ {<span class="keyword">sizeof</span>(char)}; <span class="comment">/*&lt; The data type currently stored in the buffer. */</span></div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    MPIEnvironment mpiEnviron_;           <span class="comment">/*&lt; The MPI environment. */</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    Environment mpiEnviron_;              <span class="comment">/*&lt; The MPI environment. */</span></div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    std::vector&lt;MPI_Request&gt; request_;    <span class="comment">/*&lt; The MPI request for communication with each rank. */</span></div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    std::vector&lt;char&gt; rankBuffer_;        <span class="comment">/*&lt; The buffer data for all ranks. Never shrinks. */</span></div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    std::vector&lt;std::size_t&gt;</div>
