@@ -21,10 +21,10 @@ namespace mpi
 {
 
 /**
- * @struct MPIInit
+ * @struct Init
  * @brief A RAII class to manage MPI initialization and finalization with thread support.
  */
-struct MPIInit
+struct Init
 {
     /**
      * @brief Initializes the MPI environment, ensuring thread support.
@@ -32,7 +32,7 @@ struct MPIInit
      * @param argc Reference to the argument count.
      * @param argv Reference to the argument vector.
      */
-    MPIInit(int argc, char** argv)
+    Init(int argc, char** argv)
     {
 #ifdef NF_REQUIRE_MPI_THREAD_SUPPORT
         int provided;
@@ -46,17 +46,17 @@ struct MPIInit
     }
 
     /**
-     * @brief Destroy the MPIInit object.
+     * @brief Destroy the Init object.
      */
-    ~MPIInit() { MPI_Finalize(); }
+    ~Init() { MPI_Finalize(); }
 };
 
 
 /**
- * @class MPIEnvironment
+ * @class Environment
  * @brief Manages the MPI environment, including rank and rank size information.
  */
-class MPIEnvironment
+class Environment
 {
 public:
 
@@ -65,29 +65,37 @@ public:
      *
      * @param commGroup The communicator group, default is MPI_COMM_WORLD.
      */
-    MPIEnvironment(MPI_Comm commGroup = MPI_COMM_WORLD) : communicator(commGroup)
+    Environment(MPI_Comm commGroup = MPI_COMM_WORLD) : communicator(commGroup)
     {
+        MPI_Initialized(&mpiInitialized);
         updateRankData();
     }
 
     /**
      * @brief Finalizes the MPI environment.
      */
-    ~MPIEnvironment() = default;
+    ~Environment() = default;
+
+    /**
+     * @brief returns if
+     *
+     * @return The number of ranks.
+     */
+    bool isInitialized() const { return mpiInitialized == 1; }
 
     /**
      * @brief Returns the number of ranks.
      *
      * @return The number of ranks.
      */
-    size_t sizeRank() const { return static_cast<size_t>(mpi_size); }
+    size_t sizeRank() const { return static_cast<size_t>(mpiSize); }
 
     /**
      * @brief Returns the rank of the current process.
      *
      * @return The rank of the current process.
      */
-    size_t rank() const { return static_cast<size_t>(mpi_rank); }
+    size_t rank() const { return static_cast<size_t>(mpiRank); }
 
     /**
      * @brief Returns the communicator.
@@ -99,17 +107,20 @@ public:
 private:
 
     MPI_Comm communicator {MPI_COMM_NULL}; // MPI communicator
-    int mpi_rank {-1};                     // Index of this rank
-    int mpi_size {-1};                     // Number of ranks in this communicator group.
+    int mpiInitialized {0};
+    int mpiRank {-1}; // Index of this rank
+    int mpiSize {-1}; // Number of ranks in this communicator group.
 
     /**
      * @brief Updates the rank data, based on the communicator.
      */
     void updateRankData()
     {
-        NF_ASSERT(communicator != MPI_COMM_NULL, "Invalid communicator, is null.");
-        MPI_Comm_rank(communicator, &mpi_rank);
-        MPI_Comm_size(communicator, &mpi_size);
+        if (mpiInitialized)
+        {
+            MPI_Comm_rank(communicator, &mpiRank);
+            MPI_Comm_size(communicator, &mpiSize);
+        }
     }
 };
 
