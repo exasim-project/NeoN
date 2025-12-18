@@ -71,7 +71,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
-    ctest --preset develop --E bench -output-on-failure
+    ctest --preset develop -E bench --output-on-failure
 
 else
     echo "Unknown GPU type: $GPU_TYPE"
