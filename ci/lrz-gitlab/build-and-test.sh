@@ -32,7 +32,7 @@ if [ "$GPU_TYPE" == "nvidia" ]; then
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
-    ctest --preset develop --output-on-failure
+    ctest --preset develop -E bench --output-on-failure
 
 elif [ "$GPU_TYPE" == "amd" ]; then
     # Set up environment
@@ -51,7 +51,7 @@ elif [ "$GPU_TYPE" == "amd" ]; then
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
-    ctest --preset develop --output-on-failure
+    ctest --preset develop -E bench --output-on-failure
 
 elif [ "$GPU_TYPE" == "intel" ]; then
     if ! sycl-ls --ignore-device-selectors 2>/dev/null | grep -qi intel; then
@@ -71,7 +71,7 @@ elif [ "$GPU_TYPE" == "intel" ]; then
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
-    ctest --preset develop --output-on-failure
+    ctest --preset develop --E bench -output-on-failure
 
 else
     echo "Unknown GPU type: $GPU_TYPE"
