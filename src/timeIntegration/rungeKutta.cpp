@@ -32,7 +32,7 @@ RungeKutta<SolutionVectorType>::RungeKutta(RungeKutta<SolutionVectorType>&& othe
 {}
 
 template<typename SolutionVectorType>
-void RungeKutta<SolutionVectorType>::solve(
+la::SolverStats RungeKutta<SolutionVectorType>::solve(
     dsl::Expression<ValueType>& exp, SolutionVectorType& solutionVector, scalar t, const scalar dt
 )
 {
@@ -55,6 +55,7 @@ void RungeKutta<SolutionVectorType>::solve(
     // Copy solution out. (Fence is in sundails free)
     NeoN::sundials::sunNVectorToVector(solution_.sunNVector(), solutionVector.internalVector());
     oldSolutionVector.internalVector() = solutionVector.internalVector();
+    return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
 }
 
 template<typename SolutionVectorType>

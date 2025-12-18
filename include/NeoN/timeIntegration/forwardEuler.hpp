@@ -8,6 +8,7 @@
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -30,11 +31,11 @@ public:
 
     static std::string name() { return "forwardEuler"; }
 
-    static std::string doc() { return "first order time integration method"; }
+    static std::string doc() { return "first order explicit time integration method"; }
 
     static std::string schema() { return "none"; }
 
-    void solve(
+    la::SolverStats solve(
         dsl::Expression<ValueType>& eqn,
         SolutionVectorType& solutionVector,
         [[maybe_unused]] scalar t,
@@ -49,6 +50,7 @@ public:
         solutionVector.correctBoundaryConditions();
 
         fence(eqn.exec());
+        return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
     };
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override

@@ -9,6 +9,7 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/linearAlgebra/solver.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -30,13 +31,13 @@ public:
 
     static std::string name() { return "timeIntegrationFactory"; }
 
-    TimeIntegratorBase(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : schemeDict_(schemeDict), solutionDict_(solutionDict)
+    TimeIntegratorBase(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
+        : timeIntegrationDict_(timeIntegrationDict), solutionDict_(solutionDict)
     {}
 
     virtual ~TimeIntegratorBase() {}
 
-    virtual void solve(
+    virtual la::SolverStats solve(
         Expression& eqn, SolutionType& sol, scalar t, scalar dt
     ) = 0; // Pure virtual function for solving
 
@@ -47,7 +48,7 @@ public:
 
 protected:
 
-    const Dictionary& schemeDict_;
+    const Dictionary& timeIntegrationDict_;
     const Dictionary& solutionDict_;
 };
 
@@ -72,12 +73,12 @@ public:
     TimeIntegration(TimeIntegration&& timeIntegrator)
         : timeIntegratorStrategy_(std::move(timeIntegrator.timeIntegratorStrategy_)) {};
 
-    TimeIntegration(const Dictionary& schemeDict, const Dictionary& solutionDict)
+    TimeIntegration(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
         : timeIntegratorStrategy_(TimeIntegratorBase<SolutionVectorType>::create(
-            schemeDict.get<std::string>("type"), schemeDict, solutionDict
+            timeIntegrationDict.get<std::string>("type"), timeIntegrationDict, solutionDict
         )) {};
 
-    void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
+    la::SolverStats solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
         timeIntegratorStrategy_->solve(eqn, sol, t, dt);
     }
