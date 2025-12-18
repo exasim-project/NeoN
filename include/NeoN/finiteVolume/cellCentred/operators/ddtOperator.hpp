@@ -44,8 +44,8 @@ private:
     // NOTE ddtOperator does not have a FactoryClass
     const la::SparsityPattern& sparsityPattern_;
 
-    static timeIntegration::Euler defaultEulerScheme_;
-    const timeIntegration::DdtScheme* scheme_ {&defaultEulerScheme_};
+    static timeIntegration::Euler DEFAULT_EULER_SCHEME;
+    const timeIntegration::DdtScheme* scheme_ {&DEFAULT_EULER_SCHEME};
 
     mutable bool firstTimeStep_ {true};
 };

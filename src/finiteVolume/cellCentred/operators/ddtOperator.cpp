@@ -94,7 +94,7 @@ void DdtOperator<ValueType>::implicitOperation(
 }
 
 template<typename ValueType>
-timeIntegration::Euler DdtOperator<ValueType>::defaultEulerScheme_ {};
+timeIntegration::Euler DdtOperator<ValueType>::DEFAULT_EULER_SCHEME {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::read(const Input& input)
@@ -130,13 +130,13 @@ void DdtOperator<ValueType>::read(const Input& input)
     // TODO (later: steadyState, CrankNicolson, etc.)
     if (schemeName == "Euler")
     {
-        scheme_ = &defaultEulerScheme_;
+        scheme_ = &DEFAULT_EULER_SCHEME;
         return;
     }
-    static timeIntegration::Backward backwardScheme;
+    static timeIntegration::Backward BACKWARD_SCHEME;
     if (schemeName == "backward")
     {
-        scheme_ = &backwardScheme;
+        scheme_ = &BACKWARD_SCHEME;
         return;
     }
 
