@@ -26,7 +26,7 @@ TEST_CASE("TimeIntegration")
     NeoN::Dictionary fvSchemes;
     NeoN::Dictionary ddtSchemes;
     ddtSchemes.insert("type", std::string("forwardEuler"));
-    ddtSchemes.insert("default", std::string("Euler"));
+    ddtSchemes.insert("ddt(vf)", std::string("BDF1"));
     fvSchemes.insert("ddtSchemes", ddtSchemes);
     NeoN::Dictionary fvSolution;
 

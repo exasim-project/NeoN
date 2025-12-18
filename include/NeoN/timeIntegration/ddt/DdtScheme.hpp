@@ -13,9 +13,7 @@ namespace timeIntegration
 
 /**
  * @brief Time-derivative discretisation policy.
- *
  * Provides coefficients for implicit ddt assembly.
- * Does NOT perform any loops or Kokkos execution.
  */
 class DdtScheme
 {

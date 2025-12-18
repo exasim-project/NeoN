@@ -11,7 +11,7 @@ namespace NeoN
 namespace timeIntegration
 {
 
-class Euler final : public DdtScheme
+class BDF1 final : public DdtScheme
 {
 public:
 

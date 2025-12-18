@@ -12,7 +12,7 @@
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/timeIntegration/ddt/DdtScheme.hpp"
-#include "NeoN/timeIntegration/ddt/Euler.hpp"
+#include "NeoN/timeIntegration/ddt/BDF1.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -44,8 +44,8 @@ private:
     // NOTE ddtOperator does not have a FactoryClass
     const la::SparsityPattern& sparsityPattern_;
 
-    static timeIntegration::Euler DEFAULT_EULER_SCHEME;
-    const timeIntegration::DdtScheme* scheme_ {&DEFAULT_EULER_SCHEME};
+    static timeIntegration::BDF1 DEFAULT_BDF1_SCHEME;
+    const timeIntegration::DdtScheme* scheme_ {&DEFAULT_BDF1_SCHEME};
 
     mutable bool firstTimeStep_ {true};
 };

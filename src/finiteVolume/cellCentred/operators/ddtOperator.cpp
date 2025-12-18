@@ -55,7 +55,7 @@ void DdtOperator<ValueType>::implicitOperation(
 
     // Select coefficients for the single-step kernel:
     // - if startup (BDF2 first step), use a0Startup/a1Startup
-    // - else use the scheme's normal a0/a1 (covers Euler, CN, etc.)
+    // - else use the scheme's normal a0/a1
     const scalar a0 = useStartup ? scheme_->a0Startup(dt) : scheme_->a0(dt);
     const scalar a1 = useStartup ? scheme_->a1Startup(dt) : scheme_->a1(dt);
 
@@ -94,7 +94,7 @@ void DdtOperator<ValueType>::implicitOperation(
 }
 
 template<typename ValueType>
-timeIntegration::Euler DdtOperator<ValueType>::DEFAULT_EULER_SCHEME {};
+timeIntegration::BDF1 DdtOperator<ValueType>::DEFAULT_BDF1_SCHEME {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::read(const Input& input)
@@ -108,17 +108,12 @@ void DdtOperator<ValueType>::read(const Input& input)
 
     if (!dict.contains("ddtSchemes"))
     {
-        return; // keep default Euler
+        return; // keep default BDF1
     }
 
     const Dictionary& ddtSchemes = dict.subDict("ddtSchemes");
 
-    // Default scheme
     std::string schemeName;
-    if (ddtSchemes.contains("default"))
-    {
-        schemeName = ddtSchemes.get<std::string>("default");
-    }
 
     // Per-field override: ddt(fieldName)
     const std::string fieldKey = "ddt(" + this->field_.name + ")";
@@ -128,20 +123,20 @@ void DdtOperator<ValueType>::read(const Input& input)
     }
 
     // TODO (later: steadyState, CrankNicolson, etc.)
-    if (schemeName == "Euler")
+    if (schemeName == "BDF1")
     {
-        scheme_ = &DEFAULT_EULER_SCHEME;
+        scheme_ = &DEFAULT_BDF1_SCHEME;
         return;
     }
-    static timeIntegration::Backward BACKWARD_SCHEME;
-    if (schemeName == "backward")
+    static timeIntegration::BDF2 bdf2Scheme;
+    if (schemeName == "BDF2")
     {
-        scheme_ = &BACKWARD_SCHEME;
+        scheme_ = &bdf2Scheme;
         return;
     }
 
     NF_ERROR_EXIT(std::format(
-        "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: Euler, backward.",
+        "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2.",
         schemeName,
         this->field_.name
     ));

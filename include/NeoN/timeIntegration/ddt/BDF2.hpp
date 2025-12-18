@@ -12,7 +12,7 @@ namespace NeoN::timeIntegration
 /**
  * @brief BDF2 time-derivative scheme.
  */
-class Backward final : public DdtScheme
+class BDF2 final : public DdtScheme
 {
 public:
 
@@ -24,7 +24,7 @@ public:
 
     scalar a2(scalar dt) const override { return scalar(-0.5) / dt; }
 
-    // Startup = Euler
+    // Startup = BDF1
     scalar a0Startup(scalar dt) const override { return scalar(1.0) / dt; }
     scalar a1Startup(scalar dt) const override { return scalar(1.0) / dt; }
 };
