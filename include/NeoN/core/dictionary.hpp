@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <cpptrace/cpptrace.hpp>
+
 #include "NeoN/core/demangle.hpp"
 
 namespace NeoN
@@ -97,6 +99,7 @@ public:
         catch (const std::bad_any_cast& e)
         {
             logBadAnyCast<T>(e, key, data_);
+            cpptrace::generate_trace().print();
             throw;
         }
     }
@@ -119,6 +122,7 @@ public:
         catch (const std::bad_any_cast& e)
         {
             logBadAnyCast<T>(e, key, data_);
+            cpptrace::generate_trace().print();
             throw;
         }
     }
