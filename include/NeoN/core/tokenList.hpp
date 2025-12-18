@@ -92,11 +92,38 @@ public:
      * type T.
      */
     template<typename ReturnType>
-    [[nodiscard]] ReturnType& get(const size_t& idx)
+    [[nodiscard]] ReturnType& get(const size_t idx)
     {
         try
         {
             return std::any_cast<ReturnType&>(data_.at(idx));
+        }
+        catch (const std::bad_any_cast& e)
+        {
+            logBadAnyCast<ReturnType>(e, idx, data_);
+            throw e;
+        }
+        catch (const std::out_of_range& e)
+        {
+            logOutRange(e, idx, data_);
+            throw e;
+        }
+    }
+
+    /**
+     * @brief Retrieves the value associated with the given index, casting it to
+     * the specified type.
+     * @tparam T The type to cast the value to.
+     * @param idx The index to retrieve the value for.
+     * @return A const reference to the value associated with the index, casted to
+     * type T.
+     */
+    template<typename ReturnType>
+    [[nodiscard]] const ReturnType& get(const size_t idx) const
+    {
+        try
+        {
+            return std::any_cast<const ReturnType&>(data_.at(idx));
         }
         catch (const std::bad_any_cast& e)
         {
@@ -125,32 +152,6 @@ public:
         return retValue;
     }
 
-    /**
-     * @brief Retrieves the value associated with the given index, casting it to
-     * the specified type.
-     * @tparam T The type to cast the value to.
-     * @param idx The index to retrieve the value for.
-     * @return A const reference to the value associated with the index, casted to
-     * type T.
-     */
-    template<typename ReturnType>
-    [[nodiscard]] const ReturnType& get(const size_t& idx) const
-    {
-        try
-        {
-            return std::any_cast<const ReturnType&>(data_.at(idx));
-        }
-        catch (const std::bad_any_cast& e)
-        {
-            logBadAnyCast<ReturnType>(e, idx, data_);
-            throw e;
-        }
-        catch (const std::out_of_range& e)
-        {
-            logOutRange(e, idx, data_);
-            throw e;
-        }
-    }
 
     /**
      * @brief Retrieves the value associated with the nextIndex, casting it to
