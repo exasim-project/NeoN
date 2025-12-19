@@ -1,0 +1,135 @@
+\doxysection{diagonal\+Solver.\+hpp}
+\hypertarget{diagonalSolver_8hpp_source}{}\label{diagonalSolver_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp}}
+\mbox{\hyperlink{diagonalSolver_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2solver_8hpp}{NeoN/linearAlgebra/solver.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00016}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver}{00016}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver}{DiagonalSolver}}\ :\ \textcolor{keyword}{public}\ SolverFactory::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<DiagonalSolver>}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00018}00018\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ SolverFactory::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<DiagonalSolver>}};}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00020}00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00022}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a825b7a56f08d36b4517721d80c64e1fa}{00022}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a825b7a56f08d36b4517721d80c64e1fa}{DiagonalSolver}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&)\ :\ Base(exec)\ \{\}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00024}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_ac7c044d16579ea8e8d9f0b131762eae8}{00024}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_ac7c044d16579ea8e8d9f0b131762eae8}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}diagonal"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00025}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_abb291dd3aea5d6f6b9e89987fcab0fda}{00025}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_abb291dd3aea5d6f6b9e89987fcab0fda}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Direct\ diagonal\ solver\ (CSR\ scan)"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a9eca3529867c3c3446d6eb8a350e84cf}{00026}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a9eca3529867c3c3446d6eb8a350e84cf}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/\ scalar\ -\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a52461161aa85a3a6f15c277930d1f73d}{00029}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a52461161aa85a3a6f15c277930d1f73d}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<scalar,\ localIdx>}}\&\ sys,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ x)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00030}00030\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ start\ =\ std::chrono::steady\_clock::now();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rhs\ =\ sys.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac2fcf5bbb16345399ffdb4fd8741833b}{rhs}}();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtx\ =\ sys.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a416fd6d5122482fcc2372590bc10b8f9}{matrix}}();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtxV\ =\ mtx.view();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [xV,\ bV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(x,\ rhs);}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ x.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ bV.size()\},}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowBegin\ =\ mtxV.rowOffs[i];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowEnd\ =\ mtxV.rowOffs[i\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ diagIdx\ =\ -\/1;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ k\ =\ rowBegin;\ k\ <\ rowEnd;\ ++k)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mtxV.colIdxs[k]\ ==\ i)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ diagIdx\ =\ k;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ break;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diagIdx\ <\ 0)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}DiagonalSolver:\ diagonal\ entry\ not\ found"{}});}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xV[i]\ =\ bV[i]\ /\ mtxV.values[diagIdx];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}DiagonalSolver::solve<scalar>"{}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(x.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}());}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ std::chrono::steady\_clock::now();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ ms\ =}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ std::chrono::duration\_cast<std::chrono::microseconds>(end\ -\/\ start).count()\ /\ 1000.0;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{1,\ 0.0,\ 0.0,\ ms\};}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/\ Vec3\ -\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_ada7f9139a5941daa27d245e24b98e6b3}{00076}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_ada7f9139a5941daa27d245e24b98e6b3}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<Vec3,\ localIdx>}}\&\ sys,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ x)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00077}00077\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rhs\ =\ sys.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac2fcf5bbb16345399ffdb4fd8741833b}{rhs}}();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtx\ =\ sys.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a416fd6d5122482fcc2372590bc10b8f9}{matrix}}();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtxV\ =\ mtx.view();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [xV,\ bV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(x,\ rhs);}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ x.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ bV.size()\},}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowBegin\ =\ mtxV.rowOffs[i];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowEnd\ =\ mtxV.rowOffs[i\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ diagIdx\ =\ -\/1;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ k\ =\ rowBegin;\ k\ <\ rowEnd;\ ++k)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mtxV.colIdxs[k]\ ==\ i)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ diagIdx\ =\ k;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ break;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diagIdx\ <\ 0)}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}DiagonalSolver<Vec3>:\ diagonal\ entry\ not\ found"{}});}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ a\ =\ mtxV.values[diagIdx];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ b\ =\ bV[i];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ xi;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xi[0]\ =\ b[0]\ /\ a[0];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xi[1]\ =\ b[1]\ /\ a[1];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xi[2]\ =\ b[2]\ /\ a[2];}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xV[i]\ =\ xi;}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}DiagonalSolver::solve<Vec3>"{}}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(x.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}());}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{1,\ 0.0,\ 0.0,\ 0.0\};}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00121}00121\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00123}\mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a843edf18e2df8e454bc051b8ee9ddab9}{00123}}\ \ \ \ \ std::unique\_ptr<SolverFactory>\ \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver_a843edf18e2df8e454bc051b8ee9ddab9}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00124}00124\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<DiagonalSolver>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00127}00127\ \};}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00129}00129\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+
+\end{DoxyCode}

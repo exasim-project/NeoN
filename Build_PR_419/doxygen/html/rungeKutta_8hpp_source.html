@@ -99,7 +99,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="field_8hpp.html">NeoN/fields/field.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="timeIntegration_8hpp.html">NeoN/timeIntegration/timeIntegration.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="sundials_8hpp.html">NeoN/timeIntegration/sundials.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="linearAlgebra_2solver_8hpp.html">NeoN/linearAlgebra/solver.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1timeIntegration.html">NeoN::timeIntegration</a></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
@@ -118,8 +118,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    ~RungeKutta() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    RungeKutta(<span class="keyword">const</span> Dictionary&amp; schemeDict, <span class="keyword">const</span> Dictionary&amp; solutionDict)</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        : Base(schemeDict, solutionDict)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    RungeKutta(<span class="keyword">const</span> Dictionary&amp; timeIntegrationDict, <span class="keyword">const</span> Dictionary&amp; solutionDict)</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        : Base(timeIntegrationDict, solutionDict)</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    {}</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    RungeKutta(<span class="keyword">const</span> RungeKutta&amp; other);</div>
@@ -138,7 +138,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">static</span> std::string schema() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;none&quot;</span>; }</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a8ba06394082cf5961a6c00182cde10fd">solve</a>(</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_struct" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a8ba06394082cf5961a6c00182cde10fd">solve</a>(</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        dsl::Expression&lt;ValueType&gt;&amp; exp,</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        SolutionVectorType&amp; solutionVector,</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        scalar t,</div>
@@ -182,11 +182,13 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassRuntimeSelectionFactory_1_1Register_html"><div class="ttname"><a href="classRuntimeSelectionFactory_1_1Register.html">Register</a></div><div class="ttdoc">A template class for registering derived classes with a base class.</div></div>
 <div class="ttc" id="afieldCollection_8hpp_html"><div class="ttname"><a href="fieldCollection_8hpp.html">fieldCollection.hpp</a></div></div>
 <div class="ttc" id="afield_8hpp_html"><div class="ttname"><a href="field_8hpp.html">field.hpp</a></div></div>
+<div class="ttc" id="alinearAlgebra_2solver_8hpp_html"><div class="ttname"><a href="linearAlgebra_2solver_8hpp.html">solver.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_a8ba06394082cf5961a6c00182cde10fd"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a8ba06394082cf5961a6c00182cde10fd">NeoN::dsl::solve</a></div><div class="ttdeci">la::SolverStats solve(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType &gt; &gt; p={})</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00102">solver.hpp:102</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1timeIntegration_html"><div class="ttname"><a href="namespaceNeoN_1_1timeIntegration.html">NeoN::timeIntegration</a></div><div class="ttdef"><b>Definition</b> <a href="backwardEuler_8hpp_source.html#l00017">backwardEuler.hpp:18</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1timeIntegration_html"><div class="ttname"><a href="namespaceNeoN_1_1timeIntegration.html">NeoN::timeIntegration</a></div><div class="ttdef"><b>Definition</b> <a href="backwardEuler_8hpp_source.html#l00014">backwardEuler.hpp:15</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_aa67294511d0c7da987259a7b1a3ba59d"><div class="ttname"><a href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">NeoN::name</a></div><div class="ttdeci">const std::string &amp; name(const NeoN::Document &amp;doc)</div><div class="ttdoc">Retrieves the name of a Document.</div></div>
 <div class="ttc" id="aoldTimeCollection_8hpp_html"><div class="ttname"><a href="oldTimeCollection_8hpp.html">oldTimeCollection.hpp</a></div></div>
 <div class="ttc" id="aparallelAlgorithms_8hpp_html"><div class="ttname"><a href="parallelAlgorithms_8hpp.html">parallelAlgorithms.hpp</a></div></div>
+<div class="ttc" id="astructNeoN_1_1la_1_1SolverStats_html"><div class="ttname"><a href="structNeoN_1_1la_1_1SolverStats.html">NeoN::la::SolverStats</a></div><div class="ttdef"><b>Definition</b> <a href="linearAlgebra_2solver_8hpp_source.html#l00016">solver.hpp:17</a></div></div>
 <div class="ttc" id="asundials_8hpp_html"><div class="ttname"><a href="sundials_8hpp.html">sundials.hpp</a></div></div>
 <div class="ttc" id="atimeIntegration_8hpp_html"><div class="ttname"><a href="timeIntegration_8hpp.html">timeIntegration.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

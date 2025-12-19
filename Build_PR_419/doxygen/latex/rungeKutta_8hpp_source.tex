@@ -19,7 +19,7 @@
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{timeIntegration_8hpp}{NeoN/timeIntegration/timeIntegration.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sundials_8hpp}{NeoN/timeIntegration/sundials.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2solver_8hpp}{NeoN/linearAlgebra/solver.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00019}00019\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{NeoN::timeIntegration}}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00021}00021\ \{}
@@ -38,8 +38,8 @@
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00068}00068\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00072}00072\ \ \ \ \ \string~RungeKutta()\ =\ \textcolor{keywordflow}{default};}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00078}00078\ \ \ \ \ RungeKutta(\textcolor{keyword}{const}\ Dictionary\&\ schemeDict,\ \textcolor{keyword}{const}\ Dictionary\&\ solutionDict)}
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ :\ Base(schemeDict,\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00078}00078\ \ \ \ \ RungeKutta(\textcolor{keyword}{const}\ Dictionary\&\ timeIntegrationDict,\ \textcolor{keyword}{const}\ Dictionary\&\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ :\ Base(timeIntegrationDict,\ solutionDict)}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00080}00080\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00081}00081\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00088}00088\ \ \ \ \ RungeKutta(\textcolor{keyword}{const}\ RungeKutta\&\ other);}
@@ -58,7 +58,7 @@
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00113}00113\ }
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ schema()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a8ba06394082cf5961a6c00182cde10fd}{solve}}(}
+\DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00127}00127\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a8ba06394082cf5961a6c00182cde10fd}{solve}}(}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ dsl::Expression<ValueType>\&\ exp,}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ SolutionVectorType\&\ solutionVector,}
 \DoxyCodeLine{\Hypertarget{rungeKutta_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ scalar\ t,}

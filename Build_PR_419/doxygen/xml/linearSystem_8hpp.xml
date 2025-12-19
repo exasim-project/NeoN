@@ -16,8 +16,8 @@
     <includedby refid="gradOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</includedby>
     <includedby refid="laplacianOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</includedby>
     <includedby refid="sourceTerm_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</includedby>
+    <includedby refid="diagonalSolver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</includedby>
     <includedby refid="linearAlgebra_2solver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</includedby>
-    <includedby refid="backwardEuler_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</includedby>
     <incdepgraph>
       <node id="38">
         <label>NeoN/core/array.hpp</label>
@@ -378,13 +378,13 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="8">
+      <node id="15">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddt.hpp</label>
         <link refid="ddt_8hpp"/>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="8">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</label>
         <link refid="explicit_8hpp"/>
       </node>
@@ -411,21 +411,21 @@
         <link refid="spatialOperator_8hpp"/>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="14">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/temporalOperator.hpp</label>
         <link refid="temporalOperator_8hpp"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
@@ -435,26 +435,28 @@
       <node id="16">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
         <link refid="ddtOperator_8hpp"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
+        <link refid="divOperator_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="11">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
-        <link refid="divOperator_8hpp"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp</label>
         <link refid="gaussGreenDiv_8hpp"/>
       </node>
-      <node id="14">
+      <node id="13">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
         <link refid="gaussGreenGrad_8hpp"/>
       </node>
@@ -462,18 +464,18 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
         <link refid="gaussGreenLaplacian_8hpp"/>
       </node>
-      <node id="13">
+      <node id="12">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</label>
         <link refid="gradOperator_8hpp"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="17">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</label>
         <link refid="laplacianOperator_8hpp"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -483,10 +485,14 @@
       <node id="19">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</label>
         <link refid="sourceTerm_8hpp"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+      </node>
+      <node id="20">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
+        <link refid="diagonalSolver_8hpp"/>
       </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
@@ -497,13 +503,13 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -511,13 +517,21 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
         <link refid="linearAlgebra_2solver_8hpp"/>
         <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="4">

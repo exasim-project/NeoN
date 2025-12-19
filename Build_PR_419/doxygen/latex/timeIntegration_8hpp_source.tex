@@ -12,82 +12,85 @@
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00008}00008\ }
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{expression_8hpp}{NeoN/dsl/expression.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{NeoN::timeIntegration}}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{expression_8hpp}{NeoN/dsl/expression.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2solver_8hpp}{NeoN/linearAlgebra/solver.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{DdtScheme_8hpp}{NeoN/timeIntegration/ddt/DdtScheme.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00015}00015\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00016}00016\ \textcolor{comment}{/*\ @class\ Factory\ class\ to\ create\ time\ integration\ method\ by\ a\ given\ name}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ using\ NeoNs\ runTimeFactory\ mechanism}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00018}00018\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00019}00019\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionType>}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00020}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{00020}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}\ :}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00021}00021\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{RuntimeSelectionFactory}}<}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00022}00022\ \ \ \ \ \ \ \ \ TimeIntegratorBase<SolutionType>,}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ Parameters<const\ Dictionary\&,\ const\ Dictionary\&>>}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00024}00024\ \{}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00026}00026\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{00028}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionType::VectorValueType;}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}{00029}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{NeoN::timeIntegration}}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00019}00019\ \textcolor{comment}{/*\ @class\ Factory\ class\ to\ create\ time\ integration\ method\ by\ a\ given\ name}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ using\ NeoNs\ runTimeFactory\ mechanism}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00021}00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00022}00022\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionType>}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{00023}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}\ :}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{RuntimeSelectionFactory}}<}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ TimeIntegratorBase<SolutionType>,}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ Parameters<const\ Dictionary\&,\ const\ Dictionary\&>>}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00029}00029\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00030}00030\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}{00031}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}timeIntegrationFactory"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00032}00032\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aef92fda8dab4d1a50e91fb63c9114395}{00033}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aef92fda8dab4d1a50e91fb63c9114395}{TimeIntegratorBase}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5}{schemeDict\_}}(schemeDict),\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{solutionDict\_}}(solutionDict)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00035}00035\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00036}00036\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}{00037}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}{\string~TimeIntegratorBase}}()\ \{\}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00038}00038\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_ad227b119cbf38ec8b1ef7f004f1fe887}{00039}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_ad227b119cbf38ec8b1ef7f004f1fe887}{solve}}(}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ eqn,\ SolutionType\&\ sol,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00041}00041\ \ \ \ \ )\ =\ 0;\ \textcolor{comment}{//\ Pure\ virtual\ function\ for\ solving}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00042}00042\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{comment}{//\ Pure\ virtual\ function\ for\ cloning}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}{00044}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<TimeIntegratorBase>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}{clone}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{00031}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa2d28bc4e908bd4665771612700b52cd}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionType::VectorValueType;}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a5dc5973f6b9d091167da62cefe883fba}{00032}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}{00034}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a9b71471bb93ba538cbfe1e2c42fedebc}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}timeIntegrationFactory"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00036}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a88cfefa71b232c6a9aed200291761b5e}{00036}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a88cfefa71b232c6a9aed200291761b5e}{TimeIntegratorBase}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ timeIntegrationDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a72fc6bbc5190d108fb602b0f38749cd3}{timeIntegrationDict\_}}(timeIntegrationDict),\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{solutionDict\_}}(solutionDict)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00038}00038\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}{00040}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a520f7e266a18cee23fe1648879d32762}{\string~TimeIntegratorBase}}()\ \{\}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a7a3154c6b7d5d88a46f201ce23efc079}{00042}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a7a3154c6b7d5d88a46f201ce23efc079}{solve}}(}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ eqn,\ SolutionType\&\ sol,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00044}00044\ \ \ \ \ )\ =\ 0;\ \textcolor{comment}{//\ Pure\ virtual\ function\ for\ solving}}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00045}00045\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a114dfe7cd96e58dc7f0f5b96f239838f}{00046}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a114dfe7cd96e58dc7f0f5b96f239838f}{explicitIntegration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00047}00047\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00048}00048\ \textcolor{keyword}{protected}:}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00049}00049\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5}{00050}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a6ec6c1557e18be4abda8b17b673652b5}{schemeDict\_}};}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{00051}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{solutionDict\_}};}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00052}00052\ \};}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00053}00053\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00060}00060\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionVectorType>}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{00061}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00062}00062\ \{}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00064}00064\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{00066}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionVectorType::VectorValueType;}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a98088851b4dfba8cc9f9f6185c6c693e}{00067}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ Pure\ virtual\ function\ for\ cloning}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}{00047}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<TimeIntegratorBase>\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_aa97bc8f374d17702e1c8f4816b8d0f24}{clone}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00049}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a114dfe7cd96e58dc7f0f5b96f239838f}{00049}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a114dfe7cd96e58dc7f0f5b96f239838f}{explicitIntegration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00051}00051\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a72fc6bbc5190d108fb602b0f38749cd3}{00053}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a72fc6bbc5190d108fb602b0f38749cd3}{timeIntegrationDict\_}};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{00054}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_a319d692ec559c3b0863e06216769a61a}{solutionDict\_}};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00055}00055\ \};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00063}00063\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SolutionVectorType>}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{00064}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00067}00067\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a9f43011382a555da953bf962bd0e4e0e}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a9f43011382a555da953bf962bd0e4e0e}{TimeIntegration}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}\&\ timeIntegrator)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(timeIntegrator.timeIntegratorStrategy\_-\/>clone())\ \{\};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{00069}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a7e4efcc439775a517a4a6d92123ab0ae}{ValueType}}\ =\ \textcolor{keyword}{typename}\ SolutionVectorType::VectorValueType;}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a98088851b4dfba8cc9f9f6185c6c693e}{00070}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}};}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109}{TimeIntegration}}(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}\&\&\ timeIntegrator)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(std::move(timeIntegrator.timeIntegratorStrategy\_))\ \{\};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a9f43011382a555da953bf962bd0e4e0e}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a9f43011382a555da953bf962bd0e4e0e}{TimeIntegration}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}\&\ timeIntegrator)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(timeIntegrator.timeIntegratorStrategy\_-\/>clone())\ \{\};}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a396623a117d5148481f376df12090c38}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a396623a117d5148481f376df12090c38}{TimeIntegration}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ schemeDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionVectorType>::create(}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ schemeDict.get<std::string>(\textcolor{stringliteral}{"{}type"{}}),\ schemeDict,\ solutionDict}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ ))\ \{\};}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ad0b7d09fb156d2ba6da0f15fcf39cd0d}{solve}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ eqn,\ SolutionVectorType\&\ sol,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00081}00081\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ timeIntegratorStrategy\_-\/>solve(eqn,\ sol,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00083}00083\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}{00085}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}{explicitIntegration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ timeIntegratorStrategy\_-\/>explicitIntegration();\ \}}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00086}00086\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00087}00087\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00088}00088\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00089}00089\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionVectorType>>\ timeIntegratorStrategy\_;}
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00090}00090\ \};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109}{00075}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ae74768bc8d2c29be38b77340ec0a6109}{TimeIntegration}}(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration}{TimeIntegration}}\&\&\ timeIntegrator)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(std::move(timeIntegrator.timeIntegratorStrategy\_))\ \{\};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ac03f35d48d4e1116af3221123ff4f48e}{00078}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ac03f35d48d4e1116af3221123ff4f48e}{TimeIntegration}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ timeIntegrationDict,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solutionDict)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ :\ timeIntegratorStrategy\_(\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegratorBase}{TimeIntegratorBase}}<SolutionVectorType>::create(}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ timeIntegrationDict.get<std::string>(\textcolor{stringliteral}{"{}type"{}}),\ timeIntegrationDict,\ solutionDict}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ ))\ \{\};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ab6b8b5bc29124041ceed219fb50de2cb}{00083}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_ab6b8b5bc29124041ceed219fb50de2cb}{solve}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}\&\ eqn,\ SolutionVectorType\&\ sol,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00084}00084\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ timeIntegratorStrategy\_-\/>solve(eqn,\ sol,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00086}00086\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}{00088}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1TimeIntegration_a3d88f64963933bebe51c977cbb661519}{explicitIntegration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ timeIntegratorStrategy\_-\/>explicitIntegration();\ \}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00090}00090\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00091}00091\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00093}00093\ \}\ \textcolor{comment}{//\ namespace\ NeoN::timeIntegration}}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00092}00092\ \ \ \ \ std::unique\_ptr<TimeIntegratorBase<SolutionVectorType>>\ timeIntegratorStrategy\_;}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00093}00093\ \};}
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{timeIntegration_8hpp_source_l00096}00096\ \}\ \textcolor{comment}{//\ namespace\ NeoN::timeIntegration}}
 
 \end{DoxyCode}
