@@ -6,21 +6,21 @@
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
 
 namespace NeoN::dsl
 {
 
-/* @brief factory function to create a ddt term
- *
- * This injects the finite-volume DdtOperator into the DSL expression.
- * The choice of scheme (BDF1/BDF2) is read from fvSchemes.ddtSchemes.
- * Whether the operator is treated explicitly or implicitly is decided
- * by the time integrator.
- */
 template<typename FieldType>
-auto ddt(FieldType& field)
+TemporalOperator<typename FieldType::VectorValueType> ddt(FieldType& field)
 {
-    return NeoN::finiteVolume::cellCentred::DdtOperator<FieldType>(field);
+    using ValueType = typename FieldType::VectorValueType;
+
+    auto fvOp = NeoN::finiteVolume::cellCentred::DdtOperator<ValueType>(
+        NeoN::dsl::Operator::Type::Implicit, field
+    );
+
+    return TemporalOperator<ValueType>(std::move(fvOp));
 }
 
 } // namespace NeoN

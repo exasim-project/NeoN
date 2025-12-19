@@ -74,7 +74,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     SECTION("explicit DdtOperator " + execName)
     {
-        auto ddtOp = dsl::exp::ddt(phi);
+        auto ddtOp = dsl::ddt(phi);
         auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
         ddtOp.explicitOperation(source, 1.0, 0.5);
 
@@ -92,12 +92,12 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     {
         NeoN::Dictionary fvSchemes;
         NeoN::Dictionary ddtSchemes;
-        ddtSchemes.insert("default", std::string("Euler"));
+        ddtSchemes.insert("ddt(phi)", std::string("BDF1"));
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
         auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
 
-        auto ddtOp = dsl::imp::ddt(phi);
+        auto ddtOp = dsl::ddt(phi);
         ddtOp.read(fvSchemes);
         ddtOp.implicitOperation(ls, 1.0, 0.5);
 
@@ -118,11 +118,11 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         // fvSchemes selecting backward
         NeoN::Dictionary fvSchemes;
         NeoN::Dictionary ddtSchemes;
-        ddtSchemes.insert("default", std::string("backward"));
+        ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
 
-        auto ddtOp = dsl::imp::ddt(phi);
+        auto ddtOp = dsl::ddt(phi);
         ddtOp.read(fvSchemes);
 
         const scalar dt = 0.5;

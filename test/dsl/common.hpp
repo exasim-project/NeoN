@@ -52,6 +52,88 @@ struct CreateVector
     }
 };
 
+template<typename ValueType>
+struct CreateVolumeVector
+{
+    std::string name;
+    const NeoN::UnstructuredMesh& mesh;
+
+    // initial value for the internal field
+    ValueType value {}; // e.g. 0.0 for scalars, Vec3{0,0,0} for vectors
+
+    std::int64_t timeIndex = 0;
+    std::int64_t iterationIndex = 0;
+    std::int64_t subCycleIndex = 0;
+
+    NeoN::Document operator()(NeoN::Database& db) const
+    {
+        using VF = NeoN::finiteVolume::cellCentred::VolumeField<ValueType>;
+        using VB = NeoN::finiteVolume::cellCentred::VolumeBoundary<ValueType>;
+
+        std::vector<VB> bcs; // empty is fine for the test
+
+        // Domain storage (Field<T>) with proper sizes/offsets
+        NeoN::Field<ValueType> domainField(
+            mesh.exec(),
+            NeoN::Vector<ValueType>(mesh.exec(), mesh.nCells(), value),
+            mesh.boundaryMesh().offset()
+        );
+
+        VF vf(mesh.exec(), name, mesh, domainField, bcs, db, /*dbKey*/ "", /*collection*/ "");
+        NeoN::fill(vf.internalVector(), value);
+
+        return NeoN::Document(
+            {{"name", vf.name},
+             {"timeIndex", timeIndex},
+             {"iterationIndex", iterationIndex},
+             {"subCycleIndex", subCycleIndex},
+             {"field", vf}},
+            NeoN::finiteVolume::cellCentred::validateVectorDoc
+        );
+    }
+};
+
+template<typename ValueType>
+struct CreateSurfaceVector
+{
+    std::string name;
+    const NeoN::UnstructuredMesh& mesh;
+    const std::vector<NeoN::finiteVolume::cellCentred::SurfaceBoundary<ValueType>>* bcs = nullptr;
+
+    ValueType value {}; // initial face value
+
+    std::int64_t timeIndex = 0;
+    std::int64_t iterationIndex = 0;
+    std::int64_t subCycleIndex = 0;
+
+    NeoN::Document operator()(NeoN::Database& db) const
+    {
+        using SF = NeoN::finiteVolume::cellCentred::SurfaceField<ValueType>;
+
+        // Face storage
+        NeoN::Field<ValueType> domainField(
+            mesh.exec(), mesh.nFaces(), mesh.boundaryMesh().offset()
+        );
+        NeoN::fill(domainField.internalVector(), value);
+        NeoN::fill(domainField.boundaryData().refValue(), value);
+        NeoN::fill(domainField.boundaryData().value(), value);
+
+        // Safe default if caller didn’t pass BCs
+        std::vector<NeoN::finiteVolume::cellCentred::SurfaceBoundary<ValueType>> local_bcs;
+        const auto& use_bcs = (bcs) ? *bcs : local_bcs;
+
+        SF sf(mesh.exec(), name, mesh, domainField, use_bcs, db, /*dbKey*/ "", /*collection*/ "");
+
+        return NeoN::Document(
+            {{"name", sf.name},
+             {"timeIndex", timeIndex},
+             {"iterationIndex", iterationIndex},
+             {"subCycleIndex", subCycleIndex},
+             {"field", sf}},
+            NeoN::finiteVolume::cellCentred::validateVectorDoc
+        );
+    }
+};
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
@@ -74,6 +156,8 @@ public:
             field.exec(), dsl::Coeff(1.0), field, type
         )
     {}
+
+    // void read(const NeoN::Input&) {}
 
     void explicitOperation(NeoN::Vector<ValueType>& source) const
     {
@@ -133,6 +217,8 @@ public:
             field.exec(), dsl::Coeff(1.0), field, type
         )
     {}
+
+    // void read(const NeoN::Input&) {}
 
     void explicitOperation(NeoN::Vector<ValueType>& source, NeoN::scalar, NeoN::scalar)
     {

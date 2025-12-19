@@ -8,8 +8,10 @@
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/dsl/expression.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
+#include "NeoN/timeIntegration/ddt/DdtScheme.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -80,7 +82,7 @@ public:
 
     la::SolverStats solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
-        timeIntegratorStrategy_->solve(eqn, sol, t, dt);
+        return timeIntegratorStrategy_->solve(eqn, sol, t, dt);
     }
 
     bool explicitIntegration() const { return timeIntegratorStrategy_->explicitIntegration(); }

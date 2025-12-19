@@ -14,7 +14,7 @@
 // only needed for msvc
 template class NeoN::timeIntegration::ForwardEuler<VolumeField>;
 
-TEST_CASE("TimeIntegration")
+TEST_CASE("TimeIntegration: backwardEuler")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -24,21 +24,28 @@ TEST_CASE("TimeIntegration")
         fvcc::VectorCollection::instance(db, "fieldCollection");
 
     NeoN::Dictionary fvSchemes;
+    NeoN::Dictionary timeIntegrationDict;
     NeoN::Dictionary ddtSchemes;
-    ddtSchemes.insert("type", std::string("forwardEuler"));
+    timeIntegrationDict.insert("type", std::string("backwardEuler"));
     ddtSchemes.insert("ddt(vf)", std::string("BDF1"));
+    fvSchemes.insert("timeIntegration", timeIntegrationDict);
     fvSchemes.insert("ddtSchemes", ddtSchemes);
     NeoN::Dictionary fvSolution;
+    fvSolution.insert("solver", std::string("diagonal"));
 
     fvcc::VolumeField<NeoN::scalar>& vf =
         fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
             CreateVector {.name = "vf", .mesh = mesh, .value = 2.0, .timeIndex = 1}
         );
+    auto& vfOld = fvcc::oldTime(vf);
+    vfOld.internalVector() = vf.internalVector();
+    vfOld.correctBoundaryConditions();
 
-    SECTION("Create expression and perform explicitOperation on " + execName)
+    SECTION("Create expression and perform implicitOperation on " + execName)
     {
         auto dummy = Dummy(vf);
-        NeoN::dsl::TemporalOperator ddtOperator = NeoN::dsl::imp::ddt(vf);
+        auto ddtOperator = NeoN::dsl::ddt(vf);
+        NF_INFO("after ddtOperator");
 
         // ddt(U) = f
         auto eqn = ddtOperator + dummy;

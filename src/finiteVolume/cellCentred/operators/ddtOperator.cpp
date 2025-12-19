@@ -6,8 +6,8 @@
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/timeIntegration/ddt/Euler.hpp"
-#include "NeoN/timeIntegration/ddt/backward.hpp"
+#include "NeoN/timeIntegration/ddt/BDF1.hpp"
+#include "NeoN/timeIntegration/ddt/BDF2.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -116,7 +116,7 @@ void DdtOperator<ValueType>::read(const Input& input)
     std::string schemeName;
 
     // Per-field override: ddt(fieldName)
-    const std::string fieldKey = "ddt(" + this->field_.name + ")";
+    const std::string fieldKey = std::string("ddt(") + this->field_.name + ")";
     if (ddtSchemes.contains(fieldKey))
     {
         schemeName = ddtSchemes.get<std::string>(fieldKey);
