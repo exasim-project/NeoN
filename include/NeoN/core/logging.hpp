@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "NeoN/core/mpi/environment.hpp"
 
 namespace NeoN::Logging
 {
@@ -74,9 +75,11 @@ public:
     }
 };
 
-void setNeonDefaultPattern();
+void setNeonDefaultPattern(mpi::Environment& environment);
 
 void logImpl(std::string sv, Level level, std::string logName = "NeoN");
+
+void terminate();
 
 /*@brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
@@ -92,6 +95,20 @@ void warn(std::string formatString, Args... args)
     logImpl(std::vformat(formatString, std::make_format_args(args...)), Level::Warning);
 }
 
+/*@brief convenience function to call spdlogs debug with std::format */
+template<typename... Args>
+void debug(std::string formatString, Args... args)
+{
+    logImpl(std::vformat(formatString, std::make_format_args(args...)), Level::Debug);
+}
+
+/*@brief convenience function to call spdlogs debug with std::format */
+template<typename... Args>
+void error(std::string formatString, Args... args)
+{
+    logImpl(std::vformat(formatString, std::make_format_args(args...)), Level::Error);
+    terminate();
+}
 
 /* @class A base class to build additional loggers
  */

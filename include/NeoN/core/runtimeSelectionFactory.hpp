@@ -19,7 +19,7 @@
 #include <iostream>
 #include <functional>
 
-#include "error.hpp"
+#include "logging.hpp"
 
 namespace NeoN
 {
@@ -398,7 +398,7 @@ private:
             {
                 msg += " - " + it.first + "\n";
             }
-            NF_ERROR_EXIT(msg);
+            Logging::error(msg);
         }
     }
 

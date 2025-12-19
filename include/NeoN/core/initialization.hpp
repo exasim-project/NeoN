@@ -18,8 +18,9 @@ inline void initialize(int argc, char* argv[])
 {
     Kokkos::initialize(argc, argv);
     cpptrace::register_terminate_handler();
+    mpi::Environment mpiEnviron;
 
-    Logging::setNeonDefaultPattern();
+    Logging::setNeonDefaultPattern(mpiEnviron);
 }
 
 inline void finalize()

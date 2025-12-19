@@ -26,12 +26,17 @@ void SupportsLoggingMixin::setLogger(const std::shared_ptr<BaseLogger> logger) {
 
 std::shared_ptr<const BaseLogger> SupportsLoggingMixin::getLogger() const { return logger_; }
 
-void setNeonDefaultPattern()
+void setNeonDefaultPattern(mpi::Environment& environment)
 {
 #if NF_WITH_SPDLOG
-    auto logger = spdlog::stdout_color_mt("NeoN");
     // logger->set_pattern("%-120v[%^%l%$][%o]");
+    auto logger = spdlog::stdout_color_mt("NeoN");
     logger->set_pattern("%v");
+    if (environment.rank() != 0)
+    {
+        logger->set_pattern("%v");
+        logger->set_level(spdlog::level::err);
+    }
     logger->info("Initializing NeoN");
 #endif
 }
@@ -76,6 +81,15 @@ Logger::~Logger()
     {
         logImpl("]", Level::Info, name_);
     }
+}
+
+void terminate()
+{
+#ifdef NF_WITH_MPI_SUPPORT
+    cpptrace::generate_trace().print();
+    MPI_Abort(MPI_COMM_WORLD, 1);
+#endif
+    std::terminate();
 }
 
 }
