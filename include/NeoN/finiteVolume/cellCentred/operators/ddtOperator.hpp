@@ -11,6 +11,7 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/timeIntegration/ddt/DdtScheme.hpp"
 #include "NeoN/timeIntegration/ddt/BDF1.hpp"
 
@@ -38,6 +39,12 @@ public:
     const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
     std::string getName() const { return "DdtOperator"; }
+
+    const timeIntegration::DdtScheme& scheme() const
+    {
+        NF_ASSERT(scheme_ != nullptr, "ddt scheme not configured");
+        return *scheme_;
+    }
 
 private:
 
