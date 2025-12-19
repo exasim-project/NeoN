@@ -1,0 +1,91 @@
+\doxysection{ddt\+Phi\+Corr\+Post\+Assembly.\+hpp}
+\hypertarget{ddtPhiCorrPostAssembly_8hpp_source}{}\label{ddtPhiCorrPostAssembly_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddtPhiCorrPostAssembly.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddtPhiCorrPostAssembly.hpp}}
+\mbox{\hyperlink{ddtPhiCorrPostAssembly_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{expression_8hpp}{NeoN/dsl/expression.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ddtOperator_8hpp}{NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl}{NeoN::dsl}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00024}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae4231fa03028c1a462d69a37247d2fad}{00024}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae4231fa03028c1a462d69a37247d2fad}{applyDivToRhs}}(}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ phiCorr,\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{NeoN::la::LinearSystem<scalar,\ NeoN::localIdx>}}\&\ ls}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00026}00026\ )}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mesh\ =\ phiCorr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ exec\ =\ phiCorr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}();}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{auto}\ [rhs,\ owner,\ neighbour,\ phiV]\ =}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac2fcf5bbb16345399ffdb4fd8741833b}{rhs}}(),\ mesh.faceOwner(),\ mesh.faceNeighbour(),\ phiCorr.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}());}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.nInternalFaces();}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ exec,}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{NeoN::localIdx}}(0),\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{NeoN::localIdx}}(nInternalFaces)\},}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{NeoN::localIdx}}\ f)\ \{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ flux\ =\ phiV[f];}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ rhs[owner[f]]\ -\/=\ flux;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ rhs[neighbour[f]]\ +=\ flux;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}postAssembly::DdtPhiCorr"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00045}00045\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00046}00046\ \}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00048}00048\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00050}00050\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr}{00051}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr}{DdtPhiCorr}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{NeoN::dsl::PostAssemblyBase}}<ValueType>}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00052}00052\ \{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00053}00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{static\_assert}(}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ std::is\_same\_v<ValueType,\ NeoN::scalar>,}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}DdtPhiCorr\ postAssembly\ is\ only\ valid\ for\ scalar\ equations"{}}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00058}00058\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_acd27290d0bd278a06c7fe141463d1761}{00060}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_afc96211d8084128ae2e16db7ed6fc1c5}{00061}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a732f479d2ab6db9b60c9d95ce5983838}{00062}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme}{DdtScheme}}\ =\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme}{NeoN::timeIntegration::DdtScheme}};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a96701a3de3588eeee1d6d3b413e2c5fc}{00063}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{NeoN::la::LinearSystem<ValueType,\ NeoN::localIdx>}};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a1e55f49ed733e3d6d675cda38a9f5f9d}{00071}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a1e55f49ed733e3d6d675cda38a9f5f9d}{DdtPhiCorr}}(}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme}{DdtScheme}}\&\ scheme,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ U,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ phi,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00073}00073\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ :\ scheme\_(scheme),\ U\_(U),\ phi\_(phi),\ dt\_(dt)}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00075}00075\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a9577cea7165b5207db5c9ea26fc2e4d1}{00077}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a9577cea7165b5207db5c9ea26fc2e4d1}{operator()}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{NeoN::la::SparsityPattern}}\&,\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}\&\ ls)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00078}00078\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ phiCorr\ =\ scheme\_.\mbox{\hyperlink{classNeoN_1_1timeIntegration_1_1DdtScheme_abbde0669b938508693f5e0b3f4207b97}{ddtPhiCorr}}(U\_,\ phi\_,\ dt\_);}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ applyDivToRhs(phiCorr,\ ls);}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00081}00081\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00083}00083\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_a732f479d2ab6db9b60c9d95ce5983838}{DdtScheme}}\&\ scheme\_;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_acd27290d0bd278a06c7fe141463d1761}{VolVectorField}}\&\ U\_;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DdtPhiCorr_afc96211d8084128ae2e16db7ed6fc1c5}{SurfScalarField}}\&\ phi\_;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00088}00088\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt\_;}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00089}00089\ \};}
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{ddtPhiCorrPostAssembly_8hpp_source_l00091}00091\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
+
+\end{DoxyCode}
