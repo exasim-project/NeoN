@@ -19,6 +19,7 @@
 #include "boundary/surface/calculated.hpp"
 #include "boundary/surface/fixedValue.hpp"
 #include "boundary/surface/symmetry.hpp"
+#include "boundary/surface/processor.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -99,5 +100,8 @@ template class fvcc::surfaceBoundary::Empty<Vec3>;
 
 template class fvcc::surfaceBoundary::Symmetry<scalar>;
 template class fvcc::surfaceBoundary::Symmetry<Vec3>;
+
+template class fvcc::surfaceBoundary::Processor<scalar>;
+template class fvcc::surfaceBoundary::Processor<Vec3>;
 
 }
