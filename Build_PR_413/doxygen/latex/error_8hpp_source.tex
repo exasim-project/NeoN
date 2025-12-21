@@ -24,98 +24,100 @@
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00020}00020\ \textcolor{comment}{//\ \#include\ <source\_location>}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00021}00021\ \textcolor{comment}{//\ \#include\ <experimental/source\_location>}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00022}00022\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{info_8hpp}{info.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00024}00024\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00025}00025\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG\_MESSAGING}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}cpptrace/cpptrace.hpp"{}}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{logging_8hpp}{logging.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{info_8hpp}{info.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG\_MESSAGING}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}cpptrace/cpptrace.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00028}00028\ \textcolor{preprocessor}{\#endif}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00030}00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00031}00031\ \{}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00032}00032\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1NeoNException}{00039}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1NeoNException}{NeoNException}}\ :\ \textcolor{keyword}{public}\ std::exception}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00040}00040\ \{}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00041}00041\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00042}00042\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1NeoNException_a0c08cb41205f0c35fcd9ee9472704049}{00047}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classNeoN_1_1NeoNException_a0c08cb41205f0c35fcd9ee9472704049}{NeoNException}}(\textcolor{keyword}{const}\ std::string\&\ message)\ :\ message\_(message)\ \{\}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00048}00048\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1NeoNException_a0483098d1d92c18db89a2bb775cb052a}{00053}}\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classNeoN_1_1NeoNException_a0483098d1d92c18db89a2bb775cb052a}{what}}()\ const\ noexcept\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ message\_.c\_str();\ \}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00054}00054\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00055}00055\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00056}00056\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00057}00057\ \ \ \ \ std::string\ message\_;\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00058}00058\ \};}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00059}00059\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00060}00060\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00062}00062\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG\_MESSAGING}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00073}00073\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_MESSAGE(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00074}00074\ \textcolor{preprocessor}{\ \ \ \ "{}Error:\ "{}\ <<\ message\ <<\ "{}\(\backslash\)nFile:\ "{}\ <<\ \_\_FILE\_\_\ <<\ "{}\(\backslash\)nLine:\ "{}\ <<\ \_\_LINE\_\_\ <<\ "{}\(\backslash\)n"{}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00075}00075\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ cpptrace::generate\_trace().to\_string()\ <<\ "{}\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00076}00076\ \textcolor{preprocessor}{\#else}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00087}\mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{00087}}\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_MESSAGE(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00088}00088\ \textcolor{preprocessor}{\ \ \ \ "{}Error:\ "{}\ <<\ message\ <<\ "{}\(\backslash\)nFile:\ "{}\ <<\ \_\_FILE\_\_\ <<\ "{}\(\backslash\)nLine:\ "{}\ <<\ \_\_LINE\_\_\ <<\ "{}\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00089}00089\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00090}00090\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00101}00101\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00102}00102\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_EXIT(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00103}00103\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00104}00104\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00105}00105\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::cerr\ <<\ NF\_ERROR\_MESSAGE(message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00106}00106\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ MPI\_Abort(MPI\_COMM\_WORLD,\ 1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00107}00107\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00108}00108\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00109}00109\ \textcolor{preprocessor}{\#else}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00110}\mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{00110}}\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_EXIT(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00111}00111\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00112}00112\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00113}00113\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::cerr\ <<\ NF\_ERROR\_MESSAGE(message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00114}00114\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00115}00115\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00116}00116\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00117}00117\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00118}00118\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00129}\mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{00129}}\ \textcolor{preprocessor}{\#define\ NF\_THROW(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00130}00130\ \textcolor{preprocessor}{\ \ \ \ throw\ NeoN::NeoNException((std::stringstream()\ <<\ NF\_ERROR\_MESSAGE(std::string(message))).str())}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00131}00131\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00144}\mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{00144}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT(condition,\ message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00145}00145\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00146}00146\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00147}00147\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ if\ (!(condition))\ [[unlikely]]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00148}00148\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00149}00149\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ NF\_ERROR\_EXIT("{}Assertion\ \`{}"{}\ \#condition\ "{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}\ <<\ message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00150}00150\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00151}00151\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00152}00152\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00153}00153\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00167}\mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{00167}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_THROW(condition,\ message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00168}00168\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00169}00169\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00170}00170\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ if\ (!(condition))\ [[unlikely]]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00171}00171\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00172}00172\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ NF\_THROW("{}Assertion\ \`{}"{}\ \#condition\ "{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}\ <<\ message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00173}00173\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00174}00174\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00175}00175\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00176}00176\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00177}00177\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00188}00188\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT(condition,\ message)\ NF\_ASSERT(condition,\ message)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00189}00189\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00201}00201\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_THROW(condition,\ message)\ NF\_ASSERT\_THROW(condition,\ message)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00202}00202\ \textcolor{preprocessor}{\#else}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00213}\mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{00213}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT(condition,\ message)\ ((void)0)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00214}00214\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00226}\mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{00226}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_THROW(condition,\ message)\ ((void)0)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00227}00227\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00228}00228\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00241}\mbox{\hyperlink{error_8hpp_a40409dec4da3178309a1b0f662496159}{00241}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_EQUAL(a,\ b)\ NF\_ASSERT(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00242}00242\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00253}\mbox{\hyperlink{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}{00253}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_EQUAL(a,\ b)\ NF\_DEBUG\_ASSERT(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00254}00254\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00268}\mbox{\hyperlink{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}{00268}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_EQUAL\_THROW(a,\ b)\ NF\_ASSERT\_THROW(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00269}00269\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00280}\mbox{\hyperlink{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}{00280}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_EQUAL\_THROW(a,\ b)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00281}00281\ \textcolor{preprocessor}{\ \ \ \ NF\_DEBUG\_ASSERT\_THROW(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00031}00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1NeoNException}{00040}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1NeoNException}{NeoNException}}\ :\ \textcolor{keyword}{public}\ std::exception}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00041}00041\ \{}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00042}00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1NeoNException_a0c08cb41205f0c35fcd9ee9472704049}{00048}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classNeoN_1_1NeoNException_a0c08cb41205f0c35fcd9ee9472704049}{NeoNException}}(\textcolor{keyword}{const}\ std::string\&\ message)\ :\ message\_(message)\ \{\}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1NeoNException_a0483098d1d92c18db89a2bb775cb052a}{00054}}\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classNeoN_1_1NeoNException_a0483098d1d92c18db89a2bb775cb052a}{what}}()\ const\ noexcept\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ message\_.c\_str();\ \}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00056}00056\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00058}00058\ \ \ \ \ std::string\ message\_;\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00059}00059\ \};}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00061}00061\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00063}00063\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG\_MESSAGING}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00074}00074\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_MESSAGE(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00075}00075\ \textcolor{preprocessor}{\ \ \ \ "{}Error:\ "{}\ <<\ message\ <<\ "{}\(\backslash\)nFile:\ "{}\ <<\ \_\_FILE\_\_\ <<\ "{}\(\backslash\)nLine:\ "{}\ <<\ \_\_LINE\_\_\ <<\ "{}\(\backslash\)n"{}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00076}00076\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ cpptrace::generate\_trace().to\_string()\ <<\ "{}\(\backslash\)n"{}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00077}00077\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00088}\mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{00088}}\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_MESSAGE(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00089}00089\ \textcolor{preprocessor}{\ \ \ \ "{}Error:\ "{}\ <<\ message\ <<\ "{}\(\backslash\)nFile:\ "{}\ <<\ \_\_FILE\_\_\ <<\ "{}\(\backslash\)nLine:\ "{}\ <<\ \_\_LINE\_\_\ <<\ "{}\(\backslash\)n"{}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00090}00090\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00102}00102\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00103}00103\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_EXIT(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00104}00104\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00105}00105\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00106}00106\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::cout\ <<\ message\ <<\ "{}\(\backslash\)n"{};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00107}00107\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ cpptrace::generate\_trace().print();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00108}00108\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ MPI\_Abort(MPI\_COMM\_WORLD,\ 1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00109}00109\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00110}00110\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00111}00111\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00112}\mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{00112}}\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_EXIT(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00113}00113\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00114}00114\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00115}00115\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::cerr\ <<\ NF\_ERROR\_MESSAGE(message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00116}00116\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00117}00117\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00118}00118\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00119}00119\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00131}\mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{00131}}\ \textcolor{preprocessor}{\#define\ NF\_THROW(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00132}00132\ \textcolor{preprocessor}{\ \ \ \ throw\ NeoN::NeoNException((std::stringstream()\ <<\ NF\_ERROR\_MESSAGE(std::string(message))).str())}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00146}\mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{00146}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT(condition,\ message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00147}00147\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00148}00148\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00149}00149\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ if\ (!(condition))\ [[unlikely]]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00150}00150\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00151}00151\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ NF\_ERROR\_EXIT("{}Assertion\ \`{}"{}\ \#condition\ "{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}\ <<\ message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00152}00152\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00153}00153\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00154}00154\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00169}\mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{00169}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_THROW(condition,\ message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00170}00170\ \textcolor{preprocessor}{\ \ \ \ do\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00171}00171\ \textcolor{preprocessor}{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00172}00172\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ if\ (!(condition))\ [[unlikely]]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00173}00173\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00174}00174\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ NF\_THROW("{}Assertion\ \`{}"{}\ \#condition\ "{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}\ <<\ message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00175}00175\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00176}00176\ \textcolor{preprocessor}{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00177}00177\ \textcolor{preprocessor}{\ \ \ \ while\ (false)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00179}00179\ \textcolor{preprocessor}{\#ifdef\ NF\_DEBUG}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00190}00190\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT(condition,\ message)\ NF\_ASSERT(condition,\ message)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00203}00203\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_THROW(condition,\ message)\ NF\_ASSERT\_THROW(condition,\ message)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00204}00204\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00215}\mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{00215}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT(condition,\ message)\ ((void)0)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00228}\mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{00228}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_THROW(condition,\ message)\ ((void)0)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00229}00229\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00243}\mbox{\hyperlink{error_8hpp_a40409dec4da3178309a1b0f662496159}{00243}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_EQUAL(a,\ b)\ NF\_ASSERT(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00244}00244\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00255}\mbox{\hyperlink{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}{00255}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_EQUAL(a,\ b)\ NF\_DEBUG\_ASSERT(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00256}00256\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00270}\mbox{\hyperlink{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}{00270}}\ \textcolor{preprocessor}{\#define\ NF\_ASSERT\_EQUAL\_THROW(a,\ b)\ NF\_ASSERT\_THROW(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00271}00271\ }
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00282}\mbox{\hyperlink{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}{00282}}\ \textcolor{preprocessor}{\#define\ NF\_DEBUG\_ASSERT\_EQUAL\_THROW(a,\ b)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00283}00283\ \textcolor{preprocessor}{\ \ \ \ NF\_DEBUG\_ASSERT\_THROW(a\ ==\ b,\ "{}Expected\ "{}\ <<\ b\ <<\ "{},\ got\ "{}\ <<\ a)}}
 
 \end{DoxyCode}

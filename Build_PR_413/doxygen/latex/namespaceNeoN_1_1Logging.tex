@@ -31,13 +31,19 @@ enum \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{set\+Neon\+Default\+Pattern}} ()
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a11054d45a48213cf7e4fbcd52ce0bb62}{set\+Neon\+Default\+Pattern}} (mpi\+::\+Environment \&environment)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{log\+Impl}} (std\+::string sv, \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}} level, std\+::string log\+Name="{}Neo\+N"{})
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283}{terminate}} ()
 \item 
 {\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{info}} (std\+::string format\+String, Args... args)
 \item 
 {\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_aabd4890e490f1dc968efe839e78ac235}{warn}} (std\+::string format\+String, Args... args)
+\item 
+{\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec}{debug}} (std\+::string format\+String, Args... args)
+\item 
+{\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca}{error}} (std\+::string format\+String, Args... args)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}{log}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{Base\+Logger}} $>$ logger, \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent}{Log\+Event}} \&event, std\+::string\+\_\+view delim="{},"{})
 \item 
@@ -80,7 +86,7 @@ Critical&\\
 \end{DoxyEnumFields}
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00019}{19}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}\label{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299} 
 \index{NeoN::Logging@{NeoN::Logging}!Target@{Target}}
@@ -100,11 +106,33 @@ File&\\
 \end{DoxyEnumFields}
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 
 
 \doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec}\label{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec} 
+\index{NeoN::Logging@{NeoN::Logging}!debug@{debug}}
+\index{debug@{debug}!NeoN::Logging@{NeoN::Logging}}
+\doxysubsubsection{\texorpdfstring{debug()}{debug()}}
+{\footnotesize\ttfamily template$<$typename... Args$>$ \\
+void Neo\+N\+::\+Logging\+::debug (\begin{DoxyParamCaption}\item[{std\+::string}]{format\+String,  }\item[{Args...}]{args }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca}\label{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca} 
+\index{NeoN::Logging@{NeoN::Logging}!error@{error}}
+\index{error@{error}!NeoN::Logging@{NeoN::Logging}}
+\doxysubsubsection{\texorpdfstring{error()}{error()}}
+{\footnotesize\ttfamily template$<$typename... Args$>$ \\
+void Neo\+N\+::\+Logging\+::error (\begin{DoxyParamCaption}\item[{std\+::string}]{format\+String,  }\item[{Args...}]{args }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}\label{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c} 
 \index{NeoN::Logging@{NeoN::Logging}!info@{info}}
 \index{info@{info}!NeoN::Logging@{NeoN::Logging}}
@@ -114,7 +142,7 @@ void Neo\+N\+::\+Logging\+::info (\begin{DoxyParamCaption}\item[{std\+::string}]
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00086}{86}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}\label{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3} 
 \index{NeoN::Logging@{NeoN::Logging}!log@{log}}
@@ -124,7 +152,7 @@ Definition at line \mbox{\hyperlink{logging_8hpp_source_l00083}{83}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00134}{134}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}\label{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0} 
 \index{NeoN::Logging@{NeoN::Logging}!logImpl@{logImpl}}
@@ -141,13 +169,19 @@ void Neo\+N\+::\+Logging\+::set\+Logger (\begin{DoxyParamCaption}\item[{Call\+Cl
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00184}{184}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}\label{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5} 
+\Hypertarget{namespaceNeoN_1_1Logging_a11054d45a48213cf7e4fbcd52ce0bb62}\label{namespaceNeoN_1_1Logging_a11054d45a48213cf7e4fbcd52ce0bb62} 
 \index{NeoN::Logging@{NeoN::Logging}!setNeonDefaultPattern@{setNeonDefaultPattern}}
 \index{setNeonDefaultPattern@{setNeonDefaultPattern}!NeoN::Logging@{NeoN::Logging}}
 \doxysubsubsection{\texorpdfstring{setNeonDefaultPattern()}{setNeonDefaultPattern()}}
-{\footnotesize\ttfamily void Neo\+N\+::\+Logging\+::set\+Neon\+Default\+Pattern (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void Neo\+N\+::\+Logging\+::set\+Neon\+Default\+Pattern (\begin{DoxyParamCaption}\item[{mpi\+::\+Environment \&}]{environment }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283}\label{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283} 
+\index{NeoN::Logging@{NeoN::Logging}!terminate@{terminate}}
+\index{terminate@{terminate}!NeoN::Logging@{NeoN::Logging}}
+\doxysubsubsection{\texorpdfstring{terminate()}{terminate()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+Logging\+::terminate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1Logging_aabd4890e490f1dc968efe839e78ac235}\label{namespaceNeoN_1_1Logging_aabd4890e490f1dc968efe839e78ac235} 
 \index{NeoN::Logging@{NeoN::Logging}!warn@{warn}}
@@ -158,5 +192,5 @@ void Neo\+N\+::\+Logging\+::warn (\begin{DoxyParamCaption}\item[{std\+::string}]
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
