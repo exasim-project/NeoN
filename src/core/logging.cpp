@@ -32,9 +32,10 @@ void setNeonDefaultPattern(mpi::Environment& environment)
     // logger->set_pattern("%-120v[%^%l%$][%o]");
     auto logger = spdlog::stdout_color_mt("NeoN");
     logger->set_pattern("%v");
-    if (environment.rank() != 0)
+    logger->set_level(spdlog::level::info);
+    // mute non rank zero output
+    if (environment.isInitialized() && environment.rank() != 0)
     {
-        logger->set_pattern("%v");
         logger->set_level(spdlog::level::err);
     }
     logger->info("Initializing NeoN");
