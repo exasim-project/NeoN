@@ -2,11 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-import sys
-from pathlib import Path
-lib_dir = Path.cwd() / "neon"
-if lib_dir.exists():
-    sys.path.insert(0, str(lib_dir))
+
+def test_import():
+    try:
+        import neon  # noqa: F401
+
+        assert True  # If import succeeds, the test passes
+
+    except ImportError:
+        assert False  # If import fails, the test fails
+
 
 import pytest
 import neon
