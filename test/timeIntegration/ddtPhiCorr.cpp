@@ -63,7 +63,10 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // --- 5) DdtOperator + scheme selection
         NeoN::Dictionary fvSchemes;
         NeoN::Dictionary ddtSchemes;
+        NeoN::Dictionary timeIntegrationDict;
+        timeIntegrationDict.insert("type", std::string("backwardEuler"));
         ddtSchemes.insert("ddt(U)", std::string("BDF1"));
+        fvSchemes.insert("timeIntegration", timeIntegrationDict);
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
         fvcc::DdtOperator<Vec3> ddtOp(NeoN::dsl::Operator::Type::Implicit, U);

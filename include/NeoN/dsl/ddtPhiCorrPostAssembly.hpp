@@ -77,7 +77,7 @@ public:
     void operator()(const NeoN::la::SparsityPattern&, LinearSystem& ls) override
     {
         auto phiCorr = scheme_.ddtPhiCorr(U_, phi_, dt_);
-        applyDivToRhs(phiCorr, ls);
+        detail::applyDivToRhs(phiCorr, ls);
     }
 
 private:

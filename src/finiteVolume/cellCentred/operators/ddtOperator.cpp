@@ -106,6 +106,23 @@ void DdtOperator<ValueType>::read(const Input& input)
 
     const NeoN::Dictionary& dict = std::get<NeoN::Dictionary>(input);
 
+    if (dict.contains("timeIntegration"))
+    {
+        const Dictionary& timeIntegrationDict = dict.subDict("timeIntegration");
+        if (timeIntegrationDict.contains("type"))
+        {
+            const std::string timeIntegrationType = timeIntegrationDict.get<std::string>("type");
+            if (timeIntegrationType == "backwardEuler")
+            {
+                this->type_ = dsl::Operator::Type::Implicit;
+            }
+            else if (timeIntegrationType == "forwardEuler" || timeIntegrationType == "Runge-Kutta" || timeIntegrationType == "rungeKutta")
+            {
+                this->type_ = dsl::Operator::Type::Explicit;
+            }
+        }
+    }
+
     if (!dict.contains("ddtSchemes"))
     {
         return; // keep default BDF1

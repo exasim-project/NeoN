@@ -96,7 +96,7 @@ public:
 
                 const scalar limiter = ddtPhiCorrLimiter(mag(phi0V[i]), mag(corr));
 
-                outV[i] += limiter * w1 * corr;
+                outV[i] = limiter * w1 * corr;
             },
             "ddtPhiCorr::BDF1"
         );
