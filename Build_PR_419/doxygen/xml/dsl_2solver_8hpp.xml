@@ -845,11 +845,19 @@
 <codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fvSchemes.<ref refid="classNeoN_1_1Dictionary_1a5fba75245132842e0ad343b4fceaca39" kindref="member">subDict</ref>(</highlight><highlight class="stringliteral">&quot;timeIntegration&quot;</highlight><highlight class="normal">),<sp/>fvSolution</highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>integrate<sp/>equations<sp/>in<sp/>time</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>integrator.solve(exp,<sp/>solution,<sp/>t,<sp/>dt);</highlight></codeline>
-<codeline lineno="123"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exp.<ref refid="classNeoN_1_1dsl_1_1Expression_1a2455b209c125abad6f794e583acd7066" kindref="member">temporalOperators</ref>().size()<sp/>&gt;<sp/>0<sp/>&amp;&amp;<sp/>integrator.explicitIntegration())</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>integrate<sp/>equations<sp/>in<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>integrator.solve(exp,<sp/>solution,<sp/>t,<sp/>dt);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{.numIter<sp/>=<sp/>-1,<sp/>.initResNorm<sp/>=<sp/>0,<sp/>.finalResNorm<sp/>=<sp/>0,<sp/>.solveTime<sp/>=<sp/>0};</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ad86b892d416822fb1be5a5f9710fe45c" kindref="member">detail::iterativeSolveImpl</ref>(exp,<sp/>solution,<sp/>t,<sp/>dt,<sp/>fvSolution,<sp/>std::move(p));</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp"/>
   </compounddef>
