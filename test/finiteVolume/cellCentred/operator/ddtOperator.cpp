@@ -69,11 +69,12 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     fill(phi.internalVector(), 10 * one<TestType>());
     fill(phi.boundaryData().value(), zero<TestType>());
     fill(oldTime(phi).internalVector(), -1.0 * one<TestType>());
+    fill(oldTime(oldTime(phi)).internalVector(), -2.0 * one<TestType>());
     phi.correctBoundaryConditions();
 
     SECTION("explicit DdtOperator " + execName)
     {
-        auto ddtOp = dsl::exp::ddt(phi);
+        auto ddtOp = dsl::ddt(phi);
         auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
         ddtOp.explicitOperation(source, 1.0, 0.5);
 
@@ -87,11 +88,17 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         }
     }
 
-    SECTION("implicit DdtOperator " + execName)
+    SECTION("implicit DdtOperator (Euler) " + execName)
     {
+        NeoN::Dictionary fvSchemes;
+        NeoN::Dictionary ddtSchemes;
+        ddtSchemes.insert("ddt(phi)", std::string("BDF1"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
         auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
 
-        auto ddtOp = dsl::imp::ddt(phi);
+        auto ddtOp = dsl::ddt(phi);
+        ddtOp.read(fvSchemes);
         ddtOp.implicitOperation(ls, 1.0, 0.5);
 
         const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
@@ -103,6 +110,56 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             REQUIRE(mtxValsV[ii] == 2.0 * volV[0] * one<TestType>());
             // => phi^{n}/dt*V => -1/.5*V = -2V
             REQUIRE(rhsV[ii] == -2.0 * volV[0] * one<TestType>());
+        }
+    }
+
+    SECTION("implicit DdtOperator backward (BDF2) " + execName)
+    {
+        // fvSchemes selecting backward
+        NeoN::Dictionary fvSchemes;
+        NeoN::Dictionary ddtSchemes;
+        ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+
+        auto ddtOp = dsl::ddt(phi);
+        ddtOp.read(fvSchemes);
+
+        const scalar dt = 0.5;
+        {
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+
+            // ---------- Step 1: startup (Euler) ----------
+            ddtOp.implicitOperation(ls, 1.0, dt);
+
+            const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+            const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
+
+            for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+            {
+                // => 1/dt*V => 1/.5*V = 2V
+                REQUIRE(mtxValsV[ii] == (1.0 / dt) * volV[0] * one<TestType>());
+                // => phi^{n}/dt*V => -1/.5*V = -2V
+                REQUIRE(rhsV[ii] == (1.0 / dt) * (-1.0) * volV[0] * one<TestType>());
+            }
+        }
+        {
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+
+            // ---------- Step 2: true BDF2 ----------
+            ddtOp.implicitOperation(ls, 1.5, dt);
+
+            const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+            const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
+
+            const scalar inv2dt = 1.0 / (2.0 * dt);
+            for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+            {
+                // BDF2 diagonal: 3/(2dt)
+                REQUIRE(mtxValsV[ii] == (3.0 * inv2dt) * volV[0] * one<TestType>());
+                // RHS: (4 phi^n - phi^{n-1})/(2dt)
+                REQUIRE(rhsV[ii] == ((4.0 * (-1.0) - (-2.0)) * inv2dt) * volV[0] * one<TestType>());
+            }
         }
     }
 }

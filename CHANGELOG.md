@@ -3,6 +3,7 @@
 ### Misc
 - Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
+- Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
 
 # Version 0.2.0 (2025/12/03)
 ## Features

@@ -9,10 +9,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/dsl/solver.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
-
-#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -31,20 +27,19 @@ public:
     using Base = TimeIntegratorBase<SolutionVectorType>::template Register<
         BackwardEuler<SolutionVectorType>>;
 
-    BackwardEuler(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : Base(schemeDict, solutionDict)
+    BackwardEuler(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
+        : Base(timeIntegrationDict, solutionDict)
     {}
 
     static std::string name() { return "backwardEuler"; }
 
-    static std::string doc() { return "first order time integration method"; }
+    static std::string doc() { return "first order implicit time integration method"; }
 
     static std::string schema() { return "none"; }
 
-    void solve(dsl::Expression<ValueType>&, SolutionVectorType&, scalar, scalar) override
-    {
-        NF_ERROR_EXIT("Not implemented, use NeoN::dsl::detail::iterative_solve_impl");
-    };
+    void solve(dsl::Expression<ValueType>& exp, SolutionVectorType& solution, scalar t, scalar dt)
+        override
+    {}
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {

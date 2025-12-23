@@ -114,8 +114,9 @@ la::SolverStats solve(
         NF_ERROR_EXIT("No temporal or implicit terms to solve.");
     }
     exp.read(fvSchemes);
-    auto integrator =
-        timeIntegration::TimeIntegration<VectorType>(fvSchemes.subDict("ddtSchemes"), fvSolution);
+    auto integrator = timeIntegration::TimeIntegration<VectorType>(
+        fvSchemes.subDict("timeIntegration"), fvSolution
+    );
 
     if (exp.temporalOperators().size() > 0 && integrator.explicitIntegration())
     {
@@ -125,7 +126,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, std::move(p));
     }
 }
 

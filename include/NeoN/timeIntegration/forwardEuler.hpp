@@ -30,18 +30,22 @@ public:
 
     static std::string name() { return "forwardEuler"; }
 
-    static std::string doc() { return "first order time integration method"; }
+    static std::string doc() { return "first order explicit time integration method"; }
 
     static std::string schema() { return "none"; }
 
     void solve(
-        dsl::Expression<ValueType>& eqn,
-        SolutionVectorType& solutionVector,
-        [[maybe_unused]] scalar t,
-        scalar dt
+        dsl::Expression<ValueType>& eqn, SolutionVectorType& solutionVector, scalar t, scalar dt
     ) override
     {
-        auto source = eqn.explicitOperation(solutionVector.size());
+        auto source = Vector<ValueType>(eqn.exec(), solutionVector.size(), zero<ValueType>());
+
+        // spatial explicit operators
+        eqn.explicitOperation(source);
+
+        // temporal explicit operators (ddt explicit evaluation)
+        eqn.explicitOperation(source, t, dt);
+
         SolutionVectorType& oldSolutionVector =
             NeoN::finiteVolume::cellCentred::oldTime(solutionVector);
 

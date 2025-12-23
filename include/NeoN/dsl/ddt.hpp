@@ -5,39 +5,22 @@
 #pragma once
 
 #include "NeoN/fields/field.hpp"
-#include "NeoN/dsl/spatialOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/dsl/temporalOperator.hpp"
 
-namespace NeoN::dsl::temporal
+namespace NeoN::dsl
 {
 
-template<typename VectorType>
-class Ddt : public OperatorMixin<VectorType>
+template<typename FieldType>
+TemporalOperator<typename FieldType::VectorValueType> ddt(FieldType& field)
 {
+    using ValueType = typename FieldType::VectorValueType;
 
-public:
+    auto fvOp = NeoN::finiteVolume::cellCentred::DdtOperator<ValueType>(
+        NeoN::dsl::Operator::Type::Implicit, field
+    );
 
-    Ddt(VectorType& field)
-        : OperatorMixin<VectorType>(field.exec(), field, Operator::Type::Implicit)
-    {}
-
-    std::string getName() const { return "TimeOperator"; }
-
-    void explicitOperation(Vector<scalar>&, scalar, scalar) const
-    {
-        NF_ERROR_EXIT("Not implemented");
-    }
-
-    void implicitOperation(la::LinearSystem<scalar, localIdx>&, scalar, scalar) const
-    {
-        NF_ERROR_EXIT("Not implemented");
-    }
-};
-
-/* @brief factory function to create a Ddt term as ddt() */
-template<typename VectorType>
-Ddt<VectorType> ddt(VectorType& in)
-{
-    return Ddt(in);
-};
+    return TemporalOperator<ValueType>(std::move(fvOp));
+}
 
 } // namespace NeoN

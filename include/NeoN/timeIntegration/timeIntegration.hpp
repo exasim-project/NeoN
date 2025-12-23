@@ -30,8 +30,8 @@ public:
 
     static std::string name() { return "timeIntegrationFactory"; }
 
-    TimeIntegratorBase(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : schemeDict_(schemeDict), solutionDict_(solutionDict)
+    TimeIntegratorBase(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
+        : timeIntegrationDict_(timeIntegrationDict), solutionDict_(solutionDict)
     {}
 
     virtual ~TimeIntegratorBase() {}
@@ -47,7 +47,7 @@ public:
 
 protected:
 
-    const Dictionary& schemeDict_;
+    const Dictionary& timeIntegrationDict_;
     const Dictionary& solutionDict_;
 };
 
@@ -72,9 +72,9 @@ public:
     TimeIntegration(TimeIntegration&& timeIntegrator)
         : timeIntegratorStrategy_(std::move(timeIntegrator.timeIntegratorStrategy_)) {};
 
-    TimeIntegration(const Dictionary& schemeDict, const Dictionary& solutionDict)
+    TimeIntegration(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
         : timeIntegratorStrategy_(TimeIntegratorBase<SolutionVectorType>::create(
-            schemeDict.get<std::string>("type"), schemeDict, solutionDict
+            timeIntegrationDict.get<std::string>("type"), timeIntegrationDict, solutionDict
         )) {};
 
     void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)

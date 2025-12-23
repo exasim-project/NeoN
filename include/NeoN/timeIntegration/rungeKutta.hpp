@@ -15,7 +15,7 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/timeIntegration/sundials.hpp"
-
+#include "NeoN/linearAlgebra/solver.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -75,8 +75,8 @@ public:
      * @brief Constructor that initializes the RungeKutta solver with a dictionary configuration.
      * @param dict The dictionary containing configuration parameters.
      */
-    RungeKutta(const Dictionary& schemeDict, const Dictionary& solutionDict)
-        : Base(schemeDict, solutionDict)
+    RungeKutta(const Dictionary& timeIntegrationDict, const Dictionary& solutionDict)
+        : Base(timeIntegrationDict, solutionDict)
     {}
 
     /**
