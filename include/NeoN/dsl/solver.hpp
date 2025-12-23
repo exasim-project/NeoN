@@ -118,8 +118,16 @@ la::SolverStats solve(
         fvSchemes.subDict("timeIntegration"), fvSolution
     );
 
-    // integrate equations in time
-    return integrator.solve(exp, solution, t, dt);
+    if (exp.temporalOperators().size() > 0 && integrator.explicitIntegration())
+    {
+        // integrate equations in time
+        integrator.solve(exp, solution, t, dt);
+        return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
+    }
+    else
+    {
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, std::move(p));
+    }
 }
 
 } // namespace dsl

@@ -44,10 +44,8 @@ TEST_CASE("TimeIntegration: forwardEuler")
     {
         auto dummy = Dummy(vf);
         auto ddtOperator = NeoN::dsl::ddt(vf);
-        NF_INFO("after ddtOperator");
         // ddt(U) = f
         NeoN::dsl::Expression<NeoN::scalar> eqn = ddtOperator + dummy;
-        NF_INFO("after add");
         double dt {2.0};
         double time {1.0};
 

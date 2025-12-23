@@ -124,7 +124,7 @@ public:
      * @param t The current time
      * @param dt The time step size
      */
-    la::SolverStats solve(
+    void solve(
         dsl::Expression<ValueType>& exp,
         SolutionVectorType& solutionVector,
         scalar t,

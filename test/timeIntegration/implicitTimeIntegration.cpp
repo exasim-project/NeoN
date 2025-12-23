@@ -45,7 +45,6 @@ TEST_CASE("TimeIntegration: backwardEuler")
     {
         auto dummy = Dummy(vf);
         auto ddtOperator = NeoN::dsl::ddt(vf);
-        NF_INFO("after ddtOperator");
 
         // ddt(U) = f
         auto eqn = ddtOperator + dummy;

@@ -76,10 +76,10 @@ public:
     {
         for (auto& op : temporalOperators_)
         {
-            if (op.getType() == Operator::Type::Explicit)
-            {
-                op.explicitOperation(source, t, dt);
-            }
+            //   if (op.getType() == Operator::Type::Explicit)
+            //   {
+            op.explicitOperation(source, t, dt);
+            //   }
         }
         return source;
     }
@@ -104,10 +104,10 @@ public:
     {
         for (auto& op : temporalOperators_)
         {
-            if (op.getType() == Operator::Type::Implicit)
-            {
-                op.implicitOperation(ls, t, dt);
-            }
+            // if (op.getType() == Operator::Type::Implicit)
+            //{
+            op.implicitOperation(ls, t, dt);
+            //}
         }
     }
 

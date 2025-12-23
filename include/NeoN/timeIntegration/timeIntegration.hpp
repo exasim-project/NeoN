@@ -39,7 +39,7 @@ public:
 
     virtual ~TimeIntegratorBase() {}
 
-    virtual la::SolverStats solve(
+    virtual void solve(
         Expression& eqn, SolutionType& sol, scalar t, scalar dt
     ) = 0; // Pure virtual function for solving
 
@@ -80,9 +80,9 @@ public:
             timeIntegrationDict.get<std::string>("type"), timeIntegrationDict, solutionDict
         )) {};
 
-    la::SolverStats solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
+    void solve(Expression& eqn, SolutionVectorType& sol, scalar t, scalar dt)
     {
-        return timeIntegratorStrategy_->solve(eqn, sol, t, dt);
+        timeIntegratorStrategy_->solve(eqn, sol, t, dt);
     }
 
     bool explicitIntegration() const { return timeIntegratorStrategy_->explicitIntegration(); }

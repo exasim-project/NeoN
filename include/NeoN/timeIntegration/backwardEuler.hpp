@@ -9,7 +9,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/dsl/solver.hpp"
-#include "NeoN/linearAlgebra/solver.hpp"
 
 namespace NeoN::timeIntegration
 {
@@ -38,14 +37,9 @@ public:
 
     static std::string schema() { return "none"; }
 
-    la::SolverStats solve(
-        dsl::Expression<ValueType>& exp, SolutionVectorType& solution, scalar t, scalar dt
-    ) override
-    {
-        return NeoN::dsl::detail::iterativeSolveImpl(
-            exp, solution, t, dt, this->solutionDict_, {} // no post-assembly functors for now
-        );
-    }
+    void solve(dsl::Expression<ValueType>& exp, SolutionVectorType& solution, scalar t, scalar dt)
+        override
+    {}
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {
