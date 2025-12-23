@@ -9,7 +9,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
-#include "NeoN/finiteVolume/cellCentred/boundary/surface/ddtPhiCorrBoundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp"
 
 namespace NeoN
 {
@@ -56,10 +56,11 @@ public:
     virtual scalar a0Startup(scalar dt) const { return a0(dt); }
     virtual scalar a1Startup(scalar dt) const { return a1(dt); }
 
-    SurfScalarField ddtPhiCorr(const VolVectorField& U, const SurfScalarField& phi, scalar dt) const
+    SurfScalarField
+    ddtFluxCorr(const VolVectorField& u, const SurfScalarField& flux, scalar dt) const
     {
-        const auto& mesh = U.mesh();
-        const auto exec = phi.exec();
+        const auto& mesh = u.mesh();
+        const auto exec = flux.exec();
 
         // --- interpolation (same for all schemes)
         NeoN::finiteVolume::cellCentred::SurfaceInterpolation<Vec3> interp(
@@ -67,38 +68,38 @@ public:
         );
 
         // --- boundary conditions consistent with U
-        auto surfaceBCs = NeoN::finiteVolume::cellCentred::createPhiCorrBCsFromU(mesh, U);
+        auto surfaceBCs = NeoN::finiteVolume::cellCentred::createFluxCorrBCsFromU(mesh, u);
 
-        SurfScalarField phiCorr(exec, std::string("ddtPhiCorr"), mesh, surfaceBCs);
+        SurfScalarField fluxCorr(exec, std::string("ddtFluxCorr"), mesh, surfaceBCs);
 
-        auto [outV, SfV] = views(phiCorr.internalVector(), mesh.faceAreas());
+        auto [outV, sfV] = views(fluxCorr.internalVector(), mesh.faceAreas());
 
-        const size_t N = outV.size();
+        const size_t n = outV.size();
 
         // ===============================
         // BDF1 contribution (phi^{n})
         // ===============================
-        const auto& U0 = NeoN::finiteVolume::cellCentred::oldTime(U);
-        const auto& phi0 = NeoN::finiteVolume::cellCentred::oldTime(phi);
+        const auto& u0 = NeoN::finiteVolume::cellCentred::oldTime(u);
+        const auto& flux0 = NeoN::finiteVolume::cellCentred::oldTime(flux);
 
-        auto Uf0 = interp.interpolate(U0);
+        auto uf0 = interp.interpolate(u0);
 
-        auto [phi0V, Uf0V] = views(phi0.internalVector(), Uf0.internalVector());
+        auto [flux0V, uf0V] = views(flux0.internalVector(), uf0.internalVector());
 
         const scalar w1 = a1(dt);
 
         NeoN::parallelFor(
             exec,
-            {size_t(0), N},
+            {size_t(0), n},
             KOKKOS_LAMBDA(const localIdx i) {
-                const auto d = (SfV[i] & Uf0V[i]);
-                const auto corr = phi0V[i] - d;
+                const auto d = (sfV[i] & uf0V[i]);
+                const auto corr = flux0V[i] - d;
 
-                const scalar limiter = ddtPhiCorrLimiter(mag(phi0V[i]), mag(corr));
+                const scalar limiter = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr));
 
                 outV[i] = limiter * w1 * corr;
             },
-            "ddtPhiCorr::BDF1"
+            "ddtFluxCorr::BDF1"
         );
 
         // ===============================
@@ -106,36 +107,36 @@ public:
         // ===============================
         if (nSteps() >= 2)
         {
-            const auto& U00 =
-                NeoN::finiteVolume::cellCentred::oldTime(NeoN::finiteVolume::cellCentred::oldTime(U)
+            const auto& u00 =
+                NeoN::finiteVolume::cellCentred::oldTime(NeoN::finiteVolume::cellCentred::oldTime(u)
                 );
-            const auto& phi00 = NeoN::finiteVolume::cellCentred::oldTime(
-                NeoN::finiteVolume::cellCentred::oldTime(phi)
+            const auto& flux00 = NeoN::finiteVolume::cellCentred::oldTime(
+                NeoN::finiteVolume::cellCentred::oldTime(flux)
             );
 
-            auto Uf00 = interp.interpolate(U00);
+            auto uf00 = interp.interpolate(u00);
 
-            auto [phi00V, Uf00V] = views(phi00.internalVector(), Uf00.internalVector());
+            auto [flux00V, uf00V] = views(flux00.internalVector(), uf00.internalVector());
 
             const scalar w2 = a2(dt);
 
             NeoN::parallelFor(
                 exec,
-                {size_t(0), N},
+                {size_t(0), n},
                 KOKKOS_LAMBDA(const localIdx i) {
-                    const auto d = (SfV[i] & Uf00V[i]);
-                    const auto corr = phi00V[i] - d;
+                    const auto d = (sfV[i] & uf00V[i]);
+                    const auto corr = flux00V[i] - d;
 
-                    const scalar limiter = ddtPhiCorrLimiter(mag(phi00V[i]), mag(corr));
+                    const scalar limiter = ddtFluxCorrLimiter(mag(flux00V[i]), mag(corr));
 
                     outV[i] += limiter * w2 * corr;
                 },
-                "ddtPhiCorr::BDF2"
+                "ddtFluxCorr::BDF2"
             );
         }
 
-        phiCorr.correctBoundaryConditions();
-        return phiCorr;
+        fluxCorr.correctBoundaryConditions();
+        return fluxCorr;
     }
 
 protected:
@@ -144,12 +145,12 @@ protected:
     // OpenFOAM-compatible limiter (with numerical safety)
     // ------------------------------------------------------------------ //
     KOKKOS_INLINE_FUNCTION
-    static scalar ddtPhiCorrLimiter(const scalar phiMag, const scalar corrMag)
+    static scalar ddtFluxCorrLimiter(const scalar fluxMag, const scalar corrMag)
     {
         // OpenFOAM SMALL (double precision)
-        constexpr scalar SMALL = scalar(1e-30);
+        constexpr scalar small = scalar(1e-30);
 
-        const scalar ratio = corrMag / (phiMag + SMALL);
+        const scalar ratio = corrMag / (fluxMag + small);
         return scalar(1.0) - Kokkos::min(ratio, scalar(1.0));
     }
 };

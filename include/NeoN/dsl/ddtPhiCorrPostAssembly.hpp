@@ -22,14 +22,14 @@ namespace detail
 {
 
 inline void applyDivToRhs(
-    const fvcc::SurfaceField<scalar>& phiCorr, NeoN::la::LinearSystem<scalar, NeoN::localIdx>& ls
+    const fvcc::SurfaceField<scalar>& fluxCorr, NeoN::la::LinearSystem<scalar, NeoN::localIdx>& ls
 )
 {
-    const auto& mesh = phiCorr.mesh();
-    const auto exec = phiCorr.exec();
+    const auto& mesh = fluxCorr.mesh();
+    const auto exec = fluxCorr.exec();
 
-    auto [rhs, owner, neighbour, phiV] =
-        views(ls.rhs(), mesh.faceOwner(), mesh.faceNeighbour(), phiCorr.internalVector());
+    auto [rhsV, ownerV, neighbourV, fluxCorrV] =
+        views(ls.rhs(), mesh.faceOwner(), mesh.faceNeighbour(), fluxCorr.internalVector());
 
     const auto nInternalFaces = mesh.nInternalFaces();
 
@@ -37,9 +37,9 @@ inline void applyDivToRhs(
         exec,
         {NeoN::localIdx(0), NeoN::localIdx(nInternalFaces)},
         KOKKOS_LAMBDA(const NeoN::localIdx f) {
-            const auto flux = phiV[f];
-            rhs[owner[f]] -= flux;
-            rhs[neighbour[f]] += flux;
+            const auto flux = fluxCorrV[f];
+            rhsV[ownerV[f]] -= fluxCorrV[f];
+            rhsV[neighbourV[f]] += fluxCorrV[f];
         },
         "postAssembly::DdtPhiCorr"
     );
@@ -64,27 +64,27 @@ public:
 
     /**
      * @param scheme ddtScheme used for discretisation
-     * @param U      Velocity field
-     * @param phi    Face flux field
+     * @param u      Velocity field
+     * @param flux    Face flux field
      * @param dt     Time step size
      */
     DdtPhiCorr(
-        const DdtScheme& scheme, const VolVectorField& U, const SurfScalarField& phi, scalar dt
+        const DdtScheme& scheme, const VolVectorField& u, const SurfScalarField& flux, scalar dt
     )
-        : scheme_(scheme), U_(U), phi_(phi), dt_(dt)
+        : scheme_(scheme), U_(u), flux_(flux), dt_(dt)
     {}
 
     void operator()(const NeoN::la::SparsityPattern&, LinearSystem& ls) override
     {
-        auto phiCorr = scheme_.ddtPhiCorr(U_, phi_, dt_);
-        detail::applyDivToRhs(phiCorr, ls);
+        auto fluxCorr = scheme_.ddtFluxCorr(U_, flux_, dt_);
+        detail::applyDivToRhs(fluxCorr, ls);
     }
 
 private:
 
     const DdtScheme& scheme_;
     const VolVectorField& U_;
-    const SurfScalarField& phi_;
+    const SurfScalarField& flux_;
     scalar dt_;
 };
 

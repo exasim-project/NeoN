@@ -7,16 +7,16 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+// #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
 inline std::vector<SurfaceBoundary<scalar>>
-createPhiCorrBCsFromU(const UnstructuredMesh& mesh, const VolumeField<Vec3>& U)
+createFluxCorrBCsFromU(const UnstructuredMesh& mesh, const VolumeField<Vec3>& u)
 {
     std::vector<SurfaceBoundary<scalar>> bcs;
-    const auto& uBCs = U.boundaryConditions();
+    const auto& uBCs = u.boundaryConditions();
 
     bcs.reserve(uBCs.size());
 
