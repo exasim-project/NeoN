@@ -29,8 +29,7 @@ void computeDivImp(
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
-    const dsl::Coeff operatorScaling,
-    const la::SparsityPattern& sparsityPattern
+    const dsl::Coeff operatorScaling
 );
 
 /* @brief
@@ -99,9 +98,7 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        computeDivImp(
-            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, this->getSparsityPattern()
-        );
+        computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
