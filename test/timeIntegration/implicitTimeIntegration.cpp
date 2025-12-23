@@ -12,7 +12,7 @@
 #include "NeoN/NeoN.hpp"
 
 // only needed for msvc
-template class NeoN::timeIntegration::ForwardEuler<VolumeField>;
+template class NeoN::timeIntegration::BackwardEuler<VolumeField>;
 
 TEST_CASE("TimeIntegration: backwardEuler")
 {
