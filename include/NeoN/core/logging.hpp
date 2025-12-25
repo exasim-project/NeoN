@@ -75,7 +75,7 @@ public:
     }
 };
 
-void setNeonDefaultPattern(mpi::Environment& environment);
+void setNeonDefaultPattern(NeoN::mpi::Environment& environment);
 
 void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"

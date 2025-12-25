@@ -28,12 +28,16 @@ std::shared_ptr<const BaseLogger> SupportsLoggingMixin::getLogger() const { retu
 
 void setNeonDefaultPattern(mpi::Environment& environment)
 {
+    std::cout << __FILE__ << ":" << __LINE__ << "setPattern\n";
 #if NF_WITH_SPDLOG
     // logger->set_pattern("%-120v[%^%l%$][%o]");
     auto logger = spdlog::stdout_color_mt("NeoN");
     logger->set_pattern("%v");
     logger->set_level(spdlog::level::info);
     // mute non rank zero output
+    std::cout << __FILE__ << ":" << __LINE__ << "environment.isInitialized()"
+              << environment.isInitialized() << "environment.rank()" << environment.rank() << "\n";
+
     if (environment.isInitialized() && environment.rank() != 0)
     {
         logger->set_level(spdlog::level::err);
