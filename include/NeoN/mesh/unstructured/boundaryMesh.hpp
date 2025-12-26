@@ -45,6 +45,7 @@ public:
      * @param weights A field of weights used in cell to face interpolation.
      * @param deltaCoeffs A field of cell to face distances.
      * @param offset The offset of the boundary faces.
+     * @param neighbourRank corresponding mpiRank ouf neighbour
      */
     BoundaryMesh(
         const Executor& exec,
@@ -57,7 +58,8 @@ public:
         vectorVector delta,
         scalarVector weights,
         scalarVector deltaCoeffs,
-        std::vector<localIdx> offset
+        std::vector<localIdx> offset,
+        std::vector<localIdx> neighbourRank
     );
 
 
@@ -202,6 +204,13 @@ public:
     View<const scalar> deltaCoeffs(const localIdx i) const;
 
     /**
+     * @brief Given a patchId the corresponding neighbour Rank gets returned
+     *
+     * -1 for patches without a distributed neighbour
+     */
+    scalar neighbourRank(const localIdx i) const;
+
+    /**
      * @brief Get the offset of the boundary faces.
      *
      * @return A constant reference to the offset of the boundary faces.
@@ -278,6 +287,11 @@ private:
      */
     // TODO consistent use of Vector on CPU
     std::vector<localIdx> offset_;
+
+    /**
+     * @brief The rank of the corresponding neighbour
+     */
+    std::vector<localIdx> neighbourRank_;
 };
 
 } // namespace NeoN
