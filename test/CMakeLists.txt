@@ -88,6 +88,7 @@ endfunction()
 
 add_subdirectory(core)
 add_subdirectory(dsl)
+add_subdirectory(distributed)
 add_subdirectory(fields)
 add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)
