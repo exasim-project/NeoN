@@ -1,0 +1,83 @@
+\doxysection{matrix.\+hpp}
+\hypertarget{matrix_8hpp_source}{}\label{matrix_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp}}
+\mbox{\hyperlink{matrix_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{copyTo_8hpp}{NeoN/core/copyTo.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{CSRMatrix_8hpp}{NeoN/linearAlgebra/CSRMatrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00010}\mbox{\hyperlink{namespaceNeoN_1_1la}{00010}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00011}00011\ \{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00017}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{00017}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo}{SupportsCopyTo}}<Matrix>}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00019}00019\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{innerMtxType}}\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<scalar,\ localIdx>}};}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00021}00021\ \ \ \ \ mpi::Environment\ env\_;}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00022}00022\ \ \ \ \ std::shared\_ptr<innerMtxType>\ local\_;}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00023}00023\ \ \ \ \ std::shared\_ptr<innerMtxType>\ nonLocal\_;}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00025}00025\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a8787e32ecbf59606b89da968ea69fb14}{00037}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a8787e32ecbf59606b89da968ea69fb14}{Matrix}}(}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\&\ locValues,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ locColIdxs,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ locRowOffs,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\&\ nonLocValues,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ nonLocColIdxs,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\&\ nonLocRowOffs,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ mpi::Environment\ env}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00045}00045\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ :\ local\_(std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{innerMtxType}}>(}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ std::move(locValues),\ std::move(locColIdxs),\ std::move(locRowOffs)}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ )),}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ nonLocal\_(std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{innerMtxType}}>(}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(nonLocValues),\ std::move(nonLocColIdxs),\ std::move(nonLocRowOffs)}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ )),}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ env\_(env)}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ \ assert\ that\ nonLoc\ is\ empty\ if\ env\ is\ not\ initialized}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00055}00055\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af45afdc78259fb77c16eef436be006a8}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af45afdc78259fb77c16eef436be006a8}{Matrix}}(}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ std::shared\_ptr<innerMtxType>\ localMatrix,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ std::shared\_ptr<innerMtxType>\ nonLocalMatrix,}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ mpi::Environment\ env}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00067}00067\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ :\ local\_(localMatrix),\ nonLocal\_(nonLocalMatrix),\ env\_(env)}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00069}00069\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ \ assert\ that\ nonLoc\ is\ empty\ if\ env\ is\ not\ initialized}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{comment}{//\ getter}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a85504025214858543b304bc90d32c1fc}{00075}}\ \ \ \ \ std::shared\_ptr<innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a85504025214858543b304bc90d32c1fc}{local}}()\ \{\ \textcolor{keywordflow}{return}\ local\_;\ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_ad2fc4a1f84ac267c2c2614428b43ee91}{00077}}\ \ \ \ \ std::shared\_ptr<const\ innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_ad2fc4a1f84ac267c2c2614428b43ee91}{local}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ local\_;\ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a32f03c266c51870c711aa1912eb15d26}{00079}}\ \ \ \ \ std::shared\_ptr<innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a32f03c266c51870c711aa1912eb15d26}{nonLocal}}()\ \{\ \textcolor{keywordflow}{return}\ nonLocal\_;\ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a7734b31bf826c6b6447c372ea42a0bd9}{00081}}\ \ \ \ \ std::shared\_ptr<const\ innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a7734b31bf826c6b6447c372ea42a0bd9}{nonLocal}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nonLocal\_;\ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a5deb7baf2ebddc5d227aa7f3d165dc42}{00083}}\ \ \ \ \ mpi::Environment\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a5deb7baf2ebddc5d227aa7f3d165dc42}{environment}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ env\_;\ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af80c0eaa97743f1e11ef3f54ffb9622d}{00085}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af80c0eaa97743f1e11ef3f54ffb9622d}{copyToExecutor}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00086}00086\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ implement}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}\ \{}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<innerMtxType>(local\_-\/>copyToExecutor(exec)),}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<innerMtxType>(nonLocal\_-\/>copyToExecutor(exec)),}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ env\_}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00093}00093\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00094}00094\ \};}
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{matrix_8hpp_source_l00097}00097\ \}}
+
+\end{DoxyCode}

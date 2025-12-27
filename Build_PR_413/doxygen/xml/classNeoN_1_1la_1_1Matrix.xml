@@ -1,0 +1,342 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1la_1_1Matrix" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::la::Matrix</compoundname>
+    <basecompoundref refid="classNeoN_1_1SupportsCopyTo" prot="public" virt="non-virtual">NeoN::SupportsCopyTo&lt; Matrix &gt;</basecompoundref>
+    <includes refid="matrix_8hpp" local="no">matrix.hpp</includes>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1Matrix_1ad258d24432b456888aaac2145d786c53" prot="private" static="no">
+        <type><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>using NeoN::la::Matrix::innerMtxType =  CSRMatrix&lt;scalar, localIdx&gt;</definition>
+        <argsstring></argsstring>
+        <name>innerMtxType</name>
+        <qualifiedname>NeoN::la::Matrix::innerMtxType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="19" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1Matrix_1ab6f64f2252770a1585b265dd99ccb93d" prot="private" static="no" mutable="no">
+        <type>mpi::Environment</type>
+        <definition>mpi::Environment NeoN::la::Matrix::env_</definition>
+        <argsstring></argsstring>
+        <name>env_</name>
+        <qualifiedname>NeoN::la::Matrix::env_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="21" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1Matrix_1ab79a280b70461e4a93a2c0eaf2618135" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;innerMtxType&gt; NeoN::la::Matrix::local_</definition>
+        <argsstring></argsstring>
+        <name>local_</name>
+        <qualifiedname>NeoN::la::Matrix::local_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="22" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1Matrix_1a32aad1b63b52d6adbc626d8f32bfacad" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;innerMtxType&gt; NeoN::la::Matrix::nonLocal_</definition>
+        <argsstring></argsstring>
+        <name>nonLocal_</name>
+        <qualifiedname>NeoN::la::Matrix::nonLocal_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="23" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a8787e32ecbf59606b89da968ea69fb14" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::Matrix::Matrix</definition>
+        <argsstring>(const Vector&lt; scalar &gt; &amp;&amp;locValues, const Vector&lt; localIdx &gt; &amp;&amp;locColIdxs, const Vector&lt; localIdx &gt; &amp;&amp;locRowOffs, const Vector&lt; scalar &gt; &amp;&amp;nonLocValues, const Vector&lt; localIdx &gt; &amp;&amp;nonLocColIdxs, const Vector&lt; localIdx &gt; &amp;&amp;nonLocRowOffs, const mpi::Environment env)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>NeoN::la::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;&amp;</type>
+          <declname>locValues</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;&amp;</type>
+          <declname>locColIdxs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;&amp;</type>
+          <declname>locRowOffs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;&amp;</type>
+          <declname>nonLocValues</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;&amp;</type>
+          <declname>nonLocColIdxs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;&amp;</type>
+          <declname>nonLocRowOffs</declname>
+        </param>
+        <param>
+          <type>const mpi::Environment</type>
+          <declname>env</declname>
+        </param>
+        <briefdescription>
+<para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The non-zero values of the matrix. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>locColIdxs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column indices for each non-zero value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>locRowOffs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The starting index in values/colIdxs for each row. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nonLocValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The non-zero values of the matrix. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nonLocColIdxs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column indices for each non-zero value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nonLocRowOffs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The starting index in values/colIdxs for each row. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="37" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="37" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1af45afdc78259fb77c16eef436be006a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::Matrix::Matrix</definition>
+        <argsstring>(std::shared_ptr&lt; innerMtxType &gt; localMatrix, std::shared_ptr&lt; innerMtxType &gt; nonLocalMatrix, const mpi::Environment env)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>NeoN::la::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+          <declname>localMatrix</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+          <declname>nonLocalMatrix</declname>
+        </param>
+        <param>
+          <type>const mpi::Environment</type>
+          <declname>env</declname>
+        </param>
+        <briefdescription>
+<para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>localMatrix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nonLocalMatrix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="63" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="63" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a85504025214858543b304bc90d32c1fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; innerMtxType &gt; NeoN::la::Matrix::local</definition>
+        <argsstring>()</argsstring>
+        <name>local</name>
+        <qualifiedname>NeoN::la::Matrix::local</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="75" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1ad2fc4a1f84ac267c2c2614428b43ee91" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; const innerMtxType &gt; NeoN::la::Matrix::local</definition>
+        <argsstring>() const</argsstring>
+        <name>local</name>
+        <qualifiedname>NeoN::la::Matrix::local</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="77" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a32f03c266c51870c711aa1912eb15d26" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; innerMtxType &gt; NeoN::la::Matrix::nonLocal</definition>
+        <argsstring>()</argsstring>
+        <name>nonLocal</name>
+        <qualifiedname>NeoN::la::Matrix::nonLocal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="79" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a7734b31bf826c6b6447c372ea42a0bd9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">innerMtxType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; const innerMtxType &gt; NeoN::la::Matrix::nonLocal</definition>
+        <argsstring>() const</argsstring>
+        <name>nonLocal</name>
+        <qualifiedname>NeoN::la::Matrix::nonLocal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="81" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a5deb7baf2ebddc5d227aa7f3d165dc42" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>mpi::Environment</type>
+        <definition>mpi::Environment NeoN::la::Matrix::environment</definition>
+        <argsstring>() const</argsstring>
+        <name>environment</name>
+        <qualifiedname>NeoN::la::Matrix::environment</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="83" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="83" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1af80c0eaa97743f1e11ef3f54ffb9622d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref></type>
+        <definition>virtual Matrix NeoN::la::Matrix::copyToExecutor</definition>
+        <argsstring>(Executor exec) const override</argsstring>
+        <name>copyToExecutor</name>
+        <qualifiedname>NeoN::la::Matrix::copyToExecutor</qualifiedname>
+        <reimplements refid="classNeoN_1_1SupportsCopyTo_1ad54623a2d9533dc70f4d609714209967">copyToExecutor</reimplements>
+        <param>
+          <type><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="85" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="85" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Distributed matrix class. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::la::Matrix</label>
+        <link refid="classNeoN_1_1la_1_1Matrix"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::SupportsCopyTo&lt; Matrix &gt;</label>
+        <link refid="classNeoN_1_1SupportsCopyTo"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::la::Matrix</label>
+        <link refid="classNeoN_1_1la_1_1Matrix"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::SupportsCopyTo&lt; Matrix &gt;</label>
+        <link refid="classNeoN_1_1SupportsCopyTo"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" line="17" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp" bodystart="18" bodyend="94"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1la_1_1Matrix_1af80c0eaa97743f1e11ef3f54ffb9622d" prot="public" virt="virtual"><scope>NeoN::la::Matrix</scope><name>copyToExecutor</name></member>
+      <member refid="classNeoN_1_1SupportsCopyTo_1a256c1d9968812b8c9be5c00b2d9b3f4d" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>copyToHost</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1ab6f64f2252770a1585b265dd99ccb93d" prot="private" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>env_</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a5deb7baf2ebddc5d227aa7f3d165dc42" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>environment</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1ad258d24432b456888aaac2145d786c53" prot="private" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>innerMtxType</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a85504025214858543b304bc90d32c1fc" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>local</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1ad2fc4a1f84ac267c2c2614428b43ee91" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>local</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1ab79a280b70461e4a93a2c0eaf2618135" prot="private" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>local_</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a8787e32ecbf59606b89da968ea69fb14" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1af45afdc78259fb77c16eef436be006a8" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a32f03c266c51870c711aa1912eb15d26" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>nonLocal</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a7734b31bf826c6b6447c372ea42a0bd9" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>nonLocal</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a32aad1b63b52d6adbc626d8f32bfacad" prot="private" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>nonLocal_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

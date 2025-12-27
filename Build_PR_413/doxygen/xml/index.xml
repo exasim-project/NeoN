@@ -136,7 +136,8 @@
     <member refid="classNeoN_1_1BoundaryMesh_1aab9517130ff2fb6dd3ffed3a7889797d" kind="variable"><name>weights_</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a352abf06caf19878e7ef0124c079ee40" kind="variable"><name>deltaCoeffs_</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a74720e9331abea9a1361c5021e122001" kind="variable"><name>offset_</name></member>
-    <member refid="classNeoN_1_1BoundaryMesh_1a52b3b60458102994ffb3a7d9817fa5ca" kind="function"><name>BoundaryMesh</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1a0529d9d9be19c2c36552f72f01e2e384" kind="variable"><name>neighbourRank_</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1a0266d1ca06429f550a10beefd8a01025" kind="function"><name>BoundaryMesh</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1aae76ed2a48eb7c003c982762d366b04a" kind="function"><name>faceCells</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1af1362835d959df369ab66a5b77ce00e5" kind="function"><name>faceCells</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a92547977ed2b7915286db3bf9102495d" kind="function"><name>cf</name></member>
@@ -155,6 +156,7 @@
     <member refid="classNeoN_1_1BoundaryMesh_1a3b0e93bcac3e1fcdf878ba484232d10b" kind="function"><name>weights</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a4d68eaf96298d79527149e34e1193d7b" kind="function"><name>deltaCoeffs</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a7c1248627fced7c34412ad36673b5c04" kind="function"><name>deltaCoeffs</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1a15f500c710e99436c0e7c12efa84892f" kind="function"><name>neighbourRank</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a3e64f99b91157e2eae5e2b75c2532c87" kind="function"><name>offset</name></member>
   </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kind="class"><name>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</name>
@@ -296,6 +298,7 @@
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1aeec6d7e0db317a348955f6c4992baeb7" kind="variable"><name>colIdxs_</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1aec448d219b8e41422eeddd425916c753" kind="variable"><name>rowOffs_</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1aacaf65f8819ee497642d9359a94ed618" kind="function"><name>CSRMatrix</name></member>
+    <member refid="classNeoN_1_1la_1_1CSRMatrix_1a230710240694061ecd3c4f72144be968" kind="function"><name>CSRMatrix</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a9772de5e5073176acfa70896964af84b" kind="function"><name>CSRMatrix</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1afd83705fad7e5f93ebfcc7103d52222b" kind="function"><name>~CSRMatrix</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a5963e5160ed6e2dc1e032ca55e7a1fd2" kind="function"><name>exec</name></member>
@@ -307,8 +310,7 @@
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a37dc0ca5898502e30bffb3b69ca75a9b" kind="function"><name>values</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a6ddef904b6b19b74d1f796a06e057131" kind="function"><name>colIdxs</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a962e52108c2184154c66a06bbf44d27a" kind="function"><name>rowOffs</name></member>
-    <member refid="classNeoN_1_1la_1_1CSRMatrix_1af1509d705d3c8e261ad36f4ce9fbb5ab" kind="function"><name>copyToExecutor</name></member>
-    <member refid="classNeoN_1_1la_1_1CSRMatrix_1a951a3e8899f686f3f0cdb5769d9abb78" kind="function"><name>copyToHost</name></member>
+    <member refid="classNeoN_1_1la_1_1CSRMatrix_1aa341c7dd66d1f0e0d20d87fb6606b333" kind="function"><name>copyToExecutor</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1af21bff84292853f1e860cb5f98fb1984" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1CSRMatrix_1a664ee60d2662445f2bb91f7267c5e36d" kind="function"><name>view</name></member>
   </compound>
@@ -773,6 +775,20 @@
     <member refid="classNeoN_1_1Logging_1_1Logger_1ae2053e637c244a9a1825702e3e900c37" kind="function"><name>~Logger</name></member>
     <member refid="classNeoN_1_1Logging_1_1Logger_1a4c6ab731c451d0e95821f956e934a1a8" kind="function"><name>log</name></member>
   </compound>
+  <compound refid="classNeoN_1_1la_1_1Matrix" kind="class"><name>NeoN::la::Matrix</name>
+    <member refid="classNeoN_1_1la_1_1Matrix_1ad258d24432b456888aaac2145d786c53" kind="typedef"><name>innerMtxType</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1ab6f64f2252770a1585b265dd99ccb93d" kind="variable"><name>env_</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1ab79a280b70461e4a93a2c0eaf2618135" kind="variable"><name>local_</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a32aad1b63b52d6adbc626d8f32bfacad" kind="variable"><name>nonLocal_</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a8787e32ecbf59606b89da968ea69fb14" kind="function"><name>Matrix</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1af45afdc78259fb77c16eef436be006a8" kind="function"><name>Matrix</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a85504025214858543b304bc90d32c1fc" kind="function"><name>local</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1ad2fc4a1f84ac267c2c2614428b43ee91" kind="function"><name>local</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a32f03c266c51870c711aa1912eb15d26" kind="function"><name>nonLocal</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a7734b31bf826c6b6447c372ea42a0bd9" kind="function"><name>nonLocal</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a5deb7baf2ebddc5d227aa7f3d165dc42" kind="function"><name>environment</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1af80c0eaa97743f1e11ef3f54ffb9622d" kind="function"><name>copyToExecutor</name></member>
+  </compound>
   <compound refid="classNeoN_1_1NeoNException" kind="class"><name>NeoN::NeoNException</name>
     <member refid="classNeoN_1_1NeoNException_1aeabed249d6ec860d410fea3263b0d655" kind="variable"><name>message_</name></member>
     <member refid="classNeoN_1_1NeoNException_1a0c08cb41205f0c35fcd9ee9472704049" kind="function"><name>NeoNException</name></member>
@@ -1029,6 +1045,10 @@
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1aec6cd2e8e754f1a10ea0a01707f51a4b" kind="function"><name>getCoefficient</name></member>
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1abbf112a2938a5fe153d451c9b68ec19a" kind="function"><name>read</name></member>
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1a78ada1cf73d345d9df1a917d0ba3c76f" kind="function"><name>exec</name></member>
+  </compound>
+  <compound refid="classNeoN_1_1SupportsCopyTo" kind="class"><name>NeoN::SupportsCopyTo</name>
+    <member refid="classNeoN_1_1SupportsCopyTo_1ad54623a2d9533dc70f4d609714209967" kind="function"><name>copyToExecutor</name></member>
+    <member refid="classNeoN_1_1SupportsCopyTo_1a256c1d9968812b8c9be5c00b2d9b3f4d" kind="function"><name>copyToHost</name></member>
   </compound>
   <compound refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin" kind="class"><name>NeoN::Logging::SupportsLoggingMixin</name>
     <member refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin_1a92b130fbb55c8f4e2b39ae423df548e3" kind="variable"><name>logger_</name></member>
@@ -1656,6 +1676,8 @@
   </compound>
   <compound refid="containerFreeFunctions_8hpp" kind="file"><name>containerFreeFunctions.hpp</name>
   </compound>
+  <compound refid="copyTo_8hpp" kind="file"><name>copyTo.hpp</name>
+  </compound>
   <compound refid="collection_8hpp" kind="file"><name>collection.hpp</name>
   </compound>
   <compound refid="database_8hpp" kind="file"><name>database.hpp</name>
@@ -1742,6 +1764,8 @@
   <compound refid="vectorTypeDefs_8hpp" kind="file"><name>vectorTypeDefs.hpp</name>
   </compound>
   <compound refid="view_8hpp" kind="file"><name>view.hpp</name>
+  </compound>
+  <compound refid="matrix_8hpp" kind="file"><name>matrix.hpp</name>
   </compound>
   <compound refid="coeff_8hpp" kind="file"><name>coeff.hpp</name>
   </compound>
@@ -1883,6 +1907,8 @@
   <compound refid="dir_f2adf19220ecd655c45a5e32fe91c610" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/core</name>
   </compound>
   <compound refid="dir_3d2a1f17b474243ff3a8f3f29c966c08" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/core/database</name>
+  </compound>
+  <compound refid="dir_a3805c08735fead6f28ad2348fcf6123" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/distributed</name>
   </compound>
   <compound refid="dir_ffa7ec4af3f272998c755624b40b789d" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/dsl</name>
   </compound>
