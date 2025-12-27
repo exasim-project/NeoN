@@ -90,7 +90,8 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
-        {0, 1, 2, 3, 4}               // offset
+        {0, 1, 2, 3, 4},              // offset
+        {-1, -1, -1, -1, -1}          // offset
     );
     return UnstructuredMesh(
         {exec, {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}}}, // points,
@@ -201,7 +202,8 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
         delta,
         {exec, {1.0, 1.0}},
         deltaCoeffs,
-        {0, 1, 2}
+        {0, 1, 2},
+        {-1, -1, -1}
     );
 
     return UnstructuredMesh(

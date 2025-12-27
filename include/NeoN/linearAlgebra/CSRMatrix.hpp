@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/copyTo.hpp"
 #include "NeoN/core/vector/vector.hpp"
 
 #include <type_traits>
@@ -82,13 +83,14 @@ struct CSRMatrixView
  * @tparam IndexType The index type of the rows and columns.
  */
 template<typename ValueType, typename IndexType>
-class CSRMatrix
+class CSRMatrix : public SupportsCopyTo<CSRMatrix<ValueType, IndexType>>
 {
 
 public:
 
     /**
      * @brief Constructor for CSRMatrix.
+     *
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
@@ -103,6 +105,15 @@ public:
         NF_ASSERT(values.exec() == colIdxs_.exec(), "Executors are not the same");
         NF_ASSERT(values.exec() == rowOffs_.exec(), "Executors are not the same");
     }
+
+    /**
+     * @brief Copy Constructor for CSRMatrix.
+     *
+     * @param other
+     */
+    CSRMatrix(const CSRMatrix& other)
+        : values_(other.values_), colIdxs_(other.colIdxs_), rowOffs_(other.rowOffs_)
+    {}
 
     CSRMatrix(const Executor exec) : values_(exec, 0), colIdxs_(exec, 0), rowOffs_(exec, 0) {}
 
@@ -174,7 +185,8 @@ public:
      * @param dstExec The destination executor.
      * @return A copy of the matrix on the destination executor.
      */
-    [[nodiscard]] CSRMatrix<ValueType, IndexType> copyToExecutor(Executor dstExec) const
+    [[nodiscard]] virtual CSRMatrix<ValueType, IndexType> copyToExecutor(Executor dstExec
+    ) const override
     {
         if (dstExec == values_.exec())
         {
@@ -184,15 +196,6 @@ public:
             values_.copyToHost(), colIdxs_.copyToHost(), rowOffs_.copyToHost()
         );
         return other;
-    }
-
-    /**
-     * @brief Copy the matrix to the host.
-     * @return A copy of the matrix on the host.
-     */
-    [[nodiscard]] CSRMatrix<ValueType, IndexType> copyToHost() const
-    {
-        return copyToExecutor(SerialExecutor());
     }
 
     /**

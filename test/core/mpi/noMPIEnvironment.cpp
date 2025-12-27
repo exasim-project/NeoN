@@ -20,6 +20,7 @@ TEST_CASE("noMPIEnvironment")
 
     SECTION("mpiEnviron has -1 ranks")
     {
+        REQUIRE(mpiEnviron.isInitialized() == false);
         REQUIRE(mpiEnviron.sizeRank() == -1);
         REQUIRE(mpiEnviron.rank() == -1);
     }

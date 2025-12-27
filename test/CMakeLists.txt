@@ -76,6 +76,7 @@ function(NeoN_unit_test TEST)
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
     set_tests_properties(${NeoN_COMMAND} PROPERTIES TIMEOUT 10)
     set_tests_properties(${NeoN_COMMAND} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
+    target_link_libraries(test_${TEST} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
                       "but only <${MPIEXEC_MAX_NUMPROCS}> are available. Disabling test "
@@ -87,6 +88,7 @@ endfunction()
 
 add_subdirectory(core)
 add_subdirectory(dsl)
+add_subdirectory(distributed)
 add_subdirectory(fields)
 add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)
