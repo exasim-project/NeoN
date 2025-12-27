@@ -21,6 +21,7 @@ using I = std::initializer_list<T>;
 
 TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     const NeoN::localIdx nCells = 10;
@@ -86,7 +87,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             }
         }
 
-        auto ls = la::createEmptyLinearSystem<TestType, localIdx>(mesh, sp);
+        auto ls = la::createEmptyLinearSystem<TestType, localIdx>(mesh, sp, mpiEnviron);
 
         SECTION("implicit laplacian operator of constant field on " + execName)
         {
@@ -99,7 +100,8 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
                 auto res = Vector<scalar>(phi.internalVector());
                 fill(res, 1.0);
 
-                computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
+                // FIXME dont use *.get()
+                computeResidual(*ls.matrix().local().get(), ls.rhs(), phi.internalVector(), res);
 
                 auto resHost = res.copyToHost();
                 auto resV = resHost.view();
@@ -123,7 +125,8 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
                 lapOp.implicitOperation(ls);
 
                 auto res = Vector<scalar>(phi.internalVector());
-                computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
+                // FIXME dont use *.get()
+                computeResidual(*ls.matrix().local().get(), ls.rhs(), phi.internalVector(), res);
 
                 auto resHost = res.copyToHost();
                 auto resV = resHost.view();

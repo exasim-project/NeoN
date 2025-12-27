@@ -15,7 +15,7 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix;
 using NeoN::la::Solver;
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
@@ -87,6 +87,7 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
 
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};
@@ -97,10 +98,19 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
         Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
         Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
-        CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+        // FIXME
+        Matrix<scalar, localIdx> matrix(
+            Vector {values},
+            Vector {colIdx},
+            Vector {rowOffs},
+            Vector {values},
+            Vector {colIdx},
+            Vector {rowOffs},
+            mpiEnviron
+        );
 
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<scalar, localIdx> linearSystem(matrix, rhs);
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
 
         Dictionary solverDict {
@@ -140,10 +150,19 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
         Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
-        CSRMatrix<NeoN::Vec3, localIdx> csrMatrix(values, colIdx, rowOffs);
+        // FIXME
+        Matrix<NeoN::Vec3, localIdx> matrix(
+            Vector {values},
+            Vector {colIdx},
+            Vector {rowOffs},
+            Vector {values},
+            Vector {colIdx},
+            Vector {rowOffs},
+            mpiEnviron
+        );
 
         Vector<NeoN::Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
-        LinearSystem<NeoN::Vec3, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<NeoN::Vec3, localIdx> linearSystem(matrix, rhs);
         Vector<NeoN::Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
         Dictionary solverDict {

@@ -102,7 +102,7 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
-    auto [values, colIdxs, rowOffs] = ls.matrix().view();
+    auto [values, colIdxs, rowOffs] = ls.matrix().local()->view();
     auto rhs = ls.rhs().view();
 
     parallelFor(

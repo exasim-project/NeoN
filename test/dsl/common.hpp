@@ -173,7 +173,7 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
     {
-        auto values = ls.matrix().values().view();
+        auto values = ls.matrix().local()->values().view();
         auto rhs = ls.rhs().view();
         auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
@@ -235,7 +235,7 @@ public:
     void
     implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, NeoN::scalar, NeoN::scalar)
     {
-        auto values = ls.matrix().values().view();
+        auto values = ls.matrix().local()->values().view();
         auto rhs = ls.rhs().view();
         auto fieldView = this->field_.internalVector().view();
         auto coeff = this->getCoefficient();
@@ -281,7 +281,7 @@ template<typename ValueType>
 ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
 {
     auto hostLs = ls.copyToHost();
-    return hostLs.matrix().values().view()[0];
+    return hostLs.matrix().local()->values().view()[0];
 }
 
 template<typename ValueType>

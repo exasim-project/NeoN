@@ -6,6 +6,7 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
+#include "NeoN/distributed/matrix.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
@@ -53,44 +54,51 @@ struct BoundaryCoefficients
  * well as the solution vector.
  */
 template<typename ValueType, typename IndexType>
-class LinearSystem
+class LinearSystem : public SupportsCopyTo<LinearSystem<ValueType, IndexType>>
 {
+
+    void validate()
+    {
+        NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+    }
+
 public:
 
     LinearSystem(
-        const CSRMatrix<ValueType, IndexType>& matrix,
+        const Matrix<ValueType, IndexType>& matrix,
         const Vector<ValueType>& rhs,
         const Dictionary& aux = {}
     )
         : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
     {
-        NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
-        NF_ASSERT(matrix.nRows() == rhs.size(), "Matrix and RHS size mismatch");
-    };
+        validate();
+    }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_) {};
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_)
+    {}
 
     LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
 
     ~LinearSystem() = default;
 
-    [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
+    [[nodiscard]] Matrix<ValueType, IndexType>& matrix() { return matrix_; }
+
+    [[nodiscard]] const Matrix<ValueType, IndexType>& matrix() const { return matrix_; }
 
     [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
-    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
-
     [[nodiscard]] const Vector<ValueType>& rhs() const { return rhs_; }
 
-    [[nodiscard]] LinearSystem copyToHost() const
+    [[nodiscard]] virtual LinearSystem copyToExecutor(Executor exec) const override
     {
-        return LinearSystem(matrix_.copyToHost(), rhs_.copyToHost());
+        return LinearSystem(matrix_.copyToExecutor(exec), rhs_.copyToExecutor(exec));
     }
 
     void reset()
     {
-        fill(matrix_.values(), zero<ValueType>());
+        fill(matrix_.local()->values(), zero<ValueType>());
         fill(rhs_, zero<ValueType>());
     }
 
@@ -100,15 +108,19 @@ public:
 
     [[nodiscard]] LinearSystemView<ValueType, IndexType> view() &
     {
-        return LinearSystemView<ValueType, IndexType>(matrix_.view(), rhs_.view());
+        // FIXME
+        return LinearSystemView<ValueType, IndexType>(matrix_.local()->view(), rhs_.view());
     }
 
     [[nodiscard]] LinearSystemView<const ValueType, const IndexType> view() const&
     {
-        return LinearSystemView<const ValueType, const IndexType>(matrix_.view(), rhs_.view());
+        // FIXME
+        return LinearSystemView<const ValueType, const IndexType>(
+            matrix_.local()->view(), rhs_.view()
+        );
     }
 
-    const Executor& exec() const { return matrix_.exec(); }
+    const Executor& exec() const { return matrix_.local()->exec(); }
 
     // TODO move to fvcc
     [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
@@ -117,7 +129,7 @@ public:
 
 private:
 
-    CSRMatrix<ValueType, IndexType> matrix_;
+    Matrix<ValueType, IndexType> matrix_;
     Vector<ValueType> rhs_;
     Dictionary auxiliaryCoefficients_;
 };
@@ -140,8 +152,9 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
  * pattern
  */
 template<typename ValueType, typename IndexType>
-LinearSystem<ValueType, IndexType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
+LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
+    const UnstructuredMesh& mesh, const SparsityPattern& sparsity, mpi::Environment env
+)
 {
     const auto& exec = mesh.exec();
     localIdx rows {sparsity.rows()};
@@ -176,12 +189,20 @@ createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& spa
         "createEmptyLinearSystem"
     );
 
+    // FIXME
     Dictionary aux;
     aux.insert("boundaryCoefficients", bcCoeffs);
 
+    // FIXME
     return {
-        CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
+        Matrix<ValueType, IndexType> {
+            Vector<ValueType>(exec, nnzs, zero<ValueType>()),
+            Vector<IndexType> {sparsity.colIdxs()},
+            Vector<IndexType> {sparsity.rowOffs()},
+            Vector<ValueType>(exec, 0, zero<ValueType>()),
+            Vector<IndexType>(exec, 0, zero<IndexType>()),
+            Vector<IndexType>(exec, 0, zero<IndexType>()),
+            env
         },
         Vector<ValueType> {exec, rows, zero<ValueType>()},
         aux

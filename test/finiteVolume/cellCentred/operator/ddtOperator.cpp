@@ -54,6 +54,7 @@ struct CreateVector
 
 TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     NeoN::Database db;
@@ -94,14 +95,15 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         ddtSchemes.insert("ddt(phi)", std::string("BDF1"));
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp, mpiEnviron);
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
         ddtOp.implicitOperation(ls, 1.0, 0.5);
 
         const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
-        const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
+        const auto [mtxValsV, volV, rhsV] =
+            views(lsHost.matrix().local()->values(), vol, lsHost.rhs());
 
         for (auto ii = 0; ii < mtxValsV.size(); ++ii)
         {

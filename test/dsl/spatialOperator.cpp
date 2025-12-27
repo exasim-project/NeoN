@@ -14,6 +14,7 @@ namespace dsl = NeoN::dsl;
 
 TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
@@ -90,27 +91,27 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp, mpiEnviron);
         Vector source(exec, 1, 2.0);
         c.implicitOperation(ls);
 
         // c = 2 * 2
         auto [hostRhsC, hostLsC] = copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsC.view()[0] == 4.0 * NeoN::one<TestType>());
-        REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsC.matrix().local()->values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // d= 2 * 2
         ls.reset();
         d.implicitOperation(ls);
         auto [hostRhsD, hostLsD] = copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
-        REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsD.matrix().local()->values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // e = - -3 * 2 * 2 = -12
         ls.reset();
         e.implicitOperation(ls);
         auto [hostRhsE, hostLsE] = copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsE.view()[0] == -12.0 * NeoN::one<TestType>());
-        REQUIRE(hostLsE.matrix().values().view()[0] == -12.0 * NeoN::one<TestType>());
+        REQUIRE(hostLsE.matrix().local()->values().view()[0] == -12.0 * NeoN::one<TestType>());
     }
 }

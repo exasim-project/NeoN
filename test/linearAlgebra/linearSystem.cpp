@@ -14,27 +14,38 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix;
 
 TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+
+    // FIXME
+    Matrix<scalar, localIdx> matrix(
+        Vector {values},
+        Vector {colIdx},
+        Vector {rowOffs},
+        Vector {values},
+        Vector {colIdx},
+        Vector {rowOffs},
+        mpiEnviron
+    );
 
     SECTION("construct " + execName)
     {
 
         Vector<scalar> rhs(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<scalar, localIdx> linearSystem(matrix, rhs);
 
-        REQUIRE(linearSystem.matrix().values().size() == 9);
-        REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
-        REQUIRE(linearSystem.matrix().rowOffs().size() == 4);
-        REQUIRE(linearSystem.matrix().nRows() == 3);
+        REQUIRE(linearSystem.matrix().local()->values().size() == 9);
+        REQUIRE(linearSystem.matrix().local()->colIdxs().size() == 9);
+        REQUIRE(linearSystem.matrix().local()->rowOffs().size() == 4);
+        REQUIRE(linearSystem.matrix().local()->nRows() == 3);
         REQUIRE(linearSystem.rhs().size() == 3);
     }
 
@@ -47,19 +58,20 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         // TODO improve structure here
         auto sp = NeoN::la::SparsityPattern {mesh};
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(mesh, sp);
+        auto linearSystem =
+            NeoN::la::createEmptyLinearSystem<scalar, localIdx>(mesh, sp, mpiEnviron);
 
-        REQUIRE(linearSystem.matrix().values().size() == nnz);
-        REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
-        REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
-        REQUIRE(linearSystem.matrix().nRows() == nCells);
+        REQUIRE(linearSystem.matrix().local()->values().size() == nnz);
+        REQUIRE(linearSystem.matrix().local()->colIdxs().size() == nnz);
+        REQUIRE(linearSystem.matrix().local()->rowOffs().size() == nCells + 1);
+        REQUIRE(linearSystem.matrix().local()->nRows() == nCells);
         REQUIRE(linearSystem.rhs().size() == nCells);
     }
 
     SECTION("view read/write " + execName)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
-        LinearSystem<scalar, localIdx> ls(csrMatrix, rhs);
+        LinearSystem<scalar, localIdx> ls(matrix, rhs);
 
         auto lsView = ls.view();
         auto hostLS = ls.copyToHost();

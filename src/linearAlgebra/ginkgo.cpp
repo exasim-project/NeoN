@@ -242,24 +242,31 @@ template<typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtx(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const LinearSystem<scalar, IndexType>& sys
+    const LinearSystem<scalar, IndexType>& ls
 )
 {
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
 
-    const auto mtx = sys.view().matrix;
+    // const auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
+    // FIXME currently only mtx.local() is used
     auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values.size()), mtx.values.data()
+        exec,
+        static_cast<gko::size_type>(ls.matrix().local()->values().size()),
+        ls.matrix().local()->values().data()
     );
     auto col = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.colIdxs.size()), mtx.colIdxs.data()
+        exec,
+        static_cast<gko::size_type>(ls.matrix().local()->colIdxs().size()),
+        ls.matrix().local()->colIdxs().data()
     );
     auto row = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.rowOffs.size()), mtx.rowOffs.data()
+        exec,
+        static_cast<gko::size_type>(ls.matrix().local()->rowOffs().size()),
+        ls.matrix().local()->rowOffs().data()
     );
 
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    auto nrows = static_cast<gko::size_type>(computeNRows(ls));
 
     // FIXME currently no communication with other rank
     auto partition =
@@ -282,7 +289,6 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(
             )
         )
             ->clone();
-
     // writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
 
     std::shared_ptr<gko::LinOp> nonLocalMtx =
@@ -398,10 +404,12 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(
     );
 
     // NOTE we get a const view of the system but need a non const view to vals and indices
+    // FIXME
     const auto mtx = sys.matrix();
-    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
-    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
-    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    const auto rowsCopy = unpackRowOffs(mtx.local()->rowOffs());
+    const auto colsCopy = unpackColIdx(mtx.local()->colIdxs(), rowsCopy, mtx.local()->rowOffs());
+    const auto valuesCopy =
+        unpackMtxValues(mtx.local()->values(), mtx.local()->rowOffs(), rowsCopy);
     auto localMtx = gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec,
         gko::dim<2> {nrows, nrows},
