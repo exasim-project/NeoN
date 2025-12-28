@@ -1,0 +1,34 @@
+\doxysection{initialization.\+hpp}
+\hypertarget{initialization_8hpp_source}{}\label{initialization_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp}}
+\mbox{\hyperlink{initialization_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{logging_8hpp}{NeoN/core/logging.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00016}\mbox{\hyperlink{namespaceNeoN_aa8bb18687be355a802575d548fd7f292}{00016}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_aa8bb18687be355a802575d548fd7f292}{initialize}}(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}*\ argv[])}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00018}00018\ \ \ \ \ Kokkos::initialize(argc,\ argv);}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00020}00020\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{Logging::setNeonDefaultPattern}}();}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00021}00021\ \}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00023}\mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{00023}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{finalize}}()}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00025}00025\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{Logging::info}}(\textcolor{stringliteral}{"{}Finalizing\ NeoN"{}});}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00026}00026\ \ \ \ \ Kokkos::finalize();}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00027}00027\ \}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00028}00028\ \}}
+
+\end{DoxyCode}
