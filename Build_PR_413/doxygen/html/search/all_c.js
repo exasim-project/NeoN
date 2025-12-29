@@ -58,7 +58,7 @@ var searchData=
   ['nn_5ffor_5fall_5fvalue_5ftypes_55',['NN_FOR_ALL_VALUE_TYPES',['../macros_8hpp.html#af2b6b4d2bf83137ac1574a81f1f05470',1,'macros.hpp']]],
   ['nnonzeros_56',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a2cdecd7ad4f5ca4d876122f7716b4db2',1,'NeoN::la::CSRMatrix']]],
   ['nnz_57',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#abc480a3a2b330e0c825528785ccccdee',1,'NeoN::la::SparsityPattern']]],
-  ['nonlocal_58',['nonlocal',['../classNeoN_1_1la_1_1Matrix.html#a7734b31bf826c6b6447c372ea42a0bd9',1,'NeoN::la::Matrix::nonLocal() const'],['../classNeoN_1_1la_1_1Matrix.html#a32f03c266c51870c711aa1912eb15d26',1,'NeoN::la::Matrix::nonLocal()']]],
+  ['nonlocal_58',['nonlocal',['../classNeoN_1_1la_1_1Matrix.html#add8ff62ee15e14d14cfe737c4d56a4dc',1,'NeoN::la::Matrix::nonLocal() const'],['../classNeoN_1_1la_1_1Matrix.html#a9f8f31a5fc0859891e57488202ce6766',1,'NeoN::la::Matrix::nonLocal()']]],
   ['nonorthcorrectionvec3s_59',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_60',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nrows_61',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],

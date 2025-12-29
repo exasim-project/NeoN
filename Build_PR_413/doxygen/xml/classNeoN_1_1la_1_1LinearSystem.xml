@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classNeoN_1_1la_1_1LinearSystem" kind="class" language="C++" prot="public">
     <compoundname>NeoN::la::LinearSystem</compoundname>
-    <basecompoundref refid="classNeoN_1_1SupportsCopyTo" prot="public" virt="non-virtual">NeoN::SupportsCopyTo&lt; LinearSystem &gt;</basecompoundref>
+    <basecompoundref refid="classNeoN_1_1SupportsCopyTo" prot="public" virt="non-virtual">NeoN::SupportsCopyTo&lt; LinearSystem&lt; ValueType, IndexType &gt; &gt;</basecompoundref>
     <includes refid="linearSystem_8hpp" local="no">linearSystem.hpp</includes>
     <templateparamlist>
       <param>
@@ -13,9 +13,9 @@
       </param>
     </templateparamlist>
     <sectiondef kind="private-attrib">
-      <memberdef kind="variable" id="classNeoN_1_1la_1_1LinearSystem_1ac29204c09eea4a06e8054095cff6f626" prot="private" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref></type>
-        <definition>Matrix NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix_</definition>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1LinearSystem_1a3359a95fd84c285565465956e64b1fbe" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, IndexType &gt;</type>
+        <definition>Matrix&lt;ValueType, IndexType&gt; NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix_</definition>
         <argsstring></argsstring>
         <name>matrix_</name>
         <qualifiedname>NeoN::la::LinearSystem::matrix_</qualifiedname>
@@ -25,7 +25,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="116" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="116" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="132" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="132" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1la_1_1LinearSystem_1aff6a15d52cca80105f3300e2241514c8" prot="private" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -39,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="117" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="117" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="133" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="133" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1la_1_1LinearSystem_1aaed45af46061c794359049795e1c17ca" prot="private" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref></type>
@@ -53,18 +53,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="118" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="118" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="134" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="134" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a3fe26ae4c5f31a3a0db40c9f36ea067f" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::validate</definition>
+        <argsstring>()</argsstring>
+        <name>validate</name>
+        <qualifiedname>NeoN::la::LinearSystem::validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="60" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="60" bodyend="64"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a22f5ed48b581dd5f6371390f945c674d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a8589e5fa11b1fe75b0e92d5dc60a9b1b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::LinearSystem</definition>
-        <argsstring>(const Matrix &amp;matrix, const Vector&lt; ValueType &gt; &amp;rhs, const Dictionary &amp;aux={})</argsstring>
+        <argsstring>(const Matrix&lt; ValueType, IndexType &gt; &amp;matrix, const Vector&lt; ValueType &gt; &amp;rhs, const Dictionary &amp;aux={})</argsstring>
         <name>LinearSystem</name>
         <qualifiedname>NeoN::la::LinearSystem::LinearSystem</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, IndexType &gt; &amp;</type>
           <declname>matrix</declname>
         </param>
         <param>
@@ -82,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="60" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="60" bodyend="65"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="68" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="68" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a7a164f0361b5f26a6d517534cf650b5b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -100,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="67" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="67" bodyend="68"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="78" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="78" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a98aef1fcbf093939bc3ea967f1b7610f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -118,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="70" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="70" bodyend="70"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="82" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="82" bodyend="82"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a8c24b8b0b48f97c7a91bd884dfa5b019" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -132,11 +148,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="72" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="84" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1ae32fc2761a85b1638d7a7461e4df41c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> &amp;</type>
-        <definition>Matrix &amp; NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix</definition>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1ab415e912d357e213de25e90f0a44e985" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, IndexType &gt; &amp;</type>
+        <definition>Matrix&lt; ValueType, IndexType &gt; &amp; NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix</definition>
         <argsstring>()</argsstring>
         <name>matrix</name>
         <qualifiedname>NeoN::la::LinearSystem::matrix</qualifiedname>
@@ -146,11 +162,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="74" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="74" bodyend="74"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="86" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="86" bodyend="86"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a2c1993ab2a6c6d02c016b6ee4b761c86" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> &amp;</type>
-        <definition>const Matrix &amp; NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix</definition>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a314073956e5e6bc87336d28a2ec37de8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, IndexType &gt; &amp;</type>
+        <definition>const Matrix&lt; ValueType, IndexType &gt; &amp; NeoN::la::LinearSystem&lt; ValueType, IndexType &gt;::matrix</definition>
         <argsstring>() const</argsstring>
         <name>matrix</name>
         <qualifiedname>NeoN::la::LinearSystem::matrix</qualifiedname>
@@ -160,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="76" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="76" bodyend="76"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="88" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="88" bodyend="88"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -174,7 +190,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="78" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="78" bodyend="78"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="90" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="90" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a75d4a24d3742745f0a41eb496f111298" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -188,7 +204,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="80" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="80" bodyend="80"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="92" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="92" bodyend="92"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a74d6f24e76d6b3455982f2541732e714" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref></type>
@@ -207,7 +223,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="82" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="82" bodyend="85"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="94" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="94" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a60e4fbaa89ccee0e8540c4d4c2a3c38f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -221,7 +237,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="87" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="87" bodyend="91"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="99" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="99" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1ad00f3e7eab80d4a8b35c8a70071ba6d9" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1LinearSystemView" kindref="compound">LinearSystemView</ref>&lt; ValueType, IndexType &gt;</type>
@@ -235,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="93" column="23"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="105" column="23"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a1b9f9ed3c857ab92398bb44c910670d2" prot="public" static="no" const="yes" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1LinearSystemView" kindref="compound">LinearSystemView</ref>&lt; ValueType, IndexType &gt;</type>
@@ -249,7 +265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="95" column="23"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="107" column="23"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a4fe783b48576e44b87a352a3528a87ee" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1LinearSystemView" kindref="compound">LinearSystemView</ref>&lt; ValueType, IndexType &gt;</type>
@@ -263,7 +279,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="97" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="97" bodyend="100"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="109" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="109" bodyend="113"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1a99feb73536d23fc1241b2c5e883d6a84" prot="public" static="no" const="yes" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1LinearSystemView" kindref="compound">LinearSystemView</ref>&lt; const ValueType, const IndexType &gt;</type>
@@ -277,7 +293,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="102" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="102" bodyend="105"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="115" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="115" bodyend="121"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
@@ -291,7 +307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="107" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="107" bodyend="107"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="123" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="123" bodyend="123"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1aa64fe93bcd68b250547b9a6d4bca836b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
@@ -305,7 +321,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="110" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="110" bodyend="110"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="126" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="126" bodyend="126"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1LinearSystem_1ac6d9815219bb4ea4abfacb8c2e89978a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
@@ -319,7 +335,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="112" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="112" bodyend="112"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="128" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="128" bodyend="128"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -336,7 +352,7 @@
         </childnode>
       </node>
       <node id="2">
-        <label>NeoN::SupportsCopyTo&lt; LinearSystem &gt;</label>
+        <label>NeoN::SupportsCopyTo&lt; LinearSystem&lt; ValueType, IndexType &gt; &gt;</label>
         <link refid="classNeoN_1_1SupportsCopyTo"/>
       </node>
     </inheritancegraph>
@@ -348,11 +364,11 @@
         </childnode>
       </node>
       <node id="2">
-        <label>NeoN::SupportsCopyTo&lt; LinearSystem &gt;</label>
+        <label>NeoN::SupportsCopyTo&lt; LinearSystem&lt; ValueType, IndexType &gt; &gt;</label>
         <link refid="classNeoN_1_1SupportsCopyTo"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="56" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="57" bodyend="119"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="57" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="58" bodyend="135"/>
     <listofallmembers>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1aa64fe93bcd68b250547b9a6d4bca836b" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>auxiliaryCoefficients</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1ac6d9815219bb4ea4abfacb8c2e89978a" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>auxiliaryCoefficients</name></member>
@@ -360,16 +376,17 @@
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a74d6f24e76d6b3455982f2541732e714" prot="public" virt="virtual"><scope>NeoN::la::LinearSystem</scope><name>copyToExecutor</name></member>
       <member refid="classNeoN_1_1SupportsCopyTo_1a256c1d9968812b8c9be5c00b2d9b3f4d" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>copyToHost</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>exec</name></member>
-      <member refid="classNeoN_1_1la_1_1LinearSystem_1a22f5ed48b581dd5f6371390f945c674d" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>LinearSystem</name></member>
+      <member refid="classNeoN_1_1la_1_1LinearSystem_1a8589e5fa11b1fe75b0e92d5dc60a9b1b" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>LinearSystem</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a7a164f0361b5f26a6d517534cf650b5b" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>LinearSystem</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a98aef1fcbf093939bc3ea967f1b7610f" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>LinearSystem</name></member>
-      <member refid="classNeoN_1_1la_1_1LinearSystem_1ae32fc2761a85b1638d7a7461e4df41c4" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix</name></member>
-      <member refid="classNeoN_1_1la_1_1LinearSystem_1a2c1993ab2a6c6d02c016b6ee4b761c86" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix</name></member>
-      <member refid="classNeoN_1_1la_1_1LinearSystem_1ac29204c09eea4a06e8054095cff6f626" prot="private" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix_</name></member>
+      <member refid="classNeoN_1_1la_1_1LinearSystem_1ab415e912d357e213de25e90f0a44e985" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1LinearSystem_1a314073956e5e6bc87336d28a2ec37de8" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1LinearSystem_1a3359a95fd84c285565465956e64b1fbe" prot="private" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>matrix_</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a60e4fbaa89ccee0e8540c4d4c2a3c38f" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>reset</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>rhs</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a75d4a24d3742745f0a41eb496f111298" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>rhs</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1aff6a15d52cca80105f3300e2241514c8" prot="private" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>rhs_</name></member>
+      <member refid="classNeoN_1_1la_1_1LinearSystem_1a3fe26ae4c5f31a3a0db40c9f36ea067f" prot="private" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>validate</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1ad00f3e7eab80d4a8b35c8a70071ba6d9" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>view</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a1b9f9ed3c857ab92398bb44c910670d2" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>view</name></member>
       <member refid="classNeoN_1_1la_1_1LinearSystem_1a4fe783b48576e44b87a352a3528a87ee" prot="public" virt="non-virtual"><scope>NeoN::la::LinearSystem</scope><name>view</name></member>

@@ -14,7 +14,7 @@ var searchData=
   ['ninternalfaces_11',['nInternalFaces',['../classNeoN_1_1UnstructuredMesh.html#a56a4ae9f82c769e4ce85e2d7804f2b42',1,'NeoN::UnstructuredMesh']]],
   ['nnonzeros_12',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a2cdecd7ad4f5ca4d876122f7716b4db2',1,'NeoN::la::CSRMatrix']]],
   ['nnz_13',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#abc480a3a2b330e0c825528785ccccdee',1,'NeoN::la::SparsityPattern']]],
-  ['nonlocal_14',['nonlocal',['../classNeoN_1_1la_1_1Matrix.html#a32f03c266c51870c711aa1912eb15d26',1,'NeoN::la::Matrix::nonLocal()'],['../classNeoN_1_1la_1_1Matrix.html#a7734b31bf826c6b6447c372ea42a0bd9',1,'NeoN::la::Matrix::nonLocal() const']]],
+  ['nonlocal_14',['nonlocal',['../classNeoN_1_1la_1_1Matrix.html#a9f8f31a5fc0859891e57488202ce6766',1,'NeoN::la::Matrix::nonLocal()'],['../classNeoN_1_1la_1_1Matrix.html#add8ff62ee15e14d14cfe737c4d56a4dc',1,'NeoN::la::Matrix::nonLocal() const']]],
   ['nonorthcorrectionvec3s_15',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_16',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nrows_17',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],

@@ -233,6 +233,8 @@
       <node id="2">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp</label>
         <link refid="matrix_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="10">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddt.hpp</label>
@@ -540,10 +542,10 @@
 <codeline lineno="217"><highlight class="normal"></highlight></codeline>
 <codeline lineno="218"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="219"><highlight class="normal"></highlight></codeline>
-<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validate()</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(<ref refid="classNeoN_1_1la_1_1CSRMatrix_1a85db9eda92d62581a034a716afd6bd78" kindref="member">values</ref>.exec()<sp/>==<sp/>colIdxs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(<ref refid="classNeoN_1_1la_1_1CSRMatrix_1a85db9eda92d62581a034a716afd6bd78" kindref="member">values</ref>.exec()<sp/>==<sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validate()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="221"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(values_.exec()<sp/>==<sp/>colIdxs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(values_.exec()<sp/>==<sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"></highlight></codeline>
 <codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>values_;<sp/><sp/></highlight></codeline>
