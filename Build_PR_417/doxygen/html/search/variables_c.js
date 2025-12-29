@@ -5,5 +5,5 @@ var searchData=
   ['rhsidxs_2',['rhsIdxs',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#a1cb4cb6307f89a0afba552b2b0a59109',1,'NeoN::la::BoundaryCoefficients']]],
   ['rhsvalues_3',['rhsValues',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#afe7ba18489335d9d2ad05107c5671573',1,'NeoN::la::BoundaryCoefficients']]],
   ['rootvsmall_4',['ROOTVSMALL',['../namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0',1,'NeoN']]],
-  ['rowoffs_5',['rowOffs',['../structNeoN_1_1la_1_1CSRMatrixView.html#ae78e272155a2a23cfc97ab261fc44859',1,'NeoN::la::CSRMatrixView']]]
+  ['rowoffs_5',['rowOffs',['../structNeoN_1_1la_1_1CSRMatrixView.html#a0f3d646959bf14a073fc99868481d607',1,'NeoN::la::CSRMatrixView']]]
 ];

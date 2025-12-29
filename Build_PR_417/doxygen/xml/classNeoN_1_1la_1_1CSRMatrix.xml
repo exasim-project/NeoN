@@ -25,11 +25,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="249" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="249" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="246" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="246" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1la_1_1CSRMatrix_1a99498760f36e3f58369be3c47d06428b" prot="private" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref></type>
-        <definition>SparsityPattern NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::sparsityPattern_</definition>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1CSRMatrix_1af8670fdc001fd661813b3ca6afe018c1" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;const SparsityPattern&gt; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::sparsityPattern_</definition>
         <argsstring></argsstring>
         <name>sparsityPattern_</name>
         <qualifiedname>NeoN::la::CSRMatrix::sparsityPattern_</qualifiedname>
@@ -39,14 +39,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="253" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="253" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="248" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="248" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a845c748fb703e736928a4889b6b06bd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a56d0fe16883845ab938b69511fcc113b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::CSRMatrix</definition>
-        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, const SparsityPattern &amp;sp)</argsstring>
+        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, std::shared_ptr&lt; const SparsityPattern &gt; sp)</argsstring>
         <name>CSRMatrix</name>
         <qualifiedname>NeoN::la::CSRMatrix::CSRMatrix</qualifiedname>
         <param>
@@ -54,14 +54,14 @@
           <declname>values</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
+          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &gt;</type>
           <declname>sp</declname>
         </param>
         <briefdescription>
 <para>Constructor for <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para>FIXME for simplicity should also get an initializer from rows and cols <parameterlist kind="param"><parameteritem>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>values</parametername>
 </parameternamelist>
@@ -114,7 +114,7 @@
 <para>Constructor for <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para>FIXME for simplicity should also get an initializer from rows and cols <parameterlist kind="param"><parameteritem>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>values</parametername>
 </parameternamelist>
@@ -143,25 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="110" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="110" bodyend="119"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a9772de5e5073176acfa70896964af84b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type></type>
-        <definition>NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::CSRMatrix</definition>
-        <argsstring>(const Executor exec)</argsstring>
-        <name>CSRMatrix</name>
-        <qualifiedname>NeoN::la::CSRMatrix::CSRMatrix</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
-          <declname>exec</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="121" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="121" bodyend="121"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="110" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="110" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1afd83705fad7e5f93ebfcc7103d52222b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -176,7 +158,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="126" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="127" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a5963e5160ed6e2dc1e032ca55e7a1fd2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
@@ -194,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="132" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="132" bodyend="132"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="133" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="133" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a704a9ddc7be0401fc304137facef2135" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>IndexType</type>
@@ -212,7 +194,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="138" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="138" bodyend="142"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="139" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="139" bodyend="143"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a2cdecd7ad4f5ca4d876122f7716b4db2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>IndexType</type>
@@ -230,7 +212,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="148" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="148" bodyend="148"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="149" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="149" bodyend="149"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a85db9eda92d62581a034a716afd6bd78" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -248,12 +230,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="154" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="154" bodyend="154"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="155" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="155" bodyend="155"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a419a3f1700a690b2545f0c5aecdaf653" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
-        <definition>Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::colIdxs</definition>
-        <argsstring>()</argsstring>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a6ddef904b6b19b74d1f796a06e057131" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+        <definition>const Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::colIdxs</definition>
+        <argsstring>() const</argsstring>
         <name>colIdxs</name>
         <qualifiedname>NeoN::la::CSRMatrix::colIdxs</qualifiedname>
         <briefdescription>
@@ -266,12 +248,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="160" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="160" bodyend="160"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="161" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="161" bodyend="161"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1af484f148414f4bb3edc3bb4fda4575d6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
-        <definition>Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::rowOffs</definition>
-        <argsstring>()</argsstring>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a962e52108c2184154c66a06bbf44d27a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+        <definition>const Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::rowOffs</definition>
+        <argsstring>() const</argsstring>
         <name>rowOffs</name>
         <qualifiedname>NeoN::la::CSRMatrix::rowOffs</qualifiedname>
         <briefdescription>
@@ -284,7 +266,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="166" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="166" bodyend="166"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="167" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="167" bodyend="167"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a37dc0ca5898502e30bffb3b69ca75a9b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -302,43 +284,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="172" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="172" bodyend="172"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a6ddef904b6b19b74d1f796a06e057131" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
-        <definition>const Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::colIdxs</definition>
-        <argsstring>() const</argsstring>
-        <name>colIdxs</name>
-        <qualifiedname>NeoN::la::CSRMatrix::colIdxs</qualifiedname>
-        <briefdescription>
-<para>Get a const reference to column indices vector. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><simplesect kind="return"><para>Const vector containing the column indices. </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="178" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="178" bodyend="178"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a962e52108c2184154c66a06bbf44d27a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
-        <definition>const Vector&lt; IndexType &gt; &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::rowOffs</definition>
-        <argsstring>() const</argsstring>
-        <name>rowOffs</name>
-        <qualifiedname>NeoN::la::CSRMatrix::rowOffs</qualifiedname>
-        <briefdescription>
-<para>Get a const reference to row offset vector. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><simplesect kind="return"><para>Const vector containing the row pointers. </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="184" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="184" bodyend="184"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="173" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="173" bodyend="173"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1af1509d705d3c8e261ad36f4ce9fbb5ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>&lt; ValueType, IndexType &gt;</type>
@@ -369,11 +315,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="191" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="191" bodyend="205"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="192" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="192" bodyend="202"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a58f21ffc343424c412a295754eaecf58" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &amp;</type>
-        <definition>const SparsityPattern &amp; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::sparsity</definition>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a0c600ef5f6429deed1b868e7c7fffe29" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; const SparsityPattern &gt; NeoN::la::CSRMatrix&lt; ValueType, IndexType &gt;::sparsity</definition>
         <argsstring>()</argsstring>
         <name>sparsity</name>
         <qualifiedname>NeoN::la::CSRMatrix::sparsity</qualifiedname>
@@ -387,7 +333,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="211" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="211" bodyend="211"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="208" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="208" bodyend="208"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1a951a3e8899f686f3f0cdb5769d9abb78" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>&lt; ValueType, IndexType &gt;</type>
@@ -405,7 +351,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="218" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="218" bodyend="221"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="215" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="215" bodyend="218"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1af21bff84292853f1e860cb5f98fb1984" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1CSRMatrixView" kindref="compound">CSRMatrixView</ref>&lt; ValueType, IndexType &gt;</type>
@@ -423,7 +369,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="227" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="227" bodyend="232"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="224" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="224" bodyend="229"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1CSRMatrix_1aca097e1d3429dd192a61c42c5ae7c89e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1CSRMatrixView" kindref="compound">CSRMatrixView</ref>&lt; const ValueType, const IndexType &gt;</type>
@@ -441,7 +387,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="238" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="238" bodyend="245"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="235" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="235" bodyend="242"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -467,22 +413,19 @@
 </parameterlist>
 </para>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="86" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="87" bodyend="254"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="86" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" bodystart="87" bodyend="249"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a419a3f1700a690b2545f0c5aecdaf653" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>colIdxs</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a6ddef904b6b19b74d1f796a06e057131" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>colIdxs</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1af1509d705d3c8e261ad36f4ce9fbb5ab" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>copyToExecutor</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a951a3e8899f686f3f0cdb5769d9abb78" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>copyToHost</name></member>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a845c748fb703e736928a4889b6b06bd1" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>CSRMatrix</name></member>
+      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a56d0fe16883845ab938b69511fcc113b" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>CSRMatrix</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1aacaf65f8819ee497642d9359a94ed618" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>CSRMatrix</name></member>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a9772de5e5073176acfa70896964af84b" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>CSRMatrix</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a5963e5160ed6e2dc1e032ca55e7a1fd2" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>exec</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a2cdecd7ad4f5ca4d876122f7716b4db2" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>nNonZeros</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a704a9ddc7be0401fc304137facef2135" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>nRows</name></member>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1af484f148414f4bb3edc3bb4fda4575d6" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>rowOffs</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a962e52108c2184154c66a06bbf44d27a" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>rowOffs</name></member>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a58f21ffc343424c412a295754eaecf58" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>sparsity</name></member>
-      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a99498760f36e3f58369be3c47d06428b" prot="private" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>sparsityPattern_</name></member>
+      <member refid="classNeoN_1_1la_1_1CSRMatrix_1a0c600ef5f6429deed1b868e7c7fffe29" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>sparsity</name></member>
+      <member refid="classNeoN_1_1la_1_1CSRMatrix_1af8670fdc001fd661813b3ca6afe018c1" prot="private" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>sparsityPattern_</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a85db9eda92d62581a034a716afd6bd78" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>values</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a37dc0ca5898502e30bffb3b69ca75a9b" prot="public" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>values</name></member>
       <member refid="classNeoN_1_1la_1_1CSRMatrix_1a1f667a1de32a5c85c123e604e32741c3" prot="private" virt="non-virtual"><scope>NeoN::la::CSRMatrix</scope><name>values_</name></member>
