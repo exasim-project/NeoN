@@ -32,9 +32,9 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00028}00028\ \textcolor{keyword}{namespace\ }detail}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00029}00029\ \{}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad86b892d416822fb1be5a5f9710fe45c}{00031}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad86b892d416822fb1be5a5f9710fe45c}{iterativeSolveImpl}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a444787301002c4968cc2280c5e3d5d35}{00031}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a444787301002c4968cc2280c5e3d5d35}{iterativeSolveImpl}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType>}}\&\ exp,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la::SparsityPattern}}\&\ sp,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00033}00033\ \ \ \ \ std::shared\_ptr<const\ la::SparsityPattern>\ sp,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00034}00034\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<typename\ VectorType::ElementType,\ localIdx>}}\&\ ls,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00035}00035\ \ \ \ \ VectorType\&\ solution,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
@@ -64,7 +64,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00060}00060\ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00061}00061\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00062}00062\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00063}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a292cef046d22ee3a8d82a339144d5e7f}{00063}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad86b892d416822fb1be5a5f9710fe45c}{iterativeSolveImpl}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00063}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a292cef046d22ee3a8d82a339144d5e7f}{00063}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a444787301002c4968cc2280c5e3d5d35}{iterativeSolveImpl}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00064}00064\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType>}}\&\ exp,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00065}00065\ \ \ \ \ VectorType\&\ solution,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00066}00066\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
@@ -129,7 +129,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00125}00125\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{keywordflow}{else}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00127}00127\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad86b892d416822fb1be5a5f9710fe45c}{detail::iterativeSolveImpl}}(exp,\ solution,\ t,\ dt,\ fvSolution,\ p);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a444787301002c4968cc2280c5e3d5d35}{detail::iterativeSolveImpl}}(exp,\ solution,\ t,\ dt,\ fvSolution,\ p);}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00129}00129\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00130}00130\ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00131}00131\ }
