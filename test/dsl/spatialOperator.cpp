@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
+    auto [sp, mi] = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
 
     auto fA = NeoN::Vector<TestType>(exec, 1, 2.0 * NeoN::one<TestType>());
     auto bf = NeoN::BoundaryData<TestType>(exec, mesh.boundaryMesh().offset());
@@ -73,6 +73,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
+    // TODO i dont think these tests  are necesseray or useful anymore
     SECTION("Supports Coefficients Implicit " + execName)
     {
         auto vf = fvcc::VolumeField(exec, "vf", mesh, fA, bf, bcs);
@@ -90,26 +91,27 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+        auto ls =
+            NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, mi.sparsityPattern());
         Vector source(exec, 1, 2.0);
-        c.implicitOperation(ls);
+        c.implicitOperation(ls, mi);
 
         // c = 2 * 2
-        auto [hostRhsC, hostLsC] = copyToHosts(ls.rhs(), ls);
+        auto [hostRhsC, hostLsC] = NeoN::copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsC.view()[0] == 4.0 * NeoN::one<TestType>());
         REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // d= 2 * 2
         ls.reset();
-        d.implicitOperation(ls);
-        auto [hostRhsD, hostLsD] = copyToHosts(ls.rhs(), ls);
+        d.implicitOperation(ls, mi);
+        auto [hostRhsD, hostLsD] = NeoN::copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
         REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
         // e = - -3 * 2 * 2 = -12
         ls.reset();
-        e.implicitOperation(ls);
-        auto [hostRhsE, hostLsE] = copyToHosts(ls.rhs(), ls);
+        e.implicitOperation(ls, mi);
+        auto [hostRhsE, hostLsE] = NeoN::copyToHosts(ls.rhs(), ls);
         REQUIRE(hostRhsE.view()[0] == -12.0 * NeoN::one<TestType>());
         REQUIRE(hostLsE.matrix().values().view()[0] == -12.0 * NeoN::one<TestType>());
     }

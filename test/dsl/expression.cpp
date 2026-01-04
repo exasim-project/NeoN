@@ -17,7 +17,8 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
+
+    auto [sp, mi] = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
 
     const size_t size {1};
     NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());
@@ -83,37 +84,37 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(eqnC.size() == 2);
 
         // 2 + 2 = 4
-        eqnA.assembleSpatialOperator(ls);
+        eqnA.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 4 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 4 * NeoN::one<TestType>());
 
         // 4*2 + 2*2 = 12
         ls.reset();
-        eqnB.assembleSpatialOperator(ls);
+        eqnB.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 12 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 12 * NeoN::one<TestType>());
 
         // 2*2 - 2 = 2
         ls.reset();
-        eqnC.assembleSpatialOperator(ls);
+        eqnC.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 2 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 2 * NeoN::one<TestType>());
 
         // 3*(2*2 - 2) = 6
         ls.reset();
-        eqnD.assembleSpatialOperator(ls);
+        eqnD.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 6 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 6 * NeoN::one<TestType>());
 
         // 2*2 - 2 + 2*2 - 2 = 4
         ls.reset();
-        eqnE.assembleSpatialOperator(ls);
+        eqnE.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 4 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 4 * NeoN::one<TestType>());
 
         // // 2*2 - 2 - 2*2 + 2 = 0
         ls.reset();
-        eqnF.assembleSpatialOperator(ls);
+        eqnF.assembleSpatialOperator(ls, mi);
         REQUIRE(getDiag(ls) == 0 * NeoN::one<TestType>());
         REQUIRE(getRhs(ls) == 0 * NeoN::one<TestType>());
     }

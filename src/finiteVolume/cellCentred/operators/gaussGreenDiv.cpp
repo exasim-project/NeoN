@@ -154,6 +154,7 @@ NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType, localIdx>& ls,
+    const la::MatrixIterator<ValueType>& matIt,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
@@ -172,9 +173,9 @@ void computeDivImp(
             mesh.faceOwner(),
             mesh.faceNeighbour(),
             mesh.boundaryMesh().faceCells(),
-            ls.matrix().sparsity()->diagOffset(),
-            ls.matrix().sparsity()->ownerOffset(),
-            ls.matrix().sparsity()->neighbourOffset()
+            matIt.diagOffset(),
+            matIt.ownerOffset(),
+            matIt.neighbourOffset()
         );
     auto [matrix, rhs] = ls.view();
 
@@ -182,33 +183,20 @@ void computeDivImp(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            auto flux = faceFluxV[facei];
-            auto weight = weightsV[facei];
-            auto value = zero<ValueType>();
             auto own = owner[facei];
             auto nei = neighbour[facei];
-
-            // add neighbour contribution upper
-            auto rowNeiStart = matrix.rowOffs[nei];
-            auto rowOwnStart = matrix.rowOffs[own];
 
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
-            value = -weight * flux * one<ValueType>();
-            // scalar valueNei = (1 - weight) * flux;
-            matrix.values[rowNeiStart + neiOffs[facei]] += value * operatorScalingNei;
-            Kokkos::atomic_sub(
-                &matrix.values[rowOwnStart + diagOffs[own]], value * operatorScalingOwn
-            );
+            auto valueUpper = faceFluxV[facei] * -weightsV[facei] * one<ValueType>();
+            matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
+            Kokkos::atomic_sub(&matrix.values[matIt.diagIdx(own)], valueUpper * operatorScalingOwn);
 
-            // upper triangular part
             // add owner contribution lower
-            value = flux * (1 - weight) * one<ValueType>();
-            matrix.values[rowOwnStart + ownOffs[facei]] += value * operatorScalingOwn;
-            Kokkos::atomic_sub(
-                &matrix.values[rowNeiStart + diagOffs[nei]], value * operatorScalingNei
-            );
+            auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
+            matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
+            Kokkos::atomic_sub(&matrix.values[matIt.diagIdx(nei)], valueLower * operatorScalingNei);
         },
         "computeLocalGaussGreenDivCoefficients"
     );
@@ -262,6 +250,7 @@ void computeDivImp(
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivImp<TYPENAME>(                                                         \
         la::LinearSystem<TYPENAME, localIdx>&,                                                     \
+        const la::MatrixIterator<TYPENAME>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceInterpolation<TYPENAME>&,                                                     \

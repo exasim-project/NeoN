@@ -29,9 +29,9 @@ struct CSRMatrixView
      * @param rowOffsView View of the starting index in values/colIdxs for each row.
      */
     CSRMatrixView(
-        const View<ValueType>& valueView,
-        const View<const IndexType>& colIdxsView,
-        const View<const IndexType>& rowOffsView
+        const View<ValueType> valueView,
+        const View<const IndexType> colIdxsView,
+        const View<const IndexType> rowOffsView
     )
         : values(valueView), colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 
@@ -104,7 +104,7 @@ public:
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
      */
-    CSRMatrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern> sp)
+    CSRMatrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern<IndexType>> sp)
         : values_(values), sparsityPattern_(sp)
     {
         validate();
@@ -122,7 +122,9 @@ public:
         const Vector<IndexType>& rowOffs
     )
         : values_(values),
-          sparsityPattern_(std::make_shared<SparsityPattern>(values.exec(), colIdxs, rowOffs))
+          sparsityPattern_(
+              std::make_shared<const SparsityPattern<IndexType>>(Vector(colIdxs), Vector(rowOffs))
+          )
     {
         validate();
     }
@@ -142,13 +144,13 @@ public:
      * @brief Get the number of rows in the matrix.
      * @return Number of rows.
      */
-    [[nodiscard]] IndexType nRows() const { return sparsityPattern_->rowOffs().size() - 1; }
+    [[nodiscard]] localIdx nRows() const { return sparsityPattern_->rows(); }
 
     /**
      * @brief Get the number of non-zero values in the matrix.
      * @return Number of non-zero values.
      */
-    [[nodiscard]] IndexType nNonZeros() const { return static_cast<IndexType>(values_.size()); }
+    [[nodiscard]] localIdx nNonZeros() const { return sparsityPattern_->nnz(); }
 
     /**
      * @brief Get a reference to values vector.
@@ -202,7 +204,9 @@ public:
         }
         return {
             values_.copyToHost(),
-            std::make_shared<const la::SparsityPattern>(this->sparsityPattern_->copyToHost())
+            std::make_shared<const la::SparsityPattern<IndexType>>(
+                this->sparsityPattern_->copyToHost()
+            )
         };
     }
 
@@ -210,7 +214,10 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] std::shared_ptr<const SparsityPattern> sparsity() { return sparsityPattern_; }
+    [[nodiscard]] std::shared_ptr<const SparsityPattern<IndexType>> sparsity()
+    {
+        return sparsityPattern_;
+    }
 
 
     /**
@@ -241,8 +248,8 @@ public:
     {
         return CSRMatrixView<const ValueType, const IndexType>(
             View<const ValueType>(values_.view()),
-            View<const IndexType>(sparsityPattern_->colIdxs().view()),
-            View<const IndexType>(sparsityPattern_->rowOffs().view())
+            sparsityPattern_->colIdxs().view(),
+            sparsityPattern_->rowOffs().view()
         );
     }
 
@@ -266,7 +273,6 @@ public:
                 }
             }
         );
-
         return diag;
     }
 
@@ -275,7 +281,7 @@ private:
 
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
-    std::shared_ptr<const SparsityPattern> sparsityPattern_;
+    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern_;
 };
 
 /** @brief extract the upper triangular of the matrix

@@ -38,13 +38,17 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf1Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
+void DdtOperator<ValueType>::implicitOperation(
+    la::LinearSystem<ValueType, localIdx>& ls,
+    const la::MatrixIterator<ValueType>& matrixIterator,
+    scalar,
+    scalar dt
 ) const
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
-    const auto [diagOffs, oldVector] =
-        views(ls.matrix().sparsity()->diagOffset(), oldTime(this->field_).internalVector());
+    const auto diagOffs = matrixIterator.diagOffset().view();
+    const auto oldVector = oldTime(this->field_).internalVector().view();
     auto [matrix, rhs] = ls.view();
 
     const scalar a0a1 = 1.0 / dt;

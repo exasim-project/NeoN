@@ -171,7 +171,9 @@ public:
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
+    void
+    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, const NeoN::la::MatrixIterator<ValueType>&)
+        const
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -232,8 +234,12 @@ public:
         );
     }
 
-    void
-    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, NeoN::scalar, NeoN::scalar)
+    void implicitOperation(
+        la::LinearSystem<ValueType, NeoN::localIdx>& ls,
+        const NeoN::la::MatrixIterator<ValueType>&,
+        NeoN::scalar,
+        NeoN::scalar
+    )
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();

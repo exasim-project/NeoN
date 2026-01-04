@@ -2,25 +2,24 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "NeoN/core/macros.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
-#include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/core/array.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::la
 {
 
-std::shared_ptr<const SparsityPattern> SparsityPattern::readOrCreate(const UnstructuredMesh& mesh)
+template<typename IndexType>
+void SparsityPattern<IndexType>::validate() const
 {
-    auto& db = mesh.stencilDB();
-    if (!db.contains("SparsityPattern"))
-    {
-        db.insert(std::string("SparsityPattern"), std::make_shared<const SparsityPattern>(mesh));
-    }
-    return db.get<std::shared_ptr<const SparsityPattern>>("SparsityPattern");
+    NF_ASSERT(rowOffs_.exec() == colIdxs_.exec(), "Executors are not the same");
 }
 
-
-void updateSparsityPatternSerial(const UnstructuredMesh& mesh, SparsityPattern& sp)
+template<typename IndexType>
+SparsityPattern<IndexType>::SparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs)
+    : rowOffs_(std::move(rowOffs)), colIdxs_(std::move(colIdx)), rowOffsV_(rowOffs_.view()),
+      colIdxsV_(colIdxs_.view())
 {
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = mesh.exec();
@@ -306,16 +305,9 @@ SparsityPattern::SparsityPattern(const SparsityPattern& sp)
       neighbourOffset_(sp.neighbourOffset_), diagOffset_(sp.diagOffset_)
 {}
 
-const NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() const { return ownerOffset_; }
 
-const NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() const { return neighbourOffset_; }
+#define NN_DECLARE_SPARSITY(TYPENAME) template class SparsityPattern<TYPENAME>
 
-const NeoN::Array<uint8_t>& SparsityPattern::diagOffset() const { return diagOffset_; }
-
-NeoN::Array<uint8_t>& SparsityPattern::ownerOffset() { return ownerOffset_; }
-
-NeoN::Array<uint8_t>& SparsityPattern::neighbourOffset() { return neighbourOffset_; }
-
-NeoN::Array<uint8_t>& SparsityPattern::diagOffset() { return diagOffset_; }
+NN_FOR_ALL_INTEGER_TYPES(NN_DECLARE_SPARSITY);
 
 } // namespace NeoN::la

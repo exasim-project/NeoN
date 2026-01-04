@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
+    auto [sp, mi] = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
 
     SECTION("Operator creation on " + execName)
     {
@@ -109,7 +109,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
         Vector source(exec, 1, 2.0);
-        c.implicitOperation(ls, t, dt);
+        c.implicitOperation(ls, mi, t, dt);
 
         // c = 2 * 2
         auto hostRhsC = ls.rhs().copyToHost();
@@ -117,19 +117,17 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostLsC = ls.copyToHost();
         REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
-
         // // d= 2 * 2
         ls.reset();
-        d.implicitOperation(ls, t, dt);
+        d.implicitOperation(ls, mi, t, dt);
         auto hostRhsD = ls.rhs().copyToHost();
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
         auto hostLsD = ls.copyToHost();
         REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
-
         // e = - -3 * 2 * 2 = -12
         ls.reset();
-        e.implicitOperation(ls, t, dt);
+        e.implicitOperation(ls, mi, t, dt);
         auto hostRhsE = ls.rhs().copyToHost();
         REQUIRE(hostRhsE.view()[0] == -12.0 * NeoN::one<TestType>());
         auto hostLsE = ls.copyToHost();

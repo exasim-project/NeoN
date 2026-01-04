@@ -10,6 +10,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/matrixIterator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
@@ -20,17 +21,16 @@
 namespace NeoN::dsl
 {
 
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(std::shared_ptr<const la::SparsityPattern>, la::LinearSystem<VectorType, localIdx>&) {
-    };
+    operator()(const la::MatrixIterator<VectorType>&, la::LinearSystem<VectorType, IndexType>&) {};
 };
 
 
-template<typename ValueType>
+template<typename ValueType, typename IndexType = localIdx>
 class Expression
 {
 public:
@@ -92,13 +92,15 @@ public:
     }
 
     /*@brief compute matrix coefficients based on all spatial operators */
-    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls) const
+    void assembleSpatialOperator(
+        la::LinearSystem<ValueType, IndexType>& ls, const la::MatrixIterator<ValueType>& matIt
+    ) const
     {
         for (auto& op : spatialOperators_)
         {
             if (op.getType() == Operator::Type::Implicit)
             {
-                op.implicitOperation(ls);
+                op.implicitOperation(ls, matIt);
             }
         }
     }
@@ -106,14 +108,18 @@ public:
     /*@brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    void
-    assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
+    void assembleTemporalOperator(
+        la::LinearSystem<ValueType, IndexType>& ls,
+        const la::MatrixIterator<ValueType>& matIt,
+        scalar t,
+        scalar dt
+    ) const
     {
         for (auto& op : temporalOperators_)
         {
             if (op.getType() == Operator::Type::Implicit)
             {
-                op.implicitOperation(ls, t, dt);
+                op.implicitOperation(ls, matIt, t, dt);
             }
         }
     }
@@ -123,17 +129,19 @@ public:
      * @param ps a vector of functor performing transformation on the created linear system
      * @return a tuple of the sparsity pattern and the assembled linear system
      */
-    std::tuple<std::shared_ptr<const la::SparsityPattern>, la::LinearSystem<ValueType, localIdx>>
+    std::tuple<
+        std::shared_ptr<const la::SparsityPattern<IndexType>>,
+        la::LinearSystem<ValueType, IndexType>>
     assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
-        std::span<const PostAssemblyBase<ValueType>> ps = {}
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        auto sp = std::make_shared<const la::SparsityPattern>(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sp);
-        assemble(t, dt, sp, ls, ps);
+        auto [sp, mi] = la::createSparsityPatternMatrixIterator<ValueType, IndexType>(mesh);
+        auto ls = la::createEmptyLinearSystem<ValueType, IndexType>(mesh, sp);
+        assemble(t, dt, mi, ls, ps);
         return {sp, ls};
     };
 
@@ -144,18 +152,18 @@ public:
     void assemble(
         scalar t,
         scalar dt,
-        const std::shared_ptr<const la::SparsityPattern> sp,
-        la::LinearSystem<ValueType, localIdx>& ls,
-        std::span<const PostAssemblyBase<ValueType>> ps = {}
+        const la::MatrixIterator<ValueType>& mi,
+        la::LinearSystem<ValueType, IndexType>& ls,
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        assembleSpatialOperator(ls);         // add spatial operator
-        assembleTemporalOperator(ls, t, dt); // add temporal operators
+        assembleSpatialOperator(ls, mi);         // add spatial operator
+        assembleTemporalOperator(ls, mi, t, dt); // add temporal operators
 
         // perform post assembly transformations
         for (auto p : ps)
         {
-            p(sp, ls);
+            p(mi, ls);
         }
     };
 

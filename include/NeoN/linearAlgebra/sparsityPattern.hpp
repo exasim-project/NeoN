@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "NeoN/core/array.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -18,100 +17,56 @@ namespace NeoN::la
  * of sparsity patterns from a given unstructured mesh
  *
  */
+template<typename IndexType>
 class SparsityPattern
 {
+
+    void validate() const;
+
 public:
-
-    /* @brief create an SparsityPattern from existing mesh */
-    SparsityPattern(const UnstructuredMesh& mesh);
-
-    /* @brief create an "empty" SparsityPattern with a given size  */
-    SparsityPattern(
-        Executor exec, const Vector<localIdx>& colIdxs, const Vector<localIdx>& rowOffs
-    );
 
     /* @brief create an "empty" SparsityPattern with a given size  */
     SparsityPattern(const SparsityPattern& sp);
 
-    SparsityPattern(
-        Vector<localIdx>&& rowOffs,
-        Vector<localIdx>&& colIdx,
-        Array<uint8_t>&& ownerOffset,
-        Array<uint8_t>&& neighbourOffset,
-        Array<uint8_t>&& diagOffset
-    );
+    SparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs);
 
     [[nodiscard]] SparsityPattern copyToHost() const
     {
-        return {
-            rowOffs_.copyToHost(),
-            colIdxs_.copyToHost(),
-            ownerOffset_.copyToHost(),
-            neighbourOffset_.copyToHost(),
-            diagOffset_.copyToHost()
-        };
+        return SparsityPattern<IndexType>(colIdxs_.copyToHost(), rowOffs_.copyToHost());
     }
 
     ~SparsityPattern() = default;
 
-    /*@brief getter for ownerOffset */
-    const Array<uint8_t>& ownerOffset() const;
-
-    /*@brief getter for neighbourOffset */
-    const Array<uint8_t>& neighbourOffset() const;
-
     /*@brief getter for diagOffset */
-    const Array<uint8_t>& diagOffset() const;
-
-    /*@brief getter for ownerOffset */
-    Array<uint8_t>& ownerOffset();
-
-    /*@brief getter for neighbourOffset */
-    Array<uint8_t>& neighbourOffset();
-
-    /*@brief getter for diagOffset */
-    Array<uint8_t>& diagOffset();
-
-    /*@brief getter for diagOffset */
-    const Executor& exec() const { return exec_; };
+    const Executor& exec() const { return rowOffs_.exec(); }
 
     /*@brief getter for colIdxs */
-    [[nodiscard]] const Vector<localIdx>& colIdxs() const { return colIdxs_; };
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; };
 
-    [[nodiscard]] Vector<localIdx>& colIdxs() { return colIdxs_; };
-
-    /*@brief getter for rowOffs */
-    [[nodiscard]] const Vector<localIdx>& rowOffs() const { return rowOffs_; };
+    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
 
     /*@brief getter for rowOffs */
-    [[nodiscard]] Vector<localIdx>& rowOffs() { return rowOffs_; };
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; };
 
-    [[nodiscard]] localIdx rows() const { return diagOffset_.size(); };
+    /*@brief getter for rowOffs */
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
+
+    [[nodiscard]] localIdx rows() const { return rowOffs_.size() - 1; };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
-    // TODO add selection mechanism via dictionary later
-    /*@brief checks in mesh registry whether a sparsity pattern was created */
-    static std::shared_ptr<const SparsityPattern> readOrCreate(const UnstructuredMesh& mesh);
+    KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
 
 private:
 
-    Executor exec_;
+    Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
 
-    Vector<localIdx> rowOffs_; //! rowOffs map from row to start index in values
+    Vector<IndexType> colIdxs_; //!
 
-    Vector<localIdx> colIdxs_; //!
+    View<IndexType> rowOffsV_;
 
-    // NOTE The following data member store a simple mapping from face ids to offsets in the
-    // corresponding rows I.e. Assume the following row  [ . 18 . 20 d 18 . 20 . ] this yields
-    // ownerOffset[18] = 0 ownerOffset[20] = 1 and neighbourOffset[18] = 4 neighbourOffset[20] = 5
-    Array<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
-
-    Array<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row
-
-    Array<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
+    View<IndexType> colIdxsV_;
 };
 
-SparsityPattern updateSparsity(const UnstructuredMesh& mesh, SparsityPattern& in);
 
 } // namespace NeoN::la
