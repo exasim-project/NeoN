@@ -11,8 +11,6 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using SparsityPattern = NeoN::la::SparsityPattern;
-
 namespace NeoN
 {
 
@@ -24,32 +22,8 @@ TEST_CASE("SparsityPattern")
     auto nFaces = 9;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto sp = std::make_shared<NeoN::la::SparsityPattern>(mesh);
-
-    SECTION("Can construct sparsity pattern " + execName)
-    {
-        // some basic sanity checks
-        REQUIRE(sp->ownerOffset().size() == nFaces);
-        REQUIRE(sp->neighbourOffset().size() == nFaces);
-        REQUIRE(sp->diagOffset().size() == nCells);
-    }
-
-    SECTION("has correct diagOffs" + execName)
-    {
-        auto diagOffs = sp->diagOffset().copyToHost();
-        auto diagOffsS = diagOffs.view();
-
-        REQUIRE(diagOffsS[0] == 0);
-        REQUIRE(diagOffsS[1] == 1);
-        REQUIRE(diagOffsS[2] == 1);
-        REQUIRE(diagOffsS[3] == 1);
-        REQUIRE(diagOffsS[4] == 1);
-        REQUIRE(diagOffsS[5] == 1);
-        REQUIRE(diagOffsS[6] == 1);
-        REQUIRE(diagOffsS[7] == 1);
-        REQUIRE(diagOffsS[8] == 1);
-        REQUIRE(diagOffsS[9] == 1);
-    }
+    auto [sp, mi] =
+        NeoN::la::createSparsityPatternMatrixIterator<NeoN::scalar, NeoN::localIdx>(mesh);
 
     SECTION("Can produce rowOffs " + execName)
     {

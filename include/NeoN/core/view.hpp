@@ -53,13 +53,11 @@ public:
 #ifdef NF_DEBUG
         if (index < 0 || this->size() <= index)
         {
-            // TODO: currently this is failing on our AWS workflow, once we have clang>16 there
-            // this should work again.
-            // const std::string msg {"Index is out of range. Index: "} + to_string(index);
+            const std::string msg {"Index is out of range. Index: " + std::to_string(index)};
             if (abortOnFail)
             {
                 failureIndex = index;
-                Kokkos::abort("Index is out of range");
+                Kokkos::abort(msg.c_str());
             }
             else
             {

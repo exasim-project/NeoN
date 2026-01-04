@@ -9,8 +9,9 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/matrixIterator.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
@@ -34,6 +35,7 @@ concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
             std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
+            std::declval<la::MatrixIterator<typename T::VectorValueType>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
@@ -75,9 +77,14 @@ public:
         model_->explicitOperation(source, t, dt);
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
+    void implicitOperation(
+        la::LinearSystem<ValueType, localIdx>& ls,
+        const la::MatrixIterator<ValueType>& mi,
+        scalar t,
+        scalar dt
+    ) const
     {
-        model_->implicitOperation(ls, t, dt);
+        model_->implicitOperation(ls, mi, t, dt);
     }
 
     /* returns the fundamental type of an operator, ie explicit, implicit */
@@ -109,8 +116,12 @@ private:
 
         virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) = 0;
 
-        virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) = 0;
+        virtual void implicitOperation(
+            la::LinearSystem<ValueType, localIdx>& ls,
+            const la::MatrixIterator<ValueType>& mi,
+            scalar t,
+            scalar dt
+        ) = 0;
 
         /* @brief Given an input this function reads required properties */
         virtual void read(const Input& input) = 0;
@@ -160,12 +171,17 @@ private:
             }
         }
 
-        virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) override
+        virtual void implicitOperation(
+            la::LinearSystem<ValueType, localIdx>& ls,
+            const la::MatrixIterator<ValueType>& mi,
+
+            scalar t,
+            scalar dt
+        ) override
         {
             if constexpr (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)
             {
-                concreteOp_.implicitOperation(ls, t, dt);
+                concreteOp_.implicitOperation(ls, mi, t, dt);
             }
         }
 

@@ -27,13 +27,13 @@ TEST_CASE("parallelFor")
     );
     REQUIRE(fieldNFView.failureIndex == 0);
 
-#ifdef NF_DEBUGC
+#ifdef NF_DEBUG
 // TODO: on MSCV this results in a non terminating loop
 // so for now we deactivate it on MSVC since it a debugging helper
 #ifndef _MSC_VER
     fieldNFView.abortOnFail = false;
     NeoN::parallelFor(
-        exec, {5, 6}, NEON_LAMBDA(const localIdx i) { fieldNFView[i] *= 2.0; }
+        exec, {5, 6}, NEON_LAMBDA(const NeoN::localIdx i) { fieldNFView[i] *= 2.0; }
     );
     REQUIRE(fieldNFView.failureIndex == 5);
 #endif

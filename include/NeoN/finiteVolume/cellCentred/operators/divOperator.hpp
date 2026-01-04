@@ -52,6 +52,7 @@ public:
 
     virtual void
     div(la::LinearSystem<ValueType, localIdx>& ls,
+        const la::MatrixIterator<ValueType>& matIt,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
@@ -133,17 +134,13 @@ public:
         source += tmpsource;
     }
 
-    la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const
-    {
-        NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
-        return divOperatorStrategy_->createEmptyLinearSystem();
-    }
-
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
+    void implicitOperation(
+        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& matIt
+    ) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+        divOperatorStrategy_->div(ls, matIt, faceFlux_, this->getVector(), operatorScaling);
     }
 
     [[deprecated("use explicit or implicit operation")]] void div(auto&&... args) const

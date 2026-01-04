@@ -8,6 +8,7 @@
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/matrixIterator.hpp"
 
 #include <string>
 
@@ -125,7 +126,9 @@ public:
 private:
 
     CSRMatrix<ValueType, IndexType> matrix_;
+
     Vector<ValueType> rhs_;
+
     Dictionary auxiliaryCoefficients_;
 };
 
@@ -148,17 +151,18 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
  */
 template<typename ValueType, typename IndexType>
 LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
-    const UnstructuredMesh& mesh, std::shared_ptr<const SparsityPattern> sparsity
+    const UnstructuredMesh& mesh, std::shared_ptr<const SparsityPattern<IndexType>> sparsity
 )
 {
+    // auto sparsity = matrixIterator.sparsityPattern();
     const auto& exec = mesh.exec();
     localIdx rows {sparsity->rows()};
     localIdx nnzs {sparsity->nnz()};
 
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
-    const auto [diagOffset, rowOffs, faceCells] =
-        views(sparsity->diagOffset(), sparsity->rowOffs(), mesh.boundaryMesh().faceCells());
+    // const auto [diagOffset, rowOffs, faceCells] =
+    //     views(matrixIterator.diagOffset(), sparsity->rowOffs(), mesh.boundaryMesh().faceCells());
 
     BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
         Vector<ValueType>(exec, nBoundaryFaces),
@@ -167,22 +171,22 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
         Vector<IndexType>(exec, nBoundaryFaces)
     };
 
-    auto [mValue, mColIdx, rhsValue, rhsIdx] =
-        views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
+    // FIXME
+    // auto [mValue, mColIdx, rhsValue, rhsIdx] =
+    //     views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
 
-    parallelFor(
-        exec,
-        {0, nBoundaryFaces},
-        NEON_LAMBDA(const localIdx bfacei) {
-            localIdx celli = faceCells[bfacei];
-
-            mValue[bfacei] = zero<ValueType>();
-            mColIdx[bfacei] = celli + diagOffset[celli];
-            rhsValue[bfacei] = zero<ValueType>();
-            rhsIdx[bfacei] = celli;
-        },
-        "createEmptyLinearSystem"
-    );
+    // parallelFor(
+    //     exec,
+    //     {0, nBoundaryFaces},
+    //     KOKKOS_LAMBDA(const localIdx bfacei) {
+    //         localIdx celli = faceCells[bfacei];
+    //         mValue[bfacei] = zero<ValueType>();
+    //         mColIdx[bfacei] = celli + diagOffset[celli];
+    //         rhsValue[bfacei] = zero<ValueType>();
+    //         rhsIdx[bfacei] = celli;
+    //     },
+    //     "createEmptyLinearSystem"
+    // );
 
     Dictionary aux;
     aux.insert("boundaryCoefficients", bcCoeffs);

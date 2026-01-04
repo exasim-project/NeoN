@@ -27,21 +27,21 @@ namespace NeoN::dsl
 
 namespace detail
 {
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    std::shared_ptr<const la::SparsityPattern> sp,
-    la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
+    const la::MatrixIterator<typename VectorType::ElementType>& mi,
+    la::LinearSystem<typename VectorType::ElementType, IndexType>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
     exp.read(fvSchemes);
-    exp.assemble(t, dt, sp, ls, ps);
+    exp.assemble(t, dt, mi, ls, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
@@ -59,14 +59,14 @@ la::SolverStats iterativeSolveImpl(
     return solver.solve(ls, solution.internalVector());
 }
 
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
     auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
@@ -98,15 +98,15 @@ la::SolverStats iterativeSolveImpl(
  * @param fvSolution - Dictionary containing linear solver properties
  * @param p - A chainable functor that performs manipulations on the assembled system
  */
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats solve(
-    Expression<typename VectorType::ElementType>& exp,
+    Expression<typename VectorType::ElementType, IndexType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {}
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)

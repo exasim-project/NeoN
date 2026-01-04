@@ -5,6 +5,7 @@
 neon_unit_test(CSRMatrix)
 neon_unit_test(linearSystem)
 neon_unit_test(sparsityPattern)
+neon_unit_test(matrixIterator)
 neon_unit_test(utilities)
 
 # the following tests currently require Ginkgo
