@@ -55,11 +55,11 @@ var searchData=
   ['nn_5ffor_5fall_5finteger_5ftypes_52',['NN_FOR_ALL_INTEGER_TYPES',['../macros_8hpp.html#abf8bf7e701b2199508316e38795f5b3b',1,'macros.hpp']]],
   ['nn_5ffor_5fall_5fscalar_5ftypes_53',['NN_FOR_ALL_SCALAR_TYPES',['../macros_8hpp.html#ad7265fdbbd0832f95fb81378aae100a3',1,'macros.hpp']]],
   ['nn_5ffor_5fall_5fvalue_5ftypes_54',['NN_FOR_ALL_VALUE_TYPES',['../macros_8hpp.html#af2b6b4d2bf83137ac1574a81f1f05470',1,'macros.hpp']]],
-  ['nnonzeros_55',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a2cdecd7ad4f5ca4d876122f7716b4db2',1,'NeoN::la::CSRMatrix']]],
-  ['nnz_56',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#ae7732ea9fce9a09a43d681bfb21f172c',1,'NeoN::la::SparsityPattern']]],
+  ['nnonzeros_55',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a85433e56125f2896aa880ac27af2eaaa',1,'NeoN::la::CSRMatrix']]],
+  ['nnz_56',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#aab4df6bce8fc0b006440a4b3d9172f0d',1,'NeoN::la::SparsityPattern']]],
   ['nonorthcorrectionvec3s_57',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_58',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
-  ['nrows_59',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],
+  ['nrows_59',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a68098d6c3dd1b18b71d717b7a93b0836',1,'NeoN::la::CSRMatrix']]],
   ['numiter_60',['numIter',['../structNeoN_1_1la_1_1SolverStats.html#a1c1ed94a5cb51273fc760ac035317625',1,'NeoN::la::SolverStats']]],
   ['numsegments_61',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
 ];

@@ -11,10 +11,10 @@ var searchData=
   ['nf_8',['nf',['../classNeoN_1_1BoundaryMesh.html#a842a8e1bdf44ea64425502a9c4058e2e',1,'NeoN::BoundaryMesh::nf() const'],['../classNeoN_1_1BoundaryMesh.html#a3b201b06dfc75ee04f7c5902c690cf37',1,'NeoN::BoundaryMesh::nf(const localIdx i) const']]],
   ['nfaces_9',['nFaces',['../classNeoN_1_1UnstructuredMesh.html#aded98774706aee5d5c0fdd81147f634e',1,'NeoN::UnstructuredMesh']]],
   ['ninternalfaces_10',['nInternalFaces',['../classNeoN_1_1UnstructuredMesh.html#a56a4ae9f82c769e4ce85e2d7804f2b42',1,'NeoN::UnstructuredMesh']]],
-  ['nnonzeros_11',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a2cdecd7ad4f5ca4d876122f7716b4db2',1,'NeoN::la::CSRMatrix']]],
-  ['nnz_12',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#ae7732ea9fce9a09a43d681bfb21f172c',1,'NeoN::la::SparsityPattern']]],
+  ['nnonzeros_11',['nNonZeros',['../classNeoN_1_1la_1_1CSRMatrix.html#a85433e56125f2896aa880ac27af2eaaa',1,'NeoN::la::CSRMatrix']]],
+  ['nnz_12',['nnz',['../classNeoN_1_1la_1_1SparsityPattern.html#aab4df6bce8fc0b006440a4b3d9172f0d',1,'NeoN::la::SparsityPattern']]],
   ['nonorthcorrectionvec3s_13',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_14',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
-  ['nrows_15',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],
+  ['nrows_15',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a68098d6c3dd1b18b71d717b7a93b0836',1,'NeoN::la::CSRMatrix']]],
   ['numsegments_16',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
 ];

@@ -20,7 +20,7 @@ var searchData=
   ['rhsvalues_17',['rhsValues',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#afe7ba18489335d9d2ad05107c5671573',1,'NeoN::la::BoundaryCoefficients']]],
   ['rootvsmall_18',['ROOTVSMALL',['../namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0',1,'NeoN']]],
   ['rowoffs_19',['rowoffs',['../classNeoN_1_1la_1_1SparsityPattern.html#a43f77a753a452cdb775d38e464d4ba7b',1,'NeoN::la::SparsityPattern::rowOffs(IndexType celli) const'],['../classNeoN_1_1la_1_1SparsityPattern.html#a5880bbe18a388050ffbbc8995bcb316d',1,'NeoN::la::SparsityPattern::rowOffs()'],['../classNeoN_1_1la_1_1SparsityPattern.html#aa666c1622a3e3b65136f4e21b5ae8906',1,'NeoN::la::SparsityPattern::rowOffs() const'],['../classNeoN_1_1la_1_1CSRMatrix.html#a962e52108c2184154c66a06bbf44d27a',1,'NeoN::la::CSRMatrix::rowOffs()'],['../structNeoN_1_1la_1_1CSRMatrixView.html#a0f3d646959bf14a073fc99868481d607',1,'NeoN::la::CSRMatrixView::rowOffs']]],
-  ['rows_20',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#af04b2b0b733d8ff71549a8d70d85d839',1,'NeoN::la::SparsityPattern']]],
+  ['rows_20',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#ada1ef7649ee474a20904710808dffb52',1,'NeoN::la::SparsityPattern']]],
   ['rungekutta_2ehpp_21',['rungeKutta.hpp',['../rungeKutta_8hpp.html',1,'']]],
   ['runtimeselectionfactory_22',['RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory.html',1,'NeoN']]],
   ['runtimeselectionfactory_2ehpp_23',['runtimeSelectionFactory.hpp',['../runtimeSelectionFactory_8hpp.html',1,'']]],

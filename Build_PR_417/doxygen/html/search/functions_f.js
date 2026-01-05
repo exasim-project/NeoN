@@ -15,5 +15,5 @@ var searchData=
   ['resize_12',['resize',['../classNeoN_1_1Array.html#adae762a549262c56fb922acb850d70e3',1,'NeoN::Array::resize()'],['../classNeoN_1_1Vector.html#a99e933d0a77f9ec5fef7d492f23c2219',1,'NeoN::Vector::resize()']]],
   ['rhs_13',['rhs',['../classNeoN_1_1la_1_1LinearSystem.html#ac2fcf5bbb16345399ffdb4fd8741833b',1,'NeoN::la::LinearSystem::rhs()'],['../classNeoN_1_1la_1_1LinearSystem.html#a75d4a24d3742745f0a41eb496f111298',1,'NeoN::la::LinearSystem::rhs() const']]],
   ['rowoffs_14',['rowoffs',['../classNeoN_1_1la_1_1CSRMatrix.html#a962e52108c2184154c66a06bbf44d27a',1,'NeoN::la::CSRMatrix::rowOffs()'],['../classNeoN_1_1la_1_1SparsityPattern.html#aa666c1622a3e3b65136f4e21b5ae8906',1,'NeoN::la::SparsityPattern::rowOffs() const'],['../classNeoN_1_1la_1_1SparsityPattern.html#a5880bbe18a388050ffbbc8995bcb316d',1,'NeoN::la::SparsityPattern::rowOffs()'],['../classNeoN_1_1la_1_1SparsityPattern.html#a43f77a753a452cdb775d38e464d4ba7b',1,'NeoN::la::SparsityPattern::rowOffs(IndexType celli) const']]],
-  ['rows_15',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#af04b2b0b733d8ff71549a8d70d85d839',1,'NeoN::la::SparsityPattern']]]
+  ['rows_15',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#ada1ef7649ee474a20904710808dffb52',1,'NeoN::la::SparsityPattern']]]
 ];
