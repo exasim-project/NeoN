@@ -4,7 +4,7 @@ var searchData=
   ['target_1',['Target',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299',1,'NeoN::Logging']]],
   ['temporaloperator_2',['temporaloperator',['../classNeoN_1_1dsl_1_1TemporalOperator.html',1,'NeoN::dsl::TemporalOperator&lt; ValueType &gt;'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#aa8547a528d858e4e848ccd862a5af320',1,'NeoN::dsl::TemporalOperator::TemporalOperator(TemporalOperator &amp;&amp;eqnOperator)'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#a123506bf619aa5d08e47c84310b788eb',1,'NeoN::dsl::TemporalOperator::TemporalOperator(const TemporalOperator &amp;eqnOperator)'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#abb175059bcbc826532ec7f205def0569',1,'NeoN::dsl::TemporalOperator::TemporalOperator(T cls)']]],
   ['temporaloperator_2ehpp_3',['temporalOperator.hpp',['../temporalOperator_8hpp.html',1,'']]],
-  ['temporaloperators_4',['temporaloperators',['../classNeoN_1_1dsl_1_1Expression.html#af83cc00b92f50885174cd7a008473852',1,'NeoN::dsl::Expression::temporalOperators()'],['../classNeoN_1_1dsl_1_1Expression.html#a2455b209c125abad6f794e583acd7066',1,'NeoN::dsl::Expression::temporalOperators() const']]],
+  ['temporaloperators_4',['temporaloperators',['../classNeoN_1_1dsl_1_1Expression.html#a0fcb308788446fe43bbe635d1e79c6fa',1,'NeoN::dsl::Expression::temporalOperators()'],['../classNeoN_1_1dsl_1_1Expression.html#a2d9ffd529b27456e188643bade8ebb43',1,'NeoN::dsl::Expression::temporalOperators() const']]],
   ['tensor_2ehpp_5',['tensor.hpp',['../tensor_8hpp.html',1,'']]],
   ['time_6',['time',['../classNeoN_1_1Time.html#aa5824ce7a2b8c90a50b01cbe59ee737c',1,'NeoN::Time::Time(const word, const ArgList)'],['../classNeoN_1_1Time.html#a378257283b4b9e42c6de18519ea13c00',1,'NeoN::Time::Time()'],['../classNeoN_1_1Time.html',1,'NeoN::Time']]],
   ['time_2ehpp_7',['time.hpp',['../time_8hpp.html',1,'']]],
@@ -19,7 +19,7 @@ var searchData=
   ['tokens_16',['tokens',['../classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1',1,'NeoN::TokenList']]],
   ['trace_17',['Trace',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214a52938d50d0854c5f4273115fdc0626f2',1,'NeoN::Logging']]],
   ['traits_2ehpp_18',['traits.hpp',['../traits_8hpp.html',1,'']]],
-  ['type_19',['type',['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator::Type'],['../classNeoN_1_1Collection.html#a783d0c07830d809064e7c9830ee2a640',1,'NeoN::Collection::type()'],['../classNeoN_1_1CollectionMixin.html#a996d80b8f25ae166443b99cae12c3497',1,'NeoN::CollectionMixin::type()']]],
+  ['type_19',['type',['../classNeoN_1_1Collection.html#a783d0c07830d809064e7c9830ee2a640',1,'NeoN::Collection::type()'],['../classNeoN_1_1CollectionMixin.html#a996d80b8f25ae166443b99cae12c3497',1,'NeoN::CollectionMixin::type()'],['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator::Type']]],
   ['type_5f_20',['type_',['../classNeoN_1_1dsl_1_1OperatorMixin.html#ae160ee6042607004df8e0c3fcb7aac1c',1,'NeoN::dsl::OperatorMixin']]],
   ['typename_21',['typename',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument.html#a02bcbb6ce8fc27d6dc52c523b76f0bdd',1,'NeoN::finiteVolume::cellCentred::VectorDocument::typeName()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#aa925defdaedd60f3a859cab8f4782c94',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::typeName()']]]
 ];

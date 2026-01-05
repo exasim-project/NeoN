@@ -25,15 +25,18 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" line="73" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" declline="73" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1a444787301002c4968cc2280c5e3d5d35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1a67ecad0f1290e3672cddda4d7aa3121b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
           </param>
+          <param>
+            <type>typename IndexType</type>
+          </param>
         </templateparamlist>
         <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref></type>
         <definition>la::SolverStats NeoN::dsl::detail::iterativeSolveImpl</definition>
-        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, std::shared_ptr&lt; const la::SparsityPattern &gt; sp, la::LinearSystem&lt; typename VectorType::ElementType, localIdx &gt; &amp;ls, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType &gt; &gt; ps)</argsstring>
+        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, std::shared_ptr&lt; const la::SparsityPattern&lt; IndexType &gt; &gt; sp, la::LinearSystem&lt; typename VectorType::ElementType, IndexType &gt; &amp;ls, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType, IndexType &gt; &gt; ps)</argsstring>
         <name>iterativeSolveImpl</name>
         <qualifiedname>NeoN::dsl::detail::iterativeSolveImpl</qualifiedname>
         <param>
@@ -41,11 +44,11 @@
           <declname>exp</declname>
         </param>
         <param>
-          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &gt;</type>
+          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
           <declname>sp</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; typename VectorType::ElementType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; typename VectorType::ElementType, IndexType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <param>
@@ -69,7 +72,7 @@
           <declname>fvSolution</declname>
         </param>
         <param>
-          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase</ref>&lt; typename VectorType::ElementType &gt; &gt;</type>
+          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase</ref>&lt; typename VectorType::ElementType, IndexType &gt; &gt;</type>
           <declname>ps</declname>
         </param>
         <briefdescription>
@@ -78,17 +81,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="31" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="31" bodyend="60"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="31" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="31" bodyend="61"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1a292cef046d22ee3a8d82a339144d5e7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1_1detail_1ab8c0a600efdf6dbdaaf08fc691295016" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
           </param>
+          <param>
+            <type>typename IndexType</type>
+          </param>
         </templateparamlist>
         <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref></type>
         <definition>la::SolverStats NeoN::dsl::detail::iterativeSolveImpl</definition>
-        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSolution, std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType &gt; &gt; ps)</argsstring>
+        <argsstring>(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSolution, std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType, IndexType &gt; &gt; ps)</argsstring>
         <name>iterativeSolveImpl</name>
         <qualifiedname>NeoN::dsl::detail::iterativeSolveImpl</qualifiedname>
         <param>
@@ -112,7 +118,7 @@
           <declname>fvSolution</declname>
         </param>
         <param>
-          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase</ref>&lt; typename VectorType::ElementType &gt; &gt;</type>
+          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase</ref>&lt; typename VectorType::ElementType, IndexType &gt; &gt;</type>
           <declname>ps</declname>
         </param>
         <briefdescription>
@@ -121,7 +127,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="63" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="63" bodyend="88"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="64" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="64" bodyend="89"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
