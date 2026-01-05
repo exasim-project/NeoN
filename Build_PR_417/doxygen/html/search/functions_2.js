@@ -40,6 +40,6 @@ var searchData=
   ['createsinglecellmesh_37',['createSingleCellMesh',['../namespaceNeoN.html#a8e4ff733c9dc00a516d09fbdacb127f4',1,'NeoN']]],
   ['createsparsitypatternmatrixiterator_38',['createSparsityPatternMatrixIterator',['../namespaceNeoN_1_1la.html#a0e36b2796e2667c72c88e70f286f4821',1,'NeoN::la']]],
   ['csrmatrix_39',['csrmatrix',['../classNeoN_1_1la_1_1CSRMatrix.html#aacaf65f8819ee497642d9359a94ed618',1,'NeoN::la::CSRMatrix::CSRMatrix(const Vector&lt; ValueType &gt; &amp;values, const Vector&lt; IndexType &gt; &amp;colIdxs, const Vector&lt; IndexType &gt; &amp;rowOffs)'],['../classNeoN_1_1la_1_1CSRMatrix.html#a5dbad36333839531da5ded6d37f2c8a2',1,'NeoN::la::CSRMatrix::CSRMatrix(const Vector&lt; ValueType &gt; &amp;values, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; sp)']]],
-  ['csrmatrixview_40',['CSRMatrixView',['../structNeoN_1_1la_1_1CSRMatrixView.html#abb1cb472ac3b9e474bbcf845a035d7dc',1,'NeoN::la::CSRMatrixView']]],
+  ['csrmatrixview_40',['CSRMatrixView',['../structNeoN_1_1la_1_1CSRMatrixView.html#ad0179969e95b5d2f408a9e619286388d',1,'NeoN::la::CSRMatrixView']]],
   ['currenttime_41',['currenttime',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#a32bf6ed80ce09f47f5d4e4b03fdaf3e9',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::currentTime() const'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#ad9c36776f49d830e57592a81b04fd0f6',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::currentTime()']]]
 ];
