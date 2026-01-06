@@ -100,84 +100,103 @@
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .iterationIndex\ =\ fieldDoc.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa4c409eb5371474eb127b3ceadfdd0a6}{iterationIndex}}(),}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .subCycleIndex\ =\ fieldDoc.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_a443b0b510e0c576b5b4bf5102bd2b98d}{subCycleIndex}}()}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ OldTimeDocument\ oldTimeDocument(fieldDoc.field<VectorType>().key,\ oldVector.key,\ "{}"{},\ -\/1);}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\ oldTimeDocument(}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ fieldDoc.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa77db7066546ddbdd4ca88bb02908907}{field}}<VectorType>().key,\ oldVector.key,\ fieldDoc.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa77db7066546ddbdd4ca88bb02908907}{field}}<VectorType>().key,\ 0}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ setCurrentVectorAndLevel(oldTimeDocument);}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ab72300bf1693e7fb464dd57c9c73785a}{insert}}(oldTimeDocument);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ oldVector;}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00106}00106\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{00109}}\ \ \ \ \ \textcolor{keyword}{const}\ VectorType\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{get}}(std::string\ idOfNextVector)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00110}00110\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ std::string\ nextId\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a40b9d9c3be9321c4486edc2c4159d635}{findNextTime}}(idOfNextVector);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(\mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}}(),\ fieldCollectionName\_);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00114}00114\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextId\ !=\ \textcolor{stringliteral}{"{}"{}})\ \textcolor{comment}{//\ oldVector\ has\ to\ be\ registered}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\&\ oldTimeDocument\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_aab7b8425cc07d48ce08d58ae5cbb1989}{oldTimeDoc}}(nextId);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fieldCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_a7f7e6fbac2bb5daeeb1d3d242b9f2d42}{fieldDoc}}(oldTimeDocument.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument_ac5e843c7ec39936ff967ada299919bc2}{previousTime}}()).\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa77db7066546ddbdd4ca88bb02908907}{field}}<VectorType>();}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ replace\ with\ NF\_THROW}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Old\ field\ not\ found"{}});}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00125}00125\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\ oldTimeDocument(fieldDoc.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa77db7066546ddbdd4ca88bb02908907}{field}}<VectorType>().key,\ oldVector.key,\ \textcolor{stringliteral}{"{}"{}},\ 0);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ setCurrentVectorAndLevel(oldTimeDocument);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ab72300bf1693e7fb464dd57c9c73785a}{insert}}(oldTimeDocument);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ oldVector;}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00103}00103\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00106}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{00106}}\ \ \ \ \ \textcolor{keyword}{const}\ VectorType\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{get}}(std::string\ idOfNextVector)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00107}00107\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ std::string\ nextId\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a40b9d9c3be9321c4486edc2c4159d635}{findNextTime}}(idOfNextVector);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(\mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}}(),\ fieldCollectionName\_);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextId\ !=\ \textcolor{stringliteral}{"{}"{}})\ \textcolor{comment}{//\ oldVector\ has\ to\ be\ registered}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\&\ oldTimeDocument\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_aab7b8425cc07d48ce08d58ae5cbb1989}{oldTimeDoc}}(nextId);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fieldCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_a7f7e6fbac2bb5daeeb1d3d242b9f2d42}{fieldDoc}}(oldTimeDocument.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument_ac5e843c7ec39936ff967ada299919bc2}{previousTime}}()).\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument_aa77db7066546ddbdd4ca88bb02908907}{field}}<VectorType>();}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ replace\ with\ NF\_THROW}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Old\ field\ not\ found"{}});}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00122}00122\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00125}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{00125}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{instance}}(\mbox{\hyperlink{classNeoN_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}},\ std::string\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}},\ std::string\ fieldCollectionName);}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00126}00126\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00128}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{00128}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{instance}}(\mbox{\hyperlink{classNeoN_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}},\ std::string\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}},\ std::string\ fieldCollectionName);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00130}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0be9205d433616f5804d8984c3920501}{00130}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0be9205d433616f5804d8984c3920501}{instance}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}},\ std::string\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}});}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00131}00131\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00132}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ac57693c18d99b4162b4a8abd7bc910cd}{00132}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ac57693c18d99b4162b4a8abd7bc910cd}{instance}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00133}00133\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00134}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0bd7391b1ef76667fc2d5fca5f9428da}{00134}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0bd7391b1ef76667fc2d5fca5f9428da}{instance}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00135}00135\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00136}00136\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0be9205d433616f5804d8984c3920501}{00127}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0be9205d433616f5804d8984c3920501}{instance}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}},\ std::string\ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}});}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00129}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ac57693c18d99b4162b4a8abd7bc910cd}{00129}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_ac57693c18d99b4162b4a8abd7bc910cd}{instance}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00131}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0bd7391b1ef76667fc2d5fca5f9428da}{00131}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a0bd7391b1ef76667fc2d5fca5f9428da}{instance}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00133}00133\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00136}00136\ \ \ \ \ \textcolor{keywordtype}{void}\ setCurrentVectorAndLevel(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_aab7b8425cc07d48ce08d58ae5cbb1989}{oldTimeDoc}});}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00137}00137\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00139}00139\ \ \ \ \ \textcolor{keywordtype}{void}\ setCurrentVectorAndLevel(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}{OldTimeDocument}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_aab7b8425cc07d48ce08d58ae5cbb1989}{oldTimeDoc}});}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00138}00138\ \ \ \ \ std::string\ fieldCollectionName\_;}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00139}00139\ \};}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00140}00140\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00141}00141\ \ \ \ \ std::string\ fieldCollectionName\_;}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00142}00142\ \};}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00143}00143\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00152}00152\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00153}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{00153}}\ VectorType\&\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{oldTime}}(VectorType\&\ field)}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00154}00154\ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00155}00155\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00156}00156\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keywordflow}{return}\ oldTimeCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a44a3d2dc4c81365f2417ee649e98bab7}{getOrInsert}}<VectorType>(field.key);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00158}00158\ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00159}00159\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00168}00168\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00169}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5}{00169}}\ \textcolor{keyword}{const}\ VectorType\&\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{oldTime}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00170}00170\ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00172}00172\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{keywordflow}{return}\ oldTimeCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{get}}<VectorType>(field.key);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00174}00174\ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00175}00175\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00176}00176\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00177}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a51914b93645b7482628ef0fc97f75df0}{00177}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a51914b93645b7482628ef0fc97f75df0}{oldTimeLevel}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00178}00178\ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00179}00179\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00180}00180\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00149}00149\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00150}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{00150}}\ VectorType\&\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{oldTime}}(VectorType\&\ field)}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00151}00151\ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00152}00152\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00153}00153\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keywordflow}{return}\ oldTimeCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a44a3d2dc4c81365f2417ee649e98bab7}{getOrInsert}}<VectorType>(field.key);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00155}00155\ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00165}00165\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00166}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5}{00166}}\ \textcolor{keyword}{const}\ VectorType\&\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{oldTime}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00167}00167\ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection}{VectorCollection}}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}{OldTimeCollection}}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keywordflow}{return}\ oldTimeCollection.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a7c451920dbb60744ddf0554d45ba8e06}{get}}<VectorType>(field.key);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00171}00171\ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00173}00173\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00174}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a51914b93645b7482628ef0fc97f75df0}{00174}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a51914b93645b7482628ef0fc97f75df0}{oldTimeLevel}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00175}00175\ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ fieldCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_af7dc5506c3e37cd10181f5f58d9668c3}{VectorCollection::instance}}(field);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00177}00177\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ oldTimeCollection\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_a2d9b57d0a24e5f79f4e743d76c5b83f1}{OldTimeCollection::instance}}(fieldCollection);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00179}00179\ \ \ \ \ \textcolor{keywordtype}{int}\ level\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00180}00180\ \ \ \ \ std::string\ currentId\ =\ field.key;}
 \DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00181}00181\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00182}00182\ \ \ \ \ std::string\ nextId\ =\ oldTimeCollection.findNextTime(field.key);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00183}00183\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextId.empty())}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00184}00184\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00186}00186\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00187}00187\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00188}00188\ \ \ \ \ \textcolor{keywordflow}{return}\ oldTimeCollection.oldTimeDoc(nextId).level();}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00189}00189\ \}}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00190}00190\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00191}00191\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00192}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{00192}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate}}(VectorType\&\ field);}
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00193}00193\ }
-\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00194}00194\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00182}00182\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00183}00183\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ std::string\ nextId\ =\ oldTimeCollection.findNextTime(currentId);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextId.empty())}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ level;}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ ++level;}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ currentId\ =\ oldTimeCollection.oldTimeDoc(nextId).previousTime();}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00192}00192\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00193}00193\ \}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00194}00194\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00195}00195\ \textcolor{comment}{template<typename\ VectorType>}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00196}00196\ \textcolor{comment}{inline\ int\ oldTimeLevel(const\ VectorType\&\ field)}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00197}00197\ \textcolor{comment}{\{}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00198}00198\ \textcolor{comment}{\ \ \ \ const\ auto\&\ fieldCollection\ =\ VectorCollection::instance(field);}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00199}00199\ \textcolor{comment}{\ \ \ \ const\ auto\&\ oldTimeCollection\ =\ OldTimeCollection::instance(fieldCollection);}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00200}00200\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00201}00201\ \textcolor{comment}{\ \ \ \ std::string\ nextId\ =\ oldTimeCollection.findNextTime(field.key);}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00202}00202\ \textcolor{comment}{\ \ \ \ if\ (nextId.empty())}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00203}00203\ \textcolor{comment}{\ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00204}00204\ \textcolor{comment}{\ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00205}00205\ \textcolor{comment}{\ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00206}00206\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00207}00207\ \textcolor{comment}{\ \ \ \ return\ oldTimeCollection.oldTimeDoc(nextId).level();}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00208}00208\ \textcolor{comment}{\}}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00209}00209\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00210}00210\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00211}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{00211}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate}}(VectorType\&\ field);}
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{oldTimeCollection_8hpp_source_l00213}00213\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
