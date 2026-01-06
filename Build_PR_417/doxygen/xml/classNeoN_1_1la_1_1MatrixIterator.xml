@@ -118,12 +118,26 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="51" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="51" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1MatrixIterator_1a838a29b6cef24dcb68df2130ad93bd6c" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;const SparsityPattern&lt;IndexType&gt; &gt; NeoN::la::MatrixIterator&lt; ValueType, IndexType, MeshType &gt;::bsp_</definition>
+        <argsstring></argsstring>
+        <name>bsp_</name>
+        <qualifiedname>NeoN::la::MatrixIterator::bsp_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="54" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1a1bb7a7fe9862b641c59c7c6c83f793fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1ae72e4a3cbc85c15f1bfe622abcefbd5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>NeoN::la::MatrixIterator&lt; ValueType, IndexType, MeshType &gt;::MatrixIterator</definition>
-        <argsstring>(Array&lt; uint8_t &gt; ownerOffset, Array&lt; uint8_t &gt; neighbourOffset, Array&lt; uint8_t &gt; diagOffset, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; sparsityPattern)</argsstring>
+        <argsstring>(Array&lt; uint8_t &gt; ownerOffset, Array&lt; uint8_t &gt; neighbourOffset, Array&lt; uint8_t &gt; diagOffset, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; sparsityPattern, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; boundarySparsityPattern)</argsstring>
         <name>MatrixIterator</name>
         <qualifiedname>NeoN::la::MatrixIterator::MatrixIterator</qualifiedname>
         <param>
@@ -142,13 +156,17 @@
           <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
           <declname>sparsityPattern</declname>
         </param>
+        <param>
+          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
+          <declname>boundarySparsityPattern</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="56" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="59" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1acfd4a46f4d0bec0e74cda94dc7fbc2b1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
@@ -162,7 +180,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="63" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="63" bodyend="63"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="67" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1ae3141a06e2d4b9e9412ac4e7fbdef9b2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
+        <definition>std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; NeoN::la::MatrixIterator&lt; ValueType, IndexType, MeshType &gt;::boundarySparsityPattern</definition>
+        <argsstring>() const</argsstring>
+        <name>boundarySparsityPattern</name>
+        <qualifiedname>NeoN::la::MatrixIterator::boundarySparsityPattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="69" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="69" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1ac8e5cfa2ba969908bfd06d5460fd73a7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -176,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="66" column="17"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="75" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1a461c53dfb57d8ce81c43b5053253d023" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -190,7 +222,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="69" column="17"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="78" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1afd5aeac9ce0970195734c09e918bac2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -204,7 +236,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="72" column="17"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="81" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1af37321ec9a2712297d33489c1b183d7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -218,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="75" column="11"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="84" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1a43c19e5ea4ccef32bc342f30befc9e4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -232,7 +264,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="78" column="11"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="87" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1aa11f86f6ef92d6b607b234ba1cbf57d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Array" kindref="compound">Array</ref>&lt; uint8_t &gt; &amp;</type>
@@ -246,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="81" column="11"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="90" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1ab46132e047dbc52345e6061a2ab79415" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -264,7 +296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="85" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="85" bodyend="88"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="94" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="94" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1ab0d47443be7733de957f846aeade8956" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -286,7 +318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="91" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="91" bodyend="94"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="100" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="100" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1MatrixIterator_1adab2b50a9b4f17edba996183913250db" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -308,22 +340,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="97" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="97" bodyend="100"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="106" column="37" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="106" bodyend="109"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="26" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="27" bodyend="101"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="26" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="27" bodyend="110"/>
     <listofallmembers>
+      <member refid="classNeoN_1_1la_1_1MatrixIterator_1ae3141a06e2d4b9e9412ac4e7fbdef9b2" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>boundarySparsityPattern</name></member>
+      <member refid="classNeoN_1_1la_1_1MatrixIterator_1a838a29b6cef24dcb68df2130ad93bd6c" prot="private" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>bsp_</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1ab46132e047dbc52345e6061a2ab79415" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>diagIdx</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1afd5aeac9ce0970195734c09e918bac2b" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>diagOffset</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1aa11f86f6ef92d6b607b234ba1cbf57d4" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>diagOffset</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1a727e87ed4908ad0479a2061f1394df87" prot="private" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>diagOffset_</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1a554fb56f52b649688e2b849d64d6ed53" prot="private" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>diagOffsetV_</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1adab2b50a9b4f17edba996183913250db" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>lowerIdx</name></member>
-      <member refid="classNeoN_1_1la_1_1MatrixIterator_1a1bb7a7fe9862b641c59c7c6c83f793fe" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>MatrixIterator</name></member>
+      <member refid="classNeoN_1_1la_1_1MatrixIterator_1ae72e4a3cbc85c15f1bfe622abcefbd5d" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>MatrixIterator</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1a461c53dfb57d8ce81c43b5053253d023" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>neighbourOffset</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1a43c19e5ea4ccef32bc342f30befc9e4c" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>neighbourOffset</name></member>
       <member refid="classNeoN_1_1la_1_1MatrixIterator_1aa43262acebd195b7edcb363f83fdc3a1" prot="private" virt="non-virtual"><scope>NeoN::la::MatrixIterator</scope><name>neighbourOffset_</name></member>

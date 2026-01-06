@@ -86,12 +86,6 @@
   <compound refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes" kind="struct"><name>NeoN::finiteVolume::cellCentred::BoundaryAttributes</name>
     <member refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_1aa84cebf42ab87cda70be20aef7454c0c" kind="variable"><name>assignable</name></member>
   </compound>
-  <compound refid="structNeoN_1_1la_1_1BoundaryCoefficients" kind="struct"><name>NeoN::la::BoundaryCoefficients</name>
-    <member refid="structNeoN_1_1la_1_1BoundaryCoefficients_1a1084e3e472ad8ca16a4e5c5e43e0ca86" kind="variable"><name>matrixValues</name></member>
-    <member refid="structNeoN_1_1la_1_1BoundaryCoefficients_1a996e5073c82807d501192afc504b86f2" kind="variable"><name>matrixIdxs</name></member>
-    <member refid="structNeoN_1_1la_1_1BoundaryCoefficients_1afe7ba18489335d9d2ad05107c5671573" kind="variable"><name>rhsValues</name></member>
-    <member refid="structNeoN_1_1la_1_1BoundaryCoefficients_1a1cb4cb6307f89a0afba552b2b0a59109" kind="variable"><name>rhsIdxs</name></member>
-  </compound>
   <compound refid="classNeoN_1_1BoundaryData" kind="class"><name>NeoN::BoundaryData</name>
     <member refid="classNeoN_1_1BoundaryData_1a933bd942a557e26f683769ca72007d78" kind="variable"><name>exec_</name></member>
     <member refid="classNeoN_1_1BoundaryData_1a40a71775e71db9f7d834918275c17fd5" kind="variable"><name>value_</name></member>
@@ -734,16 +728,21 @@
   <compound refid="classNeoN_1_1la_1_1LinearSystem" kind="class"><name>NeoN::la::LinearSystem</name>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1aa5fe62b88e1638abe6e620e455de17c1" kind="variable"><name>matrix_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1aff6a15d52cca80105f3300e2241514c8" kind="variable"><name>rhs_</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1a862227c76a5234cbc9ae6701cc18204f" kind="variable"><name>boundaryMatrix_</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1af44a16132a0b557bc21865f2b225d1e9" kind="variable"><name>boundaryRhs_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1aaed45af46061c794359049795e1c17ca" kind="variable"><name>auxiliaryCoefficients_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a3fe26ae4c5f31a3a0db40c9f36ea067f" kind="function"><name>validate</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1a77c59ef7dccc1087228bd1da63990110" kind="function"><name>LinearSystem</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1a8bfd0432d478b1e20bee1a3a31581418" kind="function"><name>LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a7a164f0361b5f26a6d517534cf650b5b" kind="function"><name>LinearSystem</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1a98aef1fcbf093939bc3ea967f1b7610f" kind="function"><name>LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a8c24b8b0b48f97c7a91bd884dfa5b019" kind="function"><name>~LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a416fd6d5122482fcc2372590bc10b8f9" kind="function"><name>matrix</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kind="function"><name>rhs</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a18bd8cefa6ab9d8df2bc931fb953b633" kind="function"><name>matrix</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1aa8c575bb07879ce87165f872b2c332ac" kind="function"><name>boundaryMatrix</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1ab45e114eccc8c91eae0c62efd31b95ef" kind="function"><name>boundaryMatrix</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1ac2fcf5bbb16345399ffdb4fd8741833b" kind="function"><name>rhs</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a75d4a24d3742745f0a41eb496f111298" kind="function"><name>rhs</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1a9f9e043f21bb2d7c0feddf17dfe10075" kind="function"><name>boundaryRhs</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1aa671bd0a7e404604639b68f152e387ef" kind="function"><name>boundaryRhs</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a5037a1bacaeea8253ce1849339669687" kind="function"><name>copyToHost</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a60e4fbaa89ccee0e8540c4d4c2a3c38f" kind="function"><name>reset</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1ad00f3e7eab80d4a8b35c8a70071ba6d9" kind="function"><name>view</name></member>
@@ -751,15 +750,15 @@
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a4fe783b48576e44b87a352a3528a87ee" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a99feb73536d23fc1241b2c5e883d6a84" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1abe338ae8538049aa833e2ad71f7bb573" kind="function"><name>exec</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1aa64fe93bcd68b250547b9a6d4bca836b" kind="function"><name>auxiliaryCoefficients</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1ac6d9815219bb4ea4abfacb8c2e89978a" kind="function"><name>auxiliaryCoefficients</name></member>
   </compound>
   <compound refid="structNeoN_1_1la_1_1LinearSystemView" kind="struct"><name>NeoN::la::LinearSystemView</name>
     <member refid="structNeoN_1_1la_1_1LinearSystemView_1a4785b4ff3e365b5a62e4edaae9fae59e" kind="variable"><name>matrix</name></member>
     <member refid="structNeoN_1_1la_1_1LinearSystemView_1afb6158e5f01c9782a2fe8af27e340b50" kind="variable"><name>rhs</name></member>
+    <member refid="structNeoN_1_1la_1_1LinearSystemView_1a75c4dfa737ff000013a3ce45183fa8b9" kind="variable"><name>boundaryMatrix</name></member>
+    <member refid="structNeoN_1_1la_1_1LinearSystemView_1a997b4a21f91015df03a7da02607977a5" kind="variable"><name>boundaryRhs</name></member>
     <member refid="structNeoN_1_1la_1_1LinearSystemView_1a20eb74b301c5be1975ecb438a237713b" kind="function"><name>LinearSystemView</name></member>
     <member refid="structNeoN_1_1la_1_1LinearSystemView_1ace528280a0ab1d8d9454cb22ac421040" kind="function"><name>~LinearSystemView</name></member>
-    <member refid="structNeoN_1_1la_1_1LinearSystemView_1a2af3aade30c0db33ba590682f25dc26a" kind="function"><name>LinearSystemView</name></member>
+    <member refid="structNeoN_1_1la_1_1LinearSystemView_1ad993a5e5fc2b284d7b5533d18122e56e" kind="function"><name>LinearSystemView</name></member>
   </compound>
   <compound refid="classNeoN_1_1Logging_1_1LogEvent" kind="class"><name>NeoN::Logging::LogEvent</name>
     <member refid="classNeoN_1_1Logging_1_1LogEvent_1abc7fe8715a0dc371fb37f27e0e5a9a1e" kind="variable"><name>level</name></member>
@@ -784,8 +783,10 @@
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1a4f0da0daa3e3008578d38fb922333f4c" kind="variable"><name>neighbourOffsetV_</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1a554fb56f52b649688e2b849d64d6ed53" kind="variable"><name>diagOffsetV_</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1a88c4ea0efdfca028d949d7e81639fb30" kind="variable"><name>sp_</name></member>
-    <member refid="classNeoN_1_1la_1_1MatrixIterator_1a1bb7a7fe9862b641c59c7c6c83f793fe" kind="function"><name>MatrixIterator</name></member>
+    <member refid="classNeoN_1_1la_1_1MatrixIterator_1a838a29b6cef24dcb68df2130ad93bd6c" kind="variable"><name>bsp_</name></member>
+    <member refid="classNeoN_1_1la_1_1MatrixIterator_1ae72e4a3cbc85c15f1bfe622abcefbd5d" kind="function"><name>MatrixIterator</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1acfd4a46f4d0bec0e74cda94dc7fbc2b1" kind="function"><name>sparsityPattern</name></member>
+    <member refid="classNeoN_1_1la_1_1MatrixIterator_1ae3141a06e2d4b9e9412ac4e7fbdef9b2" kind="function"><name>boundarySparsityPattern</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1ac8e5cfa2ba969908bfd06d5460fd73a7" kind="function"><name>ownerOffset</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1a461c53dfb57d8ce81c43b5053253d023" kind="function"><name>neighbourOffset</name></member>
     <member refid="classNeoN_1_1la_1_1MatrixIterator_1afd5aeac9ce0970195734c09e918bac2b" kind="function"><name>diagOffset</name></member>
@@ -1604,8 +1605,8 @@
   </compound>
   <compound refid="namespaceNeoN_1_1la" kind="namespace"><name>NeoN::la</name>
     <member refid="namespaceNeoN_1_1la_1a56b0fbaebb30bd6efeb9a1fc5b6ab1bd" kind="function"><name>convertLinearSystem</name></member>
-    <member refid="namespaceNeoN_1_1la_1ac0772895ce76952e1a5ea51326fcc81b" kind="function"><name>createEmptyLinearSystem</name></member>
-    <member refid="namespaceNeoN_1_1la_1a0e36b2796e2667c72c88e70f286f4821" kind="function"><name>createSparsityPatternMatrixIterator</name></member>
+    <member refid="namespaceNeoN_1_1la_1abc4c4f1b6e26a29e522c2512aed9d2bb" kind="function"><name>createEmptyLinearSystem</name></member>
+    <member refid="namespaceNeoN_1_1la_1a7e7eedc474c106408dd8790cdd8b1e5e" kind="function"><name>createSparsityPatternMatrixIterator</name></member>
     <member refid="namespaceNeoN_1_1la_1ad6d454dd6fb2e31259a6349219c08629" kind="function"><name>unpackColIdx</name></member>
     <member refid="namespaceNeoN_1_1la_1adfdc10cb52098688762e13b2d0af4493" kind="function"><name>unpackRowOffs</name></member>
     <member refid="namespaceNeoN_1_1la_1a84a1627be9ccaa6c49ff77ed2a11215a" kind="function"><name>unpackVecValues</name></member>
