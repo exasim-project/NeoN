@@ -50,17 +50,44 @@ MatrixIterator<ValueType, IndexType, MeshType>::MatrixIterator(
     Array<uint8_t> ownerOffset,
     Array<uint8_t> neighbourOffset,
     Array<uint8_t> diagOffset,
-    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern
+    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
       ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
-      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern)
+      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern)
 {}
 
 #define NN_DECLARE_MATRIXITERATOR(TYPENAME)                                                        \
     template class MatrixIterator<TYPENAME, localIdx, UnstructuredMesh>
 
 NN_FOR_ALL_VALUE_TYPES(NN_DECLARE_MATRIXITERATOR);
+
+template<typename IndexType>
+void setBoundarySparsityPattern(
+    const UnstructuredMesh& mesh,
+    Array<uint8_t>& diagOffs,
+    Vector<IndexType>& bRowOffs,
+    Vector<IndexType>& bColIdx
+)
+{
+    const auto exec = mesh.exec();
+    const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
+    const auto diagOffsV = diagOffs.view();
+    const auto faceCellsV = mesh.boundaryMesh().faceCells().view();
+    auto bRowOffsV = bRowOffs.view();
+    auto bColIdxV = bColIdx.view();
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        KOKKOS_LAMBDA(const localIdx bfacei) {
+            localIdx celli = faceCellsV[bfacei];
+            bColIdxV[bfacei] = celli + diagOffsV[celli];
+            bRowOffsV[bfacei] = celli;
+        },
+        "setSparsityPatternMatrixIterator::setBoundarySparsity"
+    );
+}
 
 template<typename IndexType>
 void setSparsityPatternMatrixIteratorSerial(
@@ -164,6 +191,8 @@ void setSparsityPatternMatrixIteratorSerial(
         },
         "setSparsityPatternMatrixIterator::computeUpperTriangular"
     );
+
+
     // NOTE copy back to device
     const auto exec = mesh.exec();
     ownOffs = ownOffsetH.copyToExecutor(exec);
@@ -280,29 +309,35 @@ void setSparsityPatternMatrixIteratorSerial(
 // }
 
 template<typename ValueType, typename IndexType>
-std::tuple<std::shared_ptr<const SparsityPattern<IndexType>>, MatrixIterator<ValueType>>
+MatrixIterator<ValueType, IndexType>
 createSparsityPatternMatrixIterator(const UnstructuredMesh& mesh)
 {
     const auto exec = mesh.exec();
     const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
     const auto nCells = mesh.nCells();
     Array<uint8_t> diagOffs(exec, nCells, 0);
     Array<uint8_t> ownOffs(exec, nInternalFaces, 0);
     Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
     Vector<IndexType> rowOffs(exec, nCells + 1, 0);
     Vector<IndexType> colIdx(exec, nCells + 2 * nInternalFaces, 0);
+    Vector<IndexType> bRowOffs(exec, nBoundaryFaces, 0);
+    Vector<IndexType> bColIdx(exec, nBoundaryFaces, 0);
 
     setSparsityPatternMatrixIteratorSerial(mesh, diagOffs, ownOffs, neiOffs, rowOffs, colIdx);
     auto sp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(colIdx), std::move(rowOffs));
-    return {sp, MatrixIterator<ValueType>(ownOffs, neiOffs, diagOffs, sp)};
+    setBoundarySparsityPattern(mesh, diagOffs, bRowOffs, bColIdx);
+    auto bsp =
+        std::make_shared<const SparsityPattern<IndexType>>(std::move(bColIdx), std::move(bRowOffs));
+    return MatrixIterator<ValueType, IndexType>(ownOffs, neiOffs, diagOffs, sp, bsp);
 }
 
 
-template std::tuple<std::shared_ptr<const SparsityPattern<localIdx>>, MatrixIterator<scalar>>
+template MatrixIterator<scalar, localIdx>
 createSparsityPatternMatrixIterator<scalar, localIdx>(const UnstructuredMesh&);
 
-template std::tuple<std::shared_ptr<const SparsityPattern<localIdx>>, MatrixIterator<Vec3>>
+template MatrixIterator<Vec3, localIdx>
 createSparsityPatternMatrixIterator<Vec3, localIdx>(const UnstructuredMesh&);
 
 

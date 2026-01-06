@@ -28,21 +28,20 @@ struct LinearSystemView
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
-    LinearSystemView(CSRMatrixView<ValueType, IndexType> matrixView, View<ValueType> rhsView)
-        : matrix(matrixView), rhs(rhsView) {};
+    LinearSystemView(
+        CSRMatrixView<ValueType, IndexType> matrixView,
+        View<ValueType> rhsView,
+        CSRMatrixView<ValueType, IndexType> boundaryMatrixView,
+        View<ValueType> boundaryRhsView
+    )
+        : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
+          boundaryRhs(boundaryRhsView) {};
 
     CSRMatrixView<ValueType, IndexType> matrix;
     View<ValueType> rhs;
-};
 
-// TODO move to fvcc
-template<typename ValueType, typename IndexType>
-struct BoundaryCoefficients
-{
-    Vector<ValueType> matrixValues;
-    Vector<IndexType> matrixIdxs;
-    Vector<ValueType> rhsValues;
-    Vector<IndexType> rhsIdxs;
+    CSRMatrixView<ValueType, IndexType> boundaryMatrix;
+    View<ValueType> boundaryRhs;
 };
 
 /**
@@ -68,32 +67,48 @@ public:
     LinearSystem(
         const CSRMatrix<ValueType, IndexType>& matrix,
         const Vector<ValueType>& rhs,
-        const Dictionary& aux = {}
+        const CSRMatrix<ValueType, IndexType>& boundaryMatrix,
+        const Vector<ValueType>& boundaryRhs
     )
-        : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
+        : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs)
     {
         validate();
     }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_)
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
+          boundaryRhs_(ls.boundaryRhs_)
     {}
-
-    LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
 
     ~LinearSystem() = default;
 
     [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
 
-    [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
-
     [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
+
+    [[nodiscard]] CSRMatrix<ValueType, IndexType>& boundaryMatrix() { return boundaryMatrix_; }
+
+    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& boundaryMatrix() const
+    {
+        return boundaryMatrix_;
+    }
+
+    [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
     [[nodiscard]] const Vector<ValueType>& rhs() const { return rhs_; }
 
+    [[nodiscard]] Vector<ValueType>& boundaryRhs() { return boundaryRhs_; }
+
+    [[nodiscard]] const Vector<ValueType>& boundaryRhs() const { return boundaryRhs_; }
+
     [[nodiscard]] LinearSystem copyToHost() const
     {
-        return LinearSystem(matrix_.copyToHost(), rhs_.copyToHost());
+        return LinearSystem(
+            matrix_.copyToHost(),
+            rhs_.copyToHost(),
+            boundaryMatrix_.copyToHost(),
+            boundaryRhs_.copyToHost()
+        );
     }
 
     void reset()
@@ -108,31 +123,39 @@ public:
 
     [[nodiscard]] LinearSystemView<ValueType, IndexType> view() &
     {
-        return LinearSystemView<ValueType, IndexType>(matrix_.view(), rhs_.view());
+        return LinearSystemView<ValueType, IndexType>(
+            matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
+        );
     }
 
     [[nodiscard]] LinearSystemView<const ValueType, const IndexType> view() const&
     {
-        return LinearSystemView<const ValueType, const IndexType>(matrix_.view(), rhs_.view());
+        return LinearSystemView<const ValueType, const IndexType>(
+            matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
+        );
     }
 
     const Executor& exec() const { return matrix_.exec(); }
 
-    // TODO move to fvcc
-    [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
-
-    [[nodiscard]] Dictionary& auxiliaryCoefficients() { return auxiliaryCoefficients_; }
-
 private:
 
+    // internal values
     CSRMatrix<ValueType, IndexType> matrix_;
 
     Vector<ValueType> rhs_;
+
+    // boundary values
+    CSRMatrix<ValueType, IndexType> boundaryMatrix_;
+
+    Vector<ValueType> boundaryRhs_;
 
     Dictionary auxiliaryCoefficients_;
 };
 
 
+/*@brief helper function that converts the internal storage type
+ * pattern
+ */
 template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
 LinearSystem<ValueTypeOut, IndexTypeOut>
 convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
@@ -151,14 +174,14 @@ convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
  */
 template<typename ValueType, typename IndexType>
 LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
-    const UnstructuredMesh& mesh, std::shared_ptr<const SparsityPattern<IndexType>> sparsity
+    const UnstructuredMesh& mesh,
+    std::shared_ptr<const SparsityPattern<IndexType>> sparsity,
+    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsity
 )
 {
-    // auto sparsity = matrixIterator.sparsityPattern();
     const auto& exec = mesh.exec();
     localIdx rows {sparsity->rows()};
     localIdx nnzs {sparsity->nnz()};
-
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
     // const auto [diagOffset, rowOffs, faceCells] =
@@ -196,7 +219,10 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
             Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity
         },
         Vector<ValueType> {exec, rows, zero<ValueType>()},
-        aux
+        CSRMatrix<ValueType, IndexType> {
+            Vector<ValueType>(exec, nBoundaryFaces, zero<ValueType>()), sparsity
+        },
+        Vector<ValueType> {exec, nBoundaryFaces, zero<ValueType>()},
     };
 }
 

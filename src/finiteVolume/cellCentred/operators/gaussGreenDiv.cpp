@@ -177,7 +177,7 @@ void computeDivImp(
             matIt.ownerOffset(),
             matIt.neighbourOffset()
         );
-    auto [matrix, rhs] = ls.view();
+    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     parallelFor(
         exec,
@@ -210,13 +210,6 @@ void computeDivImp(
         mesh.boundaryMesh().deltaCoeffs()
     );
 
-    auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
-            "boundaryCoefficients"
-        );
-
-    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
-
     parallelFor(
         exec,
         {nInternalFaces, faceFluxV.size()},
@@ -234,14 +227,13 @@ void computeDivImp(
             auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
             Kokkos::atomic_add(&matrix.values[rowOwnStart + diagOffs[own]], valueMat);
-            boundValues[bcfacei] = valueMat;
+            bMatrix.values[bcfacei] = valueMat;
 
             auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
             Kokkos::atomic_sub(&rhs[own], valueRhs);
-
-            rhsBoundValues[bcfacei] = valueRhs;
+            bRhs[bcfacei] = valueRhs;
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );

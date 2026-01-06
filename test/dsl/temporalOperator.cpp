@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto [sp, mi] = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+    auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
 
     SECTION("Operator creation on " + execName)
     {
@@ -85,7 +85,10 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(
+        mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+    );
+
 
     SECTION("Supports Coefficients Implicit " + execName)
     {

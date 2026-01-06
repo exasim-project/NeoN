@@ -50,6 +50,9 @@ class MatrixIterator
     // the common sparsity pattern
     std::shared_ptr<const SparsityPattern<IndexType>> sp_;
 
+    // the common boundary sparsity pattern
+    std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
+
 public:
 
     /* @brief create an SparsityPattern from existing mesh */
@@ -57,10 +60,16 @@ public:
         Array<uint8_t> ownerOffset,
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
-        std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern
+        std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+        std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
     );
 
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
+
+    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const
+    {
+        return bsp_;
+    }
 
     /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
@@ -101,7 +110,7 @@ public:
 };
 
 template<typename ValueType, typename IndexType>
-std::tuple<std::shared_ptr<const SparsityPattern<IndexType>>, MatrixIterator<ValueType>>
+MatrixIterator<ValueType, IndexType>
 createSparsityPatternMatrixIterator(const UnstructuredMesh& mesh);
 
 }
