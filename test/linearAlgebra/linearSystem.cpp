@@ -28,7 +28,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     SECTION("construct " + execName)
     {
         Vector<scalar> rhs(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs, csrMatrix, rhs);
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
         REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
@@ -45,9 +45,10 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         auto mesh = create1DUniformMesh(exec, nCells);
 
         // TODO improve structure here
-        auto [sp, mi] =
-            NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(mesh, sp);
+        auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(
+            mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+        );
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -59,7 +60,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     SECTION("view read/write " + execName)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
-        LinearSystem<scalar, localIdx> ls(csrMatrix, rhs);
+        LinearSystem<scalar, localIdx> ls(csrMatrix, rhs, csrMatrix, rhs);
 
         auto lsView = ls.view();
         auto hostLS = ls.copyToHost();

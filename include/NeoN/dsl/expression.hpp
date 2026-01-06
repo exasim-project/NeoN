@@ -139,10 +139,12 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        auto [sp, mi] = la::createSparsityPatternMatrixIterator<ValueType, IndexType>(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, IndexType>(mesh, sp);
+        auto mi = la::createSparsityPatternMatrixIterator<ValueType, IndexType>(mesh);
+        auto ls = la::createEmptyLinearSystem<ValueType, IndexType>(
+            mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+        );
         assemble(t, dt, mi, ls, ps);
-        return {sp, ls};
+        return {mi.sparsityPattern(), ls};
     };
 
     /* @brief assemble into a given linear system

@@ -43,7 +43,7 @@ void SourceTerm<ValueType>::implicitOperation(
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] = views(matIt.diagOffset(), coefficients_.internalVector());
-    auto [matrix, rhs] = ls.view();
+    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     NeoN::parallelFor(
         ls.exec(),

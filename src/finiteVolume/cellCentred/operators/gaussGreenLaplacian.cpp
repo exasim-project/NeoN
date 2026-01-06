@@ -102,8 +102,7 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
-    auto [values, colIdxs, rowOffs] = ls.matrix().view();
-    auto rhs = ls.rhs().view();
+    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     parallelFor(
         exec,
@@ -115,23 +114,27 @@ void computeLaplacianImpl(
             auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            auto rowNeiStart = rowOffs[nei];
-            auto rowOwnStart = rowOffs[own];
+            auto rowNeiStart = matrix.rowOffs[nei];
+            auto rowOwnStart = matrix.rowOffs[own];
 
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
             // scalar valueNei = (1 - weight) * flux;
-            values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
+            matrix.values[rowNeiStart + neiOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], flux * one<ValueType>() * operatorScalingOwn
+                &matrix.values[rowOwnStart + diagOffs[own]],
+                flux * one<ValueType>() * operatorScalingOwn
             );
 
             // upper triangular part
             // add owner contribution lower
-            values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
+            matrix.values[rowOwnStart + ownOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingOwn;
             Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
+                &matrix.values[rowNeiStart + diagOffs[nei]],
+                flux * one<ValueType>() * operatorScalingNei
             );
         },
         "computeLocalLaplacianCoefficients"
@@ -144,12 +147,6 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
-            "boundaryCoefficients"
-        );
-
-    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
 
     parallelFor(
         exec,
@@ -159,19 +156,19 @@ void computeLaplacianImpl(
             auto flux = sGamma[facei] * magFaceArea[facei];
 
             auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
+            auto rowOwnStart = matrix.rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
             ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                                * deltaCoeffs[facei] * one<ValueType>();
-            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-            boundValues[bcfacei] = valueMat;
+            Kokkos::atomic_sub(&matrix.values[rowOwnStart + diagOffs[own]], valueMat);
+            bMatrix.values[bcfacei] = valueMat;
 
             ValueType valueRhs = flux * operatorScalingOwn
                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
             Kokkos::atomic_sub(&rhs[own], valueRhs);
-            rhsBoundValues[bcfacei] = valueRhs;
+            bRhs[bcfacei] = valueRhs;
         },
         "computeInterfaceLaplacianCoefficients"
     );

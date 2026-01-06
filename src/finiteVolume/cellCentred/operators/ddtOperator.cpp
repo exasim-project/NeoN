@@ -49,7 +49,7 @@ void DdtOperator<ValueType>::implicitOperation(
     const auto operatorScaling = this->getCoefficient();
     const auto diagOffs = matrixIterator.diagOffset().view();
     const auto oldVector = oldTime(this->field_).internalVector().view();
-    auto [matrix, rhs] = ls.view();
+    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     const scalar a0a1 = 1.0 / dt;
 
