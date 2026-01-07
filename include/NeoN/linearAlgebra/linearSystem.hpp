@@ -187,12 +187,12 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
     // const auto [diagOffset, rowOffs, faceCells] =
     //     views(matrixIterator.diagOffset(), sparsity->rowOffs(), mesh.boundaryMesh().faceCells());
 
-    BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces),
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces)
-    };
+    // BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
+    //     Vector<ValueType>(exec, nBoundaryFaces),
+    //     Vector<IndexType>(exec, nBoundaryFaces),
+    //     Vector<ValueType>(exec, nBoundaryFaces),
+    //     Vector<IndexType>(exec, nBoundaryFaces)
+    // };
 
     // FIXME
     // auto [mValue, mColIdx, rhsValue, rhsIdx] =
@@ -211,8 +211,8 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
     //     "createEmptyLinearSystem"
     // );
 
-    Dictionary aux;
-    aux.insert("boundaryCoefficients", bcCoeffs);
+    // Dictionary aux;
+    // aux.insert("boundaryCoefficients", bcCoeffs);
 
     return {
         CSRMatrix<ValueType, IndexType> {
