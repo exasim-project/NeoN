@@ -14,7 +14,7 @@ var searchData=
   ['reset_11',['reset',['../classNeoN_1_1la_1_1LinearSystem.html#a60e4fbaa89ccee0e8540c4d4c2a3c38f',1,'NeoN::la::LinearSystem']]],
   ['resize_12',['resize',['../classNeoN_1_1Array.html#adae762a549262c56fb922acb850d70e3',1,'NeoN::Array::resize()'],['../classNeoN_1_1Vector.html#a99e933d0a77f9ec5fef7d492f23c2219',1,'NeoN::Vector::resize()']]],
   ['rhs_13',['rhs',['../classNeoN_1_1la_1_1LinearSystem.html#ac2fcf5bbb16345399ffdb4fd8741833b',1,'NeoN::la::LinearSystem::rhs()'],['../classNeoN_1_1la_1_1LinearSystem.html#a75d4a24d3742745f0a41eb496f111298',1,'NeoN::la::LinearSystem::rhs() const']]],
-  ['rotate_14',['rotate',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa',1,'NeoN::finiteVolume::cellCentred']]],
+  ['rotateoldtimes_14',['rotateOldTimes',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170',1,'NeoN::finiteVolume::cellCentred']]],
   ['rowoffs_15',['rowoffs',['../classNeoN_1_1la_1_1CSRMatrix.html#af484f148414f4bb3edc3bb4fda4575d6',1,'NeoN::la::CSRMatrix::rowOffs()'],['../classNeoN_1_1la_1_1CSRMatrix.html#a962e52108c2184154c66a06bbf44d27a',1,'NeoN::la::CSRMatrix::rowOffs() const'],['../classNeoN_1_1la_1_1SparsityPattern.html#a4d1a8def1bee369c2c70db32d998d574',1,'NeoN::la::SparsityPattern::rowOffs() const'],['../classNeoN_1_1la_1_1SparsityPattern.html#ae3b80db6b70b1b92c71d7c51add12f74',1,'NeoN::la::SparsityPattern::rowOffs()']]],
   ['rows_16',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#af9893bb3c5c0a966a0b0a3b8a7d83fd7',1,'NeoN::la::SparsityPattern']]]
 ];

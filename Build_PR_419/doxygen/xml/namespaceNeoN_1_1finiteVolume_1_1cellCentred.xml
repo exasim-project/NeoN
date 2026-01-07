@@ -279,17 +279,17 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="180" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="180" bodyend="199"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a478d7b7d4259853cce2eca070cbe66fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
           </param>
         </templateparamlist>
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::rotate</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::rotateOldTimes</definition>
         <argsstring>(VectorType &amp;field)</argsstring>
-        <name>rotate</name>
-        <qualifiedname>NeoN::finiteVolume::cellCentred::rotate</qualifiedname>
+        <name>rotateOldTimes</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::rotateOldTimes</qualifiedname>
         <param>
           <type>VectorType &amp;</type>
           <declname>field</declname>
@@ -298,21 +298,21 @@
 <para>Rotate time levels for a field. Meaning of <computeroutput>level</computeroutput> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld) </para>
         </briefdescription>
         <detaileddescription>
-<para>Startup sequence when <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a478d7b7d4259853cce2eca070cbe66fa" kindref="member">rotate()</ref> is called at the BEGINNING of each time step:</para>
+<para>Startup sequence when rotate() is called at the BEGINNING of each time step:</para>
 <para>Initial state (t = t0, before first rotate): field = φ^{0} no oldTime buffers exist</para>
-<para>First <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a478d7b7d4259853cce2eca070cbe66fa" kindref="member">rotate()</ref> call (entering t1):<itemizedlist>
+<para>First <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" kindref="member">rotateOldTimes()</ref> call (entering t1):<itemizedlist>
 <listitem><para>level == 0</para>
 </listitem><listitem><para>φ^{n} buffer is allocated via oldTime(field)</para>
 </listitem><listitem><para>data rotated: φ^{n} ← φ^{0} → history depth = 1 (BDF1 startup)</para>
 </listitem></itemizedlist>
 </para>
-<para>Second <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a478d7b7d4259853cce2eca070cbe66fa" kindref="member">rotate()</ref> call (entering t2):<itemizedlist>
+<para>Second <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" kindref="member">rotateOldTimes()</ref> call (entering t2):<itemizedlist>
 <listitem><para>level == 1</para>
 </listitem><listitem><para>φ^{n-1} buffer is allocated via oldTime(oldTime(field))</para>
 </listitem><listitem><para>data rotated: φ^{n-1} ← φ^{n} = φ^{0}, φ^{n} ← φ^{1} → history depth = 2 (BDF2 becomes active)</para>
 </listitem></itemizedlist>
 </para>
-<para>Subsequent <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a478d7b7d4259853cce2eca070cbe66fa" kindref="member">rotate()</ref> calls:<itemizedlist>
+<para>Subsequent rotate() calls:<itemizedlist>
 <listitem><para>level &gt;= 2</para>
 </listitem><listitem><para>buffers reused (no further allocation)</para>
 </listitem><listitem><para>data rotated each step: φ^{n-1} ← φ^{n}, φ^{n} ← φ^{current}</para>

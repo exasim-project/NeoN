@@ -217,10 +217,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a51914b93645b7482628ef0fc97f75df0"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a51914b93645b7482628ef0fc97f75df0">oldTimeLevel</a> (const VectorType &amp;field)</td></tr>
 <tr class="memdesc:a51914b93645b7482628ef0fc97f75df0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to retrieve the history depth of a field in oldTimeCollection.  <br /></td></tr>
 <tr class="separator:a51914b93645b7482628ef0fc97f75df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a478d7b7d4259853cce2eca070cbe66fa" id="r_a478d7b7d4259853cce2eca070cbe66fa"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a478d7b7d4259853cce2eca070cbe66fa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa">rotate</a> (VectorType &amp;field)</td></tr>
-<tr class="memdesc:a478d7b7d4259853cce2eca070cbe66fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld)  <br /></td></tr>
-<tr class="separator:a478d7b7d4259853cce2eca070cbe66fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a564c89c16f64e7d3a9de82d871ea3170" id="r_a564c89c16f64e7d3a9de82d871ea3170"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
+<tr class="memitem:a564c89c16f64e7d3a9de82d871ea3170"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170">rotateOldTimes</a> (VectorType &amp;field)</td></tr>
+<tr class="memdesc:a564c89c16f64e7d3a9de82d871ea3170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld)  <br /></td></tr>
+<tr class="separator:a564c89c16f64e7d3a9de82d871ea3170"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a751725b9a4effad3dcab6822807b10e1" id="r_a751725b9a4effad3dcab6822807b10e1"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a751725b9a4effad3dcab6822807b10e1">computeCoNum</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt)</td></tr>
 <tr class="separator:a751725b9a4effad3dcab6822807b10e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab918b7425253d07393f1e18b71aa4e22" id="r_ab918b7425253d07393f1e18b71aa4e22"><td class="memTemplParams" colspan="2">template&lt;typename BoundaryType &gt; </td></tr>
@@ -1059,8 +1059,8 @@ template&lt;typename VectorType &gt; </div>
 
 </div>
 </div>
-<a id="a478d7b7d4259853cce2eca070cbe66fa" name="a478d7b7d4259853cce2eca070cbe66fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a478d7b7d4259853cce2eca070cbe66fa">&#9670;&#160;</a></span>rotate()</h2>
+<a id="a564c89c16f64e7d3a9de82d871ea3170" name="a564c89c16f64e7d3a9de82d871ea3170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a564c89c16f64e7d3a9de82d871ea3170">&#9670;&#160;</a></span>rotateOldTimes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1068,7 +1068,7 @@ template&lt;typename VectorType &gt; </div>
 template&lt;typename VectorType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void NeoN::finiteVolume::cellCentred::rotate </td>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::rotateOldTimes </td>
           <td>(</td>
           <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>field</em></td><td>)</td>
@@ -1078,19 +1078,19 @@ template&lt;typename VectorType &gt; </div>
 </div><div class="memdoc">
 
 <p>Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld) </p>
-<p>Startup sequence when <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> is called at the BEGINNING of each time step:</p>
+<p>Startup sequence when rotate() is called at the BEGINNING of each time step:</p>
 <p>Initial state (t = t0, before first rotate): field = φ^{0} no oldTime buffers exist</p>
-<p>First <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> call (entering t1):</p><ul>
+<p>First <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotateOldTimes()</a> call (entering t1):</p><ul>
 <li>level == 0</li>
 <li>φ^{n} buffer is allocated via oldTime(field)</li>
 <li>data rotated: φ^{n} ← φ^{0} → history depth = 1 (BDF1 startup)</li>
 </ul>
-<p>Second <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> call (entering t2):</p><ul>
+<p>Second <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotateOldTimes()</a> call (entering t2):</p><ul>
 <li>level == 1</li>
 <li>φ^{n-1} buffer is allocated via oldTime(oldTime(field))</li>
 <li>data rotated: φ^{n-1} ← φ^{n} = φ^{0}, φ^{n} ← φ^{1} → history depth = 2 (BDF2 becomes active)</li>
 </ul>
-<p>Subsequent <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> calls:</p><ul>
+<p>Subsequent rotate() calls:</p><ul>
 <li>level &gt;= 2</li>
 <li>buffers reused (no further allocation)</li>
 <li>data rotated each step: φ^{n-1} ← φ^{n}, φ^{n} ← φ^{current}</li>

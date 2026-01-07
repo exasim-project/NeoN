@@ -116,7 +116,7 @@ bool \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab8a6a702197d
 \begin{DoxyCompactList}\small\item\em Retrieves the old time field of a given field (const version). \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Vector\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a51914b93645b7482628ef0fc97f75df0}{old\+Time\+Level}} (const Vector\+Type \&field)
 \begin{DoxyCompactList}\small\item\em Helper function to retrieve the history depth of a field in old\+Time\+Collection. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Vector\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate}} (Vector\+Type \&field)
+{\footnotesize template$<$typename Vector\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170}{rotate\+Old\+Times}} (Vector\+Type \&field)
 \begin{DoxyCompactList}\small\item\em Rotate time levels for a field. Meaning of {\ttfamily level} (computed via old\+Time\+Level(field))\+: level == 0 \+: no history exists yet level == 1 \+: φ\texorpdfstring{$^\wedge$}{\string^}\{n\} exists (one old\+Time buffer) level \texorpdfstring{$>$}{>}= 2 \+: φ\texorpdfstring{$^\wedge$}{\string^}\{n\} and φ\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} exist (old and old\+Old) \end{DoxyCompactList}\item 
 std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a751725b9a4effad3dcab6822807b10e1}{compute\+Co\+Num}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
 \item 
@@ -438,36 +438,36 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00160}{160}} of fi
 
 Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa} 
-\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!rotate@{rotate}}
-\index{rotate@{rotate}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
-\doxysubsubsection{\texorpdfstring{rotate()}{rotate()}}
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!rotateOldTimes@{rotateOldTimes}}
+\index{rotateOldTimes@{rotateOldTimes}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{rotateOldTimes()}{rotateOldTimes()}}
 {\footnotesize\ttfamily template$<$typename Vector\+Type $>$ \\
-void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::rotate (\begin{DoxyParamCaption}\item[{Vector\+Type \&}]{field }\end{DoxyParamCaption})}
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::rotate\+Old\+Times (\begin{DoxyParamCaption}\item[{Vector\+Type \&}]{field }\end{DoxyParamCaption})}
 
 
 
 Rotate time levels for a field. Meaning of {\ttfamily level} (computed via old\+Time\+Level(field))\+: level == 0 \+: no history exists yet level == 1 \+: φ\texorpdfstring{$^\wedge$}{\string^}\{n\} exists (one old\+Time buffer) level \texorpdfstring{$>$}{>}= 2 \+: φ\texorpdfstring{$^\wedge$}{\string^}\{n\} and φ\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} exist (old and old\+Old) 
 
-Startup sequence when \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate()} is called at the BEGINNING of each time step\+:
+Startup sequence when rotate() is called at the BEGINNING of each time step\+:
 
 Initial state (t = t0, before first rotate)\+: field = φ\texorpdfstring{$^\wedge$}{\string^}\{0\} no old\+Time buffers exist
 
-First \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate()} call (entering t1)\+:
+First \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170}{rotate\+Old\+Times()} call (entering t1)\+:
 \begin{DoxyItemize}
 \item level == 0
 \item φ\texorpdfstring{$^\wedge$}{\string^}\{n\} buffer is allocated via old\+Time(field)
 \item data rotated\+: φ\texorpdfstring{$^\wedge$}{\string^}\{n\} ← φ\texorpdfstring{$^\wedge$}{\string^}\{0\} → history depth = 1 (BDF1 startup)
 \end{DoxyItemize}
 
-Second \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate()} call (entering t2)\+:
+Second \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170}{rotate\+Old\+Times()} call (entering t2)\+:
 \begin{DoxyItemize}
 \item level == 1
 \item φ\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} buffer is allocated via old\+Time(old\+Time(field))
 \item data rotated\+: φ\texorpdfstring{$^\wedge$}{\string^}\{n-\/1\} ← φ\texorpdfstring{$^\wedge$}{\string^}\{n\} = φ\texorpdfstring{$^\wedge$}{\string^}\{0\}, φ\texorpdfstring{$^\wedge$}{\string^}\{n\} ← φ\texorpdfstring{$^\wedge$}{\string^}\{1\} → history depth = 2 (BDF2 becomes active)
 \end{DoxyItemize}
 
-Subsequent \doxylink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a478d7b7d4259853cce2eca070cbe66fa}{rotate()} calls\+:
+Subsequent rotate() calls\+:
 \begin{DoxyItemize}
 \item level \texorpdfstring{$>$}{>}= 2
 \item buffers reused (no further allocation)

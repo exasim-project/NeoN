@@ -19,7 +19,7 @@ var searchData=
   ['rhsidxs_16',['rhsIdxs',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#a1cb4cb6307f89a0afba552b2b0a59109',1,'NeoN::la::BoundaryCoefficients']]],
   ['rhsvalues_17',['rhsValues',['../structNeoN_1_1la_1_1BoundaryCoefficients.html#afe7ba18489335d9d2ad05107c5671573',1,'NeoN::la::BoundaryCoefficients']]],
   ['rootvsmall_18',['ROOTVSMALL',['../namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0',1,'NeoN']]],
-  ['rotate_19',['rotate',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa',1,'NeoN::finiteVolume::cellCentred']]],
+  ['rotateoldtimes_19',['rotateOldTimes',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170',1,'NeoN::finiteVolume::cellCentred']]],
   ['rowoffs_20',['rowoffs',['../classNeoN_1_1la_1_1SparsityPattern.html#ae3b80db6b70b1b92c71d7c51add12f74',1,'NeoN::la::SparsityPattern::rowOffs()'],['../classNeoN_1_1la_1_1SparsityPattern.html#a4d1a8def1bee369c2c70db32d998d574',1,'NeoN::la::SparsityPattern::rowOffs() const'],['../classNeoN_1_1la_1_1CSRMatrix.html#a962e52108c2184154c66a06bbf44d27a',1,'NeoN::la::CSRMatrix::rowOffs() const'],['../classNeoN_1_1la_1_1CSRMatrix.html#af484f148414f4bb3edc3bb4fda4575d6',1,'NeoN::la::CSRMatrix::rowOffs()'],['../structNeoN_1_1la_1_1CSRMatrixView.html#ae78e272155a2a23cfc97ab261fc44859',1,'NeoN::la::CSRMatrixView::rowOffs']]],
   ['rows_21',['rows',['../classNeoN_1_1la_1_1SparsityPattern.html#af9893bb3c5c0a966a0b0a3b8a7d83fd7',1,'NeoN::la::SparsityPattern']]],
   ['rungekutta_2ehpp_22',['rungeKutta.hpp',['../rungeKutta_8hpp.html',1,'']]],
