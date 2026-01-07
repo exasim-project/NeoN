@@ -11,6 +11,7 @@
     <includes refid="volumeField_8hpp" local="yes">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</includes>
     <includedby refid="explicit_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</includedby>
     <includedby refid="implicit_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/implicit.hpp</includedby>
+    <includedby refid="temporalOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/temporalOperator.hpp</includedby>
     <incdepgraph>
       <node id="40">
         <label>NeoN/core/array.hpp</label>
@@ -599,9 +600,33 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</label>
         <link refid="explicit_8hpp"/>
       </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp</label>
+        <link refid="expression_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/implicit.hpp</label>
         <link refid="implicit_8hpp"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp</label>
+        <link refid="dsl_2solver_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/temporalOperator.hpp</label>
+        <link refid="temporalOperator_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
@@ -609,6 +634,26 @@
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</label>
+        <link refid="backwardEuler_8hpp"/>
+      </node>
+      <node id="9">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/forwardEuler.hpp</label>
+        <link refid="forwardEuler_8hpp"/>
+      </node>
+      <node id="8">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/timeIntegration.hpp</label>
+        <link refid="timeIntegration_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -621,7 +666,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2025<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
@@ -638,36 +683,51 @@
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
 <codeline lineno="16"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="19" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kindref="compound">DdtOperator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1OperatorMixin" kindref="compound">dsl::OperatorMixin</ref>&lt;VolumeField&lt;ValueType&gt;&gt;</highlight></codeline>
-<codeline lineno="20"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a66859fae1022267f27948c828c17f576" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a66859fae1022267f27948c828c17f576" kindref="member">VectorValueType</ref><sp/>=<sp/>ValueType;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" kindref="member">DdtOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3" kindref="member">dsl::Operator::Type</ref><sp/>termType,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>field);</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af27778cbc6eee6a89f848d83be9108c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af27778cbc6eee6a89f848d83be9108c2" kindref="member">~DdtOperator</ref>();</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a712042660b652c1b16af7fd239d9bee8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a712042660b652c1b16af7fd239d9bee8" kindref="member">explicitOperation</ref>(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/>source,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight></codeline>
-<codeline lineno="32" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc419cdcb8e373cef1376875d8f4080e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc419cdcb8e373cef1376875d8f4080e" kindref="member">implicitOperation</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc98229b60067151048d4a1e9824a89e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc98229b60067151048d4a1e9824a89e" kindref="member">read</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref>&amp;)<sp/>{}</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight></codeline>
-<codeline lineno="36" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa18857500050139c2ffcdc7e4b7b1e4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&amp;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa18857500050139c2ffcdc7e4b7b1e4b" kindref="member">getSparsityPattern</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_;<sp/>}</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;DdtOperator&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>ddtOperator<sp/>does<sp/>not<sp/>have<sp/>a<sp/>FactoryClass</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&amp;<sp/>sparsityPattern_;</highlight></codeline>
-<codeline lineno="44"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kindref="member">DdtScheme</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754" kindref="member">None</ref>,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" kindref="member">BDF1</ref>,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" kindref="member">BDF2</ref></highlight></codeline>
+<codeline lineno="23"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="26" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kindref="compound">DdtOperator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1OperatorMixin" kindref="compound">dsl::OperatorMixin</ref>&lt;VolumeField&lt;ValueType&gt;&gt;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a66859fae1022267f27948c828c17f576" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a66859fae1022267f27948c828c17f576" kindref="member">VectorValueType</ref><sp/>=<sp/>ValueType;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" kindref="member">DdtOperator</ref>(<ref refid="classNeoN_1_1dsl_1_1Operator_1ad72823c9a2d04641ab7c7181902f6dd3" kindref="member">dsl::Operator::Type</ref><sp/>termType,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;ValueType&gt;</ref>&amp;<sp/>field);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af27778cbc6eee6a89f848d83be9108c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af27778cbc6eee6a89f848d83be9108c2" kindref="member">~DdtOperator</ref>();</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a9a12ae20606fff0c5c2e80b17596ab4d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a9a12ae20606fff0c5c2e80b17596ab4d" kindref="member">explicitOperation</ref>(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/>source,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af2203e87d74022f771e8eba9c6804548" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af2203e87d74022f771e8eba9c6804548" kindref="member">implicitOperation</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa82c94d1b08768088bfb804cb89dcecc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa82c94d1b08768088bfb804cb89dcecc" kindref="member">bdf1Kernel</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a708d327387db1847674edd7798aec553" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a708d327387db1847674edd7798aec553" kindref="member">bdf2Kernel</ref>(<ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;ValueType, localIdx&gt;</ref>&amp;<sp/>ls,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a80db3de077c0748d4445de8989b34f3c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kindref="member">DdtScheme</ref><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a80db3de077c0748d4445de8989b34f3c" kindref="member">scheme</ref>()<sp/>const<sp/>noexcept<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>scheme_;<sp/>}</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc98229b60067151048d4a1e9824a89e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc98229b60067151048d4a1e9824a89e" kindref="member">read</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref>&amp;);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa18857500050139c2ffcdc7e4b7b1e4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&amp;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa18857500050139c2ffcdc7e4b7b1e4b" kindref="member">getSparsityPattern</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_;<sp/>}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;DdtOperator&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>ddtOperator<sp/>does<sp/>not<sp/>have<sp/>a<sp/>FactoryClass</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&amp;<sp/>sparsityPattern_;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kindref="member">DdtScheme</ref><sp/>scheme_<sp/>{<ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" kindref="member">DdtScheme::BDF1</ref>};</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"/>
   </compounddef>

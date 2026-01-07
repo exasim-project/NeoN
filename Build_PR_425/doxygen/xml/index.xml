@@ -46,8 +46,8 @@
   <compound refid="classNeoN_1_1timeIntegration_1_1BackwardEuler" kind="class"><name>NeoN::timeIntegration::BackwardEuler</name>
     <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1aa0038f62edb303ff02cf8792e629cd4c" kind="typedef"><name>ValueType</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a40fbe8c435bfc59b29e8da4a8a90955f" kind="typedef"><name>Base</name></member>
-    <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a15f1e0a0ad1950f87bb9eeeba7c0d4d8" kind="function"><name>BackwardEuler</name></member>
-    <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a25c578f3776cceafe073b0e693849c45" kind="function"><name>solve</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a5d066fe3f507245e3216a0eea75ee2be" kind="function"><name>BackwardEuler</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a5bd6e2ede1a682fc50a552de0b26ae01" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a44c328deeb3eb7dd09b66e7a6863ac25" kind="function"><name>clone</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1ac3ccde4fbcaf9b3f414e95694a7c3402" kind="function"><name>explicitIntegration</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1ab67d1ec12577c5f0f4353b76109626b4" kind="function"><name>name</name></member>
@@ -85,6 +85,7 @@
   </compound>
   <compound refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes" kind="struct"><name>NeoN::finiteVolume::cellCentred::BoundaryAttributes</name>
     <member refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_1aa84cebf42ab87cda70be20aef7454c0c" kind="variable"><name>assignable</name></member>
+    <member refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_1a6ca8948d47e0dfa00ff58b533d830b2c" kind="variable"><name>fixesValue</name></member>
   </compound>
   <compound refid="structNeoN_1_1la_1_1BoundaryCoefficients" kind="struct"><name>NeoN::la::BoundaryCoefficients</name>
     <member refid="structNeoN_1_1la_1_1BoundaryCoefficients_1a1084e3e472ad8ca16a4e5c5e43e0ca86" kind="variable"><name>matrixValues</name></member>
@@ -340,10 +341,14 @@
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator" kind="class"><name>NeoN::finiteVolume::cellCentred::DdtOperator</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a66859fae1022267f27948c828c17f576" kind="typedef"><name>VectorValueType</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a2bc5326ce2aac386e10c1a0009165ffe" kind="variable"><name>sparsityPattern_</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afa3c873b9a4bf679e797b05d6475472f" kind="variable"><name>scheme_</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1ac840f87bfe68aced2e8cdcabe863119d" kind="function"><name>DdtOperator</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af27778cbc6eee6a89f848d83be9108c2" kind="function"><name>~DdtOperator</name></member>
-    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a712042660b652c1b16af7fd239d9bee8" kind="function"><name>explicitOperation</name></member>
-    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc419cdcb8e373cef1376875d8f4080e" kind="function"><name>implicitOperation</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a9a12ae20606fff0c5c2e80b17596ab4d" kind="function"><name>explicitOperation</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1af2203e87d74022f771e8eba9c6804548" kind="function"><name>implicitOperation</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa82c94d1b08768088bfb804cb89dcecc" kind="function"><name>bdf1Kernel</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a708d327387db1847674edd7798aec553" kind="function"><name>bdf2Kernel</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a80db3de077c0748d4445de8989b34f3c" kind="function"><name>scheme</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1afc98229b60067151048d4a1e9824a89e" kind="function"><name>read</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1aa18857500050139c2ffcdc7e4b7b1e4b" kind="function"><name>getSparsityPattern</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_1a557821d7890bce2cf1668982d0f5baf0" kind="function"><name>getName</name></member>
@@ -351,6 +356,16 @@
   <compound refid="classNeoN_1_1DerivedClassDocumentation" kind="class"><name>NeoN::DerivedClassDocumentation</name>
     <member refid="classNeoN_1_1DerivedClassDocumentation_1a4a67fe40c265c9725d1f48404008fc7f" kind="variable"><name>doc</name></member>
     <member refid="classNeoN_1_1DerivedClassDocumentation_1a309f623249a9a7558e51375e8e7a61eb" kind="variable"><name>schema</name></member>
+  </compound>
+  <compound refid="classNeoN_1_1la_1_1DiagonalSolver" kind="class"><name>NeoN::la::DiagonalSolver</name>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1af6f81eaced91f053f0358da9ab62fea6" kind="typedef"><name>Base</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a825b7a56f08d36b4517721d80c64e1fa" kind="function"><name>DiagonalSolver</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a52461161aa85a3a6f15c277930d1f73d" kind="function"><name>solve</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1ada7f9139a5941daa27d245e24b98e6b3" kind="function"><name>solve</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a843edf18e2df8e454bc051b8ee9ddab9" kind="function"><name>clone</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1ac7c044d16579ea8e8d9f0b131762eae8" kind="function"><name>name</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1abb291dd3aea5d6f6b9e89987fcab0fda" kind="function"><name>doc</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a9eca3529867c3c3446d6eb8a350e84cf" kind="function"><name>schema</name></member>
   </compound>
   <compound refid="classNeoN_1_1Dictionary" kind="class"><name>NeoN::Dictionary</name>
     <member refid="classNeoN_1_1Dictionary_1ac35f1e90cdfe13d0126f95e76f342a06" kind="variable"><name>data_</name></member>
@@ -1133,6 +1148,7 @@
     <member refid="classNeoN_1_1dsl_1_1TemporalOperator_1a6fe16992f3ec6270570440e302a86f19" kind="function"><name>getCoefficient</name></member>
     <member refid="classNeoN_1_1dsl_1_1TemporalOperator_1a97633d93c2e6d5438806991482f8d29d" kind="function"><name>read</name></member>
     <member refid="classNeoN_1_1dsl_1_1TemporalOperator_1a243dfd0d6dc7e606ce01d93f19e259a8" kind="function"><name>exec</name></member>
+    <member refid="classNeoN_1_1dsl_1_1TemporalOperator_1a1a86158497b676990e249d875a80be65" kind="function"><name>ddtScheme</name></member>
   </compound>
   <compound refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept" kind="struct"><name>NeoN::dsl::TemporalOperator::TemporalOperatorConcept</name>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1ad36f69714075845826b2faa7cab8776e" kind="function"><name>~TemporalOperatorConcept</name></member>
@@ -1144,6 +1160,7 @@
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1a0a8996fa4eb6a798c4f6c9703a5edd90" kind="function"><name>getCoefficient</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1a3fb6ce6c5af55f75e1ae432688d56eaa" kind="function"><name>getCoefficient</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1a5ee8c81a5afa7496335709e14c55abbc" kind="function"><name>exec</name></member>
+    <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1a9e89a6a8829939049217c54bbf4265d8" kind="function"><name>ddtScheme</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorConcept_1aa0ceb40e74806218b855cd23be4999c1" kind="function"><name>clone</name></member>
   </compound>
   <compound refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel" kind="struct"><name>NeoN::dsl::TemporalOperator::TemporalOperatorModel</name>
@@ -1157,6 +1174,7 @@
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel_1aef6ce0322a3497dd430e76834f812293" kind="function"><name>exec</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel_1a9cea8c74a8d70c18e9bc8b588684ea80" kind="function"><name>getCoefficient</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel_1a3983b9cd62618a01542400a14e22a2df" kind="function"><name>getCoefficient</name></member>
+    <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel_1a430b55794ca6423d9eaa3178452797ac" kind="function"><name>ddtScheme</name></member>
     <member refid="structNeoN_1_1dsl_1_1TemporalOperator_1_1TemporalOperatorModel_1af7669e9969b308c66dc78bff31793157" kind="function"><name>clone</name></member>
   </compound>
   <compound refid="classNeoN_1_1Time" kind="class"><name>NeoN::Time</name>
@@ -1174,17 +1192,17 @@
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a520dcc459ac076d850374cc96faea1c1" kind="variable"><name>timeIntegratorStrategy_</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a9f43011382a555da953bf962bd0e4e0e" kind="function"><name>TimeIntegration</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ae74768bc8d2c29be38b77340ec0a6109" kind="function"><name>TimeIntegration</name></member>
-    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a396623a117d5148481f376df12090c38" kind="function"><name>TimeIntegration</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ac03f35d48d4e1116af3221123ff4f48e" kind="function"><name>TimeIntegration</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ad0b7d09fb156d2ba6da0f15fcf39cd0d" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a3d88f64963933bebe51c977cbb661519" kind="function"><name>explicitIntegration</name></member>
   </compound>
   <compound refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kind="class"><name>NeoN::timeIntegration::TimeIntegratorBase</name>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aa2d28bc4e908bd4665771612700b52cd" kind="typedef"><name>ValueType</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a5dc5973f6b9d091167da62cefe883fba" kind="typedef"><name>Expression</name></member>
-    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a6ec6c1557e18be4abda8b17b673652b5" kind="variable"><name>schemeDict_</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a72fc6bbc5190d108fb602b0f38749cd3" kind="variable"><name>timeIntegrationDict_</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a319d692ec559c3b0863e06216769a61a" kind="variable"><name>solutionDict_</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a9b71471bb93ba538cbfe1e2c42fedebc" kind="function"><name>name</name></member>
-    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aef92fda8dab4d1a50e91fb63c9114395" kind="function"><name>TimeIntegratorBase</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a88cfefa71b232c6a9aed200291761b5e" kind="function"><name>TimeIntegratorBase</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a520f7e266a18cee23fe1648879d32762" kind="function"><name>~TimeIntegratorBase</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1ad227b119cbf38ec8b1ef7f004f1fe887" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aa97bc8f374d17702e1c8f4816b8d0f24" kind="function"><name>clone</name></member>
@@ -1563,24 +1581,39 @@
   <compound refid="namespaceNeoN_1_1finiteVolume" kind="namespace"><name>NeoN::finiteVolume</name>
   </compound>
   <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kind="namespace"><name>NeoN::finiteVolume::cellCentred</name>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kind="enum"><name>DdtScheme</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754" kind="enumvalue"><name>None</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" kind="enumvalue"><name>BDF1</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" kind="enumvalue"><name>BDF2</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af1c5b27f52cfe871ebc69cf0c8d11626" kind="typedef"><name>CreateFunction</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a6568c7313fb14207c50ce55d892197fe" kind="typedef"><name>VolVectorField</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kind="typedef"><name>SurfScalarField</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab8a6a702197de1bbac01984af4bde590" kind="function"><name>validateVectorDoc</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af177c363435f0b7c6f48fb197a62df1c" kind="function"><name>oldTime</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aff55801e0df1fcf7be8f26668fa963e5" kind="function"><name>oldTime</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a51914b93645b7482628ef0fc97f75df0" kind="function"><name>oldTimeLevel</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" kind="function"><name>rotateOldTimes</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a751725b9a4effad3dcab6822807b10e1" kind="function"><name>computeCoNum</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab918b7425253d07393f1e18b71aa4e22" kind="function"><name>createCalculatedBCs</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ac219f7675251df9d46327915c48c74e4" kind="function"><name>createExtrapolatedBCs</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" kind="function"><name>createFluxCorrBCsFromU</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad5c0aa904c7545c5c4ba1b1a833261c9" kind="function"><name>computeFaceNormalGrad</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aee25e9fd121df9a620046de2aeec8093" kind="function"><name>operator*</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a3deeafaf46d7d4e44bef4d6206b2604a" kind="function"><name>operator+</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5ee2b2f0634716198d36459918063de3" kind="function"><name>computeLinearInterpolation</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aa9d7a25056cb046afef32003276efb73" kind="function"><name>computeUpwindInterpolation</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a097f320c9bd5c29ce0f05c1de7ea047f" kind="function"><name>computeUpwindInterpolationWeights</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae2be2580a8248d415eadc502ceebcf95" kind="function"><name>ddtFluxCorr</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1adebf18ffc07511e7a497371f83f92fc3" kind="function"><name>computeDivExp</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a91df1880106d9d15a41fd75153aac3f7" kind="function"><name>computeDivImp</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a1827d771a724a1436e1ece864c4fc8a7" kind="function"><name>computeLaplacianExp</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a08f3abb7596691a8ef82f2e887b8fb04" kind="function"><name>computeLaplacianImpl</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae943e0d9df47132f4e227ceff274d664" kind="function"><name>surfaceIntegrate</name></member>
+  </compound>
+  <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail" kind="namespace"><name>NeoN::finiteVolume::cellCentred::detail</name>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a502b3efc47c2f41b6a4cfb9dbe7ada3b" kind="function"><name>ddtFluxCorrLimiter</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a3ab3efbc6f9cb22226affb2305cc93a5" kind="function"><name>ddtFluxCorrBDF1Kernel</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a9fb27d788ee7ab453d5b5b4a2b5e0bfb" kind="function"><name>ddtFluxCorrBDF2Kernel</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary" kind="namespace"><name>NeoN::finiteVolume::cellCentred::surfaceBoundary</name>
   </compound>
@@ -1630,6 +1663,8 @@
     <member refid="namespaceNeoN_1_1Logging_1a02663648b70255c0e7ec3fad5271a862" kind="function"><name>setLogger</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1timeIntegration" kind="namespace"><name>NeoN::timeIntegration</name>
+  </compound>
+  <compound refid="namespaceSolverFactory" kind="namespace"><name>SolverFactory</name>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -1761,6 +1796,8 @@
   </compound>
   <compound refid="boundaryPatchMixin_8hpp" kind="file"><name>boundaryPatchMixin.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  </compound>
   <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
   </compound>
   <compound refid="surface_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
@@ -1801,6 +1838,8 @@
   </compound>
   <compound refid="upwind_8hpp" kind="file"><name>upwind.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorr_8hpp" kind="file"><name>ddtFluxCorr.hpp</name>
+  </compound>
   <compound refid="ddtOperator_8hpp" kind="file"><name>ddtOperator.hpp</name>
   </compound>
   <compound refid="divOperator_8hpp" kind="file"><name>divOperator.hpp</name>
@@ -1829,6 +1868,8 @@
     <member refid="exceptions_8hpp_1ad5d4e37fe86567a1b588532e3d6f94e1" kind="define"><name>NeoN_ASSERT_EQUAL_LENGTH</name></member>
   </compound>
   <compound refid="CSRMatrix_8hpp" kind="file"><name>CSRMatrix.hpp</name>
+  </compound>
+  <compound refid="diagonalSolver_8hpp" kind="file"><name>diagonalSolver.hpp</name>
   </compound>
   <compound refid="ginkgo_8hpp" kind="file"><name>ginkgo.hpp</name>
   </compound>
