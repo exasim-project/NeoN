@@ -660,7 +660,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2025<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2025<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
@@ -669,42 +669,40 @@
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="unstructuredMesh_8hpp" kindref="compound">NeoN/mesh/unstructured/unstructuredMesh.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="boundary_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/boundary.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="volumeField_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#include<sp/>&quot;NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
-<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::vector&lt;SurfaceBoundary&lt;scalar&gt;&gt;</highlight></codeline>
-<codeline lineno="16" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" kindref="member">createFluxCorrBCsFromU</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>u)</highlight></codeline>
-<codeline lineno="17"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SurfaceBoundary&lt;scalar&gt;&gt;<sp/>bcs;</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>uBCs<sp/>=<sp/>u.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField_1abb0f2b7d367e01f755e53021fad3527f" kindref="member">boundaryConditions</ref>();</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(uBCs.size());</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID<sp/>=<sp/>0;<sp/>patchID<sp/>&lt;<sp/>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>)uBCs.size();<sp/>++patchID)</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>attrs<sp/>=<sp/>uBCs[patchID].attributes();</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>dict;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kindref="compound">NeoN::finiteVolume::cellCentred</ref></highlight></codeline>
+<codeline lineno="12"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::vector&lt;SurfaceBoundary&lt;scalar&gt;&gt;</highlight></codeline>
+<codeline lineno="23" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" kindref="member">createFluxCorrBCsFromU</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>u)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;SurfaceBoundary&lt;scalar&gt;&gt;<sp/>bcs;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>uBCs<sp/>=<sp/>u.<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField_1abb0f2b7d367e01f755e53021fad3527f" kindref="member">boundaryConditions</ref>();</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(attrs.fixesValue)</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Zero<sp/>correction<sp/>on<sp/>U<sp/>fixedValue<sp/>patches</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">));</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(0));</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bcs.emplace_back(mesh,<sp/>dict,<sp/>patchID);</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(uBCs.size());</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID<sp/>=<sp/>0;<sp/>patchID<sp/>&lt;<sp/>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>)uBCs.size();<sp/>++patchID)</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>attrs<sp/>=<sp/>uBCs[patchID].attributes();</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>dict;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(attrs.fixesValue)</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;calculated&quot;</highlight><highlight class="normal">));</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bcs.emplace_back(mesh,<sp/>dict,<sp/>patchID);</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>bcs;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::finiteVolume::cellCentred</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Zero<sp/>correction<sp/>on<sp/>U<sp/>fixedValue<sp/>patches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(0));</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bcs.emplace_back(mesh,<sp/>dict,<sp/>patchID);</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1ac622f165a5d718e04bc3a22b80d949de" kindref="member">insert</ref>(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;calculated&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bcs.emplace_back(mesh,<sp/>dict,<sp/>patchID);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>bcs;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::finiteVolume::cellCentred</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp"/>
   </compounddef>

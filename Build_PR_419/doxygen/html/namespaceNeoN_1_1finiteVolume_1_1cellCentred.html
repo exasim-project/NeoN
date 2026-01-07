@@ -219,6 +219,7 @@ Functions</h2></td></tr>
 <tr class="separator:a51914b93645b7482628ef0fc97f75df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a478d7b7d4259853cce2eca070cbe66fa" id="r_a478d7b7d4259853cce2eca070cbe66fa"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
 <tr class="memitem:a478d7b7d4259853cce2eca070cbe66fa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa">rotate</a> (VectorType &amp;field)</td></tr>
+<tr class="memdesc:a478d7b7d4259853cce2eca070cbe66fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld)  <br /></td></tr>
 <tr class="separator:a478d7b7d4259853cce2eca070cbe66fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a751725b9a4effad3dcab6822807b10e1" id="r_a751725b9a4effad3dcab6822807b10e1"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a751725b9a4effad3dcab6822807b10e1">computeCoNum</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt)</td></tr>
 <tr class="separator:a751725b9a4effad3dcab6822807b10e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,6 +230,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ac219f7675251df9d46327915c48c74e4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; BoundaryType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac219f7675251df9d46327915c48c74e4">createExtrapolatedBCs</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:ac219f7675251df9d46327915c48c74e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a616a3a0d2d9285da79f5301efe88d399" id="r_a616a3a0d2d9285da79f5301efe88d399"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html">SurfaceBoundary</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a616a3a0d2d9285da79f5301efe88d399">createFluxCorrBCsFromU</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;u)</td></tr>
+<tr class="memdesc:a616a3a0d2d9285da79f5301efe88d399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boundary condition to apply to ddtFluxCorr surfaceScalarField. It sets the flux correction to zero for all fixedValue velocity boundaries by calling .correctBoundaryConditions().  <br /></td></tr>
 <tr class="separator:a616a3a0d2d9285da79f5301efe88d399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5c0aa904c7545c5c4ba1b1a833261c9" id="r_ad5c0aa904c7545c5c4ba1b1a833261c9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ad5c0aa904c7545c5c4ba1b1a833261c9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ad5c0aa904c7545c5c4ba1b1a833261c9">computeFaceNormalGrad</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;volVector, const std::shared_ptr&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html">GeometryScheme</a> &gt; geometryScheme, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;surfaceVector)</td></tr>
@@ -814,7 +816,17 @@ template&lt;typename BoundaryType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ddtFluxCorrBoundary_8hpp_source.html#l00016">16</a> of file <a class="el" href="ddtFluxCorrBoundary_8hpp_source.html">ddtFluxCorrBoundary.hpp</a>.</p>
+<p>Boundary condition to apply to ddtFluxCorr surfaceScalarField. It sets the flux correction to zero for all fixedValue velocity boundaries by calling .correctBoundaryConditions(). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mesh</td><td>The mesh the boundary is registered on. </td></tr>
+    <tr><td class="paramname">u</td><td>The velocity field to check the boundary conditions on. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>bcs The surface boundary vector with updated BC types. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="ddtFluxCorrBoundary_8hpp_source.html#l00023">23</a> of file <a class="el" href="ddtFluxCorrBoundary_8hpp_source.html">ddtFluxCorrBoundary.hpp</a>.</p>
 
 </div>
 </div>
@@ -1064,6 +1076,32 @@ template&lt;typename VectorType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld) </p>
+<p>Startup sequence when <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> is called at the BEGINNING of each time step:</p>
+<p>Initial state (t = t0, before first rotate): field = φ^{0} no oldTime buffers exist</p>
+<p>First <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> call (entering t1):</p><ul>
+<li>level == 0</li>
+<li>φ^{n} buffer is allocated via oldTime(field)</li>
+<li>data rotated: φ^{n} ← φ^{0} → history depth = 1 (BDF1 startup)</li>
+</ul>
+<p>Second <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> call (entering t2):</p><ul>
+<li>level == 1</li>
+<li>φ^{n-1} buffer is allocated via oldTime(oldTime(field))</li>
+<li>data rotated: φ^{n-1} ← φ^{n} = φ^{0}, φ^{n} ← φ^{1} → history depth = 2 (BDF2 becomes active)</li>
+</ul>
+<p>Subsequent <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a478d7b7d4259853cce2eca070cbe66fa" title="Rotate time levels for a field. Meaning of level (computed via oldTimeLevel(field)): level == 0 : no ...">rotate()</a> calls:</p><ul>
+<li>level &gt;= 2</li>
+<li>buffers reused (no further allocation)</li>
+<li>data rotated each step: φ^{n-1} ← φ^{n}, φ^{n} ← φ^{current}</li>
+</ul>
+<p>Only two historical states are kept (φ^{n}, φ^{n-1}).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">field</td><td>The field to retrieve the old time field from. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
