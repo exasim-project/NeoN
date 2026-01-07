@@ -101,16 +101,16 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
             NEON_LAMBDA(const localIdx i) { lsView.rhs[i] = -lsView.rhs[i]; }
         );
 
-    //     // Check modification.
-    //     auto hostLS2 = ls.copyToHost();
-    //     auto hostLS2View = hostLS2.view();
-    //     for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
-    //     {
-    //         REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
-    //     }
-    //     for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
-    //     {
-    //         REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
-    //     }
-    // }
+        //     // Check modification.
+        //     auto hostLS2 = ls.copyToHost();
+        //     auto hostLS2View = hostLS2.view();
+        //     for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
+        //     {
+        //         REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
+        //     }
+        //     for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
+        //     {
+        //         REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
+        //     }
+    }
 }

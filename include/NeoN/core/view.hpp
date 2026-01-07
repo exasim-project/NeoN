@@ -51,22 +51,15 @@ public:
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index < 0 || this->size() <= index)
+        if (index < 0 || index >= this->size())
         {
             const std::string msg {"Index is out of range. Index: " + std::to_string(index)};
             if (abortOnFail)
             {
-                failureIndex = index;
                 Kokkos::abort(msg.c_str());
             }
             else
             {
-                // NOTE: throwing from a device function does not work
-                // throw std::invalid_argument("Index is out of range");
-                if (failureIndex == 0)
-                {
-                    failureIndex = index;
-                }
                 return std::span<ValueType>::operator[](static_cast<size_t>(index));
             }
         }

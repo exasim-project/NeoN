@@ -43,9 +43,19 @@ public:
         scalar dt
     ) const;
 
-    void bdf1Kernel(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const;
+    void bdf1Kernel(
+        la::LinearSystem<ValueType, localIdx>& ls,
+        const la::MatrixIterator<ValueType>& matrixIterator,
+        scalar t,
+        scalar dt
+    ) const;
 
-    void bdf2Kernel(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const;
+    void bdf2Kernel(
+        la::LinearSystem<ValueType, localIdx>& ls,
+        const la::MatrixIterator<ValueType>& matrixIterator,
+        scalar t,
+        scalar dt
+    ) const;
 
     DdtScheme scheme() const noexcept { return scheme_; }
 

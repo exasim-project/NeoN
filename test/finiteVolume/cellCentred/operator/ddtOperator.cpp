@@ -125,13 +125,16 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
+        auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
 
         const scalar dt = 0.5;
         {
-            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(
+                mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+            );
 
             // ---------- Step 1: startup (Euler) ----------
-            ddtOp.implicitOperation(ls, 1.0, dt);
+            ddtOp.implicitOperation(ls, mi, 1.0, dt);
 
             const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
             const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
@@ -145,11 +148,13 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             }
         }
         {
-            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(
+                mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+            );
 
             // ---------- Step 2: true BDF2 ----------
             fill(oldTime(oldTime(phi)).internalVector(), -2.0 * one<TestType>());
-            ddtOp.implicitOperation(ls, 1.5, dt);
+            ddtOp.implicitOperation(ls, mi, 1.5, dt);
 
             const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
             const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());

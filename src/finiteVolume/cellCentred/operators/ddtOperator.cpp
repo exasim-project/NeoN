@@ -38,7 +38,6 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf1Kernel(
-void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<ValueType, localIdx>& ls,
     const la::MatrixIterator<ValueType>& matrixIterator,
     scalar,
@@ -68,7 +67,10 @@ void DdtOperator<ValueType>::implicitOperation(
 
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
+    la::LinearSystem<ValueType, localIdx>& ls,
+    const la::MatrixIterator<ValueType>& mi,
+    scalar t,
+    scalar dt
 ) const
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
@@ -76,8 +78,8 @@ void DdtOperator<ValueType>::bdf2Kernel(
     auto& old = oldTime(this->field_);
     auto& oldOld = oldTime(old);
     const auto [diagOffs, oldVector, oldOldVector] =
-        views(getSparsityPattern().diagOffset(), old.internalVector(), oldOld.internalVector());
-    auto [matrix, rhs] = ls.view();
+        views(mi.diagOffset(), old.internalVector(), oldOld.internalVector());
+    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     const scalar a0 = 1.5 / dt;
     const scalar a1 = 2.0 / dt;
@@ -99,22 +101,25 @@ void DdtOperator<ValueType>::bdf2Kernel(
 
 template<typename ValueType>
 void DdtOperator<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt
+    la::LinearSystem<ValueType, localIdx>& ls,
+    const la::MatrixIterator<ValueType>& mi,
+    scalar t,
+    scalar dt
 ) const
 {
     const int level = oldTimeLevel(this->field_);
 
     if (scheme_ == DdtScheme::BDF1)
     {
-        bdf1Kernel(ls, t, dt);
+        bdf1Kernel(ls, mi, t, dt);
     }
     else if (level < 2)
     {
-        bdf1Kernel(ls, t, dt); // startup step
+        bdf1Kernel(ls, mi, t, dt); // startup step
     }
     else
     {
-        bdf2Kernel(ls, t, dt);
+        bdf2Kernel(ls, mi, t, dt);
     }
 }
 
