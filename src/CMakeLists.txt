@@ -55,7 +55,11 @@ target_sources(
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
           "finiteVolume/cellCentred/auxiliary/coNum.cpp"
           "timeIntegration/timeIntegration.cpp"
-          "timeIntegration/rungeKutta.cpp")
+          "timeIntegration/rungeKutta.cpp"
+          "turbulenceModels/ReynoldsStress.cpp"
+          "turbulenceModels/DES/maxDeltaxyz.cpp"
+          "turbulenceModels/DES/SpalartAllmarasBase.cpp"
+          "turbulenceModels/DES/SpalartAllmarasDDES.cpp")
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
