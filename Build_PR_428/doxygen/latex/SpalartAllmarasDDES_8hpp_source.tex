@@ -1,0 +1,59 @@
+\doxysection{Spalart\+Allmaras\+DDES.\+hpp}
+\hypertarget{SpalartAllmarasDDES_8hpp_source}{}\label{SpalartAllmarasDDES_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/DES/SpalartAllmarasDDES.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/DES/SpalartAllmarasDDES.hpp}}
+\mbox{\hyperlink{SpalartAllmarasDDES_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1turbulenceModels_1_1DES}{NeoN::turbulenceModels::DES}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00015}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES}{00015}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES}{SpalartAllmarasDDES}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00017}00017\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00019}\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients}{00019}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00020}00020\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00021}\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_a2f2015e7019264cb016ab1531aec56b7}{00021}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_a2f2015e7019264cb016ab1531aec56b7}{Cdes}}\ =\ 0.65;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00022}\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_ad9d7a5a22659a882c37b5f35bde8c9b0}{00022}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_ad9d7a5a22659a882c37b5f35bde8c9b0}{kappa}}\ =\ 0.41;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00023}\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_af1f861a8aa6d2ddf435420da288ae6ef}{00023}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients_af1f861a8aa6d2ddf435420da288ae6ef}{fdCoef}}\ =\ 8.0;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00024}00024\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a15fa4326778d9bf1fb4d68ece170cc0e}{00026}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a15fa4326778d9bf1fb4d68ece170cc0e}{SpalartAllmarasDDES}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_ac73b7221e2b9b4122e6da784c0db3e3f}{coeffs}});}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_ac73b7221e2b9b4122e6da784c0db3e3f}{00028}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}\&\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_ac73b7221e2b9b4122e6da784c0db3e3f}{coeffs}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a33e9d7a9fcb320ad3a44e965208b0333}{00030}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a33e9d7a9fcb320ad3a44e965208b0333}{dTilde}}(}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ wallDistance,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ nuTilde,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ nu,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ strainRate,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ delta}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00036}00036\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a91cde81fd44db2f4f664200fdb0566d2}{00038}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_a91cde81fd44db2f4f664200fdb0566d2}{dTilde}}(}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ dTildeField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ wallDistance,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ nuTilde,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ nu,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ strainRate,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ delta}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00045}00045\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00047}00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00049}00049\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00050}00050\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}\ coeffs\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00051}00051\ \};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00053}00053\ \}\ \textcolor{comment}{//\ namespace\ NeoN::turbulenceModels::DES}}
+
+\end{DoxyCode}

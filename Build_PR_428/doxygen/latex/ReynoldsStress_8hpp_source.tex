@@ -1,0 +1,46 @@
+\doxysection{Reynolds\+Stress.\+hpp}
+\hypertarget{ReynoldsStress_8hpp_source}{}\label{ReynoldsStress_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/ReynoldsStress.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/ReynoldsStress.hpp}}
+\mbox{\hyperlink{ReynoldsStress_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{input_8hpp}{NeoN/core/input.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gaussGreenLaplacian_8hpp}{NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1turbulenceModels}{NeoN::turbulenceModels}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00016}\mbox{\hyperlink{namespaceNeoN_1_1turbulenceModels_ac725b4bb078047d43105c52aebee3495}{00016}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{NeoN::finiteVolume::cellCentred::VolumeField<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00017}\mbox{\hyperlink{namespaceNeoN_1_1turbulenceModels_a0c4b3bca91bdbb1cd476f6067ffbc01d}{00017}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{NeoN::finiteVolume::cellCentred::VolumeField<scalar>}};}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00018}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress}{ReynoldsStress}}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00020}00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00022}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress_a183196e062d336d201b87c2bc2637f2c}{00022}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress_a183196e062d336d201b87c2bc2637f2c}{ReynoldsStress}}(}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\ input\ =}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ \{\{\textcolor{stringliteral}{"{}surfaceInterpolation"{}},\ \textcolor{stringliteral}{"{}linear"{}}\},\ \{\textcolor{stringliteral}{"{}faceNormalGradient"{}},\ \textcolor{stringliteral}{"{}uncorrected"{}}\}\}}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00027}00027\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress_a21ed67a6008295ea71be4dd600e45044}{00029}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1ReynoldsStress_a21ed67a6008295ea71be4dd600e45044}{divDevReff}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ velocity,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuEff)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00031}00031\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00033}00033\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\ input\_;}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{finiteVolume::cellCentred::SurfaceInterpolation<scalar>}}\ surfaceInterpolation\_;}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian}{finiteVolume::cellCentred::GaussGreenLaplacian<Vec3>}}\ laplacian\_;}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00038}00038\ \};}
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{ReynoldsStress_8hpp_source_l00040}00040\ \}\ \textcolor{comment}{//\ namespace\ NeoN::turbulenceModels}}
+
+\end{DoxyCode}

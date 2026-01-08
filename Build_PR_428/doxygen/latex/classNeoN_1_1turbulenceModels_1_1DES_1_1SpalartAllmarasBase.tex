@@ -1,0 +1,160 @@
+\doxysection{NeoN\+::turbulence\+Models\+::DES\+::Spalart\+Allmaras\+Base Class Reference}
+\hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase}{}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase}\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+
+
+{\ttfamily \#include $<$Spalart\+Allmaras\+Base.\+hpp$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients}{Coefficients}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae1e2c877dfd94f779ac3d2dfe23efd53}{Spalart\+Allmaras\+Base}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients}{Coefficients}} \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a6c0af707dba6906c10ee34859299abae}{coeffs}})
+\item 
+const \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients}{Coefficients}} \& \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a6c0af707dba6906c10ee34859299abae}{coeffs}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a79f0a1ff7d39408f6f4cf5be138fab17}{cw1}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad538382dfc5c4b28ca32e4b90df59c95}{wall\+Distance}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a7e569b66766e50ccc4dbef58412e7c9f}{strain\+Rate}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Ux, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Uy, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Uz) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_acdb490b3d548cbe66ce9b9e22e0e4d42}{strain\+Rate}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&strain\+Rate\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Ux, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Uy, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&grad\+Uz) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a588c32f6accee1a4dfabd76bae43bcac}{chi}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu\+Tilde, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad7b93cea2f35ba2375be9e456a61a013}{chi}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu\+Tilde, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a0a6842349fb64ae05f579889cfbd43d5}{fv1}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a115a721f0a10c36404186b24e0f4bfda}{fv1}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&fv1\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a623c125a928efeab508b912c586a1cf0}{fv2}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&fv1\+Field) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ac75cc4daefa0a9734e0e22c04d50a259}{fv2}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&fv2\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&fv1\+Field) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae4712ef8d02f9c3286cfc380ecbf851f}{ft2}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_afcc47491f1dc44e0eda6fe95d34d7b9d}{ft2}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&ft2\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&chi\+Field) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a713e73a01fef1b87f0dd8e4447f52598}{nut}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu\+Tilde, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a9ec783c308598aad0f8e0670a527849d}{nut}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nut\+Field, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu\+Tilde, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu) const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{SpalartAllmarasBase_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{SpalartAllmarasBase_8hpp_source}{Spalart\+Allmaras\+Base.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae1e2c877dfd94f779ac3d2dfe23efd53}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae1e2c877dfd94f779ac3d2dfe23efd53} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!SpalartAllmarasBase@{SpalartAllmarasBase}}
+\index{SpalartAllmarasBase@{SpalartAllmarasBase}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{SpalartAllmarasBase()}{SpalartAllmarasBase()}}
+{\footnotesize\ttfamily Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::\+Spalart\+Allmaras\+Base (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{\mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients}{Coefficients}}}]{coeffs }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a588c32f6accee1a4dfabd76bae43bcac}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a588c32f6accee1a4dfabd76bae43bcac} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!chi@{chi}}
+\index{chi@{chi}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{chi()}{chi()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::chi (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu\+Tilde,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad7b93cea2f35ba2375be9e456a61a013}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad7b93cea2f35ba2375be9e456a61a013} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!chi@{chi}}
+\index{chi@{chi}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{chi()}{chi()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::chi (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu\+Tilde,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a6c0af707dba6906c10ee34859299abae}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a6c0af707dba6906c10ee34859299abae} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!coeffs@{coeffs}}
+\index{coeffs@{coeffs}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{coeffs()}{coeffs()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients}{Coefficients}} \& Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::coeffs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a79f0a1ff7d39408f6f4cf5be138fab17}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a79f0a1ff7d39408f6f4cf5be138fab17} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!cw1@{cw1}}
+\index{cw1@{cw1}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{cw1()}{cw1()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::cw1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae4712ef8d02f9c3286cfc380ecbf851f}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ae4712ef8d02f9c3286cfc380ecbf851f} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!ft2@{ft2}}
+\index{ft2@{ft2}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{ft2()}{ft2()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::ft2 (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_afcc47491f1dc44e0eda6fe95d34d7b9d}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_afcc47491f1dc44e0eda6fe95d34d7b9d} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!ft2@{ft2}}
+\index{ft2@{ft2}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{ft2()}{ft2()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::ft2 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{ft2\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a0a6842349fb64ae05f579889cfbd43d5}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a0a6842349fb64ae05f579889cfbd43d5} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!fv1@{fv1}}
+\index{fv1@{fv1}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{fv1()}{fv1()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::fv1 (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a115a721f0a10c36404186b24e0f4bfda}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a115a721f0a10c36404186b24e0f4bfda} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!fv1@{fv1}}
+\index{fv1@{fv1}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{fv1()}{fv1()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::fv1 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{fv1\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a623c125a928efeab508b912c586a1cf0}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a623c125a928efeab508b912c586a1cf0} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!fv2@{fv2}}
+\index{fv2@{fv2}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{fv2()}{fv2()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::fv2 (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{fv1\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ac75cc4daefa0a9734e0e22c04d50a259}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ac75cc4daefa0a9734e0e22c04d50a259} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!fv2@{fv2}}
+\index{fv2@{fv2}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{fv2()}{fv2()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::fv2 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{fv2\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{chi\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{fv1\+Field }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a713e73a01fef1b87f0dd8e4447f52598}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a713e73a01fef1b87f0dd8e4447f52598} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!nut@{nut}}
+\index{nut@{nut}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{nut()}{nut()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::nut (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu\+Tilde,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a9ec783c308598aad0f8e0670a527849d}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a9ec783c308598aad0f8e0670a527849d} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!nut@{nut}}
+\index{nut@{nut}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{nut()}{nut()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::nut (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nut\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu\+Tilde,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a7e569b66766e50ccc4dbef58412e7c9f}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_a7e569b66766e50ccc4dbef58412e7c9f} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!strainRate@{strainRate}}
+\index{strainRate@{strainRate}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{strainRate()}{strainRate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::strain\+Rate (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Ux,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Uy,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Uz }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_acdb490b3d548cbe66ce9b9e22e0e4d42}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_acdb490b3d548cbe66ce9b9e22e0e4d42} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!strainRate@{strainRate}}
+\index{strainRate@{strainRate}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{strainRate()}{strainRate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::strain\+Rate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{strain\+Rate\+Field,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Ux,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Uy,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{grad\+Uz }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad538382dfc5c4b28ca32e4b90df59c95}\label{classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_ad538382dfc5c4b28ca32e4b90df59c95} 
+\index{NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}!wallDistance@{wallDistance}}
+\index{wallDistance@{wallDistance}!NeoN::turbulenceModels::DES::SpalartAllmarasBase@{NeoN::turbulenceModels::DES::SpalartAllmarasBase}}
+\doxysubsubsection{\texorpdfstring{wallDistance()}{wallDistance()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::turbulence\+Models\+::\+DES\+::\+Spalart\+Allmaras\+Base\+::wall\+Distance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/turbulence\+Models/\+DES/\mbox{\hyperlink{SpalartAllmarasBase_8hpp}{Spalart\+Allmaras\+Base.\+hpp}}\end{DoxyCompactItemize}
