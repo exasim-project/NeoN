@@ -16,8 +16,8 @@
     <includedby refid="gradOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</includedby>
     <includedby refid="laplacianOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</includedby>
     <includedby refid="sourceTerm_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</includedby>
+    <includedby refid="diagonalSolver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</includedby>
     <includedby refid="linearAlgebra_2solver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</includedby>
-    <includedby refid="backwardEuler_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</includedby>
     <incdepgraph>
       <node id="38">
         <label>NeoN/core/array.hpp</label>
@@ -439,6 +439,8 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="11">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
@@ -488,6 +490,10 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
+      <node id="20">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
+        <link refid="diagonalSolver_8hpp"/>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
         <link refid="linearSystem_8hpp"/>
@@ -511,13 +517,15 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
         <link refid="linearAlgebra_2solver_8hpp"/>
         <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -549,7 +557,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2025<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
@@ -701,7 +709,7 @@
 <codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1acb7fdfbc6739e8f91ebda00a82184e47" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exec,</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>nBoundaryFaces},</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>KOKKOS_LAMBDA(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>bfacei)<sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>bfacei)<sp/>{</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli<sp/>=<sp/>faceCells[bfacei];</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"></highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mValue[bfacei]<sp/>=<sp/>zero&lt;ValueType&gt;();</highlight></codeline>
