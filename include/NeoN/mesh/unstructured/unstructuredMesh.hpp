@@ -50,6 +50,7 @@ public:
      * @param boundaryMesh The boundary mesh.
      */
     UnstructuredMesh(
+        Executor exec,
         vectorVector points,
         scalarVector cellVolumes,
         vectorVector cellCentres,
