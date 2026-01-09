@@ -19,33 +19,52 @@
 \DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
 \DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00016}00016\ \{}
 \DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00018}00018\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00019}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{00019}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{DdtOperator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{dsl::OperatorMixin}}<VolumeField<ValueType>>}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00020}00020\ \{}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00021}00021\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00022}00022\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00023}00023\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00024}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a66859fae1022267f27948c828c17f576}{00024}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a66859fae1022267f27948c828c17f576}{VectorValueType}}\ =\ ValueType;}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_ac840f87bfe68aced2e8cdcabe863119d}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_ac840f87bfe68aced2e8cdcabe863119d}{DdtOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ termType,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ field);}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af27778cbc6eee6a89f848d83be9108c2}{00028}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af27778cbc6eee6a89f848d83be9108c2}{\string~DdtOperator}}();}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a712042660b652c1b16af7fd239d9bee8}{00030}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a712042660b652c1b16af7fd239d9bee8}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00031}00031\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af2c88e5f54d36d978fd660f23653e8d4}{00032}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af2c88e5f54d36d978fd660f23653e8d4}{implicitOperation}}(}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MatrixIterator}{la::MatrixIterator<ValueType>}}\&\ matrixIterator,}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00037}00037\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00018}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{00018}}\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{DdtScheme}}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00020}00020\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754}{None}},}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00021}00021\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377}{BDF1}},}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00022}00022\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09}{BDF2}}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00023}00023\ \};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00025}00025\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{00026}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{DdtOperator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{dsl::OperatorMixin}}<VolumeField<ValueType>>}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00029}00029\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a66859fae1022267f27948c828c17f576}{00031}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a66859fae1022267f27948c828c17f576}{VectorValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_ac840f87bfe68aced2e8cdcabe863119d}{00033}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_ac840f87bfe68aced2e8cdcabe863119d}{DdtOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ termType,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ field);}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af27778cbc6eee6a89f848d83be9108c2}{00035}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af27778cbc6eee6a89f848d83be9108c2}{\string~DdtOperator}}();}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a9a12ae20606fff0c5c2e80b17596ab4d}{00037}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a9a12ae20606fff0c5c2e80b17596ab4d}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ \textcolor{keyword}{const};}
 \DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00038}00038\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_afc98229b60067151048d4a1e9824a89e}{00039}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_afc98229b60067151048d4a1e9824a89e}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&)\ \{\}}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00040}00040\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00041}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a557821d7890bce2cf1668982d0f5baf0}{00041}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a557821d7890bce2cf1668982d0f5baf0}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DdtOperator"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00042}00042\ \};}
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00044}00044\ }
-\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00045}00045\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af2c88e5f54d36d978fd660f23653e8d4}{00039}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_af2c88e5f54d36d978fd660f23653e8d4}{implicitOperation}}(}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MatrixIterator}{la::MatrixIterator<ValueType>}}\&\ matrixIterator,}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00044}00044\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_aa82c94d1b08768088bfb804cb89dcecc}{00046}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_aa82c94d1b08768088bfb804cb89dcecc}{bdf1Kernel}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a708d327387db1847674edd7798aec553}{00048}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a708d327387db1847674edd7798aec553}{bdf2Kernel}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a80db3de077c0748d4445de8989b34f3c}{00050}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{DdtScheme}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a80db3de077c0748d4445de8989b34f3c}{scheme}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ scheme\_;\ \}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_afc98229b60067151048d4a1e9824a89e}{00052}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_afc98229b60067151048d4a1e9824a89e}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&);}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a557821d7890bce2cf1668982d0f5baf0}{00054}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator_a557821d7890bce2cf1668982d0f5baf0}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DdtOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00056}00056\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ NOTE\ ddtOperator\ does\ not\ have\ a\ FactoryClass}}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00060}00060\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{DdtScheme}}\ scheme\_\ \{\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377}{DdtScheme::BDF1}}\};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00061}00061\ \};}
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{ddtOperator_8hpp_source_l00064}00064\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

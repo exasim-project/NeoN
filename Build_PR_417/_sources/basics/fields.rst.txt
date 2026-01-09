@@ -64,7 +64,7 @@ The ``fieldBinaryOp``  is implemented using our parallelFor implementations whic
     void add(Vector<ValueType>& a, const Vector<std::type_identity_t<ValueType>>& b)
     {
       detail::fieldBinaryOp(
-          a, b, KOKKOS_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
+          a, b, NEON_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
       );
     }
 
@@ -87,7 +87,7 @@ A simplified version of the ``parallelFor`` function is shown below.
             Kokkos::parallel_for(
                 "parallelFor",
                 Kokkos::RangePolicy<runOn>(start, end),
-                KOKKOS_LAMBDA(const localIdx i) { kernel(i); }
+                NEON_LAMBDA(const localIdx i) { kernel(i); }
             );
         }
     }

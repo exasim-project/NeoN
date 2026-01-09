@@ -189,13 +189,13 @@
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00282}00282\ \textcolor{comment}{//\ \ \ \ \ Vector<ValueTypeOut>\ valuesTmp(exec,\ in.values.data(),\ in.values.size());}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00283}00283\ }
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00284}00284\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00285}00285\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00285}00285\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00286}00286\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00287}00287\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00288}00288\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00288}00288\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00289}00289\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00290}00290\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00291}00291\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00291}00291\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00292}00292\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00293}00293\ }
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00294}00294\ \textcolor{comment}{//\ \ \ \ \ return\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ \{valuesTmp,\ colIdxsTmp,\ rowOffsTmp\};}}

@@ -375,6 +375,8 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
@@ -429,8 +431,12 @@
         <link refid="CSRMatrix_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
+      </node>
+      <node id="21">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
+        <link refid="diagonalSolver_8hpp"/>
       </node>
       <node id="2">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
@@ -455,16 +461,18 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
         <link refid="linearAlgebra_2solver_8hpp"/>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp</label>
         <link refid="utilities_8hpp"/>
       </node>
@@ -683,13 +691,13 @@
 <codeline lineno="282"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>Vector&lt;ValueTypeOut&gt;<sp/>valuesTmp(exec,<sp/>in.values.data(),<sp/>in.values.size());</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="283"><highlight class="normal"></highlight></codeline>
 <codeline lineno="284"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>parallelFor(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>colIdxsTmp,<sp/>KOKKOS_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>IndexTypeOut<sp/>{in.colIdxs[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>colIdxsTmp,<sp/>NEON_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>IndexTypeOut<sp/>{in.colIdxs[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="286"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="287"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>parallelFor(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="288"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rowOffsTmp,<sp/>KOKKOS_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>IndexTypeOut<sp/>{in.rowOffs[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rowOffsTmp,<sp/>NEON_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>IndexTypeOut<sp/>{in.rowOffs[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="289"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="290"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>parallelFor(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="291"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valuesTmp,<sp/>KOKKOS_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>ValueTypeOut<sp/>{in.values[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valuesTmp,<sp/>NEON_LAMBDA(const<sp/>localIdx<sp/>i)<sp/>{<sp/>return<sp/>ValueTypeOut<sp/>{in.values[i]};<sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="292"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="293"><highlight class="normal"></highlight></codeline>
 <codeline lineno="294"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>return<sp/>la::CSRMatrix&lt;ValueTypeOut,<sp/>IndexTypeOut&gt;<sp/>{valuesTmp,<sp/>colIdxsTmp,<sp/>rowOffsTmp};</highlight><highlight class="normal"></highlight></codeline>
