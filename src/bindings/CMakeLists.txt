@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+# SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -34,6 +34,10 @@ nanobind_add_module(
   containerFreeFunctions.cpp
   boundaryMesh.cpp
   unstructuredMesh.cpp
+  surfaceField.cpp
+  volumeField.cpp
+  surfaceInterpolation.cpp
+  coNum.cpp
   database/document.cpp
   database/collection.cpp
   database/database.cpp)

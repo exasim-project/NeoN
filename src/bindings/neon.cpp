@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -20,6 +20,10 @@ NB_MODULE(neon, m)
     NeoN::bindings::registerContainerFreeFunctions(m);
     NeoN::bindings::registerBoundaryMesh(m);
     NeoN::bindings::registerUnstructuredMesh(m);
+    NeoN::bindings::registerSurfaceField(m);
+    NeoN::bindings::registerVolumeField(m);
+    NeoN::bindings::registerSurfaceInterpolation(m);
+    NeoN::bindings::registerCoNum(m);
 
     // Database bindings
     NeoN::bindings::registerDocument(m);

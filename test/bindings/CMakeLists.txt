@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 NeoN authors
+# SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -16,3 +16,8 @@ function(neon_bindings_test TEST)
 endfunction()
 
 neon_bindings_test(executor)
+neon_bindings_test(mesh)
+neon_bindings_test(co_num)
+neon_bindings_test(surface_field)
+neon_bindings_test(volume_field)
+neon_bindings_test(surface_interpolation)
