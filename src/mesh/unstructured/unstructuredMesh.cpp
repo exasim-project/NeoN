@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -36,19 +36,35 @@ UnstructuredMesh::UnstructuredMesh(
 
 const vectorVector& UnstructuredMesh::points() const { return points_; }
 
+vectorVector& UnstructuredMesh::points() { return points_; }
+
 const scalarVector& UnstructuredMesh::cellVolumes() const { return cellVolumes_; }
+
+scalarVector& UnstructuredMesh::cellVolumes() { return cellVolumes_; }
 
 const vectorVector& UnstructuredMesh::cellCentres() const { return cellCentres_; }
 
+vectorVector& UnstructuredMesh::cellCentres() { return cellCentres_; }
+
 const vectorVector& UnstructuredMesh::faceCentres() const { return faceCentres_; }
+
+vectorVector& UnstructuredMesh::faceCentres() { return faceCentres_; }
 
 const vectorVector& UnstructuredMesh::faceAreas() const { return faceAreas_; }
 
+vectorVector& UnstructuredMesh::faceAreas() { return faceAreas_; }
+
 const scalarVector& UnstructuredMesh::magFaceAreas() const { return magFaceAreas_; }
+
+scalarVector& UnstructuredMesh::magFaceAreas() { return magFaceAreas_; }
 
 const labelVector& UnstructuredMesh::faceOwner() const { return faceOwner_; }
 
+labelVector& UnstructuredMesh::faceOwner() { return faceOwner_; }
+
 const labelVector& UnstructuredMesh::faceNeighbour() const { return faceNeighbour_; }
+
+labelVector& UnstructuredMesh::faceNeighbour() { return faceNeighbour_; }
 
 localIdx UnstructuredMesh::nCells() const { return nCells_; }
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -72,6 +72,7 @@ public:
      * @return The field of mesh points.
      */
     const vectorVector& points() const;
+    vectorVector& points();
 
     /**
      * @brief Get the field of cell volumes in the mesh.
@@ -79,6 +80,7 @@ public:
      * @return The field of cell volumes in the mesh.
      */
     const scalarVector& cellVolumes() const;
+    scalarVector& cellVolumes();
 
     /**
      * @brief Get the field of cell centres in the mesh.
@@ -86,6 +88,7 @@ public:
      * @return The field of cell centres in the mesh.
      */
     const vectorVector& cellCentres() const;
+    vectorVector& cellCentres();
 
     /**
      * @brief Get the field of face centres.
@@ -93,6 +96,7 @@ public:
      * @return The field of face centres.
      */
     const vectorVector& faceCentres() const;
+    vectorVector& faceCentres();
 
     /**
      * @brief Get the field of area face normals.
@@ -100,6 +104,7 @@ public:
      * @return The field of area face normals.
      */
     const vectorVector& faceAreas() const;
+    vectorVector& faceAreas();
 
     /**
      * @brief Get the field of magnitudes of face areas.
@@ -107,6 +112,7 @@ public:
      * @return The field of magnitudes of face areas.
      */
     const scalarVector& magFaceAreas() const;
+    scalarVector& magFaceAreas();
 
     /**
      * @brief Get the field of face owner cells.
@@ -114,6 +120,7 @@ public:
      * @return The field of face owner cells.
      */
     const labelVector& faceOwner() const;
+    labelVector& faceOwner();
 
     /**
      * @brief Get the field of face neighbour cells.
@@ -121,6 +128,7 @@ public:
      * @return The field of face neighbour cells.
      */
     const labelVector& faceNeighbour() const;
+    labelVector& faceNeighbour();
 
     /**
      * @brief Get the number of cells in the mesh.
