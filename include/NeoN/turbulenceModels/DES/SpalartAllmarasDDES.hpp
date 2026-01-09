@@ -6,11 +6,13 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
-#include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/turbulenceModels/DES/SpalartAllmarasBase.hpp"
 
 namespace NeoN::turbulenceModels::DES
 {
+
+using VolScalarField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
 
 class SpalartAllmarasDDES
 {
@@ -23,25 +25,35 @@ public:
         scalar fdCoef = 8.0;
     };
 
-    explicit SpalartAllmarasDDES(const Executor& exec, Coefficients coeffs);
+    explicit SpalartAllmarasDDES(const Executor& exec);
 
     const Coefficients& coeffs() const;
 
-    Vector<scalar> dTilde(
-        const Vector<scalar>& wallDistance,
-        const Vector<scalar>& nuTilde,
-        const Vector<scalar>& nu,
-        const Vector<scalar>& strainRate,
-        const Vector<scalar>& delta
+    void dTilde(
+        VolScalarField& dTildeField,
+        const VolScalarField& wallDistance,
+        const VolScalarField& nuTilde,
+        const VolScalarField& nu,
+        const VolScalarField& strainRate,
+        const VolScalarField& delta
     ) const;
 
-    void dTilde(
-        Vector<scalar>& dTildeField,
-        const Vector<scalar>& wallDistance,
-        const Vector<scalar>& nuTilde,
-        const Vector<scalar>& nu,
-        const Vector<scalar>& strainRate,
-        const Vector<scalar>& delta
+    void correctNut(
+        VolScalarField& nutField,
+        const SpalartAllmarasBase& base,
+        const VolScalarField& nuTilde,
+        const VolScalarField& nu
+    ) const;
+
+    void correct(
+        VolScalarField& dTildeField,
+        VolScalarField& nutField,
+        const SpalartAllmarasBase& base,
+        const VolScalarField& wallDistance,
+        const VolScalarField& nuTilde,
+        const VolScalarField& nu,
+        const VolScalarField& strainRate,
+        const VolScalarField& delta
     ) const;
 
 private:

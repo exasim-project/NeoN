@@ -18,10 +18,8 @@
 namespace NeoN::turbulenceModels::DES
 {
 
-SpalartAllmarasBase::SpalartAllmarasBase(
-    const Executor& exec, const UnstructuredMesh& mesh, Coefficients coeffs
-)
-    : exec_(exec), mesh_(mesh), coeffs_(coeffs),
+SpalartAllmarasBase::SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh)
+    : exec_(exec), mesh_(mesh),
       cw1_(coeffs_.Cb1 / (coeffs_.kappa * coeffs_.kappa) + (1.0 + coeffs_.Cb2) / coeffs_.sigmaNut)
 {}
 
@@ -29,59 +27,53 @@ const SpalartAllmarasBase::Coefficients& SpalartAllmarasBase::coeffs() const { r
 
 scalar SpalartAllmarasBase::cw1() const { return cw1_; }
 
-Vector<scalar> SpalartAllmarasBase::wallDistance() const
+void SpalartAllmarasBase::wallDistance(VolScalarField& wallDistanceField) const
 {
-    const auto cellCentresHost = mesh_.cellCentres().copyToHost();
-    const auto boundaryFaceCentresHost = mesh_.boundaryMesh().cf().copyToHost();
-
-    const auto cellCentresView = cellCentresHost.view();
-    const auto boundaryFaceCentresView = boundaryFaceCentresHost.view();
+    const auto cellCentresView = mesh_.cellCentres().view();
+    const auto boundaryFaceCentresView = mesh_.boundaryMesh().cf().view();
     const auto nCells = mesh_.nCells();
     const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    auto wallDistanceView = wallDistanceField.internalVector().view();
 
-    std::vector<scalar> distances(nCells, std::numeric_limits<scalar>::max());
-
-    for (localIdx celli = 0; celli < nCells; ++celli)
-    {
-        const auto cellCentre = cellCentresView[celli];
-        scalar minDistance = distances[celli];
-        for (localIdx facei = 0; facei < nBoundaryFaces; ++facei)
-        {
-            const auto faceCentre = boundaryFaceCentresView[facei];
-            const scalar dx = cellCentre[0] - faceCentre[0];
-            const scalar dy = cellCentre[1] - faceCentre[1];
-            const scalar dz = cellCentre[2] - faceCentre[2];
-            const scalar distance = std::sqrt(dx * dx + dy * dy + dz * dz);
-            minDistance = std::min(minDistance, distance);
-        }
-        distances[celli] = minDistance;
-    }
-
-    return Vector<scalar>(exec_, distances);
-}
-
-Vector<scalar> SpalartAllmarasBase::strainRate(
-    const Vector<Vec3>& gradUx, const Vector<Vec3>& gradUy, const Vector<Vec3>& gradUz
-) const
-{
-    Vector<scalar> result(exec_, gradUx.size());
-    strainRate(result, gradUx, gradUy, gradUz);
-    return result;
+    parallelFor(
+        exec_,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            const auto cellCentre = cellCentresView[celli];
+            scalar minDistance = std::numeric_limits<scalar>::max();
+            for (localIdx facei = 0; facei < nBoundaryFaces; ++facei)
+            {
+                const auto faceCentre = boundaryFaceCentresView[facei];
+                const scalar dx = cellCentre[0] - faceCentre[0];
+                const scalar dy = cellCentre[1] - faceCentre[1];
+                const scalar dz = cellCentre[2] - faceCentre[2];
+                const scalar distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+                minDistance = std::min(minDistance, distance);
+            }
+            wallDistanceView[celli] = minDistance;
+        },
+        "SpalartAllmarasBase::wallDistance"
+    );
 }
 
 void SpalartAllmarasBase::strainRate(
-    Vector<scalar>& strainRateField,
-    const Vector<Vec3>& gradUx,
-    const Vector<Vec3>& gradUy,
-    const Vector<Vec3>& gradUz
+    VolScalarField& strainRateField,
+    const VolVectorField& gradUx,
+    const VolVectorField& gradUy,
+    const VolVectorField& gradUz
 ) const
 {
-    NF_DEBUG_ASSERT(strainRateField.size() == gradUx.size(), "strainRate size mismatch.");
-    NF_DEBUG_ASSERT(gradUy.size() == gradUx.size(), "gradUy size mismatch.");
-    NF_DEBUG_ASSERT(gradUz.size() == gradUx.size(), "gradUz size mismatch.");
+    const auto& gradUxVector = gradUx.internalVector();
+    const auto& gradUyVector = gradUy.internalVector();
+    const auto& gradUzVector = gradUz.internalVector();
+    auto& strainVector = strainRateField.internalVector();
+
+    NF_DEBUG_ASSERT(strainVector.size() == gradUxVector.size(), "strainRate size mismatch.");
+    NF_DEBUG_ASSERT(gradUyVector.size() == gradUxVector.size(), "gradUy size mismatch.");
+    NF_DEBUG_ASSERT(gradUzVector.size() == gradUxVector.size(), "gradUz size mismatch.");
 
     const auto [gradUxView, gradUyView, gradUzView, strainView] =
-        views(gradUx, gradUy, gradUz, strainRateField);
+        views(gradUxVector, gradUyVector, gradUzVector, strainVector);
 
     parallelFor(
         exec_,
@@ -106,22 +98,18 @@ void SpalartAllmarasBase::strainRate(
     );
 }
 
-Vector<scalar>
-SpalartAllmarasBase::chi(const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const
-{
-    Vector<scalar> result(exec_, nuTilde.size());
-    chi(result, nuTilde, nu);
-    return result;
-}
-
 void SpalartAllmarasBase::chi(
-    Vector<scalar>& chiField, const Vector<scalar>& nuTilde, const Vector<scalar>& nu
+    VolScalarField& chiField, const VolScalarField& nuTilde, const VolScalarField& nu
 ) const
 {
-    NF_DEBUG_ASSERT(chiField.size() == nuTilde.size(), "chi size mismatch.");
-    NF_DEBUG_ASSERT(nu.size() == nuTilde.size(), "nu size mismatch.");
+    const auto& nuTildeVector = nuTilde.internalVector();
+    const auto& nuVector = nu.internalVector();
+    auto& chiVector = chiField.internalVector();
 
-    const auto [nuTildeView, nuView, chiView] = views(nuTilde, nu, chiField);
+    NF_DEBUG_ASSERT(chiVector.size() == nuTildeVector.size(), "chi size mismatch.");
+    NF_DEBUG_ASSERT(nuVector.size() == nuTildeVector.size(), "nu size mismatch.");
+
+    const auto [nuTildeView, nuView, chiView] = views(nuTildeVector, nuVector, chiVector);
 
     parallelFor(
         exec_,
@@ -133,19 +121,15 @@ void SpalartAllmarasBase::chi(
     );
 }
 
-Vector<scalar> SpalartAllmarasBase::fv1(const Vector<scalar>& chiField) const
+void SpalartAllmarasBase::fv1(VolScalarField& fv1Field, const VolScalarField& chiField) const
 {
-    Vector<scalar> result(exec_, chiField.size());
-    fv1(result, chiField);
-    return result;
-}
+    const auto& chiVector = chiField.internalVector();
+    auto& fv1Vector = fv1Field.internalVector();
 
-void SpalartAllmarasBase::fv1(Vector<scalar>& fv1Field, const Vector<scalar>& chiField) const
-{
-    NF_DEBUG_ASSERT(fv1Field.size() == chiField.size(), "fv1 size mismatch.");
+    NF_DEBUG_ASSERT(fv1Vector.size() == chiVector.size(), "fv1 size mismatch.");
 
-    const auto chiView = chiField.view();
-    const auto fv1View = fv1Field.view();
+    const auto chiView = chiVector.view();
+    const auto fv1View = fv1Vector.view();
     const scalar cv1 = coeffs_.Cv1;
     const scalar cv1Cubed = cv1 * cv1 * cv1;
 
@@ -161,22 +145,18 @@ void SpalartAllmarasBase::fv1(Vector<scalar>& fv1Field, const Vector<scalar>& ch
     );
 }
 
-Vector<scalar>
-SpalartAllmarasBase::fv2(const Vector<scalar>& chiField, const Vector<scalar>& fv1Field) const
-{
-    Vector<scalar> result(exec_, chiField.size());
-    fv2(result, chiField, fv1Field);
-    return result;
-}
-
 void SpalartAllmarasBase::fv2(
-    Vector<scalar>& fv2Field, const Vector<scalar>& chiField, const Vector<scalar>& fv1Field
+    VolScalarField& fv2Field, const VolScalarField& chiField, const VolScalarField& fv1Field
 ) const
 {
-    NF_DEBUG_ASSERT(fv2Field.size() == chiField.size(), "fv2 size mismatch.");
-    NF_DEBUG_ASSERT(fv1Field.size() == chiField.size(), "fv1 size mismatch.");
+    const auto& chiVector = chiField.internalVector();
+    const auto& fv1Vector = fv1Field.internalVector();
+    auto& fv2Vector = fv2Field.internalVector();
 
-    const auto [chiView, fv1View, fv2View] = views(chiField, fv1Field, fv2Field);
+    NF_DEBUG_ASSERT(fv2Vector.size() == chiVector.size(), "fv2 size mismatch.");
+    NF_DEBUG_ASSERT(fv1Vector.size() == chiVector.size(), "fv1 size mismatch.");
+
+    const auto [chiView, fv1View, fv2View] = views(chiVector, fv1Vector, fv2Vector);
 
     parallelFor(
         exec_,
@@ -189,19 +169,15 @@ void SpalartAllmarasBase::fv2(
     );
 }
 
-Vector<scalar> SpalartAllmarasBase::ft2(const Vector<scalar>& chiField) const
+void SpalartAllmarasBase::ft2(VolScalarField& ft2Field, const VolScalarField& chiField) const
 {
-    Vector<scalar> result(exec_, chiField.size());
-    ft2(result, chiField);
-    return result;
-}
+    const auto& chiVector = chiField.internalVector();
+    auto& ft2Vector = ft2Field.internalVector();
 
-void SpalartAllmarasBase::ft2(Vector<scalar>& ft2Field, const Vector<scalar>& chiField) const
-{
-    NF_DEBUG_ASSERT(ft2Field.size() == chiField.size(), "ft2 size mismatch.");
+    NF_DEBUG_ASSERT(ft2Vector.size() == chiVector.size(), "ft2 size mismatch.");
 
-    const auto chiView = chiField.view();
-    const auto ft2View = ft2Field.view();
+    const auto chiView = chiVector.view();
+    const auto ft2View = ft2Vector.view();
     const scalar ct3 = coeffs_.Ct3;
     const scalar ct4 = coeffs_.Ct4;
 
@@ -216,27 +192,144 @@ void SpalartAllmarasBase::ft2(Vector<scalar>& ft2Field, const Vector<scalar>& ch
     );
 }
 
-Vector<scalar>
-SpalartAllmarasBase::nut(const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const
+void SpalartAllmarasBase::stilda(
+    VolScalarField& stildaField,
+    const VolScalarField& strainRate,
+    const VolScalarField& nuTilde,
+    const VolScalarField& dTilde,
+    const VolScalarField& fv2Field
+) const
 {
-    Vector<scalar> result(exec_, nuTilde.size());
-    nut(result, nuTilde, nu);
-    return result;
+    const auto& strainVector = strainRate.internalVector();
+    const auto& nuTildeVector = nuTilde.internalVector();
+    const auto& dTildeVector = dTilde.internalVector();
+    const auto& fv2Vector = fv2Field.internalVector();
+    auto& stildaVector = stildaField.internalVector();
+
+    NF_DEBUG_ASSERT(stildaVector.size() == strainVector.size(), "stilda size mismatch.");
+    NF_DEBUG_ASSERT(nuTildeVector.size() == strainVector.size(), "nuTilde size mismatch.");
+    NF_DEBUG_ASSERT(dTildeVector.size() == strainVector.size(), "dTilde size mismatch.");
+    NF_DEBUG_ASSERT(fv2Vector.size() == strainVector.size(), "fv2 size mismatch.");
+
+    const auto [strainView, nuTildeView, dTildeView, fv2View, stildaView] =
+        views(strainVector, nuTildeVector, dTildeVector, fv2Vector, stildaVector);
+    const scalar kappa2 = coeffs_.kappa * coeffs_.kappa;
+
+    parallelFor(
+        exec_,
+        {0, stildaField.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            const scalar d = dTildeView[celli];
+            const scalar denom = kappa2 * d * d + ROOTVSMALL;
+            stildaView[celli] = strainView[celli] + fv2View[celli] * nuTildeView[celli] / denom;
+        },
+        "SpalartAllmarasBase::stilda"
+    );
+}
+
+void SpalartAllmarasBase::fw(
+    VolScalarField& fwField,
+    const VolScalarField& stildaField,
+    const VolScalarField& dTilde,
+    const VolScalarField& nuTilde
+) const
+{
+    const auto& stildaVector = stildaField.internalVector();
+    const auto& dTildeVector = dTilde.internalVector();
+    const auto& nuTildeVector = nuTilde.internalVector();
+    auto& fwVector = fwField.internalVector();
+
+    NF_DEBUG_ASSERT(fwVector.size() == stildaVector.size(), "fw size mismatch.");
+    NF_DEBUG_ASSERT(dTildeVector.size() == stildaVector.size(), "dTilde size mismatch.");
+    NF_DEBUG_ASSERT(nuTildeVector.size() == stildaVector.size(), "nuTilde size mismatch.");
+
+    const auto [stildaView, dTildeView, nuTildeView, fwView] =
+        views(stildaVector, dTildeVector, nuTildeVector, fwVector);
+    const scalar kappa2 = coeffs_.kappa * coeffs_.kappa;
+    const scalar cw2 = coeffs_.Cw2;
+    const scalar cw3 = coeffs_.Cw3;
+    const scalar cw3Pow6 = std::pow(cw3, 6.0);
+
+    parallelFor(
+        exec_,
+        {0, fwField.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            const scalar d = dTildeView[celli];
+            const scalar denom = stildaView[celli] * kappa2 * d * d + ROOTVSMALL;
+            const scalar r = std::min(static_cast<scalar>(10.0), nuTildeView[celli] / denom);
+            const scalar g = r + cw2 * (std::pow(r, 6.0) - r);
+            const scalar gPow6 = std::pow(g, 6.0);
+            fwView[celli] = g * std::pow((1.0 + cw3Pow6) / (gPow6 + cw3Pow6), 1.0 / 6.0);
+        },
+        "SpalartAllmarasBase::fw"
+    );
+}
+
+void SpalartAllmarasBase::dNuTildeEff(
+    VolScalarField& dNuTildeEffField, const VolScalarField& nuTilde, const VolScalarField& nu
+) const
+{
+    const auto& nuTildeVector = nuTilde.internalVector();
+    const auto& nuVector = nu.internalVector();
+    auto& effVector = dNuTildeEffField.internalVector();
+
+    NF_DEBUG_ASSERT(effVector.size() == nuTildeVector.size(), "dNuTildeEff size mismatch.");
+    NF_DEBUG_ASSERT(nuVector.size() == nuTildeVector.size(), "nu size mismatch.");
+
+    const auto [nuTildeView, nuView, effView] = views(nuTildeVector, nuVector, effVector);
+    const scalar sigmaNut = coeffs_.sigmaNut;
+
+    parallelFor(
+        exec_,
+        {0, dNuTildeEffField.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            effView[celli] = (nuTildeView[celli] + nuView[celli]) / sigmaNut;
+        },
+        "SpalartAllmarasBase::dNuTildeEff"
+    );
 }
 
 void SpalartAllmarasBase::nut(
-    Vector<scalar>& nutField, const Vector<scalar>& nuTilde, const Vector<scalar>& nu
+    VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu
 ) const
 {
-    NF_DEBUG_ASSERT(nutField.size() == nuTilde.size(), "nut size mismatch.");
-    NF_DEBUG_ASSERT(nu.size() == nuTilde.size(), "nu size mismatch.");
+    const auto& nuTildeVector = nuTilde.internalVector();
+    const auto& nuVector = nu.internalVector();
+    auto& nutVector = nutField.internalVector();
 
-    Vector<scalar> chiField(exec_, nuTilde.size());
-    Vector<scalar> fv1Field(exec_, nuTilde.size());
-    chi(chiField, nuTilde, nu);
-    fv1(fv1Field, chiField);
+    NF_DEBUG_ASSERT(nutVector.size() == nuTildeVector.size(), "nut size mismatch.");
+    NF_DEBUG_ASSERT(nuVector.size() == nuTildeVector.size(), "nu size mismatch.");
 
-    const auto [nuTildeView, fv1View, nutView] = views(nuTilde, fv1Field, nutField);
+    Vector<scalar> chiField(exec_, nuTildeVector.size());
+    Vector<scalar> fv1Field(exec_, nuTildeVector.size());
+
+    const auto [nuTildeView, nuView, chiView] = views(nuTildeVector, nuVector, chiField);
+    parallelFor(
+        exec_,
+        {0, chiField.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            chiView[celli] = nuTildeView[celli] / (nuView[celli] + ROOTVSMALL);
+        },
+        "SpalartAllmarasBase::nutChi"
+    );
+
+    const scalar cv1 = coeffs_.Cv1;
+    const scalar cv1Cubed = cv1 * cv1 * cv1;
+    const auto chiViewForFv1 = chiField.view();
+    const auto fv1View = fv1Field.view();
+    parallelFor(
+        exec_,
+        {0, fv1Field.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            const scalar chiVal = chiViewForFv1[celli];
+            const scalar chiCubed = chiVal * chiVal * chiVal;
+            fv1View[celli] = chiCubed / (chiCubed + cv1Cubed);
+        },
+        "SpalartAllmarasBase::nutFv1"
+    );
+
+    const auto [nuTildeViewForNut, fv1ViewForNut, nutView] =
+        views(nuTildeVector, fv1Field, nutVector);
 
     parallelFor(
         exec_,

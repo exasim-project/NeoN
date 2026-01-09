@@ -5,13 +5,17 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
-#include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vec3.hpp"
-#include "NeoN/core/vector/vector.hpp"
+// #include "NeoN/core/primitives/scalar.hpp"
+// #include "NeoN/core/primitives/vec3.hpp"
+// #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::turbulenceModels::DES
 {
+
+using VolVectorField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
+using VolScalarField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
 
 class SpalartAllmarasBase
 {
@@ -31,48 +35,53 @@ public:
         scalar Cs = 0.3;
     };
 
-    SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh, Coefficients coeffs);
+    SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh);
 
     const Coefficients& coeffs() const;
 
     scalar cw1() const;
 
-    Vector<scalar> wallDistance() const;
-
-    Vector<scalar> strainRate(
-        const Vector<Vec3>& gradUx, const Vector<Vec3>& gradUy, const Vector<Vec3>& gradUz
-    ) const;
+    void wallDistance(VolScalarField& wallDistanceField) const;
 
     void strainRate(
-        Vector<scalar>& strainRateField,
-        const Vector<Vec3>& gradUx,
-        const Vector<Vec3>& gradUy,
-        const Vector<Vec3>& gradUz
+        VolScalarField& strainRateField,
+        const VolVectorField& gradUx,
+        const VolVectorField& gradUy,
+        const VolVectorField& gradUz
     ) const;
 
-    Vector<scalar> chi(const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const;
 
     void
-    chi(Vector<scalar>& chiField, const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const;
+    chi(VolScalarField& chiField, const VolScalarField& nuTilde, const VolScalarField& nu) const;
 
-    Vector<scalar> fv1(const Vector<scalar>& chiField) const;
-
-    void fv1(Vector<scalar>& fv1Field, const Vector<scalar>& chiField) const;
-
-    Vector<scalar> fv2(const Vector<scalar>& chiField, const Vector<scalar>& fv1Field) const;
+    void fv1(VolScalarField& fv1Field, const VolScalarField& chiField) const;
 
     void
-    fv2(Vector<scalar>& fv2Field, const Vector<scalar>& chiField, const Vector<scalar>& fv1Field
+    fv2(VolScalarField& fv2Field, const VolScalarField& chiField, const VolScalarField& fv1Field
     ) const;
 
-    Vector<scalar> ft2(const Vector<scalar>& chiField) const;
+    void ft2(VolScalarField& ft2Field, const VolScalarField& chiField) const;
 
-    void ft2(Vector<scalar>& ft2Field, const Vector<scalar>& chiField) const;
-
-    Vector<scalar> nut(const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const;
+    void stilda(
+        VolScalarField& stildaField,
+        const VolScalarField& strainRate,
+        const VolScalarField& nuTilde,
+        const VolScalarField& dTilde,
+        const VolScalarField& fv2Field
+    ) const;
 
     void
-    nut(Vector<scalar>& nutField, const Vector<scalar>& nuTilde, const Vector<scalar>& nu) const;
+    fw(VolScalarField& fwField,
+       const VolScalarField& stildaField,
+       const VolScalarField& dTilde,
+       const VolScalarField& nuTilde) const;
+
+    void dNuTildeEff(
+        VolScalarField& dNuTildeEffField, const VolScalarField& nuTilde, const VolScalarField& nu
+    ) const;
+
+    void
+    nut(VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu) const;
 
 private:
 

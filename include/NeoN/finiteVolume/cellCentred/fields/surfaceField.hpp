@@ -164,6 +164,20 @@ operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
     result.boundaryData().value() *= rhs.boundaryData().value();
     return result;
 }
+
+inline SurfaceField<scalar> operator*(scalar scale, const SurfaceField<scalar>& rhs)
+{
+    SurfaceField<scalar> result(rhs);
+    result.internalVector() *= scale;
+    result.boundaryData().value() *= scale;
+    return result;
+}
+
+inline SurfaceField<scalar> operator*(const SurfaceField<scalar>& lhs, scalar scale)
+{
+    return scale * lhs;
+}
+
 inline SurfaceField<scalar>
 operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {

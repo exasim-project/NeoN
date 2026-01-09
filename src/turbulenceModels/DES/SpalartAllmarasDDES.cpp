@@ -13,42 +13,34 @@
 namespace NeoN::turbulenceModels::DES
 {
 
-SpalartAllmarasDDES::SpalartAllmarasDDES(const Executor& exec, Coefficients coeffs)
-    : exec_(exec), coeffs_(coeffs)
-{}
+SpalartAllmarasDDES::SpalartAllmarasDDES(const Executor& exec) : exec_(exec) {}
 
 const SpalartAllmarasDDES::Coefficients& SpalartAllmarasDDES::coeffs() const { return coeffs_; }
 
-Vector<scalar> SpalartAllmarasDDES::dTilde(
-    const Vector<scalar>& wallDistance,
-    const Vector<scalar>& nuTilde,
-    const Vector<scalar>& nu,
-    const Vector<scalar>& strainRate,
-    const Vector<scalar>& delta
-) const
-{
-    Vector<scalar> result(exec_, wallDistance.size());
-    dTilde(result, wallDistance, nuTilde, nu, strainRate, delta);
-    return result;
-}
-
 void SpalartAllmarasDDES::dTilde(
-    Vector<scalar>& dTildeField,
-    const Vector<scalar>& wallDistance,
-    const Vector<scalar>& nuTilde,
-    const Vector<scalar>& nu,
-    const Vector<scalar>& strainRate,
-    const Vector<scalar>& delta
+    VolScalarField& dTildeField,
+    const VolScalarField& wallDistance,
+    const VolScalarField& nuTilde,
+    const VolScalarField& nu,
+    const VolScalarField& strainRate,
+    const VolScalarField& delta
 ) const
 {
-    NF_DEBUG_ASSERT(dTildeField.size() == wallDistance.size(), "dTilde field size mismatch.");
-    NF_DEBUG_ASSERT(nuTilde.size() == wallDistance.size(), "nuTilde field size mismatch.");
-    NF_DEBUG_ASSERT(nu.size() == wallDistance.size(), "nu field size mismatch.");
-    NF_DEBUG_ASSERT(strainRate.size() == wallDistance.size(), "strainRate size mismatch.");
-    NF_DEBUG_ASSERT(delta.size() == wallDistance.size(), "delta field size mismatch.");
+    const auto& wallVector = wallDistance.internalVector();
+    const auto& nuTildeVector = nuTilde.internalVector();
+    const auto& nuVector = nu.internalVector();
+    const auto& strainVector = strainRate.internalVector();
+    const auto& deltaVector = delta.internalVector();
+    auto& dTildeVector = dTildeField.internalVector();
+
+    NF_DEBUG_ASSERT(dTildeVector.size() == wallVector.size(), "dTilde field size mismatch.");
+    NF_DEBUG_ASSERT(nuTildeVector.size() == wallVector.size(), "nuTilde field size mismatch.");
+    NF_DEBUG_ASSERT(nuVector.size() == wallVector.size(), "nu field size mismatch.");
+    NF_DEBUG_ASSERT(strainVector.size() == wallVector.size(), "strainRate size mismatch.");
+    NF_DEBUG_ASSERT(deltaVector.size() == wallVector.size(), "delta field size mismatch.");
 
     const auto [wallView, nuTildeView, nuView, strainView, deltaView, dTildeView] =
-        views(wallDistance, nuTilde, nu, strainRate, delta, dTildeField);
+        views(wallVector, nuTildeVector, nuVector, strainVector, deltaVector, dTildeVector);
 
     const scalar kappa2 = coeffs_.kappa * coeffs_.kappa;
     const scalar fdCoef = coeffs_.fdCoef;
@@ -56,7 +48,7 @@ void SpalartAllmarasDDES::dTilde(
 
     parallelFor(
         exec_,
-        {0, dTildeField.size()},
+        {0, dTildeVector.size()},
         NEON_LAMBDA(const localIdx celli) {
             const scalar d = wallView[celli];
             const scalar denom = kappa2 * d * d * (strainView[celli] + ROOTVSMALL);
@@ -68,6 +60,31 @@ void SpalartAllmarasDDES::dTilde(
         },
         "SpalartAllmarasDDES::dTilde"
     );
+}
+
+void SpalartAllmarasDDES::correctNut(
+    VolScalarField& nutField,
+    const SpalartAllmarasBase& base,
+    const VolScalarField& nuTilde,
+    const VolScalarField& nu
+) const
+{
+    base.nut(nutField, nuTilde, nu);
+}
+
+void SpalartAllmarasDDES::correct(
+    VolScalarField& dTildeField,
+    VolScalarField& nutField,
+    const SpalartAllmarasBase& base,
+    const VolScalarField& wallDistance,
+    const VolScalarField& nuTilde,
+    const VolScalarField& nu,
+    const VolScalarField& strainRate,
+    const VolScalarField& delta
+) const
+{
+    dTilde(dTildeField, wallDistance, nuTilde, nu, strainRate, delta);
+    correctNut(nutField, base, nuTilde, nu);
 }
 
 } // namespace NeoN::turbulenceModels::DES
