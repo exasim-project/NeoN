@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -17,6 +17,10 @@ void registerVectors(nanobind::module_& m);
 void registerContainerFreeFunctions(nanobind::module_& m);
 void registerBoundaryMesh(nanobind::module_& m);
 void registerUnstructuredMesh(nanobind::module_& m);
+void registerSurfaceField(nanobind::module_& m);
+void registerVolumeField(nanobind::module_& m);
+void registerSurfaceInterpolation(nanobind::module_& m);
+void registerCoNum(nanobind::module_& m);
 
 // Database bindings
 void registerDocument(nanobind::module_& m);
