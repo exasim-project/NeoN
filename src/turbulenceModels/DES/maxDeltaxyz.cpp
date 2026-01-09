@@ -6,7 +6,7 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 // #include <Kokkos_Core.hpp>
 // #include <algorithm>
 
@@ -14,7 +14,13 @@ namespace NeoN::turbulenceModels::DES
 {
 
 maxDeltaxyz::maxDeltaxyz(const UnstructuredMesh& mesh)
-    : mesh_(mesh), delta_(mesh.exec(), mesh.nCells(), 0.0)
+    : mesh_(mesh), delta_(
+                       mesh.exec(),
+                       "delta",
+                       mesh,
+                       NeoN::finiteVolume::cellCentred::createCalculatedBCs<
+                           NeoN::finiteVolume::cellCentred::VolumeBoundary<scalar>>(mesh)
+                   )
 {
     update();
 }
@@ -92,7 +98,7 @@ void maxDeltaxyz::update()
         "maxDeltaxyz::updateBoundary"
     );
 
-    auto deltaView = delta_.view();
+    auto deltaView = delta_.internalVector().view();
     parallelFor(
         exec,
         {0, nCells},
@@ -106,6 +112,6 @@ void maxDeltaxyz::update()
     );
 }
 
-const Vector<scalar>& maxDeltaxyz::delta() const { return delta_; }
+const VolScalarField& maxDeltaxyz::delta() const { return delta_; }
 
 } // namespace NeoN::turbulenceModels::DES

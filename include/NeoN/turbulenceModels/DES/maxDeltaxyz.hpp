@@ -4,11 +4,14 @@
 
 #pragma once
 
-#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::turbulenceModels::DES
 {
+
+using VolScalarField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
 
 class maxDeltaxyz
 {
@@ -18,12 +21,12 @@ public:
 
     void update();
 
-    const Vector<scalar>& delta() const;
+    const VolScalarField& delta() const;
 
 private:
 
     const UnstructuredMesh& mesh_;
-    Vector<scalar> delta_;
+    VolScalarField delta_;
 };
 
 } // namespace NeoN::turbulenceModels::DES

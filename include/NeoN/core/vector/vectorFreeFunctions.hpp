@@ -48,4 +48,12 @@ template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
     requires requires(ValueType a, ValueType b) { a* b; };
 
+template<typename ValueType>
+void div(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
+    requires requires(ValueType a, ValueType b) { a / b; };
+
+template<typename ValueType>
+void div(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
+    requires requires(ValueType a, ValueType b) { a / b; };
+
 } // namespace NeoN
