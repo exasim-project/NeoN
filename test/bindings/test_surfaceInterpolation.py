@@ -5,11 +5,6 @@
 import sys
 from pathlib import Path
 
-# Add the build directory to path to find the neon module
-# The module is built to build/develop/bindings/neon/
-build_path = Path(__file__).parent.parent.parent / "build" / "develop" / "bindings" / "neon"
-sys.path.insert(0, str(build_path))
-
 import neon
 
 
