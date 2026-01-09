@@ -12,12 +12,14 @@ function(neon_bindings_test TEST)
   add_test(
     NAME neon_bindings_test_${TEST}
     COMMAND ${Python_EXECUTABLE} -m pytest -vv -rs ${CMAKE_CURRENT_SOURCE_DIR}/test_${TEST}.py
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bindings)
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
 endfunction()
 
-neon_bindings_test(executor)
-neon_bindings_test(mesh)
-neon_bindings_test(co_num)
-neon_bindings_test(surface_field)
-neon_bindings_test(volume_field)
-neon_bindings_test(surface_interpolation)
+if(NeoN_BUILD_PYTHON_BINDINGS)
+  neon_bindings_test(executor)
+  neon_bindings_test(mesh)
+  neon_bindings_test(coNum)
+  neon_bindings_test(surfaceField)
+  neon_bindings_test(volumeField)
+  neon_bindings_test(surfaceInterpolation)
+endif()

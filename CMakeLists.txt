@@ -127,10 +127,6 @@ if(NeoN_BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-if(NeoN_BUILD_PYTHON_BINDINGS)
-  add_subdirectory(src/bindings)
-endif()
-
 if(NeoN_BUILD_BENCHMARKS)
   enable_testing()
   add_subdirectory(benchmarks)
