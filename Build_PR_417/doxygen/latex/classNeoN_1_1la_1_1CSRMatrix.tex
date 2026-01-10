@@ -43,6 +43,10 @@ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPatt
 \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}$<$ const Value\+Type, const Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aca097e1d3429dd192a61c42c5ae7c89e}{view}} () const
 \begin{DoxyCompactList}\small\item\em Get a const view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_acba4cba929330d32cf02d7d82ddafb1c}{diag}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a3c7c7dfb881a66ec888adc6b13baeabb}{scaled\+Inverse\+Diag}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_ad70c9cb7ed7ee72361596b86e45d08c2}{scaled\+Off\+Diag}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out) const
 \end{DoxyCompactItemize}
 
 
@@ -191,11 +195,7 @@ Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00212}{212}} of file 
 \index{diag@{diag}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{diag()}{diag()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::diag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00241}{241}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::diag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2}\label{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2} 
 \index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!exec@{exec}}
@@ -268,6 +268,20 @@ Get a reference to row offset vector.
 
 
 Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00171}{171}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a3c7c7dfb881a66ec888adc6b13baeabb}\label{classNeoN_1_1la_1_1CSRMatrix_a3c7c7dfb881a66ec888adc6b13baeabb} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!scaledInverseDiag@{scaledInverseDiag}}
+\index{scaledInverseDiag@{scaledInverseDiag}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{scaledInverseDiag()}{scaledInverseDiag()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::scaled\+Inverse\+Diag (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{a }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_ad70c9cb7ed7ee72361596b86e45d08c2}\label{classNeoN_1_1la_1_1CSRMatrix_ad70c9cb7ed7ee72361596b86e45d08c2} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!scaledOffDiag@{scaledOffDiag}}
+\index{scaledOffDiag@{scaledOffDiag}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{scaledOffDiag()}{scaledOffDiag()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::scaled\+Off\+Diag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{a,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption}) const}
 
 \Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a3ccee4e8dc6aa09ac05a9dc66813debf}\label{classNeoN_1_1la_1_1CSRMatrix_a3ccee4e8dc6aa09ac05a9dc66813debf} 
 \index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!sparsity@{sparsity}}
