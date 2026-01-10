@@ -48,4 +48,10 @@ template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
     requires requires(ValueType a, ValueType b) { a* b; };
 
+/**
+ * @brief Given a Vector of Vec3 this function extracts a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I, typename VectorType>
+[[nodiscard]] Vector<scalar> get(const Vector<VectorType>& in);
 } // namespace NeoN

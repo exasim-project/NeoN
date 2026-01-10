@@ -120,6 +120,24 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     );
 }
 
+template<unsigned int I, typename VectorType>
+Vector<scalar> get(const Vector<VectorType>& in)
+{
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    auto out = Vector<scalar> {exec, in.size()};
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, in.size()}, NEON_LAMBDA(const localIdx i) { outV[i] = inV[i][I]; }, "getVecValues"
+    );
+    return out;
+};
+
+template Vector<scalar> get<0, Vec3>(const Vector<Vec3>&);
+template Vector<scalar> get<1, Vec3>(const Vector<Vec3>&);
+template Vector<scalar> get<2, Vec3>(const Vector<Vec3>&);
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
@@ -137,7 +155,9 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
-    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
+    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
 NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 NN_VECTOR_OPERATOR_INSTANTIATION(float);

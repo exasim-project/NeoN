@@ -253,29 +253,23 @@ public:
         );
     }
 
-    [[nodiscard]] Vector<ValueType> diag() const
-    {
-        auto diag = Vector<ValueType>(values_.exec(), nRows(), 0.0);
-        auto [diagV, rowOffsV, colIdxV, matrixV] =
-            views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
+    /* @brief extract the diagonal of the matrix
+     *
+     */
+    [[nodiscard]] Vector<ValueType> diag() const;
 
-        parallelFor(
-            values_.exec(),
-            {0, nRows()},
-            KOKKOS_LAMBDA(const std::size_t rowi) {
-                for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
-                {
-                    if (rowi == colIdxV[i])
-                    {
-                        diagV[rowi] = matrixV[i];
-                        break;
-                    }
-                }
-            }
-        );
-        return diag;
-    }
+    /* @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
+     *
+     */
+    [[nodiscard]] Vector<ValueType> scaledInverseDiag(const Vector<scalar>& a) const;
 
+    void scaledInverseDiag(const Vector<scalar>& a, Vector<ValueType>& out) const;
+
+    /* @brief computes out = -(L+U) x
+     *
+     * @notes explicitly sets out values to zero
+     */
+    void negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
 
 private:
 

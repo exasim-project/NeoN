@@ -51,12 +51,10 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
         auto rowOffsDenseHost = rowOffsDense.copyToHost();
         auto rowOffsDenseHostView = rowOffsDenseHost.view();
 
-        std::cout << "  valuesDenseHostView.size();" << valuesDenseHostView.size() << "\n";
         for (int i = 0; i < valuesDenseHostView.size(); ++i)
         {
             REQUIRE(valuesDenseHostView[i] == values[i]);
-            std::cout << " colIdx " << colIdxs[i] << "\n";
-            // REQUIRE(colIdxDenseHostView[i] == colIdxs[i]);
+            REQUIRE(colIdxDenseHostView[i] == colIdxs[i]);
         }
         for (int i = 0; i < rowOffsDenseHostView.size(); ++i)
         {
@@ -137,6 +135,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
         REQUIRE(diagH.view()[2] == 9.0);
     }
 
+
     SECTION("Can extract upper " + execName)
     {
         auto upper = NeoN::la::upper(denseMatrix);
@@ -145,6 +144,28 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
         REQUIRE(upperH.view()[0] == 2.0);
         REQUIRE(upperH.view()[1] == 3.0);
         REQUIRE(upperH.view()[2] == 6.0);
+
+    SECTION("Can computed scaledInverseDiagonal " + execName)
+    {
+        auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+        auto diag = denseMatrix.scaledInverseDiag(a);
+        auto diagH = diag.copyToHost();
+
+        REQUIRE(diagH.view()[0] == 1.0);
+        REQUIRE(diagH.view()[1] == 2.0 / 5.0);
+        REQUIRE(diagH.view()[2] == 3.0 / 9.0);
+    }
+
+    SECTION("Can compute scaledOffDiagonal " + execName)
+    {
+        auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+        auto out = NeoN::Vector<TestType>(exec, {0.0, 0.0, 0.0});
+        denseMatrix.negLUx(a, out);
+        auto outH = out.copyToHost();
+
+        REQUIRE(outH.view()[0] == -13.0);
+        REQUIRE(outH.view()[1] == -22.0);
+        REQUIRE(outH.view()[2] == -23.0);
     }
 
     SECTION("Update existing entry on " + execName)

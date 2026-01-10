@@ -7,6 +7,7 @@
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 namespace NeoN
 {

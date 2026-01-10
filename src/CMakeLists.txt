@@ -36,6 +36,7 @@ target_sources(
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo.cpp"
+          "linearAlgebra/csrMatrix.cpp"
           "linearAlgebra/matrixIterator.cpp"
           "linearAlgebra/sparsityPattern.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
