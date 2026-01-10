@@ -6,7 +6,7 @@
 
 #include "NeoN/core/vector/vector.hpp"
 
-#include <type_traits>
+import std;
 
 namespace NeoN::la
 {

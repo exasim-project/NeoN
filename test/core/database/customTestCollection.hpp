@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <optional>
-#include <string>
+import std;
 
 #include "NeoN/NeoN.hpp"
 

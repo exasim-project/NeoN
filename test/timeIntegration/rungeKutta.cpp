@@ -5,12 +5,13 @@
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
-#include <string>
+
 
 #include "../dsl/common.hpp"
 
 #include "NeoN/NeoN.hpp"
 
+import std;
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <functional>
-
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/core/executor/executor.hpp"
@@ -15,6 +13,8 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+
+import std;
 
 namespace NeoN::finiteVolume::cellCentred
 {

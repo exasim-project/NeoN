@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-// #include <source_location>
-
 #include "catch2_common.hpp"
 
 #include "NeoN/NeoN.hpp"

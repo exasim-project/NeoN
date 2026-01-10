@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: MIT
 
+import std;
+
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 
 #include "NeoN/core/mpi/fullDuplexCommBuffer.hpp"
 #include "NeoN/core/mpi/environment.hpp"
-#include <cstring>
 
 using namespace NeoN;
 using namespace NeoN::mpi;

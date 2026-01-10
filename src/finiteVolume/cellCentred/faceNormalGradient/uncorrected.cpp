@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <memory>
-
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp"
 
 namespace NeoN::finiteVolume::cellCentred

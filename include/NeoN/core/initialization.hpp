@@ -7,8 +7,8 @@
 #include "NeoN/core/logging.hpp"
 
 #include <Kokkos_Core.hpp>
-#include <chrono>
 
+import std;
 
 namespace NeoN
 {

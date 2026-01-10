@@ -4,7 +4,7 @@
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
-#include <string>
+import std;
 
 #include "catch2_common.hpp"
 

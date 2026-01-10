@@ -4,12 +4,9 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <any>
-#include <string>
-#include <vector>
-
 #include "NeoN/core/demangle.hpp"
+
+import std;
 
 namespace NeoN
 {

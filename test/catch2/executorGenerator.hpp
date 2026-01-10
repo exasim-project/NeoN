@@ -4,14 +4,13 @@
 
 #pragma once
 
+import std;
+
 #include "catch2_common.hpp"
 
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/NeoN.hpp"
-
-#include <string>
-#include <utility>
 
 // This class shows how to implement a simple generator for Catch tests
 class ExecutorGenerator final :

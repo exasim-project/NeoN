@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <optional>
-#include <string>
-#include <stdexcept>
-
 #include "NeoN/core/database/database.hpp"
+
+import std;
 
 namespace NeoN::finiteVolume::cellCentred
 {

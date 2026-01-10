@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <iostream>
-#include <memory>
-#include <type_traits>
-#include <utility>
-#include <concepts>
+import std;
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/primitives/scalar.hpp"

@@ -5,11 +5,12 @@
 #pragma once
 
 #include <Kokkos_Core.hpp>
-#include <type_traits>
 
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
+
+import std;
 
 #ifdef NN_WITH_KOKKOS
 #define NEON_LAMBDA KOKKOS_LAMBDA

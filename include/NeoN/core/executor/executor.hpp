@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <string>
-#include <variant>
+import std;
 
 #include "NeoN/core/executor/serialExecutor.hpp"
 #include "NeoN/core/executor/GPUExecutor.hpp"

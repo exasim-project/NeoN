@@ -4,13 +4,13 @@
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
+import std;
+
 #include "catch2_common.hpp"
 
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/NeoN.hpp"
-
-#include <limits>
 
 TEST_CASE("parallelFor")
 {

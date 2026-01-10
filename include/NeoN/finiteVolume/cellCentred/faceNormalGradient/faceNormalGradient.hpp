@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <functional>
+import std;
 
 #include <Kokkos_Core.hpp>
 

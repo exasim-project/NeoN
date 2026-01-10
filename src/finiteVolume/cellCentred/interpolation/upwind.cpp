@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <memory>
-
 #include "NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 

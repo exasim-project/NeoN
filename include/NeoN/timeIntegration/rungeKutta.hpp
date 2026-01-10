@@ -6,15 +6,14 @@
 
 #if NN_WITH_SUNDIALS
 
-#include <functional>
-#include <memory>
-
 #include "NeoN/core/database/fieldCollection.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 #include "NeoN/timeIntegration/sundials.hpp"
+
+import std;
 
 namespace NeoN::timeIntegration
 {

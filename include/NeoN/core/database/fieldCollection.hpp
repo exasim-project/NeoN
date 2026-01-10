@@ -4,9 +4,6 @@
 
 #pragma once
 
-#include <limits>
-#include <string>
-#include <functional>
 
 #include "NeoN/core/demangle.hpp"
 #include "NeoN/core/error.hpp"
@@ -16,6 +13,8 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
 #include "NeoN/core/database/document.hpp"
+
+import std;
 
 namespace NeoN::finiteVolume::cellCentred
 {

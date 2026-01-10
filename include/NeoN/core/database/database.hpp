@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <string>
-#include <memory>
-
 #include "NeoN/core/database/collection.hpp"
+
+import std;
 
 namespace NeoN
 {

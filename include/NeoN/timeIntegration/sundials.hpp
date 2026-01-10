@@ -6,10 +6,6 @@
 
 #if NN_WITH_SUNDIALS
 
-#include <concepts>
-#include <functional>
-#include <memory>
-
 #include <sundials/sundials_nvector.h>
 #include <sundials/sundials_core.hpp>
 #include <nvector/nvector_serial.h>
@@ -20,6 +16,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/fields/field.hpp"
+
+import std;
 
 namespace NeoN::sundials
 {

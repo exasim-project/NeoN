@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <numeric>
-#include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream
+import std;
 
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/error.hpp"

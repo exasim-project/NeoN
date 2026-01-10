@@ -4,7 +4,7 @@
 
 #if NF_WITH_GINKGO
 
-#include <sstream>
+import std;
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 

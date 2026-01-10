@@ -4,13 +4,6 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <exception>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <iostream>
-
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
 #endif
@@ -26,6 +19,7 @@
 #include "cpptrace/cpptrace.hpp"
 #endif
 
+import std;
 
 namespace NeoN
 {

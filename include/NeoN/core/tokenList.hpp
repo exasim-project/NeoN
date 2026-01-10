@@ -4,10 +4,9 @@
 
 #pragma once
 
-#include <vector>
-#include <any>
-
 #include "NeoN/core/demangle.hpp"
+
+import std;
 
 namespace NeoN
 {

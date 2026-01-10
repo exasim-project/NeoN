@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+import std;
+
 #include "NeoN/core/logging.hpp"
 
 #if NF_WITH_SPDLOG
@@ -16,8 +18,6 @@ auto noAssert = []() {};
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/async.h"
 #endif
-
-#include <iostream>
 
 namespace NeoN::Logging
 {

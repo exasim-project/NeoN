@@ -6,8 +6,6 @@
 
 #if NF_WITH_GINKGO
 
-#include <chrono>
-
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
 #include <ginkgo/extensions/config/json_config.hpp>
@@ -19,6 +17,7 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
 
+import std;
 
 namespace NeoN::la::ginkgo
 {

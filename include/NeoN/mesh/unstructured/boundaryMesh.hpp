@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <vector>
+import std;
 
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"

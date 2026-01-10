@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <string>
-#include <functional>
-#include <atomic>
-
 #include "NeoN/core/dictionary.hpp"
+
+import std;
 
 namespace NeoN
 {

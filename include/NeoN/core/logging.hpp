@@ -4,13 +4,7 @@
 
 #pragma once
 
-#include <chrono>
-#include <source_location>
-#include <format>
-#include <memory>
-#include <string>
-#include <string_view>
-
+import std;
 
 namespace NeoN::Logging
 {
@@ -40,7 +34,7 @@ class LogEvent
 
 public:
 
-    LogEvent(std::source_location location, Level level, std::string_view message)
+    LogEvent(std::source_location location, Level level, std::string message)
         : level(level), message(message), location(location)
     {
         creationTS = std::chrono::steady_clock::now();
