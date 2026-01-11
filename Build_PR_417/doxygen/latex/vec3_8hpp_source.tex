@@ -137,30 +137,53 @@
 \DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keywordflow}{return}\ rhs;}
 \DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00154}00154\ \}}
 \DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00155}00155\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00156}00156\ KOKKOS\_INLINE\_FUNCTION}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00157}\mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{00157}}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{operator\&}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ lhs,\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ rhs)}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00158}00158\ \{}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00159}00159\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs[0]\ *\ rhs[0]\ +\ lhs[1]\ *\ rhs[1]\ +\ lhs[2]\ *\ rhs[2];}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00160}00160\ \}}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00161}00161\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00162}00162\ KOKKOS\_INLINE\_FUNCTION}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00163}\mbox{\hyperlink{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}{00163}}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ vec)\ \{\ \textcolor{keywordflow}{return}\ sqrt(vec[0]\ *\ vec[0]\ +\ vec[1]\ *\ vec[1]\ +\ vec[2]\ *\ vec[2]);\ \}}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00164}00164\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00165}\mbox{\hyperlink{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e}{00165}}\ std::ostream\&\ \mbox{\hyperlink{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7}{operator<<}}(std::ostream\&\ out,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ vec);}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00166}00166\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00167}00167\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00168}00168\ \textcolor{keyword}{template}<>}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00169}\mbox{\hyperlink{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}{00169}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}{one<Vec3>}}()}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00170}00170\ \{}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}(1.0,\ 1.0,\ 1.0);}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00172}00172\ \}}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00173}00173\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00174}00174\ \textcolor{keyword}{template}<>}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00175}\mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{00175}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{zero<Vec3>}}()}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00176}00176\ \{}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00177}00177\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}(0.0,\ 0.0,\ 0.0);}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00178}00178\ \}}
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00179}00179\ }
-\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00180}00180\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00156}00156\ \textcolor{comment}{/*\ @brief\ inner\ product\ */}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00157}00157\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00158}\mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{00158}}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{operator\&}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ lhs,\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00159}00159\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs[0]\ *\ rhs[0]\ +\ lhs[1]\ *\ rhs[1]\ +\ lhs[2]\ *\ rhs[2];}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00161}00161\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00163}00163\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00164}\mbox{\hyperlink{namespaceNeoN_ad34e9c8eef2169ff2803c54d3cbff6f1}{00164}}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a8482e9b18df5dd944627afdb72291479}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ lhs,\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00165}00165\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00166}00166\ \ \ \ \ \textcolor{keywordflow}{return}\ \{lhs[0]\ *\ rhs[0],\ lhs[1]\ *\ rhs[1],\ lhs[2]\ *\ rhs[2]\};}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00167}00167\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00169}00169\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00170}\mbox{\hyperlink{namespaceNeoN_a4af795df499e4050ffd3cc35d3883765}{00170}}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a4af795df499e4050ffd3cc35d3883765}{operator/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00171}00171\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00172}00172\ \ \ \ \ \textcolor{keywordflow}{return}\ \{lhs[0]\ /\ rhs[0],\ lhs[1]\ /\ rhs[1],\ lhs[2]\ /\ rhs[2]\};}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00173}00173\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00175}00175\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00176}\mbox{\hyperlink{namespaceNeoN_aed585df60bb68f0c99e9dc3377883767}{00176}}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a4af795df499e4050ffd3cc35d3883765}{operator/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ lhs,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ rhs)\ \{\ \textcolor{keywordflow}{return}\ \{lhs[0]\ /\ rhs,\ lhs[1]\ /\ rhs,\ lhs[2]\ /\ rhs\};\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00178}00178\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00179}\mbox{\hyperlink{namespaceNeoN_a302d9388842ea2cef1de7ec03044cfba}{00179}}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a4af795df499e4050ffd3cc35d3883765}{operator/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00180}00180\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00181}00181\ \ \ \ \ \textcolor{keywordflow}{return}\ \{lhs\ /\ rhs[0],\ lhs\ /\ rhs[1],\ lhs\ /\ rhs[2]\};}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00182}00182\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00185}00185\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00186}\mbox{\hyperlink{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}{00186}}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ vec)\ \{\ \textcolor{keywordflow}{return}\ sqrt(vec[0]\ *\ vec[0]\ +\ vec[1]\ *\ vec[1]\ +\ vec[2]\ *\ vec[2]);\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00188}\mbox{\hyperlink{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e}{00188}}\ std::ostream\&\ \mbox{\hyperlink{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7}{operator<<}}(std::ostream\&\ out,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ vec);}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00191}00191\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00192}\mbox{\hyperlink{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}{00192}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}{one<Vec3>}}()}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00193}00193\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}(1.0,\ 1.0,\ 1.0);}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00195}00195\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00197}00197\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00198}\mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{00198}}\ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ \mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{zero<Vec3>}}()}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00199}00199\ \{}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}(0.0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00201}00201\ \}}
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{vec3_8hpp_source_l00203}00203\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
