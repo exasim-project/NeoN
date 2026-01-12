@@ -24,6 +24,8 @@ struct SolverStats
 {
     std::vector<SolverStatsEntry> entries;
 
+    SolverStats() : entries() {}
+
     SolverStats(int numIter, scalar initResNorm, scalar finalResNorm, scalar solveTime)
         : entries({SolverStatsEntry {numIter, initResNorm, finalResNorm, solveTime}})
     {}

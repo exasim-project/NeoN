@@ -7,7 +7,6 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
@@ -120,8 +119,8 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     );
 }
 
-template<unsigned int I, typename VectorType>
-Vector<scalar> get(const Vector<VectorType>& in)
+template<unsigned int I>
+Vector<scalar> get(const Vector<Vec3>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
@@ -134,9 +133,25 @@ Vector<scalar> get(const Vector<VectorType>& in)
     return out;
 };
 
-template Vector<scalar> get<0, Vec3>(const Vector<Vec3>&);
-template Vector<scalar> get<1, Vec3>(const Vector<Vec3>&);
-template Vector<scalar> get<2, Vec3>(const Vector<Vec3>&);
+template Vector<scalar> get<0>(const Vector<Vec3>&);
+template Vector<scalar> get<1>(const Vector<Vec3>&);
+template Vector<scalar> get<2>(const Vector<Vec3>&);
+
+template<unsigned int I>
+void set(const Vector<scalar>& in, Vector<Vec3>& out)
+{
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, in.size()}, NEON_LAMBDA(const localIdx i) { outV[i][I] = inV[i]; }, "setVecValues"
+    );
+};
+
+template void set<0>(const Vector<scalar>&, Vector<Vec3>&);
+template void set<1>(const Vector<scalar>&, Vector<Vec3>&);
+template void set<2>(const Vector<scalar>&, Vector<Vec3>&);
 
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
 
@@ -52,6 +53,13 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
  * @brief Given a Vector of Vec3 this function extracts a single component
  * @returns The resulting scalar vector
  */
-template<unsigned int I, typename VectorType>
-[[nodiscard]] Vector<scalar> get(const Vector<VectorType>& in);
+template<unsigned int I>
+[[nodiscard]] Vector<scalar> get(const Vector<Vec3>& in);
+
+/**
+ * @brief Given a Vector of Vec3 this function extracts a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I>
+void set(const Vector<scalar>& in, Vector<Vec3>& out);
 } // namespace NeoN
