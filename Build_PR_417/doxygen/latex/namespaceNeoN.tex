@@ -254,7 +254,9 @@ requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b
 {\footnotesize template$<$typename Value\+Type $>$ \newline
 requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
 \item 
-{\footnotesize template$<$unsigned int I, typename Vector\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_addf15f6852a1d07a0120c595856f6fb7}{get}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Vector\+Type $>$ \&in)
+{\footnotesize template$<$unsigned int I$>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_aac684a88024d052ad5026aef575a5c64}{get}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&in)
+\begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function extracts a single component. \end{DoxyCompactList}\item 
+{\footnotesize template$<$unsigned int I$>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae7808f9288557741a38a6a87514110f3}{set}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&in, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function extracts a single component. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename... Types$>$ \newline
 requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...)}\\auto \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}} (Types \&... args)
@@ -567,12 +569,12 @@ Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00078}{7
 
 Definition at line \mbox{\hyperlink{initialization_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{initialization_8hpp_source}{initialization.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_addf15f6852a1d07a0120c595856f6fb7}\label{namespaceNeoN_addf15f6852a1d07a0120c595856f6fb7} 
+\Hypertarget{namespaceNeoN_aac684a88024d052ad5026aef575a5c64}\label{namespaceNeoN_aac684a88024d052ad5026aef575a5c64} 
 \index{NeoN@{NeoN}!get@{get}}
 \index{get@{get}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{get()}{get()}}
-{\footnotesize\ttfamily template$<$unsigned int I, typename Vector\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::get (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Vector\+Type $>$ \&}]{in }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$unsigned int I$>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::get (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{in }\end{DoxyParamCaption})}
 
 
 
@@ -1121,6 +1123,20 @@ The offsets are computed by a prefix sum of the input values. So, with given inp
 
 Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_ae7808f9288557741a38a6a87514110f3}\label{namespaceNeoN_ae7808f9288557741a38a6a87514110f3} 
+\index{NeoN@{NeoN}!set@{set}}
+\index{set@{set}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{set()}{set()}}
+{\footnotesize\ttfamily template$<$unsigned int I$>$ \\
+void Neo\+N\+::set (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{in,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})}
+
+
+
+Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function extracts a single component. 
+
+\begin{DoxyReturn}{Returns}
+The resulting scalar vector 
+\end{DoxyReturn}
 \Hypertarget{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0}\label{namespaceNeoN_aadca37c3aeefc2c64c59b7b8c9b624c0} 
 \index{NeoN@{NeoN}!setContainer@{setContainer}}
 \index{setContainer@{setContainer}!NeoN@{NeoN}}
