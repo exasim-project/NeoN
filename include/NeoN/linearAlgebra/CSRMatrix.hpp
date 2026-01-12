@@ -214,7 +214,7 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] std::shared_ptr<const SparsityPattern<IndexType>> sparsity()
+    [[nodiscard]] std::shared_ptr<const SparsityPattern<IndexType>> sparsity() const
     {
         return sparsityPattern_;
     }
@@ -271,6 +271,12 @@ public:
      */
     void negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
 
+    /* @brief computes out = P - L*f + U*f
+     *
+     * @notes explicitly sets out values to zero
+     */
+    // void PLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
+
 private:
 
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
@@ -283,6 +289,15 @@ private:
  */
 template<typename ValueType, typename IndexType>
 [[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx);
+
+// FIXME
+// template<typename ValueType, typename IndexType>
+// void faceIterateNegLUx(
+//         const CSRMatrix<ValueType, IndexType>& mat,
+//         const MatrixIterator& mi,
+//         const Vector<ValueType>& a,
+//         Vector<ValueType>& out
+//     ) const;
 
 // /* @brief given a csr matrix this function copies the matrix and converts to requested target
 // types
