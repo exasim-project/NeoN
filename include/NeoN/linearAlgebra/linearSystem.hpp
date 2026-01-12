@@ -184,36 +184,6 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
     localIdx nnzs {sparsity->nnz()};
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
-    // const auto [diagOffset, rowOffs, faceCells] =
-    //     views(matrixIterator.diagOffset(), sparsity->rowOffs(), mesh.boundaryMesh().faceCells());
-
-    // BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
-    //     Vector<ValueType>(exec, nBoundaryFaces),
-    //     Vector<IndexType>(exec, nBoundaryFaces),
-    //     Vector<ValueType>(exec, nBoundaryFaces),
-    //     Vector<IndexType>(exec, nBoundaryFaces)
-    // };
-
-    // FIXME
-    // auto [mValue, mColIdx, rhsValue, rhsIdx] =
-    //     views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
-
-    // parallelFor(
-    //     exec,
-    //     {0, nBoundaryFaces},
-    //     KOKKOS_LAMBDA(const localIdx bfacei) {
-    //         localIdx celli = faceCells[bfacei];
-    //         mValue[bfacei] = zero<ValueType>();
-    //         mColIdx[bfacei] = celli + diagOffset[celli];
-    //         rhsValue[bfacei] = zero<ValueType>();
-    //         rhsIdx[bfacei] = celli;
-    //     },
-    //     "createEmptyLinearSystem"
-    // );
-
-    // Dictionary aux;
-    // aux.insert("boundaryCoefficients", bcCoeffs);
-
     return {
         CSRMatrix<ValueType, IndexType> {
             Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity

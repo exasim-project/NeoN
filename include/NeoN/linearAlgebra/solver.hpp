@@ -11,17 +11,24 @@
 namespace NeoN::la
 {
 
+struct SolverStatsEntry
+{
+    int numIter;
+    scalar initResNorm;
+    scalar finalResNorm;
+    scalar solveTime;
+};
 
 /* @brief A helper to collect statistics of the solver */
 struct SolverStats
 {
-    int numIter;
+    std::vector<SolverStatsEntry> entries;
 
-    scalar initResNorm;
+    SolverStats(int numIter, scalar initResNorm, scalar finalResNorm, scalar solveTime)
+        : entries({SolverStatsEntry {numIter, initResNorm, finalResNorm, solveTime}})
+    {}
 
-    scalar finalResNorm;
-
-    scalar solveTime;
+    SolverStats(SolverStatsEntry entry) : entries({entry}) {}
 };
 
 /* @class SolverFactory
