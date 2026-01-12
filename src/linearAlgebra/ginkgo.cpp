@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -194,21 +195,22 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localId
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
-createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx)
 {
-    const auto mtx = sys.view().matrix;
+    // const auto mtx = sys.view().matrix;
+    const auto mtxV = mtx.view();
     // NOTE we get a const view of the system but need a non const view to vals and indices
     auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values.size()), mtx.values.data()
+        exec, static_cast<gko::size_type>(mtxV.values.size()), mtxV.values.data()
     );
     auto col = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.colIdxs.size()), mtx.colIdxs.data()
+        exec, static_cast<gko::size_type>(mtxV.colIdxs.size()), mtxV.colIdxs.data()
     );
     auto row = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.rowOffs.size()), mtx.rowOffs.data()
+        exec, static_cast<gko::size_type>(mtxV.rowOffs.size()), mtxV.rowOffs.data()
     );
 
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    auto nrows = static_cast<gko::size_type>(mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
         exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
     ));
@@ -224,7 +226,7 @@ scalar retrieve(const InType& in)
     return host->copy_from(in)->at(0);
 };
 
-SolverStats solve_impl(
+SolverStatsEntry solve_impl(
     std::shared_ptr<const gko::Executor> exec,
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
@@ -271,15 +273,15 @@ SolverStats solve_impl(
         )
         / 1000.0;
 
-    return {{numIter, initResNorm, finalResNorm, duration}};
+    return {numIter, initResNorm, finalResNorm, duration};
 }
 
 
 SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const
 {
-    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    auto gkoMtx = createGkoMtx(gkoExec_, sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver));
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -305,16 +307,64 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
 
 SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const
 {
-    const auto gkoMtx = createGkoMtx(gkoExec_, sys);
-    auto solver = factory_->generate(gkoMtx);
+    // TODO make it runtime selectable
+    bool fused = false;
+    if (fused)
+    {
+        const auto gkoMtx = createGkoMtx(gkoExec_, sys);
+        auto solver = factory_->generate(gkoMtx);
 
-    auto rhsCopy = unpackVecValues(sys.rhs());
-    auto xCopy = unpackVecValues(x);
+        auto rhsCopy = unpackVecValues(sys.rhs());
+        auto xCopy = unpackVecValues(x);
 
-    auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
 
-    packVecValues(xCopy, x);
-    return stats;
+        packVecValues(xCopy, x);
+        return {stats};
+    }
+    else
+    {
+        auto stats = SolverStats {};
+        auto sparsity = sys.matrix().sparsity();
+        {
+            auto rhs = get<0>(sys.rhs());
+            auto xcopy = get<0>(x);
+            auto values = get<0>(sys.matrix().values());
+
+            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+            auto gkoMtx = createGkoMtx(gkoExec_, mtx);
+            auto solver = factory_->generate(gkoMtx);
+            stats.entries.push_back(solve_impl(gkoExec_, rhs, xcopy, gkoMtx, std::move(solver)));
+
+            set<0>(xcopy, x);
+        }
+        {
+            auto rhs = get<1>(sys.rhs());
+            auto xcopy = get<1>(x);
+            auto values = get<1>(sys.matrix().values());
+
+            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+            auto gkoMtx = createGkoMtx(gkoExec_, mtx);
+            auto solver = factory_->generate(gkoMtx);
+            stats.entries.push_back(solve_impl(gkoExec_, rhs, xcopy, gkoMtx, std::move(solver)));
+            set<1>(xcopy, x);
+        }
+        {
+            auto rhs = get<2>(sys.rhs());
+            auto xcopy = get<2>(x);
+            auto values = get<2>(sys.matrix().values());
+
+            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+            auto gkoMtx = createGkoMtx(gkoExec_, mtx);
+            auto solver = factory_->generate(gkoMtx);
+            stats.entries.push_back(solve_impl(gkoExec_, rhs, xcopy, gkoMtx, std::move(solver)));
+            set<2>(xcopy, x);
+        }
+        return stats;
+    }
 }
 
 
