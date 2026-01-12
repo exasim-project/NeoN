@@ -253,29 +253,23 @@ public:
         );
     }
 
-    /* @brief extract the diagonal of the matrix
+    /** @brief extract the diagonal of the matrix
      *
      */
     [[nodiscard]] Vector<ValueType> diag() const;
 
-    /* @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
+    /** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
      *
      */
     [[nodiscard]] Vector<ValueType> scaledInverseDiag(const Vector<scalar>& a) const;
 
     void scaledInverseDiag(const Vector<scalar>& a, Vector<ValueType>& out) const;
 
-    /* @brief computes out = -(L+U) x
+    /** @brief computes out = -(L+U) x
      *
      * @notes explicitly sets out values to zero
      */
     void negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
-
-    /* @brief computes out = P - L*f + U*f
-     *
-     * @notes explicitly sets out values to zero
-     */
-    // void PLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
 
 private:
 

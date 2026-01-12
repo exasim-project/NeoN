@@ -271,7 +271,7 @@ SolverStats solve_impl(
         )
         / 1000.0;
 
-    return {numIter, initResNorm, finalResNorm, duration};
+    return {{numIter, initResNorm, finalResNorm, duration}};
 }
 
 
@@ -292,6 +292,7 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec,

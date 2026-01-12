@@ -119,7 +119,7 @@ public:
         );
 
         fence(x.exec());
-        return {1, 0.0, 0.0, 0.0};
+        return {{1, 0.0, 0.0, 0.0}};
     }
 
     std::unique_ptr<SolverFactory> clone() const override

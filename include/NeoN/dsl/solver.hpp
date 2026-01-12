@@ -122,7 +122,7 @@ la::SolverStats solve(
     {
         // integrate equations in time
         integrator.solve(exp, solution, t, dt);
-        return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
+        return {{.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0}};
     }
     else
     {
