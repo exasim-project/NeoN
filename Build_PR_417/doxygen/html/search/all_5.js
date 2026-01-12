@@ -28,7 +28,7 @@ var searchData=
   ['file_25',['File',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299a4ea6596d8006801e5878cfe907d8ff92',1,'NeoN::Logging']]],
   ['fill_26',['fill',['../namespaceNeoN.html#aef3e2dce49fdf45c689e6718112c258c',1,'NeoN']]],
   ['finalize_27',['finalize',['../namespaceNeoN.html#a2e4d907637bdc31918dfb7a91f9857fa',1,'NeoN']]],
-  ['finalresnorm_28',['finalResNorm',['../structNeoN_1_1la_1_1SolverStats.html#a3127eecae195d0f3d755a5fcda45b3df',1,'NeoN::la::SolverStats']]],
+  ['finalresnorm_28',['finalResNorm',['../structNeoN_1_1la_1_1SolverStatsEntry.html#a026a040331e54ab553c8f44fc3357b55',1,'NeoN::la::SolverStatsEntry']]],
   ['find_29',['find',['../classNeoN_1_1Collection.html#ab66946a42309840d8e96658103b64c88',1,'NeoN::Collection::find()'],['../classNeoN_1_1CollectionMixin.html#a5d4b588b1edf7fba73f8a2ef77c0cdc1',1,'NeoN::CollectionMixin::find()']]],
   ['findnexttime_30',['findNextTime',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection.html#a40b9d9c3be9321c4486edc2c4159d635',1,'NeoN::finiteVolume::cellCentred::OldTimeCollection']]],
   ['findprevioustime_31',['findPreviousTime',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection.html#a4bf35c592378cd254ada3409d9510bb3',1,'NeoN::finiteVolume::cellCentred::OldTimeCollection']]],

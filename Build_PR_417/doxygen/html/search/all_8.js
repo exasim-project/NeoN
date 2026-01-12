@@ -9,7 +9,7 @@ var searchData=
   ['init_6',['init',['../structNeoN_1_1RegisterDocumentation.html#a556f43fee3eda07630e4ada3fecc330c',1,'NeoN::RegisterDocumentation']]],
   ['initialization_2ehpp_7',['initialization.hpp',['../initialization_8hpp.html',1,'']]],
   ['initialize_8',['initialize',['../namespaceNeoN.html#aa8bb18687be355a802575d548fd7f292',1,'NeoN']]],
-  ['initresnorm_9',['initResNorm',['../structNeoN_1_1la_1_1SolverStats.html#a037258a420e19d2dd2d7ddd8541aae9b',1,'NeoN::la::SolverStats']]],
+  ['initresnorm_9',['initResNorm',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aee83338874c2ac4a7997e11b0725f54d',1,'NeoN::la::SolverStatsEntry']]],
   ['input_10',['Input',['../namespaceNeoN.html#a0f89cac0ba212d1026c9fedc65742cea',1,'NeoN']]],
   ['input_2ehpp_11',['input.hpp',['../input_8hpp.html',1,'']]],
   ['insert_12',['insert',['../classNeoN_1_1Database.html#ac954e46fb566204c46888176edbedc3d',1,'NeoN::Database::insert()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection.html#a8308db0eff4b6c333c975fa60e845a41',1,'NeoN::finiteVolume::cellCentred::VectorCollection::insert()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection.html#ab72300bf1693e7fb464dd57c9c73785a',1,'NeoN::finiteVolume::cellCentred::OldTimeCollection::insert()'],['../classNeoN_1_1Dictionary.html#ac622f165a5d718e04bc3a22b80d949de',1,'NeoN::Dictionary::insert()'],['../classNeoN_1_1TokenList.html#a7c544efc78031acfcdd8a6bec2710bb7',1,'NeoN::TokenList::insert()']]],

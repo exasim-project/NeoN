@@ -64,6 +64,6 @@ var searchData=
   ['nonorthcorrectionvec3s_61',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_62',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nrows_63',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a68098d6c3dd1b18b71d717b7a93b0836',1,'NeoN::la::CSRMatrix']]],
-  ['numiter_64',['numIter',['../structNeoN_1_1la_1_1SolverStats.html#a1c1ed94a5cb51273fc760ac035317625',1,'NeoN::la::SolverStats']]],
+  ['numiter_64',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
   ['numsegments_65',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
 ];

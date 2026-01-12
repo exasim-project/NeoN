@@ -134,12 +134,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aca097e1d3429dd192a61c42c5ae7c89e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a const view representation of the matrix's data.  <br /></td></tr>
 <tr class="separator:aca097e1d3429dd192a61c42c5ae7c89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acba4cba929330d32cf02d7d82ddafb1c" id="r_acba4cba929330d32cf02d7d82ddafb1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#acba4cba929330d32cf02d7d82ddafb1c">diag</a> () const</td></tr>
+<tr class="memdesc:acba4cba929330d32cf02d7d82ddafb1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">extract the diagonal of the matrix  <br /></td></tr>
 <tr class="separator:acba4cba929330d32cf02d7d82ddafb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a864d836dc3684a5c1ed0613189561473" id="r_a864d836dc3684a5c1ed0613189561473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#a864d836dc3684a5c1ed0613189561473">scaledInverseDiag</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;a) const</td></tr>
+<tr class="memdesc:a864d836dc3684a5c1ed0613189561473"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1  <br /></td></tr>
 <tr class="separator:a864d836dc3684a5c1ed0613189561473"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9353c407a2bf44827dca73ce62b0f5a4" id="r_a9353c407a2bf44827dca73ce62b0f5a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#a9353c407a2bf44827dca73ce62b0f5a4">scaledInverseDiag</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;a, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;out) const</td></tr>
 <tr class="separator:a9353c407a2bf44827dca73ce62b0f5a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b52827aa6380bf06f7f57f77d046e5d" id="r_a8b52827aa6380bf06f7f57f77d046e5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#a8b52827aa6380bf06f7f57f77d046e5d">negLUx</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;a, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;out) const</td></tr>
+<tr class="memdesc:a8b52827aa6380bf06f7f57f77d046e5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes out = -(L+U) x  <br /></td></tr>
 <tr class="separator:a8b52827aa6380bf06f7f57f77d046e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -411,6 +414,8 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>extract the diagonal of the matrix </p>
+
 </div>
 </div>
 <a id="a5963e5160ed6e2dc1e032ca55e7a1fd2" name="a5963e5160ed6e2dc1e032ca55e7a1fd2"></a>
@@ -472,6 +477,9 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>computes out = -(L+U) x </p>
+<p>@notes explicitly sets out values to zero </p>
 
 </div>
 </div>
@@ -588,6 +596,8 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1 </p>
 
 </div>
 </div>
