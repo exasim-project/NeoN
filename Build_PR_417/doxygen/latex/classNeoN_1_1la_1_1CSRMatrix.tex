@@ -34,7 +34,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox
 \begin{DoxyCompactList}\small\item\em Get a const reference to values vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af1509d705d3c8e261ad36f4ce9fbb5ab}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
 \begin{DoxyCompactList}\small\item\em Copy the matrix to another executor. \end{DoxyCompactList}\item 
-std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a3ccee4e8dc6aa09ac05a9dc66813debf}{sparsity}} ()
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a632f0d07892a09a1407463bf2c4503e0}{sparsity}} () const
 \begin{DoxyCompactList}\small\item\em Get a reference to column indices vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a951a3e8899f686f3f0cdb5769d9abb78}{copy\+To\+Host}} () const
 \begin{DoxyCompactList}\small\item\em Copy the matrix to the host. \end{DoxyCompactList}\item 
@@ -48,7 +48,7 @@ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPatt
 \item 
 void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a9353c407a2bf44827dca73ce62b0f5a4}{scaled\+Inverse\+Diag}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&a, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out) const
 \item 
-void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_ad30b8c4441fc0882e1abf46989f65c98}{scaled\+Off\+Diag}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out) const
+void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a8b52827aa6380bf06f7f57f77d046e5d}{neg\+LUx}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&a, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out) const
 \end{DoxyCompactItemize}
 
 
@@ -217,6 +217,13 @@ Reference to the executor.
 
 Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00141}{141}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
 
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a8b52827aa6380bf06f7f57f77d046e5d}\label{classNeoN_1_1la_1_1CSRMatrix_a8b52827aa6380bf06f7f57f77d046e5d} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!negLUx@{negLUx}}
+\index{negLUx@{negLUx}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{negLUx()}{negLUx()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::neg\+LUx (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{a,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption}) const}
+
 \Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a85433e56125f2896aa880ac27af2eaaa}\label{classNeoN_1_1la_1_1CSRMatrix_a85433e56125f2896aa880ac27af2eaaa} 
 \index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!nNonZeros@{nNonZeros}}
 \index{nNonZeros@{nNonZeros}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
@@ -285,19 +292,12 @@ Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00171}{171}} of file 
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
 void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::scaled\+Inverse\+Diag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{a,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption}) const}
 
-\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_ad30b8c4441fc0882e1abf46989f65c98}\label{classNeoN_1_1la_1_1CSRMatrix_ad30b8c4441fc0882e1abf46989f65c98} 
-\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!scaledOffDiag@{scaledOffDiag}}
-\index{scaledOffDiag@{scaledOffDiag}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
-\doxysubsubsection{\texorpdfstring{scaledOffDiag()}{scaledOffDiag()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::scaled\+Off\+Diag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{a,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption}) const}
-
-\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a3ccee4e8dc6aa09ac05a9dc66813debf}\label{classNeoN_1_1la_1_1CSRMatrix_a3ccee4e8dc6aa09ac05a9dc66813debf} 
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a632f0d07892a09a1407463bf2c4503e0}\label{classNeoN_1_1la_1_1CSRMatrix_a632f0d07892a09a1407463bf2c4503e0} 
 \index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!sparsity@{sparsity}}
 \index{sparsity@{sparsity}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
 \doxysubsubsection{\texorpdfstring{sparsity()}{sparsity()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::sparsity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::sparsity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
