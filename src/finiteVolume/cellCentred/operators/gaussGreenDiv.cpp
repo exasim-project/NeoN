@@ -166,17 +166,27 @@ void computeDivImp(
     const auto exec = phi.exec();
     const auto weights = surfInterp.weight(faceFlux, phi);
 
-    const auto [faceFluxV, weightsV, owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] =
-        views(
-            faceFlux.internalVector(),
-            weights.internalVector(),
-            mesh.faceOwner(),
-            mesh.faceNeighbour(),
-            mesh.boundaryMesh().faceCells(),
-            matIt.diagOffset(),
-            matIt.ownerOffset(),
-            matIt.neighbourOffset()
-        );
+    const auto
+        [faceFluxV,
+         weightsV,
+         owner,
+         neighbour,
+         surfFaceCells,
+         diagOffs,
+         ownOffs,
+         neiOffs,
+         rowOffs] =
+            views(
+                faceFlux.internalVector(),
+                weights.internalVector(),
+                mesh.faceOwner(),
+                mesh.faceNeighbour(),
+                mesh.boundaryMesh().faceCells(),
+                matIt.diagOffset(),
+                matIt.ownerOffset(),
+                matIt.neighbourOffset(),
+                matIt.sparsityPattern()->rowOffs()
+            );
     auto [matrix, rhs, bMatrix, bRhs] = ls.view();
 
     parallelFor(
@@ -189,14 +199,24 @@ void computeDivImp(
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
+            auto rowNeiStart = rowOffs[nei];
+            auto rowOwnStart = rowOffs[own];
+
             auto valueUpper = faceFluxV[facei] * -weightsV[facei] * one<ValueType>();
-            matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
-            Kokkos::atomic_sub(&matrix.values[matIt.diagIdx(own)], valueUpper * operatorScalingOwn);
+            // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
+            matrix.values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
+            Kokkos::atomic_sub(
+                &matrix.values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
+            );
 
             // add owner contribution lower
             auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
-            matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
-            Kokkos::atomic_sub(&matrix.values[matIt.diagIdx(nei)], valueLower * operatorScalingNei);
+            // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
+            //
+            matrix.values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
+            Kokkos::atomic_sub(
+                &matrix.values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
+            );
         },
         "computeLocalGaussGreenDivCoefficients"
     );
