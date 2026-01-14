@@ -37,7 +37,7 @@ public:
      * @param ls [in,out] - assemble gradient operator into the given linear system
      */
     virtual void
-    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3, localIdx>&)
+    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3, localIdx>&, const la::MatrixIterator<localIdx>&)
         const override
     {
         NF_ERROR_EXIT("Not implemented");

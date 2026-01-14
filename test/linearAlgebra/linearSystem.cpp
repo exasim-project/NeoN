@@ -45,7 +45,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         auto mesh = create1DUniformMesh(exec, nCells);
 
         // TODO improve structure here
-        auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+        auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
         auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(
             mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
         );

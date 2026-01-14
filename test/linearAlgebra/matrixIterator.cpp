@@ -22,7 +22,7 @@ TEST_CASE("MatrixIterator")
     auto nFaces = 9;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::scalar, NeoN::localIdx>(mesh);
+    auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
     SECTION("Can construct sparsity pattern " + execName)
     {

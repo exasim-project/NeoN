@@ -37,7 +37,7 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 
 template<typename ValueType>
 void SourceTerm<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& matIt
+    la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& matIt
 ) const
 {
     const auto operatorScaling = this->getCoefficient();

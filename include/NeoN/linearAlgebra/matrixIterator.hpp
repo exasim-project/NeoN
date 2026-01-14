@@ -22,7 +22,7 @@ namespace NeoN::la
  * of sparsity patterns from a given unstructured mesh
  *
  */
-template<typename ValueType, typename IndexType = localIdx, typename MeshType = UnstructuredMesh>
+template<typename IndexType = localIdx, typename MeshType = UnstructuredMesh>
 class MatrixIterator
 {
 
@@ -113,8 +113,7 @@ public:
     }
 };
 
-template<typename ValueType, typename IndexType>
-MatrixIterator<ValueType, IndexType>
-createSparsityPatternMatrixIterator(const UnstructuredMesh& mesh);
+template<typename IndexType>
+MatrixIterator<IndexType> createSparsityPatternMatrixIterator(const UnstructuredMesh& mesh);
 
 }

@@ -32,7 +32,7 @@ concept HasImplicitOperator = requires(T const t) {
     {
         t.implicitOperation(
             std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
-            std::declval<la::MatrixIterator<typename T::VectorValueType>&>()
+            std::declval<la::MatrixIterator<localIdx>&>()
         )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
@@ -76,7 +76,7 @@ public:
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
     void implicitOperation(
-        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& mi
+        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<localIdx>& mi
     ) const
     {
         model_->implicitOperation(ls, mi);
@@ -110,7 +110,7 @@ private:
         virtual void explicitOperation(Vector<ValueType>& source) const = 0;
 
         virtual void implicitOperation(
-            la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& mi
+            la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<localIdx>& mi
         ) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
@@ -154,7 +154,7 @@ private:
         }
 
         virtual void implicitOperation(
-            la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& mi
+            la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<localIdx>& mi
         ) const override
         {
             if constexpr (HasImplicitOperator<ConcreteOperatorType>)

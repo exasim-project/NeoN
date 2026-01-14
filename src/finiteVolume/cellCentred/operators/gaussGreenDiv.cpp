@@ -154,7 +154,7 @@ NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType, localIdx>& ls,
-    const la::MatrixIterator<ValueType>& matIt,
+    const la::MatrixIterator<>& matIt,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
@@ -262,7 +262,7 @@ void computeDivImp(
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivImp<TYPENAME>(                                                         \
         la::LinearSystem<TYPENAME, localIdx>&,                                                     \
-        const la::MatrixIterator<TYPENAME>&,                                                       \
+        const la::MatrixIterator<localIdx>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceInterpolation<TYPENAME>&,                                                     \

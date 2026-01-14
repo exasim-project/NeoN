@@ -58,7 +58,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     NeoN::Database db;
     auto mesh = createSingleCellMesh(exec);
-    auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+    auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "testVectorCollection");
@@ -125,7 +125,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
-        auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+        auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
         const scalar dt = 0.5;
         {

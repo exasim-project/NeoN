@@ -52,7 +52,7 @@ public:
 
     virtual void
     div(la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& matIt,
+        const la::MatrixIterator<>& matIt,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
@@ -135,7 +135,7 @@ public:
     }
 
     void implicitOperation(
-        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<ValueType>& matIt
+        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& matIt
     ) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
