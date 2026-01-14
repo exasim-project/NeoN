@@ -17,7 +17,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+    auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
     SECTION("Operator creation on " + execName)
     {

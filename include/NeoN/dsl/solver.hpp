@@ -30,7 +30,7 @@ namespace detail
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    const la::MatrixIterator<typename VectorType::ElementType>& mi,
+    const la::MatrixIterator<IndexType>& mi,
     la::LinearSystem<typename VectorType::ElementType, IndexType>& ls,
     VectorType& solution,
     scalar t,

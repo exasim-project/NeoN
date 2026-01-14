@@ -172,9 +172,10 @@ public:
     }
 
     void
-    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, const NeoN::la::MatrixIterator<ValueType>&)
+    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, const NeoN::la::MatrixIterator<NeoN::localIdx>&)
         const
     {
+        std::cout << __FILE__ << __LINE__ << "FOOO \n";
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
         auto fieldView = this->field_.internalVector().view();
@@ -236,11 +237,12 @@ public:
 
     void implicitOperation(
         la::LinearSystem<ValueType, NeoN::localIdx>& ls,
-        const NeoN::la::MatrixIterator<ValueType>&,
+        const NeoN::la::MatrixIterator<NeoN::localIdx>&,
         NeoN::scalar,
         NeoN::scalar
     )
     {
+        std::cout << __FILE__ << __LINE__ << "FOOO \n";
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
         auto fieldView = this->field_.internalVector().view();

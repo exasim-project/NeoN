@@ -38,21 +38,21 @@ public:
 
     void implicitOperation(
         la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& matrixIterator,
+        const la::MatrixIterator<>& matrixIterator,
         scalar,
         scalar dt
     ) const;
 
     void bdf1Kernel(
         la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& matrixIterator,
+        const la::MatrixIterator<>& matrixIterator,
         scalar t,
         scalar dt
     ) const;
 
     void bdf2Kernel(
         la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& matrixIterator,
+        const la::MatrixIterator<>& matrixIterator,
         scalar t,
         scalar dt
     ) const;

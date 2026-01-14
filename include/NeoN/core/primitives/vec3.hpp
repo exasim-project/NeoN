@@ -200,4 +200,11 @@ KOKKOS_INLINE_FUNCTION Vec3 zero<Vec3>()
     return Vec3(0.0, 0.0, 0.0);
 }
 
+template<>
+KOKKOS_INLINE_FUNCTION Vec3 inv<Vec3>(Vec3 in)
+{
+    return Vec3(1.0 / in[0], 1.0 / in[1], 1.0 / in[2]);
+}
+
+
 } // namespace NeoN

@@ -18,7 +18,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
 
     auto mesh = NeoN::createSingleCellMesh(exec);
 
-    auto mi = NeoN::la::createSparsityPatternMatrixIterator<TestType, NeoN::localIdx>(mesh);
+    auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
     const size_t size {1};
     NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());

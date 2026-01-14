@@ -57,7 +57,7 @@ void CSRMatrix<ValueType, IndexType>::scaledInverseDiag(
             {
                 if (rowi == colIdxV[i])
                 {
-                    outV[rowi] = aV[rowi] / matrixV[i];
+                    outV[rowi] = aV[rowi] * inv(matrixV[i]);
                     break;
                 }
             }

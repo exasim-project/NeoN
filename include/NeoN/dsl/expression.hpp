@@ -26,7 +26,7 @@ struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(const la::MatrixIterator<VectorType>&, la::LinearSystem<VectorType, IndexType>&) {};
+    operator()(const la::MatrixIterator<IndexType>&, la::LinearSystem<VectorType, IndexType>&) {};
 };
 
 
@@ -93,7 +93,7 @@ public:
 
     /*@brief compute matrix coefficients based on all spatial operators */
     void assembleSpatialOperator(
-        la::LinearSystem<ValueType, IndexType>& ls, const la::MatrixIterator<ValueType>& matIt
+        la::LinearSystem<ValueType, IndexType>& ls, const la::MatrixIterator<IndexType>& matIt
     ) const
     {
         for (auto& op : spatialOperators_)
@@ -110,7 +110,7 @@ public:
      */
     void assembleTemporalOperator(
         la::LinearSystem<ValueType, IndexType>& ls,
-        const la::MatrixIterator<ValueType>& matIt,
+        const la::MatrixIterator<IndexType>& matIt,
         scalar t,
         scalar dt
     ) const
@@ -139,7 +139,7 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        auto mi = la::createSparsityPatternMatrixIterator<ValueType, IndexType>(mesh);
+        auto mi = la::createSparsityPatternMatrixIterator<IndexType>(mesh);
         auto ls = la::createEmptyLinearSystem<ValueType, IndexType>(
             mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
         );
@@ -154,7 +154,7 @@ public:
     void assemble(
         scalar t,
         scalar dt,
-        const la::MatrixIterator<ValueType>& mi,
+        const la::MatrixIterator<IndexType>& mi,
         la::LinearSystem<ValueType, IndexType>& ls,
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const

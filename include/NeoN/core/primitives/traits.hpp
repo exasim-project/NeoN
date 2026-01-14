@@ -15,5 +15,7 @@ KOKKOS_INLINE_FUNCTION T one();
 template<typename T>
 KOKKOS_INLINE_FUNCTION T zero();
 
+template<typename T>
+KOKKOS_INLINE_FUNCTION T inv(T);
 
 }

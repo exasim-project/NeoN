@@ -91,6 +91,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};
 
+    // FIXME add again
     // SECTION("Solve linear system scalar " + execName)
     // {
     //     Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});

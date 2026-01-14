@@ -35,7 +35,7 @@ concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
             std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
-            std::declval<la::MatrixIterator<typename T::VectorValueType>&>(),
+            std::declval<la::MatrixIterator<localIdx>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
@@ -79,7 +79,7 @@ public:
 
     void implicitOperation(
         la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& mi,
+        const la::MatrixIterator<localIdx>& mi,
         scalar t,
         scalar dt
     ) const
@@ -118,7 +118,7 @@ private:
 
         virtual void implicitOperation(
             la::LinearSystem<ValueType, localIdx>& ls,
-            const la::MatrixIterator<ValueType>& mi,
+            const la::MatrixIterator<localIdx>& mi,
             scalar t,
             scalar dt
         ) = 0;
@@ -173,7 +173,7 @@ private:
 
         virtual void implicitOperation(
             la::LinearSystem<ValueType, localIdx>& ls,
-            const la::MatrixIterator<ValueType>& mi,
+            const la::MatrixIterator<localIdx>& mi,
 
             scalar t,
             scalar dt

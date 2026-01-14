@@ -27,7 +27,7 @@ void computeLaplacianExp(
 template<typename ValueType>
 void computeLaplacianImpl(
     la::LinearSystem<ValueType, localIdx>& ls,
-    const la::MatrixIterator<ValueType>& matIt,
+    const la::MatrixIterator<>& matIt,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
@@ -98,7 +98,7 @@ public:
 
     virtual void laplacian(
         la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<ValueType>& mi,
+        const la::MatrixIterator<>& mi,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
