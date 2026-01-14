@@ -64,6 +64,10 @@ public:
         std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
     );
 
+    /* @brief create an SparsityPattern from existing mesh */
+    MatrixIterator(const MatrixIterator& mi);
+
+
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
 
     std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const

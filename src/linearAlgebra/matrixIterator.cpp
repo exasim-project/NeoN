@@ -58,6 +58,15 @@ MatrixIterator<ValueType, IndexType, MeshType>::MatrixIterator(
       diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern)
 {}
 
+template<typename ValueType, typename IndexType, typename MeshType>
+MatrixIterator<ValueType, IndexType, MeshType>::MatrixIterator(const MatrixIterator& mi)
+    : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
+      diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
+      neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()), sp_(mi.sp_),
+      bsp_(mi.bsp_)
+{}
+
+
 #define NN_DECLARE_MATRIXITERATOR(TYPENAME)                                                        \
     template class MatrixIterator<TYPENAME, localIdx, UnstructuredMesh>
 
