@@ -1,0 +1,83 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/dsl/solver.hpp File Reference}
+\hypertarget{dsl_2solver_8hpp}{}\label{dsl_2solver_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp}}
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$concepts$>$}\newline
+{\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/input.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/dsl/expression.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/time\+Integration/time\+Integration.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/linear\+System.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/solver.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1dsl_1_1detail_1_1RelaxationCache}{Neo\+N\+::dsl\+::detail\+::\+Relaxation\+Cache}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1dsl}{Neo\+N\+::dsl}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail}{Neo\+N\+::dsl\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const \mbox{\hyperlink{structNeoN_1_1dsl_1_1detail_1_1RelaxationCache}{Relaxation\+Cache}} \& \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a26383f3466406cd020a77338329085c2}{Neo\+N\+::dsl\+::detail\+::relaxation\+Cache}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution)
+\item 
+std\+::optional$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_aa8ff87b58865f9e8980bb070d5e722ef}{Neo\+N\+::dsl\+::detail\+::find\+Relaxation\+Factor}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, const std\+::string \&field\+Name)
+\item 
+std\+::optional$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a8181a21040fc6d49a959231f487f2376}{Neo\+N\+::dsl\+::detail\+::find\+Field\+Relaxation\+Factor}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, const std\+::string \&field\+Name)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a1a8da2500a6ccf69692ed30c1a887433}{Neo\+N\+::dsl\+::detail\+::component\+Multiply}} (const Value\+Type \&lhs, const Value\+Type \&rhs)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae31732fa20fd75e9ebb24ecce7a60173}{Neo\+N\+::dsl\+::detail\+::component\+Multiply}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&rhs)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_af5d8eb6a464196b32de1cca2f2b47e5e}{Neo\+N\+::dsl\+::detail\+::cmpt\+Mag\+Value}} (const Value\+Type \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a7da93b600960881f40c3d1c35500f6bc}{Neo\+N\+::dsl\+::detail\+::cmpt\+Mag\+Value}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a266e7d7c46617dca1a20906659aac0a3}{Neo\+N\+::dsl\+::detail\+::cmpt\+Mag\+Value}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&value)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ac4cdf109e82f32490cd8f9613abafefa}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max\+Value}} (const Value\+Type \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ac6634d9d16ea18a52e3201fa44bdee0e}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max\+Value}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a285757883ad8aa2ad61afaf10871e2e7}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max\+Value}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&value)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a5cb963cb9ca8e98ae1d6efc3e2d71d61}{Neo\+N\+::dsl\+::detail\+::cmpt\+Min\+Value}} (const Value\+Type \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a7a9ea5bd75e978b02d0ea931d84ab848}{Neo\+N\+::dsl\+::detail\+::cmpt\+Min\+Value}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&value)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a6ed2cd9cf375d6434c2b7593839591ae}{Neo\+N\+::dsl\+::detail\+::cmpt\+Min\+Value}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&value)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a21470cd85c3afc9ea7a5a39c06ddbff8}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max}} (const Value\+Type \&lhs, const Value\+Type \&rhs)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a8e3f90796c4371a1bacd2a198c853ef4}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&lhs, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&rhs)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a16a73b3ef4014c2f205764dca5fa61de}{Neo\+N\+::dsl\+::detail\+::cmpt\+Max}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&rhs)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad2c801b53206405427d31d9d7e9bf6bd}{Neo\+N\+::dsl\+::detail\+::copy\+Sign}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a962997faeefee9e136f8493609f76b23}{Neo\+N\+::dsl\+::detail\+::component\+Copy\+Sign}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a240f77c2910738859ba9437f773dfdbd}{Neo\+N\+::dsl\+::detail\+::component\+Copy\+Sign}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&s)
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_add1d5f474c3f7ca703c02e3b7a271b05}{Neo\+N\+::dsl\+::detail\+::apply\+Matrix\+Relaxation}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \&sp, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ typename Vector\+Type\+::\+Element\+Type, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&ls, const Vector\+Type \&solution, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution)
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad9f46cfeb39aae04cac0192a6932b571}{Neo\+N\+::dsl\+::detail\+::apply\+Field\+Relaxation}} (Vector\+Type \&solution, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&previous, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution)
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad86b892d416822fb1be5a5f9710fe45c}{Neo\+N\+::dsl\+::detail\+::iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \&sp, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ typename Vector\+Type\+::\+Element\+Type, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&ls, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ $>$ ps)
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a292cef046d22ee3a8d82a339144d5e7f}{Neo\+N\+::dsl\+::detail\+::iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ $>$ ps)
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_a8ba06394082cf5961a6c00182cde10fd}{Neo\+N\+::dsl\+::solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ $>$ p=\{\})
+\end{DoxyCompactItemize}
