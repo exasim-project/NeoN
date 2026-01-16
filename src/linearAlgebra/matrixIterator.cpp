@@ -55,7 +55,8 @@ MatrixIterator<IndexType, MeshType>::MatrixIterator(
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
       ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
-      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern)
+      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern),
+      rowOffsV_(sp_->rowOffs().view())
 {}
 
 template<typename IndexType, typename MeshType>
@@ -63,7 +64,7 @@ MatrixIterator<IndexType, MeshType>::MatrixIterator(const MatrixIterator& mi)
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
       diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
       neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()), sp_(mi.sp_),
-      bsp_(mi.bsp_)
+      bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
 {}
 
 
@@ -197,7 +198,6 @@ void setSparsityPatternMatrixIteratorSerial(
         },
         "setSparsityPatternMatrixIterator::computeUpperTriangular"
     );
-
 
     // NOTE copy back to device
     const auto exec = mesh.exec();

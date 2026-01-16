@@ -53,6 +53,8 @@ class MatrixIterator
     // the common boundary sparsity pattern
     std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
 
+    View<const IndexType> rowOffsV_;
+
 public:
 
     /* @brief create an SparsityPattern from existing mesh */
@@ -103,13 +105,13 @@ public:
     /* @brief given celli the function returns index of the diagonal element  */
     KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx celli, localIdx faceIdx) const
     {
-        return sp_->rowOffs(celli) + neighbourOffsetV_[faceIdx];
+        return rowOffsV_[celli] + neighbourOffsetV_[faceIdx];
     }
 
     /* @brief given celli the function returns index of the diagonal element  */
     KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx celli, localIdx faceIdx) const
     {
-        return sp_->rowOffs(celli) + ownerOffsetV_[faceIdx];
+        return rowOffsV_[celli] + ownerOffsetV_[faceIdx];
     }
 };
 

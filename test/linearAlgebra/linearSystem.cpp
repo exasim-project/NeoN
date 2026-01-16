@@ -14,7 +14,7 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix;
 
 TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 {
@@ -23,7 +23,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    Matrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
     SECTION("construct " + execName)
     {

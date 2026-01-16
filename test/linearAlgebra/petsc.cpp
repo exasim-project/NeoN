@@ -22,7 +22,7 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::Matrix < ;
 using NeoN::la::Solver;
 
 TEST_CASE("MatrixAssembly - Petsc")
@@ -47,7 +47,7 @@ TEST_CASE("MatrixAssembly - Petsc")
         // TODO work on support for unsingned types
         Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
         Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-        CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+        Matrix << scalar, localIdx > csrMatrix(values, colIdx, rowOffs);
 
         Vector<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
         LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
@@ -79,7 +79,7 @@ TEST_CASE("MatrixAssembly - Petsc")
 
             Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
             Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-            CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+            Matrix << scalar, localIdx > csrMatrix(values, colIdx, rowOffs);
 
             Vector<NeoN::scalar> rhs(exec, {1.0, 2.0, 3.0});
             LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);

@@ -7,7 +7,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/Matrix.hpp"
 
 
 namespace NeoN::la
@@ -100,7 +100,7 @@ Vector<scalar> unpackMtxValues(
  * @param[out]
  */
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, localIdx>& mtx,
     const Vector<scalar>& b,
     const Vector<scalar>& x,
     Vector<scalar>& res
