@@ -2,12 +2,12 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1la" kind="namespace" language="C++">
     <compoundname>NeoN::la</compoundname>
-    <innerclass refid="classNeoN_1_1la_1_1CSRMatrix" prot="public">NeoN::la::CSRMatrix</innerclass>
-    <innerclass refid="structNeoN_1_1la_1_1CSRMatrixView" prot="public">NeoN::la::CSRMatrixView</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1DiagonalSolver" prot="public">NeoN::la::DiagonalSolver</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1LinearSystem" prot="public">NeoN::la::LinearSystem</innerclass>
     <innerclass refid="structNeoN_1_1la_1_1LinearSystemView" prot="public">NeoN::la::LinearSystemView</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1Matrix" prot="public">NeoN::la::Matrix</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1MatrixIterator" prot="public">NeoN::la::MatrixIterator</innerclass>
+    <innerclass refid="structNeoN_1_1la_1_1MatrixView" prot="public">NeoN::la::MatrixView</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1Solver" prot="public">NeoN::la::Solver</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1SolverFactory" prot="public">NeoN::la::SolverFactory</innerclass>
     <innerclass refid="structNeoN_1_1la_1_1SolverStats" prot="public">NeoN::la::SolverStats</innerclass>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="176" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="176" bodyend="197"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="176" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="176" bodyend="195"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a85f5379340f066b86e4386c7d4bc4f65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="117" column="16" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" declline="117" declcolumn="16"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="119" column="16" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" declline="119" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1ad6d454dd6fb2e31259a6349219c08629" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
@@ -213,14 +213,14 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" line="89" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" declline="89" declcolumn="8"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a0f2ef5235583f6df761bfcb72f6435ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a72ef6c61b041df5711b6b14176baa05f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::la::computeResidual</definition>
-        <argsstring>(const CSRMatrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</argsstring>
+        <argsstring>(const Matrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</argsstring>
         <name>computeResidual</name>
         <qualifiedname>NeoN::la::computeResidual</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -248,6 +248,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp" line="12" column="1"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp" line="13" column="1"/>
   </compounddef>
 </doxygen>

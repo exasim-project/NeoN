@@ -3,18 +3,18 @@
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}
-\begin{DoxyCompactList}\small\item\em Sparse matrix class with compact storage by row (CSR) format. \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}
-\begin{DoxyCompactList}\small\item\em A view struct to allow easy read/write on all executors. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1DiagonalSolver}{Diagonal\+Solver}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}
 \begin{DoxyCompactList}\small\item\em A class representing a linear system of equations. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}
 \begin{DoxyCompactList}\small\item\em A view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}
+\begin{DoxyCompactList}\small\item\em Sparse matrix class with compact storage by row (CSR) format. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1MatrixIterator}{Matrix\+Iterator}}
 \item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}
+\begin{DoxyCompactList}\small\item\em A view struct to allow easy read/write on all executors. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{Solver}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory}{Solver\+Factory}}
@@ -44,16 +44,16 @@ void \mbox{\hyperlink{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f}{pac
 \item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{unpack\+Mtx\+Values}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&row\+Offs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&new\+Row\+Offs)
 \item 
-void \mbox{\hyperlink{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}{compute\+Residual}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&x, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&res)
+void \mbox{\hyperlink{namespaceNeoN_1_1la_a72ef6c61b041df5711b6b14176baa05f}{compute\+Residual}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&x, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&res)
 \end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
-\Hypertarget{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea}\label{namespaceNeoN_1_1la_a0f2ef5235583f6df761bfcb72f6435ea} 
+\Hypertarget{namespaceNeoN_1_1la_a72ef6c61b041df5711b6b14176baa05f}\label{namespaceNeoN_1_1la_a72ef6c61b041df5711b6b14176baa05f} 
 \index{NeoN::la@{NeoN::la}!computeResidual@{computeResidual}}
 \index{computeResidual@{computeResidual}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{computeResidual()}{computeResidual()}}
-{\footnotesize\ttfamily void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd}\label{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd} 
 \index{NeoN::la@{NeoN::la}!convertLinearSystem@{convertLinearSystem}}
