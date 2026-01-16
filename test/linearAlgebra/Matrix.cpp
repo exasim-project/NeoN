@@ -9,7 +9,7 @@
 
 #include "NeoN/NeoN.hpp"
 
-TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
+TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -20,10 +20,10 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     NeoN::Vector<TestType> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
-    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
+    NeoN::la::Matrix<TestType, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
-    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
+    const NeoN::la::Matrix<TestType, NeoN::localIdx> sparseMatrixConst(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
 
@@ -31,10 +31,8 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     NeoN::Vector<TestType> valuesDense(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     NeoN::Vector<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     NeoN::Vector<NeoN::localIdx> rowOffsDense(exec, {0, 3, 6, 9});
-    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrix(
-        valuesDense, colIdxDense, rowOffsDense
-    );
-    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrixConst(
+    NeoN::la::Matrix<TestType, NeoN::localIdx> denseMatrix(valuesDense, colIdxDense, rowOffsDense);
+    const NeoN::la::Matrix<TestType, NeoN::localIdx> denseMatrixConst(
         valuesDense, colIdxDense, rowOffsDense
     );
 
@@ -352,7 +350,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     }
 }
 
-TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
+TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -363,10 +361,10 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
 
-    NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
+    NeoN::la::Matrix<TestType, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
-    const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
+    const NeoN::la::Matrix<TestType, NeoN::localIdx> sparseMatrixConst(
         valuesSparse, colIdxSparse, rowOffsSparse
     );
 

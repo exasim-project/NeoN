@@ -12,10 +12,12 @@
 using NeoN::Executor;
 using NeoN::Dictionary;
 using NeoN::scalar;
+using NeoN::Vec3;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::CSRMatrix;
+using NeoN::la::SparsityPattern;
+using NeoN::la::Matrix;
 using NeoN::la::Solver;
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
@@ -91,90 +93,105 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};
 
-    // FIXME add again
-    // SECTION("Solve linear system scalar " + execName)
-    // {
-    //     Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
-    //     Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
-    //     Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
-    //     CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
+    Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
+    Vector<localIdx> bColIdx(exec, {});
+    Vector<localIdx> bRowOffs(exec, {});
 
-    //     Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
-    //     LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
-    //     Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+    auto sparsity =
+        std::make_shared<SparsityPattern<localIdx>>(std::move(colIdx), std::move(rowOffs));
+    auto bSparsity =
+        std::make_shared<SparsityPattern<localIdx>>(std::move(bColIdx), std::move(bRowOffs));
 
-    //     Dictionary solverDict {
-    //         {{"solver", std::string {"Ginkgo"}},
-    //          {"type", "solver::Cg"},
-    //          {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
-    //     };
+    SECTION("Solve linear system scalar " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        Matrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
-    //     // Create solver
-    //     auto solver = NeoN::la::Solver(exec, solverDict);
+        Vector<scalar> bValues(exec, {});
+        Matrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
 
-    //     // Solve system
-    //     auto [numIter, initResNorm, finalResNorm, solveTime] = solver.solve(linearSystem, x);
+        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs, bCsrMatrix, bRhs);
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
 
-    //     auto hostX = x.copyToHost();
-    //     auto hostXS = hostX.view();
-    //     REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
-    //     REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
-    //     REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
-    //     REQUIRE(numIter == 3);
-    //     REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
-    //     REQUIRE(finalResNorm < 1.0e-04);
-    // }
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+        };
 
-    // SECTION("Solve linear system vector " + execName)
-    // {
-    //     Vector<NeoN::Vec3> values(
-    //         exec,
-    //         {{1.0, 1.0, 1.0},
-    //          {-0.1, -0.1, -0.1},
-    //          {-0.1, -0.1, -0.1},
-    //          {1.0, 1.0, 1.0},
-    //          {-0.1, -0.1, -0.1},
-    //          {-0.1, -0.1, -0.1},
-    //          {1.0, 1.0, 1.0}}
-    //     );
+        // Create solver
+        auto solver = NeoN::la::Solver(exec, solverDict);
 
-    //     Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
-    //     Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
-    //     CSRMatrix<NeoN::Vec3, localIdx> csrMatrix(values, colIdx, rowOffs);
+        // Solve system
+        auto solverStats = solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 
-    //     Vector<NeoN::Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
-    //     LinearSystem<NeoN::Vec3, localIdx> linearSystem(csrMatrix, rhs);
-    //     Vector<NeoN::Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+        REQUIRE(numIter == 3);
+        REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
+        REQUIRE(finalResNorm < 1.0e-04);
+    }
 
-    //     Dictionary solverDict {
-    //         {{"solver", std::string {"Ginkgo"}},
-    //          {"type", "solver::Cg"},
-    //          {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
-    //     };
+    SECTION("Solve linear system vector " + execName)
+    {
+        Vector<Vec3> values(
+            exec,
+            {{1.0, 1.0, 1.0},
+             {-0.1, -0.1, -0.1},
+             {-0.1, -0.1, -0.1},
+             {1.0, 1.0, 1.0},
+             {-0.1, -0.1, -0.1},
+             {-0.1, -0.1, -0.1},
+             {1.0, 1.0, 1.0}}
+        );
 
-    //     // Create solver
-    //     auto solver = NeoN::la::Solver(exec, solverDict);
+        Matrix<Vec3, localIdx> csrMatrix(values, sparsity);
+        Vector<Vec3> bValues(exec, {});
+        Matrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
+        Vector<Vec3> bRhs(exec, {});
 
-    //     // Solve system
-    //     auto [numIter, initResNorm, finalResNorm, solveTime] = solver.solve(linearSystem, x);
+        Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
+        Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
-    //     auto hostX = x.copyToHost();
-    //     auto hostXS = hostX.view();
-    //     REQUIRE((hostXS[0][0]) == Catch::Approx(1.24489796).margin(1e-8));
-    //     REQUIRE((hostXS[1][0]) == Catch::Approx(2.44897959).margin(1e-8));
-    //     REQUIRE((hostXS[2][0]) == Catch::Approx(3.24489796).margin(1e-8));
+        LinearSystem<Vec3, localIdx> linearSystem(csrMatrix, rhs, bCsrMatrix, bRhs);
 
-    //     REQUIRE((hostXS[0][1]) == Catch::Approx(1.24489796).margin(1e-8));
-    //     REQUIRE((hostXS[1][1]) == Catch::Approx(2.44897959).margin(1e-8));
-    //     REQUIRE((hostXS[2][1]) == Catch::Approx(3.24489796).margin(1e-8));
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+        };
 
-    //     REQUIRE((hostXS[0][2]) == Catch::Approx(1.24489796).margin(1e-8));
-    //     REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
-    //     REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
+        // Create solver
+        auto solver = NeoN::la::Solver(exec, solverDict);
 
-    //     REQUIRE(numIter == 3);
-    //     REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
-    //     REQUIRE(finalResNorm < 1.0e-04);
-    // }
+        // Solve system
+        auto solverStats = solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0][0]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1][0]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2][0]) == Catch::Approx(3.24489796).margin(1e-8));
+
+        REQUIRE((hostXS[0][1]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1][1]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2][1]) == Catch::Approx(3.24489796).margin(1e-8));
+
+        REQUIRE((hostXS[0][2]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
+
+        REQUIRE(numIter == 3);
+        REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
+        REQUIRE(finalResNorm < 1.0e-04);
+    }
 }
 #endif

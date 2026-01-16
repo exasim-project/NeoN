@@ -6,7 +6,7 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/Matrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/matrixIterator.hpp"
 
@@ -29,18 +29,18 @@ struct LinearSystemView
     ~LinearSystemView() = default;
 
     LinearSystemView(
-        CSRMatrixView<ValueType, IndexType> matrixView,
+        MatrixView<ValueType, IndexType> matrixView,
         View<ValueType> rhsView,
-        CSRMatrixView<ValueType, IndexType> boundaryMatrixView,
+        MatrixView<ValueType, IndexType> boundaryMatrixView,
         View<ValueType> boundaryRhsView
     )
         : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
           boundaryRhs(boundaryRhsView) {};
 
-    CSRMatrixView<ValueType, IndexType> matrix;
+    MatrixView<ValueType, IndexType> matrix;
     View<ValueType> rhs;
 
-    CSRMatrixView<ValueType, IndexType> boundaryMatrix;
+    MatrixView<ValueType, IndexType> boundaryMatrix;
     View<ValueType> boundaryRhs;
 };
 
@@ -65,9 +65,9 @@ class LinearSystem
 public:
 
     LinearSystem(
-        const CSRMatrix<ValueType, IndexType>& matrix,
+        const Matrix<ValueType, IndexType>& matrix,
         const Vector<ValueType>& rhs,
-        const CSRMatrix<ValueType, IndexType>& boundaryMatrix,
+        const Matrix<ValueType, IndexType>& boundaryMatrix,
         const Vector<ValueType>& boundaryRhs
     )
         : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs)
@@ -82,13 +82,13 @@ public:
 
     ~LinearSystem() = default;
 
-    [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
+    [[nodiscard]] Matrix<ValueType, IndexType>& matrix() { return matrix_; }
 
-    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
+    [[nodiscard]] const Matrix<ValueType, IndexType>& matrix() const { return matrix_; }
 
-    [[nodiscard]] CSRMatrix<ValueType, IndexType>& boundaryMatrix() { return boundaryMatrix_; }
+    [[nodiscard]] Matrix<ValueType, IndexType>& boundaryMatrix() { return boundaryMatrix_; }
 
-    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& boundaryMatrix() const
+    [[nodiscard]] const Matrix<ValueType, IndexType>& boundaryMatrix() const
     {
         return boundaryMatrix_;
     }
@@ -140,12 +140,12 @@ public:
 private:
 
     // internal values
-    CSRMatrix<ValueType, IndexType> matrix_;
+    Matrix<ValueType, IndexType> matrix_;
 
     Vector<ValueType> rhs_;
 
     // boundary values
-    CSRMatrix<ValueType, IndexType> boundaryMatrix_;
+    Matrix<ValueType, IndexType> boundaryMatrix_;
 
     Vector<ValueType> boundaryRhs_;
 
@@ -185,11 +185,9 @@ LinearSystem<ValueType, IndexType> createEmptyLinearSystem(
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
     return {
-        CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity
-        },
+        Matrix<ValueType, IndexType> {Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity},
         Vector<ValueType> {exec, rows, zero<ValueType>()},
-        CSRMatrix<ValueType, IndexType> {
+        Matrix<ValueType, IndexType> {
             Vector<ValueType>(exec, nBoundaryFaces, zero<ValueType>()), sparsity
         },
         Vector<ValueType> {exec, nBoundaryFaces, zero<ValueType>()},

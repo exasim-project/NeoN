@@ -268,7 +268,7 @@ public:
         NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
         NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
         NeoN::Vector<NeoN::localIdx> rowOffs(this->exec(), {0, 1});
-        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowOffs);
+        NeoN::la::Matrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowOffs);
 
         NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
         NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);

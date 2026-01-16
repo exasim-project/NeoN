@@ -195,7 +195,7 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localId
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
-createGkoMtx(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx)
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const Matrix<scalar, IndexType>& mtx)
 {
     // const auto mtx = sys.view().matrix;
     const auto mtxV = mtx.view();
@@ -331,7 +331,7 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
             auto xcopy = get<0>(x);
             auto values = get<0>(sys.matrix().values());
 
-            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+            auto mtx = Matrix<scalar, localIdx> {values, sparsity};
 
             auto gkoMtx = createGkoMtx(gkoExec_, mtx);
             auto solver = factory_->generate(gkoMtx);
@@ -344,7 +344,7 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
             auto xcopy = get<1>(x);
             auto values = get<1>(sys.matrix().values());
 
-            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+            auto mtx = Matrix<scalar, localIdx> {values, sparsity};
 
             auto gkoMtx = createGkoMtx(gkoExec_, mtx);
             auto solver = factory_->generate(gkoMtx);
@@ -356,7 +356,7 @@ SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<
             auto xcopy = get<2>(x);
             auto values = get<2>(sys.matrix().values());
 
-            auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+            auto mtx = Matrix<scalar, localIdx> {values, sparsity};
 
             auto gkoMtx = createGkoMtx(gkoExec_, mtx);
             auto solver = factory_->generate(gkoMtx);

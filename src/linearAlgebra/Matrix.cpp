@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/Matrix.hpp"
 
 namespace NeoN::la
 {
 
 template<typename ValueType, typename IndexType>
-Vector<ValueType> CSRMatrix<ValueType, IndexType>::diag() const
+Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     auto [diagV, rowOffsV, colIdxV, matrixV] =
@@ -32,7 +32,7 @@ Vector<ValueType> CSRMatrix<ValueType, IndexType>::diag() const
 }
 
 template<typename ValueType, typename IndexType>
-Vector<ValueType> CSRMatrix<ValueType, IndexType>::scaledInverseDiag(const Vector<scalar>& a) const
+Vector<ValueType> Matrix<ValueType, IndexType>::scaledInverseDiag(const Vector<scalar>& a) const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     scaledInverseDiag(a, diag);
@@ -40,7 +40,7 @@ Vector<ValueType> CSRMatrix<ValueType, IndexType>::scaledInverseDiag(const Vecto
 }
 
 template<typename ValueType, typename IndexType>
-void CSRMatrix<ValueType, IndexType>::scaledInverseDiag(
+void Matrix<ValueType, IndexType>::scaledInverseDiag(
     const Vector<scalar>& a, Vector<ValueType>& out
 ) const
 {
@@ -66,8 +66,7 @@ void CSRMatrix<ValueType, IndexType>::scaledInverseDiag(
 }
 
 template<typename ValueType, typename IndexType>
-void CSRMatrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<ValueType>& out)
-    const
+void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const
 {
     NF_ASSERT(nRows() == a.size(), "Dimension mismatch");
     NF_ASSERT(nRows() == out.size(), "Dimension mismatch");
@@ -94,8 +93,7 @@ void CSRMatrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<
 }
 
 
-#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class CSRMatrix<VALUETYPE, INTEGERTYPE>
+#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE) template class Matrix<VALUETYPE, INTEGERTYPE>
 
 NN_DECLARE_CSRMATRIX(scalar, localIdx);
 NN_DECLARE_CSRMATRIX(Vec3, int);

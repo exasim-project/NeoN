@@ -161,7 +161,7 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
 }
 
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, localIdx>& mtx,
     const Vector<scalar>& bV,
     const Vector<scalar>& xV,
     Vector<scalar>& resV

@@ -13,22 +13,22 @@ namespace NeoN::la
 {
 
 /**
- * @struct CSRMatrixView
+ * @struct MatrixView
  * @brief A view struct to allow easy read/write on all executors.
  *
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
 template<typename ValueType, typename IndexType>
-struct CSRMatrixView
+struct MatrixView
 {
     /**
-     * @brief Constructor for CSRMatrixView.
+     * @brief Constructor for MatrixView.
      * @param valueView View of the non-zero values of the matrix.
      * @param colIdxsView View of the column indices for each non-zero value.
      * @param rowOffsView View of the starting index in values/colIdxs for each row.
      */
-    CSRMatrixView(
+    MatrixView(
         const View<ValueType> valueView,
         const View<const IndexType> colIdxsView,
         const View<const IndexType> rowOffsView
@@ -38,7 +38,7 @@ struct CSRMatrixView
     /**
      * @brief Default destructor.
      */
-    ~CSRMatrixView() = default;
+    ~MatrixView() = default;
 
     /**
      * @brief Retrieve a reference to the matrix element at position (i,j).
@@ -77,46 +77,41 @@ struct CSRMatrixView
 };
 
 /**
- * @class CSRMatrix
+ * @class Matrix
  * @brief Sparse matrix class with compact storage by row (CSR) format.
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
 template<typename ValueType, typename IndexType>
-class CSRMatrix
+class Matrix
 {
 
     void validate()
     {
-        NF_ASSERT(
-            values_.exec() == sparsityPattern_->colIdxs().exec(), "Executors are not the same"
-        );
-        NF_ASSERT(
-            values_.exec() == sparsityPattern_->rowOffs().exec(), "Executors are not the same"
-        );
+        NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
     }
 
 public:
 
     /**
-     * @brief Constructor for CSRMatrix.
+     * @brief Constructor for Matrix.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
      */
-    CSRMatrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern<IndexType>> sp)
+    Matrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern<IndexType>> sp)
         : values_(values), sparsityPattern_(sp)
     {
         validate();
     }
 
     /**
-     * @brief Constructor for CSRMatrix.
+     * @brief Constructor for Matrix.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
      */
-    CSRMatrix(
+    Matrix(
         const Vector<ValueType>& values,
         const Vector<IndexType>& colIdxs,
         const Vector<IndexType>& rowOffs
@@ -132,7 +127,7 @@ public:
     /**
      * @brief Default destructor.
      */
-    ~CSRMatrix() = default;
+    ~Matrix() = default;
 
     /**
      * @brief Get the executor associated with this matrix.
@@ -196,7 +191,7 @@ public:
      * @param dstExec The destination executor.
      * @return A copy of the matrix on the destination executor.
      */
-    [[nodiscard]] CSRMatrix<ValueType, IndexType> copyToExecutor(Executor dstExec) const
+    [[nodiscard]] Matrix<ValueType, IndexType> copyToExecutor(Executor dstExec) const
     {
         if (dstExec == values_.exec())
         {
@@ -219,34 +214,33 @@ public:
         return sparsityPattern_;
     }
 
-
     /**
      * @brief Copy the matrix to the host.
      * @return A copy of the matrix on the host.
      */
-    [[nodiscard]] CSRMatrix<ValueType, IndexType> copyToHost() const
+    [[nodiscard]] Matrix<ValueType, IndexType> copyToHost() const
     {
         return copyToExecutor(SerialExecutor());
     }
 
     /**
      * @brief Get a view representation of the matrix's data.
-     * @return CSRMatrixView for easy access to matrix elements.
+     * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] CSRMatrixView<ValueType, IndexType> view()
+    [[nodiscard]] MatrixView<ValueType, IndexType> view()
     {
-        return CSRMatrixView(
+        return MatrixView(
             values_.view(), sparsityPattern_->colIdxs().view(), sparsityPattern_->rowOffs().view()
         );
     }
 
     /**
      * @brief Get a const view representation of the matrix's data.
-     * @return Const CSRMatrixView for read-only access to matrix elements.
+     * @return Const MatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] CSRMatrixView<const ValueType, const IndexType> view() const
+    [[nodiscard]] MatrixView<const ValueType, const IndexType> view() const
     {
-        return CSRMatrixView<const ValueType, const IndexType>(
+        return MatrixView<const ValueType, const IndexType>(
             View<const ValueType>(values_.view()),
             sparsityPattern_->colIdxs().view(),
             sparsityPattern_->rowOffs().view()
@@ -287,7 +281,7 @@ template<typename ValueType, typename IndexType>
 // FIXME
 // template<typename ValueType, typename IndexType>
 // void faceIterateNegLUx(
-//         const CSRMatrix<ValueType, IndexType>& mat,
+//         const Matrix<ValueType, IndexType>& mat,
 //         const MatrixIterator& mi,
 //         const Vector<ValueType>& a,
 //         Vector<ValueType>& out
@@ -298,8 +292,8 @@ template<typename ValueType, typename IndexType>
 //  *
 //  */
 // template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename
-// IndexTypeOut> la::CSRMatrix<ValueTypeOut, IndexTypeOut> convert(const Executor exec, const
-// la::CSRMatrixView<const ValueTypeIn, const IndexTypeIn> in)
+// IndexTypeOut> la::Matrix<ValueTypeOut, IndexTypeOut> convert(const Executor exec, const
+// la::MatrixView<const ValueTypeIn, const IndexTypeIn> in)
 // {
 //     Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
 //     Vector<IndexTypeOut> rowOffsTmp(exec, in.rowOffs.size());
@@ -315,7 +309,7 @@ template<typename ValueType, typename IndexType>
 //         valuesTmp, NEON_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
 //     );
 
-//     return la::CSRMatrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowOffsTmp};
+//     return la::Matrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowOffsTmp};
 // }
 
 
