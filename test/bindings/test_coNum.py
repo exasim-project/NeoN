@@ -13,5 +13,6 @@ def test_compute_co_num_on_uniform_mesh():
     face_flux = neon.ScalarVector(exec, face_count)
     neon.fill(face_flux, 1.0)
 
-    co_num = neon.compute_co_num(mesh, face_flux, 0.01)
-    assert abs(co_num - 0.04) < 1.0e-12
+    max_CoNum, mean_CoNum = neon.compute_co_num(mesh, face_flux, 0.01)
+    assert abs(max_CoNum - 0.04) < 1.0e-12
+    assert abs(mean_CoNum - 0.04) < 1.0e-12
