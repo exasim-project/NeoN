@@ -21,64 +21,6 @@ namespace NeoN::bindings
 void registerInputs(nb::module_& m)
 {
 
-    // Input class - wrapper around std::variant to provide class-like interface
-    nb::class_<NeoN::Input>(m, "Input", "Input class that can hold Dictionary or TokenList")
-        .def(nb::init<NeoN::Dictionary>(), "Create Input from Dictionary", "dictionary"_a)
-        .def(nb::init<NeoN::TokenList>(), "Create Input from TokenList", "token_list"_a)
-        .def(
-            "is_dictionary",
-            [](const NeoN::Input& self) -> bool
-            { return std::holds_alternative<NeoN::Dictionary>(self); },
-            "Check if Input contains Dictionary"
-        )
-        .def(
-            "is_token_list",
-            [](const NeoN::Input& self) -> bool
-            { return std::holds_alternative<NeoN::TokenList>(self); },
-            "Check if Input contains TokenList"
-        )
-        .def(
-            "get_dictionary",
-            [](const NeoN::Input& self) -> NeoN::Dictionary
-            {
-                if (!std::holds_alternative<NeoN::Dictionary>(self))
-                {
-                    throw std::runtime_error("Input does not contain Dictionary");
-                }
-                return std::get<NeoN::Dictionary>(self);
-            },
-            "Get Dictionary from Input (throws if not Dictionary)"
-        )
-        .def(
-            "get_token_list",
-            [](const NeoN::Input& self) -> NeoN::TokenList
-            {
-                if (!std::holds_alternative<NeoN::TokenList>(self))
-                {
-                    throw std::runtime_error("Input does not contain TokenList");
-                }
-                return std::get<NeoN::TokenList>(self);
-            },
-            "Get TokenList from Input (throws if not TokenList)"
-        )
-        .def(
-            "__repr__",
-            [](const NeoN::Input& self)
-            {
-                if (std::holds_alternative<NeoN::Dictionary>(self))
-                {
-                    auto dict = std::get<NeoN::Dictionary>(self);
-                    return "<Input containing Dictionary with " + std::to_string(dict.keys().size())
-                         + " keys>";
-                }
-                else
-                {
-                    auto tokenList = std::get<NeoN::TokenList>(self);
-                    return "<Input containing TokenList with " + std::to_string(tokenList.size())
-                         + " items>";
-                }
-            }
-        );
 
     // TokenList bindings - simplified version without std::any direct access
     nb::class_<NeoN::TokenList>(m, "TokenList", "A list of tokens storing values of any type")
