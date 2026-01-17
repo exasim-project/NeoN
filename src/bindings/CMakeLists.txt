@@ -24,6 +24,15 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
                                                "RelWithDebInfo")
 endif()
 
+# Set output directory based on build mode
+if(DEFINED SKBUILD)
+  # scikit-build-core manages installation paths
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+else()
+  # Standalone build - convention is to put bindings .so file in a project name folder
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
+endif()
+
 nanobind_add_module(
   neon
   neon.cpp
@@ -44,3 +53,12 @@ nanobind_add_module(
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(neon PRIVATE NeoN::NeoN)
+
+# Installation
+if(DEFINED SKBUILD)
+  # Install for scikit-build (into neon/ package)
+  install(TARGETS neon LIBRARY DESTINATION neon COMPONENT python)
+else()
+  # Standalone installation
+  install(TARGETS neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+endif()

@@ -95,6 +95,21 @@ if(NOT DEFINED CMAKE_EXPORT_COMPILE_COMMANDS)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+# Detect if building with scikit-build-core
+if(DEFINED SKBUILD)
+  message(STATUS "Building with scikit-build-core")
+  set(NeoN_BUILD_PYTHON_BINDINGS
+      ON
+      CACHE BOOL "" FORCE)
+  set(BUILD_SHARED_LIBS
+      ON
+      CACHE BOOL "" FORCE)
+  # Configure RPATH for Python extension modules
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
+
 include(cmake/CxxThirdParty.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StandardProjectSettings.cmake)

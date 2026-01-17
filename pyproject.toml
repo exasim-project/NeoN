@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+
+[project]
+name = "neon"
+version = "0.1.0"
+authors = [
+    {name = "NeoN authors", email = "neon@example.com"}
+]
+description = "Python bindings for the NeoN CFD framework"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy>=1.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "black",
+    "ruff>=0.14.0",
+    "mypy",
+]
+test = [
+    "pytest>=6.0",
+]
+
+[build-system]
+requires = [
+    "scikit-build-core[pyproject]>=0.4.3",
+    "nanobind>=2.9.0",
+]
+build-backend = "scikit_build_core.build"
+
+[tool.uv]
+no-build-isolation = true
+
+[tool.scikit-build]
+cmake.version = ">=3.22"
+cmake.build-type = "Release"
+build.verbose = true
+build-dir = "_skbuild"
+editable.mode = "redirect"
+editable.verbose = true
+editable.rebuild = false
+
+[tool.scikit-build.cmake.define]
+NeoN_BUILD_PYTHON_BINDINGS = "ON"
+CMAKE_CXX_STANDARD = "20"
+CMAKE_CUDA_ARCHITECTURES = "native"Kokkos_ENABLE_CUDA = "OFF"
+Kokkos_ENABLE_THREADS = "ON"
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311", "py312"]
