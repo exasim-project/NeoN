@@ -46,6 +46,7 @@ nanobind_add_module(
   surfaceField.cpp
   volumeField.cpp
   surfaceInterpolation.cpp
+  inputs.cpp
   coNum.cpp
   database/document.cpp
   database/collection.cpp

@@ -20,6 +20,7 @@ void registerUnstructuredMesh(nanobind::module_& m);
 void registerSurfaceField(nanobind::module_& m);
 void registerVolumeField(nanobind::module_& m);
 void registerSurfaceInterpolation(nanobind::module_& m);
+void registerInputs(nanobind::module_& m);
 void registerCoNum(nanobind::module_& m);
 
 // Database bindings

@@ -23,6 +23,7 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerSurfaceField(m);
     NeoN::bindings::registerVolumeField(m);
     NeoN::bindings::registerSurfaceInterpolation(m);
+    NeoN::bindings::registerInputs(m);
     NeoN::bindings::registerCoNum(m);
 
     // Database bindings

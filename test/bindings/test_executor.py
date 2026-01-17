@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+
 def test_import():
     try:
         import neon  # noqa: F401
