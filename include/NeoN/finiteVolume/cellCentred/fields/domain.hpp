@@ -32,20 +32,37 @@ public:
     typedef ValueType ElementType;
 
     /**
-     * @brief Constructor for DomainMixin.
+     * @brief Constructor for DomainMixin (const lvalue).
      *
      * @param exec The executor object.
      * @param fieldName The name of the field.
      * @param mesh The unstructured mesh object.
-     * @param domainVector The domain field object.
+     * @param field The domain field object.
      */
     DomainMixin(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& field
     )
         : name(fieldName), exec_(exec), mesh_(mesh), field_(field)
+    {}
+
+    /**
+     * @brief Constructor for DomainMixin (rvalue).
+     *
+     * @param exec The executor object.
+     * @param fieldName The name of the field.
+     * @param mesh The unstructured mesh object.
+     * @param field The domain field object (moved).
+     */
+    DomainMixin(
+        const Executor& exec,
+        const std::string& fieldName,
+        const UnstructuredMesh& mesh,
+        Field<ValueType>&& field
+    )
+        : name(fieldName), exec_(exec), mesh_(mesh), field_(std::move(field))
     {}
 
     /**
@@ -59,7 +76,7 @@ public:
      */
     DomainMixin(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const Vector<ValueType>& internalVector,
         const BoundaryData<ValueType>& boundaryVectors
@@ -70,6 +87,59 @@ public:
         {
             NF_ERROR_EXIT("Inconsistent size of mesh and internal field detected");
         }
+    }
+
+    /**
+     * @brief Copy constructor for DomainMixin.
+     *
+     * @param other The DomainMixin object to copy from.
+     */
+    DomainMixin(const DomainMixin& other)
+        : name(other.name), exec_(other.exec_), mesh_(other.mesh_), field_(other.field_)
+    {}
+
+    /**
+     * @brief Move constructor for DomainMixin.
+     *
+     * @param other The DomainMixin object to move from.
+     */
+    DomainMixin(DomainMixin&& other) noexcept
+        : name(std::move(other.name)), exec_(std::move(other.exec_)), mesh_(other.mesh_),
+          field_(std::move(other.field_))
+    {}
+
+    /**
+     * @brief Copy assignment operator for DomainMixin.
+     *
+     * @param other The DomainMixin object to copy from.
+     */
+    DomainMixin& operator=(const DomainMixin& other)
+    {
+        if (this != &other)
+        {
+            name = other.name;
+            exec_ = other.exec_;
+            // mesh_ reference cannot be reassigned
+            field_ = other.field_;
+        }
+        return *this;
+    }
+
+    /**
+     * @brief Move assignment operator for DomainMixin.
+     *
+     * @param other The DomainMixin object to move from.
+     */
+    DomainMixin& operator=(DomainMixin&& other) noexcept
+    {
+        if (this != &other)
+        {
+            name = std::move(other.name);
+            exec_ = std::move(other.exec_);
+            // mesh_ reference cannot be reassigned
+            field_ = std::move(other.field_);
+        }
+        return *this;
     }
 
     /**

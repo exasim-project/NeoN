@@ -43,7 +43,7 @@ public:
      */
     VolumeField(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
     );
@@ -60,7 +60,7 @@ public:
      */
     VolumeField(
         const Executor& exec,
-        std::string name,
+        const std::string& name,
         const UnstructuredMesh& mesh,
         const Vector<ValueType>& internalVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
@@ -77,7 +77,7 @@ public:
      */
     VolumeField(
         const Executor& exec,
-        std::string name,
+        const std::string& name,
         const UnstructuredMesh& mesh,
         const Vector<ValueType>& internalVector,
         const BoundaryData<ValueType>& boundaryVectors,
@@ -98,7 +98,7 @@ public:
      */
     VolumeField(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& domainVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions,
@@ -108,6 +108,10 @@ public:
     );
 
     VolumeField(const VolumeField& other);
+
+    VolumeField(VolumeField&& other) noexcept = default;
+
+    VolumeField<ValueType>& operator=(VolumeField&& other) noexcept = default;
 
     VolumeField<ValueType>& operator-=(const ValueType rhs);
 

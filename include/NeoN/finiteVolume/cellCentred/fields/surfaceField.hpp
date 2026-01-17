@@ -41,7 +41,7 @@ public:
      */
     SurfaceField(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
@@ -107,7 +107,7 @@ public:
      */
     SurfaceField(
         const Executor& exec,
-        std::string fieldName,
+        const std::string& fieldName,
         const UnstructuredMesh& mesh,
         const Field<ValueType>& domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions,
@@ -129,6 +129,10 @@ public:
         : DomainMixin<ValueType>(other), FieldDatabaseMixin(other),
           boundaryConditions_(other.boundaryConditions_)
     {}
+
+    SurfaceField(SurfaceField&& other) noexcept = default;
+
+    SurfaceField<ValueType>& operator=(SurfaceField&& other) noexcept = default;
 
     /**
      * @brief Corrects the boundary conditions of the surface field.
