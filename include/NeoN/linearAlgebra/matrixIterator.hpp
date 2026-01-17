@@ -99,7 +99,7 @@ public:
     /* @brief given celli the function returns index of the diagonal element  */
     KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
     {
-        return sp_->rowOffs(celli) + diagOffsetV_[celli];
+        return rowOffsV_[celli] + diagOffsetV_[celli];
     }
 
     /* @brief given celli the function returns index of the diagonal element  */
