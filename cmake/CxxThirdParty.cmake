@@ -157,6 +157,7 @@ if(${NeoN_WITH_SUNDIALS})
 
   if(Kokkos_ENABLE_CUDA)
     set(CMAKE_CUDA_STANDARD 20)
+    set(CMAKE_CUDA_ARCHITECTURES native)
     set(SUNDIALS_CUDA_OPTIONS "ENABLE_CUDA ON" "SUNDIALS_BUILD_KOKKOS ON")
   else()
     set(SUNDIALS_CUDA_OPTIONS "ENABLE_CUDA OFF" "SUNDIALS_BUILD_KOKKOS ON")
@@ -220,12 +221,17 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
       "GINKGO_ENABLE_HALF OFF"
       "GINKGO_BUILD_MPI OFF"
+      "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
   endif()
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})
+  find_package(
+    Python
+    COMPONENTS Interpreter Development
+    REQUIRED)
   cpmaddpackage(
     NAME
     nanobind

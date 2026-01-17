@@ -34,7 +34,7 @@ else()
 endif()
 
 nanobind_add_module(
-  neon
+  _neon
   neon.cpp
   executors.cpp
   scalar.cpp
@@ -52,13 +52,13 @@ nanobind_add_module(
   database/database.cpp)
 
 # Link against the NeoN library to access executor classes
-target_link_libraries(neon PRIVATE NeoN::NeoN)
+target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
 # Installation
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
-  install(TARGETS neon LIBRARY DESTINATION neon COMPONENT python)
+  install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
 else()
   # Standalone installation
-  install(TARGETS neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+  install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
 endif()

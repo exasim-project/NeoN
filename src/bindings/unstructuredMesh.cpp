@@ -62,50 +62,50 @@ void registerUnstructuredMesh(nb::module_& m)
             "Create an UnstructuredMesh with all data"
         )
 
-        .def(
+        .def_prop_ro(
             "points",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::points, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of mesh points (vertices)"
         )
-        .def(
+        .def_prop_ro(
             "cell_volumes",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::cellVolumes, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of cell volumes"
         )
-        .def(
+        .def_prop_ro(
             "cell_centres",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::cellCentres, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of cell centres"
         )
-        .def(
+        .def_prop_ro(
             "face_centres",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::faceCentres, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face centres"
         )
-        .def(
+        .def_prop_ro(
             "face_areas",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::faceAreas, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face area normals"
         )
-        .def(
+        .def_prop_ro(
             "mag_face_areas",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::magFaceAreas, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face area magnitudes"
         )
 
-        .def(
+        .def_prop_ro(
             "face_owner",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::faceOwner, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face owner cell indices"
         )
-        .def(
+        .def_prop_ro(
             "face_neighbour",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::faceNeighbour, nb::const_),
             nb::rv_policy::reference_internal,

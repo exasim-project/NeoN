@@ -39,6 +39,9 @@ dev = [
 test = [
     "pytest>=6.0",
 ]
+all = [
+    "neon[dev,test]",
+]
 
 [build-system]
 requires = [
@@ -46,9 +49,6 @@ requires = [
     "nanobind>=2.9.0",
 ]
 build-backend = "scikit_build_core.build"
-
-[tool.uv]
-no-build-isolation = true
 
 [tool.scikit-build]
 cmake.version = ">=3.22"
@@ -61,9 +61,7 @@ editable.rebuild = false
 
 [tool.scikit-build.cmake.define]
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
-CMAKE_CXX_STANDARD = "20"
-CMAKE_CUDA_ARCHITECTURES = "native"Kokkos_ENABLE_CUDA = "OFF"
-Kokkos_ENABLE_THREADS = "ON"
+
 [tool.pytest.ini_options]
 testpaths = ["test"]
 python_files = "test_*.py"

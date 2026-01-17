@@ -8,7 +8,7 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(neon, m)
+NB_MODULE(_neon, m)
 {
     m.doc() = "NeoN Python bindings";
 

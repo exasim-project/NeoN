@@ -108,6 +108,8 @@ if(DEFINED SKBUILD)
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  # Set RPATH so _neon.so can find libNeoN.so at ../lib/
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 endif()
 
 include(cmake/CxxThirdParty.cmake)
