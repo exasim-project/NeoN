@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: 2026 NeoN authors
 #
 # SPDX-License-Identifier: MIT
