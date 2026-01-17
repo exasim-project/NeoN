@@ -162,6 +162,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         LinearSystem<Vec3, localIdx> linearSystem(csrMatrix, rhs, bCsrMatrix, bRhs);
 
+        SECTION("Segregated" + execName)
+        {
+
         Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},
              {"type", "solver::Cg"},
@@ -173,25 +176,28 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         // Solve system
         auto solverStats = solver.solve(linearSystem, x);
-        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+        for (auto entry: solverStats.entries) {
+        auto [numIter, initResNorm, finalResNorm, solveTime] = entry;
+            auto hostX = x.copyToHost();
+            auto hostXS = hostX.view();
+            REQUIRE((hostXS[0][0]) == Catch::Approx(1.24489796).margin(1e-8));
+            REQUIRE((hostXS[1][0]) == Catch::Approx(2.44897959).margin(1e-8));
+            REQUIRE((hostXS[2][0]) == Catch::Approx(3.24489796).margin(1e-8));
 
-        auto hostX = x.copyToHost();
-        auto hostXS = hostX.view();
-        REQUIRE((hostXS[0][0]) == Catch::Approx(1.24489796).margin(1e-8));
-        REQUIRE((hostXS[1][0]) == Catch::Approx(2.44897959).margin(1e-8));
-        REQUIRE((hostXS[2][0]) == Catch::Approx(3.24489796).margin(1e-8));
+            REQUIRE((hostXS[0][1]) == Catch::Approx(1.24489796).margin(1e-8));
+            REQUIRE((hostXS[1][1]) == Catch::Approx(2.44897959).margin(1e-8));
+            REQUIRE((hostXS[2][1]) == Catch::Approx(3.24489796).margin(1e-8));
 
-        REQUIRE((hostXS[0][1]) == Catch::Approx(1.24489796).margin(1e-8));
-        REQUIRE((hostXS[1][1]) == Catch::Approx(2.44897959).margin(1e-8));
-        REQUIRE((hostXS[2][1]) == Catch::Approx(3.24489796).margin(1e-8));
+            REQUIRE((hostXS[0][2]) == Catch::Approx(1.24489796).margin(1e-8));
+            REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
+            REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
 
-        REQUIRE((hostXS[0][2]) == Catch::Approx(1.24489796).margin(1e-8));
-        REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
-        REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
-
-        REQUIRE(numIter == 3);
-        REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
-        REQUIRE(finalResNorm < 1.0e-04);
+            REQUIRE(numIter == 3);
+            REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
+            // REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
+            REQUIRE(finalResNorm < 1.0e-04);
+        }
+        }
     }
 }
 #endif
