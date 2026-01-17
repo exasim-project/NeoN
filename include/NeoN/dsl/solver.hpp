@@ -36,53 +36,63 @@ struct RelaxationCache
 
 inline const RelaxationCache& relaxationCache(const Dictionary& fvSolution)
 {
-    static RelaxationCache cache;
-    static std::once_flag cacheFlag;
+    static std::mutex mtx;
+    static std::unordered_map<const Dictionary*, RelaxationCache> caches;
 
-    std::call_once(cacheFlag, [&]() {
-        if (!fvSolution.contains("relaxationFactors"))
+    std::lock_guard<std::mutex> lock(mtx);
+
+    auto it = caches.find(&fvSolution);
+    if (it != caches.end())
+    {
+        return it->second;
+    }
+
+    RelaxationCache cache;
+
+    if (!fvSolution.contains("relaxationFactors"))
+    {
+        NeoN::Logging::info("No relaxationFactors dictionary found");
+        return caches.emplace(&fvSolution, std::move(cache)).first->second;
+    }
+
+    const Dictionary& rf = fvSolution.subDict("relaxationFactors");
+    cache.hasRelaxationFactors = true;
+
+    NeoN::Logging::info("Reading relaxationFactors");
+
+    if (rf.isDict("equations"))
+    {
+        const auto& eqs = rf.subDict("equations");
+        for (const auto& k : eqs.keys())
+            if (eqs.isType<scalar>(k))
+	    {
+                cache.equations.emplace(k, eqs.get<scalar>(k));
+	        NeoN::Logging::info("URF eqn {} = {}", k, eqs.get<scalar>(k));
+	    }
+    }
+
+    if (rf.isDict("fields"))
+    {
+        const auto& flds = rf.subDict("fields");
+        for (const auto& k : flds.keys())
+            if (flds.isType<scalar>(k))
+	    {
+		cache.fields.emplace(k, flds.get<scalar>(k));
+	        NeoN::Logging::info("URF field {} = {}", k, flds.get<scalar>(k));
+	    }
+    }
+
+    // OpenFOAM-compatible fallback: flat entries apply to both
+    for (const auto& k : rf.keys())
+        if (rf.isType<scalar>(k))
         {
-            return;
+            scalar v = rf.get<scalar>(k);
+            cache.equations.emplace(k, v);
+            cache.fields.emplace(k, v);
+	    NeoN::Logging::info("URF field {} = {}", k, v);
         }
 
-        cache.hasRelaxationFactors = true;
-        const Dictionary& relaxationFactors = fvSolution.subDict("relaxationFactors");
-
-        if (relaxationFactors.isDict("equations"))
-        {
-            const Dictionary& equations = relaxationFactors.subDict("equations");
-            for (const auto& key : equations.keys())
-            {
-                if (equations.isType<scalar>(key))
-                {
-                    cache.equations.emplace(key, equations.get<scalar>(key));
-                }
-            }
-        }
-
-        if (relaxationFactors.isDict("fields"))
-        {
-            const Dictionary& fields = relaxationFactors.subDict("fields");
-            for (const auto& key : fields.keys())
-            {
-                if (fields.isType<scalar>(key))
-                {
-                    cache.fields.emplace(key, fields.get<scalar>(key));
-                }
-            }
-        }
-
-        for (const auto& key : relaxationFactors.keys())
-        {
-            if (relaxationFactors.isType<scalar>(key))
-            {
-                cache.equations.emplace(key, relaxationFactors.get<scalar>(key));
-                cache.fields.emplace(key, relaxationFactors.get<scalar>(key));
-            }
-        }
-    });
-
-    return cache;
+    return caches.emplace(&fvSolution, std::move(cache)).first->second;
 }
 
 inline std::optional<scalar> findRelaxationFactor(
@@ -90,19 +100,11 @@ inline std::optional<scalar> findRelaxationFactor(
     const std::string& fieldName
 )
 {
-    const auto& cache = relaxationCache(fvSolution);
-    if (!cache.hasRelaxationFactors)
-    {
-        return std::nullopt;
-    }
+    const auto& c = relaxationCache(fvSolution);
+    if (!c.hasRelaxationFactors) return std::nullopt;
 
-    auto it = cache.equations.find(fieldName);
-    if (it != cache.equations.end())
-    {
-        return it->second;
-    }
-
-    return std::nullopt;
+    auto it = c.equations.find(fieldName);
+    return (it != c.equations.end()) ? std::optional<scalar>(it->second) : std::nullopt;
 }
 
 inline std::optional<scalar> findFieldRelaxationFactor(
@@ -110,19 +112,11 @@ inline std::optional<scalar> findFieldRelaxationFactor(
     const std::string& fieldName
 )
 {
-    const auto& cache = relaxationCache(fvSolution);
-    if (!cache.hasRelaxationFactors)
-    {
-        return std::nullopt;
-    }
+    const auto& c = relaxationCache(fvSolution);
+    if (!c.hasRelaxationFactors) return std::nullopt;
 
-    auto it = cache.fields.find(fieldName);
-    if (it != cache.fields.end())
-    {
-        return it->second;
-    }
-
-    return std::nullopt;
+    auto it = c.fields.find(fieldName);
+    return (it != c.fields.end()) ? std::optional<scalar>(it->second) : std::nullopt;
 }
 
 template<typename ValueType>
@@ -221,21 +215,10 @@ void applyMatrixRelaxation(
     const la::SparsityPattern& sp,
     la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
     const VectorType& solution,
-    const Dictionary& fvSolution
+    scalar alpha
 )
 {
-    const auto relaxFactor = findRelaxationFactor(fvSolution, solution.name);
-    if (!relaxFactor.has_value())
-    {
-        return;
-    }
-
-    const scalar alpha = relaxFactor.value();
-    if (alpha <= 0.0 || alpha == 1.0)
-    {
-        return;
-    }
-
+    NeoN::Logging::info("URF applied");
     const scalar invAlpha = 1.0 / alpha;
     auto [matrix, rhs] = ls.view();
     auto& mtx = ls.matrix();
@@ -311,20 +294,9 @@ template<typename VectorType>
 void applyFieldRelaxation(
     VectorType& solution,
     const Vector<typename VectorType::ElementType>& previous,
-    const Dictionary& fvSolution
+    scalar alpha
 )
 {
-    const auto relaxFactor = findFieldRelaxationFactor(fvSolution, solution.name);
-    if (!relaxFactor.has_value())
-    {
-        return;
-    }
-
-    const scalar alpha = relaxFactor.value();
-    if (alpha <= 0.0 || alpha == 1.0)
-    {
-        return;
-    }
 
     auto [current, prev] = views(solution.internalVector(), previous);
 
@@ -348,7 +320,9 @@ la::SolverStats iterativeSolveImpl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps,
+    std::optional<scalar> eqnUrf,
+    std::optional<scalar> fieldUrf
 )
 {
     exp.read(fvSchemes);
@@ -365,13 +339,19 @@ la::SolverStats iterativeSolveImpl(
         NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
 
-    applyMatrixRelaxation(sp, ls, solution, fvSolution);
+    if (eqnUrf && *eqnUrf > 0.0 && *eqnUrf != 1.0)
+    {
+        applyMatrixRelaxation(sp, ls, solution, *eqnUrf);
+    }
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
     auto stats = solver.solve(ls, solution.internalVector());
-    applyFieldRelaxation(solution, prev, fvSolution);
+    if (fieldUrf && *fieldUrf > 0.0 && *fieldUrf != 1.0)
+    {
+        applyFieldRelaxation(solution, prev, *fieldUrf);
+    }
     return stats;
 }
 
@@ -382,7 +362,9 @@ la::SolverStats iterativeSolveImpl(
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps,
+    std::optional<scalar> eqnUrf,
+    std::optional<scalar> fieldUrf
 )
 {
     auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
@@ -398,13 +380,19 @@ la::SolverStats iterativeSolveImpl(
         NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
 
-    applyMatrixRelaxation(sparsity, ls, solution, fvSolution);
+    if (eqnUrf && *eqnUrf > 0.0 && *eqnUrf != 1.0)
+    {
+        applyMatrixRelaxation(sparsity, ls, solution, *eqnUrf);
+    }
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
     auto stats = solver.solve(ls, solution.internalVector());
-    applyFieldRelaxation(solution, prev, fvSolution);
+    if (fieldUrf && *fieldUrf > 0.0 && *fieldUrf != 1.0)
+    {
+        applyFieldRelaxation(solution, prev, *fieldUrf);
+    }
     return stats;
 }
 }
@@ -427,7 +415,9 @@ la::SolverStats solve(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {}
+    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {},
+    std::optional<scalar> eqnUrf = std::nullopt,
+    std::optional<scalar> fieldUrf = std::nullopt
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
@@ -447,7 +437,7 @@ la::SolverStats solve(
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
+        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p, eqnUrf, fieldUrf);
     }
 }
 

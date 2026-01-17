@@ -76,25 +76,24 @@ NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
 
 template<typename ValueType>
 void computeLaplacianImpl(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<ValueType, localIdx>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
+    const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    const auto matIt = ls.faceToMatrixAddress();
-    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs, rowOffs] = views(
+    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
-        matIt->diagOffset(),
-        matIt->ownerOffset(),
-        matIt->neighbourOffset(),
-        matIt->sparsityPattern()->rowOffs()
+        sparsityPattern.diagOffset(),
+        sparsityPattern.ownerOffset(),
+        sparsityPattern.neighbourOffset()
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = views(
@@ -103,8 +102,8 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
+    auto [values, colIdxs, rowOffs] = ls.matrix().view();
     auto rhs = ls.rhs().view();
-    auto values = ls.matrix().values().view();
 
     parallelFor(
         exec,
@@ -145,9 +144,12 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto bRhs = ls.boundaryRhs().view();
-    auto bValues = ls.boundaryMatrix().values().view();
+    auto& bcCoeffs =
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
+            "boundaryCoefficients"
+        );
 
+    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
 
     parallelFor(
         exec,
@@ -162,14 +164,14 @@ void computeLaplacianImpl(
 
             ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                                * deltaCoeffs[facei] * one<ValueType>();
-            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-            bValues[bcfacei] = valueMat;
+            //   Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+            boundValues[bcfacei] -= valueMat;
 
             ValueType valueRhs = flux * operatorScalingOwn
                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-            Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] = valueRhs;
+            //   Kokkos::atomic_sub(&rhs[own], valueRhs);
+            rhsBoundValues[bcfacei] += valueRhs;
         },
         "computeInterfaceLaplacianCoefficients"
     );
@@ -177,7 +179,7 @@ void computeLaplacianImpl(
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
+        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
