@@ -287,30 +287,4 @@ template<typename ValueType, typename IndexType>
 //         Vector<ValueType>& out
 //     ) const;
 
-// /* @brief given a csr matrix this function copies the matrix and converts to requested target
-// types
-//  *
-//  */
-// template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename
-// IndexTypeOut> la::Matrix<ValueTypeOut, IndexTypeOut> convert(const Executor exec, const
-// la::MatrixView<const ValueTypeIn, const IndexTypeIn> in)
-// {
-//     Vector<IndexTypeOut> colIdxsTmp(exec, in.colIdxs.size());
-//     Vector<IndexTypeOut> rowOffsTmp(exec, in.rowOffs.size());
-//     Vector<ValueTypeOut> valuesTmp(exec, in.values.data(), in.values.size());
-
-//     parallelFor(
-//         colIdxsTmp, NEON_LAMBDA(const localIdx i) { return IndexTypeOut {in.colIdxs[i]}; }
-//     );
-//     parallelFor(
-//         rowOffsTmp, NEON_LAMBDA(const localIdx i) { return IndexTypeOut {in.rowOffs[i]}; }
-//     );
-//     parallelFor(
-//         valuesTmp, NEON_LAMBDA(const localIdx i) { return ValueTypeOut {in.values[i]}; }
-//     );
-
-//     return la::Matrix<ValueTypeOut, IndexTypeOut> {valuesTmp, colIdxsTmp, rowOffsTmp};
-// }
-
-
 } // namespace NeoN
