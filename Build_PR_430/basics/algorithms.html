@@ -231,6 +231,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mpi_architecture.html">MPI Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous Integration</a></li>
 </ul>
 
 </div>
@@ -301,7 +302,7 @@ These can be found in the following files:</p>
 <span class="w">        </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">parallel_for</span><span class="p">(</span>
 <span class="w">            </span><span class="s">&quot;parallelFor&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">RangePolicy</span><span class="o">&lt;</span><span class="n">runOn</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="n">size</span><span class="p">()),</span>
-<span class="w">            </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">view</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">            </span><span class="n">NEON_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">view</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -310,7 +311,7 @@ These can be found in the following files:</p>
 <p>based on the Executor type a kernel function is either run directly within a for loop or dispatched to <code class="docutils literal notranslate"><span class="pre">Kokkos::parallel_for</span></code> for all non <code class="docutils literal notranslate"><span class="pre">SerialExecutors</span></code>.
 The executor type determines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy&lt;runOn&gt;</span></code> and thus dispatches to GPUs if a <code class="docutils literal notranslate"><span class="pre">GPUExecutor</span></code> was used.
 Additionally, we name the kernel as <code class="docutils literal notranslate"><span class="pre">&quot;parallelFor&quot;</span></code> to improve visibility in profiling tools like nsys.
-Finally, a <code class="docutils literal notranslate"><span class="pre">KOKKOS_LAMBDA</span></code> is dispatched assigning the result of the given kernel function to the view of the field.
+Finally, a <code class="docutils literal notranslate"><span class="pre">NEON_LAMBDA</span></code> is dispatched assigning the result of the given kernel function to the view of the field.
 Here the view holds data pointers to the device data and defines the begin and end pointer of the data.
 Several overloads of the <code class="docutils literal notranslate"><span class="pre">parallelFor</span></code> functions exists to simplify running parallelFor on fields and views with and without an explicitly defined data range.</p>
 <p>To learn more on how to use the algorithms it is recommended to check the corresponding <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/test/core/parallelAlgorithms.cpp">unit test</a>.</p>
