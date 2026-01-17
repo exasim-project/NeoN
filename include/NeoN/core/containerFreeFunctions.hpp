@@ -33,9 +33,21 @@ auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
     size_t size = static_cast<size_t>(ssize);
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
-        Kokkos::deep_copy(
-            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
-        );
+        using SrcExecType = std::decay_t<decltype(srcExec)>;
+        using DstExecType = std::decay_t<decltype(dstExec)>;
+        
+        // use std::memcpy for host to host copy
+        if constexpr (std::is_same_v<SrcExecType, SerialExecutor> && std::is_same_v<DstExecType, SerialExecutor>)
+        {
+            std::memcpy(dstPtr, srcPtr, size * sizeof(ValueType));
+        }
+        else
+        {
+            // Device copy or host-device copy
+            Kokkos::deep_copy(
+                dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
+            );
+        }
     };
 };
 
@@ -88,9 +100,16 @@ void fill(
         end = cont.size();
     }
     auto viewA = cont.view();
-    parallelFor(
-        cont.exec(), {start, end}, NEON_LAMBDA(const localIdx i) { viewA[i] = value; }, "fill"
-    );
+    if (std::holds_alternative<SerialExecutor>(cont.exec()))
+    {
+        std::fill(viewA.begin() + start, viewA.begin() + end, value);
+    }
+    else
+    {
+        parallelFor(
+            cont.exec(), {start, end}, NEON_LAMBDA(const localIdx i) { viewA[i] = value; }, "fill"
+        );
+    }
 }
 
 

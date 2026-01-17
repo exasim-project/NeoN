@@ -45,7 +45,7 @@ public:
 
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
-    ) const;
+    ) const override;
 
     /* @brief compute grad
      *
@@ -53,9 +53,9 @@ public:
      * @param operatorScaling [in] - scales operator by a coefficient
      * @param gradPhi [in,out] - resulting gradient field
      */
-    virtual void grad(const VolumeField<scalar>&, const dsl::Coeff, VolumeField<Vec3>&) const
+    void grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, VolumeField<Vec3>& gradPhi) const 
     {
-        NF_ERROR_EXIT("Not implemented");
+        grad(phi, operatorScaling, gradPhi.internalVector());
     };
 
     /* @brief compute explicit gradient operator and return result
@@ -65,9 +65,9 @@ public:
      * @return gradPhi - resulting gradient field
      */
     VolumeField<Vec3>
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const ;
 
-    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const
+    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
     };
