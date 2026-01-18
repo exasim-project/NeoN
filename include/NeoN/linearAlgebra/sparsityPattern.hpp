@@ -10,6 +10,46 @@
 namespace NeoN::la
 {
 
+/**
+ * @struct MatrixView
+ * @brief A view struct to allow easy read/write on all executors.
+ *
+ * @tparam IndexType The index type of the rows and columns.
+ */
+template<typename IndexType>
+struct SparsityView
+{
+    SparsityView(const View<const IndexType> colIdxsView, const View<const IndexType> rowOffsView)
+        : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
+
+
+    /**
+     * @brief Retrieve a reference to the matrix element at position (i,j).
+     * @param i The row index.
+     * @param j The column index.
+     * @return Reference to the matrix element if it exists.
+     */
+    KOKKOS_INLINE_FUNCTION
+    IndexType& entry(const IndexType i, const IndexType j) const
+    {
+        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
+        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
+        {
+            const IndexType localCol = rowOffs[i] + ic;
+            if (colIdxs[localCol] == j)
+            {
+                return localCol;
+            }
+            if (colIdxs[localCol] > j) break;
+        }
+        Kokkos::abort("Memory not allocated for CSR matrix component.");
+        return 0; // compiler warning suppression.
+    }
+
+    const View<const IndexType> colIdxs;
+    const View<const IndexType> rowOffs;
+};
+
 /* @class SparsityPattern
  * @brief row and column index representation of a mesh
  *
@@ -24,6 +64,8 @@ class SparsityPattern
     void validate() const;
 
 public:
+
+    using SparsityIndexType = IndexType;
 
     /* @brief create an "empty" SparsityPattern with a given size  */
     SparsityPattern(const SparsityPattern& sp);
@@ -54,6 +96,15 @@ public:
     [[nodiscard]] localIdx rows() const { return rowOffs_.size() - 1; };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
+
+    /**
+     * @brief Get a view representation of the matrix's data.
+     * @return MatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] SparsityView<IndexType> view()
+    {
+        return SparsityView(colIdxs_.view(), rowOffs_.view());
+    }
 
     KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
 
