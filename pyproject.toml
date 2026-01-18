@@ -45,14 +45,14 @@ all = [
 
 [build-system]
 requires = [
-    "scikit-build-core[pyproject]>=0.4.3",
+    "scikit-build-core[pyproject]>=0.11.0",
     "nanobind>=2.9.0",
 ]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 cmake.version = ">=3.22"
-cmake.build-type = "Release"
+cmake.args = ["--preset=production"]
 build.verbose = true
 build-dir = "_skbuild"
 editable.mode = "redirect"
