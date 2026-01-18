@@ -2,7 +2,7 @@
 \hypertarget{CSRMatrix_8hpp_source}{}\label{CSRMatrix_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp}}
 \mbox{\hyperlink{CSRMatrix_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00004}00004\ }
@@ -142,13 +142,13 @@
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00233}00233\ \textcolor{comment}{//\ \ \ \ \ Vector<ValueTypeOut>\ valuesTmp(exec,\ in.values.data(),\ in.values.size());}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00234}00234\ }
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00235}00235\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00236}00236\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00236}00236\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00237}00237\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00238}00238\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00239}00239\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00239}00239\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00240}00240\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00241}00241\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00242}00242\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00242}00242\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00243}00243\ \textcolor{comment}{//\ \ \ \ \ );}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00244}00244\ }
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00245}00245\ \textcolor{comment}{//\ \ \ \ \ return\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ \{valuesTmp,\ colIdxsTmp,\ rowOffsTmp\};}}

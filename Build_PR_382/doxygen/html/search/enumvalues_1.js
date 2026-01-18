@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['implicit_0',['Implicit',['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788',1,'NeoN::dsl::Operator']]]
+  ['console_0',['Console',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12',1,'NeoN::Logging']]],
+  ['critical_1',['Critical',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214a5b191a1c471a255d90cb093aa9219e03',1,'NeoN::Logging']]]
 ];

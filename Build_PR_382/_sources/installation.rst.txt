@@ -75,6 +75,18 @@ Then you can enable HIP during the configure step with the following flags.
    -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON  # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
 
+In the case of Intel PVC GPUs, the following flags ensure sycl support.
+
+.. code-block:: bash
+
+   -DCMAKE_CXX_COMPILER=icpx
+   -DCMAKE_CXX_FLAGS=-fsycl
+   -DCMAKE_BUILD_TYPE=release
+   -DKokkos_ENABLE_SYCL=ON
+   -DKokkos_ARCH_INTEL_PVC=ON
+
+Please note that current support for NeoN on Intel GPUs is experimental.
+
 After configuring for GPU support, you can continue to build NeoN.
 
 .. _Building with CMake Presets:
