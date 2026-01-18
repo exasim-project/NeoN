@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+# SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -47,6 +47,7 @@ target_sources(
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenConvDiff.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"

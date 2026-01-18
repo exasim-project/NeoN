@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -11,7 +11,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeLaplacianExp(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const SurfaceField<scalar>&, // gamma,
+    const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     Vector<ValueType>& lapPhi,
     const dsl::Coeff operatorScaling
@@ -25,8 +25,13 @@ void computeLaplacianExp(
     const auto [owner, neighbour, surfFaceCells] =
         views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
-    const auto [result, faceArea, fnGrad, vol] =
-        views(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
+    const auto [result, faceArea, fnGrad, vol, sGamma] = views(
+        lapPhi,
+        mesh.magFaceAreas(),
+        faceNormalGrad.internalVector(),
+        mesh.cellVolumes(),
+        gamma.internalVector()
+    );
 
     auto nInternalFaces = mesh.nInternalFaces();
 
@@ -35,7 +40,7 @@ void computeLaplacianExp(
         exec,
         {0, nInternalFaces},
         KOKKOS_LAMBDA(const localIdx i) {
-            ValueType flux = faceArea[i] * fnGrad[i];
+            ValueType flux = sGamma[i] * faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[owner[i]], flux);
             Kokkos::atomic_sub(&result[neighbour[i]], flux);
         }
@@ -46,7 +51,7 @@ void computeLaplacianExp(
         {nInternalFaces, fnGrad.size()},
         KOKKOS_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
-            ValueType valueOwn = faceArea[i] * fnGrad[i];
+            ValueType valueOwn = sGamma[i] * faceArea[i] * fnGrad[i];
             Kokkos::atomic_add(&result[own], valueOwn);
         }
     );

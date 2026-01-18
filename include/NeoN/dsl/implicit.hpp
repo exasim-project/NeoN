@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -15,6 +15,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/convDiffOperator.hpp"
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
@@ -50,6 +51,18 @@ laplacian(fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<ValueType>& phi)
 {
     return SpatialOperator<ValueType>(
         fvcc::LaplacianOperator<ValueType>(dsl::Operator::Type::Implicit, gamma, phi)
+    );
+}
+
+template<typename ValueType>
+SpatialOperator<ValueType> convDiff(
+    fvcc::SurfaceField<scalar>& faceFlux,
+    fvcc::SurfaceField<scalar>& gamma,
+    fvcc::VolumeField<ValueType>& phi
+)
+{
+    return SpatialOperator<ValueType>(
+        fvcc::ConvDiffOperator<ValueType>(dsl::Operator::Type::Implicit, faceFlux, gamma, phi)
     );
 }
 
