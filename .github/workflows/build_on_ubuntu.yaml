@@ -90,8 +90,6 @@ jobs:
       - name: Build NeoN without Ginkgo
         if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
-          # create virtual environment
-          uv venv
 
           CMAKE_FLAGS_ARR=(
             -DNeoN_BUILD_TESTS=ON
@@ -106,9 +104,23 @@ jobs:
           cmake --preset ${{matrix.preset}} "${CMAKE_FLAGS_ARR[@]}"
           cmake --build  --preset ${{matrix.preset}}
 
-          # SKBUILD needs semicolon separated flags
+      - name: Install python package
+        run: |
+          # create virtual environment
+          uv venv
+
+          CMAKE_FLAGS_ARR=(
+            -DNeoN_BUILD_TESTS=ON
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON
+            -DNeoN_DEVEL_TOOLS=OFF
+            -DNeoN_WITH_GINKGO=OFF
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          )
+
           CMAKE_FLAGS_SC="$(IFS=';'; echo "${CMAKE_FLAGS_ARR[*]}")"
           CMAKE_ARGS="--preset ${{ matrix.preset }};${CMAKE_FLAGS_SC}"
+
+          echo "building directory: build/${{ matrix.preset }}"
           uv sync --all-extras -v -C skbuild.cmake.args="$CMAKE_ARGS" -C skbuild.build-dir="build/${{ matrix.preset }}"
 
       - name: Execute unit tests NeoN
