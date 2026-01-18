@@ -1,5 +1,5 @@
 name: Build NeoN on ubuntu
-run-name: 'Build workflow'
+run-name: "Build workflow"
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   schedule:
-    - cron: '00 8 * * 0'  # Runs at 10 AM CEST (08:00 UTC) every Sunday
-  workflow_dispatch:      # Optional: allows manual trigger
+    - cron: "00 8 * * 0" # Runs at 10 AM CEST (08:00 UTC) every Sunday
+  workflow_dispatch: # Optional: allows manual trigger
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -42,61 +42,76 @@ jobs:
               CXX: clang++
             preset: "profiling"
     steps:
-     - name: Checkout to repository
-       uses: actions/checkout@v4
+      - name: Checkout to repository
+        uses: actions/checkout@v4
 
-     - name: Add clang repo
-       run: |
-         sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-         wget https://apt.llvm.org/llvm-snapshot.gpg.key
-         sudo apt-key add llvm-snapshot.gpg.key
+      - name: Add clang repo
+        run: |
+          sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
+          wget https://apt.llvm.org/llvm-snapshot.gpg.key
+          sudo apt-key add llvm-snapshot.gpg.key
 
-     - name: Set up cache
-       uses: actions/cache@v4
-       if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
-       with:
-         path: build
-         key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
+      - name: Set up cache
+        uses: actions/cache@v4
+        if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
+        with:
+          path: build
+          key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
 
-     - name: Install dependencies
-       run: |
-         sudo apt update
-         sudo apt install \
-           ninja-build \
-           clang-16 \
-           gcc-10 \
-           libomp-16-dev \
-           python3 \
-           python3-dev \
-           python3-pytest \
-           build-essential \
-           libopenmpi-dev \
-           openmpi-bin
-         sudo apt remove clang-14
-         sudo rm /usr/bin/clang
-         sudo rm /usr/bin/clang++
-         sudo ln -s /usr/bin/clang-16 /usr/bin/clang
-         sudo ln -s /usr/bin/clang++-16 /usr/bin/clang++
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install \
+            ninja-build \
+            clang-16 \
+            gcc-10 \
+            libomp-16-dev \
+            python3 \
+            python3-dev \
+            python3-pytest \
+            build-essential \
+            libopenmpi-dev \
+            openmpi-bin
+          sudo apt remove clang-14
+          sudo rm /usr/bin/clang
+          sudo rm /usr/bin/clang++
+          sudo ln -s /usr/bin/clang-16 /usr/bin/clang
+          sudo ln -s /usr/bin/clang++-16 /usr/bin/clang++
 
-     - name: Get versions
-       run: |
-         clang --version
-         ninja --version
-         cmake --version
+      - name: Get versions
+        run: |
+          clang --version
+          ninja --version
+          cmake --version
 
-     - name: Build NeoN without Ginkgo
-       if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
-       run: |
-         CC=${{matrix.compiler.CC}} \
-         CXX=${{matrix.compiler.CXX}} \
-         cmake --preset ${{matrix.preset}} \
-           -DNeoN_BUILD_TESTS=ON \
-           -DNeoN_BUILD_PYTHON_BINDINGS=ON \
-           -DNeoN_DEVEL_TOOLS=OFF \
-           -DNeoN_WITH_GINKGO=OFF \
-           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
-         cmake --build  --preset ${{matrix.preset}}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-     - name: Execute unit tests NeoN
-       run: |
-         ctest --preset ${{matrix.preset}}
+      - name: Build NeoN without Ginkgo
+        if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
+        run: |
+          # create virtual environment
+          uv venv
+
+          CMAKE_FLAGS_ARR=(
+            -DNeoN_BUILD_TESTS=ON
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON
+            -DNeoN_DEVEL_TOOLS=OFF
+            -DNeoN_WITH_GINKGO=OFF
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          )
+
+          CC=${{matrix.compiler.CC}}
+          CXX=${{matrix.compiler.CXX}}
+          cmake --preset ${{matrix.preset}} "${CMAKE_FLAGS_ARR[@]}"
+          cmake --build  --preset ${{matrix.preset}}
+
+          # SKBUILD needs semicolon separated flags
+          CMAKE_FLAGS_SC="$(IFS=';'; echo "${CMAKE_FLAGS_ARR[*]}")"
+          CMAKE_ARGS="--preset ${{ matrix.preset }};${CMAKE_FLAGS_SC}"
+          uv sync --all-extras -v -C skbuild.cmake.args="$CMAKE_ARGS" -C skbuild.build-dir="build/${{ matrix.preset }}"
+
+      - name: Execute unit tests NeoN
+        run: |
+          source .venv/bin/activate
+          ctest --preset ${{matrix.preset}}
