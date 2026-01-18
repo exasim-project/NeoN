@@ -26,6 +26,8 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerInputs(m);
     NeoN::bindings::registerCoNum(m);
     NeoN::bindings::registerInitialization(m);
+    NeoN::bindings::registerLinearAlgebra(m);
+    NeoN::bindings::registerDSL(m);
 
     // Database bindings
     NeoN::bindings::registerDocument(m);

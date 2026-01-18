@@ -53,6 +53,8 @@ nanobind_add_module(
   inputs.cpp
   coNum.cpp
   initialization.cpp
+  linearAlgebra.cpp
+  dsl.cpp
   database/document.cpp
   database/collection.cpp
   database/database.cpp)
