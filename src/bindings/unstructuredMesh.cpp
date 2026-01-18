@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -64,50 +64,50 @@ void registerUnstructuredMesh(nb::module_& m)
 
         .def(
             "points",
-            &NeoN::UnstructuredMesh::points,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::points, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of mesh points (vertices)"
         )
         .def(
             "cell_volumes",
-            &NeoN::UnstructuredMesh::cellVolumes,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::cellVolumes, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of cell volumes"
         )
         .def(
             "cell_centres",
-            &NeoN::UnstructuredMesh::cellCentres,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::cellCentres, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of cell centres"
         )
         .def(
             "face_centres",
-            &NeoN::UnstructuredMesh::faceCentres,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceCentres, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face centres"
         )
         .def(
             "face_areas",
-            &NeoN::UnstructuredMesh::faceAreas,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceAreas, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face area normals"
         )
         .def(
             "mag_face_areas",
-            &NeoN::UnstructuredMesh::magFaceAreas,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::magFaceAreas, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face area magnitudes"
         )
 
         .def(
             "face_owner",
-            &NeoN::UnstructuredMesh::faceOwner,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceOwner, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face owner cell indices"
         )
         .def(
             "face_neighbour",
-            &NeoN::UnstructuredMesh::faceNeighbour,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceNeighbour, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face neighbor cell indices"
         )
