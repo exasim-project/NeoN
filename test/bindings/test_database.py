@@ -1,11 +1,8 @@
-# SPDX-FileCopyrightText: 2025 NeoN authors
+# SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: MIT
 
 """Tests for NeoN database bindings (Document, Collection, Database)."""
-
-import sys
-sys.path.insert(0, "/home/andrei2/Downloads/NeoN/build/develop/bindings/neon")
 
 import neon
 
