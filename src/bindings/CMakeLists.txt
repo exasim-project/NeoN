@@ -16,6 +16,10 @@ find_package(
   COMPONENTS Interpreter ${DEV_MODULE}
   REQUIRED)
 
+message(STATUS "Python_EXECUTABLE = ${Python_EXECUTABLE}")
+message(STATUS "Python_INCLUDE_DIRS = ${Python_INCLUDE_DIRS}")
+message(STATUS "Python_LIBRARIES = ${Python_LIBRARIES}")
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE
       Release
