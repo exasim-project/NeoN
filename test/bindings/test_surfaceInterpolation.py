@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import sys
-from pathlib import Path
-
 import neon
 
 

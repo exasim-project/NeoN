@@ -1,9 +1,6 @@
-# SPDX-FileCopyrightText: 2025 NeoN authors
+# SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: MIT
-
-import sys
-from pathlib import Path
 
 import neon
 

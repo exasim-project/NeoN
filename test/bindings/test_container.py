@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 NeoN authors
+# SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: MIT
 
@@ -7,14 +7,6 @@ Tests for NeoN container free functions Python bindings.
 
 This module tests the fill and equal functions for various vector types.
 """
-
-import sys
-from pathlib import Path
-
-# Add the build directory to path to find the neon module
-# The module is built to build/develop/bindings/neon/
-build_path = Path(__file__).parent.parent.parent / "build" / "develop" / "bindings" / "neon"
-sys.path.insert(0, str(build_path))
 
 import neon
 
