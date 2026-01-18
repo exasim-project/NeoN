@@ -19,7 +19,7 @@ namespace NeoN::la
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename SparsityViewType>
 struct MatrixView
 {
     /**
@@ -28,12 +28,8 @@ struct MatrixView
      * @param colIdxsView View of the column indices for each non-zero value.
      * @param rowOffsView View of the starting index in values/colIdxs for each row.
      */
-    MatrixView(
-        const View<ValueType> valueView,
-        const View<const IndexType> colIdxsView,
-        const View<const IndexType> rowOffsView
-    )
-        : values(valueView), colIdxs(colIdxsView), rowOffs(rowOffsView) {};
+    MatrixView(const View<ValueType> valueView, const SparsityViewType sparsityView)
+        : values(valueView), sparsityView(sparsityView) {};
 
     /**
      * @brief Default destructor.
@@ -47,20 +43,9 @@ struct MatrixView
      * @return Reference to the matrix element if it exists.
      */
     KOKKOS_INLINE_FUNCTION
-    ValueType& entry(const IndexType i, const IndexType j) const
+    ValueType& entry(const localIdx i, const localIdx j) const
     {
-        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
-        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
-        {
-            const IndexType localCol = rowOffs[i] + ic;
-            if (colIdxs[localCol] == j)
-            {
-                return values[localCol];
-            }
-            if (colIdxs[localCol] > j) break;
-        }
-        Kokkos::abort("Memory not allocated for CSR matrix component.");
-        return values[0]; // compiler warning suppression.
+        return values[sparsityView.entry(i, j)];
     }
 
     /**
@@ -69,11 +54,10 @@ struct MatrixView
      * @return Reference to the matrix element if it exists.
      */
     KOKKOS_INLINE_FUNCTION
-    ValueType& entry(const IndexType offset) const { return values[offset]; }
+    ValueType& entry(const localIdx offset) const { return values[offset]; }
 
-    View<ValueType> values;        //!< View to the values of the CSR matrix.
-    View<const IndexType> colIdxs; //!< View to the column indices of the CSR matrix.
-    View<const IndexType> rowOffs; //!< View to the row offsets for the CSR matrix.
+    View<ValueType> values; //!< View to the values of the CSR matrix.
+    const SparsityViewType sparsityView;
 };
 
 /**
@@ -82,7 +66,7 @@ struct MatrixView
  * @tparam ValueType The value type of the non-zero entries.
  * @tparam IndexType The index type of the rows and columns.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename SparsityType>
 class Matrix
 {
 
@@ -93,13 +77,16 @@ class Matrix
 
 public:
 
+    using MatrixValueType = ValueType;
+    using MatrixSparsityType = SparsityType;
+
     /**
      * @brief Constructor for Matrix.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
      */
-    Matrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityPattern<IndexType>> sp)
+    Matrix(const Vector<ValueType>& values, std::shared_ptr<const SparsityType> sp)
         : values_(values), sparsityPattern_(sp)
     {
         validate();
@@ -113,13 +100,11 @@ public:
      */
     Matrix(
         const Vector<ValueType>& values,
-        const Vector<IndexType>& colIdxs,
-        const Vector<IndexType>& rowOffs
+        const Vector<typename SparsityType::IndexType>& colIdxs,
+        const Vector<typename SparsityType::IndexType>& rowOffs
     )
         : values_(values),
-          sparsityPattern_(
-              std::make_shared<const SparsityPattern<IndexType>>(Vector(colIdxs), Vector(rowOffs))
-          )
+          sparsityPattern_(std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs)))
     {
         validate();
     }
@@ -153,17 +138,19 @@ public:
      */
     [[nodiscard]] Vector<ValueType>& values() { return values_; }
 
-    /**
-     * @brief Get a reference to column indices vector.
-     * @return Vector containing the column indices.
-     */
-    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return sparsityPattern_->colIdxs(); }
+    // /**
+    //  * @brief Get a reference to column indices vector.
+    //  * @return Vector containing the column indices.
+    //  */
+    // [[nodiscard]] const Vector<IndexType>& colIdxs() const { return sparsityPattern_->colIdxs();
+    // }
 
-    /**
-     * @brief Get a reference to row offset vector.
-     * @return Vector containing the row pointers.
-     */
-    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return sparsityPattern_->rowOffs(); }
+    // /**
+    //  * @brief Get a reference to row offset vector.
+    //  * @return Vector containing the row pointers.
+    //  */
+    // [[nodiscard]] const Vector<IndexType>& rowOffs() const { return sparsityPattern_->rowOffs();
+    // }
 
     /**
      * @brief Get a const reference to values vector.
@@ -191,7 +178,7 @@ public:
      * @param dstExec The destination executor.
      * @return A copy of the matrix on the destination executor.
      */
-    [[nodiscard]] Matrix<ValueType, IndexType> copyToExecutor(Executor dstExec) const
+    [[nodiscard]] Matrix<ValueType, SparsityType> copyToExecutor(Executor dstExec) const
     {
         if (dstExec == values_.exec())
         {
@@ -199,9 +186,7 @@ public:
         }
         return {
             values_.copyToHost(),
-            std::make_shared<const la::SparsityPattern<IndexType>>(
-                this->sparsityPattern_->copyToHost()
-            )
+            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToHost())
         };
     }
 
@@ -209,16 +194,13 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] std::shared_ptr<const SparsityPattern<IndexType>> sparsity() const
-    {
-        return sparsityPattern_;
-    }
+    [[nodiscard]] std::shared_ptr<const SparsityType> sparsity() const { return sparsityPattern_; }
 
     /**
      * @brief Copy the matrix to the host.
      * @return A copy of the matrix on the host.
      */
-    [[nodiscard]] Matrix<ValueType, IndexType> copyToHost() const
+    [[nodiscard]] Matrix<ValueType, SparsityType> copyToHost() const
     {
         return copyToExecutor(SerialExecutor());
     }
@@ -227,7 +209,7 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] MatrixView<ValueType, IndexType> view()
+    [[nodiscard]] MatrixView<ValueType, SparsityType> view()
     {
         return MatrixView(
             values_.view(), sparsityPattern_->colIdxs().view(), sparsityPattern_->rowOffs().view()
@@ -238,9 +220,10 @@ public:
      * @brief Get a const view representation of the matrix's data.
      * @return Const MatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] MatrixView<const ValueType, const IndexType> view() const
+    [[nodiscard]] MatrixView<const ValueType, SparsityView<typename SparsityType::IndexType>>
+    view() const
     {
-        return MatrixView<const ValueType, const IndexType>(
+        return MatrixView<const ValueType, const typename SparsityType::IndexType>(
             View<const ValueType>(values_.view()),
             sparsityPattern_->colIdxs().view(),
             sparsityPattern_->rowOffs().view()
@@ -269,7 +252,7 @@ private:
 
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
-    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern_;
+    std::shared_ptr<const SparsityType<IndexType>> sparsityPattern_;
 };
 
 /** @brief extract the upper triangular of the matrix
@@ -277,6 +260,9 @@ private:
  */
 template<typename ValueType, typename IndexType>
 [[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx);
+
+template<typename ValueType, typename IndexType>
+using CSRMatrix = Matrix<ValueType, IndexType, la::SparsityPattern>;
 
 // FIXME
 // template<typename ValueType, typename IndexType>
