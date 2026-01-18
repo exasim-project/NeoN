@@ -110,7 +110,7 @@ jobs:
         run: |
           # create virtual environment
           uv venv
-
+          source .venv/bin/activate
           CMAKE_FLAGS_ARR=(
             -DNeoN_BUILD_TESTS=ON
             -DNeoN_BUILD_PYTHON_BINDINGS=ON
@@ -123,7 +123,7 @@ jobs:
           CMAKE_ARGS="--preset ${{ matrix.preset }};${CMAKE_FLAGS_SC}"
 
           echo "building directory: build/${{ matrix.preset }}"
-          uv pip install -e .[all] -v -C skbuild.cmake.args="$CMAKE_ARGS" -C skbuild.build-dir="build/${{ matrix.preset }}"
+          pip install -e .[all] -v -C skbuild.cmake.args="$CMAKE_ARGS" -C skbuild.build-dir="build/${{ matrix.preset }}"
 
       - name: Execute unit tests NeoN
         run: |
