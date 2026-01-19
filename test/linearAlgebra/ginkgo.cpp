@@ -17,7 +17,7 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::SparsityPattern;
-using NeoN::la::Matrix;
+using NeoN::la::CSRMatrix;
 using NeoN::la::Solver;
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
@@ -106,14 +106,17 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     SECTION("Solve linear system scalar " + execName)
     {
         Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
-        Matrix<scalar, localIdx> csrMatrix(values, sparsity);
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
         Vector<scalar> bValues(exec, {});
-        Matrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        CSRMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs, bCsrMatrix, bRhs);
+        auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
+            csrMatrix, rhs, bCsrMatrix, bRhs
+        );
+
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
 
         Dictionary solverDict {
@@ -152,15 +155,17 @@ TEST_CASE("MatrixAssembly - Ginkgo")
              {1.0, 1.0, 1.0}}
         );
 
-        Matrix<Vec3, localIdx> csrMatrix(values, sparsity);
+        CSRMatrix<Vec3, localIdx> csrMatrix(values, sparsity);
         Vector<Vec3> bValues(exec, {});
-        Matrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
+        CSRMatrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
         Vector<Vec3> bRhs(exec, {});
 
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
         Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
-        LinearSystem<Vec3, localIdx> linearSystem(csrMatrix, rhs, bCsrMatrix, bRhs);
+        auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
+            csrMatrix, rhs, bCsrMatrix, bRhs
+        );
 
         SECTION("Segregated" + execName)
         {

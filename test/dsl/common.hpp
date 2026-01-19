@@ -286,14 +286,14 @@ ValueType getVector(const NeoN::Vector<ValueType>& source)
 }
 
 template<typename ValueType>
-ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getDiag(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.matrix().values().view()[0];
 }
 
 template<typename ValueType>
-ValueType getRhs(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getRhs(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];

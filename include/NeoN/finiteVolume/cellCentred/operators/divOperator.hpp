@@ -51,7 +51,7 @@ public:
         const dsl::Coeff operatorScaling) const = 0;
 
     virtual void
-    div(la::LinearSystem<ValueType, localIdx>& ls,
+    div(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
         const la::MatrixIterator<>& matIt,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
@@ -135,7 +135,8 @@ public:
     }
 
     void implicitOperation(
-        la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& matIt
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        const la::MatrixIterator<localIdx>& matIt
     ) const
     {
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");

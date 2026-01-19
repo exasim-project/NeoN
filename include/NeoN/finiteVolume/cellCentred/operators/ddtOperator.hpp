@@ -37,22 +37,22 @@ public:
     void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const;
 
     void implicitOperation(
-        la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<>& matrixIterator,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        const la::MatrixIterator<localIdx>& matrixIterator,
         scalar,
         scalar dt
     ) const;
 
     void bdf1Kernel(
-        la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<>& matrixIterator,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        const la::MatrixIterator<localIdx>& matrixIterator,
         scalar t,
         scalar dt
     ) const;
 
     void bdf2Kernel(
-        la::LinearSystem<ValueType, localIdx>& ls,
-        const la::MatrixIterator<>& matrixIterator,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        const la::MatrixIterator<localIdx>& matrixIterator,
         scalar t,
         scalar dt
     ) const;

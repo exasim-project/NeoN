@@ -15,11 +15,12 @@ namespace NeoN::la
  * @brief A view struct to allow easy read/write on all executors.
  *
  * @tparam IndexType The index type of the rows and columns.
+ * @todo ideally this should be immutable
  */
 template<typename IndexType>
 struct SparsityView
 {
-    SparsityView(const View<const IndexType> colIdxsView, const View<const IndexType> rowOffsView)
+    SparsityView(View<const IndexType> colIdxsView, View<const IndexType> rowOffsView)
         : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 
 
@@ -46,8 +47,8 @@ struct SparsityView
         return 0; // compiler warning suppression.
     }
 
-    const View<const IndexType> colIdxs;
-    const View<const IndexType> rowOffs;
+    View<const IndexType> colIdxs;
+    View<const IndexType> rowOffs;
 };
 
 /* @class SparsityPattern
@@ -101,9 +102,9 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] SparsityView<IndexType> view()
+    [[nodiscard]] SparsityView<IndexType> view() const
     {
-        return SparsityView(colIdxs_.view(), rowOffs_.view());
+        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
     }
 
     KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }

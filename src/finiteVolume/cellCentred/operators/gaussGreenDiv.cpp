@@ -153,7 +153,7 @@ NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 template<typename ValueType>
 void computeDivImp(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
     const la::MatrixIterator<>& matIt,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -187,7 +187,8 @@ void computeDivImp(
                 matIt.neighbourOffset(),
                 matIt.sparsityPattern()->rowOffs()
             );
-    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
+    auto rhs = ls.rhs().view();
+    auto values = ls.matrix().values().view();
 
     parallelFor(
         exec,
@@ -204,18 +205,18 @@ void computeDivImp(
 
             auto valueUpper = faceFluxV[facei] * -weightsV[facei] * one<ValueType>();
             // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
-            matrix.values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
+            values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
             Kokkos::atomic_sub(
-                &matrix.values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
+                &values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
             );
 
             // add owner contribution lower
             auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
             // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
             //
-            matrix.values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
+            values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
             Kokkos::atomic_sub(
-                &matrix.values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
+                &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
             );
         },
         "computeLocalGaussGreenDivCoefficients"
@@ -230,6 +231,9 @@ void computeDivImp(
         mesh.boundaryMesh().deltaCoeffs()
     );
 
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
     parallelFor(
         exec,
         {nInternalFaces, faceFluxV.size()},
@@ -238,7 +242,7 @@ void computeDivImp(
             auto flux = bweights[bcfacei] * faceFluxV[facei];
 
             auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = matrix.rowOffs[own];
+            auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
             auto valFrac1 = valueFraction[bcfacei];
@@ -246,8 +250,8 @@ void computeDivImp(
 
             auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
-            Kokkos::atomic_add(&matrix.values[rowOwnStart + diagOffs[own]], valueMat);
-            bMatrix.values[bcfacei] = valueMat;
+            Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+            bValues[bcfacei] = valueMat;
 
             auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
@@ -261,7 +265,7 @@ void computeDivImp(
 
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivImp<TYPENAME>(                                                         \
-        la::LinearSystem<TYPENAME, localIdx>&,                                                     \
+        la::LinearSystem<TYPENAME, la::CSRMatrix<TYPENAME, localIdx>>&,                            \
         const la::MatrixIterator<localIdx>&,                                                       \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \

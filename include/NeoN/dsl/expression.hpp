@@ -26,7 +26,8 @@ struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(const la::MatrixIterator<IndexType>&, la::LinearSystem<VectorType, IndexType>&) {};
+    operator()(const la::MatrixIterator<IndexType>&, la::LinearSystem<VectorType, la::CSRMatrix<VectorType, localIdx>>&) {
+    };
 };
 
 
@@ -93,7 +94,8 @@ public:
 
     /*@brief compute matrix coefficients based on all spatial operators */
     void assembleSpatialOperator(
-        la::LinearSystem<ValueType, IndexType>& ls, const la::MatrixIterator<IndexType>& matIt
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        const la::MatrixIterator<IndexType>& matIt
     ) const
     {
         for (auto& op : spatialOperators_)
@@ -109,7 +111,7 @@ public:
      * assemble directly into linear system
      */
     void assembleTemporalOperator(
-        la::LinearSystem<ValueType, IndexType>& ls,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
         const la::MatrixIterator<IndexType>& matIt,
         scalar t,
         scalar dt
@@ -131,7 +133,7 @@ public:
      */
     std::tuple<
         std::shared_ptr<const la::SparsityPattern<IndexType>>,
-        la::LinearSystem<ValueType, IndexType>>
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>>
     assemble(
         const UnstructuredMesh& mesh,
         scalar t,
@@ -140,7 +142,7 @@ public:
     ) const
     {
         auto mi = la::createSparsityPatternMatrixIterator<IndexType>(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, IndexType>(
+        auto ls = la::createEmptyLinearSystem<ValueType, la::SparsityPattern<IndexType>>(
             mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
         );
         assemble(t, dt, mi, ls, ps);
@@ -155,7 +157,7 @@ public:
         scalar t,
         scalar dt,
         const la::MatrixIterator<IndexType>& mi,
-        la::LinearSystem<ValueType, IndexType>& ls,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {

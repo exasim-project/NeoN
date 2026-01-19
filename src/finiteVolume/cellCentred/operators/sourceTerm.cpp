@@ -37,21 +37,23 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 
 template<typename ValueType>
 void SourceTerm<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& matIt
+    la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+    const la::MatrixIterator<localIdx>& matIt
 ) const
 {
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] = views(matIt.diagOffset(), coefficients_.internalVector());
-    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
+    auto rhs = ls.rhs().view();
+    auto values = ls.matrix().values().view();
+    auto [rowOffs, colIdx] = ls.matrix().sparsity()->view();
 
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
         NEON_LAMBDA(const localIdx celli) {
-            localIdx idx = matrix.rowOffs[celli] + diagOffs[celli];
-            matrix.values[idx] +=
-                operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
+            localIdx idx = rowOffs[celli] + diagOffs[celli];
+            values[idx] += operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
         },
         "sourceTerm::implicitOperation"
     );

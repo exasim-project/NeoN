@@ -15,7 +15,7 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
 using NeoN::la::LinearSystem;
-using NeoN::la::Matrix;
+using NeoN::la::CSRMatrix;
 
 TEST_CASE("Utilities")
 {
@@ -40,7 +40,7 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    Matrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
     // Sparse matrix variant of the above, i.e, not all rows contain
     // 3 entries
@@ -226,7 +226,9 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs, csrMatrix, rhs);
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
+            csrMatrix, rhs, csrMatrix, rhs
+        );
 
         NeoN::la::computeResidual(csrMatrix, rhs, x, res);
 

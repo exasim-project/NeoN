@@ -22,25 +22,25 @@ namespace NeoN::la
  * @tparam ValueType The value type of the linear system.
  * @tparam IndexType The index type of the linear system.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename MatrixViewType>
 struct LinearSystemView
 {
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
     LinearSystemView(
-        MatrixView<ValueType, IndexType> matrixView,
+        MatrixViewType matrixView,
         View<ValueType> rhsView,
-        MatrixView<ValueType, IndexType> boundaryMatrixView,
+        MatrixViewType boundaryMatrixView,
         View<ValueType> boundaryRhsView
     )
         : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
           boundaryRhs(boundaryRhsView) {};
 
-    MatrixView<ValueType, IndexType> matrix;
+    MatrixViewType matrix;
     View<ValueType> rhs;
 
-    MatrixView<ValueType, IndexType> boundaryMatrix;
+    MatrixViewType boundaryMatrix;
     View<ValueType> boundaryRhs;
 };
 
@@ -114,20 +114,38 @@ public:
         fill(rhs_, zero<ValueType>());
     }
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() && = delete;
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+    view() && = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() const&& = delete;
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+    view() const&& = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() &
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+    view() &
     {
-        return LinearSystemView<ValueType, IndexType>(
+        return LinearSystemView<
+            ValueType,
+            MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>(
             matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
         );
     }
 
-    [[nodiscard]] LinearSystemView<const ValueType, const IndexType> view() const&
+    [[nodiscard]] LinearSystemView<
+        const ValueType,
+        const MatrixView<ValueType, SparsityView<const typename MatrixType::MatrixSparsityType>>>
+    view() const&
     {
-        return LinearSystemView<const ValueType, const IndexType>(
+        return LinearSystemView<
+            const ValueType,
+            const MatrixView<
+                ValueType,
+                SparsityView<const typename MatrixType::MatrixSparsityType>>>(
             matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
         );
     }

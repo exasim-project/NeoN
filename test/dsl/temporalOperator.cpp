@@ -85,9 +85,10 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(
-        mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
-    );
+    auto ls =
+        NeoN::la::createEmptyLinearSystem<TestType, NeoN::la::SparsityPattern<NeoN::localIdx>>(
+            mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+        );
 
 
     SECTION("Supports Coefficients Implicit " + execName)

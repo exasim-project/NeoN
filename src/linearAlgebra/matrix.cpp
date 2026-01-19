@@ -2,14 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-<<<<<<< HEAD
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
-=======
-#include "NeoN/linearAlgebra/Matrix.hpp"
->>>>>>> d751cf780 (rename matrix file)
+#include "NeoN/linearAlgebra/matrix.hpp"
 
 namespace NeoN::la
 {
@@ -166,7 +162,7 @@ void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<Val
 
 
 #define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class CSRMatrix<VALUETYPE, INTEGERTYPE>;                                              \
+    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>> \
     template Vector<VALUETYPE>                                                                     \
     upper<VALUETYPE, INTEGERTYPE>(const CSRMatrix<VALUETYPE, INTEGERTYPE>&)
 
