@@ -172,7 +172,7 @@ public:
     }
 
     void
-    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, const NeoN::la::MatrixIterator<NeoN::localIdx>&)
+    implicitOperation(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls, const NeoN::la::MatrixIterator<NeoN::localIdx>&)
         const
     {
         std::cout << __FILE__ << __LINE__ << "FOOO \n";
@@ -236,13 +236,12 @@ public:
     }
 
     void implicitOperation(
-        la::LinearSystem<ValueType, NeoN::localIdx>& ls,
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
         const NeoN::la::MatrixIterator<NeoN::localIdx>&,
         NeoN::scalar,
         NeoN::scalar
     )
     {
-        std::cout << __FILE__ << __LINE__ << "FOOO \n";
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
         auto fieldView = this->field_.internalVector().view();
@@ -261,18 +260,6 @@ public:
             ls.rhs().range(),
             NEON_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
         );
-    }
-
-    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
-    {
-        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Vector<NeoN::localIdx> rowOffs(this->exec(), {0, 1});
-        NeoN::la::Matrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowOffs);
-
-        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
-        return linearSystem;
     }
 
     std::string getName() const { return "TemporalDummy"; }

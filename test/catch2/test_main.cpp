@@ -10,27 +10,27 @@
 #include "catch2/reporters/catch_reporter_registrars.hpp"
 
 #include <Kokkos_Core.hpp>
+#include "NeoN/NeoN.hpp"
 
 int main(int argc, char* argv[])
 {
-
     // Initialize Catch2
-    Kokkos::initialize(argc, argv);
+    NeoN::initialize(argc, argv);
 
     // ensure any kokkos initialization output will appear first
     std::cout << std::flush;
     std::cerr << std::flush;
+    int result;
+    {
+        Catch::Session session;
 
-    Catch::Session session;
-
-    // Specify command line options
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0) // Indicates a command line error
-        return returnCode;
-
-    int result = session.run();
-
-    Kokkos::finalize();
+        // Specify command line options
+        int returnCode = session.applyCommandLine(argc, argv);
+        if (returnCode != 0) // Indicates a command line error
+            return returnCode;
+        result = session.run();
+    }
+    NeoN::finalize();
 
     return result;
 }

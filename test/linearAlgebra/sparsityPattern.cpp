@@ -65,6 +65,39 @@ TEST_CASE("SparsityPattern")
         REQUIRE(colIdxHS[9] == 3);
         REQUIRE(colIdxHS[10] == 4);
     }
+
+    SECTION("Can generate views " + execName)
+    {
+        auto spH = sp->copyToHost();
+        auto [colIdxs, rowOffs] = spH.view();
+
+        REQUIRE(colIdxs[0] == 0);
+        REQUIRE(colIdxs[1] == 1);
+
+        REQUIRE(colIdxs[2] == 0);
+        REQUIRE(colIdxs[3] == 1);
+        REQUIRE(colIdxs[4] == 2);
+
+        REQUIRE(colIdxs[5] == 1);
+        REQUIRE(colIdxs[6] == 2);
+        REQUIRE(colIdxs[7] == 3);
+
+        REQUIRE(colIdxs[8] == 2);
+        REQUIRE(colIdxs[9] == 3);
+        REQUIRE(colIdxs[10] == 4);
+
+        REQUIRE(rowOffs[0] == 0);
+        REQUIRE(rowOffs[1] == 2);
+        REQUIRE(rowOffs[2] == 5);
+        REQUIRE(rowOffs[3] == 8);
+        REQUIRE(rowOffs[4] == 11);
+        REQUIRE(rowOffs[5] == 14);
+        REQUIRE(rowOffs[6] == 17);
+        REQUIRE(rowOffs[7] == 20);
+        REQUIRE(rowOffs[8] == 23);
+        REQUIRE(rowOffs[9] == 26);
+        REQUIRE(rowOffs[10] == 28);
+    }
 }
 
 }

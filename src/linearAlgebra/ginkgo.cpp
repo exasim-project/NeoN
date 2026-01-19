@@ -18,6 +18,11 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("solver");
     }
 
+    if (dict.contains("coupled"))
+    {
+        dict.remove("coupled");
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {
@@ -318,9 +323,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtx(
 SolverStats
 GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const
 {
-    // TODO make it runtime selectable
-    bool fused = false;
-    if (fused)
+    if (fused_)
     {
         const auto gkoMtx = createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);

@@ -60,61 +60,60 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.rhs().size() == nCells);
     }
 
-    // FIXME
-    // SECTION("view read/write " + execName)
-    // {
-    //     Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
-    //     LinearSystem<scalar, CSRMatrix<scalar,localIdx>> ls(csrMatrix, rhs, csrMatrix, rhs);
+    SECTION("view read/write " + execName)
+    {
+        Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(csrMatrix, rhs, csrMatrix, rhs);
 
-    //     auto lsView = ls.view();
-    //     auto hostLS = ls.copyToHost();
-    //     auto hostLSView = hostLS.view();
+        auto lsView = ls.view();
+        auto hostLS = ls.copyToHost();
+        auto hostLSView = hostLS.view();
 
-    //     // some simple sanity checks
-    //     REQUIRE(hostLSView.matrix.values.size() == 9);
-    //     REQUIRE(hostLSView.matrix.colIdxs.size() == 9);
-    //     REQUIRE(hostLSView.matrix.rowOffs.size() == 4);
-    //     REQUIRE(hostLSView.rhs.size() == 3);
+        // some simple sanity checks
+        REQUIRE(hostLSView.matrix.values.size() == 9);
+        REQUIRE(hostLSView.matrix.sparsity.colIdxs.size() == 9);
+        REQUIRE(hostLSView.matrix.sparsity.rowOffs.size() == 4);
+        REQUIRE(hostLSView.rhs.size() == 3);
 
-    //     // check system values
-    //     for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
-    //     {
-    //         REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
-    //         REQUIRE(hostLSView.matrix.colIdxs[i] == (i % 3));
-    //     }
-    //     for (NeoN::localIdx i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
-    //     {
-    //         REQUIRE(hostLSView.matrix.rowOffs[i] == i * 3);
-    //     }
-    //     for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
-    //     {
-    //         REQUIRE(hostLSView.rhs[i] == static_cast<scalar>((i + 1) * 10));
-    //     }
+        // check system values
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
+        {
+            REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
+            REQUIRE(hostLSView.matrix.sparsity.colIdxs[i] == (i % 3));
+        }
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.sparsity.rowOffs.size(); ++i)
+        {
+            REQUIRE(hostLSView.matrix.sparsity.rowOffs[i] == i * 3);
+        }
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
+        {
+            REQUIRE(hostLSView.rhs[i] == static_cast<scalar>((i + 1) * 10));
+        }
 
-    //     // Modify values.
-    //     parallelFor(
-    //         exec,
-    //         {0, lsView.matrix.values.size()},
-    //         NEON_LAMBDA(const localIdx i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
-    //     );
+        // Modify values.
+        parallelFor(
+            exec,
+            {0, lsView.matrix.values.size()},
+            NEON_LAMBDA(const localIdx i) { lsView.matrix.values[i] = -lsView.matrix.values[i]; }
+        );
 
-    //     // Modify values.
-    //     parallelFor(
-    //         exec,
-    //         {0, lsView.rhs.size()},
-    //         NEON_LAMBDA(const localIdx i) { lsView.rhs[i] = -lsView.rhs[i]; }
-    //     );
+        // Modify values.
+        parallelFor(
+            exec,
+            {0, lsView.rhs.size()},
+            NEON_LAMBDA(const localIdx i) { lsView.rhs[i] = -lsView.rhs[i]; }
+        );
 
-    //     // Check modification.
-    //     auto hostLS2 = ls.copyToHost();
-    //     auto hostLS2View = hostLS2.view();
-    //     for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
-    //     {
-    //         REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
-    //     }
-    //     for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
-    //     {
-    //         REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
-    //     }
-    // }
+        // Check modification.
+        auto hostLS2 = ls.copyToHost();
+        auto hostLS2View = hostLS2.view();
+        for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
+        {
+            REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
+        }
+        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
+        {
+            REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
+        }
+    }
 }

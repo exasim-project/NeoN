@@ -35,7 +35,8 @@ class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
-        : Base(exec), gkoExec_(getGkoExecutor(exec)), config_(parse(solverConfig)),
+        : Base(exec), gkoExec_(getGkoExecutor(exec)), fused_(solverConfig.get("coupled", false)),
+          config_(parse(solverConfig)),
           factory_(gko::config::parse(
                        config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
           )
@@ -65,6 +66,7 @@ public:
 private:
 
     std::shared_ptr<const gko::Executor> gkoExec_;
+    bool fused_; // whether to solve LinearSystem<Vec3> as one or three systems
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
 };

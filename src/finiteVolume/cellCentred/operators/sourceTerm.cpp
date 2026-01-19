@@ -45,7 +45,7 @@ void SourceTerm<ValueType>::implicitOperation(
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] = views(matIt.diagOffset(), coefficients_.internalVector());
     auto values = ls.matrix().values().view();
-    auto [rowOffs, colIdx] = ls.matrix().sparsity()->view();
+    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 
     NeoN::parallelFor(
         ls.exec(),

@@ -213,7 +213,6 @@ void computeDivImp(
             // add owner contribution lower
             auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
             // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
-            //
             values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei

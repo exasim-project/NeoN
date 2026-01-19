@@ -96,7 +96,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
     Vector<localIdx> bColIdx(exec, {});
-    Vector<localIdx> bRowOffs(exec, {});
+    Vector<localIdx> bRowOffs(exec, std::vector<localIdx> {0});
 
     auto sparsity =
         std::make_shared<SparsityPattern<localIdx>>(std::move(colIdx), std::move(rowOffs));
@@ -173,6 +173,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
             Dictionary solverDict {
                 {{"solver", std::string {"Ginkgo"}},
                  {"type", "solver::Cg"},
+                 {"coupled", false},
                  {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
             };
 
@@ -200,7 +201,43 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
                 REQUIRE(numIter == 3);
                 REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
-                // REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
+                REQUIRE(finalResNorm < 1.0e-04);
+            }
+        }
+        SECTION("Coupled" + execName)
+        {
+
+            Dictionary solverDict {
+                {{"solver", std::string {"Ginkgo"}},
+                 {"type", "solver::Cg"},
+                 {"coupled", true},
+                 {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+            };
+
+            // Create solver
+            auto solver = NeoN::la::Solver(exec, solverDict);
+
+            // Solve system
+            auto solverStats = solver.solve(linearSystem, x);
+            for (auto entry : solverStats.entries)
+            {
+                auto [numIter, initResNorm, finalResNorm, solveTime] = entry;
+                auto hostX = x.copyToHost();
+                auto hostXS = hostX.view();
+                REQUIRE((hostXS[0][0]) == Catch::Approx(1.24489796).margin(1e-8));
+                REQUIRE((hostXS[1][0]) == Catch::Approx(2.44897959).margin(1e-8));
+                REQUIRE((hostXS[2][0]) == Catch::Approx(3.24489796).margin(1e-8));
+
+                REQUIRE((hostXS[0][1]) == Catch::Approx(1.24489796).margin(1e-8));
+                REQUIRE((hostXS[1][1]) == Catch::Approx(2.44897959).margin(1e-8));
+                REQUIRE((hostXS[2][1]) == Catch::Approx(3.24489796).margin(1e-8));
+
+                REQUIRE((hostXS[0][2]) == Catch::Approx(1.24489796).margin(1e-8));
+                REQUIRE((hostXS[1][2]) == Catch::Approx(2.44897959).margin(1e-8));
+                REQUIRE((hostXS[2][2]) == Catch::Approx(3.24489796).margin(1e-8));
+
+                REQUIRE(numIter == 3);
+                REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
                 REQUIRE(finalResNorm < 1.0e-04);
             }
         }

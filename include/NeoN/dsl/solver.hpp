@@ -31,7 +31,9 @@ template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     const la::MatrixIterator<IndexType>& mi,
-    la::LinearSystem<typename VectorType::ElementType, IndexType>& ls,
+    la::LinearSystem<
+        typename VectorType::ElementType,
+        la::CSRMatrix<typename VectorType::ElementType, IndexType>>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,
@@ -56,6 +58,9 @@ la::SolverStats iterativeSolveImpl(
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
+
+    // Do some sanity checks before trying to solve
+    NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
     return solver.solve(ls, solution.internalVector());
 }
 

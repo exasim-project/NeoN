@@ -31,7 +31,7 @@ struct SparsityView
      * @return Reference to the matrix element if it exists.
      */
     KOKKOS_INLINE_FUNCTION
-    IndexType& entry(const IndexType i, const IndexType j) const
+    IndexType entry(const IndexType i, const IndexType j) const
     {
         const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
         for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)

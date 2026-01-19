@@ -17,6 +17,7 @@ void computeLinearInterpolation(
     SurfaceField<ValueType>& dst
 )
 {
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
     const auto [srcS, weightS, ownerS, neighS, boundS] = views(
@@ -45,6 +46,7 @@ void computeLinearInterpolation(
         },
         "computeLinearInterpolation"
     );
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
 }
 
 #define NF_DECLARE_COMPUTE_IMP_LIN_INT(TYPENAME)                                                   \

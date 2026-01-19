@@ -52,7 +52,7 @@ struct LinearSystemView
  * equations. It supports the storage of the coefficient matrix and the right-hand side vector, as
  * well as the solution vector.
  */
-template<typename ValueType, typename MatrixType>
+template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
 class LinearSystem
 {
 
@@ -60,6 +60,8 @@ class LinearSystem
     {
         NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
         NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        std::string msg = "BMatrix.size()={} != bRHS.size()={}";
+        NF_ASSERT_EQUAL(boundaryMatrix_.nRows(), boundaryRhs_.size());
     }
 
 public:
@@ -126,28 +128,22 @@ public:
 
     [[nodiscard]] LinearSystemView<
         ValueType,
-        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+        MatrixView<
+            ValueType,
+            SparsityView<typename MatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() &
     {
-        return LinearSystemView<
-            ValueType,
-            MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>(
-            matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
-        );
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
     [[nodiscard]] LinearSystemView<
         const ValueType,
-        const MatrixView<ValueType, SparsityView<const typename MatrixType::MatrixSparsityType>>>
+        const MatrixView<
+            ValueType,
+            SparsityView<const typename MatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() const&
     {
-        return LinearSystemView<
-            const ValueType,
-            const MatrixView<
-                ValueType,
-                SparsityView<const typename MatrixType::MatrixSparsityType>>>(
-            matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()
-        );
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
     const Executor& exec() const { return matrix_.exec(); }
@@ -167,23 +163,6 @@ private:
     Dictionary auxiliaryCoefficients_;
 };
 
-
-// /*@brief helper function that converts the internal storage type
-//  * pattern
-//  */
-// template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename
-// IndexTypeOut> LinearSystem<ValueTypeOut, IndexTypeOut> convertLinearSystem(const
-// LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
-// {
-//     auto exec = ls.exec();
-//     Vector<ValueTypeOut> convertedRhs(exec, ls.rhs().data(), ls.rhs().size());
-//     return {
-//         convert<ValueTypeIn, IndexTypeIn, ValueTypeOut, IndexTypeOut>(exec, ls.view.matrix),
-//         convertedRhs,
-//         ls.sparsityPattern()
-//     };
-// }
-
 /*@brief helper function that creates a zero initialised linear system based on given sparsity
  * pattern
  */
@@ -191,23 +170,21 @@ template<typename ValueType, typename SparsityType>
 LinearSystem<ValueType, Matrix<ValueType, SparsityType>> createEmptyLinearSystem(
     const UnstructuredMesh& mesh,
     std::shared_ptr<const SparsityType> sparsity,
-    std::shared_ptr<const SparsityType> // FIXME unused boundarySparsity
+    std::shared_ptr<const SparsityType> bsparsity
 )
 {
+    NF_ASSERT(mesh.nCells() == sparsity->rows(), "Inconsistent sparsity pattern");
+
     const auto& exec = mesh.exec();
     localIdx rows {sparsity->rows()};
     localIdx nnzs {sparsity->nnz()};
     localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
 
     return {
-        Matrix<ValueType, SparsityType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity
-        },
-        Vector<ValueType> {exec, rows, zero<ValueType>()},
-        Matrix<ValueType, SparsityType> {
-            Vector<ValueType>(exec, nBoundaryFaces, zero<ValueType>()), sparsity
-        },
-        Vector<ValueType> {exec, nBoundaryFaces, zero<ValueType>()},
+        {Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity},
+        {exec, rows, zero<ValueType>()},
+        {Vector<ValueType>(exec, nBoundaryFaces, zero<ValueType>()), bsparsity},
+        {exec, bsparsity->rows(), zero<ValueType>()}
     };
 }
 
