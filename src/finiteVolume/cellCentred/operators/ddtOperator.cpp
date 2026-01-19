@@ -71,7 +71,7 @@ template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(
     la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
     const la::MatrixIterator<localIdx>& mi,
-    scalar t,
+    scalar,
     scalar dt
 ) const
 {

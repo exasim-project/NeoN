@@ -120,7 +120,7 @@ void Matrix<ValueType, IndexType>::scaledInverseDiag(
     parallelFor(
         values_.exec(),
         {0, nRows()},
-        NEON_LAMBDA(const std::size_t rowi) {
+        NEON_LAMBDA(const localIdx rowi) {
             for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
             {
                 if (rowi == colIdxV[i])
@@ -146,7 +146,7 @@ void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<Val
     parallelFor(
         values_.exec(),
         {0, nRows()},
-        NEON_LAMBDA(const std::size_t rowi) {
+        NEON_LAMBDA(const localIdx rowi) {
             outV[rowi] = zero<ValueType>();
             for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
             {
