@@ -2,19 +2,19 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structNeoN_1_1la_1_1MatrixView" kind="struct" language="C++" prot="public">
     <compoundname>NeoN::la::MatrixView</compoundname>
-    <includes refid="Matrix_8hpp" local="no">Matrix.hpp</includes>
+    <includes refid="matrix_8hpp" local="no">matrix.hpp</includes>
     <templateparamlist>
       <param>
         <type>typename ValueType</type>
       </param>
       <param>
-        <type>typename IndexType</type>
+        <type>typename SparsityViewType</type>
       </param>
     </templateparamlist>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structNeoN_1_1la_1_1MatrixView_1ade39a8937e119fe10bcf9a12de7a293f" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" prot="public" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
-        <definition>View&lt;ValueType&gt; NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::values</definition>
+        <definition>View&lt;ValueType&gt; NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::values</definition>
         <argsstring></argsstring>
         <name>values</name>
         <qualifiedname>NeoN::la::MatrixView::values</qualifiedname>
@@ -25,44 +25,28 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="74" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="74" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="59" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="59" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structNeoN_1_1la_1_1MatrixView_1a044ae0409b3dc3e08866c6b3631fa579" prot="public" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
-        <definition>View&lt;const IndexType&gt; NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::colIdxs</definition>
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" prot="public" static="no" mutable="no">
+        <type>SparsityViewType</type>
+        <definition>SparsityViewType NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::sparsity</definition>
         <argsstring></argsstring>
-        <name>colIdxs</name>
-        <qualifiedname>NeoN::la::MatrixView::colIdxs</qualifiedname>
+        <name>sparsity</name>
+        <qualifiedname>NeoN::la::MatrixView::sparsity</qualifiedname>
         <briefdescription>
-<para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> to the column indices of the CSR matrix. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="75" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="75" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structNeoN_1_1la_1_1MatrixView_1a44245f30aa467c332a9906dbe6e92248" prot="public" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
-        <definition>View&lt;const IndexType&gt; NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::rowOffs</definition>
-        <argsstring></argsstring>
-        <name>rowOffs</name>
-        <qualifiedname>NeoN::la::MatrixView::rowOffs</qualifiedname>
-        <briefdescription>
-<para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> to the row offsets for the CSR matrix. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="76" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="76" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="60" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="60" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1aec01d9d7dbfa3eb4be5f4c85f5ce3772" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a5d598fc43270d8609efcdde2019ef0cb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::MatrixView</definition>
-        <argsstring>(const View&lt; ValueType &gt; valueView, const View&lt; const IndexType &gt; colIdxsView, const View&lt; const IndexType &gt; rowOffsView)</argsstring>
+        <definition>NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::MatrixView</definition>
+        <argsstring>(const View&lt; ValueType &gt; valueView, SparsityViewType sparsityView)</argsstring>
         <name>MatrixView</name>
         <qualifiedname>NeoN::la::MatrixView::MatrixView</qualifiedname>
         <param>
@@ -70,12 +54,8 @@
           <declname>valueView</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
-          <declname>colIdxsView</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
-          <declname>rowOffsView</declname>
+          <type>SparsityViewType</type>
+          <declname>sparsityView</declname>
         </param>
         <briefdescription>
 <para>Constructor for <ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView</ref>. </para>
@@ -110,11 +90,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="31" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="31" bodyend="36"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="31" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="31" bodyend="32"/>
       </memberdef>
-      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a42abcb4021f6a4d2274d589750742004" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a69c25474692c27f30ccef2b89c6cbbbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::~MatrixView</definition>
+        <definition>NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::~MatrixView</definition>
         <argsstring>()=default</argsstring>
         <name>~MatrixView</name>
         <qualifiedname>NeoN::la::MatrixView::~MatrixView</qualifiedname>
@@ -125,20 +105,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="41" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="37" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a480efa7061c50f5cf160581c2c4b9ead" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a3420061108084be413f6292d6d06d3ec" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION ValueType &amp;</type>
-        <definition>KOKKOS_INLINE_FUNCTION ValueType &amp; NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::entry</definition>
-        <argsstring>(const IndexType i, const IndexType j) const</argsstring>
+        <definition>KOKKOS_INLINE_FUNCTION ValueType &amp; NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::entry</definition>
+        <argsstring>(const localIdx i, const localIdx j) const</argsstring>
         <name>entry</name>
         <qualifiedname>NeoN::la::MatrixView::entry</qualifiedname>
         <param>
-          <type>const IndexType</type>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
           <declname>i</declname>
         </param>
         <param>
-          <type>const IndexType</type>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
           <declname>j</declname>
         </param>
         <briefdescription>
@@ -168,16 +148,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="50" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="50" bodyend="64"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="46" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="46" bodyend="49"/>
       </memberdef>
-      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a0eeefd1806c539c62322eb11df689956" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1MatrixView_1a53263a5d50c2ecb832f9fe3b9cb871dc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION ValueType &amp;</type>
-        <definition>KOKKOS_INLINE_FUNCTION ValueType &amp; NeoN::la::MatrixView&lt; ValueType, IndexType &gt;::entry</definition>
-        <argsstring>(const IndexType offset) const</argsstring>
+        <definition>KOKKOS_INLINE_FUNCTION ValueType &amp; NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;::entry</definition>
+        <argsstring>(const localIdx offset) const</argsstring>
         <name>entry</name>
         <qualifiedname>NeoN::la::MatrixView::entry</qualifiedname>
         <param>
-          <type>const IndexType</type>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
           <declname>offset</declname>
         </param>
         <briefdescription>
@@ -199,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="72" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="72" bodyend="72"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="57" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="57" bodyend="57"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -219,40 +199,29 @@
 <parametername>IndexType</parametername>
 </parameternamelist>
 <parameterdescription>
+<para>The index type of the rows and columns.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>IndexType</parametername>
+</parameternamelist>
+<parameterdescription>
 <para>The index type of the rows and columns. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
+<xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>ideally this should be immutable </para>
+</xrefdescription></xrefsect></para>
     </detaileddescription>
-    <collaborationgraph>
-      <node id="1">
-        <label>NeoN::la::MatrixView&lt; ValueType, IndexType &gt;</label>
-        <link refid="structNeoN_1_1la_1_1MatrixView"/>
-        <childnode refid="2" relation="usage">
-          <edgelabel>colIdxs</edgelabel>
-          <edgelabel>rowOffs</edgelabel>
-        </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::View&lt; const IndexType &gt;</label>
-        <link refid="classNeoN_1_1View"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>std::span&lt; const IndexType &gt;</label>
-      </node>
-    </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp" bodystart="24" bodyend="77"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="24" bodyend="61"/>
     <listofallmembers>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1a044ae0409b3dc3e08866c6b3631fa579" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>colIdxs</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1a480efa7061c50f5cf160581c2c4b9ead" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>entry</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1a0eeefd1806c539c62322eb11df689956" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>entry</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1aec01d9d7dbfa3eb4be5f4c85f5ce3772" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>MatrixView</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1a44245f30aa467c332a9906dbe6e92248" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>rowOffs</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1ade39a8937e119fe10bcf9a12de7a293f" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>values</name></member>
-      <member refid="structNeoN_1_1la_1_1MatrixView_1a42abcb4021f6a4d2274d589750742004" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>~MatrixView</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1a3420061108084be413f6292d6d06d3ec" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>entry</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1a53263a5d50c2ecb832f9fe3b9cb871dc" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>entry</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1a5d598fc43270d8609efcdde2019ef0cb" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>MatrixView</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>sparsity</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>values</name></member>
+      <member refid="structNeoN_1_1la_1_1MatrixView_1a69c25474692c27f30ccef2b89c6cbbbb" prot="public" virt="non-virtual"><scope>NeoN::la::MatrixView</scope><name>~MatrixView</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

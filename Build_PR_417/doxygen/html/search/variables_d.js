@@ -4,6 +4,7 @@ var searchData=
   ['segments_1',['segments',['../classNeoN_1_1SegmentedVectorView.html#a0e101da590fc55027c7a0d0e986d27d3',1,'NeoN::SegmentedVectorView']]],
   ['solutiondict_5f_2',['solutionDict_',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a319d692ec559c3b0863e06216769a61a',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
   ['solvetime_3',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
-  ['start_5f_4',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
-  ['subcycleindex_5',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
+  ['sparsity_4',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView']]],
+  ['start_5f_5',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
+  ['subcycleindex_6',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
 ];

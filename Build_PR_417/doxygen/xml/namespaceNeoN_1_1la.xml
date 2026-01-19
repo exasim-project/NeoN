@@ -13,40 +13,9 @@
     <innerclass refid="structNeoN_1_1la_1_1SolverStats" prot="public">NeoN::la::SolverStats</innerclass>
     <innerclass refid="structNeoN_1_1la_1_1SolverStatsEntry" prot="public">NeoN::la::SolverStatsEntry</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1SparsityPattern" prot="public">NeoN::la::SparsityPattern</innerclass>
-    <sectiondef kind="func">
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a56b0fbaebb30bd6efeb9a1fc5b6ab1bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>typename ValueTypeIn</type>
-          </param>
-          <param>
-            <type>typename IndexTypeIn</type>
-          </param>
-          <param>
-            <type>typename ValueTypeOut</type>
-          </param>
-          <param>
-            <type>typename IndexTypeOut</type>
-          </param>
-        </templateparamlist>
-        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueTypeOut, IndexTypeOut &gt;</type>
-        <definition>LinearSystem&lt; ValueTypeOut, IndexTypeOut &gt; NeoN::la::convertLinearSystem</definition>
-        <argsstring>(const LinearSystem&lt; ValueTypeIn, IndexTypeIn &gt; &amp;ls)</argsstring>
-        <name>convertLinearSystem</name>
-        <qualifiedname>NeoN::la::convertLinearSystem</qualifiedname>
-        <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueTypeIn, IndexTypeIn &gt; &amp;</type>
-          <declname>ls</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="161" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="161" bodyend="170"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1abc4c4f1b6e26a29e522c2512aed9d2bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+    <innerclass refid="structNeoN_1_1la_1_1SparsityView" prot="public">NeoN::la::SparsityView</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespaceNeoN_1_1la_1ac6606b36cee6114533e0f5577be2be5b" prot="public" static="no">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -55,9 +24,33 @@
             <type>typename IndexType</type>
           </param>
         </templateparamlist>
-        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, IndexType &gt;</type>
-        <definition>LinearSystem&lt; ValueType, IndexType &gt; NeoN::la::createEmptyLinearSystem</definition>
-        <argsstring>(const UnstructuredMesh &amp;mesh, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; sparsity, std::shared_ptr&lt; const SparsityPattern&lt; IndexType &gt; &gt; boundarySparsity)</argsstring>
+        <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
+        <definition>using NeoN::la::CSRMatrix = typedef Matrix&lt;ValueType, la::SparsityPattern&lt;IndexType&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>CSRMatrix</name>
+        <qualifiedname>NeoN::la::CSRMatrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="249" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="249" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a8bd7a782fa2986462532204e5a36d3d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, SparsityType &gt; &gt;</type>
+        <definition>LinearSystem&lt; ValueType, Matrix&lt; ValueType, SparsityType &gt; &gt; NeoN::la::createEmptyLinearSystem</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, std::shared_ptr&lt; const SparsityType &gt; sparsity, std::shared_ptr&lt; const SparsityType &gt;)</argsstring>
         <name>createEmptyLinearSystem</name>
         <qualifiedname>NeoN::la::createEmptyLinearSystem</qualifiedname>
         <param>
@@ -65,12 +58,11 @@
           <declname>mesh</declname>
         </param>
         <param>
-          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
+          <type>std::shared_ptr&lt; const SparsityType &gt;</type>
           <declname>sparsity</declname>
         </param>
         <param>
-          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; IndexType &gt; &gt;</type>
-          <declname>boundarySparsity</declname>
+          <type>std::shared_ptr&lt; const SparsityType &gt;</type>
         </param>
         <briefdescription>
         </briefdescription>
@@ -78,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="176" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="176" bodyend="195"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="191" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="191" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a85f5379340f066b86e4386c7d4bc4f65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -213,14 +205,19 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" line="89" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" declline="89" declcolumn="8"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a72ef6c61b041df5711b6b14176baa05f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ad74bd26b28c6ce859605043d4c1d6812" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MatrixType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::computeResidual</definition>
-        <argsstring>(const Matrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</argsstring>
+        <argsstring>(const MatrixType &amp;mtx, const Vector&lt; scalar &gt; &amp;b, const Vector&lt; scalar &gt; &amp;x, Vector&lt; scalar &gt; &amp;res)</argsstring>
         <name>computeResidual</name>
         <qualifiedname>NeoN::la::computeResidual</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const MatrixType &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -241,7 +238,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" line="102" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" declline="102" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" line="103" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp" declline="103" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoN: NeoN::la::MatrixView&lt; ValueType, IndexType &gt; Struct Template Reference</title>
+<title>NeoN: NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,68 +78,66 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structNeoN_1_1la_1_1MatrixView-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">NeoN::la::MatrixView&lt; ValueType, IndexType &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>A view struct to allow easy read/write on all executors.  
  <a href="structNeoN_1_1la_1_1MatrixView.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aec01d9d7dbfa3eb4be5f4c85f5ce3772" id="r_aec01d9d7dbfa3eb4be5f4c85f5ce3772"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#aec01d9d7dbfa3eb4be5f4c85f5ce3772">MatrixView</a> (const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt; valueView, const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt; colIdxsView, const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt; rowOffsView)</td></tr>
-<tr class="memdesc:aec01d9d7dbfa3eb4be5f4c85f5ce3772"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="structNeoN_1_1la_1_1MatrixView.html" title="A view struct to allow easy read/write on all executors.">MatrixView</a>.  <br /></td></tr>
-<tr class="separator:aec01d9d7dbfa3eb4be5f4c85f5ce3772"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42abcb4021f6a4d2274d589750742004" id="r_a42abcb4021f6a4d2274d589750742004"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a42abcb4021f6a4d2274d589750742004">~MatrixView</a> ()=default</td></tr>
-<tr class="memdesc:a42abcb4021f6a4d2274d589750742004"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <br /></td></tr>
-<tr class="separator:a42abcb4021f6a4d2274d589750742004"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a480efa7061c50f5cf160581c2c4b9ead" id="r_a480efa7061c50f5cf160581c2c4b9ead"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a480efa7061c50f5cf160581c2c4b9ead">entry</a> (const IndexType i, const IndexType j) const</td></tr>
-<tr class="memdesc:a480efa7061c50f5cf160581c2c4b9ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a reference to the matrix element at position (i,j).  <br /></td></tr>
-<tr class="separator:a480efa7061c50f5cf160581c2c4b9ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0eeefd1806c539c62322eb11df689956" id="r_a0eeefd1806c539c62322eb11df689956"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a0eeefd1806c539c62322eb11df689956">entry</a> (const IndexType offset) const</td></tr>
-<tr class="memdesc:a0eeefd1806c539c62322eb11df689956"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to a value given the offset.  <br /></td></tr>
-<tr class="separator:a0eeefd1806c539c62322eb11df689956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d598fc43270d8609efcdde2019ef0cb" id="r_a5d598fc43270d8609efcdde2019ef0cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a5d598fc43270d8609efcdde2019ef0cb">MatrixView</a> (const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt; valueView, SparsityViewType sparsityView)</td></tr>
+<tr class="memdesc:a5d598fc43270d8609efcdde2019ef0cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="structNeoN_1_1la_1_1MatrixView.html" title="A view struct to allow easy read/write on all executors.">MatrixView</a>.  <br /></td></tr>
+<tr class="separator:a5d598fc43270d8609efcdde2019ef0cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69c25474692c27f30ccef2b89c6cbbbb" id="r_a69c25474692c27f30ccef2b89c6cbbbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a69c25474692c27f30ccef2b89c6cbbbb">~MatrixView</a> ()=default</td></tr>
+<tr class="memdesc:a69c25474692c27f30ccef2b89c6cbbbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <br /></td></tr>
+<tr class="separator:a69c25474692c27f30ccef2b89c6cbbbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3420061108084be413f6292d6d06d3ec" id="r_a3420061108084be413f6292d6d06d3ec"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a3420061108084be413f6292d6d06d3ec">entry</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i, const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> j) const</td></tr>
+<tr class="memdesc:a3420061108084be413f6292d6d06d3ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a reference to the matrix element at position (i,j).  <br /></td></tr>
+<tr class="separator:a3420061108084be413f6292d6d06d3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53263a5d50c2ecb832f9fe3b9cb871dc" id="r_a53263a5d50c2ecb832f9fe3b9cb871dc"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a53263a5d50c2ecb832f9fe3b9cb871dc">entry</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> offset) const</td></tr>
+<tr class="memdesc:a53263a5d50c2ecb832f9fe3b9cb871dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to a value given the offset.  <br /></td></tr>
+<tr class="separator:a53263a5d50c2ecb832f9fe3b9cb871dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ade39a8937e119fe10bcf9a12de7a293f" id="r_ade39a8937e119fe10bcf9a12de7a293f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#ade39a8937e119fe10bcf9a12de7a293f">values</a></td></tr>
-<tr class="memdesc:ade39a8937e119fe10bcf9a12de7a293f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classNeoN_1_1View.html">View</a> to the values of the CSR matrix.  <br /></td></tr>
-<tr class="separator:ade39a8937e119fe10bcf9a12de7a293f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a044ae0409b3dc3e08866c6b3631fa579" id="r_a044ae0409b3dc3e08866c6b3631fa579"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a044ae0409b3dc3e08866c6b3631fa579">colIdxs</a></td></tr>
-<tr class="memdesc:a044ae0409b3dc3e08866c6b3631fa579"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classNeoN_1_1View.html">View</a> to the column indices of the CSR matrix.  <br /></td></tr>
-<tr class="separator:a044ae0409b3dc3e08866c6b3631fa579"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44245f30aa467c332a9906dbe6e92248" id="r_a44245f30aa467c332a9906dbe6e92248"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a44245f30aa467c332a9906dbe6e92248">rowOffs</a></td></tr>
-<tr class="memdesc:a44245f30aa467c332a9906dbe6e92248"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classNeoN_1_1View.html">View</a> to the row offsets for the CSR matrix.  <br /></td></tr>
-<tr class="separator:a44245f30aa467c332a9906dbe6e92248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a233fe4d9be8c549e05266e85b836a2cc" id="r_a233fe4d9be8c549e05266e85b836a2cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#a233fe4d9be8c549e05266e85b836a2cc">values</a></td></tr>
+<tr class="memdesc:a233fe4d9be8c549e05266e85b836a2cc"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classNeoN_1_1View.html">View</a> to the values of the CSR matrix.  <br /></td></tr>
+<tr class="separator:a233fe4d9be8c549e05266e85b836a2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d07a7f12d5a63c838b283c6a6d28ac" id="r_ab2d07a7f12d5a63c838b283c6a6d28ac"><td class="memItemLeft" align="right" valign="top">SparsityViewType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac">sparsity</a></td></tr>
+<tr class="separator:ab2d07a7f12d5a63c838b283c6a6d28ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename IndexType&gt;<br />
-struct NeoN::la::MatrixView&lt; ValueType, IndexType &gt;</div><p>A view struct to allow easy read/write on all executors. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename SparsityViewType&gt;<br />
+struct NeoN::la::MatrixView&lt; ValueType, SparsityViewType &gt;</div><p>A view struct to allow easy read/write on all executors. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">ValueType</td><td>The value type of the non-zero entries. </td></tr>
+    <tr><td class="paramname">IndexType</td><td>The index type of the rows and columns.</td></tr>
     <tr><td class="paramname">IndexType</td><td>The index type of the rows and columns. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>ideally this should be immutable </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00023">23</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00023">23</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aec01d9d7dbfa3eb4be5f4c85f5ce3772" name="aec01d9d7dbfa3eb4be5f4c85f5ce3772"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec01d9d7dbfa3eb4be5f4c85f5ce3772">&#9670;&#160;</a></span>MatrixView()</h2>
+<a id="a5d598fc43270d8609efcdde2019ef0cb" name="a5d598fc43270d8609efcdde2019ef0cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d598fc43270d8609efcdde2019ef0cb">&#9670;&#160;</a></span>MatrixView()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::MatrixView </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::MatrixView </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td>
           <td class="paramname"><em>valueView</em>, </td>
@@ -147,14 +145,8 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt;&#160;</td>
-          <td class="paramname"><em>colIdxsView</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const IndexType &gt;&#160;</td>
-          <td class="paramname"><em>rowOffsView</em>&#160;</td>
+          <td class="paramtype">SparsityViewType&#160;</td>
+          <td class="paramname"><em>sparsityView</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -179,23 +171,23 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00031">31</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00031">31</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a42abcb4021f6a4d2274d589750742004" name="a42abcb4021f6a4d2274d589750742004"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42abcb4021f6a4d2274d589750742004">&#9670;&#160;</a></span>~MatrixView()</h2>
+<a id="a69c25474692c27f30ccef2b89c6cbbbb" name="a69c25474692c27f30ccef2b89c6cbbbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c25474692c27f30ccef2b89c6cbbbb">&#9670;&#160;</a></span>~MatrixView()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::~<a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a> </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::~<a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -213,27 +205,27 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a480efa7061c50f5cf160581c2c4b9ead" name="a480efa7061c50f5cf160581c2c4b9ead"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a480efa7061c50f5cf160581c2c4b9ead">&#9670;&#160;</a></span>entry() <span class="overload">[1/2]</span></h2>
+<a id="a3420061108084be413f6292d6d06d3ec" name="a3420061108084be413f6292d6d06d3ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3420061108084be413f6292d6d06d3ec">&#9670;&#160;</a></span>entry() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">KOKKOS_INLINE_FUNCTION ValueType &amp; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::entry </td>
+          <td class="memname">KOKKOS_INLINE_FUNCTION ValueType &amp; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::entry </td>
           <td>(</td>
-          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td>
           <td class="paramname"><em>j</em>&#160;</td>
         </tr>
         <tr>
@@ -259,25 +251,25 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Reference to the matrix element if it exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00050">50</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00046">46</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a0eeefd1806c539c62322eb11df689956" name="a0eeefd1806c539c62322eb11df689956"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0eeefd1806c539c62322eb11df689956">&#9670;&#160;</a></span>entry() <span class="overload">[2/2]</span></h2>
+<a id="a53263a5d50c2ecb832f9fe3b9cb871dc" name="a53263a5d50c2ecb832f9fe3b9cb871dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53263a5d50c2ecb832f9fe3b9cb871dc">&#9670;&#160;</a></span>entry() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">KOKKOS_INLINE_FUNCTION ValueType &amp; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::entry </td>
+          <td class="memname">KOKKOS_INLINE_FUNCTION ValueType &amp; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::entry </td>
           <td>(</td>
-          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td>
           <td class="paramname"><em>offset</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -298,73 +290,51 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Reference to the matrix element if it exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00072">72</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00057">57</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a044ae0409b3dc3e08866c6b3631fa579" name="a044ae0409b3dc3e08866c6b3631fa579"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a044ae0409b3dc3e08866c6b3631fa579">&#9670;&#160;</a></span>colIdxs</h2>
+<a id="ab2d07a7f12d5a63c838b283c6a6d28ac" name="ab2d07a7f12d5a63c838b283c6a6d28ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2d07a7f12d5a63c838b283c6a6d28ac">&#9670;&#160;</a></span>sparsity</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1View.html">View</a>&lt;const IndexType&gt; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::colIdxs</td>
+          <td class="memname">SparsityViewType <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::sparsity</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classNeoN_1_1View.html">View</a> to the column indices of the CSR matrix. </p>
-
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00075">75</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00060">60</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a44245f30aa467c332a9906dbe6e92248" name="a44245f30aa467c332a9906dbe6e92248"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44245f30aa467c332a9906dbe6e92248">&#9670;&#160;</a></span>rowOffs</h2>
+<a id="a233fe4d9be8c549e05266e85b836a2cc" name="a233fe4d9be8c549e05266e85b836a2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233fe4d9be8c549e05266e85b836a2cc">&#9670;&#160;</a></span>values</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
+template&lt;typename ValueType , typename SparsityViewType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1View.html">View</a>&lt;const IndexType&gt; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::rowOffs</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><a class="el" href="classNeoN_1_1View.html">View</a> to the row offsets for the CSR matrix. </p>
-
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00076">76</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ade39a8937e119fe10bcf9a12de7a293f" name="ade39a8937e119fe10bcf9a12de7a293f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade39a8937e119fe10bcf9a12de7a293f">&#9670;&#160;</a></span>values</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ValueType , typename IndexType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1View.html">View</a>&lt;ValueType&gt; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, IndexType &gt;::values</td>
+          <td class="memname"><a class="el" href="classNeoN_1_1View.html">View</a>&lt;ValueType&gt; <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">NeoN::la::MatrixView</a>&lt; ValueType, SparsityViewType &gt;::values</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p><a class="el" href="classNeoN_1_1View.html">View</a> to the values of the CSR matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="Matrix_8hpp_source.html#l00074">74</a> of file <a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00059">59</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="Matrix_8hpp_source.html">Matrix.hpp</a></li>
+<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="matrix_8hpp_source.html">matrix.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

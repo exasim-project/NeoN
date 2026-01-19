@@ -11,8 +11,8 @@
     <includedby refid="gaussGreenDiv_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp</includedby>
     <includedby refid="gaussGreenLaplacian_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</includedby>
     <includedby refid="sourceTerm_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</includedby>
-    <includedby refid="Matrix_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp</includedby>
     <includedby refid="linearSystem_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</includedby>
+    <includedby refid="matrix_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp</includedby>
     <includedby refid="matrixIterator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp</includedby>
     <incdepgraph>
       <node id="36">
@@ -435,19 +435,11 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="22">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/Matrix.hpp</label>
-        <link refid="Matrix_8hpp"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-      </node>
-      <node id="24">
+      <node id="23">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
         <link refid="diagonalSolver_8hpp"/>
       </node>
-      <node id="23">
+      <node id="22">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
         <link refid="linearSystem_8hpp"/>
         <childnode refid="2" relation="include">
@@ -468,9 +460,17 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+      </node>
+      <node id="25">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp</label>
+        <link refid="matrix_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="27">
@@ -480,15 +480,15 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="24">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
         <link refid="linearAlgebra_2solver_8hpp"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -510,7 +510,7 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
@@ -538,6 +538,7 @@
         </childnode>
       </node>
     </invincdepgraph>
+    <innerclass refid="structNeoN_1_1la_1_1SparsityView" prot="public">NeoN::la::SparsityView</innerclass>
     <innerclass refid="classNeoN_1_1la_1_1SparsityPattern" prot="public">NeoN::la::SparsityPattern</innerclass>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1la">NeoN::la</innernamespace>
@@ -558,66 +559,101 @@
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1la" kindref="compound">NeoN::la</ref></highlight></codeline>
 <codeline lineno="11"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>SparsityPattern</highlight></codeline>
-<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>@brief<sp/>row<sp/>and<sp/>column<sp/>index<sp/>representation<sp/>of<sp/>a<sp/>mesh</highlight></codeline>
-<codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>implements<sp/>the<sp/>finite<sp/>volume<sp/>3/5/7<sp/>pt<sp/>stencil<sp/>specific<sp/>generation</highlight></codeline>
-<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>of<sp/>sparsity<sp/>patterns<sp/>from<sp/>a<sp/>given<sp/>unstructured<sp/>mesh</highlight></codeline>
-<codeline lineno="18"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="19"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
-<codeline lineno="21" refid="classNeoN_1_1la_1_1SparsityPattern" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref></highlight></codeline>
+<codeline lineno="21" refid="structNeoN_1_1la_1_1SparsityView" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView</ref></highlight></codeline>
 <codeline lineno="22"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validate()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="23" refid="structNeoN_1_1la_1_1SparsityView_1a5c7e4102a1a1ffaab85ec36e6fec4075" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1a5c7e4102a1a1ffaab85ec36e6fec4075" kindref="member">SparsityView</ref>(<ref refid="classNeoN_1_1View" kindref="compound">View&lt;const IndexType&gt;</ref><sp/>colIdxsView,<sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const IndexType&gt;</ref><sp/>rowOffsView)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" kindref="member">colIdxs</ref>(colIdxsView),<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kindref="member">rowOffs</ref>(rowOffsView)<sp/>{};</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>create<sp/>an<sp/>&quot;empty&quot;<sp/>SparsityPattern<sp/>with<sp/>a<sp/>given<sp/>size<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29" refid="classNeoN_1_1la_1_1SparsityPattern_1a19a8627fea8797b87f89ab835447e4dd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a19a8627fea8797b87f89ab835447e4dd" kindref="member">SparsityPattern</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&amp;<sp/>sp);</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31" refid="classNeoN_1_1la_1_1SparsityPattern_1a3a714d439a38f3b32cfb20464a505134" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a3a714d439a38f3b32cfb20464a505134" kindref="member">SparsityPattern</ref>(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;&amp;<sp/>colIdx,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" kindref="member">rowOffs</ref>);</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="classNeoN_1_1la_1_1SparsityPattern_1ad7347002f6d3067df91f2f3ba031d2b2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ad7347002f6d3067df91f2f3ba031d2b2" kindref="member">copyToHost</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="34"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern&lt;IndexType&gt;</ref>(colIdxs_.<ref refid="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" kindref="member">copyToHost</ref>(),<sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" kindref="member">copyToHost</ref>());</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38" refid="classNeoN_1_1la_1_1SparsityPattern_1a854bd59fe7eef6d6b7f70349889008ff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a854bd59fe7eef6d6b7f70349889008ff" kindref="member">~SparsityPattern</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>diagOffset<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="41" refid="classNeoN_1_1la_1_1SparsityPattern_1ae4b82bd30056f2de921caac413188874" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ae4b82bd30056f2de921caac413188874" kindref="member">exec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>();<sp/>}</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>colIdxs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="44" refid="classNeoN_1_1la_1_1SparsityPattern_1a128489222747442beb58f55737011bd9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a128489222747442beb58f55737011bd9" kindref="member">colIdxs</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_;<sp/>};</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46" refid="classNeoN_1_1la_1_1SparsityPattern_1a1204fbba9c4874c398fc5b3506d5ebdb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a1204fbba9c4874c398fc5b3506d5ebdb" kindref="member">colIdxs</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_;<sp/>};</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>rowOffs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49" refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" kindref="member">rowOffs</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_;<sp/>};</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>rowOffs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52" refid="classNeoN_1_1la_1_1SparsityPattern_1a5880bbe18a388050ffbbc8995bcb316d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a5880bbe18a388050ffbbc8995bcb316d" kindref="member">rowOffs</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_;<sp/>};</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>KOKKOS_INLINE_FUNCTION</highlight></codeline>
+<codeline lineno="34" refid="structNeoN_1_1la_1_1SparsityView_1afb41ad29bed92a942989e9c4c3a882e3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>IndexType&amp;<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1afb41ad29bed92a942989e9c4c3a882e3" kindref="member">entry</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexType<sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexType<sp/>j)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="35"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexType<sp/>rowSize<sp/>=<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kindref="member">rowOffs</ref>[i<sp/>+<sp/>1]<sp/>-<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kindref="member">rowOffs</ref>[i];</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(std::remove_const_t&lt;IndexType&gt;<sp/>ic<sp/>=<sp/>0;<sp/>ic<sp/>&lt;<sp/>rowSize;<sp/>++ic)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexType<sp/>localCol<sp/>=<sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kindref="member">rowOffs</ref>[i]<sp/>+<sp/>ic;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" kindref="member">colIdxs</ref>[localCol]<sp/>==<sp/>j)</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>localCol;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" kindref="member">colIdxs</ref>[localCol]<sp/>&gt;<sp/>j)<sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::abort(</highlight><highlight class="stringliteral">&quot;Memory<sp/>not<sp/>allocated<sp/>for<sp/>CSR<sp/>matrix<sp/>component.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;<sp/></highlight><highlight class="comment">//<sp/>compiler<sp/>warning<sp/>suppression.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const IndexType&gt;</ref><sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" kindref="member">colIdxs</ref>;</highlight></codeline>
+<codeline lineno="51" refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const IndexType&gt;</ref><sp/><ref refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kindref="member">rowOffs</ref>;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight></codeline>
-<codeline lineno="54" refid="classNeoN_1_1la_1_1SparsityPattern_1ada1ef7649ee474a20904710808dffb52" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ada1ef7649ee474a20904710808dffb52" kindref="member">rows</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>()<sp/>-<sp/>1;<sp/>};</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight></codeline>
-<codeline lineno="56" refid="classNeoN_1_1la_1_1SparsityPattern_1aab4df6bce8fc0b006440a4b3d9172f0d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aab4df6bce8fc0b006440a4b3d9172f0d" kindref="member">nnz</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>();<sp/>};</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58" refid="classNeoN_1_1la_1_1SparsityPattern_1abb9aa60e53805072d10d4248246146f5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>KOKKOS_INLINE_FUNCTION<sp/>IndexType<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1abb9aa60e53805072d10d4248246146f5" kindref="member">rowOffs</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffsV_[celli];<sp/>}</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref><sp/>rowOffs_;<sp/></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref><sp/>colIdxs_;<sp/></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;IndexType&gt;</ref><sp/>rowOffsV_;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;IndexType&gt;</ref><sp/>colIdxsV_;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>SparsityPattern</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>@brief<sp/>row<sp/>and<sp/>column<sp/>index<sp/>representation<sp/>of<sp/>a<sp/>mesh</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>implements<sp/>the<sp/>finite<sp/>volume<sp/>3/5/7<sp/>pt<sp/>stencil<sp/>specific<sp/>generation</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>of<sp/>sparsity<sp/>patterns<sp/>from<sp/>a<sp/>given<sp/>unstructured<sp/>mesh</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
+<codeline lineno="62" refid="classNeoN_1_1la_1_1SparsityPattern" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref></highlight></codeline>
+<codeline lineno="63"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validate()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classNeoN_1_1la_1_1SparsityPattern_1aa85ef66c196ad25925c03b32f514ac0a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aa85ef66c196ad25925c03b32f514ac0a" kindref="member">SparsityIndexType</ref><sp/>=<sp/>IndexType;</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>create<sp/>an<sp/>&quot;empty&quot;<sp/>SparsityPattern<sp/>with<sp/>a<sp/>given<sp/>size<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classNeoN_1_1la_1_1SparsityPattern_1a19a8627fea8797b87f89ab835447e4dd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a19a8627fea8797b87f89ab835447e4dd" kindref="member">SparsityPattern</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&amp;<sp/>sp);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classNeoN_1_1la_1_1SparsityPattern_1a3a714d439a38f3b32cfb20464a505134" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a3a714d439a38f3b32cfb20464a505134" kindref="member">SparsityPattern</ref>(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;&amp;<sp/>colIdx,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" kindref="member">rowOffs</ref>);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="classNeoN_1_1la_1_1SparsityPattern_1ad7347002f6d3067df91f2f3ba031d2b2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ad7347002f6d3067df91f2f3ba031d2b2" kindref="member">copyToHost</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="77"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern&lt;IndexType&gt;</ref>(colIdxs_.<ref refid="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" kindref="member">copyToHost</ref>(),<sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" kindref="member">copyToHost</ref>());</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="classNeoN_1_1la_1_1SparsityPattern_1a854bd59fe7eef6d6b7f70349889008ff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a854bd59fe7eef6d6b7f70349889008ff" kindref="member">~SparsityPattern</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>diagOffset<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classNeoN_1_1la_1_1SparsityPattern_1ae4b82bd30056f2de921caac413188874" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ae4b82bd30056f2de921caac413188874" kindref="member">exec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>();<sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>colIdxs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="classNeoN_1_1la_1_1SparsityPattern_1a128489222747442beb58f55737011bd9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a128489222747442beb58f55737011bd9" kindref="member">colIdxs</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_;<sp/>};</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="classNeoN_1_1la_1_1SparsityPattern_1a1204fbba9c4874c398fc5b3506d5ebdb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a1204fbba9c4874c398fc5b3506d5ebdb" kindref="member">colIdxs</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_;<sp/>};</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>rowOffs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92" refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aa666c1622a3e3b65136f4e21b5ae8906" kindref="member">rowOffs</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_;<sp/>};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*@brief<sp/>getter<sp/>for<sp/>rowOffs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classNeoN_1_1la_1_1SparsityPattern_1a5880bbe18a388050ffbbc8995bcb316d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1a5880bbe18a388050ffbbc8995bcb316d" kindref="member">rowOffs</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_;<sp/>};</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="classNeoN_1_1la_1_1SparsityPattern_1ada1ef7649ee474a20904710808dffb52" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1ada1ef7649ee474a20904710808dffb52" kindref="member">rows</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>()<sp/>-<sp/>1;<sp/>};</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classNeoN_1_1la_1_1SparsityPattern_1aab4df6bce8fc0b006440a4b3d9172f0d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1aab4df6bce8fc0b006440a4b3d9172f0d" kindref="member">nnz</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>colIdxs_.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>();<sp/>};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="classNeoN_1_1la_1_1SparsityPattern_1af160cc7dc0d5e96bdbbaf65965ef0c31" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView&lt;IndexType&gt;</ref><sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1af160cc7dc0d5e96bdbbaf65965ef0c31" kindref="member">view</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="106"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView&lt;IndexType&gt;</ref>(colIdxs_.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>(),<sp/>rowOffs_.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>());</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="classNeoN_1_1la_1_1SparsityPattern_1abb9aa60e53805072d10d4248246146f5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>KOKKOS_INLINE_FUNCTION<sp/>IndexType<sp/><ref refid="classNeoN_1_1la_1_1SparsityPattern_1abb9aa60e53805072d10d4248246146f5" kindref="member">rowOffs</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rowOffsV_[celli];<sp/>}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref><sp/>rowOffs_;<sp/></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref><sp/>colIdxs_;<sp/></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;IndexType&gt;</ref><sp/>rowOffsV_;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;IndexType&gt;</ref><sp/>colIdxsV_;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityPattern.hpp"/>
   </compounddef>
