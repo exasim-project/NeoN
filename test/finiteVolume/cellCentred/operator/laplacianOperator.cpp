@@ -86,9 +86,10 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             }
         }
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(
-            mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
-        );
+        auto ls =
+            NeoN::la::createEmptyLinearSystem<TestType, NeoN::la::SparsityPattern<NeoN::localIdx>>(
+                mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
+            );
 
         SECTION("implicit laplacian operator of constant field on " + execName)
         {

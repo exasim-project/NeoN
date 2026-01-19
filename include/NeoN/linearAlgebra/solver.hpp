@@ -52,9 +52,11 @@ public:
 
     SolverFactory(const Executor& exec) : exec_(exec) {};
 
-    virtual SolverStats solve(const LinearSystem<scalar, localIdx>&, Vector<scalar>&) const = 0;
+    virtual SolverStats
+    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
 
-    virtual SolverStats solve(const LinearSystem<Vec3, localIdx>&, Vector<Vec3>&) const = 0;
+    virtual SolverStats
+    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<SolverFactory> clone() const = 0;
@@ -81,12 +83,14 @@ public:
     Solver(const Executor& exec, const Dictionary& dict)
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
-    SolverStats solve(const LinearSystem<scalar, localIdx>& ls, Vector<scalar>& field) const
+    SolverStats
+    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
     {
         return solverInstance_->solve(ls, field);
     }
 
-    SolverStats solve(const LinearSystem<Vec3, localIdx>& ls, Vector<Vec3>& field) const
+    SolverStats
+    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
     {
         return solverInstance_->solve(ls, field);
     }

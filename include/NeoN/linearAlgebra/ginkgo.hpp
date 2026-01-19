@@ -48,10 +48,12 @@ public:
 
     static std::string schema() { return "none"; }
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final;
+    virtual SolverStats solve(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
 
-    virtual SolverStats solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const final;
+    virtual SolverStats
+    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const final;
 
     // TODO why use a smart pointer here?
     virtual std::unique_ptr<SolverFactory> clone() const final

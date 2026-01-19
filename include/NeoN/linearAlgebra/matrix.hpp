@@ -28,8 +28,8 @@ struct MatrixView
      * @param colIdxsView View of the column indices for each non-zero value.
      * @param rowOffsView View of the starting index in values/colIdxs for each row.
      */
-    MatrixView(const View<ValueType> valueView, const SparsityViewType sparsityView)
-        : values(valueView), sparsityView(sparsityView) {};
+    MatrixView(const View<ValueType> valueView, SparsityViewType sparsityView)
+        : values(valueView), sparsity(sparsityView) {};
 
     /**
      * @brief Default destructor.
@@ -45,7 +45,7 @@ struct MatrixView
     KOKKOS_INLINE_FUNCTION
     ValueType& entry(const localIdx i, const localIdx j) const
     {
-        return values[sparsityView.entry(i, j)];
+        return values[sparsity.entry(i, j)];
     }
 
     /**
@@ -57,7 +57,7 @@ struct MatrixView
     ValueType& entry(const localIdx offset) const { return values[offset]; }
 
     View<ValueType> values; //!< View to the values of the CSR matrix.
-    const SparsityViewType sparsityView;
+    SparsityViewType sparsity;
 };
 
 /**
@@ -100,8 +100,8 @@ public:
      */
     Matrix(
         const Vector<ValueType>& values,
-        const Vector<typename SparsityType::IndexType>& colIdxs,
-        const Vector<typename SparsityType::IndexType>& rowOffs
+        const Vector<typename SparsityType::SparsityIndexType>& colIdxs,
+        const Vector<typename SparsityType::SparsityIndexType>& rowOffs
     )
         : values_(values),
           sparsityPattern_(std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs)))
@@ -138,19 +138,23 @@ public:
      */
     [[nodiscard]] Vector<ValueType>& values() { return values_; }
 
-    // /**
-    //  * @brief Get a reference to column indices vector.
-    //  * @return Vector containing the column indices.
-    //  */
-    // [[nodiscard]] const Vector<IndexType>& colIdxs() const { return sparsityPattern_->colIdxs();
-    // }
+    /**
+     * @brief Get a reference to column indices vector.
+     * @return Vector containing the column indices.
+     */
+    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& colIdxs() const
+    {
+        return sparsityPattern_->colIdxs();
+    }
 
-    // /**
-    //  * @brief Get a reference to row offset vector.
-    //  * @return Vector containing the row pointers.
-    //  */
-    // [[nodiscard]] const Vector<IndexType>& rowOffs() const { return sparsityPattern_->rowOffs();
-    // }
+    /**
+     * @brief Get a reference to row offset vector.
+     * @return Vector containing the row pointers.
+     */
+    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& rowOffs() const
+    {
+        return sparsityPattern_->rowOffs();
+    }
 
     /**
      * @brief Get a const reference to values vector.
@@ -194,10 +198,11 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] MatrixView<ValueType, SparsityType> view()
+    [[nodiscard]] MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>
+    view()
     {
-        return MatrixView(
-            values_.view(), sparsityPattern_->colIdxs().view(), sparsityPattern_->rowOffs().view()
+        return MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+            values_.view(), sparsityPattern_->view()
         );
     }
 
@@ -205,13 +210,13 @@ public:
      * @brief Get a const view representation of the matrix's data.
      * @return Const MatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] MatrixView<const ValueType, SparsityView<typename SparsityType::IndexType>>
+    [[nodiscard]] MatrixView<
+        const ValueType,
+        SparsityView<typename SparsityType::SparsityIndexType>>
     view() const
     {
-        return MatrixView<const ValueType, const typename SparsityType::IndexType>(
-            View<const ValueType>(values_.view()),
-            sparsityPattern_->colIdxs().view(),
-            sparsityPattern_->rowOffs().view()
+        return MatrixView<const ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+            View<const ValueType>(values_.view()), sparsityPattern_->view()
         );
     }
 
@@ -237,11 +242,11 @@ private:
 
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
-    std::shared_ptr<const SparsityType<IndexType>> sparsityPattern_;
+    std::shared_ptr<const SparsityType> sparsityPattern_;
 };
 
 template<typename ValueType, typename IndexType>
-using CSRMatrix = Matrix<ValueType, IndexType, la::SparsityPattern>;
+using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
 
 // FIXME
 // template<typename ValueType, typename IndexType>

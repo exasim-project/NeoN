@@ -38,8 +38,8 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf1Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls,
-    const la::MatrixIterator<>& matrixIterator,
+    la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+    const la::MatrixIterator<localIdx>& matrixIterator,
     scalar,
     scalar dt
 ) const
@@ -48,7 +48,9 @@ void DdtOperator<ValueType>::bdf1Kernel(
     const auto operatorScaling = this->getCoefficient();
     const auto diagOffs = matrixIterator.diagOffset().view();
     const auto oldVector = oldTime(this->field_).internalVector().view();
-    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
+    auto rhs = ls.rhs().view();
+    auto values = ls.matrix().values().view();
+    auto [rowOffs, colIdx] = ls.matrix().sparsity()->view();
 
     const scalar a0a1 = 1.0 / dt;
 
@@ -56,9 +58,9 @@ void DdtOperator<ValueType>::bdf1Kernel(
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            matrix.values[idx] += commonCoef * a0a1 * one<ValueType>();
+            values[idx] += commonCoef * a0a1 * one<ValueType>();
             rhs[celli] += commonCoef * a0a1 * oldVector[celli];
         },
         "ddtOperator::implicitOperation<BDF1>"
@@ -67,7 +69,10 @@ void DdtOperator<ValueType>::bdf1Kernel(
 
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& mi, scalar t, scalar dt
+    la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+    const la::MatrixIterator<localIdx>& mi,
+    scalar t,
+    scalar dt
 ) const
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
@@ -76,7 +81,9 @@ void DdtOperator<ValueType>::bdf2Kernel(
     auto& oldOld = oldTime(old);
     const auto [diagOffs, oldVector, oldOldVector] =
         views(mi.diagOffset(), old.internalVector(), oldOld.internalVector());
-    auto [matrix, rhs, bMatrix, bRhs] = ls.view();
+    auto rhs = ls.rhs().view();
+    auto values = ls.matrix().values().view();
+    auto [rowOffs, colIdx] = ls.matrix().sparsity()->view();
 
     const scalar a0 = 1.5 / dt;
     const scalar a1 = 2.0 / dt;
@@ -86,9 +93,9 @@ void DdtOperator<ValueType>::bdf2Kernel(
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            matrix.values[idx] += commonCoef * a0 * one<ValueType>();
+            values[idx] += commonCoef * a0 * one<ValueType>();
             rhs[celli] +=
                 commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
         },
@@ -98,7 +105,10 @@ void DdtOperator<ValueType>::bdf2Kernel(
 
 template<typename ValueType>
 void DdtOperator<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType, localIdx>& ls, const la::MatrixIterator<>& mi, scalar t, scalar dt
+    la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+    const la::MatrixIterator<localIdx>& mi,
+    scalar t,
+    scalar dt
 ) const
 {
     const int level = oldTimeLevel(this->field_);

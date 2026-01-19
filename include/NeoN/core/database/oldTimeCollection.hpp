@@ -106,6 +106,7 @@ public:
     const VectorType& get(std::string idOfNextVector) const
     {
         std::string nextId = findNextTime(idOfNextVector);
+        // FIXME this triggers a dangling reference warning
         const VectorCollection& fieldCollection =
             VectorCollection::instance(db(), fieldCollectionName_);
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/linearAlgebra/Matrix.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
 
 namespace NeoN::la
 {
@@ -93,7 +93,8 @@ void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<Val
 }
 
 
-#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE) template class Matrix<VALUETYPE, INTEGERTYPE>
+#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
+    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>
 
 NN_DECLARE_CSRMATRIX(scalar, localIdx);
 NN_DECLARE_CSRMATRIX(Vec3, int);
