@@ -37,9 +37,7 @@ public:
 
     static std::string schema() { return "none"; }
 
-    void solve(dsl::Expression<ValueType>& exp, SolutionVectorType& solution, scalar t, scalar dt)
-        override
-    {}
+    void solve(dsl::Expression<ValueType>&, SolutionVectorType&, scalar, scalar) override {}
 
     std::unique_ptr<TimeIntegratorBase<SolutionVectorType>> clone() const override
     {

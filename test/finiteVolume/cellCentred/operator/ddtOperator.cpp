@@ -126,7 +126,6 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
-        auto mi = NeoN::la::createSparsityPatternMatrixIterator<NeoN::localIdx>(mesh);
 
         const scalar dt = 0.5;
         {

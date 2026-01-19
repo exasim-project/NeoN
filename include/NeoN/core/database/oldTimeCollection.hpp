@@ -16,6 +16,12 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// dont do dangling rereference warning here
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-reference"
+#endif
+
 class OldTimeDocument
 {
 public:
@@ -106,7 +112,9 @@ public:
     const VectorType& get(std::string idOfNextVector) const
     {
         std::string nextId = findNextTime(idOfNextVector);
-        // FIXME this triggers a dangling reference warning
+
+        // NOTE this triggers a false positive dangling reference warning
+        // on gcc
         const VectorCollection& fieldCollection =
             VectorCollection::instance(db(), fieldCollectionName_);
 
@@ -237,3 +245,7 @@ template<typename VectorType>
 void rotateOldTimes(VectorType& field);
 
 } // namespace NeoN
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif

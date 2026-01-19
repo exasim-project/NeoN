@@ -27,7 +27,7 @@ createFluxCorrBCsFromU(const UnstructuredMesh& mesh, const VolumeField<Vec3>& u)
 
     bcs.reserve(uBCs.size());
 
-    for (localIdx patchID = 0; patchID < (localIdx)uBCs.size(); ++patchID)
+    for (auto patchID = 0u; patchID < uBCs.size(); ++patchID)
     {
         const auto attrs = uBCs[patchID].attributes();
         Dictionary dict;

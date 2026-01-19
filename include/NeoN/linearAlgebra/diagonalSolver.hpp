@@ -69,8 +69,10 @@ public:
         fence(x.exec());
 
         auto end = std::chrono::steady_clock::now();
-        scalar ms =
-            std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+        auto ms = static_cast<scalar>(
+                      std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()
+                  )
+                / 1000.0;
 
         return {1, 0.0, 0.0, ms};
     }

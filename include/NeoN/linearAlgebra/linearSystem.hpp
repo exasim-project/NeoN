@@ -191,7 +191,7 @@ template<typename ValueType, typename SparsityType>
 LinearSystem<ValueType, Matrix<ValueType, SparsityType>> createEmptyLinearSystem(
     const UnstructuredMesh& mesh,
     std::shared_ptr<const SparsityType> sparsity,
-    std::shared_ptr<const SparsityType> boundarySparsity
+    std::shared_ptr<const SparsityType> // FIXME unused boundarySparsity
 )
 {
     const auto& exec = mesh.exec();

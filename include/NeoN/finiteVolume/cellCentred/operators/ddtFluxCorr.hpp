@@ -23,8 +23,8 @@ namespace detail
 KOKKOS_INLINE_FUNCTION
 scalar ddtFluxCorrLimiter(const scalar fluxMag, const scalar corrMag)
 {
-    constexpr scalar small = scalar(1e-30);
-    const scalar ratio = corrMag / (fluxMag + small);
+    constexpr scalar small = 1.0e-30;
+    const auto ratio = corrMag / (fluxMag + small);
     return scalar(1) - Kokkos::min(ratio, scalar(1));
 }
 
@@ -45,7 +45,7 @@ inline void ddtFluxCorrBDF1Kernel(
     );
 
     const scalar a1 = scalar(1) / dt;
-    const size_t n = outV.size();
+    const auto n = outV.size();
 
     parallelFor(
         exec,
@@ -87,7 +87,7 @@ inline void ddtFluxCorrBDF2Kernel(
 
     const scalar a1 = 2.0 / dt;
     const scalar a2 = -0.5 / dt;
-    const size_t n = outV.size();
+    const auto n = outV.size();
 
     parallelFor(
         exec,

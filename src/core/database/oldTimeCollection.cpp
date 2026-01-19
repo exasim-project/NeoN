@@ -148,7 +148,7 @@ template<typename VectorType>
 void rotateOldTimes(VectorType& field)
 {
     VectorCollection& fieldCollection = VectorCollection::instance(field);
-    OldTimeCollection& oldTimeCollection = OldTimeCollection::instance(fieldCollection);
+    OldTimeCollection::instance(fieldCollection);
 
     const int level = oldTimeLevel(field);
 
@@ -157,7 +157,7 @@ void rotateOldTimes(VectorType& field)
 
     if (level == 1)
     {
-        VectorType& oldOldVector = oldTime(oldVector);
+        oldTime(oldVector);
     }
     if (level >= 2)
     {

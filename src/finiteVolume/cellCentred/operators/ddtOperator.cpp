@@ -19,7 +19,7 @@ DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<Va
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType) {};
 
 template<typename ValueType>
-void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
+void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
 {
     const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
@@ -71,7 +71,7 @@ template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(
     la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
     const la::MatrixIterator<localIdx>& mi,
-    scalar t,
+    scalar,
     scalar dt
 ) const
 {

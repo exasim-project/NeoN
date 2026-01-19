@@ -76,19 +76,18 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // Helper: expected values (host-side)
         auto expectedFrom = [&](const SurfScalar& flux0Field)
         {
-            std::vector<Scalar> e(mesh.nFaces(), 0.0);
+            std::vector<Scalar> e(static_cast<size_t>(mesh.nFaces()), 0.0);
             auto flux0FieldH = flux0Field.internalVector().copyToHost();
             auto flux0FieldV = flux0FieldH.view();
 
-            for (size_t i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nFaces(); ++i)
             {
                 const Scalar d = (sfV[i] & uf0V[i]);
                 const auto tfluxCorr = (flux0FieldV[i] - d);
-                const auto ratio =
-                    NeoN::mag(tfluxCorr) / (NeoN::mag(flux0FieldV[i]) + Scalar(1e-30));
-                const auto coeff = Scalar(1.0) - Kokkos::min(ratio, Scalar(1));
+                const auto ratio = NeoN::mag(tfluxCorr) / (NeoN::mag(flux0FieldV[i]) + 1.0e-30);
+                const auto coeff = 1.0 - Kokkos::min(ratio, Scalar(1));
 
-                e[i] = coeff * invDt * tfluxCorr;
+                e[static_cast<size_t>(i)] = coeff * invDt * tfluxCorr;
             }
             return e;
         };
@@ -97,13 +96,13 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // Case A: flux0 = sf·uf0  ⇒ correction ≈ 0
         // ─────────────────────────────────────────────
         {
-            auto [flux0V, sfV, uf0V] =
+            auto [flux0V2, sfV2, uf0V2] =
                 views(flux0.internalVector(), mesh.boundaryMesh().sf(), uf0.internalVector());
 
             NeoN::parallelFor(
                 exec,
                 {size_t(0), mesh.nFaces()},
-                NEON_LAMBDA(const NeoN::localIdx i) { flux0V[i] = (sfV[i] & uf0V[i]); }
+                NEON_LAMBDA(const NeoN::localIdx i) { flux0V2[i] = (sfV2[i] & uf0V2[i]); }
             );
 
             flux.internalVector() = flux0.internalVector();
@@ -111,7 +110,7 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
             auto corrH = fluxCorr.internalVector().copyToHost();
 
-            for (size_t i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nFaces(); ++i)
                 REQUIRE(corrH.view()[i] == Approx(0.0).margin(1e-12));
         }
 
@@ -126,8 +125,8 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
             auto corrH = fluxCorr.internalVector().copyToHost();
 
-            for (size_t i = 0; i < mesh.nFaces(); ++i)
-                REQUIRE(corrH.view()[i] == Approx(expected[i]).margin(1e-12));
+            for (auto i = 0; i < mesh.nFaces(); ++i)
+                REQUIRE(corrH.view()[i] == Approx(expected[static_cast<size_t>(i)]).margin(1e-12));
         }
     }
 }

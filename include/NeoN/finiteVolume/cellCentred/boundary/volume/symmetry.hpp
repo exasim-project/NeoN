@@ -113,7 +113,7 @@ public:
     using SymmetryType = Symmetry<ValueType>;
 
     Symmetry(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false}), mesh_(mesh)
+        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = false}), mesh_(mesh)
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final

@@ -44,7 +44,6 @@ void SourceTerm<ValueType>::implicitOperation(
     const auto operatorScaling = this->getCoefficient();
     const auto vol = coefficients_.mesh().cellVolumes().view();
     const auto [diagOffs, coeff] = views(matIt.diagOffset(), coefficients_.internalVector());
-    auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
     auto [rowOffs, colIdx] = ls.matrix().sparsity()->view();
 

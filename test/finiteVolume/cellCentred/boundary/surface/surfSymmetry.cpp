@@ -42,14 +42,14 @@ TEST_CASE("symmetry_surface")
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - refValuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
 
             for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - valuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
             }
@@ -80,27 +80,27 @@ TEST_CASE("symmetry_surface")
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - refValuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
                 const auto intV = internalH.view()[ownerV];
                 // const auto vn = vInt & n;
                 const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
-                for (int d = 0; d < 3; ++d)
+                for (auto d = 0u; d < 3; ++d)
                     REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
             }
 
             for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
-                const auto i = &boundaryValueV - valuesH.data();
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
                 const auto intV = internalH.view()[ownerV];
                 // const auto vn = vInt & n;
                 const auto vExpected = intV - nV * (intV & nV);
 
-                for (int d = 0; d < 3; ++d)
+                for (auto d = 0u; d < 3; ++d)
                     REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
             }
         }
