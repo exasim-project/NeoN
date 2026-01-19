@@ -73,6 +73,7 @@ class Matrix
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
+        NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
     }
 
 public:
@@ -248,7 +249,7 @@ private:
 template<typename ValueType, typename IndexType>
 using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
 
-// FIXME
+// TODO add this
 // template<typename ValueType, typename IndexType>
 // void faceIterateNegLUx(
 //         const Matrix<ValueType, IndexType>& mat,

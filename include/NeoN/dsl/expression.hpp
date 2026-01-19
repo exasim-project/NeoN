@@ -26,7 +26,7 @@ struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(const la::MatrixIterator<IndexType>&, la::LinearSystem<VectorType, la::CSRMatrix<VectorType, localIdx>>&) {
+    operator()(const la::MatrixIterator<IndexType>&, la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) {
     };
 };
 

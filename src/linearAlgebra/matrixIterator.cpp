@@ -220,7 +220,7 @@ MatrixIterator<IndexType> createSparsityPatternMatrixIterator(const Unstructured
     Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
     Vector<IndexType> rowOffs(exec, nCells + 1, 0);
     Vector<IndexType> colIdx(exec, nCells + 2 * nInternalFaces, 0);
-    Vector<IndexType> bRowOffs(exec, nBoundaryFaces, 0);
+    Vector<IndexType> bRowOffs(exec, nBoundaryFaces + 1, 0);
     Vector<IndexType> bColIdx(exec, nBoundaryFaces, 0);
 
     setSparsityPatternMatrixIteratorSerial(mesh, diagOffs, ownOffs, neiOffs, rowOffs, colIdx);

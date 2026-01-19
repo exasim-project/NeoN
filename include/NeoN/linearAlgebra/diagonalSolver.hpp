@@ -35,10 +35,10 @@ public:
         const auto rhs = sys.rhs();
         const auto mtx = sys.matrix();
         const auto mtxV = mtx.view();
-        auto [rowOffs, colIdx] = sys.matrix().sparsity()->view();
-
+        auto [colIdx, rowOffs] = sys.matrix().sparsity()->view();
         auto [xV, bV] = views(x, rhs);
 
+        NF_ASSERT(bV.size() + 1 == rowOffs.size(), "Inconsistent rowOffs.size()");
         parallelFor(
             x.exec(),
             {0, bV.size()},
@@ -85,7 +85,7 @@ public:
         const auto rhs = sys.rhs();
         const auto mtx = sys.matrix();
         const auto mtxV = mtx.view();
-        auto [rowOffs, colIdx] = sys.matrix().sparsity()->view();
+        auto [colIdx, rowOffs] = sys.matrix().sparsity()->view();
 
         auto [xV, bV] = views(x, rhs);
 

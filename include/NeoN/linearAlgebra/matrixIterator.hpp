@@ -28,9 +28,6 @@ class MatrixIterator
 
     // const MeshType& mesh;
 
-    // // the corresponding values
-    // std::shared_ptr<Vector<ValueType>> values_;
-
     // NOTE The following data member store a simple mapping from face ids to offsets in the
     // corresponding rows I.e. Assume the following row  [ . 18 . 20 d 18 . 20 . ] this yields
     // ownerOffset[18] = 0 ownerOffset[20] = 1 and neighbourOffset[18] = 4 neighbourOffset[20] = 5
