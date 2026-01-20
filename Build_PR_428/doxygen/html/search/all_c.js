@@ -67,5 +67,5 @@ var searchData=
   ['nrows_64',['nRows',['../classNeoN_1_1la_1_1CSRMatrix.html#a704a9ddc7be0401fc304137facef2135',1,'NeoN::la::CSRMatrix']]],
   ['numiter_65',['numIter',['../structNeoN_1_1la_1_1SolverStats.html#a1c1ed94a5cb51273fc760ac035317625',1,'NeoN::la::SolverStats']]],
   ['numsegments_66',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]],
-  ['nut_67',['nut',['../classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase.html#aa13fbabf3e1db68f449195b2bd730fc6',1,'NeoN::turbulenceModels::DES::SpalartAllmarasBase']]]
+  ['nut_67',['nut',['../classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase.html#a2c953e12880c712df0c233cad14507dd',1,'NeoN::turbulenceModels::DES::SpalartAllmarasBase']]]
 ];
