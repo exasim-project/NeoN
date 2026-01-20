@@ -5,9 +5,6 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
-// #include "NeoN/core/primitives/scalar.hpp"
-// #include "NeoN/core/primitives/vec3.hpp"
-// #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -23,7 +20,7 @@ public:
 
     struct Coefficients
     {
-        scalar sigmaNut = 2.0 / 3.0;
+        scalar sigmaNut = 0.66666;
         scalar kappa = 0.41;
         scalar Cb1 = 0.1355;
         scalar Cb2 = 0.622;
@@ -33,6 +30,8 @@ public:
         scalar Ct3 = 1.2;
         scalar Ct4 = 0.5;
         scalar Cs = 0.3;
+        scalar Cdes = 0.65;
+        scalar fdCoef = 8.0;
     };
 
     SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh);
@@ -41,15 +40,19 @@ public:
 
     scalar cw1() const;
 
-    void wallDistance(VolScalarField& wallDistanceField) const;
-
-    void strainRate(
-        VolScalarField& strainRateField,
+    void omega(
+        VolScalarField& omegaField,
         const VolVectorField& gradUx,
         const VolVectorField& gradUy,
         const VolVectorField& gradUz
     ) const;
 
+    void magGradU(
+        VolScalarField& magGradUField,
+        const VolVectorField& gradUx,
+        const VolVectorField& gradUy,
+        const VolVectorField& gradUz
+    ) const;
 
     void
     chi(VolScalarField& chiField, const VolScalarField& nuTilde, const VolScalarField& nu) const;
@@ -59,8 +62,6 @@ public:
     void
     fv2(VolScalarField& fv2Field, const VolScalarField& chiField, const VolScalarField& fv1Field
     ) const;
-
-    void ft2(VolScalarField& ft2Field, const VolScalarField& chiField) const;
 
     void stilda(
         VolScalarField& stildaField,
@@ -81,7 +82,20 @@ public:
     ) const;
 
     void
-    nut(VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu) const;
+    nut(VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& fv1Field
+    ) const;
+
+    void computeProdSpDDES(
+        VolScalarField& productionField,
+        VolScalarField& spCoeffField,
+        const VolScalarField& nuTildeField,
+        const VolScalarField& nuField,
+        const VolScalarField& omegaField,
+        const VolScalarField& wallDistanceField,
+        const VolScalarField& magGradUField,
+        const VolScalarField& deltaField,
+        const VolScalarField& gradNuTildeMagSqrField
+    ) const;
 
 private:
 
