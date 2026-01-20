@@ -39,10 +39,10 @@
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rhs\ =\ sys.rhs();}
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtx\ =\ sys.matrix();}
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ mtxV\ =\ mtx.view();}
-\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [rowOffs,\ colIdx]\ =\ sys.matrix().sparsity()-\/>view();}
-\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00039}00039\ }
-\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [xV,\ bV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(x,\ rhs);}
-\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [colIdx,\ rowOffs]\ =\ sys.matrix().sparsity()-\/>view();}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [xV,\ bV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(x,\ rhs);}
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(bV.size()\ +\ 1\ ==\ rowOffs.size(),\ \textcolor{stringliteral}{"{}Inconsistent\ rowOffs.size()"{}});}
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ x.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{diagonalSolver_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ bV.size()\},}
