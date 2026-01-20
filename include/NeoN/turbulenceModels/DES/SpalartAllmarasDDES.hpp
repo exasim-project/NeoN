@@ -31,29 +31,14 @@ public:
 
     void dTilde(
         VolScalarField& dTildeField,
+        VolScalarField& invSqrdTildeField,
         const VolScalarField& wallDistance,
         const VolScalarField& nuTilde,
         const VolScalarField& nu,
-        const VolScalarField& strainRate,
-        const VolScalarField& delta
-    ) const;
-
-    void correctNut(
-        VolScalarField& nutField,
-        const SpalartAllmarasBase& base,
-        const VolScalarField& nuTilde,
-        const VolScalarField& nu
-    ) const;
-
-    void correct(
-        VolScalarField& dTildeField,
-        VolScalarField& nutField,
-        const SpalartAllmarasBase& base,
-        const VolScalarField& wallDistance,
-        const VolScalarField& nuTilde,
-        const VolScalarField& nu,
-        const VolScalarField& strainRate,
-        const VolScalarField& delta
+        const VolScalarField& omega,
+        const VolScalarField& delta,
+        const VolScalarField& chi,
+        const VolScalarField& fv1
     ) const;
 
 private:

@@ -57,7 +57,6 @@ target_sources(
           "timeIntegration/timeIntegration.cpp"
           "timeIntegration/rungeKutta.cpp"
           "turbulenceModels/ReynoldsStress.cpp"
-          "turbulenceModels/DES/maxDeltaxyz.cpp"
           "turbulenceModels/DES/SpalartAllmarasBase.cpp"
           "turbulenceModels/DES/SpalartAllmarasDDES.cpp")
 

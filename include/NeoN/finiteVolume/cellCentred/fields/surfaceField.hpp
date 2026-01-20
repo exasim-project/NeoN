@@ -130,6 +130,20 @@ public:
           boundaryConditions_(other.boundaryConditions_)
     {}
 
+    SurfaceField<ValueType>& operator=(const SurfaceField<ValueType>& rhs)
+    {
+        if (this != &rhs)
+        {
+            NF_DEBUG_ASSERT(&this->mesh_ == &rhs.mesh_, "SurfaceField mesh mismatch.");
+            this->name = rhs.name;
+            this->field_ = rhs.field_;
+            this->db_ = rhs.db_;
+            this->key = rhs.key;
+            this->fieldCollectionName = rhs.fieldCollectionName;
+        }
+        return *this;
+    }
+
     /**
      * @brief Corrects the boundary conditions of the surface field.
      *
