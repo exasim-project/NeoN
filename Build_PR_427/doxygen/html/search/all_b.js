@@ -2,7 +2,7 @@ var searchData=
 [
   ['macros_2ehpp_0',['macros.hpp',['../macros_8hpp.html',1,'']]],
   ['mag_1',['mag',['../namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd',1,'NeoN::mag(const Vec3 &amp;vec)'],['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)']]],
-  ['magfaceareas_2',['magFaceAreas',['../classNeoN_1_1UnstructuredMesh.html#a369ce0f5c16db0d73adced648021de39',1,'NeoN::UnstructuredMesh']]],
+  ['magfaceareas_2',['magfaceareas',['../classNeoN_1_1UnstructuredMesh.html#a369ce0f5c16db0d73adced648021de39',1,'NeoN::UnstructuredMesh::magFaceAreas() const'],['../classNeoN_1_1UnstructuredMesh.html#ac9b22cacc123052a9221f040babd6f12',1,'NeoN::UnstructuredMesh::magFaceAreas()']]],
   ['magsf_3',['magsf',['../classNeoN_1_1BoundaryMesh.html#a8650bdda6efcdc3eddc7aa7124bbf53d',1,'NeoN::BoundaryMesh::magSf() const'],['../classNeoN_1_1BoundaryMesh.html#a034a854b39cc6ca44c678494f8314087',1,'NeoN::BoundaryMesh::magSf(const localIdx i) const']]],
   ['map_4',['map',['../namespaceNeoN.html#a6ac6b06f3fb6b3ff13e6d51c5ccc030b',1,'NeoN']]],
   ['matrix_5',['matrix',['../structNeoN_1_1la_1_1LinearSystemView.html#a4785b4ff3e365b5a62e4edaae9fae59e',1,'NeoN::la::LinearSystemView::matrix'],['../classNeoN_1_1la_1_1LinearSystem.html#a416fd6d5122482fcc2372590bc10b8f9',1,'NeoN::la::LinearSystem::matrix()'],['../classNeoN_1_1la_1_1LinearSystem.html#a18bd8cefa6ab9d8df2bc931fb953b633',1,'NeoN::la::LinearSystem::matrix() const']]],
