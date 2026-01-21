@@ -174,7 +174,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> <span class="keyword">auto</span> rhs = sys.rhs();</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">const</span> <span class="keyword">auto</span> mtx = sys.matrix();</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">const</span> <span class="keyword">auto</span> mtxV = mtx.view();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keyword">auto</span> [rowOffs, colIdx] = sys.matrix().sparsity()-&gt;view();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keyword">auto</span> [colIdx, rowOffs] = sys.matrix().sparsity()-&gt;view();</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keyword">auto</span> [xV, bV] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(x, rhs);</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
