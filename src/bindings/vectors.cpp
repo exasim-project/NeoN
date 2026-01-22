@@ -21,7 +21,7 @@ namespace NeoN::bindings
 {
 
 // Helper function to check if executor is CPU-compatible (Serial or CPU)
-bool on_host(const NeoN::Executor& exec)
+bool onHost(const NeoN::Executor& exec)
 {
     return std::holds_alternative<NeoN::SerialExecutor>(exec)
         || std::holds_alternative<NeoN::CPUExecutor>(exec);
@@ -108,7 +108,7 @@ declare_vector(nb::module_& m, const std::string& name, const std::string& doc =
                 "__array__",
                 [](NeoN::Vector<T>& self)
                 {
-                    if (!on_host(self.exec()))
+                    if (!onHost(self.exec()))
                     {
                         throw std::runtime_error("numpy_array() only works for CPU vectors. "
                                                  "For GPU vectors, use copy_to_host() first.");
