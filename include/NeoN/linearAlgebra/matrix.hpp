@@ -270,6 +270,14 @@ template<typename ValueType, typename IndexType>
 template<typename ValueType, typename IndexType>
 using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
 
+/* @brief given Matrix<Vec3> this function returns a component Matrix<scalar>*/
+template<unsigned int I>
+[[nodiscard]] auto get(const CSRMatrix<Vec3, localIdx>& in)
+{
+    auto sparsity = in.sparsity();
+    return CSRMatrix<scalar, localIdx>(get<I>(in.values()), sparsity);
+}
+
 // TODO add this
 // template<typename ValueType, typename IndexType>
 // void faceIterateNegLUx(
