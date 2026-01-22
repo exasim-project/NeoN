@@ -12,7 +12,7 @@
 
 #include <Kokkos_Core.hpp>
 
-#include <functional>
+import std;
 
 namespace NeoN::finiteVolume::cellCentred
 {

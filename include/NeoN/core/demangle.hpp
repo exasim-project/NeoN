@@ -7,9 +7,8 @@
 #ifdef __GNUC__
 #include <cxxabi.h>
 #endif
-#include <string>
-#include <any>
-#include <iostream>
+
+import std;
 
 namespace NeoN
 {

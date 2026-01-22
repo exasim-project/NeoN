@@ -4,13 +4,14 @@
 
 #pragma once
 
-#include <type_traits>
-#include <tuple>
+
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
+
+import std;
 
 namespace NeoN
 {

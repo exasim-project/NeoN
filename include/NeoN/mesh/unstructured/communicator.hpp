@@ -4,10 +4,7 @@
 
 #pragma once
 
-#include <vector>
-#include <unordered_map>
-#include <memory>
-
+import std;
 
 #include "NeoN/fields/field.hpp"
 

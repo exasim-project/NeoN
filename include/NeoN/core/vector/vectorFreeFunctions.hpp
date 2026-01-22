@@ -6,7 +6,7 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 
-#include <type_traits>
+import std;
 
 namespace NeoN
 {

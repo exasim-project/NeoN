@@ -6,11 +6,9 @@
 
 #include <Kokkos_Core.hpp>
 
-#include <limits>
-#include <span>
-#include <type_traits>
-
 #include "NeoN/core/primitives/label.hpp"
+
+import std;
 
 namespace NeoN
 {

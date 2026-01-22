@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <memory>
-#include <concepts>
+import std;
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"

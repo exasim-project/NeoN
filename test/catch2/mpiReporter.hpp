@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <memory>
+import std;
 
 #include <mpi.h>
 

@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <variant>
-
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/tokenList.hpp"
+
+import std;
 
 namespace NeoN
 {

@@ -10,6 +10,7 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/traits.hpp"
 
+import std;
 
 namespace NeoN
 {

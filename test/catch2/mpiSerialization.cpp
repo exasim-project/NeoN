@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "mpiSerialization.hpp"
-
-#include <thread>
-#include <vector>
-
 #include "mpiGlobals.hpp"
+
+import std;
 
 void serializeIO(volatile bool* threadShutdown)
 {

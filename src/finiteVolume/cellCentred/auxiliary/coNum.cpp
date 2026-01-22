@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <limits>
+import std;
 
 #include "NeoN/core/info.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"

@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <cstdint>
 
 #include "NeoN/core/primitives/traits.hpp"
 
+import std;
 
 namespace NeoN
 {

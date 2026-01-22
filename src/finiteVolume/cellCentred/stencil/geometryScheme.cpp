@@ -7,8 +7,6 @@
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 
-#include <memory>
-
 namespace NeoN::finiteVolume::cellCentred
 {
 

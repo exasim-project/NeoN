@@ -4,6 +4,8 @@
 
 #pragma once
 
+import std;
+
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -11,8 +13,6 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include <Kokkos_Core.hpp>
-
-#include <functional>
 
 
 namespace NeoN::finiteVolume::cellCentred

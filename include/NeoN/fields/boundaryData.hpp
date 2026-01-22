@@ -4,16 +4,14 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
+import std;
 
+#include <Kokkos_Core.hpp>
 
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/vector/vector.hpp"
-
-#include <vector>
-#include <utility>
 
 namespace NeoN
 {

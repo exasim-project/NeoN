@@ -9,7 +9,7 @@
 #include "NeoN/linearAlgebra/CSRMatrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
-#include <string>
+import std;
 
 namespace NeoN::la
 {

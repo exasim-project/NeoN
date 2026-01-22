@@ -14,12 +14,9 @@
 // how-to-force-a-static-member-to-be-initialized?noredirect=1&lq=1
 #pragma once
 
-#include <memory>
-#include <unordered_map>
-#include <iostream>
-#include <functional>
-
 #include "error.hpp"
+
+import std;
 
 namespace NeoN
 {

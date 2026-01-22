@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include <string>
-#include <typeindex>
-#include <vector>
+import std;
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/mpi/environment.hpp"

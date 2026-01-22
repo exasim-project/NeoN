@@ -4,12 +4,10 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <string>
-#include <memory>
-#include <algorithm> // for std::sort
 
 #include "NeoN/core/database/document.hpp"
+
+import std;
 
 namespace NeoN
 {

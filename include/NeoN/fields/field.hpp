@@ -6,7 +6,7 @@
 
 #include <Kokkos_Core.hpp>
 
-#include <iostream>
+import std;
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
@@ -14,8 +14,6 @@
 #include "NeoN/core/vector/vector.hpp"
 
 #include "NeoN/fields/boundaryData.hpp"
-
-#include <vector>
 
 namespace NeoN
 {

@@ -12,9 +12,7 @@
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 
-#include <variant>
-#include <vector>
-
+import std;
 
 namespace NeoN
 {

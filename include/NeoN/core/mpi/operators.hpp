@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <complex>
+import std;
+
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
 #endif
-#include <type_traits>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/vec3.hpp"

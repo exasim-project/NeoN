@@ -4,10 +4,9 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include "primitives/scalar.hpp"
+
+import std;
 
 const std::string NL = "\n";
 

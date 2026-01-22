@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
+import std;
 
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/halfDuplexCommBuffer.hpp"
