@@ -227,9 +227,15 @@ if(${NeoN_WITH_GINKGO})
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})
+  if(CMAKE_VERSION VERSION_LESS 3.18)
+    set(DEV_MODULE Development)
+  else()
+    set(DEV_MODULE Development.Module)
+  endif()
+
   find_package(
     Python
-    COMPONENTS Interpreter Development
+    COMPONENTS Interpreter ${DEV_MODULE}
     REQUIRED)
   cpmaddpackage(
     NAME

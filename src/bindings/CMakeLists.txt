@@ -2,19 +2,8 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-if(CMAKE_VERSION VERSION_LESS 3.18)
-  set(DEV_MODULE Development)
-else()
-  set(DEV_MODULE Development.Module)
-endif()
-
 # convention is to put bindings .so file in a project name folder
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
-
-find_package(
-  Python 3.8
-  COMPONENTS Interpreter ${DEV_MODULE}
-  REQUIRED)
 
 message(STATUS "Python_EXECUTABLE = ${Python_EXECUTABLE}")
 message(STATUS "Python_INCLUDE_DIRS = ${Python_INCLUDE_DIRS}")
