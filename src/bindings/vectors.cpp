@@ -21,7 +21,7 @@ namespace NeoN::bindings
 {
 
 // Helper function to check if executor is CPU-compatible (Serial or CPU)
-bool onHost(const NeoN::Executor& exec)
+bool on_host(const NeoN::Executor& exec)
 {
     return std::holds_alternative<NeoN::SerialExecutor>(exec)
         || std::holds_alternative<NeoN::CPUExecutor>(exec);
