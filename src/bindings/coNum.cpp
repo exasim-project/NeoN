@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/string.h>
 
 #include <stdexcept>
 #include <string>
@@ -28,7 +30,7 @@ void registerCoNum(nb::module_& m)
         "compute_co_num",
         [](const NeoN::UnstructuredMesh& mesh,
            const NeoN::Vector<NeoN::scalar>& faceFlux,
-           NeoN::scalar dt)
+           NeoN::scalar dt) -> std::pair<NeoN::scalar, NeoN::scalar>
         {
             const auto expected = mesh.nInternalFaces() + mesh.nBoundaryFaces();
             if (faceFlux.size() != expected)

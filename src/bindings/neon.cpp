@@ -8,7 +8,7 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(neon, m)
+NB_MODULE(_neon, m)
 {
     m.doc() = "NeoN Python bindings";
 
@@ -23,7 +23,11 @@ NB_MODULE(neon, m)
     NeoN::bindings::registerSurfaceField(m);
     NeoN::bindings::registerVolumeField(m);
     NeoN::bindings::registerSurfaceInterpolation(m);
+    NeoN::bindings::registerInputs(m);
     NeoN::bindings::registerCoNum(m);
+    NeoN::bindings::registerInitialization(m);
+    NeoN::bindings::registerLinearAlgebra(m);
+    NeoN::bindings::registerDSL(m);
 
     // Database bindings
     NeoN::bindings::registerDocument(m);

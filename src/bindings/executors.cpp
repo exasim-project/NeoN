@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/stl/string.h>
+#include <Kokkos_Core.hpp>
 
 #include "NeoN/core/executor/executor.hpp"
 #include "bindings.hpp"
@@ -96,6 +97,20 @@ void registerExecutors(nb::module_& m)
         [](const NeoN::Executor& exec) { return std::holds_alternative<NeoN::GPUExecutor>(exec); },
         "exec"_a,
         "Check if an executor is a GPUExecutor"
+    );
+
+    m.def(
+        "gpu_available",
+        []() -> bool
+        {
+            // Check if DefaultExecutionSpace cannot access HostSpace from device
+            // This indicates the execution space runs on device (GPU)
+            constexpr bool cannot_access_host_from_device =
+                !Kokkos::SpaceAccessibility<NeoN::GPUExecutor::exec, Kokkos::HostSpace>::accessible;
+
+            return cannot_access_host_from_device;
+        },
+        "Check if GPU acceleration is available at runtime"
     );
 }
 

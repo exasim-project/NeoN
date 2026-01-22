@@ -9,6 +9,8 @@ This module tests the fill and equal functions for various vector types.
 """
 
 import neon
+import numpy as np
+import pytest
 
 
 def test_container_imports():
@@ -35,7 +37,14 @@ def test_fill_scalar_vector():
     # Verify all elements are filled
     assert neon.equal(v, 3.14)
 
-    print("✓ fill(ScalarVector, scalar) test passed")
+    np_v = np.asarray(v)
+    assert np_v.shape == (10,)
+    np_v[0:4] = 42.0
+    assert np.allclose(np_v[0:4], 42.0)
+    assert np.allclose(np_v[4:], 3.14)
+    np_v2 = np.asarray(v)
+    assert np.allclose(np_v2[0:4], 42.0)
+    assert not neon.equal(v, 3.14)
 
 
 def test_fill_range_scalar_vector():
@@ -44,27 +53,13 @@ def test_fill_range_scalar_vector():
     v = neon.ScalarVector(exec, 10, 0.0)  # Initialize with zeros
 
     # Fill a range with a value
+    assert neon.equal(v, 0.0)  # Not all elements are 0.0 anymore
     neon.fill_range(v, 5.0, 2, 7)
+    assert not neon.equal(v, 0.0)
 
-    # The elements at indices 2-6 should be 5.0
-    # We can't easily check individual elements without more bindings,
-    # but we can verify the whole vector is NOT all 5.0 (since we only filled part)
-    assert not neon.equal(v, 5.0)  # Not all elements are 5.0
-    assert not neon.equal(v, 0.0)  # Not all elements are 0.0 anymore
-
-    print("✓ fill_range(ScalarVector, scalar, start, end) test passed")
-
-
-def test_fill_scalar_vector_zero():
-    """Test fill with zero value."""
-    exec = neon.SerialExecutor()
-    v = neon.ScalarVector(exec, 5, 1.0)  # Initialize with ones
-
-    neon.fill(v, 0.0)
-
-    assert neon.equal(v, 0.0)
-
-    print("✓ fill(ScalarVector, 0.0) test passed")
+    np_v = np.asarray(v)
+    assert np.allclose(np_v[0:2], 0.0)  # The elements at indices 0-1 should be 0.0
+    assert np.allclose(np_v[2:7], 5.0)
 
 
 # ============================================================================
@@ -79,11 +74,15 @@ def test_fill_vector_vector():
     # Fill with a Vec3 value
     fill_value = neon.Vec3(1.0, 2.0, 3.0)
     neon.fill(v, fill_value)
-
-    # Verify all elements are filled
     assert neon.equal(v, fill_value)
+    np_vec3 = np.asarray(v)
+    assert np_vec3.shape == (10, 3)
+    np_vec3[0:4, :] = np.array([42.0, 42.0, 42.0])
+    assert np.allclose(np_vec3[0:4, :], [42.0, 42.0, 42.0])
+    assert np.allclose(np_vec3[4:, :], [1.0, 2.0, 3.0])
 
-    print("✓ fill(VectorVector, Vec3) test passed")
+    # Verify all elements changed filled
+    assert not neon.equal(v, fill_value)
 
 
 def test_fill_range_vector_vector():
@@ -92,15 +91,21 @@ def test_fill_range_vector_vector():
     zero_vec = neon.Vec3(0.0, 0.0, 0.0)
     v = neon.VectorVector(exec, 10, zero_vec)
 
+    assert neon.equal(v, zero_vec)
     # Fill a range with a value
     fill_value = neon.Vec3(1.0, 1.0, 1.0)
     neon.fill_range(v, fill_value, 3, 8)
 
-    # Not all elements should be the fill value
-    assert not neon.equal(v, fill_value)
-    assert not neon.equal(v, zero_vec)
-
-    print("✓ fill_range(VectorVector, Vec3, start, end) test passed")
+    np_v = np.asarray(v)
+    assert np.allclose(
+        np_v[0:3, :], [0.0, 0.0, 0.0]
+    )  # The elements at indices 0-2 should be zero_vec
+    assert np.allclose(
+        np_v[3:8, :], [1.0, 1.0, 1.0]
+    )  # The elements at indices 3-7 should be fill_value
+    assert np.allclose(
+        np_v[8:, :], [0.0, 0.0, 0.0]
+    )  # The elements at indices 8-9 should be zero_vec
 
 
 # ============================================================================
@@ -117,23 +122,29 @@ def test_fill_label_vector():
 
     # Verify all elements are filled
     assert neon.equal(v, 42)
-
-    print("✓ fill(LabelVector, label) test passed")
+    np_v = np.asarray(v)
+    assert np_v.shape == (10,)
+    np_v[0:4] = 99
+    assert np.allclose(np_v[0:4], 99)
+    assert np.allclose(np_v[4:], 42)
+    np_v2 = np.asarray(v)
+    assert np.allclose(np_v2[0:4], 99)
+    assert not neon.equal(v, 42)
 
 
 def test_fill_range_label_vector():
     """Test fill_range function with LabelVector."""
     exec = neon.SerialExecutor()
     v = neon.LabelVector(exec, 10, 0)  # Initialize with zeros
+    assert neon.equal(v, 0)
 
     # Fill a range with a value
     neon.fill_range(v, 99, 1, 5)
 
-    # Not all elements should be 99 or 0
-    assert not neon.equal(v, 99)
-    assert not neon.equal(v, 0)
-
-    print("✓ fill_range(LabelVector, label, start, end) test passed")
+    np_v = np.asarray(v)
+    assert np.allclose(np_v[0:1], 0)  # The elements at index 0 should be 0
+    assert np.allclose(np_v[1:5], 99)  # The elements at indices 1-4 should be 99
+    assert np.allclose(np_v[5:], 0)  # The elements at indices 5-9 should be 0
 
 
 # ============================================================================
@@ -149,8 +160,6 @@ def test_equal_scalar_vector_value():
     assert neon.equal(v1, 7.5)
     assert not neon.equal(v1, 0.0)
 
-    print("✓ equal(ScalarVector, scalar) test passed")
-
 
 def test_equal_scalar_vectors():
     """Test equal function comparing two ScalarVectors."""
@@ -163,8 +172,6 @@ def test_equal_scalar_vectors():
     assert neon.equal(v1, v2)
     assert not neon.equal(v1, v3)
 
-    print("✓ equal(ScalarVector, ScalarVector) test passed")
-
 
 def test_equal_scalar_vectors_different_sizes():
     """Test equal function with different sized vectors."""
@@ -175,8 +182,6 @@ def test_equal_scalar_vectors_different_sizes():
 
     # Different sizes should not be equal
     assert not neon.equal(v1, v2)
-
-    print("✓ equal(ScalarVector, ScalarVector) different sizes test passed")
 
 
 # ============================================================================
@@ -193,8 +198,6 @@ def test_equal_vector_vector_value():
     assert neon.equal(v, fill_val)
     assert not neon.equal(v, neon.Vec3(0.0, 0.0, 0.0))
 
-    print("✓ equal(VectorVector, Vec3) test passed")
-
 
 def test_equal_vector_vectors():
     """Test equal function comparing two VectorVectors."""
@@ -210,8 +213,6 @@ def test_equal_vector_vectors():
     assert neon.equal(v1, v2)
     assert not neon.equal(v1, v3)
 
-    print("✓ equal(VectorVector, VectorVector) test passed")
-
 
 # ============================================================================
 # equal tests for LabelVector
@@ -226,8 +227,6 @@ def test_equal_label_vector_value():
     assert neon.equal(v, 123)
     assert not neon.equal(v, 0)
 
-    print("✓ equal(LabelVector, label) test passed")
-
 
 def test_equal_label_vectors():
     """Test equal function comparing two LabelVectors."""
@@ -239,8 +238,6 @@ def test_equal_label_vectors():
 
     assert neon.equal(v1, v2)
     assert not neon.equal(v1, v3)
-
-    print("✓ equal(LabelVector, LabelVector) test passed")
 
 
 # ============================================================================
@@ -258,8 +255,6 @@ def test_fill_empty_vector():
     assert v.empty()
     assert v.size() == 0
 
-    print("✓ fill empty vector test passed")
-
 
 def test_equal_empty_vectors():
     """Test equal with empty vectors."""
@@ -270,36 +265,3 @@ def test_equal_empty_vectors():
 
     # Empty vectors should be equal
     assert neon.equal(v1, v2)
-
-    print("✓ equal empty vectors test passed")
-
-
-if __name__ == "__main__":
-    # Run all tests
-    test_container_imports()
-
-    # fill tests
-    test_fill_scalar_vector()
-    test_fill_range_scalar_vector()
-    test_fill_scalar_vector_zero()
-    test_fill_vector_vector()
-    test_fill_range_vector_vector()
-    test_fill_label_vector()
-    test_fill_range_label_vector()
-
-    # equal tests
-    test_equal_scalar_vector_value()
-    test_equal_scalar_vectors()
-    test_equal_scalar_vectors_different_sizes()
-    test_equal_vector_vector_value()
-    test_equal_vector_vectors()
-    test_equal_label_vector_value()
-    test_equal_label_vectors()
-
-    # Edge cases
-    test_fill_empty_vector()
-    test_equal_empty_vectors()
-
-    print("\n" + "=" * 60)
-    print("✓ All container free function binding tests passed successfully!")
-    print("=" * 60)
