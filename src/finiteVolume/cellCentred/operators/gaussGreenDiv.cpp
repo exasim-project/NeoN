@@ -30,8 +30,8 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeDiv(
     const Executor& exec,
-    localIdx nInternalFaces,
-    localIdx nBoundaryFaces,
+    const localIdx nInternalFaces,
+    const localIdx nBoundaryFaces,
     View<const localIdx> neighbour,
     View<const localIdx> owner,
     View<const localIdx> faceCells,
@@ -48,15 +48,15 @@ void computeDiv(
     {
         for (localIdx i = 0; i < nInternalFaces; i++)
         {
-            ValueType flux = faceFlux[i] * phiF[i];
+            const ValueType flux = faceFlux[i] * phiF[i];
             res[owner[i]] += flux;
             res[neighbour[i]] -= flux;
         }
 
         for (localIdx i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
         {
-            auto own = faceCells[i - nInternalFaces];
-            ValueType valueOwn = faceFlux[i] * phiF[i];
+            const auto own = faceCells[i - nInternalFaces];
+            const ValueType valueOwn = faceFlux[i] * phiF[i];
             res[own] += valueOwn;
         }
 

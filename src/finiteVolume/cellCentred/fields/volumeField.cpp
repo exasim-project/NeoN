@@ -13,7 +13,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(
     const Executor& exec,
-    std::string name,
+    const std::string& name,
     const UnstructuredMesh& mesh,
     const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
 )
@@ -26,7 +26,7 @@ VolumeField<ValueType>::VolumeField(
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(
     const Executor& exec,
-    std::string name,
+    const std::string& name,
     const UnstructuredMesh& mesh,
     const Vector<ValueType>& internalVector,
     const std::vector<VolumeBoundary<ValueType>>& boundaryConditions
@@ -40,7 +40,7 @@ VolumeField<ValueType>::VolumeField(
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(
     const Executor& exec,
-    std::string name,
+    const std::string& name,
     const UnstructuredMesh& mesh,
     const Vector<ValueType>& internalVector,
     const BoundaryData<ValueType>& boundaryVectors,
@@ -54,7 +54,7 @@ VolumeField<ValueType>::VolumeField(
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(
     const Executor& exec,
-    std::string fieldName,
+    const std::string& fieldName,
     const UnstructuredMesh& mesh,
     const Field<ValueType>& domainVector,
     const std::vector<VolumeBoundary<ValueType>>& boundaryConditions,

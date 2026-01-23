@@ -29,13 +29,15 @@ public:
     template<typename T>
     T* alloc(size_t size) const
     {
-        return static_cast<T*>(Kokkos::kokkos_malloc<exec>("Vector", size * sizeof(T)));
+        // Use standard malloc instead of Kokkos for testing
+        return static_cast<T*>(std::malloc(size * sizeof(T)));
     }
 
     template<typename T>
     T* realloc(void* ptr, size_t newSize) const
     {
-        return static_cast<T*>(Kokkos::kokkos_realloc<exec>(ptr, newSize * sizeof(T)));
+        // Use standard realloc instead of Kokkos for testing
+        return static_cast<T*>(std::realloc(ptr, newSize * sizeof(T)));
     }
 
     /** @brief create a Kokkos view for a given ptr
@@ -51,14 +53,14 @@ public:
         return Kokkos::View<ValueType*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(ptr, size);
     }
 
-    void* alloc(size_t size) const { return Kokkos::kokkos_malloc<exec>("Vector", size); }
+    void* alloc(size_t size) const { return std::malloc(size); }
 
     void* realloc(void* ptr, size_t newSize) const
     {
-        return Kokkos::kokkos_realloc<exec>(ptr, newSize);
+        return std::realloc(ptr, newSize);
     }
 
-    void free(void* ptr) const noexcept { Kokkos::kokkos_free<exec>(ptr); };
+    void free(void* ptr) const noexcept { std::free(ptr); };
 
     std::string name() const { return "SerialExecutor"; };
 

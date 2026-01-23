@@ -59,6 +59,7 @@ public:
           nBoundaries_(rhs.nBoundaries_), nBoundaryFaces_(rhs.nBoundaryFaces_)
     {}
 
+    BoundaryData(BoundaryData<T>&& rhs) noexcept = default;
 
     /**
      * @brief constructor with default initialized Vectors from sizes.
@@ -80,10 +81,12 @@ public:
      * @param offsets - The total number of boundary faces
      */
     BoundaryData(const Executor& exec, const std::vector<localIdx>& offsets)
-        : BoundaryData(exec, offsets.back(), static_cast<localIdx>(offsets.size() - 1))
-    {
-        offset_ = Vector(SerialExecutor {}, offsets);
-    }
+        : exec_(exec), value_(exec, offsets.back()), refValue_(exec, offsets.back()),
+          valueFraction_(exec, offsets.back()), refGrad_(exec, offsets.back()),
+          boundaryTypes_(exec, static_cast<localIdx>(offsets.size() - 1)),
+          offset_(SerialExecutor {}, offsets),
+          nBoundaries_(static_cast<localIdx>(offsets.size() - 1)), nBoundaryFaces_(offsets.back())
+    {}
 
 
     /** @copydoc BoundaryData::value()*/
@@ -160,9 +163,6 @@ public:
 
     BoundaryData<T>& operator=(const BoundaryData<T>& rhs)
     {
-
-        // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
-        // but use them for a sanity check
         nBoundaries_ = rhs.nBoundaries_;
         nBoundaryFaces_ = rhs.nBoundaryFaces_;
 
@@ -175,22 +175,7 @@ public:
         return *this;
     }
 
-    BoundaryData<T>& operator=(const BoundaryData<T>&& rhs)
-    {
-
-        // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
-        // but use them for a sanity check
-        nBoundaries_ = rhs.nBoundaries_;
-        nBoundaryFaces_ = rhs.nBoundaryFaces_;
-
-        value_ = std::move(rhs.value_);
-        refValue_ = std::move(rhs.refValue_);
-        valueFraction_ = std::move(rhs.valueFraction_);
-        refGrad_ = std::move(rhs.refGrad_);
-        boundaryTypes_ = std::move(rhs.boundaryTypes_);
-        offset_ = std::move(rhs.offset_);
-        return *this;
-    }
+    BoundaryData<T>& operator=(BoundaryData<T>&& rhs) noexcept = default;
 
     /**
      * @brief Get the range for a given patchId
