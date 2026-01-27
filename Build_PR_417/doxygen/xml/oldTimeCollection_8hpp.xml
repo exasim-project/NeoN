@@ -587,7 +587,7 @@
 <codeline lineno="17"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>dont<sp/>do<sp/>dangling<sp/>rereference<sp/>warning<sp/>here</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)<sp/>or<sp/>defined(__llvm__)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>GCC<sp/>diagnostic<sp/>push</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>GCC<sp/>diagnostic<sp/>ignored<sp/>&quot;-Wdangling-reference&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
@@ -684,7 +684,7 @@
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>nextId<sp/>=<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection_1a40b9d9c3be9321c4486edc2c4159d635" kindref="member">findNextTime</ref>(idOfNextVector);</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"></highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE<sp/>this<sp/>triggers<sp/>a<sp/>false<sp/>positive<sp/>dangling<sp/>reference<sp/>warning</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>gcc</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>gcc<sp/>&lt;=<sp/>15</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection" kindref="compound">VectorCollection</ref>&amp;<sp/>fieldCollection<sp/>=</highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection_1af7dc5506c3e37cd10181f5f58d9668c3" kindref="member">VectorCollection::instance</ref>(<ref refid="classNeoN_1_1CollectionMixin_1a817c2dc43ae8feac71fc686fb2ba7b13" kindref="member">db</ref>(),<sp/>fieldCollectionName_);</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"></highlight></codeline>
@@ -759,7 +759,7 @@
 <codeline lineno="246"><highlight class="normal"></highlight></codeline>
 <codeline lineno="247"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="248"><highlight class="normal"></highlight></codeline>
-<codeline lineno="249"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)<sp/>or<sp/>defined(__llvm__)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="250"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>GCC<sp/>diagnostic<sp/>pop</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="251"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
