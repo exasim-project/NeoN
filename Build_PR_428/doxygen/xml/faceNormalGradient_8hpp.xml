@@ -12,7 +12,9 @@
     <includes refid="volumeField_8hpp" local="yes">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</includes>
     <includes refid="boundary_8hpp" local="yes">NeoN/finiteVolume/cellCentred/boundary.hpp</includes>
     <includedby refid="uncorrected_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp</includedby>
+    <includedby refid="divTensorExp_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divTensorExp.hpp</includedby>
     <includedby refid="gaussGreenLaplacian_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</includedby>
+    <includedby refid="viscousStressOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp</includedby>
     <incdepgraph>
       <node id="48">
         <label>NeoN/core/database/collection.hpp</label>
@@ -696,6 +698,10 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</label>
+        <link refid="explicit_8hpp"/>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</label>
         <link refid="faceNormalGradient_8hpp"/>
@@ -703,18 +709,32 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp</label>
         <link refid="uncorrected_8hpp"/>
       </node>
       <node id="3">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
-        <link refid="gaussGreenLaplacian_8hpp"/>
-        <childnode refid="4" relation="include">
-        </childnode>
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divTensorExp.hpp</label>
+        <link refid="divTensorExp_8hpp"/>
       </node>
       <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
+        <link refid="gaussGreenLaplacian_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp</label>
+        <link refid="viscousStressOperator_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/ReynoldsStress.hpp</label>
         <link refid="ReynoldsStress_8hpp"/>
       </node>

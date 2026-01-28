@@ -14,6 +14,7 @@
     <includes refid="gradOperator_8hpp" local="yes">NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</includes>
     <includes refid="surfaceIntegrate_8hpp" local="yes">NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp</includes>
     <includes refid="sourceTerm_8hpp" local="yes">NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</includes>
+    <includes refid="viscousStressOperator_8hpp" local="yes">NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp</includes>
     <incdepgraph>
       <node id="42">
         <label>NeoN/core/array.hpp</label>
@@ -372,6 +373,8 @@
         </childnode>
         <childnode refid="91" relation="include">
         </childnode>
+        <childnode refid="92" relation="include">
+        </childnode>
       </node>
       <node id="53">
         <label>NeoN/dsl/operator.hpp</label>
@@ -651,6 +654,28 @@
         <childnode refid="46" relation="include">
         </childnode>
       </node>
+      <node id="93">
+        <label>NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</label>
+        <link refid="faceNormalGradient_8hpp"/>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
+      </node>
       <node id="63">
         <label>NeoN/finiteVolume/cellCentred/fields/domain.hpp</label>
         <link refid="domain_8hpp"/>
@@ -827,6 +852,38 @@
         <childnode refid="85" relation="include">
         </childnode>
       </node>
+      <node id="92">
+        <label>NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp</label>
+        <link refid="viscousStressOperator_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
       <node id="40">
         <label>NeoN/linearAlgebra/CSRMatrix.hpp</label>
         <link refid="CSRMatrix_8hpp"/>
@@ -997,7 +1054,7 @@
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="gradOperator_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="surfaceIntegrate_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="sourceTerm_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="viscousStressOperator_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24" refid="namespaceNeoN_1_1dsl_1_1exp" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1dsl_1_1exp" kindref="compound">NeoN::dsl::exp</ref></highlight></codeline>
 <codeline lineno="25"><highlight class="normal">{</highlight></codeline>
@@ -1026,7 +1083,16 @@
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
 <codeline lineno="49" refid="namespaceNeoN_1_1dsl_1_1exp_1af4f75aa67931b23e7662e6ff3af4b984" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1af4f75aa67931b23e7662e6ff3af4b984" kindref="member">source</ref>(<ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;scalar&gt;</ref>&amp;<sp/>coeff,<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;scalar&gt;</ref>&amp;<sp/>phi);</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="namespaceNeoN_1_1dsl_1_1exp_1a2af8129c33cb1b4af5d0acca98aed224" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator&lt;Vec3&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1a2af8129c33cb1b4af5d0acca98aed224" kindref="member">viscousStress</ref>(</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>nuF,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">fvcc::SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>nutF,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>U,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>gradUx,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>gradUy,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField&lt;Vec3&gt;</ref>&amp;<sp/>gradUz</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp"/>
   </compounddef>

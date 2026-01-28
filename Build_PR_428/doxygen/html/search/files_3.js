@@ -9,6 +9,7 @@ var searchData=
   ['diagonalsolver_2ehpp_6',['diagonalSolver.hpp',['../diagonalSolver_8hpp.html',1,'']]],
   ['dictionary_2ehpp_7',['dictionary.hpp',['../dictionary_8hpp.html',1,'']]],
   ['divoperator_2ehpp_8',['divOperator.hpp',['../divOperator_8hpp.html',1,'']]],
-  ['document_2ehpp_9',['document.hpp',['../document_8hpp.html',1,'']]],
-  ['domain_2ehpp_10',['domain.hpp',['../domain_8hpp.html',1,'']]]
+  ['divtensorexp_2ehpp_9',['divTensorExp.hpp',['../divTensorExp_8hpp.html',1,'']]],
+  ['document_2ehpp_10',['document.hpp',['../document_8hpp.html',1,'']]],
+  ['domain_2ehpp_11',['domain.hpp',['../domain_8hpp.html',1,'']]]
 ];

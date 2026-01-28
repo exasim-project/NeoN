@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['initresnorm_0',['initResNorm',['../structNeoN_1_1la_1_1SolverStats.html#a037258a420e19d2dd2d7ddd8541aae9b',1,'NeoN::la::SolverStats']]],
-  ['iterationindex_1',['iterationIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#a0a447302a7dabcdc27b10f0dd3d34867',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
+  ['gradux_0',['gradUx',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1GradVecField.html#a8b8836afb1dd852c299f112506984353',1,'NeoN::finiteVolume::cellCentred::GradVecField']]],
+  ['graduy_1',['gradUy',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1GradVecField.html#a30868168fcb474f4d8849a20e9e8ee6a',1,'NeoN::finiteVolume::cellCentred::GradVecField']]],
+  ['graduz_2',['gradUz',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1GradVecField.html#a5ecd63ad89a71b67146218881021831a',1,'NeoN::finiteVolume::cellCentred::GradVecField']]]
 ];

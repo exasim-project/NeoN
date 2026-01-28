@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['kappa_0',['kappa',['../structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase_1_1Coefficients.html#a5eea05c6550c4e97a3ea6f71b5e211d8',1,'NeoN::turbulenceModels::DES::SpalartAllmarasBase::Coefficients::kappa'],['../structNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasDDES_1_1Coefficients.html#ad9d7a5a22659a882c37b5f35bde8c9b0',1,'NeoN::turbulenceModels::DES::SpalartAllmarasDDES::Coefficients::kappa']]],
-  ['key_1',['key',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin.html#ab1ea0a9e16f0d7fdfe345d755b069d30',1,'NeoN::finiteVolume::cellCentred::FieldDatabaseMixin']]]
+  ['initresnorm_0',['initResNorm',['../structNeoN_1_1la_1_1SolverStats.html#a037258a420e19d2dd2d7ddd8541aae9b',1,'NeoN::la::SolverStats']]],
+  ['iterationindex_1',['iterationIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#a0a447302a7dabcdc27b10f0dd3d34867',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
 ];

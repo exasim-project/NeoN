@@ -1,0 +1,281 @@
+\doxysection{viscous\+Stress\+Operator.\+hpp}
+\hypertarget{viscousStressOperator_8hpp_source}{}\label{viscousStressOperator_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp}}
+\mbox{\hyperlink{viscousStressOperator_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00007}00007\ \textcolor{comment}{//\ \#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{input_8hpp}{NeoN/core/input.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{runtimeSelectionFactory_8hpp}{NeoN/core/runtimeSelectionFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{coeff_8hpp}{NeoN/dsl/coeff.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operator_8hpp}{NeoN/dsl/operator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceNormalGradient_8hpp}{NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00024}00024\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00027}00027\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00028}00028\ \textcolor{comment}{//\ Low-\/level\ kernel\ (decl\ only)}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00029}00029\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00039}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a4c3530dbfc21193d2cfece74a2558bdb}{00039}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a4c3530dbfc21193d2cfece74a2558bdb}{computeViscousStressExp}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{FaceNormalGradient<Vec3>}}\&\ faceNormalGradient,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{SurfaceInterpolation<Vec3>}}\&\ surfaceInterpolationVec,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00048}00048\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ rhs,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00050}00050\ );}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00053}00053\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00054}00054\ \textcolor{comment}{//\ Operator\ runtime\ selection}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00055}00055\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory}{00057}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory}{ViscousStressOperatorFactory}}\ :}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{NeoN::RuntimeSelectionFactory}}<}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ ViscousStressOperatorFactory,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ Parameters<const\ Executor\&,\ const\ UnstructuredMesh\&,\ const\ Input\&>>}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00061}00061\ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00062}00062\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<ViscousStressOperatorFactory>}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a0a4823b29df75c785e7f2b5ddb09079b}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a0a4823b29df75c785e7f2b5ddb09079b}{create}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00066}00066\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ std::string\ key\ =\ (std::holds\_alternative<NeoN::Dictionary>(inputs))}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ std::get<NeoN::Dictionary>(inputs).get<std::string>(\textcolor{stringliteral}{"{}viscousStress"{}})}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::get<NeoN::TokenList>(inputs).next<std::string>();}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ ViscousStressOperatorFactory::keyExistsOrError(key);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ViscousStressOperatorFactory::table().at(key)(exec,\ mesh,\ inputs);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ae5cb0393becd6ef4c9cb75b52844b448}{00075}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ae5cb0393becd6ef4c9cb75b52844b448}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ViscousStressOperatorFactory"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a3aabde670f56aabc5dbe8ef2f5a5c782}{00077}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a3aabde670f56aabc5dbe8ef2f5a5c782}{ViscousStressOperatorFactory}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_aa6428987a60690d8ad374ddc92b0ae6c}{exec\_}}(exec),\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ac68da58da00ff8ef8edb85e4f75aa2f9}{mesh\_}}(mesh)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00079}00079\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a5a0e8e5d6c014564efe33f595322be11}{00081}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a5a0e8e5d6c014564efe33f595322be11}{\string~ViscousStressOperatorFactory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_af246011557f84bd8a5d2905d5106a1fe}{00088}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_af246011557f84bd8a5d2905d5106a1fe}{explicitOp}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ rhs,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00097}00097\ \ \ \ \ )\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ab5a60be22f5eed358929564b2a10c11c}{00099}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<ViscousStressOperatorFactory>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ab5a60be22f5eed358929564b2a10c11c}{clone}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00101}00101\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_aa6428987a60690d8ad374ddc92b0ae6c}{00103}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_aa6428987a60690d8ad374ddc92b0ae6c}{exec\_}};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00104}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ac68da58da00ff8ef8edb85e4f75aa2f9}{00104}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_ac68da58da00ff8ef8edb85e4f75aa2f9}{mesh\_}};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00105}00105\ \};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00108}00108\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00109}00109\ \textcolor{comment}{//\ DSL-\/facing\ operator\ wrapper}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00110}00110\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00112}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator}{00112}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator}{ViscousStressOperator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin}{dsl::OperatorMixin}}<VolumeField<Vec3>>}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00113}00113\ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00114}00114\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00116}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_aef41879bdde8cb25c6876a628c047a2f}{00116}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1Vec3}{VectorValueType}}\ =\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a3ba793d8264dda9fc8fd4b3de3635364}{00118}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a3ba793d8264dda9fc8fd4b3de3635364}{ViscousStressOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator}{ViscousStressOperator}}\&\ other)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ :\ dsl::\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a7fc7ecc0c0239a3519605ca4f3cd425b}{OperatorMixin}}<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}>>(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ other.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a4a4f591280551ec0ea98c5050b2df55a}{exec\_}},\ other.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_aca2e5d4a971d6f5e412d9c3466f0890c}{coeffs\_}},\ other.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}},\ other.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae160ee6042607004df8e0c3fcb7aac1c}{type\_}}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ nuF\_(other.nuF\_),\ nutF\_(other.nutF\_),\ gradUx\_(other.gradUx\_),\ gradUy\_(other.gradUy\_),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ gradUz\_(other.gradUz\_),\ viscousOp\_(other.viscousOp\_\ ?\ other.viscousOp\_-\/>clone()\ :\ nullptr)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00124}00124\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00126}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_aaaf3f372953b5b1f8424662cfdfaf727}{00126}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_aaaf3f372953b5b1f8424662cfdfaf727}{ViscousStressOperator}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ termType,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\ input}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00135}00135\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ :\ dsl::\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a7fc7ecc0c0239a3519605ca4f3cd425b}{OperatorMixin}}<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}>>(U.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ dsl::Coeff(1.0),\ U,\ termType),\ nuF\_(nuF),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ nutF\_(nutF),\ gradUx\_(gradUx),\ gradUy\_(gradUy),\ gradUz\_(gradUz),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ viscousOp\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory}{ViscousStressOperatorFactory}}::create(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a4a4f591280551ec0ea98c5050b2df55a}{exec\_}},\ U.mesh(),\ input))}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00139}00139\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00141}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a2dd1aaa18c84885bdd6db54400b20f7e}{00141}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a2dd1aaa18c84885bdd6db54400b20f7e}{ViscousStressOperator}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ termType,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ std::unique\_ptr<ViscousStressOperatorFactory>\ viscousOp}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00150}00150\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ :\ dsl::\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a7fc7ecc0c0239a3519605ca4f3cd425b}{OperatorMixin}}<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}>>(U.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ dsl::Coeff(1.0),\ U,\ termType),\ nuF\_(nuF),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ nutF\_(nutF),\ gradUx\_(gradUx),\ gradUy\_(gradUy),\ gradUz\_(gradUz),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ viscousOp\_(std::move(viscousOp))}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00154}00154\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00156}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a55c8f1a1ec1dde96abf92c9609019cff}{00156}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a55c8f1a1ec1dde96abf92c9609019cff}{ViscousStressOperator}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{dsl::Operator::Type}}\ termType,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00164}00164\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ :\ dsl::\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a7fc7ecc0c0239a3519605ca4f3cd425b}{OperatorMixin}}<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}>>(U.\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ dsl::Coeff(1.0),\ U,\ termType),\ nuF\_(nuF),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ nutF\_(nutF),\ gradUx\_(gradUx),\ gradUy\_(gradUy),\ gradUz\_(gradUz),\ viscousOp\_(nullptr)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00167}00167\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00169}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a4b6c8f8214c76215023a0cf69cf56d83}{00169}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a4b6c8f8214c76215023a0cf69cf56d83}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ source)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00170}00170\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(viscousOp\_,\ \textcolor{stringliteral}{"{}ViscousStressOperatorStrategy\ not\ initialized"{}});}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\ tmpsource(source.exec(),\ source.size(),\ \mbox{\hyperlink{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}{zero<Vec3>}}());}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ viscousOp\_-\/>explicitOp(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ tmpsource,\ nuF\_,\ nutF\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}},\ gradUx\_,\ gradUy\_,\ gradUz\_,\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ source\ +=\ tmpsource;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00178}00178\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00180}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a40a6bc524bf370c9668bbf6fc1946c65}{00180}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a40a6bc524bf370c9668bbf6fc1946c65}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3,\ localIdx>}}\&)\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00181}00181\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00182}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_ac82afed643409ea721268ebaf58e38cb}{00182}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_ac82afed643409ea721268ebaf58e38cb}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00183}00183\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::Dictionary>(input))}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<NeoN::Dictionary>(input);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.subDict(\textcolor{stringliteral}{"{}viscousStressSchemes"{}}).get<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(\textcolor{stringliteral}{"{}viscousStress"{}});}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ viscousOp\_\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a0a4823b29df75c785e7f2b5ddb09079b}{ViscousStressOperatorFactory::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ tokens\ =\ std::get<NeoN::TokenList>(input);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ viscousOp\_\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory_a0a4823b29df75c785e7f2b5ddb09079b}{ViscousStressOperatorFactory::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00197}00197\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00198}00198\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00199}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a7a1aef0657d4cec1f51f1750871ffb51}{00199}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperator_a7a1aef0657d4cec1f51f1750871ffb51}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ViscousStressOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00201}00201\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00203}00203\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00204}00204\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00205}00205\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00206}00206\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00207}00207\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00208}00208\ \ \ \ \ std::unique\_ptr<ViscousStressOperatorFactory>\ viscousOp\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00209}00209\ \};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00211}00211\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00212}00212\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00213}00213\ \textcolor{comment}{//\ Concrete\ implementation:\ Gauss}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00214}00214\ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00215}00215\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00216}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress}{00216}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress}{GaussViscousStress}}\ :\ \textcolor{keyword}{public}\ ViscousStressOperatorFactory::Register<GaussViscousStress>}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00217}00217\ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00218}00218\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ ViscousStressOperatorFactory::Register<GaussViscousStress>;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00220}00220\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00221}00221\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00222}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a6279fe0c91e1a1b56a6edd9475e9b662}{00222}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a6279fe0c91e1a1b56a6edd9475e9b662}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Gauss"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00223}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a5e41477a0b62f4a6c203eb5970f3933b}{00223}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a5e41477a0b62f4a6c203eb5970f3933b}{doc}}()}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00224}00224\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Gauss\ explicit\ viscous\ stress\ (tensor-\/free\ reconstruction)"{}};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00226}00226\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00227}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a447b24cc68775e7dfac243a16ed2314d}{00227}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a447b24cc68775e7dfac243a16ed2314d}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00228}00228\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00229}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a8ddb09337cb143851e1788760054b566}{00229}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a8ddb09337cb143851e1788760054b566}{GaussViscousStress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00230}00230\ \ \ \ \ \ \ \ \ :\ Base(exec,\ mesh),\ surfaceInterpolationVec\_(exec,\ mesh,\ inputs),}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ faceNormalGradient\_(exec,\ mesh,\ inputs)}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00232}00232\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00234}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a25a3a970ae3ac69ef6eb1f5b22d8b132}{00234}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a25a3a970ae3ac69ef6eb1f5b22d8b132}{explicitOp}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ rhs,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00236}00236\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00237}00237\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00243}00243\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00244}00244\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00245}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a296880a5b03c8c6705c38fb0e78c3298}{00245}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a296880a5b03c8c6705c38fb0e78c3298}{viscousStress}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00246}00246\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00247}00247\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00248}00248\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00249}00249\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00250}00250\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00251}00251\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00252}00252\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00253}00253\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00254}00254\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00255}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_aacb0bd7b31f3b50e31c9b59ae56d0133}{00255}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_aacb0bd7b31f3b50e31c9b59ae56d0133}{viscousStress}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00256}00256\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ result,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00257}00257\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00258}00258\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00259}00259\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00260}00260\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00261}00261\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00262}00262\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00264}00264\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00265}00265\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00266}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_aa5270a4c7ada26e91c883fbb81ccfdce}{00266}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_aa5270a4c7ada26e91c883fbb81ccfdce}{viscousStress}}(}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00267}00267\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ result,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00268}00268\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00269}00269\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00270}00270\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ U,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00271}00271\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00273}00273\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00274}00274\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00275}00275\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00277}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a8d9f7988b32ccdd917149a386f5ed763}{00277}}\ \ \ \ \ std::unique\_ptr<ViscousStressOperatorFactory>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussViscousStress_a8d9f7988b32ccdd917149a386f5ed763}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00278}00278\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<GaussViscousStress>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00280}00280\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00281}00281\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00282}00282\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00283}00283\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00284}00284\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{SurfaceInterpolation<Vec3>}}\ surfaceInterpolationVec\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00285}00285\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{FaceNormalGradient<Vec3>}}\ faceNormalGradient\_;}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00286}00286\ \};}
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00287}00287\ }
+\DoxyCodeLine{\Hypertarget{viscousStressOperator_8hpp_source_l00288}00288\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+
+\end{DoxyCode}
