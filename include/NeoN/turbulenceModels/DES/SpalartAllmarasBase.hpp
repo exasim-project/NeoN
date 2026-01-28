@@ -32,6 +32,7 @@ public:
         scalar Cs = 0.3;
         scalar Cdes = 0.65;
         scalar fdCoef = 8.0;
+        scalar fwStar = 0.424;
     };
 
     SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh);

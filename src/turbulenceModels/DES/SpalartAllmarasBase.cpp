@@ -134,15 +134,15 @@ void SpalartAllmarasBase::magGradU(
     // -----------------
     // boundary values
     // -----------------
-    const auto& gxB = gradUx.boundaryData().value();
-    const auto& gyB = gradUy.boundaryData().value();
-    const auto& gzB = gradUz.boundaryData().value();
-    auto& mgB = magGradUField.boundaryData().value();
+    /*    const auto& gxB = gradUx.boundaryData().value();
+        const auto& gyB = gradUy.boundaryData().value();
+        const auto& gzB = gradUz.boundaryData().value();
+        auto& mgB = magGradUField.boundaryData().value();
 
-    NF_DEBUG_ASSERT(mgB.size() == gxB.size(), "magGradU boundary size mismatch.");
-    NF_DEBUG_ASSERT(gyB.size() == gxB.size(), "magGradU boundary gradUy size mismatch.");
-    NF_DEBUG_ASSERT(gzB.size() == gxB.size(), "magGradU boundary gradUz size mismatch.");
-
+        NF_DEBUG_ASSERT(mgB.size() == gxB.size(), "magGradU boundary size mismatch.");
+        NF_DEBUG_ASSERT(gyB.size() == gxB.size(), "magGradU boundary gradUy size mismatch.");
+        NF_DEBUG_ASSERT(gzB.size() == gxB.size(), "magGradU boundary gradUz size mismatch.");
+    */
     // -----------------
     // internal kernel
     // -----------------
@@ -170,26 +170,26 @@ void SpalartAllmarasBase::magGradU(
     // -----------------
     // boundary kernel
     // -----------------
-    {
-        const auto [gxV, gyV, gzV, mgV] = views(gxB, gyB, gzB, mgB);
+    /*   {
+           const auto [gxV, gyV, gzV, mgV] = views(gxB, gyB, gzB, mgB);
 
-        parallelFor(
-            exec_,
-            {0, mgB.size()},
-            NEON_LAMBDA(const localIdx i) {
-                const auto gx = gxV[i];
-                const auto gy = gyV[i];
-                const auto gz = gzV[i];
+           parallelFor(
+               exec_,
+               {0, mgB.size()},
+               NEON_LAMBDA(const localIdx i) {
+                   const auto gx = gxV[i];
+                   const auto gy = gyV[i];
+                   const auto gz = gzV[i];
 
-                const scalar sum = gx[0] * gx[0] + gx[1] * gx[1] + gx[2] * gx[2] + gy[0] * gy[0]
-                                 + gy[1] * gy[1] + gy[2] * gy[2] + gz[0] * gz[0] + gz[1] * gz[1]
-                                 + gz[2] * gz[2];
+                   const scalar sum = gx[0] * gx[0] + gx[1] * gx[1] + gx[2] * gx[2] + gy[0] * gy[0]
+                                    + gy[1] * gy[1] + gy[2] * gy[2] + gz[0] * gz[0] + gz[1] * gz[1]
+                                    + gz[2] * gz[2];
 
-                mgV[i] = std::sqrt(sum);
-            },
-            "SpalartAllmarasBase::magGradU/boundary"
-        );
-    }
+                   mgV[i] = std::sqrt(sum);
+               },
+               "SpalartAllmarasBase::magGradU/boundary"
+           );
+       }  */
 }
 
 void SpalartAllmarasBase::chi(
@@ -454,6 +454,7 @@ void SpalartAllmarasBase::computeProdSpDDES(
     const scalar Cdes = coeffs_.Cdes;
     const scalar Cs = coeffs_.Cs;
     const scalar Ct3 = coeffs_.Ct3;
+    const scalar fwStar = coeffs_.fwStar;
     const scalar ROOTVSMALL(1e-30);
 
     parallelFor(
@@ -476,7 +477,7 @@ void SpalartAllmarasBase::computeProdSpDDES(
             const scalar dWall = Kokkos::max(wallDistV[i], ROOTVSMALL);
 
             const scalar rD = Kokkos::min(
-                (nuV[i] + nuTildeV[i])
+                (nuV[i] + nuTildeV[i] * fv1)
                     / (kappa2 * dWall * dWall * Kokkos::max(magGradUV[i], ROOTVSMALL)),
                 scalar(10)
             );
@@ -488,7 +489,7 @@ void SpalartAllmarasBase::computeProdSpDDES(
             // -------------------------
             const scalar psi = std::sqrt(Kokkos::min(
                 scalar(100),
-                (scalar(1) - Cb1 / (Cw1 * kappa2 * Ct3) * fv2) / Kokkos::max(fv1, ROOTVSMALL)
+                (scalar(1) - Cb1 / (Cw1 * kappa2 * fwStar) * fv2) / Kokkos::max(fv1, ROOTVSMALL)
             ));
 
             // -------------------------

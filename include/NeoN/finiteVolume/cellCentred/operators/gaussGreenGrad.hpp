@@ -13,6 +13,13 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+struct GradVecField
+{
+    VolumeField<Vec3> gradUx;
+    VolumeField<Vec3> gradUy;
+    VolumeField<Vec3> gradUz;
+};
+
 class GaussGreenGrad : public GradOperatorFactory<Vec3>::template Register<GaussGreenGrad>
 {
 
@@ -68,6 +75,9 @@ public:
     VolumeField<Vec3>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 
+    GradVecField
+    grad(const VolumeField<Vec3>& U, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const
     {
         NF_ERROR_EXIT("Not implemented");
@@ -76,6 +86,7 @@ public:
 private:
 
     SurfaceInterpolation<scalar> surfaceInterpolation_;
+    SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
 };
 
 } // namespace NeoN
