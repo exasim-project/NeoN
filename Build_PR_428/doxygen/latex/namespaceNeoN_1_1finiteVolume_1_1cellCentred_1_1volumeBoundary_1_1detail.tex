@@ -9,6 +9,10 @@
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{set\+Fixed\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ range, Value\+Type fixed\+Value)
 \item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa960c8a5aecbe45b978faa67b9a770e5}{compute\+UTau}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} mag\+GradU, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} mag\+Up, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} y, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} nuw, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} nutw, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&err)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0c9df1f2ca3a8ffe08557224a7178a4b}{set\+Nut\+USpalding\+Wall\+Function}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&U, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
+\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a441e4f821471c83004cfef5b1b757259}{set\+Symmetry\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
 \item 
 template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a796f3a5b7d1ef50cf6147e53631e77bd}{set\+Symmetry\+Value$<$ Neo\+N\+::scalar $>$}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar}} $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
@@ -18,6 +22,16 @@ template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentre
 
 
 \doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa960c8a5aecbe45b978faa67b9a770e5}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa960c8a5aecbe45b978faa67b9a770e5} 
+\index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!computeUTau@{computeUTau}}
+\index{computeUTau@{computeUTau}!NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}
+\doxysubsubsection{\texorpdfstring{computeUTau()}{computeUTau()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::compute\+UTau (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{mag\+GradU,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{mag\+Up,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{y,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{nuw,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{nutw,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&}]{err }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{nutWallFunction_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{nutWallFunction_8hpp_source}{nut\+Wall\+Function.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2864d5431aa5578080a90ff1e791f389}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2864d5431aa5578080a90ff1e791f389} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!extrapolateValue@{extrapolateValue}}
 \index{extrapolateValue@{extrapolateValue}!NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}
@@ -50,6 +64,16 @@ void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::
 
 
 Definition at line \mbox{\hyperlink{fixedGradient_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{fixedGradient_8hpp_source}{fixed\+Gradient.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0c9df1f2ca3a8ffe08557224a7178a4b}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0c9df1f2ca3a8ffe08557224a7178a4b} 
+\index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setNutUSpaldingWallFunction@{setNutUSpaldingWallFunction}}
+\index{setNutUSpaldingWallFunction@{setNutUSpaldingWallFunction}!NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}
+\doxysubsubsection{\texorpdfstring{setNutUSpaldingWallFunction()}{setNutUSpaldingWallFunction()}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::set\+Nut\+USpalding\+Wall\+Function (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{domain\+Vector,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{U,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{nutWallFunction_8hpp_source_l00094}{94}} of file \mbox{\hyperlink{nutWallFunction_8hpp_source}{nut\+Wall\+Function.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a441e4f821471c83004cfef5b1b757259}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a441e4f821471c83004cfef5b1b757259} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setSymmetryValue@{setSymmetryValue}}
