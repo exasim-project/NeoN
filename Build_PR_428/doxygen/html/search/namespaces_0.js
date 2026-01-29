@@ -17,6 +17,5 @@ var searchData=
   ['neon_3a_3ala_14',['la',['../namespaceNeoN_1_1la.html',1,'NeoN']]],
   ['neon_3a_3alogging_15',['Logging',['../namespaceNeoN_1_1Logging.html',1,'NeoN']]],
   ['neon_3a_3atimeintegration_16',['timeIntegration',['../namespaceNeoN_1_1timeIntegration.html',1,'NeoN']]],
-  ['neon_3a_3aturbulencemodels_17',['turbulenceModels',['../namespaceNeoN_1_1turbulenceModels.html',1,'NeoN']]],
-  ['neon_3a_3aturbulencemodels_3a_3ades_18',['DES',['../namespaceNeoN_1_1turbulenceModels_1_1DES.html',1,'NeoN::turbulenceModels']]]
+  ['neon_3a_3aturbulencemodels_17',['turbulenceModels',['../namespaceNeoN_1_1turbulenceModels.html',1,'NeoN']]]
 ];

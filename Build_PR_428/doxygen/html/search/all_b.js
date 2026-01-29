@@ -3,7 +3,7 @@ var searchData=
   ['macros_2ehpp_0',['macros.hpp',['../macros_8hpp.html',1,'']]],
   ['mag_1',['mag',['../namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626',1,'NeoN::mag(const scalar &amp;s)'],['../namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd',1,'NeoN::mag(const Vec3 &amp;vec)']]],
   ['magfaceareas_2',['magfaceareas',['../classNeoN_1_1UnstructuredMesh.html#a369ce0f5c16db0d73adced648021de39',1,'NeoN::UnstructuredMesh::magFaceAreas() const'],['../classNeoN_1_1UnstructuredMesh.html#ac9b22cacc123052a9221f040babd6f12',1,'NeoN::UnstructuredMesh::magFaceAreas()']]],
-  ['maggradu_3',['magGradU',['../classNeoN_1_1turbulenceModels_1_1DES_1_1SpalartAllmarasBase.html#a621b490c9fbf7fb48173312833e402b0',1,'NeoN::turbulenceModels::DES::SpalartAllmarasBase']]],
+  ['maggradu_3',['magGradU',['../classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES.html#a5b5aa123a20c4639dc74fd934680fcb0',1,'NeoN::turbulenceModels::SpalartAllmarasDDES']]],
   ['magsf_4',['magsf',['../classNeoN_1_1BoundaryMesh.html#a8650bdda6efcdc3eddc7aa7124bbf53d',1,'NeoN::BoundaryMesh::magSf() const'],['../classNeoN_1_1BoundaryMesh.html#a034a854b39cc6ca44c678494f8314087',1,'NeoN::BoundaryMesh::magSf(const localIdx i) const']]],
   ['magsqr_5',['magSqr',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a578d87c0e2902d73e2ba8e7756079ebf',1,'NeoN::finiteVolume::cellCentred']]],
   ['map_6',['map',['../namespaceNeoN.html#a6ac6b06f3fb6b3ff13e6d51c5ccc030b',1,'NeoN']]],
