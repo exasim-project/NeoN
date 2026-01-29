@@ -8,13 +8,13 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-namespace NeoN::turbulenceModels::DES
+namespace NeoN::turbulenceModels
 {
 
 using VolVectorField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
 using VolScalarField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
 
-class SpalartAllmarasBase
+class SpalartAllmarasDDES
 {
 public:
 
@@ -35,7 +35,7 @@ public:
         scalar fwStar = 0.424;
     };
 
-    SpalartAllmarasBase(const Executor& exec, const UnstructuredMesh& mesh);
+    SpalartAllmarasDDES(const Executor& exec, const UnstructuredMesh& mesh);
 
     const Coefficients& coeffs() const;
 
@@ -55,45 +55,31 @@ public:
         const VolVectorField& gradUz
     ) const;
 
-    void
-    chi(VolScalarField& chiField, const VolScalarField& nuTilde, const VolScalarField& nu) const;
-
-    void fv1(VolScalarField& fv1Field, const VolScalarField& chiField) const;
-
-    void
-    fv2(VolScalarField& fv2Field, const VolScalarField& chiField, const VolScalarField& fv1Field
+    void correctNut(
+        VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu
     ) const;
-
-    void stilda(
-        VolScalarField& stildaField,
-        const VolScalarField& strainRate,
-        const VolScalarField& nuTilde,
-        const VolScalarField& dTilde,
-        const VolScalarField& fv2Field
-    ) const;
-
-    void
-    fw(VolScalarField& fwField,
-       const VolScalarField& stildaField,
-       const VolScalarField& dTilde,
-       const VolScalarField& nuTilde) const;
-
-    void dNuTildeEff(
-        VolScalarField& dNuTildeEffField, const VolScalarField& nuTilde, const VolScalarField& nu
-    ) const;
-
-    void
-    nut(VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& fv1Field
-    ) const;
-
+    /*
+        void computeProdSpDDES(
+            VolScalarField& productionField,
+            VolScalarField& spCoeffField,
+            const VolScalarField& nuTildeField,
+            const VolScalarField& nuField,
+            const VolScalarField& omegaField,
+            const VolScalarField& wallDistanceField,
+            const VolScalarField& magGradUField,
+            const VolScalarField& deltaField,
+            const VolScalarField& gradNuTildeMagSqrField
+        ) const;
+    */
     void computeProdSpDDES(
         VolScalarField& productionField,
         VolScalarField& spCoeffField,
         const VolScalarField& nuTildeField,
         const VolScalarField& nuField,
-        const VolScalarField& omegaField,
+        const VolVectorField& gradUx,
+        const VolVectorField& gradUy,
+        const VolVectorField& gradUz,
         const VolScalarField& wallDistanceField,
-        const VolScalarField& magGradUField,
         const VolScalarField& deltaField,
         const VolScalarField& gradNuTildeMagSqrField
     ) const;
@@ -106,4 +92,4 @@ private:
     scalar cw1_;
 };
 
-} // namespace NeoN::turbulenceModels::DES
+} // namespace NeoN::turbulenceModels
