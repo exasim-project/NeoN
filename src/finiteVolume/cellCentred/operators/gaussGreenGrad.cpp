@@ -101,7 +101,6 @@ void computeBoundaryGrad(
     const auto exec = gradPhi.exec();
     const auto boundaryConditions = phi.boundaryConditions();
 
-    // const auto& offsets = mesh.boundaryMesh().offset();
     auto gradInternal = gradPhi.internalVector().view();
     auto gradBoundary = gradPhi.boundaryData().value().view();
     const auto
@@ -115,12 +114,9 @@ void computeBoundaryGrad(
                 mesh.boundaryMesh().nf()
             );
 
-    // for (localIdx patchID = 0; patchID < static_cast<localIdx>(offsets.size() - 1); ++patchID)
     for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
     {
         const auto attrs = boundaryConditions[patchID].attributes();
-        // const localIdx start = offsets[patchID];
-        // const localIdx end   = offsets[patchID + 1];
         const auto [start, end] = phi.boundaryData().range(patchID);
 
         if (start == end)
@@ -136,20 +132,20 @@ void computeBoundaryGrad(
                 NEON_LAMBDA(const localIdx i) {
                     const auto owner = faceCells[i];
 
-                    // 1) Extrapolate internal gradient
+                    // Extrapolate internal gradient
                     Vec3 g = gradInternal[owner];
 
-                    // 2) Compute snGrad
+                    // Compute snGrad
                     const scalar snGrad =
                         (phiBoundaryValue[i] - phiInternal[owner]) * deltaCoeffs[i];
                     const Vec3 n = normals[i];
 
-                    // 3) Normal reconstruction
+                    // Normal reconstruction
                     const scalar nDotG = n[0] * g[0] + n[1] * g[1] + n[2] * g[2];
 
                     g += n * (snGrad - nDotG);
 
-                    gradBoundary[i] = Vec3 {1, 2, 3};
+                    gradBoundary[i] = g;
                 },
                 "computeGradBoundaryFixedValue"
             );
@@ -162,7 +158,7 @@ void computeBoundaryGrad(
                 NEON_LAMBDA(const localIdx i) {
                     const auto owner = faceCells[i];
 
-                    // 1) Extrapolate internal gradient
+                    // Extrapolate internal gradient
                     Vec3 g = gradInternal[owner];
 
                     const Vec3 n = normals[i];
@@ -175,7 +171,7 @@ void computeBoundaryGrad(
 
                     g += n * (snGrad - nDotG);
 
-                    gradBoundary[i] = Vec3 {5, 6, 7};
+                    gradBoundary[i] = g;
                 },
                 "computeGradBoundaryRefGrad"
             );
@@ -203,10 +199,10 @@ void computeGradVec(
     auto gUz = gradUz.view();
 
     const auto [UfAll, owner, nei, SfAll, V, bFaceCells] = views(
-        Uf.internalVector(), // expected: size >= nFaces
+        Uf.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
-        mesh.faceAreas(), // <-- IMPORTANT: ALL faces
+        mesh.faceAreas(),
         mesh.cellVolumes(),
         mesh.boundaryMesh().faceCells() // boundary faces only
     );
@@ -215,8 +211,6 @@ void computeGradVec(
     const localIdx nBnd = mesh.boundaryMesh().offset().back();
     const localIdx nFaces = nInt + nBnd;
 
-    // (Optional) debug asserts
-    // NF_ASSERT_EQUAL(static_cast<size_t>(nFaces), UfAll.size());
 
     parallelFor(
         exec,
@@ -273,101 +267,6 @@ void computeGradVec(
         "computeGradVecCells"
     );
 }
-/*
-void computeGradVec(
-    const VolumeField<Vec3>& U,
-    const SurfaceInterpolation<Vec3>& surfInterpVec,
-    Vector<Vec3>& gradUx,   // internal storage only
-    Vector<Vec3>& gradUy,
-    Vector<Vec3>& gradUz,
-    const dsl::Coeff operatorScaling
-)
-{
-    const auto& mesh = U.mesh();
-    const auto exec = gradUx.exec();
-
-    SurfaceField<Vec3> Uf(
-        exec, "Uf", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
-    );
-    surfInterpVec.interpolate(U, Uf);
-
-    auto gUx = gradUx.view();
-    auto gUy = gradUy.view();
-    auto gUz = gradUz.view();
-
-    const auto [bFaceCells, Sf, UfInt, owner, nei, V] = views(
-        mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().sf(),
-        Uf.internalVector(),
-        mesh.faceOwner(),
-        mesh.faceNeighbour(),
-        mesh.cellVolumes()
-    );
-
-    const localIdx nIntFaces = mesh.nInternalFaces();
-
-    // internal faces
-    parallelFor(
-        exec,
-        {0, nIntFaces},
-        NEON_LAMBDA(const localIdx f)
-        {
-            const Vec3 sf = Sf[f];
-            const Vec3 uf = UfInt[f];
-
-            const Vec3 fluxX = sf * uf[0];
-            const Vec3 fluxY = sf * uf[1];
-            const Vec3 fluxZ = sf * uf[2];
-
-            const auto o = owner[f];
-            const auto n = nei[f];
-
-            Kokkos::atomic_add(&gUx[o], fluxX);
-            Kokkos::atomic_sub(&gUx[n], fluxX);
-
-            Kokkos::atomic_add(&gUy[o], fluxY);
-            Kokkos::atomic_sub(&gUy[n], fluxY);
-
-            Kokkos::atomic_add(&gUz[o], fluxZ);
-            Kokkos::atomic_sub(&gUz[n], fluxZ);
-        },
-        "computeGradVecInternal"
-    );
-
-    // boundary faces (faces stored after internal)
-    parallelFor(
-        exec,
-        {nIntFaces, static_cast<localIdx>(UfInt.size())},
-        NEON_LAMBDA(const localIdx f)
-        {
-            const localIdx bi = f - nIntFaces;
-            const auto o = bFaceCells[bi];
-
-            const Vec3 sf = Sf[f];
-            const Vec3 uf = UfInt[f];
-
-            Kokkos::atomic_add(&gUx[o], sf * uf[0]);
-            Kokkos::atomic_add(&gUy[o], sf * uf[1]);
-            Kokkos::atomic_add(&gUz[o], sf * uf[2]);
-        },
-        "computeGradVecBoundary"
-    );
-
-    // scale by 1/V
-    parallelFor(
-        exec,
-        {0, mesh.nCells()},
-        NEON_LAMBDA(const localIdx c)
-        {
-            const scalar s = operatorScaling[c] / V[c];
-            gUx[c] *= s;
-            gUy[c] *= s;
-            gUz[c] *= s;
-        },
-        "computeGradVecCells"
-    );
-}
-*/
 
 void computeBoundaryGradVec(
     const VolumeField<Vec3>& U,

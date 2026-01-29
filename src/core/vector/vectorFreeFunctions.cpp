@@ -120,24 +120,6 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     );
 }
 
-template<typename ValueType>
-void div(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
-    requires requires(ValueType a, ValueType b) { a / b; }
-{
-    detail::fieldBinaryOp(
-        vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va / vb; }
-    );
-}
-
-template<typename ValueType>
-void div(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
-    requires requires(ValueType a, ValueType b) { a / b; }
-{
-    detail::fieldBinaryOp(
-        vect1, vect2, NEON_LAMBDA(ValueType va, ValueType vb) { return va / vb; }
-    );
-}
-
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
@@ -147,9 +129,7 @@ void div(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
-    template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
-    template void div<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
-    template void div<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
+    template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \

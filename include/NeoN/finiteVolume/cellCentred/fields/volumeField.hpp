@@ -197,7 +197,7 @@ operator*(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
     mul(result.boundaryData().value(), rhs.boundaryData().value());
     return result;
 }
-
+/*
 template<typename ValueType>
 inline VolumeField<ValueType>
 operator/(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
@@ -208,7 +208,7 @@ operator/(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
     div(result.boundaryData().value(), rhs.boundaryData().value());
     return result;
 }
-
+*/
 inline VolumeField<scalar> magSqr(const VolumeField<Vec3>& field)
 {
     VolumeField<scalar> result(
