@@ -16,7 +16,7 @@ var searchData=
   ['localidx_13',['localIdx',['../namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc',1,'NeoN']]],
   ['localidxvector_14',['localIdxVector',['../namespaceNeoN.html#a345d64e8263d03609fc24b88fed965be',1,'NeoN']]],
   ['location_15',['location',['../classNeoN_1_1Logging_1_1LogEvent.html#acbcd09de99ef6864937f7367d73eafdc',1,'NeoN::Logging::LogEvent']]],
-  ['log_16',['log',['../namespaceNeoN_1_1Logging.html#a1a041df8e9d32fdec6253944cbd348a3',1,'NeoN::Logging::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../classNeoN_1_1Logging_1_1BaseLogger.html#af4802af6ad562278b6293bad7e6b64cc',1,'NeoN::Logging::BaseLogger::log()']]],
+  ['log_16',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#af4802af6ad562278b6293bad7e6b64cc',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a1a041df8e9d32fdec6253944cbd348a3',1,'NeoN::Logging::log()']]],
   ['logbadanycast_17',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
   ['logevent_18',['logevent',['../classNeoN_1_1Logging_1_1LogEvent.html',1,'NeoN::Logging::LogEvent'],['../classNeoN_1_1Logging_1_1LogEvent.html#acdfe6d1e78e8da13f0410f3fc5727696',1,'NeoN::Logging::LogEvent::LogEvent()']]],
   ['logger_19',['logger',['../classNeoN_1_1Logging_1_1Logger.html',1,'NeoN::Logging::Logger'],['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger::Logger()']]],
@@ -24,6 +24,5 @@ var searchData=
   ['logimpl_21',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
   ['logoutrange_22',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
   ['lookuptable_23',['lookuptable',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable'],['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable']]],
-  ['loop_24',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
-  ['lower_25',['lower',['../classNeoN_1_1la_1_1CSRMatrix.html#ad4f59e0d034e9cd76760520390246552',1,'NeoN::la::CSRMatrix']]]
+  ['loop_24',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]]
 ];
