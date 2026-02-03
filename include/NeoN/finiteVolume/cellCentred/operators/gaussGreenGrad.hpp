@@ -57,14 +57,20 @@ public:
     /* @brief compute grad
      *
      * @param phi [in] - field for which the gradient is computed
-     * @param operatorScaling [in] - scales operator by a coefficient
      * @param gradPhi [in,out] - resulting gradient field
+     * @param operatorScaling [in] - scales operator by a coefficient
      */
-    virtual void
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff coeff, VolumeField<Vec3>& in) const
-    {
-        grad(phi, coeff, in.internalVector());
-    }
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        VolumeField<Vec3>& gradPhi,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
+
+    virtual void grad(
+        const VolumeField<Vec3>& phi,
+        GradVecField& gradPhi,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
 
     /* @brief compute explicit gradient operator and return result
      *

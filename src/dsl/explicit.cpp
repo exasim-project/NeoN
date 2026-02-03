@@ -47,9 +47,15 @@ source(fvcc::VolumeField<NeoN::scalar>& coeff, fvcc::VolumeField<NeoN::scalar>& 
     return SpatialOperator<scalar>(fvcc::SourceTerm(dsl::Operator::Type::Explicit, coeff, phi));
 }
 
+SpatialOperator<scalar> sourceU(fvcc::VolumeField<NeoN::scalar>& coeff)
+{
+    return SpatialOperator<scalar>(fvcc::SourceUTerm(dsl::Operator::Type::Explicit, coeff));
+}
+
 SpatialOperator<Vec3> viscousStress(
     const fvcc::SurfaceField<scalar>& nuF,
     const fvcc::SurfaceField<scalar>& nutF,
+    const fvcc::SurfaceField<scalar>& nuTildeF,
     const fvcc::VolumeField<Vec3>& U,
     const fvcc::VolumeField<Vec3>& gradUx,
     const fvcc::VolumeField<Vec3>& gradUy,
@@ -57,7 +63,7 @@ SpatialOperator<Vec3> viscousStress(
 )
 {
     return SpatialOperator<Vec3>(fvcc::ViscousStressOperator(
-        dsl::Operator::Type::Explicit, nuF, nutF, U, gradUx, gradUy, gradUz
+        dsl::Operator::Type::Explicit, nuF, nutF, nuTildeF, U, gradUx, gradUy, gradUz
     ));
 }
 

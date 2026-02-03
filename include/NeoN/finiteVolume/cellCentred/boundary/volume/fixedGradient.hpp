@@ -63,6 +63,8 @@ class FixedGradient :
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using FixedGradientType = FixedGradient<ValueType>;
 
     FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)

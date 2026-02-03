@@ -363,6 +363,39 @@ void GaussGreenGrad::grad(
     computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
 };
 
+void GaussGreenGrad::grad(
+    const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi, const dsl::Coeff operatorScaling
+) const
+{
+    // optional, but keeps behavior consistent with your return-by-value overload
+    fill(gradPhi.internalVector(), zero<Vec3>());
+
+    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    computeBoundaryGrad(phi, gradPhi, operatorScaling);
+}
+
+void GaussGreenGrad::grad(
+    const VolumeField<Vec3>& phi, GradVecField& gradPhi, const dsl::Coeff operatorScaling
+) const
+{
+
+    // zero existing storage
+    fill(gradPhi.gradUx.internalVector(), zero<Vec3>());
+    fill(gradPhi.gradUy.internalVector(), zero<Vec3>());
+    fill(gradPhi.gradUz.internalVector(), zero<Vec3>());
+
+    computeGradVec(
+        phi,
+        surfaceInterpolationVec_,
+        gradPhi.gradUx.internalVector(),
+        gradPhi.gradUy.internalVector(),
+        gradPhi.gradUz.internalVector(),
+        operatorScaling
+    );
+
+    computeBoundaryGradVec(phi, gradPhi.gradUx, gradPhi.gradUy, gradPhi.gradUz);
+}
+
 VolumeField<Vec3>
 GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const
 {

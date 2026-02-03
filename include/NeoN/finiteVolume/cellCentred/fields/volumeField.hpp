@@ -110,30 +110,30 @@ public:
 
     VolumeField(const VolumeField& other);
 
-    VolumeField<ValueType>& operator=(const VolumeField<ValueType>& rhs)
-    {
-        if (this != &rhs)
+    /*    VolumeField<ValueType>& operator=(const VolumeField<ValueType>& rhs)
         {
-            NF_DEBUG_ASSERT(&this->mesh_ == &rhs.mesh_, "VolumeField mesh mismatch.");
-            this->name = rhs.name;
-            this->field_ = rhs.field_;
-            this->db_ = rhs.db_;
-            this->key = rhs.key;
-            this->fieldCollectionName = rhs.fieldCollectionName;
+            if (this != &rhs)
+            {
+                NF_DEBUG_ASSERT(&this->mesh_ == &rhs.mesh_, "VolumeField mesh mismatch.");
+                this->name = rhs.name;
+                this->field_ = rhs.field_;
+                this->db_ = rhs.db_;
+                this->key = rhs.key;
+                this->fieldCollectionName = rhs.fieldCollectionName;
+            }
+            return *this;
         }
-        return *this;
-    }
-
+    */
     VolumeField<ValueType>& operator-=(const ValueType rhs);
 
     VolumeField<ValueType>& operator+=(const ValueType rhs);
 
-    VolumeField<ValueType>& operator*=(const scalar rhs)
-        requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
+    /*    VolumeField<ValueType>& operator*=(const scalar rhs)
+            requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
 
-    [[nodiscard]] VolumeField<ValueType> operator*(const scalar rhs) const
-        requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
-
+        [[nodiscard]] VolumeField<ValueType> operator*(const scalar rhs) const
+            requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
+    */
     /**
      * @brief Corrects the boundary conditions of the surface field.
      *
@@ -141,6 +141,14 @@ public:
      * the field.
      */
     void correctBoundaryConditions();
+
+    void correctBoundaryConditions(const VolumeField<Vec3>& U, const VolumeField<scalar>& nu)
+    {
+        for (auto& boundaryCondition : boundaryConditions_)
+        {
+            boundaryCondition.correctBoundaryCondition(this->field_, U, nu);
+        }
+    }
 
     std::vector<VolumeBoundary<ValueType>> boundaryConditions() const
     {
@@ -152,7 +160,7 @@ private:
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
 };
-
+/*
 template<typename ValueType>
 inline VolumeField<ValueType>
 operator+(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
@@ -197,7 +205,7 @@ operator*(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
     mul(result.boundaryData().value(), rhs.boundaryData().value());
     return result;
 }
-/*
+
 template<typename ValueType>
 inline VolumeField<ValueType>
 operator/(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
@@ -208,7 +216,7 @@ operator/(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
     div(result.boundaryData().value(), rhs.boundaryData().value());
     return result;
 }
-*/
+
 inline VolumeField<scalar> magSqr(const VolumeField<Vec3>& field)
 {
     VolumeField<scalar> result(
@@ -228,5 +236,5 @@ inline VolumeField<scalar> magSqr(const VolumeField<Vec3>& field)
     );
     return result;
 }
-
+*/
 } // namespace NeoN

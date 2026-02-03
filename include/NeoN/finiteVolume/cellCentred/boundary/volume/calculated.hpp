@@ -19,6 +19,8 @@ class Calculated : public VolumeBoundaryFactory<ValueType>::template Register<Ca
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using CalculatedType = Calculated<ValueType>;
 
     Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)

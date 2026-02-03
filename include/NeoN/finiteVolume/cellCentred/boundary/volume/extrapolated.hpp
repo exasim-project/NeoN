@@ -62,6 +62,8 @@ class Extrapolated :
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using ExtrapolatedType = Extrapolated<ValueType>;
 
     Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)

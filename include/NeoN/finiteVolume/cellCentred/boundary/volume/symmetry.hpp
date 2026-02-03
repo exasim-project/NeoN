@@ -110,6 +110,8 @@ class Symmetry : public VolumeBoundaryFactory<ValueType>::template Register<Symm
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using SymmetryType = Symmetry<ValueType>;
 
     Symmetry(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)

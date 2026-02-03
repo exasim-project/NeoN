@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include "NeoN/core/database/fieldCollection.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-// #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
@@ -59,38 +58,7 @@ scalar computeUTau(
 
     return ut > 0.0 ? ut : 0.0;
 }
-/*
-template<typename ValueType>
-const VolumeField<ValueType>& lookupVolumeField(
-    const Field<scalar>& field,
-    const std::string& fieldName
-)
-{
-    if (!field.hasDatabase())
-    {
-        throw std::runtime_error {
-            "Database not set: make sure the field is registered in the database"
-        };
-    }
-    if (field.fieldCollectionName().empty())
-    {
-        throw std::runtime_error {
-            "Field collection name not set: make sure the field is registered in the database"
-        };
-    }
-    const auto& collection = VectorCollection::instance(field.db(), field.fieldCollectionName());
-    const auto matches = collection.find(
-        [&fieldName](const NeoN::Document& doc) { return NeoN::name(doc) == fieldName; }
-    );
 
-    if (matches.empty())
-    {
-        throw std::runtime_error {"VectorCollection does not contain field '" + fieldName + "'"};
-    }
-
-    return collection.fieldDoc(matches.front()).field<VolumeField<ValueType>>();
-}
-*/
 inline void setNutUSpaldingWallFunction(
     Field<scalar>& domainVector,
     const fvcc::VolumeField<Vec3>& U,
@@ -112,7 +80,7 @@ inline void setNutUSpaldingWallFunction(
         mesh.boundaryMesh().deltaCoeffs(),
         mesh.boundaryMesh().delta()
     );
-
+    //    NeoN::Logging::info("Before Loop {}",uInternal[0][0]);
     NeoN::parallelFor(
         domainVector.exec(),
         range,
@@ -159,15 +127,13 @@ public:
         : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = true}), mesh_(mesh)
     {}
 
-    void correctBoundaryCondition(Field<scalar>& domainVector) final
+    void correctBoundaryCondition(Field<scalar>& domainVector) final {}
+
+    void correctBoundaryCondition(
+        Field<scalar>& domainVector, const VolumeField<Vec3>& U, const VolumeField<scalar>& nu
+    ) final
     {
-        // const auto& uField = detail::lookupVolumeField<Vec3>(domainVector, "U");
-        // const auto& nuField = detail::lookupVolumeField<scalar>(domainVector, "nu");
-        auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh_);
-        auto volumeVec3BCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::Vec3>>(mesh_);
-        fvcc::VolumeField<NeoN::scalar> nuField(domainVector.exec(), "nu", mesh_, volumeBCs);
-        fvcc::VolumeField<NeoN::Vec3> uField(domainVector.exec(), "uField", mesh_, volumeVec3BCs);
-        detail::setNutUSpaldingWallFunction(domainVector, uField, nuField, mesh_, this->range());
+        detail::setNutUSpaldingWallFunction(domainVector, U, nu, mesh_, this->range());
     }
 
     static std::string name() { return "nutUSpaldingWallFunction"; }

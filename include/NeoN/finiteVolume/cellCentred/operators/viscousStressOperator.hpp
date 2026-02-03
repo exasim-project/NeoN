@@ -41,6 +41,7 @@ void computeViscousStressExp(
     const SurfaceInterpolation<Vec3>& surfaceInterpolationVec,
     const SurfaceField<scalar>& nuF,
     const SurfaceField<scalar>& nutF,
+    const SurfaceField<scalar>& nuTildeF,
     const VolumeField<Vec3>& U,
     const VolumeField<Vec3>& gradUx,
     const VolumeField<Vec3>& gradUy,
@@ -89,6 +90,7 @@ public:
         Vector<Vec3>& rhs,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -119,14 +121,16 @@ public:
         : dsl::OperatorMixin<VolumeField<Vec3>>(
             other.exec_, other.coeffs_, other.field_, other.type_
         ),
-          nuF_(other.nuF_), nutF_(other.nutF_), gradUx_(other.gradUx_), gradUy_(other.gradUy_),
-          gradUz_(other.gradUz_), viscousOp_(other.viscousOp_ ? other.viscousOp_->clone() : nullptr)
+          nuF_(other.nuF_), nutF_(other.nutF_), nuTildeF_(other.nuTildeF_), gradUx_(other.gradUx_),
+          gradUy_(other.gradUy_), gradUz_(other.gradUz_),
+          viscousOp_(other.viscousOp_ ? other.viscousOp_->clone() : nullptr)
     {}
 
     ViscousStressOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -134,7 +138,7 @@ public:
         Input input
     )
         : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
+          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
           viscousOp_(ViscousStressOperatorFactory::create(this->exec_, U.mesh(), input))
     {}
 
@@ -142,6 +146,7 @@ public:
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -149,7 +154,7 @@ public:
         std::unique_ptr<ViscousStressOperatorFactory> viscousOp
     )
         : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
+          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
           viscousOp_(std::move(viscousOp))
     {}
 
@@ -157,13 +162,15 @@ public:
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
         const VolumeField<Vec3>& gradUz
     )
         : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz), viscousOp_(nullptr)
+          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
+          viscousOp_(nullptr)
     {}
 
     void explicitOperation(Vector<Vec3>& source) const
@@ -172,7 +179,15 @@ public:
         Vector<Vec3> tmpsource(source.exec(), source.size(), zero<Vec3>());
         const auto operatorScaling = this->getCoefficient();
         viscousOp_->explicitOp(
-            tmpsource, nuF_, nutF_, this->field_, gradUx_, gradUy_, gradUz_, operatorScaling
+            tmpsource,
+            nuF_,
+            nutF_,
+            nuTildeF_,
+            this->field_,
+            gradUx_,
+            gradUy_,
+            gradUz_,
+            operatorScaling
         );
         source += tmpsource;
     }
@@ -202,6 +217,7 @@ private:
 
     const SurfaceField<scalar>& nuF_;
     const SurfaceField<scalar>& nutF_;
+    const SurfaceField<scalar>& nuTildeF_;
     const VolumeField<Vec3>& gradUx_;
     const VolumeField<Vec3>& gradUy_;
     const VolumeField<Vec3>& gradUz_;
@@ -235,6 +251,7 @@ public:
         Vector<Vec3>& rhs,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -245,6 +262,7 @@ public:
     VolumeField<Vec3> viscousStress(
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -256,6 +274,7 @@ public:
         VolumeField<Vec3>& result,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,
@@ -267,6 +286,7 @@ public:
         Vector<Vec3>& result,
         const SurfaceField<scalar>& nuF,
         const SurfaceField<scalar>& nutF,
+        const SurfaceField<scalar>& nuTildeF,
         const VolumeField<Vec3>& U,
         const VolumeField<Vec3>& gradUx,
         const VolumeField<Vec3>& gradUy,

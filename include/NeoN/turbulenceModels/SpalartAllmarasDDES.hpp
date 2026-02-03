@@ -6,13 +6,17 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+// #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
 namespace NeoN::turbulenceModels
 {
 
 using VolVectorField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
 using VolScalarField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
+using SurfScalarField = NeoN::finiteVolume::cellCentred::SurfaceField<scalar>;
 
 class SpalartAllmarasDDES
 {
@@ -41,36 +45,28 @@ public:
 
     scalar cw1() const;
 
-    void omega(
-        VolScalarField& omegaField,
-        const VolVectorField& gradUx,
-        const VolVectorField& gradUy,
-        const VolVectorField& gradUz
-    ) const;
-
-    void magGradU(
-        VolScalarField& magGradUField,
-        const VolVectorField& gradUx,
-        const VolVectorField& gradUy,
-        const VolVectorField& gradUz
-    ) const;
-
     void correctNut(
         VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu
     ) const;
-    /*
-        void computeProdSpDDES(
-            VolScalarField& productionField,
-            VolScalarField& spCoeffField,
-            const VolScalarField& nuTildeField,
-            const VolScalarField& nuField,
-            const VolScalarField& omegaField,
-            const VolScalarField& wallDistanceField,
-            const VolScalarField& magGradUField,
-            const VolScalarField& deltaField,
-            const VolScalarField& gradNuTildeMagSqrField
-        ) const;
-    */
+
+    void correctNut(
+        VolScalarField& nutField,
+        SurfScalarField& nutF,
+        SurfScalarField& nuEff,
+        const VolScalarField& nuTilde,
+        const VolScalarField& nu,
+        const SurfScalarField& nuF
+    ) const;
+
+    void calcNuTildeDiffusionCoeff(
+        VolScalarField& nuTilde,
+        const SurfScalarField& nuF,
+        SurfScalarField& surfNuTilde,
+        SurfScalarField& nuTildeEffF
+    ) const;
+
+    void calcMagSqrVec(VolScalarField& magSqr, const VolVectorField& in) const;
+
     void computeProdSpDDES(
         VolScalarField& productionField,
         VolScalarField& spCoeffField,

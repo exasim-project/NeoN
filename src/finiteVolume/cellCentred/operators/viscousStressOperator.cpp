@@ -20,6 +20,7 @@ Vec3 fusedViscousStressFlux(
     const scalar magSf,
     const scalar nuFace,
     const scalar nutFace,
+    const scalar nuTildeFace,
     const Vec3& dUdn, // snGrad(U)
     const Vec3& gUx,  // grad(Ux) at face
     const Vec3& gUy,
@@ -36,7 +37,7 @@ Vec3 fusedViscousStressFlux(
     F_lap *= (nutFace * magSf);
 
     // -------------------------
-    // dev(2 sym gradU) part
+    // -nu*dev2(T(gradU)) part
     // -------------------------
 
     const scalar dUx_dx = gUx[0], dUx_dy = gUx[1], dUx_dz = gUx[2];
@@ -46,23 +47,35 @@ Vec3 fusedViscousStressFlux(
     const scalar divU = dUx_dx + dUy_dy + dUz_dz;
 
     constexpr scalar twoThird = scalar(2.0 / 3.0);
-    constexpr scalar half = scalar(0.5);
 
     // symm(gradU)
-    const scalar Sxy = half * (dUx_dy + dUy_dx);
-    const scalar Sxz = half * (dUx_dz + dUz_dx);
-    const scalar Syz = half * (dUy_dz + dUz_dy);
+    // const scalar Sxy = (dUx_dy + dUy_dx);
+    // const scalar Sxz = (dUx_dz + dUz_dx);
+    // const scalar Syz = (dUy_dz + dUz_dy);
 
     // dev2(symmTensor) rows
-    const Vec3 tauX {nuFace * (dUx_dx - twoThird * divU), nuFace * Sxy, nuFace * Sxz};
-    const Vec3 tauY {nuFace * Sxy, nuFace * (dUy_dy - twoThird * divU), nuFace * Syz};
-    const Vec3 tauZ {nuFace * Sxz, nuFace * Syz, nuFace * (dUz_dz - twoThird * divU)};
+    const Vec3 tauX {nuFace * (dUx_dx - twoThird * divU), nuFace * dUy_dx, nuFace * dUz_dx};
+    const Vec3 tauY {nuFace * dUx_dy, nuFace * (dUy_dy - twoThird * divU), nuFace * dUz_dy};
+    const Vec3 tauZ {nuFace * dUx_dz, nuFace * dUy_dz, nuFace * (dUz_dz - twoThird * divU)};
 
     // flux components = Sf · tauRow
     Vec3 t_dev;
     t_dev[0] = Sf[0] * tauX[0] + Sf[1] * tauX[1] + Sf[2] * tauX[2];
     t_dev[1] = Sf[0] * tauY[0] + Sf[1] * tauY[1] + Sf[2] * tauY[2];
     t_dev[2] = Sf[0] * tauZ[0] + Sf[1] * tauZ[1] + Sf[2] * tauZ[2];
+
+    // -------------------------
+    // Reynoldsstress part for div(R)
+    // -------------------------
+
+    const scalar chi = nuTildeFace / nuFace;
+    const scalar chi3 = chi * chi * chi;
+
+    const scalar fv1 = chi3 / (chi3 + scalar(357.911)); // pow3(Cv1) = 357.911
+
+    const scalar kFace =
+        Kokkos::cbrt(fv1) * nuTildeFace * Kokkos::sqrt(2.0 / 0.09); // Cmu = 0.09
+                                                                    //* magSymmGradUFace;
 
     return F_lap - t_dev;
 }
@@ -93,6 +106,7 @@ void GaussViscousStress::explicitOp(
     Vector<Vec3>& rhs,
     const SurfaceField<scalar>& nuF,
     const SurfaceField<scalar>& nutF,
+    const SurfaceField<scalar>& nuTildeF,
     const VolumeField<Vec3>& U,
     const VolumeField<Vec3>& gradUx,
     const VolumeField<Vec3>& gradUy,
@@ -105,6 +119,7 @@ void GaussViscousStress::explicitOp(
         surfaceInterpolationVec_,
         nuF,
         nutF,
+        nuTildeF,
         U,
         gradUx,
         gradUy,
@@ -117,6 +132,7 @@ void GaussViscousStress::explicitOp(
 VolumeField<Vec3> GaussViscousStress::viscousStress(
     const SurfaceField<scalar>& nuF,
     const SurfaceField<scalar>& nutF,
+    const SurfaceField<scalar>& nuTildeF,
     const VolumeField<Vec3>& U,
     const VolumeField<Vec3>& gradUx,
     const VolumeField<Vec3>& gradUy,
@@ -133,6 +149,7 @@ VolumeField<Vec3> GaussViscousStress::viscousStress(
         surfaceInterpolationVec_,
         nuF,
         nutF,
+        nuTildeF,
         U,
         gradUx,
         gradUy,
@@ -151,6 +168,7 @@ void computeViscousStressExp(
     const SurfaceInterpolation<Vec3>& surfaceInterpolationVec,
     const SurfaceField<scalar>& nuF,
     const SurfaceField<scalar>& nutF,
+    const SurfaceField<scalar>& nuTildeF,
     const VolumeField<Vec3>& U,
     const VolumeField<Vec3>& gradUx,
     const VolumeField<Vec3>& gradUy,
@@ -179,11 +197,12 @@ void computeViscousStressExp(
     const auto [owner, neighbour, faceCells] =
         views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
-    const auto [Sf, magSf, nuFace, nutFace, dUdnF, gUx, gUy, gUz, vol, rhsV] = views(
+    const auto [Sf, magSf, nuFace, nutFace, nuTildeFace, dUdnF, gUx, gUy, gUz, vol, rhsV] = views(
         mesh.faceAreas(),
         mesh.magFaceAreas(),
         nuF.internalVector(),
         nutF.internalVector(),
+        nuTildeF.internalVector(),
         dUdn.internalVector(),
         gUxF.internalVector(),
         gUyF.internalVector(),
@@ -206,7 +225,15 @@ void computeViscousStressExp(
             const localIdx n = neighbour[f];
 
             const Vec3 flux = fusedViscousStressFlux(
-                Sf[f], magSf[f], nuFace[f], nutFace[f], dUdnF[f], gUx[f], gUy[f], gUz[f]
+                Sf[f],
+                magSf[f],
+                nuFace[f],
+                nutFace[f],
+                nuTildeFace[f],
+                dUdnF[f],
+                gUx[f],
+                gUy[f],
+                gUz[f]
             );
 
             atomicAddVec3(&rhsV[o], flux);
@@ -225,7 +252,15 @@ void computeViscousStressExp(
             const localIdx own = faceCells[f - nIF];
 
             const Vec3 flux = fusedViscousStressFlux(
-                Sf[f], magSf[f], nuFace[f], nutFace[f], dUdnF[f], gUx[f], gUy[f], gUz[f]
+                Sf[f],
+                magSf[f],
+                nuFace[f],
+                nutFace[f],
+                nuTildeFace[f],
+                dUdnF[f],
+                gUx[f],
+                gUy[f],
+                gUz[f]
             );
 
             atomicAddVec3(&rhsV[own], flux);
@@ -242,6 +277,27 @@ void computeViscousStressExp(
         NEON_LAMBDA(const localIdx c) { rhsV[c] *= operatorScaling[c] / vol[c]; },
         "viscousStressFused_Normalize"
     );
+    /*    constexpr scalar twoThird = scalar(2.0 / 3.0);
+        const auto [gUxV,gUyV,gUzV] =
+    views(gradUx.internalVector(),gradUy.internalVector(),gradUz.internalVector()); parallelFor(
+        exec,
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx c)
+        {
+            const Vec3 gUx2 = gUxV[c];
+            const Vec3 gUy2 = gUyV[c];
+            const Vec3 gUz2 = gUzV[c];
+
+            const scalar divU = gUx2[0] + gUy2[1] + gUz2[2];
+
+            rhsV[c] = Vec3(
+                (gUx2[0] - twoThird * divU),
+                gUy2[0],
+                gUz2[0]
+            );
+        },
+        "tauX_cell"
+    ); */
 }
 
 } // namespace NeoN::finiteVolume::cellCentred

@@ -49,6 +49,7 @@ target_sources(
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
+          "finiteVolume/cellCentred/operators/sourceUTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/operators/viscousStressOperator.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"

@@ -19,6 +19,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/sourceUTerm.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp"
 
 namespace NeoN::dsl::exp
@@ -48,9 +49,12 @@ SpatialOperator<Vec3> grad(fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
 
+SpatialOperator<scalar> sourceU(fvcc::VolumeField<scalar>& coeff);
+
 SpatialOperator<Vec3> viscousStress(
     const fvcc::SurfaceField<scalar>& nuF,
     const fvcc::SurfaceField<scalar>& nutF,
+    const fvcc::SurfaceField<scalar>& nuTildeF,
     const fvcc::VolumeField<Vec3>& U,
     const fvcc::VolumeField<Vec3>& gradUx,
     const fvcc::VolumeField<Vec3>& gradUy,

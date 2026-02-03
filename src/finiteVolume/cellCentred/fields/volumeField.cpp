@@ -88,7 +88,7 @@ VolumeField<ValueType>& VolumeField<ValueType>::operator-=(const ValueType rhs)
     correctBoundaryConditions();
     return *this;
 }
-
+/*
 template<typename ValueType>
 VolumeField<ValueType>& VolumeField<ValueType>::operator*=(const scalar rhs)
     requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; }
@@ -107,7 +107,7 @@ VolumeField<ValueType> VolumeField<ValueType>::operator*(const scalar rhs) const
     result *= rhs;
     return result;
 }
-
+*/
 template<typename ValueType>
 void VolumeField<ValueType>::correctBoundaryConditions()
 {

@@ -54,6 +54,121 @@ void SpalartAllmarasDDES::correctNut(
     nutField.correctBoundaryConditions();
 }
 
+void SpalartAllmarasDDES::correctNut(
+    VolScalarField& nutField,
+    SurfScalarField& nutF,
+    SurfScalarField& nuEffF,
+    const VolScalarField& nuTilde,
+    const VolScalarField& nu,
+    const SurfScalarField& nuF
+) const
+{
+    // --- Internal data
+    const auto& nuTildeI = nuTilde.internalVector();
+    const auto& nuI = nu.internalVector();
+    auto& nutI = nutField.internalVector();
+
+    NF_DEBUG_ASSERT(nuTildeI.size() == nuI.size(), "nuTilde / nu size mismatch");
+    NF_DEBUG_ASSERT(nutI.size() == nuTildeI.size(), "nut size mismatch");
+
+    const scalar cv1 = coeffs_.Cv1;
+    const scalar cv1Cubed = cv1 * cv1 * cv1;
+
+    const auto [nuTildeV, nuV, nutV] = views(nuTildeI, nuI, nutI);
+
+    // --- Internal nut update
+    parallelFor(
+        exec_,
+        {0, nutI.size()},
+        NEON_LAMBDA(const localIdx i) {
+            const scalar chi = nuTildeV[i] / nuV[i];
+            const scalar chi3 = chi * chi * chi;
+            nutV[i] = nuTildeV[i] * chi3 / (chi3 + cv1Cubed);
+        },
+        "SA-DDES::correctNut::internal"
+    );
+
+    // --- Boundary conditions MUST be applied before face usage
+    nutField.correctBoundaryConditions();
+
+    // --- Interpolate nut to faces (API-correct form)
+    fvcc::SurfaceInterpolation<scalar> surfInterp(
+        exec_, nutField.mesh(), NeoN::TokenList({std::string("linear")})
+    );
+
+    surfInterp.interpolate(nutField, nutF);
+
+    // --- Build nuEffF = nuF + nutF (face algebra)
+    {
+        const auto& nuFI = nuF.internalVector();
+        const auto& nutFI = nutF.internalVector();
+        auto& nuEffFI = nuEffF.internalVector();
+
+        NF_DEBUG_ASSERT(nuFI.size() == nutFI.size(), "nuF / nutF size mismatch");
+        NF_DEBUG_ASSERT(nuEffFI.size() == nuFI.size(), "nuEffF size mismatch");
+
+        const auto [nuVf, nutVf, nuEffVf] = views(nuFI, nutFI, nuEffFI);
+
+        parallelFor(
+            exec_,
+            {0, nuEffFI.size()},
+            NEON_LAMBDA(const localIdx f) { nuEffVf[f] = nuVf[f] + nutVf[f]; },
+            "SA-DDES::correctNut::nuEffF"
+        );
+    }
+
+    nuEffF.name = "nuEff";
+}
+
+void SpalartAllmarasDDES::calcNuTildeDiffusionCoeff(
+    VolScalarField& nuTilde,
+    const SurfScalarField& nuF,
+    SurfScalarField& surfNuTilde,
+    SurfScalarField& nuTildeEffF
+) const
+{
+    nuTilde.correctBoundaryConditions();
+
+    fvcc::SurfaceInterpolation<scalar> surfInterpol(
+        exec_, nuTilde.mesh(), NeoN::TokenList({std::string("linear")})
+    );
+
+    surfInterpol.interpolate(nuTilde, surfNuTilde);
+
+    const scalar invSigmaNut = scalar(1) / coeffs_.sigmaNut;
+
+    const auto& nuFI = nuF.internalVector();
+    const auto& nuTildeFI = surfNuTilde.internalVector();
+    auto& nuTildeEffFI = nuTildeEffF.internalVector();
+
+    const auto [nuVf, nuTildeVf, nuTildeEffVf] = views(nuFI, nuTildeFI, nuTildeEffFI);
+
+    parallelFor(
+        exec_,
+        {0, nuTildeEffFI.size()},
+        NEON_LAMBDA(const localIdx f) { nuTildeEffVf[f] = invSigmaNut * (nuVf[f] + nuTildeVf[f]); },
+        "SA-DDES::calcNuTildeDiffusionCoeff"
+    );
+
+    nuTildeEffF.name = "nuTildeEff";
+}
+
+void SpalartAllmarasDDES::calcMagSqrVec(VolScalarField& magSqr, const VolVectorField& in) const
+{
+
+    const auto [value, magV] = views(in.internalVector(), magSqr.internalVector());
+
+    parallelFor(
+        exec_,
+        {0, in.internalVector().size()},
+        NEON_LAMBDA(const localIdx i) {
+            magV[i] =
+                value[i][0] * value[i][0] + value[i][1] * value[i][1] + value[i][2] * value[i][2];
+        },
+        "SA-DDES::magSqrGradNuTilde::internal"
+    );
+}
+
 void SpalartAllmarasDDES::computeProdSpDDES(
     VolScalarField& productionField,
     VolScalarField& spCoeffField,
@@ -182,8 +297,9 @@ void SpalartAllmarasDDES::computeProdSpDDES(
             // =====================================================
             // fw
             // =====================================================
-            const scalar r =
-                Kokkos::min(nuT / (sTilde * kappa2 * invSqrdTilde + ROOTVSMALL), scalar(10));
+            const scalar r = Kokkos::min(
+                nuT / (Kokkos::max(sTilde, ROOTVSMALL) * kappa2 * dTilde * dTilde), scalar(10)
+            );
 
             const scalar r6 = r * r * r * r * r * r;
             const scalar g = r + Cw2 * (r6 - r);
@@ -201,4 +317,5 @@ void SpalartAllmarasDDES::computeProdSpDDES(
         "SA-DDES::prod+Sp+omega+magGradU/fused"
     );
 }
+
 } // namespace NeoN::turbulenceModels
