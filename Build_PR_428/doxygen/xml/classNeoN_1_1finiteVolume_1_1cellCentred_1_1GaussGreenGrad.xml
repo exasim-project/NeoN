@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="88" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="88" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="94" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a51c658bf78c8680727235c7f9784d213" prot="private" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="89" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="89" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="95" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="95" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -166,10 +166,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="53" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1affcd57db4a848e5cdb4a1bb6061944e6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a2edf1f1a1fd4c2fc86edac8bfe432b20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenGrad::grad</definition>
-        <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff coeff, VolumeField&lt; Vec3 &gt; &amp;in) const</argsstring>
+        <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, VolumeField&lt; Vec3 &gt; &amp;gradPhi, const dsl::Coeff operatorScaling=dsl::Coeff {}) const</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenGrad::grad</qualifiedname>
         <param>
@@ -177,12 +177,13 @@
           <declname>phi</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
-          <declname>coeff</declname>
+          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>gradPhi</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>in</declname>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
+          <declname>operatorScaling</declname>
+          <defval><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref> {}</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -190,7 +191,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="64" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="64" bodyend="67"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="63" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1abb574d18dae731d34506951bdb6db48b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenGrad::grad</definition>
+        <argsstring>(const VolumeField&lt; Vec3 &gt; &amp;phi, GradVecField &amp;gradPhi, const dsl::Coeff operatorScaling=dsl::Coeff {}) const</argsstring>
+        <name>grad</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenGrad::grad</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>phi</declname>
+        </param>
+        <param>
+          <type><ref refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1GradVecField" kindref="compound">GradVecField</ref> &amp;</type>
+          <declname>gradPhi</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
+          <declname>operatorScaling</declname>
+          <defval><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref> {}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="69" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ac3f35af0b681d9c7792a019f61f0c4aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
@@ -213,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="76" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="82" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a1221c4c7a39c45e14223d8a7c062adcb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1GradVecField" kindref="compound">GradVecField</ref></type>
@@ -236,7 +264,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="79" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="85" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ad90090e19c0e9eae353438aa8338df86" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" kindref="compound">GradOperatorFactory</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &gt;</type>
@@ -250,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="81" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="81" bodyend="84"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="87" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="87" bodyend="90"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -279,7 +307,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="24" bodyend="90"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" bodystart="24" bodyend="96"/>
     <listofallmembers>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ac40a48e23e9636b227cd3f2483334223" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>Base</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ad90090e19c0e9eae353438aa8338df86" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>clone</name></member>
@@ -287,7 +315,8 @@
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1aec87900934419cd1805b792dc3521dbd" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>GaussGreenGrad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a295ef0dcce4802aa8eddebcfd7732ab4" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1af120954eb6582febe60c230b1b05b693" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1affcd57db4a848e5cdb4a1bb6061944e6" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a2edf1f1a1fd4c2fc86edac8bfe432b20" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1abb574d18dae731d34506951bdb6db48b" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ac3f35af0b681d9c7792a019f61f0c4aa" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a1221c4c7a39c45e14223d8a7c062adcb" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>grad</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a507a4b6ebb200eae03b80cec59342bd0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenGrad</scope><name>name</name></member>
