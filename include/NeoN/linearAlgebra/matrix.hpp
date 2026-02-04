@@ -256,6 +256,20 @@ void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
 );
 
+/** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
+ * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
+ * entries are identical
+ */
+[[nodiscard]] Vector<scalar>
+scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const MatrixIterator<localIdx>& mi, const Vector<scalar>&);
+
+void scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const MatrixIterator<localIdx>& mi,
+    const Vector<scalar>& a,
+    Vector<scalar>& out
+);
+
 /* @brief given Matrix<Vec3> this function returns a component Matrix<scalar>*/
 template<unsigned int I>
 [[nodiscard]] auto get(const CSRMatrix<Vec3, localIdx>& in)

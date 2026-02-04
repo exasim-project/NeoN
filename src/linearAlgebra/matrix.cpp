@@ -170,6 +170,42 @@ void scaledInverseDiag(
     );
 }
 
+Vector<scalar> scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const MatrixIterator<localIdx>& mi,
+    const Vector<scalar>& a
+)
+{
+    auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
+    scaledInverseDiag(mtx, mi, a, diag);
+    return diag;
+}
+
+void scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const MatrixIterator<localIdx>& mi,
+    const Vector<scalar>& a,
+    Vector<scalar>& out
+)
+{
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+
+    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
+        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
+
+    parallelFor(
+        mtx.exec(),
+        {0, mtx.nRows()},
+        NEON_LAMBDA(const localIdx rowi) {
+            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            {
+                auto diagIdx mi.diagIdx(rowi);
+                outV[rowi] = aV[rowi] * inv(matrixV[diagIdx][0]);
+            }
+        }
+    );
+}
+
 #define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
     template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>;                            \
     template Vector<VALUETYPE>                                                                     \
