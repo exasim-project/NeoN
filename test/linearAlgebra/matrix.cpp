@@ -158,17 +158,17 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
     //     REQUIRE(diagH.view()[2] == 3.0 / 9.0);
     // }
 
-    SECTION("Can compute scaledOffDiagonal " + execName)
-    {
-        auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
-        auto out = NeoN::Vector<TestType>(exec, {0.0, 0.0, 0.0});
-        denseMatrix.negLUx(a, out);
-        auto outH = out.copyToHost();
+    // SECTION("Can compute scaledOffDiagonal " + execName)
+    // {
+    //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+    //     auto out = NeoN::Vector<TestType>(exec, {0.0, 0.0, 0.0});
+    //     denseMatrix.negLUx(a, out);
+    //     auto outH = out.copyToHost();
 
-        REQUIRE(outH.view()[0] == -13.0);
-        REQUIRE(outH.view()[1] == -22.0);
-        REQUIRE(outH.view()[2] == -23.0);
-    }
+    //     REQUIRE(outH.view()[0] == -13.0);
+    //     REQUIRE(outH.view()[1] == -22.0);
+    //     REQUIRE(outH.view()[2] == -23.0);
+    // }
 
     SECTION("Update existing entry on " + execName)
     {

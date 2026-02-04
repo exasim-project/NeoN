@@ -103,21 +103,26 @@ Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx)
     return upper;
 }
 
-template<typename ValueType, typename IndexType>
-void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const
+void negLUx(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<scalar>& rAU,
+    const Vector<scalar>& vol,
+    Vector<Vec3>& out
+)
 {
-    NF_ASSERT(nRows() == a.size(), "Dimension mismatch");
-    NF_ASSERT(nRows() == out.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    auto [rowOffsV, colIdxV, matrixV, outV] =
-        views(sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_, out);
-    const auto aV = a.view();
+    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV] =
+        views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a);
+    auto outV = out.view();
 
     parallelFor(
-        values_.exec(),
-        {0, nRows()},
+        mtx.exec(),
+        {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
-            outV[rowi] = zero<ValueType>();
+            outV[rowi] = zero<Vec3>();
             for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
             {
                 auto colI = colIdxV[i];
@@ -126,6 +131,9 @@ void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<Val
                     outV[rowi] -= matrixV[i] * aV[colI];
                 }
             }
+
+            outV[rowi] += aV[rowi];
+            outV[rowi] *= rAUV[rowi] / volV[rowi];
         }
     );
 }

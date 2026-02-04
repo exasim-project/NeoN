@@ -226,11 +226,6 @@ public:
      */
     [[nodiscard]] Vector<ValueType> diag() const;
 
-    /** @brief computes out = -(L+U) x
-     *
-     * @notes explicitly sets out values to zero
-     */
-    void negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const;
 
 private:
 
@@ -269,13 +264,16 @@ template<unsigned int I>
     return CSRMatrix<scalar, localIdx>(get<I>(in.values()), sparsity);
 }
 
-// TODO add this
-// template<typename ValueType, typename IndexType>
-// void faceIterateNegLUx(
-//         const Matrix<ValueType, IndexType>& mat,
-//         const MatrixIterator& mi,
-//         const Vector<ValueType>& a,
-//         Vector<ValueType>& out
-//     ) const;
+/** @brief computes out = -(L+U) x
+ *
+ * @notes explicitly sets out values to zero
+ */
+void negLUx(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<scalar>& rAU,
+    const Vector<scalar>& V,
+    Vector<Vec3>& out
+);
 
 } // namespace NeoN
