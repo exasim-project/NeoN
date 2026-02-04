@@ -155,11 +155,11 @@
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00166}00166\ \textcolor{comment}{/*@brief\ helper\ function\ that\ creates\ a\ zero\ initialised\ linear\ system\ based\ on\ given\ sparsity}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00167}00167\ \textcolor{comment}{\ *\ pattern}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00168}00168\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00169}00169\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00170}\mbox{\hyperlink{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a}{00170}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ Matrix<ValueType,\ SparsityType>}}>\ \mbox{\hyperlink{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a}{createEmptyLinearSystem}}(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00169}00169\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixType\ =\ CSRMatrix<ValueType,\ localIdx>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00170}\mbox{\hyperlink{namespaceNeoN_1_1la_a8e5db5d8c9c121d659bc66b6b44eba02}{00170}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ MatrixType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a8e5db5d8c9c121d659bc66b6b44eba02}{createEmptyLinearSystem}}(}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00172}00172\ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ sparsity,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00173}00173\ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ bsparsity}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00172}00172\ \ \ \ \ std::shared\_ptr<const\ typename\ MatrixType::MatrixSparsityType>\ sparsity,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00173}00173\ \ \ \ \ std::shared\_ptr<const\ typename\ MatrixType::MatrixSparsityType>\ bsparsity}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00174}00174\ )}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00175}00175\ \{}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00176}00176\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a0e2245854aad317731034ac549956117}{nCells}}()\ ==\ sparsity-\/>rows(),\ \textcolor{stringliteral}{"{}Inconsistent\ sparsity\ pattern"{}});}

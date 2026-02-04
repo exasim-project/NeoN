@@ -24,7 +24,7 @@ var searchData=
   ['demangle_2ehpp_21',['demangle.hpp',['../demangle_8hpp.html',1,'']]],
   ['derivedclass_22',['derivedClass',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a5ab28273ae4c40a351d732aa503125f2',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['derivedclassdocumentation_23',['DerivedClassDocumentation',['../classNeoN_1_1DerivedClassDocumentation.html',1,'NeoN']]],
-  ['diag_24',['diag',['../classNeoN_1_1la_1_1Matrix.html#a979c3429572d3ca0afad7dc8acf90475',1,'NeoN::la::Matrix::diag() const'],['../classNeoN_1_1la_1_1Matrix.html#a979c3429572d3ca0afad7dc8acf90475',1,'NeoN::la::Matrix::diag() const']]],
+  ['diag_24',['diag',['../classNeoN_1_1la_1_1Matrix.html#a979c3429572d3ca0afad7dc8acf90475',1,'NeoN::la::Matrix']]],
   ['diagidx_25',['diagIdx',['../classNeoN_1_1la_1_1MatrixIterator.html#a9facd607bc9b16dddc86ccd19e16b80d',1,'NeoN::la::MatrixIterator']]],
   ['diagoffset_26',['diagoffset',['../classNeoN_1_1la_1_1MatrixIterator.html#a12ec78317fad1089b1bc629bc72fea72',1,'NeoN::la::MatrixIterator::diagOffset() const'],['../classNeoN_1_1la_1_1MatrixIterator.html#a3381adcd195a1c8189ac813475b584df',1,'NeoN::la::MatrixIterator::diagOffset()']]],
   ['diagonalsolver_27',['diagonalsolver',['../classNeoN_1_1la_1_1DiagonalSolver.html',1,'NeoN::la::DiagonalSolver'],['../classNeoN_1_1la_1_1DiagonalSolver.html#a825b7a56f08d36b4517721d80c64e1fa',1,'NeoN::la::DiagonalSolver::DiagonalSolver()']]],

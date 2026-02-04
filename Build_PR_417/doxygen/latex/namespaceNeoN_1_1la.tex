@@ -35,10 +35,14 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Sparsity\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, Sparsity\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sparsity, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ bsparsity)
+{\footnotesize template$<$typename Value\+Type , typename Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a8e5db5d8c9c121d659bc66b6b44eba02}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ const typename Matrix\+Type\+::\+Matrix\+Sparsity\+Type $>$ sparsity, std\+::shared\+\_\+ptr$<$ const typename Matrix\+Type\+::\+Matrix\+Sparsity\+Type $>$ bsparsity)
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}{upper}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&mtx)
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_adf0e2e0fd0c0edb0caf3488bcc1ec63c}{upper}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&)
 \begin{DoxyCompactList}\small\item\em extract the upper triangular of the matrix \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5f10a5012c985982b6ab270fdc14f98b}{scaled\+Inverse\+Diag}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&)
+\begin{DoxyCompactList}\small\item\em computes the inverted diagonal of a matrix and scales it by a, ie. a\texorpdfstring{$\ast$}{*}\+D\texorpdfstring{$^\wedge$}{\string^}-\/1 \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1la_adb9cd225a8925a20dc28f935ce424d96}{scaled\+Inverse\+Diag}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&a, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&out)
+\item 
 {\footnotesize template$<$unsigned int I$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_1_1la_a540a390c884b722c4f06db6d5ed6aa44}{get}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in)
 \item 
 {\footnotesize template$<$typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1MatrixIterator}{Matrix\+Iterator}}$<$ Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a85f5379340f066b86e4386c7d4bc4f65}{create\+Sparsity\+Pattern\+Matrix\+Iterator}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
@@ -67,7 +71,7 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00244}{244}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
@@ -79,12 +83,12 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00271}{271}} of file \mb
 {\footnotesize\ttfamily template$<$typename Matrix\+Type $>$ \\
 void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const Matrix\+Type \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a}\label{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a} 
+\Hypertarget{namespaceNeoN_1_1la_a8e5db5d8c9c121d659bc66b6b44eba02}\label{namespaceNeoN_1_1la_a8e5db5d8c9c121d659bc66b6b44eba02} 
 \index{NeoN::la@{NeoN::la}!createEmptyLinearSystem@{createEmptyLinearSystem}}
 \index{createEmptyLinearSystem@{createEmptyLinearSystem}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{createEmptyLinearSystem()}{createEmptyLinearSystem()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, Sparsity\+Type $>$ $>$ Neo\+N\+::la\+::create\+Empty\+Linear\+System (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{sparsity,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{bsparsity }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Matrix\+Type $>$ Neo\+N\+::la\+::create\+Empty\+Linear\+System (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::shared\+\_\+ptr$<$ const typename Matrix\+Type\+::\+Matrix\+Sparsity\+Type $>$}]{sparsity,  }\item[{std\+::shared\+\_\+ptr$<$ const typename Matrix\+Type\+::\+Matrix\+Sparsity\+Type $>$}]{bsparsity }\end{DoxyParamCaption})}
 
 
 
@@ -106,13 +110,32 @@ auto Neo\+N\+::la\+::get (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00275}{275}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00266}{266}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f}\label{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f} 
 \index{NeoN::la@{NeoN::la}!packVecValues@{packVecValues}}
 \index{packVecValues@{packVecValues}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{packVecValues()}{packVecValues()}}
 {\footnotesize\ttfamily void Neo\+N\+::la\+::pack\+Vec\+Values (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{in,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1la_a5f10a5012c985982b6ab270fdc14f98b}\label{namespaceNeoN_1_1la_a5f10a5012c985982b6ab270fdc14f98b} 
+\index{NeoN::la@{NeoN::la}!scaledInverseDiag@{scaledInverseDiag}}
+\index{scaledInverseDiag@{scaledInverseDiag}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{scaledInverseDiag()}{scaledInverseDiag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::la\+::scaled\+Inverse\+Diag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{ }\end{DoxyParamCaption})}
+
+
+
+computes the inverted diagonal of a matrix and scales it by a, ie. a\texorpdfstring{$\ast$}{*}\+D\texorpdfstring{$^\wedge$}{\string^}-\/1 
+
+\begin{DoxyNote}{Note}
+this function is a specialized function for CSR$<$\+Vec3$>$ matrices assuming all diagonal entries are identical 
+\end{DoxyNote}
+\Hypertarget{namespaceNeoN_1_1la_adb9cd225a8925a20dc28f935ce424d96}\label{namespaceNeoN_1_1la_adb9cd225a8925a20dc28f935ce424d96} 
+\index{NeoN::la@{NeoN::la}!scaledInverseDiag@{scaledInverseDiag}}
+\index{scaledInverseDiag@{scaledInverseDiag}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{scaledInverseDiag()}{scaledInverseDiag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::scaled\+Inverse\+Diag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{a,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{out }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1la_ad6d454dd6fb2e31259a6349219c08629}\label{namespaceNeoN_1_1la_ad6d454dd6fb2e31259a6349219c08629} 
 \index{NeoN::la@{NeoN::la}!unpackColIdx@{unpackColIdx}}
@@ -138,12 +161,12 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00275}{275}} of file \mb
 \doxysubsubsection{\texorpdfstring{unpackVecValues()}{unpackVecValues()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::la\+::unpack\+Vec\+Values (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{in }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}\label{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4} 
+\Hypertarget{namespaceNeoN_1_1la_adf0e2e0fd0c0edb0caf3488bcc1ec63c}\label{namespaceNeoN_1_1la_adf0e2e0fd0c0edb0caf3488bcc1ec63c} 
 \index{NeoN::la@{NeoN::la}!upper@{upper}}
 \index{upper@{upper}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{upper()}{upper()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::la\+::upper (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&}]{mtx }\end{DoxyParamCaption})}
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::la\+::upper (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&}]{ }\end{DoxyParamCaption})}
 
 
 
