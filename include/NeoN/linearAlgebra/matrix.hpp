@@ -6,6 +6,7 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "sparsityPattern.hpp"
+#include "matrixIterator.hpp"
 
 #include <type_traits>
 

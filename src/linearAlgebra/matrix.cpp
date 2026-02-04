@@ -193,15 +193,14 @@ void scaledInverseDiag(
     auto [outV, rowOffsV, colIdxV, matrixV, aV] =
         views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
 
+    const auto diaOffsV = mi.diagOffset().view();
+
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
-            {
-                auto diagIdx mi.diagIdx(rowi);
-                outV[rowi] = aV[rowi] * inv(matrixV[diagIdx][0]);
-            }
+            auto diagIdx = rowOffsV[rowi] + diaOffsV[rowi];
+            outV[rowi] = aV[rowi] * inv(matrixV[diagIdx][0]);
         }
     );
 }
