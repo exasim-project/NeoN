@@ -37,6 +37,8 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \item 
 {\footnotesize template$<$typename Value\+Type , typename Sparsity\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, Sparsity\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a3bf8f9ed004a739de90cbbb47e739d1a}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sparsity, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ bsparsity)
 \item 
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}{upper}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&mtx)
+\begin{DoxyCompactList}\small\item\em extract the upper triangular of the matrix \end{DoxyCompactList}\item 
 {\footnotesize template$<$unsigned int I$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_1_1la_a540a390c884b722c4f06db6d5ed6aa44}{get}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in)
 \item 
 {\footnotesize template$<$typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1MatrixIterator}{Matrix\+Iterator}}$<$ Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a85f5379340f066b86e4386c7d4bc4f65}{create\+Sparsity\+Pattern\+Matrix\+Iterator}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
@@ -65,7 +67,7 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00250}{250}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
@@ -104,7 +106,7 @@ auto Neo\+N\+::la\+::get (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00254}{254}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00275}{275}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f}\label{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f} 
 \index{NeoN::la@{NeoN::la}!packVecValues@{packVecValues}}
@@ -136,3 +138,17 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00254}{254}} of file \mb
 \doxysubsubsection{\texorpdfstring{unpackVecValues()}{unpackVecValues()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::la\+::unpack\+Vec\+Values (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{in }\end{DoxyParamCaption})}
 
+\Hypertarget{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}\label{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4} 
+\index{NeoN::la@{NeoN::la}!upper@{upper}}
+\index{upper@{upper}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{upper()}{upper()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::la\+::upper (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&}]{mtx }\end{DoxyParamCaption})}
+
+
+
+extract the upper triangular of the matrix 
+
+\begin{DoxyNote}{Note}
+this function is meant for testing purposes, it will recompute upper offsets 
+\end{DoxyNote}

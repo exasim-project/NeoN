@@ -64,8 +64,8 @@ The following labels and their meaning are discussed here:
 
  * ``ready-for-review``: Signal that the PR is ready for review.
  * ``ready-to-merge``: Signal that the work on this PR has been finished and can be merged.
- * ``Skip-Changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
- * ``Skip-build``: Don't run any build steps, including building the compile commands database.
+ * ``skip-changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
+ * ``skip-build``: Don't run any build steps, including building the compile commands database.
  * ``Skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
  * ``full-ci``: Run tests on AWS and enable sanitizer workflows.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
