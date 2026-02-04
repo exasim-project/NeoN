@@ -286,9 +286,24 @@ template<unsigned int I>
 void negLUx(
     const CSRMatrix<Vec3, localIdx>& mtx,
     const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
     const Vector<scalar>& rAU,
     const Vector<scalar>& V,
     Vector<Vec3>& out
 );
+
+/** @brief computes out = -(L+U) x
+ *
+ * @notes explicitly sets out values to zero
+ */
+void scaledInvDiagnegLUx(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
+    const Vector<scalar>& V,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+);
+
 
 } // namespace NeoN
