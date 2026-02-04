@@ -164,21 +164,6 @@ public:
     [[nodiscard]] const Vector<ValueType>& values() const { return values_; }
 
     /**
-     * @brief Get a const reference to column indices vector.
-     * @return Const vector containing the column indices.
-     */
-    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; }
-
-    /**
-     * @brief Get a const reference to row offset vector.
-     * @return Const vector containing the row pointers.
-     */
-    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; }
-
-    /** @brief extract the diagonal of the matrix*/
-    [[nodiscard]] Vector<ValueType> diag() const;
-
-    /**
      * @brief Copy the matrix to another executor.
      * @param dstExec The destination executor.
      * @return A copy of the matrix on the destination executor.
@@ -241,13 +226,6 @@ public:
      */
     [[nodiscard]] Vector<ValueType> diag() const;
 
-    /** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
-     *
-     */
-    [[nodiscard]] Vector<ValueType> scaledInverseDiag(const Vector<scalar>& a) const;
-
-    void scaledInverseDiag(const Vector<scalar>& a, Vector<ValueType>& out) const;
-
     /** @brief computes out = -(L+U) x
      *
      * @notes explicitly sets out values to zero
@@ -261,14 +239,27 @@ private:
     std::shared_ptr<const SparsityType> sparsityPattern_;
 };
 
+
+template<typename ValueType, typename IndexType>
+using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
+
 /** @brief extract the upper triangular of the matrix
  * @note this function is meant for testing purposes, it will recompute upper offsets
  */
 template<typename ValueType, typename IndexType>
-[[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx);
+[[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>&);
 
-template<typename ValueType, typename IndexType>
-using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
+
+/** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
+ * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
+ * entries are identical
+ */
+[[nodiscard]] Vector<scalar>
+scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const Vector<scalar>&);
+
+void scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
+);
 
 /* @brief given Matrix<Vec3> this function returns a component Matrix<scalar>*/
 template<unsigned int I>

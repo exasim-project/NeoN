@@ -142,7 +142,7 @@ public:
     ) const
     {
         auto mi = la::createSparsityPatternMatrixIterator<IndexType>(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, la::SparsityPattern<IndexType>>(
+        auto ls = la::createEmptyLinearSystem<ValueType>(
             mesh, mi.sparsityPattern(), mi.boundarySparsityPattern()
         );
         assemble(t, dt, mi, ls, ps);

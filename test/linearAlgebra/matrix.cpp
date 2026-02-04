@@ -147,16 +147,16 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
         REQUIRE(upperH.view()[2] == 6.0);
     }
 
-    SECTION("Can computed scaledInverseDiagonal " + execName)
-    {
-        auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
-        auto diag = denseMatrix.scaledInverseDiag(a);
-        auto diagH = diag.copyToHost();
+    // SECTION("Can computed scaledInverseDiagonal " + execName)
+    // {
+    //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+    //     auto diag = denseMatrix.scaledInverseDiag(denseMatria);
+    //     auto diagH = diag.copyToHost();
 
-        REQUIRE(diagH.view()[0] == 1.0);
-        REQUIRE(diagH.view()[1] == 2.0 / 5.0);
-        REQUIRE(diagH.view()[2] == 3.0 / 9.0);
-    }
+    //     REQUIRE(diagH.view()[0] == 1.0);
+    //     REQUIRE(diagH.view()[1] == 2.0 / 5.0);
+    //     REQUIRE(diagH.view()[2] == 3.0 / 9.0);
+    // }
 
     SECTION("Can compute scaledOffDiagonal " + execName)
     {

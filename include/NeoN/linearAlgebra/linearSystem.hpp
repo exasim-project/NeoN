@@ -166,11 +166,11 @@ private:
 /*@brief helper function that creates a zero initialised linear system based on given sparsity
  * pattern
  */
-template<typename ValueType, typename SparsityType>
-LinearSystem<ValueType, Matrix<ValueType, SparsityType>> createEmptyLinearSystem(
+template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(
     const UnstructuredMesh& mesh,
-    std::shared_ptr<const SparsityType> sparsity,
-    std::shared_ptr<const SparsityType> bsparsity
+    std::shared_ptr<const typename MatrixType::MatrixSparsityType> sparsity,
+    std::shared_ptr<const typename MatrixType::MatrixSparsityType> bsparsity
 )
 {
     NF_ASSERT(mesh.nCells() == sparsity->rows(), "Inconsistent sparsity pattern");

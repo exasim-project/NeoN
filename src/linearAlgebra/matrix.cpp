@@ -35,8 +35,11 @@ Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
     return diag;
 }
 
+
+// Free functions
+
 template<typename ValueType, typename IndexType>
-Vector<ValueType> upper(const Matrix<ValueType, IndexType>& mtx)
+Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx)
 {
     localIdx nRows = mtx.nRows();
     localIdx nUpper = (mtx.nNonZeros() - mtx.nRows()) / 2;
@@ -100,39 +103,6 @@ Vector<ValueType> upper(const Matrix<ValueType, IndexType>& mtx)
     return upper;
 }
 
-Vector<ValueType> Matrix<ValueType, IndexType>::scaledInverseDiag(const Vector<scalar>& a) const
-{
-    auto diag = Vector<ValueType>(values_.exec(), nRows());
-    scaledInverseDiag(a, diag);
-    return diag;
-}
-
-template<typename ValueType, typename IndexType>
-void Matrix<ValueType, IndexType>::scaledInverseDiag(
-    const Vector<scalar>& a, Vector<ValueType>& out
-) const
-{
-    NF_ASSERT(nRows() == a.size(), "Dimension mismatch");
-
-    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
-        views(out, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_, a);
-
-    parallelFor(
-        values_.exec(),
-        {0, nRows()},
-        NEON_LAMBDA(const localIdx rowi) {
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
-            {
-                if (rowi == colIdxV[i])
-                {
-                    outV[rowi] = aV[rowi] * inv(matrixV[i]);
-                    break;
-                }
-            }
-        }
-    );
-}
-
 template<typename ValueType, typename IndexType>
 void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<ValueType>& out) const
 {
@@ -160,9 +130,40 @@ void Matrix<ValueType, IndexType>::negLUx(const Vector<ValueType>& a, Vector<Val
     );
 }
 
+Vector<scalar> scaledInverseDiag(const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a)
+{
+    auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
+    scaledInverseDiag(mtx, a, diag);
+    return diag;
+}
+
+void scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
+)
+{
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+
+    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
+        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
+
+    parallelFor(
+        mtx.exec(),
+        {0, mtx.nRows()},
+        NEON_LAMBDA(const localIdx rowi) {
+            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            {
+                if (rowi == colIdxV[i])
+                {
+                    outV[rowi] = aV[rowi] * inv(matrixV[i][0]);
+                    break;
+                }
+            }
+        }
+    );
+}
 
 #define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>> \
+    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>;                            \
     template Vector<VALUETYPE>                                                                     \
     upper<VALUETYPE, INTEGERTYPE>(const CSRMatrix<VALUETYPE, INTEGERTYPE>&)
 
