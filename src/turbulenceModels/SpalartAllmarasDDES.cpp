@@ -23,38 +23,6 @@ const SpalartAllmarasDDES::Coefficients& SpalartAllmarasDDES::coeffs() const { r
 scalar SpalartAllmarasDDES::cw1() const { return cw1_; }
 
 void SpalartAllmarasDDES::correctNut(
-    VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu
-) const
-{
-    // --- Internal data
-    const auto& nuTildeI = nuTilde.internalVector();
-    const auto& nuI = nu.internalVector();
-    auto& nutI = nutField.internalVector();
-
-    NF_DEBUG_ASSERT(nuTildeI.size() == nuI.size(), "nuTilde / nu size mismatch");
-    NF_DEBUG_ASSERT(nutI.size() == nuTildeI.size(), "nut size mismatch");
-
-    const scalar cv1 = coeffs_.Cv1;
-    const scalar cv1Cubed = cv1 * cv1 * cv1;
-
-    const auto [nuTildeV, nuV, nutV] = views(nuTildeI, nuI, nutI);
-
-    parallelFor(
-        exec_,
-        {0, nutI.size()},
-        NEON_LAMBDA(const localIdx i) {
-            const scalar chi = nuTildeV[i] / nuV[i];
-            const scalar chi3 = chi * chi * chi;
-            nutV[i] = nuTildeV[i] * chi3 / (chi3 + cv1Cubed);
-        },
-        "SA-DDES::correctNut::internal"
-    );
-
-    // --- Boundary handling stays explicit and unchanged
-    nutField.correctBoundaryConditions();
-}
-
-void SpalartAllmarasDDES::correctNut(
     VolScalarField& nutField,
     SurfScalarField& nutF,
     SurfScalarField& nuEffF,
@@ -117,10 +85,28 @@ void SpalartAllmarasDDES::correctNut(
         );
     }
 
+    // --- Boundary faces
+    {
+        const auto& nuFB = nuF.boundaryData().value();
+        const auto& nutFB = nutF.boundaryData().value();
+        auto& nuEffFB = nuEffF.boundaryData().value();
+
+        NF_DEBUG_ASSERT(nuFB.size() == nutFB.size(), "nuF/nutF boundary size mismatch");
+        NF_DEBUG_ASSERT(nuEffFB.size() == nuFB.size(), "nuEffF boundary size mismatch");
+
+        const auto [nuVb, nutVb, nuEffVb] = views(nuFB, nutFB, nuEffFB);
+
+        parallelFor(
+            exec_,
+            {0, nuEffFB.size()},
+            NEON_LAMBDA(const localIdx bf) { nuEffVb[bf] = nuVb[bf] + nutVb[bf]; },
+            "SA-DDES::nuEffF::boundary"
+        );
+    }
     nuEffF.name = "nuEff";
 }
 
-void SpalartAllmarasDDES::calcNuTildeDiffusionCoeff(
+void SpalartAllmarasDDES::calcNuTildaDiffusionCoeff(
     VolScalarField& nuTilde,
     const SurfScalarField& nuF,
     SurfScalarField& surfNuTilde,
@@ -150,7 +136,7 @@ void SpalartAllmarasDDES::calcNuTildeDiffusionCoeff(
         "SA-DDES::calcNuTildeDiffusionCoeff"
     );
 
-    nuTildeEffF.name = "nuTildeEff";
+    nuTildeEffF.name = "nuTildaEff";
 }
 
 void SpalartAllmarasDDES::calcMagSqrVec(VolScalarField& magSqr, const VolVectorField& in) const

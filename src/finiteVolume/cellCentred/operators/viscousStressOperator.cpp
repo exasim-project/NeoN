@@ -15,69 +15,47 @@ namespace
 {
 
 KOKKOS_INLINE_FUNCTION
-Vec3 fusedViscousStressFlux(
-    const Vec3& Sf,
-    const scalar magSf,
-    const scalar nuFace,
-    const scalar nutFace,
-    const scalar nuTildeFace,
-    const Vec3& dUdn, // snGrad(U)
-    const Vec3& gUx,  // grad(Ux) at face
-    const Vec3& gUy,
-    const Vec3& gUz
-)
+Vec3 fusedViscousStressFlux(const Vec3& Sf, const Vec3& Tx, const Vec3& Ty, const Vec3& Tz)
 {
-    const scalar invMag = scalar(1) / magSf;
-    const Vec3 nf = Sf * invMag;
-
-    // -------------------------
-    // Laplacian part: div(nut grad U)
-    // -------------------------
-    Vec3 F_lap = dUdn;
-    F_lap *= (nutFace * magSf);
-
-    // -------------------------
-    // -nu*dev2(T(gradU)) part
-    // -------------------------
-
-    const scalar dUx_dx = gUx[0], dUx_dy = gUx[1], dUx_dz = gUx[2];
-    const scalar dUy_dx = gUy[0], dUy_dy = gUy[1], dUy_dz = gUy[2];
-    const scalar dUz_dx = gUz[0], dUz_dy = gUz[1], dUz_dz = gUz[2];
-
-    const scalar divU = dUx_dx + dUy_dy + dUz_dz;
-
-    constexpr scalar twoThird = scalar(2.0 / 3.0);
-
-    // symm(gradU)
-    // const scalar Sxy = (dUx_dy + dUy_dx);
-    // const scalar Sxz = (dUx_dz + dUz_dx);
-    // const scalar Syz = (dUy_dz + dUz_dy);
-
-    // dev2(symmTensor) rows
-    const Vec3 tauX {nuFace * (dUx_dx - twoThird * divU), nuFace * dUy_dx, nuFace * dUz_dx};
-    const Vec3 tauY {nuFace * dUx_dy, nuFace * (dUy_dy - twoThird * divU), nuFace * dUz_dy};
-    const Vec3 tauZ {nuFace * dUx_dz, nuFace * dUy_dz, nuFace * (dUz_dz - twoThird * divU)};
-
     // flux components = Sf · tauRow
     Vec3 t_dev;
-    t_dev[0] = Sf[0] * tauX[0] + Sf[1] * tauX[1] + Sf[2] * tauX[2];
-    t_dev[1] = Sf[0] * tauY[0] + Sf[1] * tauY[1] + Sf[2] * tauY[2];
-    t_dev[2] = Sf[0] * tauZ[0] + Sf[1] * tauZ[1] + Sf[2] * tauZ[2];
 
-    // -------------------------
-    // Reynoldsstress part for div(R)
-    // -------------------------
+    t_dev[0] = Sf[0] * Tx[0] + Sf[1] * Tx[1] + Sf[2] * Tx[2];
+    t_dev[1] = Sf[0] * Ty[0] + Sf[1] * Ty[1] + Sf[2] * Ty[2];
+    t_dev[2] = Sf[0] * Tz[0] + Sf[1] * Tz[1] + Sf[2] * Tz[2];
 
-    const scalar chi = nuTildeFace / nuFace;
-    const scalar chi3 = chi * chi * chi;
+    return scalar(-1.0) * t_dev;
+}
 
-    const scalar fv1 = chi3 / (chi3 + scalar(357.911)); // pow3(Cv1) = 357.911
+KOKKOS_INLINE_FUNCTION
+void computeNuEffDev2TGradU(
+    const Vec3& gUx, // grad(Ux) = (dUx/dx, dUx/dy, dUx/dz)
+    const Vec3& gUy, // grad(Uy)
+    const Vec3& gUz, // grad(Uz)
+    const scalar nu,
+    const scalar nut,
+    Vec3& tauX, // row X of nuEff*dev2(T(gradU))
+    Vec3& tauY, // row Y
+    Vec3& tauZ  // row Z
+)
+{
+    constexpr scalar twoThird = scalar(2.0 / 3.0);
 
-    const scalar kFace =
-        Kokkos::cbrt(fv1) * nuTildeFace * Kokkos::sqrt(2.0 / 0.09); // Cmu = 0.09
-                                                                    //* magSymmGradUFace;
+    // divergence of velocity
+    const scalar divU = gUx[0] + gUy[1] + gUz[2];
 
-    return F_lap - t_dev;
+    const scalar nuEff = nu + nut;
+
+    // T(gradU) rows:
+    // rowX = (dUx/dx, dUy/dx, dUz/dx)
+    // rowY = (dUx/dy, dUy/dy, dUz/dy)
+    // rowZ = (dUx/dz, dUy/dz, dUz/dz)
+
+    tauX = Vec3 {nuEff * (gUx[0] - twoThird * divU), nuEff * gUy[0], nuEff * gUz[0]};
+
+    tauY = Vec3 {nuEff * gUx[1], nuEff * (gUy[1] - twoThird * divU), nuEff * gUz[1]};
+
+    tauZ = Vec3 {nuEff * gUx[2], nuEff * gUy[2], nuEff * (gUz[2] - twoThird * divU)};
 }
 
 KOKKOS_INLINE_FUNCTION
@@ -104,58 +82,28 @@ void atomicSubVec3(Vec3* dst, const Vec3& v)
 
 void GaussViscousStress::explicitOp(
     Vector<Vec3>& rhs,
-    const SurfaceField<scalar>& nuF,
-    const SurfaceField<scalar>& nutF,
-    const SurfaceField<scalar>& nuTildeF,
-    const VolumeField<Vec3>& U,
-    const VolumeField<Vec3>& gradUx,
-    const VolumeField<Vec3>& gradUy,
-    const VolumeField<Vec3>& gradUz,
+    const VolumeField<scalar>& nu,
+    const VolumeField<scalar>& nut,
+    const TensorVecField& gradU,
     const dsl::Coeff operatorScaling
 ) const
 {
-    computeViscousStressExp(
-        faceNormalGradient_,
-        surfaceInterpolationVec_,
-        nuF,
-        nutF,
-        nuTildeF,
-        U,
-        gradUx,
-        gradUy,
-        gradUz,
-        rhs,
-        operatorScaling
-    );
+    computeViscousStressExp(surfaceInterpolationVec_, nu, nut, gradU, rhs, operatorScaling);
 }
 
 VolumeField<Vec3> GaussViscousStress::viscousStress(
-    const SurfaceField<scalar>& nuF,
-    const SurfaceField<scalar>& nutF,
-    const SurfaceField<scalar>& nuTildeF,
-    const VolumeField<Vec3>& U,
-    const VolumeField<Vec3>& gradUx,
-    const VolumeField<Vec3>& gradUy,
-    const VolumeField<Vec3>& gradUz,
+    const VolumeField<scalar>& nu,
+    const VolumeField<scalar>& nut,
+    const TensorVecField& gradU,
     const dsl::Coeff operatorScaling
 ) const
 {
-    std::string name = "viscousStress(" + nuF.name + "," + nutF.name + "," + U.name + ")";
+    std::string name = "div((nuEff*dev2(T(grad(U)))))";
     VolumeField<Vec3> result(exec_, name, mesh_, createCalculatedBCs<VolumeBoundary<Vec3>>(mesh_));
     fill(result.internalVector(), zero<Vec3>());
     fill(result.boundaryData().value(), zero<Vec3>());
     computeViscousStressExp(
-        faceNormalGradient_,
-        surfaceInterpolationVec_,
-        nuF,
-        nutF,
-        nuTildeF,
-        U,
-        gradUx,
-        gradUy,
-        gradUz,
-        result.internalVector(),
-        operatorScaling
+        surfaceInterpolationVec_, nu, nut, gradU, result.internalVector(), operatorScaling
     );
     return result;
 }
@@ -164,55 +112,108 @@ VolumeField<Vec3> GaussViscousStress::viscousStress(
 // Low-level kernel implementation
 // ----------------------------
 void computeViscousStressExp(
-    const FaceNormalGradient<Vec3>& faceNormalGradient,
     const SurfaceInterpolation<Vec3>& surfaceInterpolationVec,
-    const SurfaceField<scalar>& nuF,
-    const SurfaceField<scalar>& nutF,
-    const SurfaceField<scalar>& nuTildeF,
-    const VolumeField<Vec3>& U,
-    const VolumeField<Vec3>& gradUx,
-    const VolumeField<Vec3>& gradUy,
-    const VolumeField<Vec3>& gradUz,
+    const VolumeField<scalar>& nu,
+    const VolumeField<scalar>& nut,
+    const TensorVecField& gradU,
     Vector<Vec3>& rhs,
     const dsl::Coeff operatorScaling
 )
 {
-    const UnstructuredMesh& mesh = U.mesh();
-    const auto exec = U.exec();
+    const UnstructuredMesh& mesh = nut.mesh();
+    const auto exec = nut.exec();
 
-    // fill(rhs, zero<Vec3>());
+    auto calcVolVecBC = createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto calcSurfVecBC = createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh);
 
-    // snGrad(U)
-    SurfaceField<Vec3> dUdn = faceNormalGradient.faceNormalGrad(U);
+    VolumeField<Vec3> tauX(exec, "tauX", mesh, calcVolVecBC);
+    VolumeField<Vec3> tauY(exec, "tauY", mesh, calcVolVecBC);
+    VolumeField<Vec3> tauZ(exec, "tauZ", mesh, calcVolVecBC);
+
+    const auto [gUxV, gUyV, gUzV, nutV, nuV, tauXV, tauYV, tauZV] = views(
+        gradU.Tx.internalVector(),
+        gradU.Ty.internalVector(),
+        gradU.Tz.internalVector(),
+        nut.internalVector(),
+        nu.internalVector(),
+        tauX.internalVector(),
+        tauY.internalVector(),
+        tauZ.internalVector()
+    );
+
+    const localIdx nCells = static_cast<localIdx>(nut.internalVector().size());
+
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx i) {
+            Vec3 tauX, tauY, tauZ;
+
+            computeNuEffDev2TGradU(gUxV[i], gUyV[i], gUzV[i], nuV[i], nutV[i], tauX, tauY, tauZ);
+
+            tauXV[i] = tauX;
+            tauYV[i] = tauY;
+            tauZV[i] = tauZ;
+        },
+        "SA-DDES::R::internal"
+    );
+
+    const auto [gUxB, gUyB, gUzB, nutB, nuB, tauXB, tauYB, tauZB] = views(
+        gradU.Tx.boundaryData().value(),
+        gradU.Ty.boundaryData().value(),
+        gradU.Tz.boundaryData().value(),
+        nut.boundaryData().value(),
+        nu.boundaryData().value(),
+        tauX.boundaryData().value(),
+        tauY.boundaryData().value(),
+        tauZ.boundaryData().value()
+    );
+
+    const localIdx nBF = static_cast<localIdx>(tauX.boundaryData().value().size());
+
+    parallelFor(
+        exec,
+        {0, nBF},
+        NEON_LAMBDA(const localIdx bf) {
+            Vec3 tauX, tauY, tauZ;
+
+            computeNuEffDev2TGradU(
+                gUxB[bf], gUyB[bf], gUzB[bf], nuB[bf], nutB[bf], tauX, tauY, tauZ
+            );
+
+            tauXB[bf] = tauX;
+            tauYB[bf] = tauY;
+            tauZB[bf] = tauZ;
+        },
+        "SA-DDES::R::internal"
+    );
 
     // interpolate gradU components
-    SurfaceField<Vec3> gUxF(exec, "gUxF", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh));
-    SurfaceField<Vec3> gUyF(exec, "gUyF", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh));
-    SurfaceField<Vec3> gUzF(exec, "gUzF", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh));
+    SurfaceField<Vec3> tauXF(exec, "tauXF", mesh, calcSurfVecBC);
+    SurfaceField<Vec3> tauYF(exec, "tauYF", mesh, calcSurfVecBC);
+    SurfaceField<Vec3> tauZF(exec, "tauZF", mesh, calcSurfVecBC);
+    // fill(gUxF.internalVector(), zero<Vec3>());
+    // fill(gUyF.internalVector(), zero<Vec3>());
+    // fill(gUzF.internalVector(), zero<Vec3>());
 
-    surfaceInterpolationVec.interpolate(gradUx, gUxF);
-    surfaceInterpolationVec.interpolate(gradUy, gUyF);
-    surfaceInterpolationVec.interpolate(gradUz, gUzF);
+    surfaceInterpolationVec.interpolate(tauX, tauXF);
+    surfaceInterpolationVec.interpolate(tauY, tauYF);
+    surfaceInterpolationVec.interpolate(tauZ, tauZF);
 
     const auto [owner, neighbour, faceCells] =
         views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
 
-    const auto [Sf, magSf, nuFace, nutFace, nuTildeFace, dUdnF, gUx, gUy, gUz, vol, rhsV] = views(
+    const auto [Sf, tauXFV, tauYFV, tauZFV, vol, rhsV] = views(
         mesh.faceAreas(),
-        mesh.magFaceAreas(),
-        nuF.internalVector(),
-        nutF.internalVector(),
-        nuTildeF.internalVector(),
-        dUdn.internalVector(),
-        gUxF.internalVector(),
-        gUyF.internalVector(),
-        gUzF.internalVector(),
+        tauXF.internalVector(),
+        tauYF.internalVector(),
+        tauZF.internalVector(),
         mesh.cellVolumes(),
         rhs
     );
 
     const localIdx nIF = mesh.nInternalFaces();
-    const localIdx nFaces = dUdnF.size();
+    const localIdx nFaces = tauXF.size();
 
     // -------------------------
     // Internal faces
@@ -224,17 +225,7 @@ void computeViscousStressExp(
             const localIdx o = owner[f];
             const localIdx n = neighbour[f];
 
-            const Vec3 flux = fusedViscousStressFlux(
-                Sf[f],
-                magSf[f],
-                nuFace[f],
-                nutFace[f],
-                nuTildeFace[f],
-                dUdnF[f],
-                gUx[f],
-                gUy[f],
-                gUz[f]
-            );
+            const Vec3 flux = fusedViscousStressFlux(Sf[f], tauXFV[f], tauYFV[f], tauZFV[f]);
 
             atomicAddVec3(&rhsV[o], flux);
             atomicSubVec3(&rhsV[n], flux);
@@ -251,17 +242,7 @@ void computeViscousStressExp(
         NEON_LAMBDA(const localIdx f) {
             const localIdx own = faceCells[f - nIF];
 
-            const Vec3 flux = fusedViscousStressFlux(
-                Sf[f],
-                magSf[f],
-                nuFace[f],
-                nutFace[f],
-                nuTildeFace[f],
-                dUdnF[f],
-                gUx[f],
-                gUy[f],
-                gUz[f]
-            );
+            const Vec3 flux = fusedViscousStressFlux(Sf[f], tauXFV[f], tauYFV[f], tauZFV[f]);
 
             atomicAddVec3(&rhsV[own], flux);
         },
@@ -277,27 +258,6 @@ void computeViscousStressExp(
         NEON_LAMBDA(const localIdx c) { rhsV[c] *= operatorScaling[c] / vol[c]; },
         "viscousStressFused_Normalize"
     );
-    /*    constexpr scalar twoThird = scalar(2.0 / 3.0);
-        const auto [gUxV,gUyV,gUzV] =
-    views(gradUx.internalVector(),gradUy.internalVector(),gradUz.internalVector()); parallelFor(
-        exec,
-        {0, mesh.nCells()},
-        NEON_LAMBDA(const localIdx c)
-        {
-            const Vec3 gUx2 = gUxV[c];
-            const Vec3 gUy2 = gUyV[c];
-            const Vec3 gUz2 = gUzV[c];
-
-            const scalar divU = gUx2[0] + gUy2[1] + gUz2[2];
-
-            rhsV[c] = Vec3(
-                (gUx2[0] - twoThird * divU),
-                gUy2[0],
-                gUz2[0]
-            );
-        },
-        "tauX_cell"
-    ); */
 }
 
 } // namespace NeoN::finiteVolume::cellCentred

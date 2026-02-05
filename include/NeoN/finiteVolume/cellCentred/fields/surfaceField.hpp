@@ -130,20 +130,6 @@ public:
           boundaryConditions_(other.boundaryConditions_)
     {}
 
-    /*    SurfaceField<ValueType>& operator=(const SurfaceField<ValueType>& rhs)
-        {
-            if (this != &rhs)
-            {
-                NF_DEBUG_ASSERT(&this->mesh_ == &rhs.mesh_, "SurfaceField mesh mismatch.");
-                this->name = rhs.name;
-                this->field_ = rhs.field_;
-                this->db_ = rhs.db_;
-                this->key = rhs.key;
-                this->fieldCollectionName = rhs.fieldCollectionName;
-            }
-            return *this;
-        }
-    */
     /**
      * @brief Corrects the boundary conditions of the surface field.
      *
@@ -178,20 +164,7 @@ operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
     result.boundaryData().value() *= rhs.boundaryData().value();
     return result;
 }
-/*
-inline SurfaceField<scalar> operator*(scalar scale, const SurfaceField<scalar>& rhs)
-{
-    SurfaceField<scalar> result(rhs);
-    result.internalVector() *= scale;
-    result.boundaryData().value() *= scale;
-    return result;
-}
 
-inline SurfaceField<scalar> operator*(const SurfaceField<scalar>& lhs, scalar scale)
-{
-    return scale * lhs;
-}
-*/
 inline SurfaceField<scalar>
 operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {

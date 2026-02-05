@@ -375,25 +375,25 @@ void GaussGreenGrad::grad(
 }
 
 void GaussGreenGrad::grad(
-    const VolumeField<Vec3>& phi, GradVecField& gradPhi, const dsl::Coeff operatorScaling
+    const VolumeField<Vec3>& phi, TensorVecField& gradPhi, const dsl::Coeff operatorScaling
 ) const
 {
 
     // zero existing storage
-    fill(gradPhi.gradUx.internalVector(), zero<Vec3>());
-    fill(gradPhi.gradUy.internalVector(), zero<Vec3>());
-    fill(gradPhi.gradUz.internalVector(), zero<Vec3>());
+    fill(gradPhi.Tx.internalVector(), zero<Vec3>());
+    fill(gradPhi.Ty.internalVector(), zero<Vec3>());
+    fill(gradPhi.Tz.internalVector(), zero<Vec3>());
 
     computeGradVec(
         phi,
         surfaceInterpolationVec_,
-        gradPhi.gradUx.internalVector(),
-        gradPhi.gradUy.internalVector(),
-        gradPhi.gradUz.internalVector(),
+        gradPhi.Tx.internalVector(),
+        gradPhi.Ty.internalVector(),
+        gradPhi.Tz.internalVector(),
         operatorScaling
     );
 
-    computeBoundaryGradVec(phi, gradPhi.gradUx, gradPhi.gradUy, gradPhi.gradUz);
+    computeBoundaryGradVec(phi, gradPhi.Tx, gradPhi.Ty, gradPhi.Tz);
 }
 
 VolumeField<Vec3>
@@ -407,31 +407,31 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
     return gradPhi;
 }
 
-GradVecField
+TensorVecField
 GaussGreenGrad::grad(const VolumeField<Vec3>& U, const dsl::Coeff operatorScaling) const
 {
     auto calcBC = createCalculatedBCs<VolumeBoundary<Vec3>>(U.mesh());
 
-    GradVecField G {
+    TensorVecField G {
         VolumeField<Vec3>(U.exec(), "gradUx", U.mesh(), calcBC),
         VolumeField<Vec3>(U.exec(), "gradUy", U.mesh(), calcBC),
         VolumeField<Vec3>(U.exec(), "gradUz", U.mesh(), calcBC)
     };
 
-    fill(G.gradUx.internalVector(), zero<Vec3>());
-    fill(G.gradUy.internalVector(), zero<Vec3>());
-    fill(G.gradUz.internalVector(), zero<Vec3>());
+    fill(G.Tx.internalVector(), zero<Vec3>());
+    fill(G.Ty.internalVector(), zero<Vec3>());
+    fill(G.Tz.internalVector(), zero<Vec3>());
 
     computeGradVec(
         U,
         surfaceInterpolationVec_,
-        G.gradUx.internalVector(),
-        G.gradUy.internalVector(),
-        G.gradUz.internalVector(),
+        G.Tx.internalVector(),
+        G.Ty.internalVector(),
+        G.Tz.internalVector(),
         operatorScaling
     );
 
-    computeBoundaryGradVec(U, G.gradUx, G.gradUy, G.gradUz);
+    computeBoundaryGradVec(U, G.Tx, G.Ty, G.Tz);
 
     return G;
 }

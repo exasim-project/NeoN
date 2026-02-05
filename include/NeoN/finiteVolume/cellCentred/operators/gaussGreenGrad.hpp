@@ -8,17 +8,11 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
-
-struct GradVecField
-{
-    VolumeField<Vec3> gradUx;
-    VolumeField<Vec3> gradUy;
-    VolumeField<Vec3> gradUz;
-};
 
 class GaussGreenGrad : public GradOperatorFactory<Vec3>::template Register<GaussGreenGrad>
 {
@@ -68,7 +62,7 @@ public:
 
     virtual void grad(
         const VolumeField<Vec3>& phi,
-        GradVecField& gradPhi,
+        TensorVecField& gradPhi,
         const dsl::Coeff operatorScaling = dsl::Coeff {}
     ) const;
 
@@ -81,7 +75,7 @@ public:
     VolumeField<Vec3>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 
-    GradVecField
+    TensorVecField
     grad(const VolumeField<Vec3>& U, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const

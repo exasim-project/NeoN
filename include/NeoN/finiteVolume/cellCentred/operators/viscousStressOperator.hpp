@@ -17,6 +17,7 @@
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -30,22 +31,17 @@ namespace NeoN::finiteVolume::cellCentred
 
 /**
  * @brief Explicit contribution for:
- *   fvc::laplacian(nut, U) - fvc::div(nu * dev2(T(fvc::grad(U))))
+ *    - fvc::div(nuEff * dev2(T(fvc::grad(U))))
  *
  * Adds result into `rhs` (Vector<Vec3>) directly.
  *
  * @note This is called by ViscousStress operators. Not intended to be used from DSL directly.
  */
 void computeViscousStressExp(
-    const FaceNormalGradient<Vec3>& faceNormalGradient,
     const SurfaceInterpolation<Vec3>& surfaceInterpolationVec,
-    const SurfaceField<scalar>& nuF,
-    const SurfaceField<scalar>& nutF,
-    const SurfaceField<scalar>& nuTildeF,
-    const VolumeField<Vec3>& U,
-    const VolumeField<Vec3>& gradUx,
-    const VolumeField<Vec3>& gradUy,
-    const VolumeField<Vec3>& gradUz,
+    const VolumeField<scalar>& nu,
+    const VolumeField<scalar>& nut,
+    const TensorVecField& gradU,
     Vector<Vec3>& rhs,
     const dsl::Coeff operatorScaling
 );
@@ -66,7 +62,9 @@ public:
     create(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<NeoN::Dictionary>(inputs))
-                            ? std::get<NeoN::Dictionary>(inputs).get<std::string>("viscousStress")
+                            ? std::get<NeoN::Dictionary>(inputs).get<std::string>(
+                                "div((nuEff*dev2(T(grad(U)))))"
+                            )
                             : std::get<NeoN::TokenList>(inputs).next<std::string>();
 
         ViscousStressOperatorFactory::keyExistsOrError(key);
@@ -88,13 +86,9 @@ public:
      */
     virtual void explicitOp(
         Vector<Vec3>& rhs,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         const dsl::Coeff operatorScaling
     ) const = 0;
 
@@ -121,56 +115,41 @@ public:
         : dsl::OperatorMixin<VolumeField<Vec3>>(
             other.exec_, other.coeffs_, other.field_, other.type_
         ),
-          nuF_(other.nuF_), nutF_(other.nutF_), nuTildeF_(other.nuTildeF_), gradUx_(other.gradUx_),
-          gradUy_(other.gradUy_), gradUz_(other.gradUz_),
+          nu_(other.nu_), nut_(other.nut_), gradU_(other.gradU_),
           viscousOp_(other.viscousOp_ ? other.viscousOp_->clone() : nullptr)
     {}
 
     ViscousStressOperator(
         dsl::Operator::Type termType,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         Input input
     )
-        : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
-          viscousOp_(ViscousStressOperatorFactory::create(this->exec_, U.mesh(), input))
+        : dsl::OperatorMixin<VolumeField<Vec3>>(nut.exec(), dsl::Coeff(1.0), gradU.Tx, termType),
+          nu_(nu), nut_(nut), gradU_(gradU),
+          viscousOp_(ViscousStressOperatorFactory::create(this->exec_, nut.mesh(), input))
     {}
 
     ViscousStressOperator(
         dsl::Operator::Type termType,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         std::unique_ptr<ViscousStressOperatorFactory> viscousOp
     )
-        : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
-          viscousOp_(std::move(viscousOp))
+        : dsl::OperatorMixin<VolumeField<Vec3>>(nut.exec(), dsl::Coeff(1.0), gradU.Tx, termType),
+          nu_(nu), nut_(nut), gradU_(gradU), viscousOp_(std::move(viscousOp))
     {}
 
     ViscousStressOperator(
         dsl::Operator::Type termType,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU
     )
-        : dsl::OperatorMixin<VolumeField<Vec3>>(U.exec(), dsl::Coeff(1.0), U, termType), nuF_(nuF),
-          nutF_(nutF), nuTildeF_(nuTildeF), gradUx_(gradUx), gradUy_(gradUy), gradUz_(gradUz),
-          viscousOp_(nullptr)
+        : dsl::OperatorMixin<VolumeField<Vec3>>(nut.exec(), dsl::Coeff(1.0), gradU.Tx, termType),
+          nu_(nu), nut_(nut), gradU_(gradU), viscousOp_(nullptr)
     {}
 
     void explicitOperation(Vector<Vec3>& source) const
@@ -178,17 +157,7 @@ public:
         NF_ASSERT(viscousOp_, "ViscousStressOperatorStrategy not initialized");
         Vector<Vec3> tmpsource(source.exec(), source.size(), zero<Vec3>());
         const auto operatorScaling = this->getCoefficient();
-        viscousOp_->explicitOp(
-            tmpsource,
-            nuF_,
-            nutF_,
-            nuTildeF_,
-            this->field_,
-            gradUx_,
-            gradUy_,
-            gradUz_,
-            operatorScaling
-        );
+        viscousOp_->explicitOp(tmpsource, nu_, nut_, gradU_, operatorScaling);
         source += tmpsource;
     }
 
@@ -201,7 +170,7 @@ public:
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             auto tokens =
-                dict.subDict("viscousStressSchemes").get<NeoN::TokenList>("viscousStress");
+                dict.subDict("divSchemes").get<NeoN::TokenList>("div((nuEff*dev2(T(grad(U)))))");
             viscousOp_ = ViscousStressOperatorFactory::create(this->exec(), mesh, tokens);
         }
         else
@@ -215,12 +184,9 @@ public:
 
 private:
 
-    const SurfaceField<scalar>& nuF_;
-    const SurfaceField<scalar>& nutF_;
-    const SurfaceField<scalar>& nuTildeF_;
-    const VolumeField<Vec3>& gradUx_;
-    const VolumeField<Vec3>& gradUy_;
-    const VolumeField<Vec3>& gradUz_;
+    const VolumeField<scalar>& nu_;
+    const VolumeField<scalar>& nut_;
+    const TensorVecField& gradU_;
     std::unique_ptr<ViscousStressOperatorFactory> viscousOp_;
 };
 
@@ -243,54 +209,37 @@ public:
     static std::string schema() { return "none"; }
 
     GaussViscousStress(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
-        : Base(exec, mesh), surfaceInterpolationVec_(exec, mesh, inputs),
-          faceNormalGradient_(exec, mesh, inputs)
+        : Base(exec, mesh), surfaceInterpolationVec_(exec, mesh, inputs)
     {}
 
     void explicitOp(
         Vector<Vec3>& rhs,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         const dsl::Coeff operatorScaling
     ) const override;
 
     VolumeField<Vec3> viscousStress(
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         const dsl::Coeff operatorScaling
     ) const;
 
     void viscousStress(
         VolumeField<Vec3>& result,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         const dsl::Coeff operatorScaling
     ) const;
 
     void viscousStress(
         Vector<Vec3>& result,
-        const SurfaceField<scalar>& nuF,
-        const SurfaceField<scalar>& nutF,
-        const SurfaceField<scalar>& nuTildeF,
-        const VolumeField<Vec3>& U,
-        const VolumeField<Vec3>& gradUx,
-        const VolumeField<Vec3>& gradUy,
-        const VolumeField<Vec3>& gradUz,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nut,
+        const TensorVecField& gradU,
         const dsl::Coeff operatorScaling
     ) const;
 
@@ -302,7 +251,6 @@ public:
 private:
 
     SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
-    FaceNormalGradient<Vec3> faceNormalGradient_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred

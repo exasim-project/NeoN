@@ -7,7 +7,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
-// #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
@@ -46,10 +46,6 @@ public:
     scalar cw1() const;
 
     void correctNut(
-        VolScalarField& nutField, const VolScalarField& nuTilde, const VolScalarField& nu
-    ) const;
-
-    void correctNut(
         VolScalarField& nutField,
         SurfScalarField& nutF,
         SurfScalarField& nuEff,
@@ -58,7 +54,7 @@ public:
         const SurfScalarField& nuF
     ) const;
 
-    void calcNuTildeDiffusionCoeff(
+    void calcNuTildaDiffusionCoeff(
         VolScalarField& nuTilde,
         const SurfScalarField& nuF,
         SurfScalarField& surfNuTilde,

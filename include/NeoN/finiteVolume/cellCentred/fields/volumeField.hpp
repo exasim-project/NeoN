@@ -110,30 +110,10 @@ public:
 
     VolumeField(const VolumeField& other);
 
-    /*    VolumeField<ValueType>& operator=(const VolumeField<ValueType>& rhs)
-        {
-            if (this != &rhs)
-            {
-                NF_DEBUG_ASSERT(&this->mesh_ == &rhs.mesh_, "VolumeField mesh mismatch.");
-                this->name = rhs.name;
-                this->field_ = rhs.field_;
-                this->db_ = rhs.db_;
-                this->key = rhs.key;
-                this->fieldCollectionName = rhs.fieldCollectionName;
-            }
-            return *this;
-        }
-    */
     VolumeField<ValueType>& operator-=(const ValueType rhs);
 
     VolumeField<ValueType>& operator+=(const ValueType rhs);
 
-    /*    VolumeField<ValueType>& operator*=(const scalar rhs)
-            requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
-
-        [[nodiscard]] VolumeField<ValueType> operator*(const scalar rhs) const
-            requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; };
-    */
     /**
      * @brief Corrects the boundary conditions of the surface field.
      *
@@ -160,81 +140,4 @@ private:
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
 };
-/*
-template<typename ValueType>
-inline VolumeField<ValueType>
-operator+(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
-{
-    VolumeField<ValueType> result(lhs);
-    add(result.internalVector(), rhs.internalVector());
-    add(result.boundaryData().value(), rhs.boundaryData().value());
-    return result;
-}
-
-template<typename ValueType>
-inline VolumeField<ValueType>
-operator-(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
-{
-    VolumeField<ValueType> result(lhs);
-    sub(result.internalVector(), rhs.internalVector());
-    sub(result.boundaryData().value(), rhs.boundaryData().value());
-    return result;
-}
-
-template<typename ValueType>
-inline VolumeField<ValueType> operator*(scalar scale, const VolumeField<ValueType>& rhs)
-    requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; }
-{
-    return rhs * scale;
-}
-
-template<typename ValueType>
-inline VolumeField<ValueType> operator*(const VolumeField<ValueType>& lhs, scalar scale)
-    requires requires(ValueType value, scalar rhsScalar) { value* rhsScalar; }
-{
-    return lhs * scale;
-}
-
-template<typename ValueType>
-inline VolumeField<ValueType>
-operator*(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
-    requires requires(ValueType value) { value* value; }
-{
-    VolumeField<ValueType> result(lhs);
-    mul(result.internalVector(), rhs.internalVector());
-    mul(result.boundaryData().value(), rhs.boundaryData().value());
-    return result;
-}
-
-template<typename ValueType>
-inline VolumeField<ValueType>
-operator/(const VolumeField<ValueType>& lhs, const VolumeField<ValueType>& rhs)
-    requires requires(ValueType value) { value / value; }
-{
-    VolumeField<ValueType> result(lhs);
-    div(result.internalVector(), rhs.internalVector());
-    div(result.boundaryData().value(), rhs.boundaryData().value());
-    return result;
-}
-
-inline VolumeField<scalar> magSqr(const VolumeField<Vec3>& field)
-{
-    VolumeField<scalar> result(
-        field.exec(),
-        field.name + ".magSqr",
-        field.mesh(),
-        createCalculatedBCs<VolumeBoundary<scalar>>(field.mesh())
-    );
-
-    auto sourceInternal = field.internalVector().view();
-    parallelFor(
-        result.internalVector(),
-        NEON_LAMBDA(const localIdx i) {
-            const auto value = sourceInternal[i];
-            return value[0] * value[0] + value[1] * value[1] + value[2] * value[2];
-        }
-    );
-    return result;
-}
-*/
 } // namespace NeoN

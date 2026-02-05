@@ -10,6 +10,7 @@
 #include "NeoN/dsl/temporalOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp"
 
 // TODO we should get rid of this include since it includes details
 // from a general implementation
@@ -52,13 +53,9 @@ SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeFie
 SpatialOperator<scalar> sourceU(fvcc::VolumeField<scalar>& coeff);
 
 SpatialOperator<Vec3> viscousStress(
-    const fvcc::SurfaceField<scalar>& nuF,
-    const fvcc::SurfaceField<scalar>& nutF,
-    const fvcc::SurfaceField<scalar>& nuTildeF,
-    const fvcc::VolumeField<Vec3>& U,
-    const fvcc::VolumeField<Vec3>& gradUx,
-    const fvcc::VolumeField<Vec3>& gradUy,
-    const fvcc::VolumeField<Vec3>& gradUz
+    const fvcc::VolumeField<scalar>& nu,
+    const fvcc::VolumeField<scalar>& nut,
+    const fvcc::TensorVecField& gradU
 );
 
 } // namespace NeoN
