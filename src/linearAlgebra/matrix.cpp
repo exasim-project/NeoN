@@ -167,7 +167,7 @@ void scaledInvDiagnegLUx(
                 {
                     rAUV[rowi] = volV[rowi] / matrixV[i][0];
                 }
-                if (rowi != colI)
+                else
                 {
                     outV[rowi] -= matrixV[i] * aV[colI];
                 }
