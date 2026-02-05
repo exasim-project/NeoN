@@ -158,7 +158,7 @@ void scaledInvDiagnegLUx(
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
-        NEON_LAMBDA(const localIdx rowi) {
+        NEON_LAMBDA(const size_t rowi) {
             outV[rowi] = zero<Vec3>();
             for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
             {
@@ -196,16 +196,30 @@ void scaledInverseDiag(
     auto [outV, rowOffsV, colIdxV, matrixV, aV] =
         views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
 
-    parallelFor(
-        mtx.exec(),
-        {0, mtx.nRows()},
+    // parallelFor(
+    //     mtx.exec(),
+    //     {0, mtx.nRows()},
+    //     NEON_LAMBDA(const localIdx rowi) {
+    //         for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+    //         {
+    //             if (rowi == colIdxV[i])
+    //             {
+    //                 outV[rowi] = aV[rowi] * inv(matrixV[i][0]);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // );
+    // parallelFor(
+    //     mtx.exec(),
+    //     {0, mtx.nRows()},
+    out.apply(
         NEON_LAMBDA(const localIdx rowi) {
             for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
             {
                 if (rowi == colIdxV[i])
                 {
-                    outV[rowi] = aV[rowi] * inv(matrixV[i][0]);
-                    break;
+                    return aV[rowi] / matrixV[i][0];
                 }
             }
         }
@@ -232,18 +246,25 @@ void scaledInverseDiag(
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
 
-    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
-        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
+    const auto [rowOffsV, colIdxV, diaOffsV, matrixV, aV] =
+        views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(),
+mi.diagOffset(),
+                mtx.values(), a);
+    // const auto diaOffsV = mi.diagOffset().view();
+    // auto outV = out.view();
 
-    const auto diaOffsV = mi.diagOffset().view();
+    // parallelFor(
+    //     mtx.exec(),
+    //     {0, mtx.nRows()},
+    //     NEON_LAMBDA(const size_t rowi) {
+    //         outV[rowi] = aV[rowi] / matrixV[rowOffsV[rowi] + diaOffsV[rowi]][0];
+    //     }
+    // );
+    out.apply(NEON_LAMBDA(const localIdx i) {
+            const localIdx offs = diaOffsV[i];
+            return aV[i] / matrixV[rowOffsV[i] + offs][0];
+            });
 
-    parallelFor(
-        mtx.exec(),
-        {0, mtx.nRows()},
-        NEON_LAMBDA(const localIdx rowi) {
-            outV[rowi] = aV[rowi] / matrixV[rowOffsV[rowi] + diaOffsV[rowi]][0];
-        }
-    );
 }
 
 #define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
