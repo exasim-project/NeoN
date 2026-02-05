@@ -11,7 +11,7 @@
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00010}00010\ \textcolor{comment}{//\ \#include\ "{}NeoN/finiteVolume/cellCentred/boundary.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensorVecField_8hpp}{NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00013}00013\ }
@@ -49,49 +49,45 @@
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00045}00045\ }
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a887779f5d60ae7f376c93d2d55842575}{00046}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a887779f5d60ae7f376c93d2d55842575}{cw1}}()\ \textcolor{keyword}{const};}
 \DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00047}00047\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ad1c76a4eb86012ebf95ddaf22e01914a}{00048}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ad1c76a4eb86012ebf95ddaf22e01914a}{correctNut}}(}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nutField,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTilde,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nu}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00050}00050\ \ \ \ \ )\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00051}00051\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a2c03bc8c931a6e2c6a23e01bbb23ad46}{00052}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a2c03bc8c931a6e2c6a23e01bbb23ad46}{correctNut}}(}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nutField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nutF,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuEff,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTilde,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nu,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuF}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00059}00059\ \ \ \ \ )\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a4faff522082808057a67506713be3187}{00061}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a4faff522082808057a67506713be3187}{calcNuTildeDiffusionCoeff}}(}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTilde,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuF,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ surfNuTilde,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuTildeEffF}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00066}00066\ \ \ \ \ )\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ab812f773a386f85c83e0217fbf10d2ae}{00068}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ab812f773a386f85c83e0217fbf10d2ae}{calcMagSqrVec}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ magSqr,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ in)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a669e793a6a4959d59776bd549cd05408}{00070}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a669e793a6a4959d59776bd549cd05408}{computeProdSpDDES}}(}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ productionField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ spCoeffField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTildeField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUx,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUy,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUz,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ wallDistanceField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ deltaField,}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ gradNuTildeMagSqrField}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00081}00081\ \ \ \ \ )\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00082}00082\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00083}00083\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00085}00085\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00087}00087\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}\ coeffs\_;}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00088}00088\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ cw1\_;}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00089}00089\ \};}
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00090}00090\ }
-\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00091}00091\ \}\ \textcolor{comment}{//\ namespace\ NeoN::turbulenceModels}}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a2c03bc8c931a6e2c6a23e01bbb23ad46}{00048}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a2c03bc8c931a6e2c6a23e01bbb23ad46}{correctNut}}(}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nutField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nutF,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuEff,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTilde,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nu,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuF}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00055}00055\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_af39765d5e7825c27e4b60db9f942ff64}{00057}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_af39765d5e7825c27e4b60db9f942ff64}{calcNuTildaDiffusionCoeff}}(}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTilde,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuF,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ surfNuTilde,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfScalarField}}\&\ nuTildeEffF}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00062}00062\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ab812f773a386f85c83e0217fbf10d2ae}{00064}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_ab812f773a386f85c83e0217fbf10d2ae}{calcMagSqrVec}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ magSqr,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ in)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a669e793a6a4959d59776bd549cd05408}{00066}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_a669e793a6a4959d59776bd549cd05408}{computeProdSpDDES}}(}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ productionField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ spCoeffField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuTildeField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ nuField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUx,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUy,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolVectorField}}\&\ gradUz,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ wallDistanceField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ deltaField,}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolScalarField}}\&\ gradNuTildeMagSqrField}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00077}00077\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00079}00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00081}00081\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00083}00083\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1_1Coefficients}{Coefficients}}\ coeffs\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00084}00084\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ cw1\_;}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00085}00085\ \};}
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{SpalartAllmarasDDES_8hpp_source_l00087}00087\ \}\ \textcolor{comment}{//\ namespace\ NeoN::turbulenceModels}}
 
 \end{DoxyCode}

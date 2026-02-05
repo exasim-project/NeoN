@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['kappa_0',['kappa',['../structNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1_1Coefficients.html#a33b66db331d24c41e29cdfafbc113fb0',1,'NeoN::turbulenceModels::SpalartAllmarasDDES::Coefficients']]],
-  ['key_1',['key',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin.html#ab1ea0a9e16f0d7fdfe345d755b069d30',1,'NeoN::finiteVolume::cellCentred::FieldDatabaseMixin']]]
+  ['level_0',['level',['../classNeoN_1_1Logging_1_1LogEvent.html#abc7fe8715a0dc371fb37f27e0e5a9a1e',1,'NeoN::Logging::LogEvent']]],
+  ['location_1',['location',['../classNeoN_1_1Logging_1_1LogEvent.html#acbcd09de99ef6864937f7367d73eafdc',1,'NeoN::Logging::LogEvent']]]
 ];
