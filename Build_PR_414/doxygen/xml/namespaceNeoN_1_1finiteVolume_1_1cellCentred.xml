@@ -40,8 +40,44 @@
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary" prot="public">NeoN::finiteVolume::cellCentred::VolumeBoundary</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" prot="public">NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" prot="public">NeoN::finiteVolume::cellCentred::VolumeField</innerclass>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail">NeoN::finiteVolume::cellCentred::detail</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary">NeoN::finiteVolume::cellCentred::surfaceBoundary</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary">NeoN::finiteVolume::cellCentred::volumeBoundary</innernamespace>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>DdtScheme</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::DdtScheme</qualifiedname>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754" prot="public">
+          <name>None</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" prot="public">
+          <name>BDF1</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" prot="public">
+          <name>BDF2</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp" line="18" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp" bodystart="19" bodyend="23"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af1c5b27f52cfe871ebc69cf0c8d11626" prot="public" static="no">
         <type>std::function&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument" kindref="compound">VectorDocument</ref>(<ref refid="classNeoN_1_1Database" kindref="compound">NeoN::Database</ref> &amp;db)&gt;</type>
@@ -70,6 +106,34 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/fieldCollection.hpp" line="201" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/fieldCollection.hpp" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a6568c7313fb14207c50ce55d892197fe" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::VolVectorField = typedef VolumeField&lt;Vec3&gt;</definition>
+        <argsstring></argsstring>
+        <name>VolVectorField</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::VolVectorField</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="17" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::SurfScalarField = typedef SurfaceField&lt;scalar&gt;</definition>
+        <argsstring></argsstring>
+        <name>SurfScalarField</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::SurfScalarField</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="18" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="18" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -140,7 +204,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="149" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="149" bodyend="154"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="159" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="159" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aff55801e0df1fcf7be8f26668fa963e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -177,7 +241,98 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="165" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="165" bodyend="170"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="175" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="175" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a51914b93645b7482628ef0fc97f75df0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename VectorType</type>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int NeoN::finiteVolume::cellCentred::oldTimeLevel</definition>
+        <argsstring>(const VectorType &amp;field)</argsstring>
+        <name>oldTimeLevel</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::oldTimeLevel</qualifiedname>
+        <param>
+          <type>const VectorType &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to retrieve the history depth of a field in oldTimeCollection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to retrieve the old time field from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>History depth of the old time field. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="189" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" bodystart="189" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename VectorType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::rotateOldTimes</definition>
+        <argsstring>(VectorType &amp;field)</argsstring>
+        <name>rotateOldTimes</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::rotateOldTimes</qualifiedname>
+        <param>
+          <type>VectorType &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Rotate time levels for a field. Meaning of <computeroutput>level</computeroutput> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Startup sequence when rotate() is called at the BEGINNING of each time step:</para>
+<para>Initial state (t = t0, before first rotate): field = φ^{0} no oldTime buffers exist</para>
+<para>First <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" kindref="member">rotateOldTimes()</ref> call (entering t1):<itemizedlist>
+<listitem><para>level == 0</para>
+</listitem><listitem><para>φ^{n} buffer is allocated via oldTime(field)</para>
+</listitem><listitem><para>data rotated: φ^{n} ← φ^{0} → history depth = 1 (BDF1 startup)</para>
+</listitem></itemizedlist>
+</para>
+<para>Second <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a564c89c16f64e7d3a9de82d871ea3170" kindref="member">rotateOldTimes()</ref> call (entering t2):<itemizedlist>
+<listitem><para>level == 1</para>
+</listitem><listitem><para>φ^{n-1} buffer is allocated via oldTime(oldTime(field))</para>
+</listitem><listitem><para>data rotated: φ^{n-1} ← φ^{n} = φ^{0}, φ^{n} ← φ^{1} → history depth = 2 (BDF2 becomes active)</para>
+</listitem></itemizedlist>
+</para>
+<para>Subsequent rotate() calls:<itemizedlist>
+<listitem><para>level &gt;= 2</para>
+</listitem><listitem><para>buffers reused (no further allocation)</para>
+</listitem><listitem><para>data rotated each step: φ^{n-1} ← φ^{n}, φ^{n} ← φ^{current}</para>
+</listitem></itemizedlist>
+</para>
+<para>Only two historical states are kept (φ^{n}, φ^{n-1}).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to retrieve the old time field from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" line="245" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/oldTimeCollection.hpp" declline="245" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a751725b9a4effad3dcab6822807b10e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
@@ -246,6 +401,49 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="44" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="44" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &gt;</type>
+        <definition>std::vector&lt; SurfaceBoundary&lt; scalar &gt; &gt; NeoN::finiteVolume::cellCentred::createFluxCorrBCsFromU</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const VolumeField&lt; Vec3 &gt; &amp;u)</argsstring>
+        <name>createFluxCorrBCsFromU</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::createFluxCorrBCsFromU</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>u</declname>
+        </param>
+        <briefdescription>
+<para>Boundary condition to apply to ddtFluxCorr surfaceScalarField. It sets the flux correction to zero for all fixedValue velocity boundaries by calling .correctBoundaryConditions(). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh the boundary is registered on. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>u</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocity field to check the boundary conditions on. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>bcs The surface boundary vector with updated BC types. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp" bodystart="23" bodyend="50"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ad5c0aa904c7545c5c4ba1b1a833261c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -418,6 +616,36 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" line="41" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" declline="41" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae2be2580a8248d415eadc502ceebcf95" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref></type>
+        <definition>SurfScalarField NeoN::finiteVolume::cellCentred::ddtFluxCorr</definition>
+        <argsstring>(const VolVectorField &amp;u, const SurfScalarField &amp;phi, scalar dt, DdtScheme scheme)</argsstring>
+        <name>ddtFluxCorr</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::ddtFluxCorr</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a6568c7313fb14207c50ce55d892197fe" kindref="member">VolVectorField</ref> &amp;</type>
+          <declname>u</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>phi</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kindref="member">DdtScheme</ref></type>
+          <declname>scheme</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="114" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="114" bodyend="149"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1adebf18ffc07511e7a497371f83f92fc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

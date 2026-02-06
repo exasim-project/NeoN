@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a962e52108c2184154c66a06bbf44d27a" id="r_a962e52108c2184154c66a06bbf44d27a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; IndexType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#a962e52108c2184154c66a06bbf44d27a">rowOffs</a> () const</td></tr>
 <tr class="memdesc:a962e52108c2184154c66a06bbf44d27a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a const reference to row offset vector.  <br /></td></tr>
 <tr class="separator:a962e52108c2184154c66a06bbf44d27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acba4cba929330d32cf02d7d82ddafb1c" id="r_acba4cba929330d32cf02d7d82ddafb1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#acba4cba929330d32cf02d7d82ddafb1c">diag</a> () const</td></tr>
+<tr class="memdesc:acba4cba929330d32cf02d7d82ddafb1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">extract the diagonal of the matrix  <br /></td></tr>
+<tr class="separator:acba4cba929330d32cf02d7d82ddafb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1509d705d3c8e261ad36f4ce9fbb5ab" id="r_af1509d705d3c8e261ad36f4ce9fbb5ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html">CSRMatrix</a>&lt; ValueType, IndexType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html#af1509d705d3c8e261ad36f4ce9fbb5ab">copyToExecutor</a> (<a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> dstExec) const</td></tr>
 <tr class="memdesc:af1509d705d3c8e261ad36f4ce9fbb5ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the matrix to another executor.  <br /></td></tr>
 <tr class="separator:af1509d705d3c8e261ad36f4ce9fbb5ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -364,7 +367,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the matrix on the destination executor. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00177">177</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00180">180</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -396,7 +399,28 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 <p>Copy the matrix to the host. </p>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the matrix on the host. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00193">193</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00196">196</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
+
+</div>
+</div>
+<a id="acba4cba929330d32cf02d7d82ddafb1c" name="acba4cba929330d32cf02d7d82ddafb1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acba4cba929330d32cf02d7d82ddafb1c">&#9670;&#160;</a></span>diag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType , typename IndexType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; <a class="el" href="classNeoN_1_1la_1_1CSRMatrix.html">NeoN::la::CSRMatrix</a>&lt; ValueType, IndexType &gt;::diag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>extract the diagonal of the matrix </p>
 
 </div>
 </div>
@@ -652,7 +676,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 <p>Get a view representation of the matrix's data. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structNeoN_1_1la_1_1CSRMatrixView.html" title="A view struct to allow easy read/write on all executors.">CSRMatrixView</a> for easy access to matrix elements. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00202">202</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00205">205</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -684,7 +708,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
 <p>Get a const view representation of the matrix's data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Const <a class="el" href="structNeoN_1_1la_1_1CSRMatrixView.html" title="A view struct to allow easy read/write on all executors.">CSRMatrixView</a> for read-only access to matrix elements. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00211">211</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSRMatrix_8hpp_source.html#l00214">214</a> of file <a class="el" href="CSRMatrix_8hpp_source.html">CSRMatrix.hpp</a>.</p>
 
 </div>
 </div>

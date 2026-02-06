@@ -411,6 +411,8 @@
         </childnode>
         <childnode refid="71" relation="include">
         </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
       </node>
       <node id="34">
         <label>NeoN/fields/boundaryData.hpp</label>
@@ -498,6 +500,24 @@
         <childnode refid="56" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="73">
+        <label>NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
+        <link refid="ddtOperator_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
       <node id="61">
@@ -688,7 +708,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2025<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
@@ -720,8 +740,8 @@
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
 <codeline lineno="31" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a9b71471bb93ba538cbfe1e2c42fedebc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a9b71471bb93ba538cbfe1e2c42fedebc" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;timeIntegrationFactory&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aef92fda8dab4d1a50e91fb63c9114395" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aef92fda8dab4d1a50e91fb63c9114395" kindref="member">TimeIntegratorBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>schemeDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a6ec6c1557e18be4abda8b17b673652b5" kindref="member">schemeDict_</ref>(schemeDict),<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a319d692ec559c3b0863e06216769a61a" kindref="member">solutionDict_</ref>(solutionDict)</highlight></codeline>
+<codeline lineno="33" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a88cfefa71b232c6a9aed200291761b5e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a88cfefa71b232c6a9aed200291761b5e" kindref="member">TimeIntegratorBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>timeIntegrationDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a72fc6bbc5190d108fb602b0f38749cd3" kindref="member">timeIntegrationDict_</ref>(timeIntegrationDict),<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a319d692ec559c3b0863e06216769a61a" kindref="member">solutionDict_</ref>(solutionDict)</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="37" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a520f7e266a18cee23fe1648879d32762" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a520f7e266a18cee23fe1648879d32762" kindref="member">~TimeIntegratorBase</ref>()<sp/>{}</highlight></codeline>
@@ -737,7 +757,7 @@
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a6ec6c1557e18be4abda8b17b673652b5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a6ec6c1557e18be4abda8b17b673652b5" kindref="member">schemeDict_</ref>;</highlight></codeline>
+<codeline lineno="50" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a72fc6bbc5190d108fb602b0f38749cd3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a72fc6bbc5190d108fb602b0f38749cd3" kindref="member">timeIntegrationDict_</ref>;</highlight></codeline>
 <codeline lineno="51" refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a319d692ec559c3b0863e06216769a61a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a319d692ec559c3b0863e06216769a61a" kindref="member">solutionDict_</ref>;</highlight></codeline>
 <codeline lineno="52"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight></codeline>
@@ -756,9 +776,9 @@
 <codeline lineno="72" refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ae74768bc8d2c29be38b77340ec0a6109" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ae74768bc8d2c29be38b77340ec0a6109" kindref="member">TimeIntegration</ref>(<ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration" kindref="compound">TimeIntegration</ref>&amp;&amp;<sp/>timeIntegrator)</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>timeIntegratorStrategy_(std::move(timeIntegrator.timeIntegratorStrategy_))<sp/>{};</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75" refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a396623a117d5148481f376df12090c38" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1a396623a117d5148481f376df12090c38" kindref="member">TimeIntegration</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>schemeDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
+<codeline lineno="75" refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ac03f35d48d4e1116af3221123ff4f48e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ac03f35d48d4e1116af3221123ff4f48e" kindref="member">TimeIntegration</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>timeIntegrationDict,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>solutionDict)</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>timeIntegratorStrategy_(<ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref>&lt;SolutionVectorType&gt;::create(</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>schemeDict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">),<sp/>schemeDict,<sp/>solutionDict</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timeIntegrationDict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">),<sp/>timeIntegrationDict,<sp/>solutionDict</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>))<sp/>{};</highlight></codeline>
 <codeline lineno="79"><highlight class="normal"></highlight></codeline>
 <codeline lineno="80" refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ad0b7d09fb156d2ba6da0f15fcf39cd0d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegration_1ad0b7d09fb156d2ba6da0f15fcf39cd0d" kindref="member">solve</ref>(<ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&amp;<sp/>eqn,<sp/>SolutionVectorType&amp;<sp/>sol,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>t,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt)</highlight></codeline>
