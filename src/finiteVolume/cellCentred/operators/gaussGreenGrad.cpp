@@ -11,7 +11,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 KOKKOS_INLINE_FUNCTION
-void atomicAdd(Vec3* target, const Vec3& value)
+void atomicAddVec3(Vec3* target, const Vec3& value)
 {
     Kokkos::atomic_add(&(*target)[0], value[0]);
     Kokkos::atomic_add(&(*target)[1], value[1]);
@@ -19,7 +19,7 @@ void atomicAdd(Vec3* target, const Vec3& value)
 }
 
 KOKKOS_INLINE_FUNCTION
-void atomicSub(Vec3* target, const Vec3& value)
+void atomicSubVec3(Vec3* target, const Vec3& value)
 {
     Kokkos::atomic_sub(&(*target)[0], value[0]);
     Kokkos::atomic_sub(&(*target)[1], value[1]);
@@ -226,14 +226,14 @@ void computeGradVec(
             const auto o = owner[f];
             const auto n = nei[f];
 
-            atomicAdd(&gUx[o], fluxX);
-            atomicSub(&gUx[n], fluxX);
+            atomicAddVec3(&gUx[o], fluxX);
+            atomicSubVec3(&gUx[n], fluxX);
 
-            atomicAdd(&gUy[o], fluxY);
-            atomicSub(&gUy[n], fluxY);
+            atomicAddVec3(&gUy[o], fluxY);
+            atomicSubVec3(&gUy[n], fluxY);
 
-            atomicAdd(&gUz[o], fluxZ);
-            atomicSub(&gUz[n], fluxZ);
+            atomicAddVec3(&gUz[o], fluxZ);
+            atomicSubVec3(&gUz[n], fluxZ);
         },
         "computeGradVecInternal"
     );
@@ -248,9 +248,9 @@ void computeGradVec(
             const Vec3 sf = SfAll[f];
             const Vec3 uf = UfAll[f];
 
-            atomicAdd(&gUx[o], sf * uf[0]);
-            atomicAdd(&gUy[o], sf * uf[1]);
-            atomicAdd(&gUz[o], sf * uf[2]);
+            atomicAddVec3(&gUx[o], sf * uf[0]);
+            atomicAddVec3(&gUy[o], sf * uf[1]);
+            atomicAddVec3(&gUz[o], sf * uf[2]);
         },
         "computeGradVecBoundary"
     );

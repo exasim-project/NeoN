@@ -6,7 +6,6 @@
 
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
-#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/core/database/fieldDatabase.hpp"
 
