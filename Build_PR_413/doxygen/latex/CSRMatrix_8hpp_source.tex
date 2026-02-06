@@ -2,7 +2,7 @@
 \hypertarget{CSRMatrix_8hpp_source}{}\label{CSRMatrix_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/CSRMatrix.hpp}}
 \mbox{\hyperlink{CSRMatrix_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00004}00004\ }
@@ -99,68 +99,73 @@
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00175}00175\ }
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00180}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a962e52108c2184154c66a06bbf44d27a}{00180}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a962e52108c2184154c66a06bbf44d27a}{rowOffs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rowOffs\_;\ \}}
 \DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00181}00181\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00187}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aa341c7dd66d1f0e0d20d87fb6606b333}{00187}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aa341c7dd66d1f0e0d20d87fb6606b333}{copyToExecutor}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ dstExec}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00188}00188\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00189}00189\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dstExec\ ==\ values\_.exec())}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<ValueType,\ IndexType>}}\ other(}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ values\_.copyToHost(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}()}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ other;}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00198}00198\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00199}00199\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00204}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}{00204}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}{view}}()}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00205}00205\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView}}(values\_.view(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}());}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00207}00207\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00208}00208\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00213}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}{00213}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView<const\ ValueType,\ const\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}{view}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00214}00214\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView}}(values\_.view(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}());}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00216}00216\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00217}00217\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00218}00218\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00219}00219\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00220}00220\ \ \ \ \ \textcolor{keywordtype}{void}\ validate()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00221}00221\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(values\_.exec()\ ==\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(values\_.exec()\ ==\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00224}00224\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00225}00225\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00226}00226\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ values\_;\ \ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00227}00227\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\ colIdxs\_;\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00228}00228\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\ rowOffs\_;\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00229}00229\ \};}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00230}00230\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00231}00231\ \textcolor{comment}{//\ /*\ @brief\ given\ a\ csr\ matrix\ this\ function\ copies\ the\ matrix\ and\ converts\ to\ requested\ target}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00232}00232\ \textcolor{comment}{//\ types}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00233}00233\ \textcolor{comment}{//\ \ *}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00234}00234\ \textcolor{comment}{//\ \ */}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00235}00235\ \textcolor{comment}{//\ template<typename\ ValueTypeIn,\ typename\ IndexTypeIn,\ typename\ ValueTypeOut,\ typename}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00236}00236\ \textcolor{comment}{//\ IndexTypeOut>\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ convert(const\ Executor\ exec,\ const}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00237}00237\ \textcolor{comment}{//\ la::CSRMatrixView<const\ ValueTypeIn,\ const\ IndexTypeIn>\ in)}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00238}00238\ \textcolor{comment}{//\ \{}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00239}00239\ \textcolor{comment}{//\ \ \ \ \ Vector<IndexTypeOut>\ colIdxsTmp(exec,\ in.colIdxs.size());}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00240}00240\ \textcolor{comment}{//\ \ \ \ \ Vector<IndexTypeOut>\ rowOffsTmp(exec,\ in.rowOffs.size());}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00241}00241\ \textcolor{comment}{//\ \ \ \ \ Vector<ValueTypeOut>\ valuesTmp(exec,\ in.values.data(),\ in.values.size());}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00242}00242\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00243}00243\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00244}00244\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00245}00245\ \textcolor{comment}{//\ \ \ \ \ );}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00246}00246\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00247}00247\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00248}00248\ \textcolor{comment}{//\ \ \ \ \ );}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00249}00249\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00250}00250\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ KOKKOS\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00251}00251\ \textcolor{comment}{//\ \ \ \ \ );}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00252}00252\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00253}00253\ \textcolor{comment}{//\ \ \ \ \ return\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ \{valuesTmp,\ colIdxsTmp,\ rowOffsTmp\};}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00254}00254\ \textcolor{comment}{//\ \}}}
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00255}00255\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00256}00256\ }
-\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00257}00257\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00183}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_acba4cba929330d32cf02d7d82ddafb1c}{00183}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_acba4cba929330d32cf02d7d82ddafb1c}{diag}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00190}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aa341c7dd66d1f0e0d20d87fb6606b333}{00190}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aa341c7dd66d1f0e0d20d87fb6606b333}{copyToExecutor}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ dstExec}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00191}00191\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00192}00192\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dstExec\ ==\ values\_.exec())}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<ValueType,\ IndexType>}}\ other(}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ values\_.copyToHost(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}()}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ other;}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00201}00201\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00207}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}{00207}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView<ValueType,\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}{view}}()}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00208}00208\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView}}(values\_.view(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}());}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00210}00210\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00211}00211\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00216}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}{00216}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView<const\ ValueType,\ const\ IndexType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}{view}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00217}00217\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrixView}}(values\_.view(),\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}(),\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}());}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00219}00219\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00221}00221\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00222}00222\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00223}00223\ \ \ \ \ \textcolor{keywordtype}{void}\ validate()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00224}00224\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(values\_.exec()\ ==\ colIdxs\_.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(values\_.exec()\ ==\ rowOffs\_.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00227}00227\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00228}00228\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00229}00229\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ values\_;\ \ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00230}00230\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\ colIdxs\_;\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00231}00231\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\ rowOffs\_;\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00232}00232\ \};}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00237}00237\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00238}\mbox{\hyperlink{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}{00238}}\ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a544897145e4a54a5386ba7ecd24304e4}{upper}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix<ValueType,\ IndexType>}}\&\ mtx);}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00239}00239\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00240}00240\ \textcolor{comment}{//\ /*\ @brief\ given\ a\ csr\ matrix\ this\ function\ copies\ the\ matrix\ and\ converts\ to\ requested\ target}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00241}00241\ \textcolor{comment}{//\ types}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00242}00242\ \textcolor{comment}{//\ \ *}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00243}00243\ \textcolor{comment}{//\ \ */}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00244}00244\ \textcolor{comment}{//\ template<typename\ ValueTypeIn,\ typename\ IndexTypeIn,\ typename\ ValueTypeOut,\ typename}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00245}00245\ \textcolor{comment}{//\ IndexTypeOut>\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ convert(const\ Executor\ exec,\ const}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00246}00246\ \textcolor{comment}{//\ la::CSRMatrixView<const\ ValueTypeIn,\ const\ IndexTypeIn>\ in)}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00247}00247\ \textcolor{comment}{//\ \{}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00248}00248\ \textcolor{comment}{//\ \ \ \ \ Vector<IndexTypeOut>\ colIdxsTmp(exec,\ in.colIdxs.size());}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00249}00249\ \textcolor{comment}{//\ \ \ \ \ Vector<IndexTypeOut>\ rowOffsTmp(exec,\ in.rowOffs.size());}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00250}00250\ \textcolor{comment}{//\ \ \ \ \ Vector<ValueTypeOut>\ valuesTmp(exec,\ in.values.data(),\ in.values.size());}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00251}00251\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00252}00252\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00253}00253\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ colIdxsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.colIdxs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00254}00254\ \textcolor{comment}{//\ \ \ \ \ );}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00255}00255\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00256}00256\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ rowOffsTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ IndexTypeOut\ \{in.rowOffs[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00257}00257\ \textcolor{comment}{//\ \ \ \ \ );}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00258}00258\ \textcolor{comment}{//\ \ \ \ \ parallelFor(}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00259}00259\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ valuesTmp,\ NEON\_LAMBDA(const\ localIdx\ i)\ \{\ return\ ValueTypeOut\ \{in.values[i]\};\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00260}00260\ \textcolor{comment}{//\ \ \ \ \ );}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00262}00262\ \textcolor{comment}{//\ \ \ \ \ return\ la::CSRMatrix<ValueTypeOut,\ IndexTypeOut>\ \{valuesTmp,\ colIdxsTmp,\ rowOffsTmp\};}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00263}00263\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00264}00264\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00265}00265\ }
+\DoxyCodeLine{\Hypertarget{CSRMatrix_8hpp_source_l00266}00266\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

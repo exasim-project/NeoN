@@ -10,7 +10,7 @@ var searchData=
   ['local_7',['local',['../classNeoN_1_1la_1_1Matrix.html#a7e22fe00947b070398dad8ee031d96f9',1,'NeoN::la::Matrix::local()'],['../classNeoN_1_1la_1_1Matrix.html#a5f84780ba7d99ea8ceecc06879cb7a43',1,'NeoN::la::Matrix::local() const']]],
   ['log_8',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#af4802af6ad562278b6293bad7e6b64cc',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a1a041df8e9d32fdec6253944cbd348a3',1,'NeoN::Logging::log()']]],
   ['logbadanycast_9',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
-  ['logevent_10',['LogEvent',['../classNeoN_1_1Logging_1_1LogEvent.html#af1224a8a45a46a1bb7727e2c00ae6f94',1,'NeoN::Logging::LogEvent']]],
+  ['logevent_10',['LogEvent',['../classNeoN_1_1Logging_1_1LogEvent.html#a8313dff6d8edc6b6c5411c5ee7d2f3e1',1,'NeoN::Logging::LogEvent']]],
   ['logger_11',['Logger',['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger']]],
   ['logimpl_12',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
   ['logoutrange_13',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
