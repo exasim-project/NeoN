@@ -236,10 +236,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="276" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="276" bodyend="280"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a81ea5bf6450cb2402acf9f981d5583ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a3525ef08360a2b2d17f6cd7938a006f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::la::negLUx</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;rAU, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
+        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;rAU, const Vector&lt; scalar &gt; &amp;V, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
         <name>negLUx</name>
         <qualifiedname>NeoN::la::negLUx</qualifiedname>
         <param>
@@ -260,7 +260,7 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>vol</declname>
+          <declname>V</declname>
         </param>
         <param>
           <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
@@ -276,10 +276,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="286" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="286" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1ac9fe4b813decf585bf15034f011c72eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a3cd618303a2cd8255c84da25dc014e14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::la::scaledInvDiagnegLUx</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
+        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;V, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
         <name>scaledInvDiagnegLUx</name>
         <qualifiedname>NeoN::la::scaledInvDiagnegLUx</qualifiedname>
         <param>
@@ -296,7 +296,7 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>vol</declname>
+          <declname>V</declname>
         </param>
         <param>
           <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
@@ -307,7 +307,7 @@
           <declname>out</declname>
         </param>
         <briefdescription>
-<para>computes out negLux and scaledInverseDiag </para>
+<para>computes out = -(L+U) x </para>
         </briefdescription>
         <detaileddescription>
 <para>@notes explicitly sets out values to zero </para>
