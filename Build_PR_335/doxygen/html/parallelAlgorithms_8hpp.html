@@ -77,12 +77,14 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#concepts">Concepts</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">parallelAlgorithms.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;Kokkos_Core.hpp&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
+<code>#include &quot;<a class="el" href="logging_8hpp_source.html">NeoN/core/logging.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="label_8hpp_source.html">NeoN/core/primitives/label.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="executor_8hpp_source.html">NeoN/core/executor/executor.hpp</a>&quot;</code><br />
 </div>
@@ -100,17 +102,25 @@ Concepts</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptNeoN_1_1parallelForContainerKernel.html">NeoN::parallelForContainerKernel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a9498b53fd8bbd2ab12440cef550e6533" id="r_a9498b53fd8bbd2ab12440cef550e6533"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>&#160;&#160;&#160;[&amp;]</td></tr>
+<tr class="separator:a9498b53fd8bbd2ab12440cef550e6533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a21e64530776182407f0f068c289adf81" id="r_a21e64530776182407f0f068c289adf81"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , parallelForKernel Kernel&gt; </td></tr>
-<tr class="memitem:a21e64530776182407f0f068c289adf81"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a21e64530776182407f0f068c289adf81">NeoN::parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
-<tr class="separator:a21e64530776182407f0f068c289adf81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d03ed0359a20ca2685179a9ed723478" id="r_a1d03ed0359a20ca2685179a9ed723478"><td class="memTemplParams" colspan="2">template&lt;typename ExecutorType &gt; </td></tr>
+<tr class="memitem:a1d03ed0359a20ca2685179a9ed723478"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a1d03ed0359a20ca2685179a9ed723478">NeoN::fenceIfLogger</a> (const ExecutorType &amp;exec)</td></tr>
+<tr class="separator:a1d03ed0359a20ca2685179a9ed723478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a126d8c73d03797fa02ed0ba390452363" id="r_a126d8c73d03797fa02ed0ba390452363"><td class="memTemplParams" colspan="2">template&lt;typename ExecutorType , parallelForKernel Kernel&gt; </td></tr>
+<tr class="memitem:a126d8c73d03797fa02ed0ba390452363"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">NeoN::parallelFor</a> (const ExecutorType &amp;, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>)</td></tr>
+<tr class="separator:a126d8c73d03797fa02ed0ba390452363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44f27717687a4b73cc58ec9918530f05" id="r_a44f27717687a4b73cc58ec9918530f05"><td class="memTemplParams" colspan="2">template&lt;parallelForKernel Kernel&gt; </td></tr>
 <tr class="memitem:a44f27717687a4b73cc58ec9918530f05"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a44f27717687a4b73cc58ec9918530f05">NeoN::parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
 <tr class="separator:a44f27717687a4b73cc58ec9918530f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad159397b740c7143932f44f43cf04cbf" id="r_ad159397b740c7143932f44f43cf04cbf"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
-<tr class="memitem:ad159397b740c7143932f44f43cf04cbf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ad159397b740c7143932f44f43cf04cbf">NeoN::parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, ContType&lt; ValueType &gt; &amp;container, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
-<tr class="separator:ad159397b740c7143932f44f43cf04cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b98be76aa832e80150da000f7d3d35e" id="r_a4b98be76aa832e80150da000f7d3d35e"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> , template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
+<tr class="memitem:a4b98be76aa832e80150da000f7d3d35e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a4b98be76aa832e80150da000f7d3d35e">NeoN::parallelFor</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;, ContType&lt; ValueType &gt; &amp;container, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
+<tr class="separator:a4b98be76aa832e80150da000f7d3d35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a998b4b2db7ab2fb275c20a76cf323a49" id="r_a998b4b2db7ab2fb275c20a76cf323a49"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class ContType, typename ValueType , parallelForContainerKernel&lt; ValueType &gt; Kernel&gt; </td></tr>
 <tr class="memitem:a998b4b2db7ab2fb275c20a76cf323a49"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a998b4b2db7ab2fb275c20a76cf323a49">NeoN::parallelFor</a> (ContType&lt; ValueType &gt; &amp;cont, Kernel kernel, std::string <a class="el" href="namespaceNeoN.html#aa67294511d0c7da987259a7b1a3ba59d">name</a>=&quot;parallelFor&quot;)</td></tr>
 <tr class="separator:a998b4b2db7ab2fb275c20a76cf323a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,6 +149,23 @@ Functions</h2></td></tr>
 <tr class="memitem:ae066b98b683f3a7bd61c9a45a9de942f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ae066b98b683f3a7bd61c9a45a9de942f">NeoN::parallelScan</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">NeoN::Executor</a> &amp;exec, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, Kernel kernel, ReturnType &amp;returnValue)</td></tr>
 <tr class="separator:ae066b98b683f3a7bd61c9a45a9de942f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a9498b53fd8bbd2ab12440cef550e6533" name="a9498b53fd8bbd2ab12440cef550e6533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9498b53fd8bbd2ab12440cef550e6533">&#9670;&#160;</a></span>NEON_LAMBDA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NEON_LAMBDA&#160;&#160;&#160;[&amp;]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00024">24</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

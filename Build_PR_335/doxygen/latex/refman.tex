@@ -226,11 +226,13 @@
 \input{namespaceNeoN_1_1dsl_1_1temporal}
 \input{namespaceNeoN_1_1finiteVolume}
 \input{namespaceNeoN_1_1finiteVolume_1_1cellCentred}
+\input{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail}
 \input{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary}
 \input{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1detail}
 \input{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}
 \input{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}
 \input{namespaceNeoN_1_1la}
+\input{namespaceNeoN_1_1Logging}
 \input{namespaceNeoN_1_1timeIntegration}
 \chapter{Concept Documentation}
 \input{conceptNeoN_1_1dsl_1_1HasExplicitOperator}
@@ -248,6 +250,7 @@
 \input{classNeoN_1_1timeIntegration_1_1BackwardEuler}
 \input{classNeoN_1_1BaseClassData}
 \input{classNeoN_1_1BaseClassDocumentation}
+\input{classNeoN_1_1Logging_1_1BaseLogger}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme}
 \input{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes}
 \input{structNeoN_1_1la_1_1BoundaryCoefficients}
@@ -268,6 +271,7 @@
 \input{classNeoN_1_1dsl_1_1temporal_1_1Ddt}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}
 \input{classNeoN_1_1DerivedClassDocumentation}
+\input{classNeoN_1_1la_1_1DiagonalSolver}
 \input{classNeoN_1_1Dictionary}
 \input{classNeoN_1_1DimensionMismatch}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator}
@@ -283,6 +287,7 @@
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory}
 \input{classFactory}
 \input{classNeoN_1_1Field}
+\input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue}
@@ -300,6 +305,8 @@
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear}
 \input{classNeoN_1_1la_1_1LinearSystem}
 \input{structNeoN_1_1la_1_1LinearSystemView}
+\input{classNeoN_1_1Logging_1_1LogEvent}
+\input{classNeoN_1_1Logging_1_1Logger}
 \input{classNeoN_1_1NeoNException}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeCollection}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument}
@@ -321,13 +328,15 @@
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm}
 \input{classNeoN_1_1la_1_1SparsityPattern}
 \input{classNeoN_1_1dsl_1_1SpatialOperator}
-\input{classNeoN_1_1StencilDataBase}
+\input{classNeoN_1_1Logging_1_1SupportsLoggingMixin}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}
 \input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}
+\input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Symmetry}
+\input{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Symmetry}
 \input{classNeoN_1_1dsl_1_1TemporalOperator}
 \input{classNeoN_1_1Time}
 \input{classNeoN_1_1timeIntegration_1_1TimeIntegration}
@@ -357,6 +366,8 @@
 \input{document_8hpp_source}
 \input{fieldCollection_8hpp}
 \input{fieldCollection_8hpp_source}
+\input{fieldDatabase_8hpp}
+\input{fieldDatabase_8hpp_source}
 \input{oldTimeCollection_8hpp}
 \input{oldTimeCollection_8hpp_source}
 \input{demangle_8hpp}
@@ -375,8 +386,12 @@
 \input{serialExecutor_8hpp_source}
 \input{info_8hpp}
 \input{info_8hpp_source}
+\input{initialization_8hpp}
+\input{initialization_8hpp_source}
 \input{input_8hpp}
 \input{input_8hpp_source}
+\input{logging_8hpp}
+\input{logging_8hpp_source}
 \input{macros_8hpp}
 \input{macros_8hpp_source}
 \input{environment_8hpp}
@@ -441,6 +456,8 @@
 \input{boundary_8hpp_source}
 \input{boundaryPatchMixin_8hpp}
 \input{boundaryPatchMixin_8hpp_source}
+\input{ddtFluxCorrBoundary_8hpp}
+\input{ddtFluxCorrBoundary_8hpp_source}
 \input{surfaceBoundaryFactory_8hpp}
 \input{surfaceBoundaryFactory_8hpp_source}
 \input{surface_2calculated_8hpp}
@@ -459,6 +476,10 @@
 \input{surface_2fixedValue_8hpp_source}
 \input{volume_2fixedValue_8hpp}
 \input{volume_2fixedValue_8hpp_source}
+\input{surface_2symmetry_8hpp}
+\input{surface_2symmetry_8hpp_source}
+\input{volume_2symmetry_8hpp}
+\input{volume_2symmetry_8hpp_source}
 \input{volumeBoundaryFactory_8hpp}
 \input{volumeBoundaryFactory_8hpp_source}
 \input{faceNormalGradient_8hpp}
@@ -477,6 +498,8 @@
 \input{surfaceInterpolation_8hpp_source}
 \input{upwind_8hpp}
 \input{upwind_8hpp_source}
+\input{ddtFluxCorr_8hpp}
+\input{ddtFluxCorr_8hpp_source}
 \input{ddtOperator_8hpp}
 \input{ddtOperator_8hpp_source}
 \input{divOperator_8hpp}
@@ -501,12 +524,12 @@
 \input{cellToFaceStencil_8hpp_source}
 \input{geometryScheme_8hpp}
 \input{geometryScheme_8hpp_source}
-\input{stencilDataBase_8hpp}
-\input{stencilDataBase_8hpp_source}
 \input{exceptions_8hpp}
 \input{exceptions_8hpp_source}
 \input{CSRMatrix_8hpp}
 \input{CSRMatrix_8hpp_source}
+\input{diagonalSolver_8hpp}
+\input{diagonalSolver_8hpp_source}
 \input{ginkgo_8hpp}
 \input{ginkgo_8hpp_source}
 \input{linearSystem_8hpp}

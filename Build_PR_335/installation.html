@@ -6,10 +6,10 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="Welcome to NeoN!" href="index.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/installation.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
         <title>Installation - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=acfd86a5" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6a4ff913" />
@@ -348,6 +348,15 @@ during the configure step.</p>
 -DKokkos_ARCH_AMD_&lt;GPU_ARCH&gt;<span class="o">=</span>ON<span class="w">  </span><span class="c1"># e.g., -DKokkos_ARCH_AMD_GFX90A=ON</span>
 </pre></div>
 </div>
+<p>In the case of Intel PVC GPUs, the following flags ensure sycl support.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>icpx
+-DCMAKE_CXX_FLAGS<span class="o">=</span>-fsycl
+-DCMAKE_BUILD_TYPE<span class="o">=</span>release
+-DKokkos_ENABLE_SYCL<span class="o">=</span>ON
+-DKokkos_ARCH_INTEL_PVC<span class="o">=</span>ON
+</pre></div>
+</div>
+<p>Please note that current support for NeoN on Intel GPUs is experimental.</p>
 <p>After configuring for GPU support, you can continue to build NeoN.</p>
 </section>
 <section id="building-with-cmake-presets">
