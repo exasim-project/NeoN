@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_0',['Type',['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator']]]
+  ['level_0',['Level',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214',1,'NeoN::Logging']]]
 ];

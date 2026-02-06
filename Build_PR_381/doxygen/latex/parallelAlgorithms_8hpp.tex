@@ -2,6 +2,7 @@
 \hypertarget{parallelAlgorithms_8hpp}{}\label{parallelAlgorithms_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp}}
 {\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
 {\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/logging.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
 \doxysubsubsection*{Namespaces}
@@ -19,7 +20,9 @@ concept \mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{Neo\+N\+::pa
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a21e64530776182407f0f068c289adf81}{Neo\+N\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$typename Executor\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1d03ed0359a20ca2685179a9ed723478}{Neo\+N\+::fence\+If\+Logger}} (const Executor\+Type \&exec)
+\item 
+{\footnotesize template$<$typename Executor\+Type , parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{Neo\+N\+::parallel\+For}} (const Executor\+Type \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
 \item 
 {\footnotesize template$<$parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a44f27717687a4b73cc58ec9918530f05}{Neo\+N\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 

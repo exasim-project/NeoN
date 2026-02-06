@@ -1,8 +1,45 @@
 Operator
-=======
+========
 
+Overview
+^^^^^^^^
 
-The `Operator` class represents a term in an equation and can be instantiated with different value types.
+An `Operator` is an essential building block to represent expressions in NeoNs dsl.
+Here is an example of combining multiple `Operator` to an expression:
+    .. code-block:: cpp
+
+        dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U)
+
+NeoN's implements explicit (`exp`) and implicit (`imp`) of operator in the `dsl` namespace.
+Note that, temporal operators are currently, part of the implicit (`imp`) namespace eventhough an explicit time integration can be selected at runtime.
+
+An `Operator` can be instantiated on fields of different value types, e.g.   `VolumeField<scalar>` or `VolumeField<Vec3>`, thus `Operator` are templated over the field `ValueType`.
+Since the purpose of an `Operator` is to encode an expression, an `Operator` merely stores constant references to the field(s) it operates on and provides a connection to kernel which are executed at runtime when an expression is solved and operators are evaluated.
+Additionally, since expressions are evaluated lazily, a simple instantiation of an operator does not execute any computational kernel.
+
+Implementation
+^^^^^^^^^^^^^^
+
+Operators are implemented via multiple functions and classes:
+
+    1. `dsl/implicit.hpp` and `dsl/explicit.hpp` implement free standing functions such as `dsl::imp::div(phi, U)` or `dsl::exp::grad(p)` or which act as factories to construct the operator instance.
+    2. The expression stores operators separately either as temporal or spatial operator. Thus, an implementation of both classes can be found in `spatialOperator.hpp` and `temporalOperator.hpp`.
+    3. The Operator holder classes `spatialOperator` and `temporalOperator` implement an interface which expression trigger evaluation of the operator via the `explicitOperation` and `implicitOperation` member function. These function forward the operation call to the concrete model.
+    4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
+
+.. mermaid::
+    flowchart TD
+        n2["dsl/implicit.hpp"]
+        -- imp::div
+        --> n3["spatialOperator&lt;&gt; <br> spatialOperator.hpp"] n3
+        --> n5["divOperator"]
+        --> n6["gaussGreenDiv"]
+        n2@{ shape: text}
+        n3@{ shape: proc}
+
+Details
+^^^^^^^
+
 An `Operator` is either explicit, implicit or temporal, and can be scalable by an additional coefficient, for example a scalar value or a further field.
 The `Operator` implementation uses Type Erasure (more details `[1] <https://medium.com/@gealleh/type-erasure-idiom-in-c-0d1cb4f61cf0>`_ `[2] <https://www.youtube.com/watch?v=4eeESJQk-mw>`_ `[3] <https://www.youtube.com/watch?v=qn6OqefuH08>`_) to achieve polymorphism without inheritance. Consequently, the class needs only to implement the interface which is used in the DSL and which is shown in the below example:
 
