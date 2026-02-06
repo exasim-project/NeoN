@@ -4,7 +4,7 @@ var searchData=
   ['nboundaries_1',['nboundaries',['../classNeoN_1_1BoundaryData.html#a43dd63100a240f03820bd1dd56329bd3',1,'NeoN::BoundaryData::nBoundaries()'],['../classNeoN_1_1UnstructuredMesh.html#a401abe2bb196b51465ea476e55a5622e',1,'NeoN::UnstructuredMesh::nBoundaries() const']]],
   ['nboundaryfaces_2',['nboundaryfaces',['../classNeoN_1_1UnstructuredMesh.html#a2cc40de21a651f18026027a53f13ce24',1,'NeoN::UnstructuredMesh::nBoundaryFaces()'],['../classNeoN_1_1BoundaryData.html#ae02127156206dae46c11bf1d84c25a21',1,'NeoN::BoundaryData::nBoundaryFaces() const'],['../classNeoN_1_1BoundaryData.html#ac6296db77d6f9c0136a8a9afe2e534d5',1,'NeoN::BoundaryData::nBoundaryFaces(localIdx patchId) const']]],
   ['ncells_3',['nCells',['../classNeoN_1_1UnstructuredMesh.html#a0e2245854aad317731034ac549956117',1,'NeoN::UnstructuredMesh']]],
-  ['neglux_4',['negLUx',['../namespaceNeoN_1_1la.html#a3525ef08360a2b2d17f6cd7938a006f0',1,'NeoN::la']]],
+  ['neglux_4',['negLUx',['../namespaceNeoN_1_1la.html#a81ea5bf6450cb2402acf9f981d5583ab',1,'NeoN::la']]],
   ['neighbouroffset_5',['neighbouroffset',['../classNeoN_1_1la_1_1MatrixIterator.html#a52be39f4f0819dcfed07f453bb6fabe3',1,'NeoN::la::MatrixIterator::neighbourOffset() const'],['../classNeoN_1_1la_1_1MatrixIterator.html#ab4162dd7f4604d787f60bf0c05751680',1,'NeoN::la::MatrixIterator::neighbourOffset()']]],
   ['neonexception_6',['NeoNException',['../classNeoN_1_1NeoNException.html#a0c08cb41205f0c35fcd9ee9472704049',1,'NeoN::NeoNException']]],
   ['next_7',['next',['../classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6',1,'NeoN::TokenList::next() const'],['../classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f',1,'NeoN::TokenList::next()']]],
