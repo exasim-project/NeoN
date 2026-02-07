@@ -27,6 +27,23 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
     NeoN::Vector<NeoN::scalar> scaleVector(exec, 1, 4.0);
     auto vf = fvcc::VolumeField(exec, "vf", mesh, fA, bf, bcs);
 
+    SECTION("Create equation and perform explicit Operation on " + execName)
+    {
+        dsl::SpatialOperator<TestType> a = Dummy<TestType>(vf);
+        auto expr = dsl::Expression<TestType>(exec);
+        expr.addOperator(a);
+
+        REQUIRE(expr.hasOperator("Dummy") == true);
+        REQUIRE_NOTHROW(expr.template getOperator<dsl::SpatialOperator<TestType>>("Dummy"));
+        REQUIRE_THROWS_AS(
+            expr.template getOperator<dsl::SpatialOperator<TestType>>("Dummy2"), std::runtime_error
+        );
+        REQUIRE_NOTHROW(expr.dropOperator("Dummy"));
+        REQUIRE(expr.hasOperator("Dummy") == false);
+        REQUIRE_THROWS_AS(
+            expr.template getOperator<dsl::SpatialOperator<TestType>>("Dummy"), std::runtime_error
+        );
+    }
 
     SECTION("Create equation and perform explicit Operation on " + execName)
     {

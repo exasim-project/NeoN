@@ -50,7 +50,7 @@ concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImpli
  * see https://www.youtube.com/watch?v=4eeESJQk-mw
  *
  * Motivation for using type erasure is that concrete implementation
- * of TemporalOperator e.g Divergence, Laplacian, etc can be stored in a vector of
+ * of TemporalOperator e.g ddt, d2dt2, etc can be stored in a vector of
  * TemporalOperator
  *
  * @ingroup dsl
@@ -69,6 +69,12 @@ public:
     TemporalOperator(const TemporalOperator& eqnOperator) : model_ {eqnOperator.model_->clone()} {}
 
     TemporalOperator(TemporalOperator&& eqnOperator) : model_ {std::move(eqnOperator.model_)} {}
+
+    TemporalOperator& operator=(const TemporalOperator& eqnOperator)
+    {
+        model_ = eqnOperator.model_->clone();
+        return *this;
+    }
 
     void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
     {
