@@ -87,6 +87,8 @@ public:
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }
 
+    Dictionary getConfig() const { return model_->getConfig(); }
+
     /* @brief Given an input this function reads required properties */
     void read(const Input& input) { model_->read(input); }
 
@@ -121,6 +123,9 @@ private:
 
         /* @brief get the associated coefficient for this term */
         virtual Coeff getCoefficient() const = 0;
+
+        /* @brief Get the config of operator*/
+        virtual Dictionary getConfig() const = 0;
 
         /* @brief Get the executor */
         virtual const Executor& exec() const = 0;
@@ -169,6 +174,8 @@ private:
 
         /* @brief get the associated coefficient for this term */
         virtual Coeff getCoefficient() const override { return concreteOp_.getCoefficient(); }
+
+        virtual Dictionary getConfig() const override { return concreteOp_.getConfig(); }
 
         // The Prototype Design Pattern
         std::unique_ptr<OperatorConcept> clone() const override

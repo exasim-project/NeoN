@@ -42,6 +42,8 @@ public:
 
     const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
+    Dictionary getConfig() const { return {}; }
+
 private:
 
     const VolumeField<scalar>& coefficients_;

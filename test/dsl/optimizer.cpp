@@ -38,6 +38,29 @@ TEST_CASE("Optimizer")
         auto exprOpt = dsl::optimize(expr);
         REQUIRE(exprOpt.size() == 1);
     }
+
+    SECTION("Can optimize div + laplacian " + execName)
+    {
+        auto input = NeoN::Dictionary {
+            {
+                "laplacianSchemes",
+                NeoN::Dictionary {
+                    {"laplacian(gamma,U)",
+                     NeoN::TokenList(
+                         {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
+                     )}
+                },
+            },
+            {"divSchemes",
+             NeoN::Dictionary {
+                 {"div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
+             }}
+        };
+
+        auto expr = NeoN::dsl::imp::laplacian(gamma, U) - NeoN::dsl::exp::div(phi, U);
+        auto exprOpt = dsl::optimize(expr);
+        expr.read(input);
+    }
 }
 
 

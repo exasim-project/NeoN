@@ -10,6 +10,7 @@
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -32,80 +33,101 @@ void computeDivLapImpl(
  *
  */
 template<typename ValueType>
-class GaussGreenDivLaplacian :
-    public DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>
+class GaussGreenDivLaplacian : public dsl::OperatorMixin<VolumeField<ValueType>>
+// public DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>
 {
-    using Base =
-        DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>;
+    // using Base =
+    //     DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>;
 
 public:
 
-    static std::string name() { return "Gauss"; }
+    using VectorValueType = ValueType;
 
-    static std::string doc() { return "Gauss-Green Divergence"; }
-
-    static std::string schema() { return "none"; }
-
-    GaussGreenDivLaplacian(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
-        : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs) {};
-
-    virtual VolumeField<ValueType>
-    div(const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
+    GaussGreenDivLaplacian(const Executor& exec, Dictionary divConfig, Dictionary lapConfig)
+        : dsl::OperatorMixin<VolumeField<ValueType>>(
+            exec,
+            dsl::Coeff(1.0),
+            divConfig.get<VolumeField<ValueType>&>("field"),
+            dsl::Operator::Type::Implicit
+        ),
+          coeffA_(divConfig.get<dsl::Coeff>("coeff")), coeffB_(lapConfig.get<dsl::Coeff>("coeff")),
+          gamma_(lapConfig.get<SurfaceField<scalar>&>("gamma")),
+          flux_(divConfig.get<SurfaceField<scalar>&>("flux"))
     {
-        std::string name = "div(" + faceFlux.name + "," + phi.name + ")";
-        VolumeField<ValueType> divPhi(
-            this->exec_,
-            name,
-            this->mesh_,
-            createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
-        );
-        NeoN::fill(divPhi.internalVector(), zero<ValueType>());
-        NeoN::fill(divPhi.boundaryData().value(), zero<ValueType>());
-        // computeDivExp<ValueType>(
-        //     faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
-        // );
-        return divPhi;
-    };
+        // FIXME some sanity checks are needed
+        // are div and lap field the same
+    }
 
-    virtual void
-    div(VolumeField<ValueType>& divPhi,
-        const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
+    // ,
+    //   surfaceInterpolation_(exec, mesh, inputs) {};
+
+    // std::unique_ptr<DivOperatorFactory<ValueType>> clone() const
+    // {
+    //     return std::make_unique<GaussGreenDivLaplacian<ValueType>>(*this);
+    // }
+
+    void explicitOperation(Vector<ValueType>& source) const {}
+
+    la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const {}
+
+    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
-        // computeDivExp<ValueType>(
-        //     faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
+        //  computeDivLapImpl(
+        //     ls,
+        //     const VolumeField<ValueType>& phi,
+        //      face_,
+        //      gamma_,
+        //     laplSurfaceInterpolation_,
+        //     divSurfaceInterpolation_,
+        //     faceNormalGradient_,
+        //      coeffA_,
+        //      coeffB_,
+        //     const la::SparsityPattern& sp
         // );
     }
 
-    virtual void
-    div(Vector<ValueType>& divPhi,
-        const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override {
-        // computeDivExp<ValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
-    };
-
-    virtual void
-    div(la::LinearSystem<ValueType, localIdx>& ls,
-        const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override {
-        // computeDivImp(
-        //     ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, this->getSparsityPattern()
-        // );
-    };
-
-    std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
+    void read(const Input& input)
     {
-        return std::make_unique<GaussGreenDivLaplacian<ValueType>>(*this);
+        const UnstructuredMesh& mesh = this->field_.mesh();
+        TokenList laplTokens;
+        TokenList divTokens;
+        if (std::holds_alternative<Dictionary>(input))
+        {
+            auto dict = std::get<Dictionary>(input);
+            std::string lapSchemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
+            std::string divSchemeName = "div(" + flux_.name + "," + this->getVector().name + ")";
+            laplTokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(lapSchemeName);
+            divTokens = dict.subDict("divSchemes").get<NeoN::TokenList>(divSchemeName);
+        }
+        else
+        {
+            NF_ERROR_EXIT("only dictionary input supported");
+        }
+        laplSurfaceInterpolation_ =
+            std::make_shared<SurfaceInterpolation<ValueType>>(this->exec(), mesh, laplTokens);
+        divSurfaceInterpolation_ =
+            std::make_shared<SurfaceInterpolation<ValueType>>(this->exec(), mesh, divTokens);
+        faceNormalGradient_ =
+            std::make_shared<FaceNormalGradient<ValueType>>(this->exec(), mesh, laplTokens);
     }
+
+    std::string getName() const { return "FusedDivLapOperator"; }
+
+    Dictionary getConfig() const { return {}; }
 
 private:
 
-    SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    // SurfaceInterpolation<ValueType> surfaceInterpolation_;
+
+    dsl::Coeff coeffA_; // div coeff
+    dsl::Coeff coeffB_; // lap coeff
+
+    const SurfaceField<scalar>& gamma_;
+    const SurfaceField<scalar>& flux_;
+
+    std::shared_ptr<SurfaceInterpolation<ValueType>> divSurfaceInterpolation_;
+    std::shared_ptr<SurfaceInterpolation<ValueType>> laplSurfaceInterpolation_;
+    std::shared_ptr<FaceNormalGradient<ValueType>> faceNormalGradient_;
 };
 
 template class GaussGreenDivLaplacian<scalar>;

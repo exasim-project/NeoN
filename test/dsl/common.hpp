@@ -137,6 +137,7 @@ struct CreateSurfaceVector
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
+// FIXME remove this Dummy operator
 template<typename ValueType>
 class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 {
@@ -194,6 +195,8 @@ public:
     }
 
     std::string getName() const { return "Dummy"; }
+
+    NeoN::Dictionary getConfig() const { return {}; }
 };
 
 /* A dummy implementation of a SpatialOperator

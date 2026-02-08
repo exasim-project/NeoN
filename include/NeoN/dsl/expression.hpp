@@ -32,12 +32,20 @@ class Expression
 {
 public:
 
+    using ExpressionValueType = ValueType;
+
     Expression(const Executor& exec) : exec_(exec), temporalOperators_(), spatialOperators_() {}
 
     Expression(const Expression& exp)
         : exec_(exp.exec_), temporalOperators_(exp.temporalOperators_),
           spatialOperators_(exp.spatialOperators_)
     {}
+
+    void operator=(const Expression& exp)
+    {
+        temporalOperators_ = exp.temporalOperators_;
+        spatialOperators_ = exp.spatialOperators_;
+    }
 
     Expression(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
 

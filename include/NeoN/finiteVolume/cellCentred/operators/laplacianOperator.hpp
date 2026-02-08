@@ -194,6 +194,14 @@ public:
 
     std::string getName() const { return "LaplacianOperator"; }
 
+    // TODO make this private and let only friends use it
+    Dictionary getConfig() const
+    {
+        const auto& ret = this->getVector();
+        const auto& coeff = this->getCoefficient();
+        return {{"field", ret}, {"coeff", coeff}, {"gamma", gamma_}};
+    }
+
 private:
 
     const SurfaceField<scalar>& gamma_;
