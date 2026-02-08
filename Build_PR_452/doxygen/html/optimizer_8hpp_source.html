@@ -100,7 +100,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="spatialOperator_8hpp.html">NeoN/dsl/spatialOperator.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// #include &quot;NeoN/mesh/unstructured/unstructuredMesh.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// #include &quot;NeoN/finiteVolume/cellCentred/fields/volumeField.hpp&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="gaussGreenDivLaplacian_8hpp.html">NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1dsl.html">NeoN::dsl</a></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
@@ -136,12 +136,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">return</span> out;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        }</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">auto</span>&amp; divOperator =</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">auto</span> divOperator =</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            out.template getOperator&lt;SpatialOperator&lt;typename ExpressionType::ExpressionValueType&gt;&gt;(</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                   <span class="stringliteral">&quot;DivOperator&quot;</span></div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            )</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                .getConfig();</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">auto</span>&amp; lapOperator =</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">auto</span> lapOperator =</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            out.template getOperator&lt;SpatialOperator&lt;typename ExpressionType::ExpressionValueType&gt;&gt;(</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                   <span class="stringliteral">&quot;LaplacianOperator&quot;</span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            )</div>
@@ -150,46 +150,52 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        out.dropOperator(<span class="stringliteral">&quot;DivOperator&quot;</span>);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        out.dropOperator(<span class="stringliteral">&quot;LaplacianOperator&quot;</span>);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">auto</span> divLapOperator = DivLapOperator(config);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        expr.addOperator(divLapOperator);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> out;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_class" href="classNeoN_1_1dsl_1_1SpatialOperator.html">dsl::SpatialOperator&lt;typename ExpressionType::ExpressionValueType&gt;</a> divLapOperator =</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian.html">finiteVolume::cellCentred::GaussGreenDivLaplacian</a>&lt;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keyword">typename</span> ExpressionType::ExpressionValueType&gt;(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                expr.exec(), divOperator, lapOperator</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            );</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        out.addOperator(divLapOperator);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
 </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
 </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExpressionType&gt;</div>
-<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">   76</a></span>ExpressionType <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">optimize</a>(<span class="keyword">const</span> ExpressionType in)</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>{</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    ExpressionType out = ExpressionType(in);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> optimizer = std::vector&lt;std::shared_ptr&lt;Optimizer&lt;ExpressionType&gt;&gt;&gt; {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        std::make_shared&lt;DivLapOptimizer&lt;ExpressionType&gt;&gt;()</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    };</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> opt : optimizer)</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        out = opt-&gt;optimize(out);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> out;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
-</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExpressionType&gt;</div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">   79</a></span>ExpressionType <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">optimize</a>(<span class="keyword">const</span> ExpressionType in)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>{</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    ExpressionType out = ExpressionType(in);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">auto</span> optimizer = std::vector&lt;std::shared_ptr&lt;Optimizer&lt;ExpressionType&gt;&gt;&gt; {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        std::make_shared&lt;DivLapOptimizer&lt;ExpressionType&gt;&gt;()</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    };</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> opt : optimizer)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        out = opt-&gt;optimize(out);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>} <span class="comment">// namespace dsl</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>} <span class="comment">// namespace dsl</span></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1DivLapOptimizer_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1DivLapOptimizer.html">NeoN::dsl::DivLapOptimizer</a></div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00035">optimizer.hpp:36</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1DivLapOptimizer_html_a28de09bef0dc3f33069395ec536653b7"><div class="ttname"><a href="classNeoN_1_1dsl_1_1DivLapOptimizer.html#a28de09bef0dc3f33069395ec536653b7">NeoN::dsl::DivLapOptimizer::~DivLapOptimizer</a></div><div class="ttdeci">~DivLapOptimizer()</div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00039">optimizer.hpp:39</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1DivLapOptimizer_html_a2dce232ed510b030ebd7ff7952b4a04b"><div class="ttname"><a href="classNeoN_1_1dsl_1_1DivLapOptimizer.html#a2dce232ed510b030ebd7ff7952b4a04b">NeoN::dsl::DivLapOptimizer::optimize</a></div><div class="ttdeci">ExpressionType optimize(const ExpressionType &amp;expr) const override</div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00041">optimizer.hpp:41</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Optimizer_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Optimizer.html">NeoN::dsl::Optimizer</a></div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00026">optimizer.hpp:27</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Optimizer_html_a80cf5d590e5e2404cb7785781c85b487"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Optimizer.html#a80cf5d590e5e2404cb7785781c85b487">NeoN::dsl::Optimizer::optimize</a></div><div class="ttdeci">virtual ExpressionType optimize(const ExpressionType &amp;expr) const =0</div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Optimizer_html_ad7b76be8bbca47117e9c68386c905903"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Optimizer.html#ad7b76be8bbca47117e9c68386c905903">NeoN::dsl::Optimizer::~Optimizer</a></div><div class="ttdeci">virtual ~Optimizer()=default</div></div>
+<div class="ttc" id="aclassNeoN_1_1dsl_1_1SpatialOperator_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1SpatialOperator.html">NeoN::dsl::SpatialOperator</a></div><div class="ttdef"><b>Definition</b> <a href="spatialOperator_8hpp_source.html#l00054">spatialOperator.hpp:55</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_html"><div class="ttname"><a href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian.html">NeoN::finiteVolume::cellCentred::GaussGreenDivLaplacian</a></div><div class="ttdef"><b>Definition</b> <a href="gaussGreenDivLaplacian_8hpp_source.html#l00036">gaussGreenDivLaplacian.hpp:38</a></div></div>
 <div class="ttc" id="aexpression_8hpp_html"><div class="ttname"><a href="expression_8hpp.html">expression.hpp</a></div></div>
+<div class="ttc" id="agaussGreenDivLaplacian_8hpp_html"><div class="ttname"><a href="gaussGreenDivLaplacian_8hpp.html">gaussGreenDivLaplacian.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html">NeoN::dsl</a></div><div class="ttdef"><b>Definition</b> <a href="coeff_8hpp_source.html#l00010">coeff.hpp:11</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1dsl_html_a25b147b6a9e1bbd3200045769fc12116"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">NeoN::dsl::optimize</a></div><div class="ttdeci">ExpressionType optimize(const ExpressionType in)</div><div class="ttdoc">given an expression subsequent optimiziations are applied</div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00076">optimizer.hpp:76</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1dsl_html_a25b147b6a9e1bbd3200045769fc12116"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a25b147b6a9e1bbd3200045769fc12116">NeoN::dsl::optimize</a></div><div class="ttdeci">ExpressionType optimize(const ExpressionType in)</div><div class="ttdoc">given an expression subsequent optimiziations are applied</div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00079">optimizer.hpp:79</a></div></div>
 <div class="ttc" id="aspatialOperator_8hpp_html"><div class="ttname"><a href="spatialOperator_8hpp.html">spatialOperator.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
