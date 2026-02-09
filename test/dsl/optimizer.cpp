@@ -60,6 +60,8 @@ TEST_CASE("Optimizer")
         auto expr = NeoN::dsl::imp::laplacian(gamma, U) - NeoN::dsl::exp::div(phi, U);
         auto exprOpt = dsl::optimize(expr);
         expr.read(input);
+
+        auto ls = expr.assemble(mesh, 1.0, 1.0);
     }
 }
 

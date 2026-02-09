@@ -13,10 +13,11 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeDivLapImpl(
     la::LinearSystem<ValueType, localIdx>& ls,
-    const VolumeField<ValueType>& phi,
-    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& U,
+    const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& surfInterp,
+    const SurfaceInterpolation<ValueType>& divSurfInterp,
+    const SurfaceInterpolation<ValueType>& lapSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB,
@@ -26,15 +27,16 @@ void computeDivLapImpl(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    const auto weights = surfInterp.weight(faceFlux, phi);
+    const auto weights = divSurfInterp.weight(phi, U);
+    // const auto weightsI = lapSurfInterp.weight(phi, U);
 
     auto [matrix, rhs] = ls.view();
     const auto [gammaV, deltaV] =
         views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
     const auto [diaOffV, ownOffV, neiOffV] =
         views(sp.diagOffset(), sp.ownerOffset(), sp.neighbourOffset());
-    const auto [faceFluxV, weightsV, ownV, neiV, magFaceAreaV] = views(
-        faceFlux.internalVector(),
+    const auto [phiV, weightsV, ownV, neiV, magFaceAreaV] = views(
+        phi.internalVector(),
         weights.internalVector(),
         mesh.faceOwner(),
         mesh.faceNeighbour(),
@@ -47,12 +49,13 @@ void computeDivLapImpl(
         NEON_LAMBDA(const localIdx facei) {
             auto own = ownV[facei];
             auto nei = neiV[facei];
-
-            auto fluxDiv = faceFluxV[facei];
-            auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei];
+            auto oneV = one<ValueType>();
 
             auto weight = weightsV[facei];
             auto value = zero<ValueType>();
+
+            auto fluxDiv = phiV[facei] * oneV;
+            auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei] * oneV;
 
             // add neighbour contribution upper
             auto rowNeiStart = matrix.rowOffs[nei];
@@ -63,10 +66,8 @@ void computeDivLapImpl(
             auto coeffNeiB = coeffB[nei];
             auto coeffOwnB = coeffB[own];
 
-            auto oneV = one<ValueType>();
-
-            auto valueDiv = -weight * coeffNeiA * fluxDiv * oneV;
-            auto valueLap = coeffNeiB * fluxLap * oneV;
+            auto valueDiv = -weight * coeffNeiA * fluxDiv;
+            auto valueLap = coeffNeiB * fluxLap;
 
             auto valueA = valueDiv + valueLap;
             matrix.values[rowNeiStart + neiOffV[facei]] += valueA;
@@ -74,8 +75,8 @@ void computeDivLapImpl(
 
             // upper triangular part
             // add owner contribution lower
-            valueDiv = (1 - weight) * coeffOwnA * fluxDiv * oneV;
-            valueLap = coeffOwnB * fluxLap * oneV;
+            valueDiv = (1 - weight) * coeffOwnA * fluxDiv;
+            valueLap = coeffOwnB * fluxLap;
             auto valueB = valueDiv + valueLap;
 
             matrix.values[rowOwnStart + ownOffV[facei]] += valueB;
@@ -132,8 +133,7 @@ void computeDivLapImpl(
 };
 
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
-    template void                                                                                  \
-    computeDivLapImpl(la::LinearSystem<TYPENAME, localIdx>&, const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<scalar>&, const SurfaceInterpolation<TYPENAME>&, const FaceNormalGradient<TYPENAME>&, const dsl::Coeff, const dsl::Coeff, const la::SparsityPattern&)
+    template void computeDivLapImpl(la::LinearSystem<TYPENAME, localIdx>&, const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<scalar>&, const SurfaceInterpolation<TYPENAME>&, const SurfaceInterpolation<TYPENAME>&, const FaceNormalGradient<TYPENAME>&, const dsl::Coeff, const dsl::Coeff, const la::SparsityPattern&)
 
 NN_DECLARE_COMPUTE_IMP_DIV(scalar);
 NN_DECLARE_COMPUTE_IMP_DIV(Vec3);

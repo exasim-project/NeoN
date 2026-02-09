@@ -19,10 +19,11 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void computeDivLapImpl(
     la::LinearSystem<ValueType, localIdx>& ls,
-    const VolumeField<ValueType>& phi,
-    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& U,
+    const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& surfInterp,
+    const SurfaceInterpolation<ValueType>& divSurfInterp,
+    const SurfaceInterpolation<ValueType>& lapSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB,
@@ -34,10 +35,7 @@ void computeDivLapImpl(
  */
 template<typename ValueType>
 class GaussGreenDivLaplacian : public dsl::OperatorMixin<VolumeField<ValueType>>
-// public DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>
 {
-    // using Base =
-    //     DivOperatorFactory<ValueType>::template Register<GaussGreenDivLaplacian<ValueType>>;
 
 public:
 
@@ -50,6 +48,7 @@ public:
             divConfig.get<VolumeField<ValueType>&>("field"),
             dsl::Operator::Type::Implicit
         ),
+          sparsityPattern_(la::SparsityPattern::readOrCreate(this->getVector().mesh())),
           coeffA_(divConfig.get<dsl::Coeff>("coeff")), coeffB_(lapConfig.get<dsl::Coeff>("coeff")),
           gamma_(lapConfig.get<SurfaceField<scalar>&>("gamma")),
           flux_(divConfig.get<SurfaceField<scalar>&>("flux"))
@@ -58,32 +57,24 @@ public:
         // are div and lap field the same
     }
 
-    // ,
-    //   surfaceInterpolation_(exec, mesh, inputs) {};
-
-    // std::unique_ptr<DivOperatorFactory<ValueType>> clone() const
-    // {
-    //     return std::make_unique<GaussGreenDivLaplacian<ValueType>>(*this);
-    // }
-
     void explicitOperation(Vector<ValueType>& source) const {}
 
     la::LinearSystem<ValueType, localIdx> createEmptyLinearSystem() const {}
 
     void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
     {
-        //  computeDivLapImpl(
-        //     ls,
-        //     const VolumeField<ValueType>& phi,
-        //      face_,
-        //      gamma_,
-        //     laplSurfaceInterpolation_,
-        //     divSurfaceInterpolation_,
-        //     faceNormalGradient_,
-        //      coeffA_,
-        //      coeffB_,
-        //     const la::SparsityPattern& sp
-        // );
+        computeDivLapImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_.get(),
+            *lapSurfaceInterpolation_.get(),
+            *faceNormalGradient_.get(),
+            coeffA_,
+            coeffB_,
+            sparsityPattern_
+        );
     }
 
     void read(const Input& input)
@@ -103,7 +94,7 @@ public:
         {
             NF_ERROR_EXIT("only dictionary input supported");
         }
-        laplSurfaceInterpolation_ =
+        lapSurfaceInterpolation_ =
             std::make_shared<SurfaceInterpolation<ValueType>>(this->exec(), mesh, laplTokens);
         divSurfaceInterpolation_ =
             std::make_shared<SurfaceInterpolation<ValueType>>(this->exec(), mesh, divTokens);
@@ -117,7 +108,7 @@ public:
 
 private:
 
-    // SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    const la::SparsityPattern& sparsityPattern_;
 
     dsl::Coeff coeffA_; // div coeff
     dsl::Coeff coeffB_; // lap coeff
@@ -126,7 +117,7 @@ private:
     const SurfaceField<scalar>& flux_;
 
     std::shared_ptr<SurfaceInterpolation<ValueType>> divSurfaceInterpolation_;
-    std::shared_ptr<SurfaceInterpolation<ValueType>> laplSurfaceInterpolation_;
+    std::shared_ptr<SurfaceInterpolation<ValueType>> lapSurfaceInterpolation_;
     std::shared_ptr<FaceNormalGradient<ValueType>> faceNormalGradient_;
 };
 
