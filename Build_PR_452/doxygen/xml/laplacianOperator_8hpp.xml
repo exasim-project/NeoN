@@ -861,17 +861,23 @@
 <codeline lineno="194"><highlight class="normal"></highlight></codeline>
 <codeline lineno="195" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a387a190d9948e39d9efe81885687d011" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a387a190d9948e39d9efe81885687d011" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;LaplacianOperator&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
 <codeline lineno="196"><highlight class="normal"></highlight></codeline>
-<codeline lineno="197" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a4e5ab1a34c5d1fd3b08883d117cde5b3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a4e5ab1a34c5d1fd3b08883d117cde5b3" kindref="member">getConfig</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="200"><highlight class="normal"></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma_;</highlight></codeline>
-<codeline lineno="202"><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;LaplacianOperatorFactory&lt;ValueType&gt;&gt;<sp/>laplacianOperatorStrategy_;</highlight></codeline>
-<codeline lineno="204"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>make<sp/>this<sp/>private<sp/>and<sp/>let<sp/>only<sp/>friends<sp/>use<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a4e5ab1a34c5d1fd3b08883d117cde5b3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a4e5ab1a34c5d1fd3b08883d117cde5b3" kindref="member">getConfig</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="199"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>ret<sp/>=<sp/>this-&gt;<ref refid="classNeoN_1_1dsl_1_1OperatorMixin_1a96bb88b69c5edfc0b903346b2b7280a9" kindref="member">getVector</ref>();</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>coeff<sp/>=<sp/>this-&gt;<ref refid="classNeoN_1_1dsl_1_1OperatorMixin_1a6a72de1ab73257c3d1ae94ab0fdcfa6e" kindref="member">getCoefficient</ref>();</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{{</highlight><highlight class="stringliteral">&quot;field&quot;</highlight><highlight class="normal">,<sp/>ret},<sp/>{</highlight><highlight class="stringliteral">&quot;coeff&quot;</highlight><highlight class="normal">,<sp/>coeff},<sp/>{</highlight><highlight class="stringliteral">&quot;gamma&quot;</highlight><highlight class="normal">,<sp/>gamma_}};</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="206"><highlight class="normal"></highlight></codeline>
-<codeline lineno="207"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>gamma_;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;LaplacianOperatorFactory&lt;ValueType&gt;&gt;<sp/>laplacianOperatorStrategy_;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"/>
   </compounddef>
