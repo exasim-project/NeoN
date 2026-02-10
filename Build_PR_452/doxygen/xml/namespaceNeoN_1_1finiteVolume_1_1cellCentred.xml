@@ -730,7 +730,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="27" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" declline="27" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a74661cd107f4865710c903117f27a903" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a8b25731e4ecfe8f34f15fefdb1945de7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -738,7 +738,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeDivLapImpl</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const VolumeField&lt; ValueType &gt; &amp;phi, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const SurfaceField&lt; scalar &gt; &amp;gamma, const SurfaceInterpolation&lt; ValueType &gt; &amp;surfInterp, const FaceNormalGradient&lt; ValueType &gt; &amp;faceNormalGradient, const dsl::Coeff coeffA, const dsl::Coeff coeffB, const la::SparsityPattern &amp;sp)</argsstring>
+        <argsstring>(la::LinearSystem&lt; ValueType, localIdx &gt; &amp;ls, const VolumeField&lt; ValueType &gt; &amp;U, const SurfaceField&lt; scalar &gt; &amp;phi, const SurfaceField&lt; scalar &gt; &amp;gamma, const SurfaceInterpolation&lt; ValueType &gt; &amp;divSurfInterp, const SurfaceInterpolation&lt; ValueType &gt; &amp;lapSurfInterp, const FaceNormalGradient&lt; ValueType &gt; &amp;faceNormalGradient, const dsl::Coeff coeffA, const dsl::Coeff coeffB, const la::SparsityPattern &amp;sp)</argsstring>
         <name>computeDivLapImpl</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeDivLapImpl</qualifiedname>
         <param>
@@ -747,11 +747,11 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
-          <declname>phi</declname>
+          <declname>U</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
-          <declname>faceFlux</declname>
+          <declname>phi</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
@@ -759,7 +759,11 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; ValueType &gt; &amp;</type>
-          <declname>surfInterp</declname>
+          <declname>divSurfInterp</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>lapSurfInterp</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient</ref>&lt; ValueType &gt; &amp;</type>
