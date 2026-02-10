@@ -245,6 +245,7 @@ SolverStatsEntry solve_impl(
     std::unique_ptr<gko::LinOp> solver
 )
 {
+    Kokkos::Profiling::pushRegion("Ginkgo linear solver");
     exec->synchronize();
     auto startEval = std::chrono::steady_clock::now();
 
@@ -278,6 +279,7 @@ SolverStatsEntry solve_impl(
     auto numIter = label(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
+    Kokkos::Profiling::popRegion(); // Ginkgo linear solver
     auto duration =
         static_cast<scalar>(
             std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()

@@ -42,6 +42,7 @@ la::SolverStats iterativeSolveImpl(
 )
 {
     exp.read(fvSchemes);
+    Kokkos::Profiling::pushRegion("Assembling linear system");
     exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
@@ -54,6 +55,7 @@ la::SolverStats iterativeSolveImpl(
         {0, rhs.size()},
         NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
+    Kokkos::Profiling::popRegion(); // Assembling linear system
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
@@ -73,6 +75,7 @@ la::SolverStats iterativeSolveImpl(
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
+    Kokkos::Profiling::pushRegion("Assembling linear system");
     auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
 
     // TODO move that to expression explicit operation or
@@ -85,6 +88,7 @@ la::SolverStats iterativeSolveImpl(
         {0, rhs.size()},
         NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
+    Kokkos::Profiling::popRegion(); // Assembling linear system
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
