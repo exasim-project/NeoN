@@ -86,6 +86,8 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1DiagonalSolver.html">DiagonalSolver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing a linear system of equations.  <a href="classNeoN_1_1la_1_1LinearSystem.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -94,8 +96,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Matrix.html">Matrix</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sparse matrix class with compact storage by row (CSR) format.  <a href="classNeoN_1_1la_1_1Matrix.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A view struct to allow easy read/write on all executors.  <a href="structNeoN_1_1la_1_1MatrixView.html#details">More...</a><br /></td></tr>
@@ -121,6 +121,9 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ab0b99cb5bc03a26ce7905a9a6be6e616" id="r_ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
+<tr class="memitem:ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#ab0b99cb5bc03a26ce7905a9a6be6e616">createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a83829a38dad931ef72287214b5d444" id="r_a2a83829a38dad931ef72287214b5d444"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:a2a83829a38dad931ef72287214b5d444"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a2a83829a38dad931ef72287214b5d444">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a2a83829a38dad931ef72287214b5d444"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,11 +136,11 @@ Functions</h2></td></tr>
 <tr class="separator:a5f10a5012c985982b6ab270fdc14f98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb9cd225a8925a20dc28f935ce424d96" id="r_adb9cd225a8925a20dc28f935ce424d96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#adb9cd225a8925a20dc28f935ce424d96">scaledInverseDiag</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;a, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;out)</td></tr>
 <tr class="separator:adb9cd225a8925a20dc28f935ce424d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a570e9a8ab985d5f1555743730f56ecdc" id="r_a570e9a8ab985d5f1555743730f56ecdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a570e9a8ab985d5f1555743730f56ecdc">scaledInverseDiag</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;, const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mi, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;)</td></tr>
-<tr class="memdesc:a570e9a8ab985d5f1555743730f56ecdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1  <br /></td></tr>
-<tr class="separator:a570e9a8ab985d5f1555743730f56ecdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cd38d9a71289a7961b38be3ba4d8c18" id="r_a4cd38d9a71289a7961b38be3ba4d8c18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a4cd38d9a71289a7961b38be3ba4d8c18">scaledInverseDiag</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mi, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;a, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;out)</td></tr>
-<tr class="separator:a4cd38d9a71289a7961b38be3ba4d8c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff7498eb1e453e6ecb371c5c9a2c0264" id="r_aff7498eb1e453e6ecb371c5c9a2c0264"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aff7498eb1e453e6ecb371c5c9a2c0264">scaledInverseDiag</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mi, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;)</td></tr>
+<tr class="memdesc:aff7498eb1e453e6ecb371c5c9a2c0264"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1  <br /></td></tr>
+<tr class="separator:aff7498eb1e453e6ecb371c5c9a2c0264"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33308f3eac7d3dfc36a4f60ffe6dd8ae" id="r_a33308f3eac7d3dfc36a4f60ffe6dd8ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a33308f3eac7d3dfc36a4f60ffe6dd8ae">scaledInverseDiag</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mi, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;a, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;out)</td></tr>
+<tr class="separator:a33308f3eac7d3dfc36a4f60ffe6dd8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a540a390c884b722c4f06db6d5ed6aa44" id="r_a540a390c884b722c4f06db6d5ed6aa44"><td class="memTemplParams" colspan="2">template&lt;unsigned int I&gt; </td></tr>
 <tr class="memitem:a540a390c884b722c4f06db6d5ed6aa44"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a540a390c884b722c4f06db6d5ed6aa44">get</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;in)</td></tr>
 <tr class="separator:a540a390c884b722c4f06db6d5ed6aa44"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,9 +150,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a3cd618303a2cd8255c84da25dc014e14" id="r_a3cd618303a2cd8255c84da25dc014e14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a3cd618303a2cd8255c84da25dc014e14">scaledInvDiagnegLUx</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;a, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;b, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;V, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;rAU, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;out)</td></tr>
 <tr class="memdesc:a3cd618303a2cd8255c84da25dc014e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes out = -(L+U) x  <br /></td></tr>
 <tr class="separator:a3cd618303a2cd8255c84da25dc014e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af922bd755452508401d95d8d8ebf20a2" id="r_af922bd755452508401d95d8d8ebf20a2"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
-<tr class="memitem:af922bd755452508401d95d8d8ebf20a2"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#af922bd755452508401d95d8d8ebf20a2">createSparsityPatternMatrixIterator</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
-<tr class="separator:af922bd755452508401d95d8d8ebf20a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6d454dd6fb2e31259a6349219c08629" id="r_ad6d454dd6fb2e31259a6349219c08629"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#ad6d454dd6fb2e31259a6349219c08629">unpackColIdx</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;in, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;unpackedRowOffs, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;packedRowOffs)</td></tr>
 <tr class="separator:ad6d454dd6fb2e31259a6349219c08629"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfdc10cb52098688762e13b2d0af4493" id="r_adfdc10cb52098688762e13b2d0af4493"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493">unpackRowOffs</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;in)</td></tr>
@@ -248,8 +248,8 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 
 </div>
 </div>
-<a id="af922bd755452508401d95d8d8ebf20a2" name="af922bd755452508401d95d8d8ebf20a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af922bd755452508401d95d8d8ebf20a2">&#9670;&#160;</a></span>createSparsityPatternMatrixIterator()</h2>
+<a id="ab0b99cb5bc03a26ce7905a9a6be6e616" name="ab0b99cb5bc03a26ce7905a9a6be6e616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b99cb5bc03a26ce7905a9a6be6e616">&#9670;&#160;</a></span>createSparsityPatternFaceToMatrixAddress()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,7 +257,7 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 template&lt;typename IndexType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; IndexType &gt; &gt; NeoN::la::createSparsityPatternMatrixIterator </td>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt; NeoN::la::createSparsityPatternFaceToMatrixAddress </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em></td><td>)</td>
@@ -428,8 +428,8 @@ template&lt;unsigned int I&gt; </div>
 
 </div>
 </div>
-<a id="a570e9a8ab985d5f1555743730f56ecdc" name="a570e9a8ab985d5f1555743730f56ecdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a570e9a8ab985d5f1555743730f56ecdc">&#9670;&#160;</a></span>scaledInverseDiag() <span class="overload">[1/4]</span></h2>
+<a id="aff7498eb1e453e6ecb371c5c9a2c0264" name="aff7498eb1e453e6ecb371c5c9a2c0264"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff7498eb1e453e6ecb371c5c9a2c0264">&#9670;&#160;</a></span>scaledInverseDiag() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -443,7 +443,7 @@ template&lt;unsigned int I&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>mi</em>, </td>
         </tr>
         <tr>
@@ -496,8 +496,8 @@ template&lt;unsigned int I&gt; </div>
 
 </div>
 </div>
-<a id="a4cd38d9a71289a7961b38be3ba4d8c18" name="a4cd38d9a71289a7961b38be3ba4d8c18"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4cd38d9a71289a7961b38be3ba4d8c18">&#9670;&#160;</a></span>scaledInverseDiag() <span class="overload">[3/4]</span></h2>
+<a id="a33308f3eac7d3dfc36a4f60ffe6dd8ae" name="a33308f3eac7d3dfc36a4f60ffe6dd8ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33308f3eac7d3dfc36a4f60ffe6dd8ae">&#9670;&#160;</a></span>scaledInverseDiag() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -511,7 +511,7 @@ template&lt;unsigned int I&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1MatrixIterator.html">MatrixIterator</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>mi</em>, </td>
         </tr>
         <tr>

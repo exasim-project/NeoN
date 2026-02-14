@@ -6,7 +6,7 @@
     <includes refid="dictionary_8hpp" local="yes">NeoN/core/dictionary.hpp</includes>
     <includes refid="matrix_8hpp" local="yes">NeoN/linearAlgebra/matrix.hpp</includes>
     <includes refid="sparsityPattern_8hpp" local="yes">NeoN/linearAlgebra/sparsityPattern.hpp</includes>
-    <includes refid="matrixIterator_8hpp" local="yes">NeoN/linearAlgebra/matrixIterator.hpp</includes>
+    <includes refid="faceToMatrixAddress_8hpp" local="yes">NeoN/linearAlgebra/faceToMatrixAddress.hpp</includes>
     <includes local="no">string</includes>
     <includedby refid="expression_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp</includedby>
     <includedby refid="dsl_2solver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp</includedby>
@@ -248,6 +248,16 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
+      <node id="43">
+        <label>faceToMatrixAddress.hpp</label>
+        <link refid="faceToMatrixAddress_8hpp"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
         <link refid="linearSystem_8hpp"/>
@@ -274,16 +284,6 @@
         <childnode refid="43" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
-        </childnode>
-      </node>
-      <node id="43">
-        <label>matrixIterator.hpp</label>
-        <link refid="matrixIterator_8hpp"/>
-        <childnode refid="44" relation="include">
-        </childnode>
-        <childnode refid="36" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="36">
@@ -571,7 +571,7 @@
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dictionary_8hpp" kindref="compound">NeoN/core/dictionary.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="matrix_8hpp" kindref="compound">NeoN/linearAlgebra/matrix.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="sparsityPattern_8hpp" kindref="compound">NeoN/linearAlgebra/sparsityPattern.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="matrixIterator_8hpp" kindref="compound">NeoN/linearAlgebra/matrixIterator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="faceToMatrixAddress_8hpp" kindref="compound">NeoN/linearAlgebra/faceToMatrixAddress.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
@@ -616,7 +616,7 @@
 <codeline lineno="68"><highlight class="normal"></highlight></codeline>
 <codeline lineno="69" refid="classNeoN_1_1la_1_1LinearSystem_1abfbc2a7ff0529f2c42bf9fce51b9b4a9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1LinearSystem_1abfbc2a7ff0529f2c42bf9fce51b9b4a9" kindref="member">LinearSystemIndexType</ref><sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MatrixType::MatrixSparsityType::SparsityIndexType;</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71" refid="classNeoN_1_1la_1_1LinearSystem_1aa471cd89a853e56126f782642f097e09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1aa471cd89a853e56126f782642f097e09" kindref="member">LinearSystem</ref>(std::shared_ptr&lt;</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1MatrixIterator" kindref="compound">MatrixIterator&lt;LinearSystemIndexType&gt;</ref>&gt;<sp/>mi)</highlight></codeline>
+<codeline lineno="71" refid="classNeoN_1_1la_1_1LinearSystem_1a5f7d418ee4bf711f9ca8ff07ba0f3fb5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a5f7d418ee4bf711f9ca8ff07ba0f3fb5" kindref="member">LinearSystem</ref>(std::shared_ptr&lt;</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;LinearSystemIndexType&gt;</ref>&gt;<sp/>mi)</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>matrix_(</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt;ValueType&gt;(mi-&gt;<ref refid="classNeoN_1_1la_1_1LinearSystem_1aecee4146f3204e7aea1bf58d919d90bb" kindref="member">exec</ref>(),<sp/>mi-&gt;localNonZeros(),<sp/><ref refid="namespaceNeoN_1a4beedab28f9499a108fea579a833f101" kindref="member">zero</ref>&lt;ValueType&gt;()),</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mi-&gt;sparsityPattern()</highlight></codeline>
@@ -631,12 +631,12 @@
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>validate();</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"></highlight></codeline>
-<codeline lineno="86" refid="classNeoN_1_1la_1_1LinearSystem_1a6862a1ea4afe5f1481e1b72b509fa57a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a6862a1ea4afe5f1481e1b72b509fa57a" kindref="member">LinearSystem</ref>(</highlight></codeline>
+<codeline lineno="86" refid="classNeoN_1_1la_1_1LinearSystem_1acba42d84b999940c55ee2ce4396b90fa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1acba42d84b999940c55ee2ce4396b90fa" kindref="member">LinearSystem</ref>(</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MatrixType&amp;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a2319e4cc9bc4ea33423c7f9a2048adc7" kindref="member">matrix</ref>,</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a9c04e6dbddd20359bd60609de7bf3b35" kindref="member">rhs</ref>,</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MatrixType&amp;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a2624dea8911eccbb31b39338821433ae" kindref="member">boundaryMatrix</ref>,</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a5cf0a45ff96a014cb4ba9fd5977fd9b8" kindref="member">boundaryRhs</ref>,</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1MatrixIterator" kindref="compound">MatrixIterator&lt;LinearSystemIndexType&gt;</ref>&gt;<sp/>mi</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;LinearSystemIndexType&gt;</ref>&gt;<sp/>mi</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>matrix_(<ref refid="classNeoN_1_1la_1_1LinearSystem_1a2319e4cc9bc4ea33423c7f9a2048adc7" kindref="member">matrix</ref>),<sp/>rhs_(<ref refid="classNeoN_1_1la_1_1LinearSystem_1a9c04e6dbddd20359bd60609de7bf3b35" kindref="member">rhs</ref>),<sp/>boundaryMatrix_(<ref refid="classNeoN_1_1la_1_1LinearSystem_1a2624dea8911eccbb31b39338821433ae" kindref="member">boundaryMatrix</ref>),<sp/>boundaryRhs_(<ref refid="classNeoN_1_1la_1_1LinearSystem_1a5cf0a45ff96a014cb4ba9fd5977fd9b8" kindref="member">boundaryRhs</ref>),</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mi_(mi)</highlight></codeline>
@@ -679,7 +679,7 @@
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mi<sp/>=<sp/>std::make_shared&lt;MatrixIterator&lt;LinearSystemIndexType&gt;&gt;(</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mi<sp/>=<sp/>std::make_shared&lt;FaceToMatrixAddress&lt;LinearSystemIndexType&gt;&gt;(</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mi_-&gt;ownerOffset().copyToHost(),</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mi_-&gt;neighbourOffset().copyToHost(),</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mi_-&gt;diagOffset().copyToHost(),</highlight></codeline>
@@ -720,7 +720,7 @@
 <codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{matrix_.view(),<sp/>rhs_.view(),<sp/>boundaryMatrix_.view(),<sp/>boundaryRhs_.view()};</highlight></codeline>
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"></highlight></codeline>
-<codeline lineno="175" refid="classNeoN_1_1la_1_1LinearSystem_1ac20f8ca987993d26df810b6cc7f2c7bd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>MatrixIterator&lt;LinearSystemIndexType&gt;&gt;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1ac20f8ca987993d26df810b6cc7f2c7bd" kindref="member">matrixIterator</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="175" refid="classNeoN_1_1la_1_1LinearSystem_1a294d053ed8767519b33c8896a7cf01d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>FaceToMatrixAddress&lt;LinearSystemIndexType&gt;&gt;<sp/><ref refid="classNeoN_1_1la_1_1LinearSystem_1a294d053ed8767519b33c8896a7cf01d4" kindref="member">matrixIterator</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="176"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>mi_;</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -749,7 +749,7 @@
 <codeline lineno="201"><highlight class="normal"></highlight></codeline>
 <codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>auxiliaryCoefficients_;</highlight></codeline>
 <codeline lineno="203"><highlight class="normal"></highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>MatrixIterator&lt;LinearSystemIndexType&gt;&gt;<sp/>mi_;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>FaceToMatrixAddress&lt;LinearSystemIndexType&gt;&gt;<sp/>mi_;</highlight></codeline>
 <codeline lineno="205"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="206"><highlight class="normal"></highlight></codeline>
 <codeline lineno="207"><highlight class="normal"></highlight><highlight class="comment">/*@brief<sp/>helper<sp/>function<sp/>that<sp/>creates<sp/>a<sp/>zero<sp/>initialised<sp/>linear<sp/>system<sp/>based<sp/>on<sp/>given<sp/>sparsity</highlight></codeline>
@@ -758,7 +758,7 @@
 <codeline lineno="210"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MatrixType<sp/>=<sp/>CSRMatrix&lt;ValueType,<sp/>localIdx&gt;&gt;</highlight></codeline>
 <codeline lineno="211" refid="namespaceNeoN_1_1la_1a2a83829a38dad931ef72287214b5d444" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem&lt;ValueType, MatrixType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a2a83829a38dad931ef72287214b5d444" kindref="member">createEmptyLinearSystem</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
 <codeline lineno="212"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{createSparsityPatternMatrixIterator&lt;NeoN::localIdx&gt;(mesh)};</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{createSparsityPatternFaceToMatrixAddress&lt;NeoN::localIdx&gt;(mesh)};</highlight></codeline>
 <codeline lineno="214"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"></highlight></codeline>
 <codeline lineno="216"><highlight class="normal"></highlight></codeline>

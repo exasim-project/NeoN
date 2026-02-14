@@ -4,7 +4,7 @@
     <compoundname>matrix.hpp</compoundname>
     <includes refid="vector_8hpp" local="yes">NeoN/core/vector/vector.hpp</includes>
     <includes refid="sparsityPattern_8hpp" local="yes">sparsityPattern.hpp</includes>
-    <includes refid="matrixIterator_8hpp" local="yes">matrixIterator.hpp</includes>
+    <includes refid="faceToMatrixAddress_8hpp" local="yes">faceToMatrixAddress.hpp</includes>
     <includes local="no">type_traits</includes>
     <includedby refid="linearSystem_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</includedby>
     <includedby refid="utilities_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp</includedby>
@@ -237,6 +237,16 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
+      <node id="42">
+        <label>faceToMatrixAddress.hpp</label>
+        <link refid="faceToMatrixAddress_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp</label>
         <link refid="matrix_8hpp"/>
@@ -247,16 +257,6 @@
         <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
-        </childnode>
-      </node>
-      <node id="42">
-        <label>matrixIterator.hpp</label>
-        <link refid="matrixIterator_8hpp"/>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
         </childnode>
       </node>
       <node id="31">
@@ -554,7 +554,7 @@
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vector_8hpp" kindref="compound">NeoN/core/vector/vector.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="sparsityPattern_8hpp" kindref="compound">sparsityPattern.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="matrixIterator_8hpp" kindref="compound">matrixIterator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="faceToMatrixAddress_8hpp" kindref="compound">faceToMatrixAddress.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
@@ -699,11 +699,11 @@
 <codeline lineno="257"><highlight class="normal">);</highlight></codeline>
 <codeline lineno="258"><highlight class="normal"></highlight></codeline>
 <codeline lineno="263"><highlight class="normal">[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref></highlight></codeline>
-<codeline lineno="264" refid="namespaceNeoN_1_1la_1a570e9a8ab985d5f1555743730f56ecdc" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1MatrixIterator" kindref="compound">MatrixIterator&lt;localIdx&gt;</ref>&amp;<sp/>mi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;);</highlight></codeline>
+<codeline lineno="264" refid="namespaceNeoN_1_1la_1aff7498eb1e453e6ecb371c5c9a2c0264" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;localIdx&gt;</ref>&amp;<sp/>mi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;);</highlight></codeline>
 <codeline lineno="265"><highlight class="normal"></highlight></codeline>
-<codeline lineno="266" refid="namespaceNeoN_1_1la_1a4cd38d9a71289a7961b38be3ba4d8c18" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight></codeline>
+<codeline lineno="266" refid="namespaceNeoN_1_1la_1a33308f3eac7d3dfc36a4f60ffe6dd8ae" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight></codeline>
 <codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1MatrixIterator" kindref="compound">MatrixIterator&lt;localIdx&gt;</ref>&amp;<sp/>mi,</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;localIdx&gt;</ref>&amp;<sp/>mi,</highlight></codeline>
 <codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>a,</highlight></codeline>
 <codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>out</highlight></codeline>
 <codeline lineno="271"><highlight class="normal">);</highlight></codeline>
