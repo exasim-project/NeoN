@@ -5,7 +5,7 @@ var searchData=
   ['nboundaries_2',['nboundaries',['../classNeoN_1_1BoundaryData.html#a43dd63100a240f03820bd1dd56329bd3',1,'NeoN::BoundaryData::nBoundaries()'],['../classNeoN_1_1UnstructuredMesh.html#a401abe2bb196b51465ea476e55a5622e',1,'NeoN::UnstructuredMesh::nBoundaries()']]],
   ['nboundaryfaces_3',['nboundaryfaces',['../classNeoN_1_1BoundaryData.html#ae02127156206dae46c11bf1d84c25a21',1,'NeoN::BoundaryData::nBoundaryFaces()'],['../classNeoN_1_1UnstructuredMesh.html#a2cc40de21a651f18026027a53f13ce24',1,'NeoN::UnstructuredMesh::nBoundaryFaces()'],['../classNeoN_1_1BoundaryData.html#ac6296db77d6f9c0136a8a9afe2e534d5',1,'NeoN::BoundaryData::nBoundaryFaces()']]],
   ['ncells_4',['nCells',['../classNeoN_1_1UnstructuredMesh.html#a0e2245854aad317731034ac549956117',1,'NeoN::UnstructuredMesh']]],
-  ['neglux_5',['negLUx',['../namespaceNeoN_1_1la.html#a3525ef08360a2b2d17f6cd7938a006f0',1,'NeoN::la']]],
+  ['neglux_5',['negLUx',['../namespaceNeoN_1_1la.html#a81ea5bf6450cb2402acf9f981d5583ab',1,'NeoN::la']]],
   ['neighbouroffset_6',['neighbouroffset',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#aa74377e61e00d74a8c07e471c83e1f62',1,'NeoN::la::FaceToMatrixAddress::neighbourOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a9158bd6c235ce5957d8acb652176bb3d',1,'NeoN::la::FaceToMatrixAddress::neighbourOffset()']]],
   ['neon_7',['NeoN',['../namespaceNeoN.html',1,'']]],
   ['neon_3a_3adetail_8',['detail',['../namespaceNeoN_1_1detail.html',1,'NeoN']]],
