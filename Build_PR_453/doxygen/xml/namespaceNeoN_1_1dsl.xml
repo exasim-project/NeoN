@@ -3,8 +3,10 @@
   <compounddef id="namespaceNeoN_1_1dsl" kind="namespace" language="C++">
     <compoundname>NeoN::dsl</compoundname>
     <innerclass refid="classNeoN_1_1dsl_1_1Coeff" prot="public">NeoN::dsl::Coeff</innerclass>
+    <innerclass refid="classNeoN_1_1dsl_1_1Expression" prot="public">NeoN::dsl::Expression</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Operator" prot="public">NeoN::dsl::Operator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1OperatorMixin" prot="public">NeoN::dsl::OperatorMixin</innerclass>
+    <innerclass refid="structNeoN_1_1dsl_1_1PostAssemblyBase" prot="public">NeoN::dsl::PostAssemblyBase</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1SpatialOperator" prot="public">NeoN::dsl::SpatialOperator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1TemporalOperator" prot="public">NeoN::dsl::TemporalOperator</innerclass>
     <innernamespace refid="namespaceNeoN_1_1dsl_1_1detail">NeoN::dsl::detail</innernamespace>
@@ -34,6 +36,201 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" line="59" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" bodystart="59" bodyend="64"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+        <definition>Expression&lt; ValueType &gt; NeoN::dsl::operator+</definition>
+        <argsstring>(Expression&lt; ValueType &gt; lhs, const Expression&lt; ValueType &gt; &amp;rhs)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>NeoN::dsl::operator+</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="291" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="291" bodyend="295"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a03a2b36294837ab1965156992fe10ccd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+        <definition>Expression&lt; ValueType &gt; NeoN::dsl::operator+</definition>
+        <argsstring>(Expression&lt; ValueType &gt; lhs, const SpatialOperator&lt; ValueType &gt; &amp;rhs)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>NeoN::dsl::operator+</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="299" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="299" bodyend="303"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a191f28ba2eb12e6ca3fdc7c25929048f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename leftOperator</type>
+          </param>
+          <param>
+            <type>typename rightOperator</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; typename leftOperator::VectorValueType &gt;</type>
+        <definition>Expression&lt; typename leftOperator::VectorValueType &gt; NeoN::dsl::operator+</definition>
+        <argsstring>(leftOperator lhs, rightOperator rhs)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>NeoN::dsl::operator+</qualifiedname>
+        <param>
+          <type>leftOperator</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>rightOperator</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="307" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="307" bodyend="314"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a619c9712731a205faddf7f7b88457909" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+        <definition>Expression&lt; ValueType &gt; NeoN::dsl::operator*</definition>
+        <argsstring>(scalar scale, const Expression&lt; ValueType &gt; &amp;es)</argsstring>
+        <name>operator*</name>
+        <qualifiedname>NeoN::dsl::operator*</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>scale</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>es</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="317" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="317" bodyend="329"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+        <definition>Expression&lt; ValueType &gt; NeoN::dsl::operator-</definition>
+        <argsstring>(Expression&lt; ValueType &gt; lhs, const Expression&lt; ValueType &gt; &amp;rhs)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>NeoN::dsl::operator-</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="334" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="334" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac6ecc9a0fd680f9e8504a39a5a0ca629" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+        <definition>Expression&lt; ValueType &gt; NeoN::dsl::operator-</definition>
+        <argsstring>(Expression&lt; ValueType &gt; lhs, const SpatialOperator&lt; ValueType &gt; &amp;rhs)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>NeoN::dsl::operator-</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; ValueType &gt;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="342" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="342" bodyend="346"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a590fbdffc01dc7fad7632c70e36a42a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename leftOperator</type>
+          </param>
+          <param>
+            <type>typename rightOperator</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; typename leftOperator::VectorValueType &gt;</type>
+        <definition>Expression&lt; typename leftOperator::VectorValueType &gt; NeoN::dsl::operator-</definition>
+        <argsstring>(leftOperator lhs, rightOperator rhs)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>NeoN::dsl::operator-</qualifiedname>
+        <param>
+          <type>leftOperator</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>rightOperator</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="350" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="350" bodyend="357"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a8ba06394082cf5961a6c00182cde10fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -46,7 +243,7 @@
         <name>solve</name>
         <qualifiedname>NeoN::dsl::solve</qualifiedname>
         <param>
-          <type>Expression&lt; typename VectorType::ElementType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression</ref>&lt; typename VectorType::ElementType &gt; &amp;</type>
           <declname>exp</declname>
         </param>
         <param>
@@ -70,7 +267,7 @@
           <declname>fvSolution</declname>
         </param>
         <param>
-          <type>std::vector&lt; PostAssemblyBase&lt; typename VectorType::ElementType &gt; &gt;</type>
+          <type>std::vector&lt; <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase</ref>&lt; typename VectorType::ElementType &gt; &gt;</type>
           <declname>p</declname>
           <defval>{}</defval>
         </param>
