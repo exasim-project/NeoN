@@ -46,5 +46,5 @@ var searchData=
   ['domainmixin_3c_20neon_3a_3ascalar_20_3e_43',['DomainMixin&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['domainmixin_3c_20neon_3a_3avec3_20_3e_44',['DomainMixin&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['domainmixin_3c_20scalar_20_3e_45',['DomainMixin&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['dropoperator_46',['dropOperator',['../classNeoN_1_1dsl_1_1Expression.html#ad9103316242145c6ed9d1b16d7bd9056',1,'NeoN::dsl::Expression']]]
+  ['dropoperator_46',['dropOperator',['../classNeoN_1_1dsl_1_1Expression.html#acb58d346e01e0caf6f4631f5fe20ff81',1,'NeoN::dsl::Expression']]]
 ];
