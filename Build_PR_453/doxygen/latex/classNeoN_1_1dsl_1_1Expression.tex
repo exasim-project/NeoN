@@ -37,13 +37,13 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a769ee099e363146dbff60666b6
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a77198421f4c3765700d158f9d675264c}{add\+Expression}} (const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}} \&equation)
 \item 
-{\footnotesize template$<$typename Operator\+Type $>$ }\\bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a235750af4f0fdf9154fca1e53b515884}{has\+Operator\+Of\+Type}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+{\footnotesize template$<$typename Operator\+Type , \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ }\\bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a11f3b96b353c9367822b8b67c071c0e9}{has\+Operator\+Of\+Type}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
 \begin{DoxyCompactList}\small\item\em returns operator of given type and name exists \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_af77f3470f284379d212033cb6cb2bf53}{has\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+{\footnotesize template$<$\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ }\\bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a3fea7b842c283ef48ad282657061dd43}{has\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
 \begin{DoxyCompactList}\small\item\em returns whether the expression contains an operator with a given name \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Operator\+Type $>$ }\\Operator\+Type \& \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_abb313ad8b60cae93512ece92543985c0}{get\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+{\footnotesize template$<$typename Operator\+Type , \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ }\\Operator\+Type \& \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a69261d0020c10a27cc20d9112a0885d7}{get\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
 \begin{DoxyCompactList}\small\item\em returns operator of given type and name \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_acb58d346e01e0caf6f4631f5fe20ff81}{drop\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+{\footnotesize template$<$\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ }\\void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a0c803de123d9c4674f632366d9538a63}{drop\+Operator}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
 \begin{DoxyCompactList}\small\item\em removes operator of given name \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a776feac445b6216773eaa9a9f16a265a}{size}} () const
 \item 
@@ -193,11 +193,12 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Express
 
 Definition at line \mbox{\hyperlink{expression_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1dsl_1_1Expression_acb58d346e01e0caf6f4631f5fe20ff81}\label{classNeoN_1_1dsl_1_1Expression_acb58d346e01e0caf6f4631f5fe20ff81} 
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_a0c803de123d9c4674f632366d9538a63}\label{classNeoN_1_1dsl_1_1Expression_a0c803de123d9c4674f632366d9538a63} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!dropOperator@{dropOperator}}
 \index{dropOperator@{dropOperator}!NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{dropOperator()}{dropOperator()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+template$<$\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ \\
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type $>$\+::drop\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -206,7 +207,7 @@ removes operator of given name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00223}{223}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00237}{237}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}\label{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!exec@{exec}}
@@ -217,7 +218,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00261}{261}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00277}{277}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}\label{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!explicitOperation@{explicitOperation}}
@@ -252,12 +253,12 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00067}{67}} of file 
 
 Definition at line \mbox{\hyperlink{expression_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1dsl_1_1Expression_abb313ad8b60cae93512ece92543985c0}\label{classNeoN_1_1dsl_1_1Expression_abb313ad8b60cae93512ece92543985c0} 
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_a69261d0020c10a27cc20d9112a0885d7}\label{classNeoN_1_1dsl_1_1Expression_a69261d0020c10a27cc20d9112a0885d7} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!getOperator@{getOperator}}
 \index{getOperator@{getOperator}!NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{getOperator()}{getOperator()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-template$<$typename Operator\+Type $>$ \\
+template$<$typename Operator\+Type , \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ \\
 Operator\+Type \& \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type $>$\+::get\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -266,13 +267,14 @@ returns operator of given type and name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00203}{203}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00210}{210}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1dsl_1_1Expression_af77f3470f284379d212033cb6cb2bf53}\label{classNeoN_1_1dsl_1_1Expression_af77f3470f284379d212033cb6cb2bf53} 
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_a3fea7b842c283ef48ad282657061dd43}\label{classNeoN_1_1dsl_1_1Expression_a3fea7b842c283ef48ad282657061dd43} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!hasOperator@{hasOperator}}
 \index{hasOperator@{hasOperator}!NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{hasOperator()}{hasOperator()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+template$<$\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ \\
 bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type $>$\+::has\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -281,14 +283,14 @@ returns whether the expression contains an operator with a given name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00195}{195}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00202}{202}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1dsl_1_1Expression_a235750af4f0fdf9154fca1e53b515884}\label{classNeoN_1_1dsl_1_1Expression_a235750af4f0fdf9154fca1e53b515884} 
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_a11f3b96b353c9367822b8b67c071c0e9}\label{classNeoN_1_1dsl_1_1Expression_a11f3b96b353c9367822b8b67c071c0e9} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!hasOperatorOfType@{hasOperatorOfType}}
 \index{hasOperatorOfType@{hasOperatorOfType}!NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}}
 \doxysubsubsection{\texorpdfstring{hasOperatorOfType()}{hasOperatorOfType()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-template$<$typename Operator\+Type $>$ \\
+template$<$typename Operator\+Type , \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} Type$>$ \\
 bool \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type $>$\+::has\+Operator\+Of\+Type (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -319,7 +321,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00047}{47}} of file 
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00241}{241}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00257}{257}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a83b1c51af4cdfd9852baeeb37c7fb14b}\label{classNeoN_1_1dsl_1_1Expression_a83b1c51af4cdfd9852baeeb37c7fb14b} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!spatialOperators@{spatialOperators}}
@@ -330,7 +332,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00259}{259}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00275}{275}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a8317117e1acfdddb07e56f55ab9f394a}\label{classNeoN_1_1dsl_1_1Expression_a8317117e1acfdddb07e56f55ab9f394a} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!spatialOperators@{spatialOperators}}
@@ -341,7 +343,7 @@ const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spa
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00252}{252}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00268}{268}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_af83cc00b92f50885174cd7a008473852}\label{classNeoN_1_1dsl_1_1Expression_af83cc00b92f50885174cd7a008473852} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!temporalOperators@{temporalOperators}}
@@ -352,7 +354,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{Temporal
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00257}{257}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00273}{273}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066}\label{classNeoN_1_1dsl_1_1Expression_a2455b209c125abad6f794e583acd7066} 
 \index{NeoN::dsl::Expression$<$ ValueType $>$@{NeoN::dsl::Expression$<$ ValueType $>$}!temporalOperators@{temporalOperators}}
@@ -363,7 +365,7 @@ const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{Te
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00247}{247}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00263}{263}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
