@@ -147,8 +147,8 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00202}00202\ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00203}00203\ \ \ \ \ \textcolor{comment}{//\ Pointer\ wrangling}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00204}00204\ \ \ \ \ \textcolor{keyword}{using\ }ValueType\ =\ \textcolor{keyword}{typename}\ SolutionVectorType::VectorValueType;}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00205}00205\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}}*\ pdeExpre\ =}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{NeoN::dsl::Expression<ValueType>}}*\textcolor{keyword}{>}(userData);}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00205}00205\ \ \ \ \ NeoN::dsl::Expression<ValueType>*\ pdeExpre\ =}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}NeoN::dsl::Expression<ValueType>*\textcolor{keyword}{>}(userData);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00207}00207\ \ \ \ \ sunrealtype*\ yDotArray\ =\ N\_VGetArrayPointer(ydot);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00208}00208\ \ \ \ \ sunrealtype*\ yArray\ =\ N\_VGetArrayPointer(y);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00209}00209\ }
@@ -159,8 +159,8 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00214}00214\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00215}00215\ \ \ \ \ \textcolor{keyword}{auto}\ size\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(N\_VGetLength(y));}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{comment}{//\ Copy\ initial\ value\ from\ y\ to\ source.}}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_af4f75aa67931b23e7662e6ff3af4b984}{source}}\ =\ pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}());}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_af4f75aa67931b23e7662e6ff3af4b984}{source}}\ =\ pdeExpre-\/>explicitOperation(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(pdeExpre-\/>exec());}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00219}00219\ \ \ \ \ NeoN::sundials::fieldToSunNVector(source,\ ydot);\ \textcolor{comment}{//\ assign\ rhs\ to\ ydot.}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00220}00220\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00221}00221\ \}}
