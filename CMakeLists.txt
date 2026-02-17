@@ -263,6 +263,16 @@ endif()
 # umpire installs its own targets when fetched via CPM
 
 # install internal cpptrace version
+if(umpire_POPULATED)
+  install(
+    TARGETS umpire
+    EXPORT UmpireTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT UmpireTargets)
+endif()
+
+# install internal cpptrace version
 if(cpptrace_POPULATED)
   install(
     TARGETS cpptrace
