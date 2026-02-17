@@ -44,7 +44,7 @@
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>GinkgoSolver(Executor<sp/>exec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Dictionary&amp;<sp/>solverConfig)</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(exec),<sp/>gkoExec_(getGkoExecutor(exec)),<sp/>fused_(solverConfig.<ref refid="namespaceNeoN_1_1la_1a540a390c884b722c4f06db6d5ed6aa44" kindref="member">get</ref>(</highlight><highlight class="stringliteral">&quot;coupled&quot;</highlight><highlight class="normal">,<sp/>false)),</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(exec),<sp/>gkoExec_(getGkoExecutor(exec)),<sp/>coupled_(solverConfig.<ref refid="namespaceNeoN_1_1la_1a540a390c884b722c4f06db6d5ed6aa44" kindref="member">get</ref>(</highlight><highlight class="stringliteral">&quot;coupled&quot;</highlight><highlight class="normal">,<sp/>false)),</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>config_(parse(solverConfig)),</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>factory_(gko::config::parse(</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>config_,<sp/>gko::config::registry(),<sp/>gko::config::make_type_descriptor&lt;<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>&gt;()</highlight></codeline>
@@ -75,7 +75,7 @@
 <codeline lineno="66"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>gkoExec_;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>fused_;<sp/></highlight><highlight class="comment">//<sp/>whether<sp/>to<sp/>solve<sp/>LinearSystem&lt;Vec3&gt;<sp/>as<sp/>one<sp/>or<sp/>three<sp/>systems</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>coupled_;<sp/></highlight><highlight class="comment">//<sp/>whether<sp/>to<sp/>solve<sp/>LinearSystem&lt;Vec3&gt;<sp/>as<sp/>one<sp/>or<sp/>three<sp/>systems</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>gko::config::pnode<sp/>config_;</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOpFactory&gt;<sp/>factory_;</highlight></codeline>
 <codeline lineno="72"><highlight class="normal">};</highlight></codeline>
