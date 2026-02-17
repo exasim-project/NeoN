@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['neonexception_0',['NeoNException',['../classNeoN_1_1NeoNException.html',1,'NeoN']]]
+  ['mempool_0',['Mempool',['../classNeoN_1_1Mempool.html',1,'NeoN']]]
 ];
