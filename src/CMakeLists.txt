@@ -88,6 +88,7 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
+target_link_libraries(NeoN PUBLIC umpire)
 
 if(WIN32)
   set_target_properties(
