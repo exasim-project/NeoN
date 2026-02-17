@@ -15,7 +15,7 @@ var searchData=
   ['segmentsfromintervals_12',['segmentsFromIntervals',['../namespaceNeoN.html#a6ae1b9a7ec028b25e69bbbe4f3f32753',1,'NeoN']]],
   ['serialexecutor_13',['serialexecutor',['../classNeoN_1_1SerialExecutor.html#ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2',1,'NeoN::SerialExecutor::SerialExecutor()'],['../classNeoN_1_1SerialExecutor.html',1,'NeoN::SerialExecutor']]],
   ['serialexecutor_2ehpp_14',['serialExecutor.hpp',['../serialExecutor_8hpp.html',1,'']]],
-  ['set_15',['set',['../namespaceNeoN.html#ae7808f9288557741a38a6a87514110f3',1,'NeoN']]],
+  ['setcomponent_15',['setComponent',['../namespaceNeoN.html#ad0362f6a606cb6fe7b96d0d6a77cc5f2',1,'NeoN']]],
   ['setcontainer_16',['setContainer',['../namespaceNeoN.html#aadca37c3aeefc2c64c59b7b8c9b624c0',1,'NeoN']]],
   ['setfixedvalue_17',['setfixedvalue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a2ef18c0f426de4e5522a05bf1135e770',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setFixedValue()'],['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1detail.html#ab89592f07addcda65af0daab5edcc52a',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::detail::setFixedValue()']]],
   ['setgradientvalue_18',['setGradientValue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a0d866de55405f02532dc5ab05c5d665b',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
