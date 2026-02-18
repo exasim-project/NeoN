@@ -11,6 +11,7 @@
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
 #include "bindings.hpp"
 
 namespace nb = nanobind;
@@ -128,7 +129,15 @@ void registerVolumeField(nb::module_& m)
             "Apply boundary conditions"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::scalar>::hasDatabase)
-        .def_rw("name", &fvcc::VolumeField<NeoN::scalar>::name);
+        .def_rw("name", &fvcc::VolumeField<NeoN::scalar>::name)
+        .def(
+            "assign",
+            [](fvcc::VolumeField<NeoN::scalar>& self,
+               const fvcc::VolumeField<NeoN::scalar>& other)
+            { self.internalVector() = other.internalVector(); },
+            "other"_a,
+            "Deep-copy internal vector from another scalar field (mirrors C++ = operator)"
+        );
 
     nb::class_<fvcc::VolumeField<NeoN::Vec3>>(
         m, "VectorVolumeField", "Volume field for Vec3 values"
@@ -206,7 +215,15 @@ void registerVolumeField(nb::module_& m)
             "correct_boundary_conditions", &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
         )
         .def("has_database", &fvcc::VolumeField<NeoN::Vec3>::hasDatabase)
-        .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name);
+        .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name)
+        .def(
+            "assign",
+            [](fvcc::VolumeField<NeoN::Vec3>& self,
+               const fvcc::VolumeField<NeoN::Vec3>& other)
+            { self.internalVector() = other.internalVector(); },
+            "other"_a,
+            "Deep-copy internal vector from another Vec3 field (mirrors C++ = operator)"
+        );
 
     m.def(
         "create_calculated_volume_bcs_scalar",
@@ -222,6 +239,25 @@ void registerVolumeField(nb::module_& m)
         { return fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::Vec3>>(mesh); },
         "mesh"_a,
         "Create calculated Vec3 volume boundary conditions"
+    );
+
+    // oldTime free functions (require field to be registered in a VectorCollection)
+    m.def(
+        "old_time",
+        [](fvcc::VolumeField<NeoN::scalar>& field) -> fvcc::VolumeField<NeoN::scalar>&
+        { return fvcc::oldTime(field); },
+        "field"_a,
+        nb::rv_policy::reference,
+        "Get or create the old-time scalar volume field"
+    );
+
+    m.def(
+        "old_time",
+        [](fvcc::VolumeField<NeoN::Vec3>& field) -> fvcc::VolumeField<NeoN::Vec3>&
+        { return fvcc::oldTime(field); },
+        "field"_a,
+        nb::rv_policy::reference,
+        "Get or create the old-time vector volume field"
     );
 }
 
