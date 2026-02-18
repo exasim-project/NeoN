@@ -260,54 +260,42 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
 </div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">// KOKKOS_INLINE_FUNCTION</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="comment">// Vec3 operator/(const Vec3&amp; lhs, const Vec3&amp; rhs)</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="comment">// {</span></div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="comment">//     return {lhs[0] / rhs[0], lhs[1] / rhs[1], lhs[2] / rhs[2]};</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="comment">// }</span></div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>KOKKOS_INLINE_FUNCTION</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">  176</a></span><a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">operator/</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; lhs, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> rhs) { <span class="keywordflow">return</span> {lhs[0] / rhs, lhs[1] / rhs, lhs[2] / rhs}; }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>KOKKOS_INLINE_FUNCTION</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">  170</a></span><a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">operator/</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; lhs, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> rhs) { <span class="keywordflow">return</span> {lhs[0] / rhs, lhs[1] / rhs, lhs[2] / rhs}; }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>KOKKOS_INLINE_FUNCTION</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd">  174</a></span><a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> <a class="code hl_function" href="namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626">mag</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; vec) { <span class="keywordflow">return</span> sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a77a13e9b0fbe3ff7af004f9f98287d2e">  176</a></span>std::ostream&amp; <a class="code hl_function" href="namespaceNeoN.html#a217f8ac0be9056e594e2eb1bfd7caae7">operator&lt;&lt;</a>(std::ostream&amp; out, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; vec);</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment">// KOKKOS_INLINE_FUNCTION</span></div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="comment">// Vec3 operator/(const scalar&amp; lhs, const Vec3&amp; rhs)</span></div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">// {</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">//     return {lhs / rhs[0], lhs / rhs[1], lhs / rhs[2]};</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="comment">// }</span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keyword">template</span>&lt;&gt;</div>
+<div class="foldopen" id="foldopen00180" data-start="{" data-end="}">
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">  180</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">one&lt;Vec3&gt;</a>()</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>{</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(1.0, 1.0, 1.0);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>KOKKOS_INLINE_FUNCTION</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ab2e350b466c96eec7683040452e4e9dd">  186</a></span><a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> <a class="code hl_function" href="namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626">mag</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; vec) { <span class="keywordflow">return</span> sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a77a13e9b0fbe3ff7af004f9f98287d2e">  188</a></span>std::ostream&amp; <a class="code hl_function" href="namespaceNeoN.html#a217f8ac0be9056e594e2eb1bfd7caae7">operator&lt;&lt;</a>(std::ostream&amp; out, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>&amp; vec);</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="keyword">template</span>&lt;&gt;</div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">  186</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>()</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>{</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(0.0, 0.0, 0.0);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>}</div>
+</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="keyword">template</span>&lt;&gt;</div>
 <div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">  192</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">one&lt;Vec3&gt;</a>()</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">  192</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">inv&lt;Vec3&gt;</a>(<a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> in)</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>{</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(1.0, 1.0, 1.0);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(1.0 / in[0], 1.0 / in[1], 1.0 / in[2]);</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
 </div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keyword">template</span>&lt;&gt;</div>
-<div class="foldopen" id="foldopen00198" data-start="{" data-end="}">
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">  198</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>()</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>{</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(0.0, 0.0, 0.0);</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>}</div>
-</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="keyword">template</span>&lt;&gt;</div>
-<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">  204</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> <a class="code hl_function" href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">inv&lt;Vec3&gt;</a>(<a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a> in)</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>{</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vec3.html">Vec3</a>(1.0 / in[0], 1.0 / in[1], 1.0 / in[2]);</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>}</div>
-</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>} <span class="comment">// namespace NeoN</span></div>
 <div class="ttc" id="aclassNeoN_1_1Vec3_html"><div class="ttname"><a href="classNeoN_1_1Vec3.html">NeoN::Vec3</a></div><div class="ttdoc">A class for the representation of a 3D Vec3.</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00023">vec3.hpp:24</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vec3_html_a0778c1f4daa4bb0b607d57762b3effe2"><div class="ttname"><a href="classNeoN_1_1Vec3.html#a0778c1f4daa4bb0b607d57762b3effe2">NeoN::Vec3::data</a></div><div class="ttdeci">scalar * data()</div><div class="ttdoc">Returns pointer to the data of the vector.</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00056">vec3.hpp:56</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vec3_html_a1032af910240c9e539254046ff07caf3"><div class="ttname"><a href="classNeoN_1_1Vec3.html#a1032af910240c9e539254046ff07caf3">NeoN::Vec3::operator-</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 operator-(const Vec3 &amp;rhs) const</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00106">vec3.hpp:106</a></div></div>
@@ -331,13 +319,13 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00019">array.hpp:20</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a16d1972249505eeb9d429169b5528a1e"><div class="ttname"><a href="namespaceNeoN.html#a16d1972249505eeb9d429169b5528a1e">NeoN::operator&amp;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar operator&amp;(const Vec3 &amp;lhs, Vec3 rhs)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00158">vec3.hpp:158</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a217f8ac0be9056e594e2eb1bfd7caae7"><div class="ttname"><a href="namespaceNeoN.html#a217f8ac0be9056e594e2eb1bfd7caae7">NeoN::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const Dictionary &amp;in)</div></div>
-<div class="ttc" id="anamespaceNeoN_html_a267bdffd9fa96bfbdd04d99a5102c412"><div class="ttname"><a href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">NeoN::zero&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 zero&lt; Vec3 &gt;()</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00198">vec3.hpp:198</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_a4dd86f52f22c94a28c8af2fdd0349c7c"><div class="ttname"><a href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">NeoN::one&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 one&lt; Vec3 &gt;()</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00192">vec3.hpp:192</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_a267bdffd9fa96bfbdd04d99a5102c412"><div class="ttname"><a href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">NeoN::zero&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 zero&lt; Vec3 &gt;()</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00186">vec3.hpp:186</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_a4dd86f52f22c94a28c8af2fdd0349c7c"><div class="ttname"><a href="namespaceNeoN.html#a4dd86f52f22c94a28c8af2fdd0349c7c">NeoN::one&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 one&lt; Vec3 &gt;()</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00180">vec3.hpp:180</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a5a92d3d1550bcfb32325f9f4112a5626"><div class="ttname"><a href="namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626">NeoN::mag</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar mag(const scalar &amp;s)</div><div class="ttdef"><b>Definition</b> <a href="scalar_8hpp_source.html#l00022">scalar.hpp:22</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_a8325ae89cc7399600cd9f65a664a29d0"><div class="ttname"><a href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">NeoN::inv&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 inv&lt; Vec3 &gt;(Vec3 in)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00204">vec3.hpp:204</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_a8325ae89cc7399600cd9f65a664a29d0"><div class="ttname"><a href="namespaceNeoN.html#a8325ae89cc7399600cd9f65a664a29d0">NeoN::inv&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 inv&lt; Vec3 &gt;(Vec3 in)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00192">vec3.hpp:192</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a8482e9b18df5dd944627afdb72291479"><div class="ttname"><a href="namespaceNeoN.html#a8482e9b18df5dd944627afdb72291479">NeoN::operator*</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 operator*(const scalar &amp;sclr, Vec3 rhs)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00150">vec3.hpp:150</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a93c8d00d3aa9fc6f9271c4c0b4f0da97"><div class="ttname"><a href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a></div><div class="ttdeci">float scalar</div><div class="ttdef"><b>Definition</b> <a href="scalar_8hpp_source.html#l00016">scalar.hpp:16</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_aed585df60bb68f0c99e9dc3377883767"><div class="ttname"><a href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">NeoN::operator/</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 operator/(const Vec3 &amp;lhs, scalar rhs)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00176">vec3.hpp:176</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_aed585df60bb68f0c99e9dc3377883767"><div class="ttname"><a href="namespaceNeoN.html#aed585df60bb68f0c99e9dc3377883767">NeoN::operator/</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 operator/(const Vec3 &amp;lhs, scalar rhs)</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00170">vec3.hpp:170</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_afa6c1c30776d4f6ed4691b0f9d1ea416"><div class="ttname"><a href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">NeoN::label</a></div><div class="ttdeci">int32_t label</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00026">label.hpp:26</a></div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
 <div class="ttc" id="atraits_8hpp_html"><div class="ttname"><a href="traits_8hpp.html">traits.hpp</a></div></div>
