@@ -18,6 +18,11 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "bindings.hpp"
 
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
+
 namespace nb = nanobind;
 using namespace nb::literals;
 
