@@ -43,6 +43,28 @@ void declare_surface_interpolation(nb::module_& m, const char* name)
             "input"_a
         )
         .def(
+            "__init__",
+            [](fvcc::SurfaceInterpolation<T>* self,
+               const NeoN::Executor& exec,
+               const NeoN::UnstructuredMesh& mesh,
+               const NeoN::TokenList& tokenList)
+            { new (self) fvcc::SurfaceInterpolation<T>(exec, mesh, NeoN::Input {tokenList}); },
+            "exec"_a,
+            "mesh"_a,
+            "input"_a
+        )
+        .def(
+            "__init__",
+            [](fvcc::SurfaceInterpolation<T>* self,
+               const NeoN::Executor& exec,
+               const NeoN::UnstructuredMesh& mesh,
+               const NeoN::Dictionary& dict)
+            { new (self) fvcc::SurfaceInterpolation<T>(exec, mesh, NeoN::Input {dict}); },
+            "exec"_a,
+            "mesh"_a,
+            "input"_a
+        )
+        .def(
             "interpolate",
             [](const fvcc::SurfaceInterpolation<T>& self, const fvcc::VolumeField<T>& src)
             { return self.interpolate(src); },

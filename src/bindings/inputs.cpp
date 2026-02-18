@@ -26,6 +26,17 @@ void registerInputs(nb::module_& m)
     nb::class_<NeoN::TokenList>(m, "TokenList", "A list of tokens storing values of any type")
         .def(nb::init<>(), "Create an empty TokenList")
         .def(nb::init<const NeoN::TokenList&>(), "Copy constructor")
+        .def(
+            "__init__",
+            [](NeoN::TokenList& self, const std::vector<std::string>& strings)
+            {
+                new (&self) NeoN::TokenList();
+                for (const auto& s : strings)
+                    self.insert(std::any(s));
+            },
+            "strings"_a,
+            "Create a TokenList from a Python list of strings (e.g. TokenList(['linear']))"
+        )
         .def("empty", &NeoN::TokenList::empty, "Check if the token list is empty")
         .def("size", &NeoN::TokenList::size, "Get the size of the token list")
         .def("remove", &NeoN::TokenList::remove, "index"_a, "Remove value at specified index")
