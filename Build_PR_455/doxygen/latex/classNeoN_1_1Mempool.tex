@@ -15,9 +15,13 @@ int \mbox{\hyperlink{classNeoN_1_1Mempool_ae886a64848e692271c918157669e2592}{get
 \item 
 void \mbox{\hyperlink{classNeoN_1_1Mempool_afbd147ec6aa3745ed1518e8a0cfe1436}{set\+Size}} (int size)
 \item 
-{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Mempool_a90104898f3bdb7065ca207c0418674f2}{alloc}} (int size)
+{\footnotesize template$<$typename T , typename Execution\+Space $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Mempool_acb539a38b8f525b882de54c2deb7ea6b}{alloc}} (int size)
 \item 
-{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Mempool_ad83fafc3daf95c47f75ca1dda1f55b5f}{free}} (T \texorpdfstring{$\ast$}{*}ptr, int size)
+{\footnotesize template$<$typename T , typename Executor\+Type $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Mempool_a938f0315a8e317ca586be4e46735609c}{alloc}} (int size, Executor\+Type exec)
+\item 
+{\footnotesize template$<$typename T , typename Execution\+Space $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Mempool_a604160a05e6141597393fedf12b31ec0}{free}} (T \texorpdfstring{$\ast$}{*}ptr)
+\item 
+{\footnotesize template$<$typename T , typename Executor\+Type $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Mempool_a66a2edec9c644f942e27341c79d1e92e}{free}} (T \texorpdfstring{$\ast$}{*}ptr, Executor\+Type exec)
 \item 
 Kokkos\+::\+Memory\+Pool$<$ Kokkos\+::\+Default\+Execution\+Space $>$\+::usage\+\_\+statistics \mbox{\hyperlink{classNeoN_1_1Mempool_a7f6420120a0ff25813cbe6539c1c65d7}{get\+Statistics}} ()
 \end{DoxyCompactItemize}
@@ -33,7 +37,7 @@ static void \mbox{\hyperlink{classNeoN_1_1Mempool_aa5a8c7d203ff4be400342fdc477ad
 \doxysubsection{Detailed Description}
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00010}{10}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00014}{14}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 
 
@@ -47,16 +51,27 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00010}{10}} of file \mb
 
 
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classNeoN_1_1Mempool_a90104898f3bdb7065ca207c0418674f2}\label{classNeoN_1_1Mempool_a90104898f3bdb7065ca207c0418674f2} 
+\Hypertarget{classNeoN_1_1Mempool_acb539a38b8f525b882de54c2deb7ea6b}\label{classNeoN_1_1Mempool_acb539a38b8f525b882de54c2deb7ea6b} 
 \index{NeoN::Mempool@{NeoN::Mempool}!alloc@{alloc}}
 \index{alloc@{alloc}!NeoN::Mempool@{NeoN::Mempool}}
-\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}}
-{\footnotesize\ttfamily template$<$typename T $>$ \\
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Execution\+Space $>$ \\
 T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Mempool\+::alloc (\begin{DoxyParamCaption}\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00111}{111}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Mempool_a938f0315a8e317ca586be4e46735609c}\label{classNeoN_1_1Mempool_a938f0315a8e317ca586be4e46735609c} 
+\index{NeoN::Mempool@{NeoN::Mempool}!alloc@{alloc}}
+\index{alloc@{alloc}!NeoN::Mempool@{NeoN::Mempool}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Executor\+Type $>$ \\
+T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Mempool\+::alloc (\begin{DoxyParamCaption}\item[{int}]{size,  }\item[{Executor\+Type}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00129}{129}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Mempool_aa5a8c7d203ff4be400342fdc477ad664}\label{classNeoN_1_1Mempool_aa5a8c7d203ff4be400342fdc477ad664} 
 \index{NeoN::Mempool@{NeoN::Mempool}!destroy@{destroy}}
@@ -66,18 +81,29 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00063}{63}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00042}{42}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1Mempool_ad83fafc3daf95c47f75ca1dda1f55b5f}\label{classNeoN_1_1Mempool_ad83fafc3daf95c47f75ca1dda1f55b5f} 
+\Hypertarget{classNeoN_1_1Mempool_a604160a05e6141597393fedf12b31ec0}\label{classNeoN_1_1Mempool_a604160a05e6141597393fedf12b31ec0} 
 \index{NeoN::Mempool@{NeoN::Mempool}!free@{free}}
 \index{free@{free}!NeoN::Mempool@{NeoN::Mempool}}
-\doxysubsubsection{\texorpdfstring{free()}{free()}}
-{\footnotesize\ttfamily template$<$typename T $>$ \\
-void Neo\+N\+::\+Mempool\+::free (\begin{DoxyParamCaption}\item[{T \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\doxysubsubsection{\texorpdfstring{free()}{free()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Execution\+Space $>$ \\
+void Neo\+N\+::\+Mempool\+::free (\begin{DoxyParamCaption}\item[{T \texorpdfstring{$\ast$}{*}}]{ptr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00153}{153}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Mempool_a66a2edec9c644f942e27341c79d1e92e}\label{classNeoN_1_1Mempool_a66a2edec9c644f942e27341c79d1e92e} 
+\index{NeoN::Mempool@{NeoN::Mempool}!free@{free}}
+\index{free@{free}!NeoN::Mempool@{NeoN::Mempool}}
+\doxysubsubsection{\texorpdfstring{free()}{free()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Executor\+Type $>$ \\
+void Neo\+N\+::\+Mempool\+::free (\begin{DoxyParamCaption}\item[{T \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{Executor\+Type}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Mempool_ae886a64848e692271c918157669e2592}\label{classNeoN_1_1Mempool_ae886a64848e692271c918157669e2592} 
 \index{NeoN::Mempool@{NeoN::Mempool}!getSize@{getSize}}
@@ -87,7 +113,7 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00075}{75}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00097}{97}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Mempool_a7f6420120a0ff25813cbe6539c1c65d7}\label{classNeoN_1_1Mempool_a7f6420120a0ff25813cbe6539c1c65d7} 
 \index{NeoN::Mempool@{NeoN::Mempool}!getStatistics@{getStatistics}}
@@ -97,7 +123,7 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00049}{49}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00085}{85}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00185}{185}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Mempool_af13f06f052c90cae195e67fbb71fa25e}\label{classNeoN_1_1Mempool_af13f06f052c90cae195e67fbb71fa25e} 
 \index{NeoN::Mempool@{NeoN::Mempool}!instance@{instance}}
@@ -107,7 +133,7 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00085}{85}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Mempool_a1466b4cf0a43d1f40c9ed06c2688cd08}\label{classNeoN_1_1Mempool_a1466b4cf0a43d1f40c9ed06c2688cd08} 
 \index{NeoN::Mempool@{NeoN::Mempool}!operator=@{operator=}}
@@ -123,7 +149,7 @@ Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00028}{28}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
+Definition at line \mbox{\hyperlink{mempool_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{mempool_8hpp_source}{mempool.\+hpp}}.
 
 
 
