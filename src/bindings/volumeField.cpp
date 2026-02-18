@@ -259,6 +259,22 @@ void registerVolumeField(nb::module_& m)
         nb::rv_policy::reference,
         "Get or create the old-time vector volume field"
     );
+
+    m.def(
+        "rotate_old_times",
+        [](fvcc::VolumeField<NeoN::scalar>& field) { fvcc::rotateOldTimes(field); },
+        "field"_a,
+        "Rotate old-time scalar volume field (φ^n → φ^{n-1}) — field must be registered in "
+        "VectorCollection"
+    );
+
+    m.def(
+        "rotate_old_times",
+        [](fvcc::VolumeField<NeoN::Vec3>& field) { fvcc::rotateOldTimes(field); },
+        "field"_a,
+        "Rotate old-time Vec3 volume field (φ^n → φ^{n-1}) — field must be registered in "
+        "VectorCollection"
+    );
 }
 
 } // namespace NeoN::bindings

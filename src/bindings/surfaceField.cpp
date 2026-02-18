@@ -8,6 +8,7 @@
 
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -127,7 +128,21 @@ void registerSurfaceField(nb::module_& m)
             &fvcc::SurfaceField<NeoN::scalar>::correctBoundaryConditions,
             "Apply boundary conditions"
         )
-        .def_rw("name", &fvcc::SurfaceField<NeoN::scalar>::name);
+        .def_rw("name", &fvcc::SurfaceField<NeoN::scalar>::name)
+        .def(
+            "__add__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& a,
+               const fvcc::SurfaceField<NeoN::scalar>& b) { return a + b; },
+            "other"_a,
+            "Element-wise addition of two scalar surface fields"
+        )
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& a,
+               const fvcc::SurfaceField<NeoN::scalar>& b) { return a * b; },
+            "other"_a,
+            "Element-wise multiplication of two scalar surface fields"
+        );
 
     nb::class_<fvcc::SurfaceField<NeoN::Vec3>>(
         m, "VectorSurfaceField", "Surface field for Vec3 values"
@@ -221,6 +236,24 @@ void registerSurfaceField(nb::module_& m)
         { return fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::Vec3>>(mesh); },
         "mesh"_a,
         "Create calculated Vec3 surface boundary conditions"
+    );
+
+    // old-time and rotate for scalar SurfaceField (field must be registered in VectorCollection)
+    m.def(
+        "old_time",
+        [](fvcc::SurfaceField<NeoN::scalar>& field) -> fvcc::SurfaceField<NeoN::scalar>&
+        { return fvcc::oldTime(field); },
+        "field"_a,
+        nb::rv_policy::reference,
+        "Get or create the old-time scalar surface field"
+    );
+
+    m.def(
+        "rotate_old_times",
+        [](fvcc::SurfaceField<NeoN::scalar>& field) { fvcc::rotateOldTimes(field); },
+        "field"_a,
+        "Rotate old-time scalar surface field (φ^n → φ^{n-1}) — field must be registered in "
+        "VectorCollection"
     );
 }
 
