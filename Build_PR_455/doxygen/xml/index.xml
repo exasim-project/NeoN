@@ -676,6 +676,7 @@
   </compound>
   <compound refid="classNeoN_1_1GPUExecutor" kind="class"><name>NeoN::GPUExecutor</name>
     <member refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kind="typedef"><name>exec</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1abb761128178b04e1105f1cabeaa1846e" kind="typedef"><name>memSpace</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1ac8465d7ed9023aea8a808383f38550a5" kind="function"><name>GPUExecutor</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1adebe4dfbc231a708dbd66abea6e32abf" kind="function"><name>~GPUExecutor</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1a4e8b672e789aa3c8cae8d56ceefaf5ec" kind="function"><name>alloc</name></member>
@@ -686,6 +687,9 @@
     <member refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" kind="function"><name>createKokkosView</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" kind="function"><name>name</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" kind="function"><name>underlyingExec</name></member>
+  </compound>
+  <compound refid="structNeoN_1_1GPUMemorySpaceMapping" kind="struct"><name>NeoN::GPUMemorySpaceMapping</name>
+    <member refid="structNeoN_1_1GPUMemorySpaceMapping_1a948c7500a66178481c2eb51e86446e2d" kind="typedef"><name>MemorySpace</name></member>
   </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator" kind="class"><name>NeoN::finiteVolume::cellCentred::GradOperator</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator_1a82be32d8ec2f7f2915a638e886c86338" kind="typedef"><name>VectorValueType</name></member>
@@ -803,26 +807,30 @@
     <member refid="classNeoN_1_1Logging_1_1Logger_1ae2053e637c244a9a1825702e3e900c37" kind="function"><name>~Logger</name></member>
     <member refid="classNeoN_1_1Logging_1_1Logger_1a4c6ab731c451d0e95821f956e934a1a8" kind="function"><name>log</name></member>
   </compound>
+  <compound refid="structNeoN_1_1MemorySpaceMapping" kind="struct"><name>NeoN::MemorySpaceMapping</name>
+    <member refid="structNeoN_1_1MemorySpaceMapping_1a7930146e33280f1e7fc1faf4b47fb852" kind="typedef"><name>MemorySpace</name></member>
+  </compound>
+  <compound refid="structNeoN_1_1MemorySpaceMapping_3_01GPUExecutor_01_4" kind="struct"><name>NeoN::MemorySpaceMapping&lt; GPUExecutor &gt;</name>
+    <member refid="structNeoN_1_1MemorySpaceMapping_3_01GPUExecutor_01_4_1afa819d1624995b53b2bfdc48c6656be8" kind="typedef"><name>MemorySpace</name></member>
+  </compound>
   <compound refid="classNeoN_1_1Mempool" kind="class"><name>NeoN::Mempool</name>
-    <member refid="classNeoN_1_1Mempool_1af5acd5be5637bb1c2866b7fd8e5b6128" kind="variable"><name>ptr</name></member>
-    <member refid="classNeoN_1_1Mempool_1a4b193d3dd4fd4c0fcf720e256c0f2b8a" kind="variable"><name>size_</name></member>
-    <member refid="classNeoN_1_1Mempool_1aaf74422541239c4b486296c5c19c5e1f" kind="variable"><name>mempool_</name></member>
-    <member refid="classNeoN_1_1Mempool_1a8698329252b86aae8b0cf051d6901b60" kind="function"><name>isOnDefaultExecutionSpace</name></member>
-    <member refid="classNeoN_1_1Mempool_1a134fc63017eee8ff3a9167753c6da72e" kind="function"><name>isOnDefaultHostExecutionSpace</name></member>
-    <member refid="classNeoN_1_1Mempool_1a1ab37547bd36501e353a248f450dd905" kind="function"><name>isOnSerialExecutionSpace</name></member>
-    <member refid="classNeoN_1_1Mempool_1a62448bbd3f826b44915b07f3f4fc56c6" kind="function"><name>Mempool</name></member>
-    <member refid="classNeoN_1_1Mempool_1a45242ad23169627080d3af6569ed007d" kind="function"><name>~Mempool</name></member>
-    <member refid="classNeoN_1_1Mempool_1af13f06f052c90cae195e67fbb71fa25e" kind="function"><name>instance</name></member>
-    <member refid="classNeoN_1_1Mempool_1aa5a8c7d203ff4be400342fdc477ad664" kind="function"><name>destroy</name></member>
-    <member refid="classNeoN_1_1Mempool_1ab5f36841ee8fd568b61dd8271d1c6456" kind="function"><name>Mempool</name></member>
-    <member refid="classNeoN_1_1Mempool_1a1466b4cf0a43d1f40c9ed06c2688cd08" kind="function"><name>operator=</name></member>
-    <member refid="classNeoN_1_1Mempool_1ae886a64848e692271c918157669e2592" kind="function"><name>getSize</name></member>
-    <member refid="classNeoN_1_1Mempool_1afbd147ec6aa3745ed1518e8a0cfe1436" kind="function"><name>setSize</name></member>
-    <member refid="classNeoN_1_1Mempool_1acb539a38b8f525b882de54c2deb7ea6b" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1Mempool_1a938f0315a8e317ca586be4e46735609c" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1Mempool_1a604160a05e6141597393fedf12b31ec0" kind="function"><name>free</name></member>
-    <member refid="classNeoN_1_1Mempool_1a66a2edec9c644f942e27341c79d1e92e" kind="function"><name>free</name></member>
-    <member refid="classNeoN_1_1Mempool_1a7f6420120a0ff25813cbe6539c1c65d7" kind="function"><name>getStatistics</name></member>
+    <member refid="classNeoN_1_1Mempool_1a6f977208c30e1e1c7ef1ae38e67305aa" kind="variable"><name>ptr</name></member>
+    <member refid="classNeoN_1_1Mempool_1a7d9cff6f6a02cb44f51439fb815e5298" kind="variable"><name>size_</name></member>
+    <member refid="classNeoN_1_1Mempool_1a9949bc9cf00d887c821f8cbca4df24cc" kind="variable"><name>mempool_</name></member>
+    <member refid="classNeoN_1_1Mempool_1a82ffae741b250ac6b39c84dbdb1f3f63" kind="function"><name>isOnDefaultExecutionSpace</name></member>
+    <member refid="classNeoN_1_1Mempool_1a74d0fc20a40bffbe05ea3a100e1cd1a2" kind="function"><name>isOnDefaultHostExecutionSpace</name></member>
+    <member refid="classNeoN_1_1Mempool_1ae7e615468b5e1bd303e98d9a62dde524" kind="function"><name>isOnSerialExecutionSpace</name></member>
+    <member refid="classNeoN_1_1Mempool_1a4f70f188d5828a1a85fdf3720f8ca45b" kind="function"><name>Mempool</name></member>
+    <member refid="classNeoN_1_1Mempool_1a71bef1124c229087cc24f1929d47cd8d" kind="function"><name>~Mempool</name></member>
+    <member refid="classNeoN_1_1Mempool_1acca090a15af875f555275585212ce51e" kind="function"><name>instance</name></member>
+    <member refid="classNeoN_1_1Mempool_1ac3fe4d44c505a8bd117d496c126113c9" kind="function"><name>destroy</name></member>
+    <member refid="classNeoN_1_1Mempool_1ab602fd856e004c77ec2549b385c0cdc3" kind="function"><name>Mempool</name></member>
+    <member refid="classNeoN_1_1Mempool_1a0d9967c76a41d575ad931b8bed32530e" kind="function"><name>operator=</name></member>
+    <member refid="classNeoN_1_1Mempool_1a0ea905499fccc71b649c42a2c215e56d" kind="function"><name>getSize</name></member>
+    <member refid="classNeoN_1_1Mempool_1a5e185fdef08be263a935d5b39f6e3983" kind="function"><name>setSize</name></member>
+    <member refid="classNeoN_1_1Mempool_1abf6ba2e9bfc3bca03754dd22748dabcd" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1Mempool_1a288fc10d9ebcc91a994cb5aee4c7f32d" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1Mempool_1a5996eda3443ebe45879c8e3334065bb3" kind="function"><name>getStatistics</name></member>
   </compound>
   <compound refid="classNeoN_1_1NeoNException" kind="class"><name>NeoN::NeoNException</name>
     <member refid="classNeoN_1_1NeoNException_1aeabed249d6ec860d410fea3263b0d655" kind="variable"><name>message_</name></member>

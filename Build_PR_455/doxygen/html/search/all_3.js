@@ -24,7 +24,7 @@ var searchData=
   ['demangle_2ehpp_21',['demangle.hpp',['../demangle_8hpp.html',1,'']]],
   ['derivedclass_22',['derivedClass',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a5ab28273ae4c40a351d732aa503125f2',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['derivedclassdocumentation_23',['DerivedClassDocumentation',['../classNeoN_1_1DerivedClassDocumentation.html',1,'NeoN']]],
-  ['destroy_24',['destroy',['../classNeoN_1_1Mempool.html#aa5a8c7d203ff4be400342fdc477ad664',1,'NeoN::Mempool']]],
+  ['destroy_24',['destroy',['../classNeoN_1_1Mempool.html#ac3fe4d44c505a8bd117d496c126113c9',1,'NeoN::Mempool']]],
   ['diag_25',['diag',['../classNeoN_1_1la_1_1CSRMatrix.html#acba4cba929330d32cf02d7d82ddafb1c',1,'NeoN::la::CSRMatrix']]],
   ['diagoffset_26',['diagoffset',['../classNeoN_1_1la_1_1SparsityPattern.html#a4ee305a28281ad44785f2f471e3f086e',1,'NeoN::la::SparsityPattern::diagOffset() const'],['../classNeoN_1_1la_1_1SparsityPattern.html#a74465382287ceffd7c4d17204e468726',1,'NeoN::la::SparsityPattern::diagOffset()']]],
   ['diagonalsolver_27',['diagonalsolver',['../classNeoN_1_1la_1_1DiagonalSolver.html',1,'NeoN::la::DiagonalSolver'],['../classNeoN_1_1la_1_1DiagonalSolver.html#a825b7a56f08d36b4517721d80c64e1fa',1,'NeoN::la::DiagonalSolver::DiagonalSolver()']]],
