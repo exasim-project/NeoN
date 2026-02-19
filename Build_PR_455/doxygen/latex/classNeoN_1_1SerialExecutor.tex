@@ -25,19 +25,19 @@ using \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72
 \item 
 \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2}{Serial\+Executor}} ()
 \item 
+\mbox{\hyperlink{classNeoN_1_1SerialExecutor_a4e93a175bec9775aa0b585d07b9a42e1}{Serial\+Executor}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$ strategy)
+\item 
 \mbox{\hyperlink{classNeoN_1_1SerialExecutor_abc0bcfedaaeac17db3a9bfce2d5ae062}{\texorpdfstring{$\sim$}{\string~}\+Serial\+Executor}} ()
 \item 
-{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a9b5d9f6c6a4dfe9e4dbeca0e242a30d3}{alloc}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{alloc}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} elements) const
 \item 
-{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ac489cd8e771a6fa880dc476586a03139}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} new\+Size) const
+{\footnotesize template$<$typename T $>$ }\\T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab1dd19773b1a92c66f56aa45e5909291}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} elements) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e}{free}} (void \texorpdfstring{$\ast$}{*}ptr) const noexcept
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\decltype(auto) \mbox{\hyperlink{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}{create\+Kokkos\+View}} (Value\+Type \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
 \begin{DoxyCompactList}\small\item\em create a Kokkos view for a given ptr \end{DoxyCompactList}\item 
-void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_abf25ae5c3a9dd7d4488b4b027ac805d8}{alloc}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size) const
-\item 
 void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}{realloc}} (void \texorpdfstring{$\ast$}{*}ptr, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} new\+Size) const
-\item 
-void \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e}{free}} (void \texorpdfstring{$\ast$}{*}ptr) const noexcept
 \item 
 std\+::string \mbox{\hyperlink{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}{name}} () const
 \item 
@@ -55,7 +55,7 @@ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLog
 \doxysubsection{Detailed Description}
 Reference executor for serial CPU execution. 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00021}{21}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 
 
@@ -68,7 +68,7 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00020}{20}} of f
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 
 
@@ -76,8 +76,14 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00024}{24}} of f
 \Hypertarget{classNeoN_1_1SerialExecutor_ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2}\label{classNeoN_1_1SerialExecutor_ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!SerialExecutor@{SerialExecutor}}
 \index{SerialExecutor@{SerialExecutor}!NeoN::SerialExecutor@{NeoN::SerialExecutor}}
-\doxysubsubsection{\texorpdfstring{SerialExecutor()}{SerialExecutor()}}
+\doxysubsubsection{\texorpdfstring{SerialExecutor()}{SerialExecutor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily Neo\+N\+::\+Serial\+Executor\+::\+Serial\+Executor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1SerialExecutor_a4e93a175bec9775aa0b585d07b9a42e1}\label{classNeoN_1_1SerialExecutor_a4e93a175bec9775aa0b585d07b9a42e1} 
+\index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!SerialExecutor@{SerialExecutor}}
+\index{SerialExecutor@{SerialExecutor}!NeoN::SerialExecutor@{NeoN::SerialExecutor}}
+\doxysubsubsection{\texorpdfstring{SerialExecutor()}{SerialExecutor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Neo\+N\+::\+Serial\+Executor\+::\+Serial\+Executor (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$}]{strategy }\end{DoxyParamCaption})}
 
 \Hypertarget{classNeoN_1_1SerialExecutor_abc0bcfedaaeac17db3a9bfce2d5ae062}\label{classNeoN_1_1SerialExecutor_abc0bcfedaaeac17db3a9bfce2d5ae062} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!````~SerialExecutor@{\texorpdfstring{$\sim$}{\string~}SerialExecutor}}
@@ -88,26 +94,16 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00024}{24}} of f
 
 
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classNeoN_1_1SerialExecutor_a9b5d9f6c6a4dfe9e4dbeca0e242a30d3}\label{classNeoN_1_1SerialExecutor_a9b5d9f6c6a4dfe9e4dbeca0e242a30d3} 
+\Hypertarget{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}\label{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!alloc@{alloc}}
 \index{alloc@{alloc}!NeoN::SerialExecutor@{NeoN::SerialExecutor}}
-\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Serial\+Executor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Serial\+Executor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{elements }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1SerialExecutor_abf25ae5c3a9dd7d4488b4b027ac805d8}\label{classNeoN_1_1SerialExecutor_abf25ae5c3a9dd7d4488b4b027ac805d8} 
-\index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!alloc@{alloc}}
-\index{alloc@{alloc}!NeoN::SerialExecutor@{NeoN::SerialExecutor}}
-\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Serial\+Executor\+::alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00054}{54}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}\label{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!createKokkosView@{createKokkosView}}
@@ -134,7 +130,7 @@ Based on the executor this function creates a Kokkos view into the data managed 
 \end{DoxyTemplParams}
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e}\label{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!free@{free}}
@@ -144,7 +140,7 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00049}{49}} of f
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}\label{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!name@{name}}
@@ -154,18 +150,18 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00061}{61}} of f
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1SerialExecutor_ac489cd8e771a6fa880dc476586a03139}\label{classNeoN_1_1SerialExecutor_ac489cd8e771a6fa880dc476586a03139} 
+\Hypertarget{classNeoN_1_1SerialExecutor_ab1dd19773b1a92c66f56aa45e5909291}\label{classNeoN_1_1SerialExecutor_ab1dd19773b1a92c66f56aa45e5909291} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!realloc@{realloc}}
 \index{realloc@{realloc}!NeoN::SerialExecutor@{NeoN::SerialExecutor}}
 \doxysubsubsection{\texorpdfstring{realloc()}{realloc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Serial\+Executor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{new\+Size }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+T \texorpdfstring{$\ast$}{*} Neo\+N\+::\+Serial\+Executor\+::realloc (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{ptr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}}]{elements }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00042}{42}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}\label{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!realloc@{realloc}}
@@ -175,7 +171,7 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00036}{36}} of f
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba}\label{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba} 
 \index{NeoN::SerialExecutor@{NeoN::SerialExecutor}!underlyingExec@{underlyingExec}}
@@ -185,7 +181,7 @@ Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00056}{56}} of f
 
 
 
-Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00065}{65}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{serialExecutor_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{serialExecutor_8hpp_source}{serial\+Executor.\+hpp}}.
 
 
 

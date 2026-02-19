@@ -16,149 +16,85 @@
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00013}00013\ \{}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00014}00014\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00015}00015\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ MemorySpace\ =\ Kokkos::HostSpace>}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00015}00015\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ MemorySpace>}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00016}\mbox{\hyperlink{classNeoN_1_1Mempool}{00016}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00017}00017\ \{}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00018}00018\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00019}00019\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00020}00020\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExecutorType>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00021}00021\ \ \ \ \ \textcolor{keywordtype}{bool}\ isOnDefaultExecutionSpace(ExecutorType\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00022}00022\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit(}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ \ \ \ \ []<\textcolor{keyword}{typename}\ ExecLhs>(\textcolor{keyword}{const}\ ExecLhs\&\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<typename\ ExecLhs::exec,\ Kokkos::DefaultExecutionSpace>)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00028}00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \ \ \ \ exec}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00034}00034\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExecutorType>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ isOnDefaultHostExecutionSpace(ExecutorType\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00038}00038\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit(}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ []<\textcolor{keyword}{typename}\ ExecLhs>(\textcolor{keyword}{const}\ ExecLhs\&\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ ExecLhs::exec,}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::DefaultHostExecutionSpace>)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ exec}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00020}00020\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}()\ \{\};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00022}00022\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{\string~Mempool}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}*\ ptr\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keywordtype}{int}\ size\_\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00028}00028\ \ \ \ \ std::shared\_ptr<Kokkos::MemoryPool<MemorySpace>>\ mempool\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00030}00030\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ defines\ a\ class\ operation\ that\ lets\ clients\ access\ its\ unique\ instance.}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ MemorySpaceIn>}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1Mempool_acca090a15af875f555275585212ce51e}{00034}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&\ \mbox{\hyperlink{classNeoN_1_1Mempool_acca090a15af875f555275585212ce51e}{instance}}()}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00035}00035\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ptr\_)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ ptr\_\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool<MemorySpaceIn>}}();}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ inconsistent\ mem\ requested}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *ptr\_;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00042}00042\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1Mempool_ab602fd856e004c77ec2549b385c0cdc3}{00044}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool_ab602fd856e004c77ec2549b385c0cdc3}{Mempool}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1Mempool_a0d9967c76a41d575ad931b8bed32530e}{00046}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0d9967c76a41d575ad931b8bed32530e}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1Mempool_ac3fe4d44c505a8bd117d496c126113c9}{00048}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_ac3fe4d44c505a8bd117d496c126113c9}{destroy}}()}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00049}00049\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ ptr\_;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ ptr\_\ =\ \textcolor{keyword}{nullptr};}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00052}00052\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00053}00053\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExecutorType>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keywordtype}{bool}\ isOnSerialExecutionSpace(ExecutorType\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00056}00056\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::visit(}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ []<\textcolor{keyword}{typename}\ ExecLhs>(\textcolor{keyword}{const}\ ExecLhs\&\ exec)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<typename\ ExecLhs::exec,\ Kokkos::Serial>)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ exec}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ existing\ interface\ goes\ here}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{00055}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{getSize}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_;\ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{00057}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{initialized}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_\ !=\ 0;\ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1Mempool_ae33a329e20e90e487b0a3fe13c8cac7a}{00059}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_ae33a329e20e90e487b0a3fe13c8cac7a}{setSize}}(\textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ size\_\ =\ size;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ >\ 0)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ m\ \{\};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_\ =\ std::make\_shared<Kokkos::MemoryPool<MemorySpace>>(m,\ size);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00068}00068\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00070}00070\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}()\ \{\};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00072}00072\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{\string~Mempool}}()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}*\ ptr\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1Mempool_aedf0f9e4657cb541a3bc0a2579423130}{00071}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1Mempool_aedf0f9e4657cb541a3bc0a2579423130}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00072}00072\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}T*\textcolor{keyword}{>}(mempool\_-\/>allocate(size\ *\ \textcolor{keyword}{sizeof}(T)));}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00074}00074\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keywordtype}{int}\ size\_\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00077}00077\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00078}00078\ \ \ \ \ std::shared\_ptr<Kokkos::MemoryPool<MemorySpace>>\ mempool\_\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00080}00080\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{00077}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{free}}(T*\ ptr)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00078}00078\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ mempool\_-\/>deallocate(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(ptr),\ 0);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00080}00080\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00081}00081\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{comment}{//\ defines\ a\ class\ operation\ that\ lets\ clients\ access\ its\ unique\ instance.}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ MemorySpaceIn>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00084}\mbox{\hyperlink{classNeoN_1_1Mempool_acca090a15af875f555275585212ce51e}{00084}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&\ \mbox{\hyperlink{classNeoN_1_1Mempool_acca090a15af875f555275585212ce51e}{instance}}()}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00085}00085\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ptr)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ ptr\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool<MemorySpaceIn>}}();}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{00082}}\ \ \ \ \ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ \mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{getStatistics}}()}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00083}00083\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mempool\_)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ stats\ \{\};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_-\/>get\_usage\_statistics(stats);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stats;}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ inconsistent\ mem\ requested}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *ptr;}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00092}00092\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00090}00090\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00091}00091\ \};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00092}00092\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1Mempool_ab602fd856e004c77ec2549b385c0cdc3}{00094}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool_ab602fd856e004c77ec2549b385c0cdc3}{Mempool}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&)\ =\ \textcolor{keyword}{delete};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1Mempool_a0d9967c76a41d575ad931b8bed32530e}{00096}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0d9967c76a41d575ad931b8bed32530e}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool}}\&)\ =\ \textcolor{keyword}{delete};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00097}00097\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00098}\mbox{\hyperlink{classNeoN_1_1Mempool_ac3fe4d44c505a8bd117d496c126113c9}{00098}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_ac3fe4d44c505a8bd117d496c126113c9}{destroy}}()}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00099}00099\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ ptr;}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ ptr\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00102}00102\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00103}00103\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ existing\ interface\ goes\ here}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00105}\mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{00105}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{getSize}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_;\ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00106}00106\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00107}\mbox{\hyperlink{classNeoN_1_1Mempool_a5e185fdef08be263a935d5b39f6e3983}{00107}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a5e185fdef08be263a935d5b39f6e3983}{setSize}}(\textcolor{keywordtype}{int}\ size)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00108}00108\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ size\_\ =\ size;}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00110}00110\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ >\ 0)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ MemorySpace\ m\ \{\};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_\ =\ std::make\_shared<Kokkos::MemoryPool<MemorySpace>>(m,\ size);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00116}00116\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00117}00117\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ MemorySpaceIn>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00119}\mbox{\hyperlink{classNeoN_1_1Mempool_abf6ba2e9bfc3bca03754dd22748dabcd}{00119}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1Mempool_abf6ba2e9bfc3bca03754dd22748dabcd}{alloc}}(\textcolor{keywordtype}{int}\ size)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00120}00120\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mempool\_)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ execution\ spaces\ match}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<MemorySpaceIn,\ MemorySpace>)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}T*\textcolor{keyword}{>}(mempool\_-\/>allocate(size\ *\ \textcolor{keyword}{sizeof}(T)));}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}T*\textcolor{keyword}{>}(}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::kokkos\_malloc<MemorySpaceIn>(\textcolor{stringliteral}{"{}Kokkos\ alloc"{}},\ size\ *\ \textcolor{keyword}{sizeof}(T))}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00133}00133\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00134}00134\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00135}00135\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ MemorySpaceIn>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00136}\mbox{\hyperlink{classNeoN_1_1Mempool_a288fc10d9ebcc91a994cb5aee4c7f32d}{00136}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a288fc10d9ebcc91a994cb5aee4c7f32d}{free}}(T*\ ptr)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00137}00137\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mempool\_)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_-\/>deallocate(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(ptr),\ 0);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ Kokkos::kokkos\_free<MemorySpace>(ptr);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00144}00144\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00145}00145\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00146}\mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{00146}}\ \ \ \ \ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ \mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{getStatistics}}()}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00147}00147\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mempool\_)}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ stats\ \{\};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_-\/>get\_usage\_statistics(stats);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stats;}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00154}00154\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00155}00155\ \};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00156}00156\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00157}00157\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00158}00158\ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00094}00094\ \}}
 
 \end{DoxyCode}
