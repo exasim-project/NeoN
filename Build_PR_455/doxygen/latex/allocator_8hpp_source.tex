@@ -76,8 +76,8 @@
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getMemPool<CPUMemSpace>().alloc<\textcolor{keywordtype}{void}*>(size);}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ shouldnt\ be\ reached}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ shouldnt\ be\ reached}}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getMemPool<CPUMemSpace>().alloc<\textcolor{keywordtype}{void}*>(size);}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00085}00085\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00086}00086\ }
@@ -93,7 +93,7 @@
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ getMemPool<GPUMemSpace>().free<\textcolor{keywordtype}{void}>(ptr);}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a3905c8c5f49fca35e0dcce51ba78e634}{memSpace\_}}\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{MemorySpace::GPU}})}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ getMemPool<CPUMemSpace>().free<\textcolor{keywordtype}{void}>(ptr);}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \}}
@@ -131,7 +131,7 @@
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a3905c8c5f49fca35e0dcce51ba78e634}{memSpace\_}}\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{MemorySpace::CPU}})}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_malloc<GPUMemSpace>(\textcolor{stringliteral}{"{}Vector"{}},\ size);}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_malloc<CPUMemSpace>(\textcolor{stringliteral}{"{}Vector"{}},\ size);}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ shouldnt\ be\ reached}}
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_malloc<GPUMemSpace>(\textcolor{stringliteral}{"{}Vector"{}},\ size);}
