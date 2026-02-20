@@ -50,7 +50,7 @@ public:
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
     virtual void
-    correctBoundaryCondition(Field<ValueType>& domainVector, const VolumeField<Vec3>&, const VolumeField<scalar>&)
+    correctBoundaryCondition(Field<ValueType>& domainVector, const VolumeField<Vec3>&, const VolumeField<scalar>&, const VolumeField<scalar>&)
     {
         correctBoundaryCondition(domainVector);
     }
@@ -97,10 +97,13 @@ public:
     }
 
     virtual void correctBoundaryCondition(
-        Field<ValueType>& domainVector, const VolumeField<Vec3>& U, const VolumeField<scalar>& nu
+        Field<ValueType>& domainVector,
+        const VolumeField<Vec3>& U,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nearWallDist
     )
     {
-        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector, U, nu);
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector, U, nu, nearWallDist);
     }
 
     const BoundaryAttributes attributes() const

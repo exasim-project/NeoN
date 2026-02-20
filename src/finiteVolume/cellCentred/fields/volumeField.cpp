@@ -98,6 +98,19 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     }
 }
 
+template<typename ValueType>
+void VolumeField<ValueType>::correctBoundaryConditions(
+    const VolumeField<Vec3>& U,
+    const VolumeField<scalar>& nu,
+    const VolumeField<scalar>& nearWallDist
+)
+{
+    for (auto& boundaryCondition : boundaryConditions_)
+    {
+        boundaryCondition.correctBoundaryCondition(this->field_, U, nu, nearWallDist);
+    }
+}
+
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
 
 NN_FOR_ALL_VALUE_TYPES(NN_DECLARE_FIELD);

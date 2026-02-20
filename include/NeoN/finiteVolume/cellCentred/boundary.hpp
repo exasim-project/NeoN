@@ -13,6 +13,7 @@
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/symmetry.hpp"
+#include "boundary/volume/nutWallFunction.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"

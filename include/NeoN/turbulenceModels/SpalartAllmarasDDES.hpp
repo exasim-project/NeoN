@@ -51,7 +51,9 @@ public:
         SurfScalarField& nuEff,
         const VolScalarField& nuTilde,
         const VolScalarField& nu,
-        const SurfScalarField& nuF
+        const SurfScalarField& nuF,
+        const VolVectorField& u,
+        const VolScalarField& nearWallDist
     ) const;
 
     void calcNuTildaDiffusionCoeff(

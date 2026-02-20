@@ -28,7 +28,9 @@ void SpalartAllmarasDDES::correctNut(
     SurfScalarField& nuEffF,
     const VolScalarField& nuTilde,
     const VolScalarField& nu,
-    const SurfScalarField& nuF
+    const SurfScalarField& nuF,
+    const VolVectorField& u,
+    const VolScalarField& nearWallDist
 ) const
 {
     // --- Internal data
@@ -57,7 +59,7 @@ void SpalartAllmarasDDES::correctNut(
     );
 
     // --- Boundary conditions MUST be applied before face usage
-    nutField.correctBoundaryConditions();
+    nutField.correctBoundaryConditions(u, nu, nearWallDist);
 
     // --- Interpolate nut to faces (API-correct form)
     fvcc::SurfaceInterpolation<scalar> surfInterp(

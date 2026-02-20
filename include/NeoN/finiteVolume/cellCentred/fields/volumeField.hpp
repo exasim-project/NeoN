@@ -121,13 +121,11 @@ public:
      */
     void correctBoundaryConditions();
 
-    void correctBoundaryConditions(const VolumeField<Vec3>& U, const VolumeField<scalar>& nu)
-    {
-        for (auto& boundaryCondition : boundaryConditions_)
-        {
-            boundaryCondition.correctBoundaryCondition(this->field_, U, nu);
-        }
-    }
+    void correctBoundaryConditions(
+        const VolumeField<Vec3>& U,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nearWallDist
+    );
 
     std::vector<VolumeBoundary<ValueType>> boundaryConditions() const
     {

@@ -52,6 +52,7 @@ scalar computeUTau(
 
         const scalar uTauNew = ut + f / df;
         err = NeoN::mag((ut - uTauNew) / ut);
+        // ut = 0.5 * ut + 0.5 * uTauNew;
         ut = uTauNew;
     }
     while (ut > ROOTVSMALL && err > tolerance && ++iter < maxIter);
@@ -63,6 +64,7 @@ inline void setNutUSpaldingWallFunction(
     Field<scalar>& domainVector,
     const fvcc::VolumeField<Vec3>& U,
     const fvcc::VolumeField<scalar>& nu,
+    const fvcc::VolumeField<scalar>& nearWallDist,
     const UnstructuredMesh& mesh,
     std::pair<localIdx, localIdx> range
 )
@@ -78,9 +80,8 @@ inline void setNutUSpaldingWallFunction(
         domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().deltaCoeffs(),
-        mesh.boundaryMesh().delta()
+        nearWallDist.boundaryData().value()
     );
-    //    NeoN::Logging::info("Before Loop {}",uInternal[0][0]);
     NeoN::parallelFor(
         domainVector.exec(),
         range,
@@ -89,11 +90,11 @@ inline void setNutUSpaldingWallFunction(
 
             const Vec3 uInt = uInternal[owner];
             const Vec3 uWall = uBoundary[i];
-            const Vec3 diff = uWall - uInt;
+            const Vec3 diff = uInt - uWall;
 
             const scalar magUp = NeoN::mag(diff);
             const scalar magGradU = NeoN::mag(diff * deltaCoeffs[i]);
-            const scalar y = NeoN::mag(delta[i]);
+            const scalar y = delta[i];
             const scalar nuw = nuBoundary[i];
 
             const scalar currentNut = value[i];
@@ -130,10 +131,15 @@ public:
     void correctBoundaryCondition(Field<scalar>& domainVector) final {}
 
     void correctBoundaryCondition(
-        Field<scalar>& domainVector, const VolumeField<Vec3>& U, const VolumeField<scalar>& nu
+        Field<scalar>& domainVector,
+        const VolumeField<Vec3>& U,
+        const VolumeField<scalar>& nu,
+        const VolumeField<scalar>& nearWallDist
     ) final
     {
-        detail::setNutUSpaldingWallFunction(domainVector, U, nu, mesh_, this->range());
+        detail::setNutUSpaldingWallFunction(
+            domainVector, U, nu, nearWallDist, mesh_, this->range()
+        );
     }
 
     static std::string name() { return "nutUSpaldingWallFunction"; }
