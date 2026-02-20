@@ -36,30 +36,33 @@
 \DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
 \DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_a0c92c2f5c58030cc69234fad663a778b}{00039}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a0c92c2f5c58030cc69234fad663a778b}{alloc}}(\textcolor{keywordtype}{size\_t}\ elements)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00040}00040\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ allocContext\_-\/>alloc<T>(elements);}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00042}00042\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00045}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_a15c64b67cf4f8cfb215a8ffbdfa15baa}{00045}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a15c64b67cf4f8cfb215a8ffbdfa15baa}{realloc}}(\textcolor{keywordtype}{void}*\ ptr,\ \textcolor{keywordtype}{size\_t}\ elements)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00046}00046\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ allocContext\_-\/>realloc<T>(ptr,\ elements);}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00048}00048\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00049}00049\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}{00050}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}{free}}(\textcolor{keywordtype}{void}*\ ptr)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ allocContext\_-\/>free(ptr);\ \}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00051}00051\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}{00060}}\ \ \ \ \ \textcolor{keyword}{decltype}(\textcolor{keyword}{auto})\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}{createKokkosView}}(ValueType*\ ptr,\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{const}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00061}00061\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::View<ValueType*,\ Kokkos::DefaultExecutionSpace,\ Kokkos::MemoryUnmanaged>(}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ ptr,\ size}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00065}00065\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}{00067}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GPUExecutor"{}};\ \};}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}{underlyingExec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}}\ \{\};\ \}}
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00070}00070\ \};}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allocContext\_)}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ allocContext\_-\/>alloc<T>(elements);}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00045}00045\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_a15c64b67cf4f8cfb215a8ffbdfa15baa}{00048}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a15c64b67cf4f8cfb215a8ffbdfa15baa}{realloc}}(\textcolor{keywordtype}{void}*\ ptr,\ \textcolor{keywordtype}{size\_t}\ elements)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00049}00049\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ allocContext\_-\/>realloc<T>(ptr,\ elements);}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00051}00051\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}{00053}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ad617d5ee9588b380d6be833fed3f8588}{free}}(\textcolor{keywordtype}{void}*\ ptr)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ allocContext\_-\/>free(ptr);\ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}{00063}}\ \ \ \ \ \textcolor{keyword}{decltype}(\textcolor{keyword}{auto})\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ab8e118a7aaf1d73ab37111449bd99a4e}{createKokkosView}}(ValueType*\ ptr,\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00064}00064\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::View<ValueType*,\ Kokkos::DefaultExecutionSpace,\ Kokkos::MemoryUnmanaged>(}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ ptr,\ size}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00068}00068\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}{00070}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_af02d05e4d94fe2a813d63bf9abd5580b}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GPUExecutor"{}};\ \};}
 \DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00072}00072\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_ac3ebe1e680bf1e69f70930c7f21c5261}{underlyingExec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1GPUExecutor_a853de3f61ad2d2d32694afc816129057}{exec}}\ \{\};\ \}}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00073}00073\ \};}
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{GPUExecutor_8hpp_source_l00075}00075\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

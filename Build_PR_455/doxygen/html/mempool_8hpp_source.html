@@ -158,51 +158,56 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
 </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#aedf0f9e4657cb541a3bc0a2579423130">   71</a></span>    T* <a class="code hl_function" href="classNeoN_1_1Mempool.html#aedf0f9e4657cb541a3bc0a2579423130">alloc</a>(<span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(mempool_-&gt;allocate(size * <span class="keyword">sizeof</span>(T)));</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#a40f5e6cd7572220456d994be87fca73f">   70</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1Mempool.html#a40f5e6cd7572220456d994be87fca73f">alloc</a>(<span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (!mempool_)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            std::cout &lt;&lt; __FILE__ &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot;error\n&quot;</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        mempool_-&gt;print_state(std::cout);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordtype">void</span>* ptr = mempool_-&gt;allocate(size);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> ptr;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
 </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">   77</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">free</a>(T* ptr)</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        mempool_-&gt;deallocate(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">void</span>*<span class="keyword">&gt;</span>(ptr), 0);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
-</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">   82</a></span>    Kokkos::MemoryPool&lt;MemorySpace&gt;::usage_statistics <a class="code hl_function" href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">getStatistics</a>()</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">   82</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">free</a>(T* ptr)</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">if</span> (mempool_)</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        {</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keyword">typename</span> Kokkos::MemoryPool&lt;MemorySpace&gt;::usage_statistics stats {};</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            mempool_-&gt;get_usage_statistics(stats);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordflow">return</span> stats;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        mempool_-&gt;deallocate(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">void</span>*<span class="keyword">&gt;</span>(ptr), 0);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
 </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">   87</a></span>    Kokkos::MemoryPool&lt;MemorySpace&gt;::usage_statistics <a class="code hl_function" href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">getStatistics</a>()</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (mempool_)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keyword">typename</span> Kokkos::MemoryPool&lt;MemorySpace&gt;::usage_statistics stats {};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            mempool_-&gt;get_usage_statistics(stats);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">return</span> stats;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
 </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html"><div class="ttname"><a href="classNeoN_1_1Mempool.html">NeoN::Mempool</a></div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00016">mempool.hpp:17</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_a0d9967c76a41d575ad931b8bed32530e"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a0d9967c76a41d575ad931b8bed32530e">NeoN::Mempool::operator=</a></div><div class="ttdeci">Mempool &amp; operator=(const Mempool &amp;)=delete</div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_a0ea905499fccc71b649c42a2c215e56d"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a0ea905499fccc71b649c42a2c215e56d">NeoN::Mempool::getSize</a></div><div class="ttdeci">int getSize() const</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00055">mempool.hpp:55</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_a3754305c92f41cc35e572ce85fe34763"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a3754305c92f41cc35e572ce85fe34763">NeoN::Mempool::initialized</a></div><div class="ttdeci">int initialized() const</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00057">mempool.hpp:57</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Mempool_html_a7d3458464593c8254b26f7205797967d"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">NeoN::Mempool::getStatistics</a></div><div class="ttdeci">Kokkos::MemoryPool&lt; MemorySpace &gt;::usage_statistics getStatistics()</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00082">mempool.hpp:82</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Mempool_html_a40f5e6cd7572220456d994be87fca73f"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a40f5e6cd7572220456d994be87fca73f">NeoN::Mempool::alloc</a></div><div class="ttdeci">void * alloc(size_t size)</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00070">mempool.hpp:70</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Mempool_html_a7d3458464593c8254b26f7205797967d"><div class="ttname"><a href="classNeoN_1_1Mempool.html#a7d3458464593c8254b26f7205797967d">NeoN::Mempool::getStatistics</a></div><div class="ttdeci">Kokkos::MemoryPool&lt; MemorySpace &gt;::usage_statistics getStatistics()</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00087">mempool.hpp:87</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_ab602fd856e004c77ec2549b385c0cdc3"><div class="ttname"><a href="classNeoN_1_1Mempool.html#ab602fd856e004c77ec2549b385c0cdc3">NeoN::Mempool::Mempool</a></div><div class="ttdeci">Mempool(const Mempool &amp;)=delete</div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_ac3fe4d44c505a8bd117d496c126113c9"><div class="ttname"><a href="classNeoN_1_1Mempool.html#ac3fe4d44c505a8bd117d496c126113c9">NeoN::Mempool::destroy</a></div><div class="ttdeci">static void destroy()</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00048">mempool.hpp:48</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_acca090a15af875f555275585212ce51e"><div class="ttname"><a href="classNeoN_1_1Mempool.html#acca090a15af875f555275585212ce51e">NeoN::Mempool::instance</a></div><div class="ttdeci">static Mempool &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00034">mempool.hpp:34</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html_ae33a329e20e90e487b0a3fe13c8cac7a"><div class="ttname"><a href="classNeoN_1_1Mempool.html#ae33a329e20e90e487b0a3fe13c8cac7a">NeoN::Mempool::setSize</a></div><div class="ttdeci">void setSize(size_t size)</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00059">mempool.hpp:59</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Mempool_html_aeb693f437a5e676b5c3c067e5bab3ca3"><div class="ttname"><a href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">NeoN::Mempool::free</a></div><div class="ttdeci">void free(T *ptr)</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00077">mempool.hpp:77</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1Mempool_html_aedf0f9e4657cb541a3bc0a2579423130"><div class="ttname"><a href="classNeoN_1_1Mempool.html#aedf0f9e4657cb541a3bc0a2579423130">NeoN::Mempool::alloc</a></div><div class="ttdeci">T * alloc(size_t size)</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00071">mempool.hpp:71</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00012">allocator.hpp:13</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">NeoN::MemorySpace</a></div><div class="ttdeci">MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00016">allocator.hpp:17</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Mempool_html_aeb693f437a5e676b5c3c067e5bab3ca3"><div class="ttname"><a href="classNeoN_1_1Mempool.html#aeb693f437a5e676b5c3c067e5bab3ca3">NeoN::Mempool::free</a></div><div class="ttdeci">void free(T *ptr)</div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00082">mempool.hpp:82</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00019">allocator.hpp:20</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">NeoN::MemorySpace</a></div><div class="ttdeci">MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00023">allocator.hpp:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

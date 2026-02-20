@@ -88,278 +88,359 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="allocator_8hpp.html">NeoN/core/allocator.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Kokkos_Core.hpp&gt;</span> <span class="comment">// IWYU pragma: keep</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="mempool_8hpp.html">NeoN/core/mempool.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="error_8hpp.html">NeoN/core/error.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceNeoN.html">   12</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;umpire/Allocator.hpp&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;umpire/ResourceManager.hpp&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;umpire/Umpire.hpp&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="allocator_8hpp.html">NeoN/core/allocator.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">   16</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">CPU</a>,</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">GPU</a></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
-</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="mempool_8hpp.html">NeoN/core/mempool.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="error_8hpp.html">NeoN/core/error.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceNeoN.html">   19</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">   23</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">   28</a></span>    <a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a> <a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">CPU</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">GPU</a></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">   33</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">setMemSpace</a>(<a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a> memSpace) { <a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> = memSpace; }</div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a23a27cf665cc2fb65246238c3e765e2f">   36</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a23a27cf665cc2fb65246238c3e765e2f">alloc</a>(<span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a7fd6091797b5f980d130c26dce8a7c3c">   39</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a7fd6091797b5f980d130c26dce8a7c3c">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a9e790e5347a62749bca6056c97f74d88">   42</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a9e790e5347a62749bca6056c97f74d88">free</a>(<span class="keywordtype">void</span>* ptr) = 0;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">~AllocatorStrategy</a>() {}</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">   35</a></span>    <a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a> <a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">   40</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">setMemSpace</a>(<a class="code hl_enumeration" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">MemorySpace</a> memSpace) { <a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> = memSpace; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a23a27cf665cc2fb65246238c3e765e2f">   43</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a23a27cf665cc2fb65246238c3e765e2f">alloc</a>(<span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a7fd6091797b5f980d130c26dce8a7c3c">   46</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a7fd6091797b5f980d130c26dce8a7c3c">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#a9e790e5347a62749bca6056c97f74d88">   49</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#a9e790e5347a62749bca6056c97f74d88">free</a>(<span class="keywordtype">void</span>* ptr) = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">   51</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">~AllocatorStrategy</a>() {}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
 </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structNeoN_1_1GPUMemorySpaceMapping.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structNeoN_1_1GPUMemorySpaceMapping.html">GPUMemorySpaceMapping</a></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>{</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#if defined(KOKKOS_ENABLE_CUDA)</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::CudaSpace;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#elif defined(KOKKOS_ENABLE_HIP)</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::HIPSpace;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#elif defined(KOKKOS_ENABLE_SYCL)</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::SYCLDeviceUSMSpace;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">   56</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::HostSpace;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structNeoN_1_1GPUMemorySpaceMapping.html">   54</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structNeoN_1_1GPUMemorySpaceMapping.html">GPUMemorySpaceMapping</a></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#if defined(KOKKOS_ENABLE_CUDA)</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::CudaSpace;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#elif defined(KOKKOS_ENABLE_HIP)</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::HIPSpace;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#elif defined(KOKKOS_ENABLE_SYCL)</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::SYCLDeviceUSMSpace;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">   63</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">MemorySpace</a> = Kokkos::HostSpace;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
 </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="foldopen" id="foldopen00063" data-start="{" data-end="};">
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html">   63</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1MempoolAllocator.html">MempoolAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#a0e10975e786cfa8f55458de7f80d0b6a">   69</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1MempoolAllocator.html#a0e10975e786cfa8f55458de7f80d0b6a">GPUMemSpace</a> = <a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">GPUMemorySpaceMapping::MemorySpace</a>;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">   70</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">CPUMemSpace</a> = Kokkos::HostSpace;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">   72</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">alloc</a>(<span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">return</span> getMemPool&lt;GPUMemSpace&gt;().alloc&lt;<span class="keywordtype">void</span>*&gt;(size);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">return</span> getMemPool&lt;CPUMemSpace&gt;().alloc&lt;<span class="keywordtype">void</span>*&gt;(size);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="comment">// this shouldnt be reached</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> getMemPool&lt;CPUMemSpace&gt;().alloc&lt;<span class="keywordtype">void</span>*&gt;(size);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html">   70</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1MempoolAllocator.html">MempoolAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>{</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#ab5b8783a3d4d8ea61ddd527f0806edaf">   76</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1MempoolAllocator.html#ab5b8783a3d4d8ea61ddd527f0806edaf">GPUMemSpace</a> = Kokkos::DefaultExecutionSpace::memory_space;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">   77</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">CPUMemSpace</a> = Kokkos::HostSpace;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">   79</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">alloc</a>(<span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> getMemPool&lt;GPUMemSpace&gt;().alloc(size);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">return</span> getMemPool&lt;CPUMemSpace&gt;().alloc(size);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">// this shouldnt be reached</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> getMemPool&lt;CPUMemSpace&gt;().alloc(size);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
 </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">   87</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <a class="code hl_define" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(<span class="stringliteral">&quot;Not implemented&quot;</span>);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;GPUMemSpace&gt;(ptr, size);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">   94</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_define" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(<span class="stringliteral">&quot;Not implemented&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;GPUMemSpace&gt;(ptr, size);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
 </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">   93</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            getMemPool&lt;GPUMemSpace&gt;().free&lt;<span class="keywordtype">void</span>&gt;(ptr);</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            getMemPool&lt;CPUMemSpace&gt;().free&lt;<span class="keywordtype">void</span>&gt;(ptr);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        }</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">  100</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            getMemPool&lt;GPUMemSpace&gt;().free&lt;<span class="keywordtype">void</span>&gt;(ptr);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            getMemPool&lt;CPUMemSpace&gt;().free&lt;<span class="keywordtype">void</span>&gt;(ptr);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
 </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">  105</a></span>    <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">~MempoolAllocator</a>()<span class="keyword"> override </span>{}</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> MemSpace&gt;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classNeoN_1_1Mempool.html">Mempool&lt;MemSpace&gt;</a>&amp; getMemPool()</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    {</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">auto</span>&amp; mempool = <a class="code hl_class" href="classNeoN_1_1Mempool.html">Mempool&lt;MemSpace&gt;::template</a> instance&lt;MemSpace&gt;();</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (!mempool.initialized())</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <a class="code hl_define" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(<span class="stringliteral">&quot;trying to access uninitialized mempool&quot;</span>);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordflow">return</span> mempool;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">  112</a></span>    <a class="code hl_function" href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">~MempoolAllocator</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> MemSpace&gt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classNeoN_1_1Mempool.html">Mempool&lt;MemSpace&gt;</a>&amp; getMemPool()</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">auto</span>&amp; mempool = <a class="code hl_class" href="classNeoN_1_1Mempool.html">Mempool&lt;MemSpace&gt;::template</a> instance&lt;MemSpace&gt;();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (!mempool.initialized())</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <a class="code hl_define" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(<span class="stringliteral">&quot;trying to access uninitialized mempool&quot;</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">return</span> mempool;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>};</div>
 </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="foldopen" id="foldopen00121" data-start="{" data-end="};">
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html">  121</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1DefaultAllocator.html">DefaultAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>{</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#a4ded0a2b216f2202ee14a0f7653d04a1">  126</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1DefaultAllocator.html#a4ded0a2b216f2202ee14a0f7653d04a1">GPUMemSpace</a> = <a class="code hl_typedef" href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">GPUMemorySpaceMapping::MemorySpace</a>;</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">  127</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">CPUMemSpace</a> = Kokkos::HostSpace;</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">  129</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">alloc</a>(<span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        }</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        {</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;CPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        }</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="comment">// this shouldnt be reached</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
-</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">  143</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="comment">// return static_cast&lt;T*&gt;(Kokkos::kokkos_realloc&lt;exec&gt;(ptr, newSize * sizeof(T)));</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        {</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;GPUMemSpace&gt;(ptr, size);</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        }</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        {</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;CPUMemSpace&gt;(ptr, size);</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="};">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html">  128</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1UmpireAllocator.html">UmpireAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>{</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#ae0fa2ecdd84b34a3d8a58b41f2b80223">  134</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1UmpireAllocator.html#ae0fa2ecdd84b34a3d8a58b41f2b80223">GPUMemSpace</a> = Kokkos::DefaultExecutionSpace::memory_space;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a42637d552e9a5b95d2526a07b6930056">  135</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1UmpireAllocator.html#a42637d552e9a5b95d2526a07b6930056">CPUMemSpace</a> = Kokkos::HostSpace;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">  137</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">alloc</a>(<span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">auto</span>&amp; rm = umpire::ResourceManager::getInstance();</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            <span class="keyword">auto</span> allocator = rm.getAllocator(<span class="stringliteral">&quot;DEVICE&quot;</span>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="keywordflow">return</span> allocator.allocate(size);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="comment">// return pooled_allocator.allocate(size);</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <span class="keyword">auto</span> allocator = rm.getAllocator(<span class="stringliteral">&quot;HOST&quot;</span>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keywordflow">return</span> allocator.allocate(size);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="comment">// return pooled_allocator.allocate(size);</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="comment">// this shouldnt be reached</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="comment">// return getMemPool&lt;CPUMemSpace&gt;().alloc(size);</span></div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    }</div>
 </div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
 <div class="foldopen" id="foldopen00158" data-start="{" data-end="}">
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">  158</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">  158</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        {</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            Kokkos::kokkos_free&lt;GPUMemSpace&gt;(ptr);</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        }</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        {</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            Kokkos::kokkos_free&lt;CPUMemSpace&gt;(ptr);</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        }</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_define" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(<span class="stringliteral">&quot;Not implemented&quot;</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;GPUMemSpace&gt;(ptr, size);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
 </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">  170</a></span>    <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">~DefaultAllocator</a>()<span class="keyword"> override </span>{}</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>};</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="}">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">  164</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keyword">auto</span>&amp; rm = umpire::ResourceManager::getInstance();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keyword">auto</span>&amp; rm = umpire::ResourceManager::getInstance();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            <span class="keyword">auto</span> allocator = rm.getAllocator(<span class="stringliteral">&quot;DEVICE&quot;</span>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            allocator.deallocate(ptr);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="comment">// getMemPool&lt;CPUMemSpace&gt;().free&lt;void&gt;(ptr);</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
 </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
-<div class="foldopen" id="foldopen00174" data-start="{" data-end="};">
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html">  174</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1AllocatorContext.html">AllocatorContext</a></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>{</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::unique_ptr&lt;AllocatorStrategy&gt; strategy {};</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="foldopen" id="foldopen00181" data-start="{" data-end="}">
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">  181</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">setStrategy</a>(std::unique_ptr&lt;AllocatorStrategy&gt; strategy_)</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        strategy = std::move(strategy_);</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">  181</a></span>    <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">~UmpireAllocator</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>};</div>
 </div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00188" data-start="{" data-end="}">
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">  188</a></span>    T* <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">alloc</a>(<span class="keywordtype">size_t</span> elements)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">if</span> (strategy)</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        {</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(strategy-&gt;alloc(<span class="keyword">sizeof</span>(T) * elements));</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        }</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="foldopen" id="foldopen00187" data-start="{" data-end="};">
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html">  187</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1DefaultAllocator.html">DefaultAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>{</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ad268d37a096228a6fd012bdb7047f8f5">  192</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1DefaultAllocator.html#ad268d37a096228a6fd012bdb7047f8f5">GPUMemSpace</a> = Kokkos::DefaultExecutionSpace::memory_space;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">  193</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">CPUMemSpace</a> = Kokkos::HostSpace;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">  195</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">alloc</a>(<span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        }</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;CPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// this shouldnt be reached</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
 </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00198" data-start="{" data-end="}">
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">  198</a></span>    T* <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> elements)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">if</span> (strategy)</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        {</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(strategy-&gt;realloc(ptr, elements));</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="foldopen" id="foldopen00209" data-start="{" data-end="}">
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">  209</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="comment">// return static_cast&lt;T*&gt;(Kokkos::kokkos_realloc&lt;exec&gt;(ptr, newSize * sizeof(T)));</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;GPUMemSpace&gt;(ptr, size);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">return</span> Kokkos::kokkos_realloc&lt;CPUMemSpace&gt;(ptr, size);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="comment">// this shouldnt be reached</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keywordflow">return</span> Kokkos::kokkos_malloc&lt;GPUMemSpace&gt;(<span class="stringliteral">&quot;Vector&quot;</span>, size);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    }</div>
 </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
-<div class="foldopen" id="foldopen00206" data-start="{" data-end="}">
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">  206</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">if</span> (strategy)</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        {</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keywordflow">return</span> strategy-&gt;free(ptr);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        }</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="foldopen" id="foldopen00224" data-start="{" data-end="}">
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">  224</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">MemorySpace::GPU</a>)</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            Kokkos::kokkos_free&lt;GPUMemSpace&gt;(ptr);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">memSpace_</a> == <a class="code hl_enumvalue" href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">MemorySpace::CPU</a>)</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            Kokkos::kokkos_free&lt;CPUMemSpace&gt;(ptr);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        }</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
 </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>};</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">  236</a></span>    <a class="code hl_function" href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">~DefaultAllocator</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>};</div>
 </div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>}</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="foldopen" id="foldopen00240" data-start="{" data-end="};">
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html">  240</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1AllocatorContext.html">AllocatorContext</a></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>{</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    std::unique_ptr&lt;AllocatorStrategy&gt; strategy {};</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="foldopen" id="foldopen00247" data-start="{" data-end="}">
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">  247</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">setStrategy</a>(std::unique_ptr&lt;AllocatorStrategy&gt; strategy_)</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        strategy = std::move(strategy_);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    }</div>
+</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">  254</a></span>    T* <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">alloc</a>(<span class="keywordtype">size_t</span> elements)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="keywordflow">if</span> (strategy)</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(strategy-&gt;alloc(<span class="keyword">sizeof</span>(T) * elements));</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    }</div>
+</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00264" data-start="{" data-end="}">
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">  264</a></span>    T* <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> elements)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordflow">if</span> (strategy)</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(strategy-&gt;realloc(ptr, elements));</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    }</div>
+</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="foldopen" id="foldopen00272" data-start="{" data-end="}">
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno"><a class="line" href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">  272</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">free</a>(<span class="keywordtype">void</span>* ptr)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">if</span> (strategy)</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordflow">return</span> strategy-&gt;free(ptr);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        }</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    }</div>
+</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>};</div>
+</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>}</div>
 </div>
 <div class="ttc" id="aallocator_8hpp_html"><div class="ttname"><a href="allocator_8hpp.html">allocator.hpp</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html">NeoN::AllocatorContext</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00174">allocator.hpp:175</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ab112185aaae434981e609a47419921f6"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">NeoN::AllocatorContext::free</a></div><div class="ttdeci">void free(void *ptr) const</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00206">allocator.hpp:206</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ab88bd12b088cc31e78684f5e9d03ce5a"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">NeoN::AllocatorContext::alloc</a></div><div class="ttdeci">T * alloc(size_t elements) const</div><div class="ttdoc">allocate a space for n elements of type T</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00188">allocator.hpp:188</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_aba3cb41fadcfe95fb7b8fc45cc05681a"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">NeoN::AllocatorContext::realloc</a></div><div class="ttdeci">T * realloc(void *ptr, size_t elements) const</div><div class="ttdoc">reallocate a space for n elements of type T</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00198">allocator.hpp:198</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ad2f32daf35c429b85bbd03cacd736b4e"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">NeoN::AllocatorContext::setStrategy</a></div><div class="ttdeci">void setStrategy(std::unique_ptr&lt; AllocatorStrategy &gt; strategy_)</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00181">allocator.hpp:181</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html">NeoN::AllocatorStrategy</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00023">allocator.hpp:24</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html">NeoN::AllocatorContext</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00240">allocator.hpp:241</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ab112185aaae434981e609a47419921f6"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ab112185aaae434981e609a47419921f6">NeoN::AllocatorContext::free</a></div><div class="ttdeci">void free(void *ptr) const</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00272">allocator.hpp:272</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ab88bd12b088cc31e78684f5e9d03ce5a"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ab88bd12b088cc31e78684f5e9d03ce5a">NeoN::AllocatorContext::alloc</a></div><div class="ttdeci">T * alloc(size_t elements) const</div><div class="ttdoc">allocate a space for n elements of type T</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00254">allocator.hpp:254</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_aba3cb41fadcfe95fb7b8fc45cc05681a"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#aba3cb41fadcfe95fb7b8fc45cc05681a">NeoN::AllocatorContext::realloc</a></div><div class="ttdeci">T * realloc(void *ptr, size_t elements) const</div><div class="ttdoc">reallocate a space for n elements of type T</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00264">allocator.hpp:264</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorContext_html_ad2f32daf35c429b85bbd03cacd736b4e"><div class="ttname"><a href="classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e">NeoN::AllocatorContext::setStrategy</a></div><div class="ttdeci">void setStrategy(std::unique_ptr&lt; AllocatorStrategy &gt; strategy_)</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00247">allocator.hpp:247</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html">NeoN::AllocatorStrategy</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00030">allocator.hpp:31</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a23a27cf665cc2fb65246238c3e765e2f"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a23a27cf665cc2fb65246238c3e765e2f">NeoN::AllocatorStrategy::alloc</a></div><div class="ttdeci">virtual void * alloc(size_t size)=0</div><div class="ttdoc">allocate a block of size bytes</div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a352505b0c16b94ff5e70e6bae2c0d588"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">NeoN::AllocatorStrategy::setMemSpace</a></div><div class="ttdeci">void setMemSpace(MemorySpace memSpace)</div><div class="ttdoc">set tag controlling where allocation happens</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00033">allocator.hpp:33</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a3905c8c5f49fca35e0dcce51ba78e634"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">NeoN::AllocatorStrategy::memSpace_</a></div><div class="ttdeci">MemorySpace memSpace_</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00028">allocator.hpp:28</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a352505b0c16b94ff5e70e6bae2c0d588"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588">NeoN::AllocatorStrategy::setMemSpace</a></div><div class="ttdeci">void setMemSpace(MemorySpace memSpace)</div><div class="ttdoc">set tag controlling where allocation happens</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00040">allocator.hpp:40</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a3905c8c5f49fca35e0dcce51ba78e634"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a3905c8c5f49fca35e0dcce51ba78e634">NeoN::AllocatorStrategy::memSpace_</a></div><div class="ttdeci">MemorySpace memSpace_</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00035">allocator.hpp:35</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a7fd6091797b5f980d130c26dce8a7c3c"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a7fd6091797b5f980d130c26dce8a7c3c">NeoN::AllocatorStrategy::realloc</a></div><div class="ttdeci">virtual void * realloc(void *ptr, size_t size)=0</div><div class="ttdoc">reallocate a block of size bytes</div></div>
 <div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_a9e790e5347a62749bca6056c97f74d88"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#a9e790e5347a62749bca6056c97f74d88">NeoN::AllocatorStrategy::free</a></div><div class="ttdeci">virtual void free(void *ptr)=0</div><div class="ttdoc">free a block of size bytes</div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_ad5d883bae20050e38db1e462f1b64db2"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">NeoN::AllocatorStrategy::~AllocatorStrategy</a></div><div class="ttdeci">virtual ~AllocatorStrategy()</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00044">allocator.hpp:44</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html">NeoN::DefaultAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00121">allocator.hpp:122</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_a4ded0a2b216f2202ee14a0f7653d04a1"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#a4ded0a2b216f2202ee14a0f7653d04a1">NeoN::DefaultAllocator::GPUMemSpace</a></div><div class="ttdeci">GPUMemorySpaceMapping::MemorySpace GPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00126">allocator.hpp:126</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_a522d881577f73e5856785007fa894799"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">NeoN::DefaultAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00158">allocator.hpp:158</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_a57fdf27b6735af887f024380527fdf78"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">NeoN::DefaultAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00129">allocator.hpp:129</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ac79a8f1a951f84001c6ed0007fd61ad3"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">NeoN::DefaultAllocator::~DefaultAllocator</a></div><div class="ttdeci">~DefaultAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00170">allocator.hpp:170</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ada188697b3c6af0a7bae23d3a643dae0"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">NeoN::DefaultAllocator::CPUMemSpace</a></div><div class="ttdeci">Kokkos::HostSpace CPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00127">allocator.hpp:127</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ae09f29958a14ef50e59c5605fc216aa9"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">NeoN::DefaultAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00143">allocator.hpp:143</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html">NeoN::MempoolAllocator</a></div><div class="ttdoc">allocate and free memory via mempool</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00063">allocator.hpp:64</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_a0c3aca81f22994375a4080244fd07d67"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">NeoN::MempoolAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00087">allocator.hpp:87</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_a0e10975e786cfa8f55458de7f80d0b6a"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#a0e10975e786cfa8f55458de7f80d0b6a">NeoN::MempoolAllocator::GPUMemSpace</a></div><div class="ttdeci">GPUMemorySpaceMapping::MemorySpace GPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00069">allocator.hpp:69</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_a199974cbbcb7ab7ccc7364f9584c87c6"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">NeoN::MempoolAllocator::CPUMemSpace</a></div><div class="ttdeci">Kokkos::HostSpace CPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00070">allocator.hpp:70</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_abb97e7a61e7e739230d57ee31620021c"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">NeoN::MempoolAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00093">allocator.hpp:93</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_ac5487dd13fafeae450ab78caf17b00df"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">NeoN::MempoolAllocator::~MempoolAllocator</a></div><div class="ttdeci">~MempoolAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00105">allocator.hpp:105</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_afa4f8a0e361b84e62c7c6869d9d9c2b6"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">NeoN::MempoolAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00072">allocator.hpp:72</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html_ad5d883bae20050e38db1e462f1b64db2"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html#ad5d883bae20050e38db1e462f1b64db2">NeoN::AllocatorStrategy::~AllocatorStrategy</a></div><div class="ttdeci">virtual ~AllocatorStrategy()</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00051">allocator.hpp:51</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html">NeoN::DefaultAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00187">allocator.hpp:188</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_a522d881577f73e5856785007fa894799"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#a522d881577f73e5856785007fa894799">NeoN::DefaultAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00224">allocator.hpp:224</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_a57fdf27b6735af887f024380527fdf78"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#a57fdf27b6735af887f024380527fdf78">NeoN::DefaultAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00195">allocator.hpp:195</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ac79a8f1a951f84001c6ed0007fd61ad3"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ac79a8f1a951f84001c6ed0007fd61ad3">NeoN::DefaultAllocator::~DefaultAllocator</a></div><div class="ttdeci">~DefaultAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00236">allocator.hpp:236</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ad268d37a096228a6fd012bdb7047f8f5"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ad268d37a096228a6fd012bdb7047f8f5">NeoN::DefaultAllocator::GPUMemSpace</a></div><div class="ttdeci">Kokkos::DefaultExecutionSpace::memory_space GPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00192">allocator.hpp:192</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ada188697b3c6af0a7bae23d3a643dae0"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ada188697b3c6af0a7bae23d3a643dae0">NeoN::DefaultAllocator::CPUMemSpace</a></div><div class="ttdeci">Kokkos::HostSpace CPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00193">allocator.hpp:193</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1DefaultAllocator_html_ae09f29958a14ef50e59c5605fc216aa9"><div class="ttname"><a href="classNeoN_1_1DefaultAllocator.html#ae09f29958a14ef50e59c5605fc216aa9">NeoN::DefaultAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00209">allocator.hpp:209</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html">NeoN::MempoolAllocator</a></div><div class="ttdoc">allocate and free memory via mempool</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00070">allocator.hpp:71</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_a0c3aca81f22994375a4080244fd07d67"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#a0c3aca81f22994375a4080244fd07d67">NeoN::MempoolAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00094">allocator.hpp:94</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_a199974cbbcb7ab7ccc7364f9584c87c6"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#a199974cbbcb7ab7ccc7364f9584c87c6">NeoN::MempoolAllocator::CPUMemSpace</a></div><div class="ttdeci">Kokkos::HostSpace CPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00077">allocator.hpp:77</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_ab5b8783a3d4d8ea61ddd527f0806edaf"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#ab5b8783a3d4d8ea61ddd527f0806edaf">NeoN::MempoolAllocator::GPUMemSpace</a></div><div class="ttdeci">Kokkos::DefaultExecutionSpace::memory_space GPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00076">allocator.hpp:76</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_abb97e7a61e7e739230d57ee31620021c"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#abb97e7a61e7e739230d57ee31620021c">NeoN::MempoolAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00100">allocator.hpp:100</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_ac5487dd13fafeae450ab78caf17b00df"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#ac5487dd13fafeae450ab78caf17b00df">NeoN::MempoolAllocator::~MempoolAllocator</a></div><div class="ttdeci">~MempoolAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00112">allocator.hpp:112</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1MempoolAllocator_html_afa4f8a0e361b84e62c7c6869d9d9c2b6"><div class="ttname"><a href="classNeoN_1_1MempoolAllocator.html#afa4f8a0e361b84e62c7c6869d9d9c2b6">NeoN::MempoolAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00079">allocator.hpp:79</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Mempool_html"><div class="ttname"><a href="classNeoN_1_1Mempool.html">NeoN::Mempool</a></div><div class="ttdef"><b>Definition</b> <a href="mempool_8hpp_source.html#l00016">mempool.hpp:17</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html">NeoN::UmpireAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00128">allocator.hpp:129</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a06db2d22c51dd1573d37eb44ea0285ba"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">NeoN::UmpireAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00137">allocator.hpp:137</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a091bb0b8aa44549078c53f853604bb39"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">NeoN::UmpireAllocator::~UmpireAllocator</a></div><div class="ttdeci">~UmpireAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00181">allocator.hpp:181</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a42637d552e9a5b95d2526a07b6930056"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a42637d552e9a5b95d2526a07b6930056">NeoN::UmpireAllocator::CPUMemSpace</a></div><div class="ttdeci">Kokkos::HostSpace CPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00135">allocator.hpp:135</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a6d23931dc799c3a05a272878101c3039"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">NeoN::UmpireAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00164">allocator.hpp:164</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_ae0fa2ecdd84b34a3d8a58b41f2b80223"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#ae0fa2ecdd84b34a3d8a58b41f2b80223">NeoN::UmpireAllocator::GPUMemSpace</a></div><div class="ttdeci">Kokkos::DefaultExecutionSpace::memory_space GPUMemSpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00134">allocator.hpp:134</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_aeb70f22157d079457e43419895e1a728"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">NeoN::UmpireAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00158">allocator.hpp:158</a></div></div>
 <div class="ttc" id="aerror_8hpp_html"><div class="ttname"><a href="error_8hpp.html">error.hpp</a></div></div>
 <div class="ttc" id="aerror_8hpp_html_a8b8fc4329e5e6dfc3731ca28605a8a49"><div class="ttname"><a href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a></div><div class="ttdeci">#define NF_ERROR_EXIT(message)</div><div class="ttdoc">Macro for printing an error message and aborting the program.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00110">error.hpp:110</a></div></div>
 <div class="ttc" id="amempool_8hpp_html"><div class="ttname"><a href="mempool_8hpp.html">mempool.hpp</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00012">allocator.hpp:13</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">NeoN::MemorySpace</a></div><div class="ttdeci">MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00016">allocator.hpp:17</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00019">allocator.hpp:20</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5">NeoN::MemorySpace</a></div><div class="ttdeci">MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00023">allocator.hpp:24</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d">NeoN::MemorySpace::CPU</a></div><div class="ttdeci">@ CPU</div></div>
 <div class="ttc" id="anamespaceNeoN_html_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32"><div class="ttname"><a href="namespaceNeoN.html#aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32">NeoN::MemorySpace::GPU</a></div><div class="ttdeci">@ GPU</div></div>
-<div class="ttc" id="astructNeoN_1_1GPUMemorySpaceMapping_html"><div class="ttname"><a href="structNeoN_1_1GPUMemorySpaceMapping.html">NeoN::GPUMemorySpaceMapping</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00047">allocator.hpp:48</a></div></div>
-<div class="ttc" id="astructNeoN_1_1GPUMemorySpaceMapping_html_a948c7500a66178481c2eb51e86446e2d"><div class="ttname"><a href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">NeoN::GPUMemorySpaceMapping::MemorySpace</a></div><div class="ttdeci">Kokkos::HostSpace MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00056">allocator.hpp:56</a></div></div>
+<div class="ttc" id="astructNeoN_1_1GPUMemorySpaceMapping_html"><div class="ttname"><a href="structNeoN_1_1GPUMemorySpaceMapping.html">NeoN::GPUMemorySpaceMapping</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00054">allocator.hpp:55</a></div></div>
+<div class="ttc" id="astructNeoN_1_1GPUMemorySpaceMapping_html_a948c7500a66178481c2eb51e86446e2d"><div class="ttname"><a href="structNeoN_1_1GPUMemorySpaceMapping.html#a948c7500a66178481c2eb51e86446e2d">NeoN::GPUMemorySpaceMapping::MemorySpace</a></div><div class="ttdeci">Kokkos::HostSpace MemorySpace</div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00063">allocator.hpp:63</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

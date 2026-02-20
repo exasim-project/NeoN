@@ -29,6 +29,7 @@ var searchData=
   ['_7esparsitypattern_26',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a854bd59fe7eef6d6b7f70349889008ff',1,'NeoN::la::SparsityPattern']]],
   ['_7esurfaceinterpolationfactory_27',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
   ['_7etimeintegratorbase_28',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['_7evector_29',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
-  ['_7evolumeboundaryfactory_30',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
+  ['_7eumpireallocator_29',['~UmpireAllocator',['../classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39',1,'NeoN::UmpireAllocator']]],
+  ['_7evector_30',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
+  ['_7evolumeboundaryfactory_31',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
 ];
