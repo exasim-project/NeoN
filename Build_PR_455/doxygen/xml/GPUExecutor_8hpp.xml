@@ -3,10 +3,26 @@
   <compounddef id="GPUExecutor_8hpp" kind="file" language="C++">
     <compoundname>GPUExecutor.hpp</compoundname>
     <includes refid="logging_8hpp" local="yes">NeoN/core/logging.hpp</includes>
-    <includes local="yes">NeoN/core/allocator.hpp</includes>
+    <includes refid="allocator_8hpp" local="yes">NeoN/core/memory/allocator.hpp</includes>
     <includes local="no">Kokkos_Core.hpp</includes>
     <includedby refid="executor_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp</includedby>
     <incdepgraph>
+      <node id="11">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp</label>
         <link refid="GPUExecutor_8hpp"/>
@@ -16,6 +32,10 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+      </node>
+      <node id="16">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
       </node>
       <node id="2">
         <label>NeoN/core/logging.hpp</label>
@@ -33,23 +53,40 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="9">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
       <node id="10">
         <label>Kokkos_Core.hpp</label>
-      </node>
-      <node id="9">
-        <label>NeoN/core/allocator.hpp</label>
       </node>
       <node id="3">
         <label>chrono</label>
       </node>
+      <node id="12">
+        <label>cstdlib</label>
+      </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
       <node id="5">
         <label>format</label>
+      </node>
+      <node id="14">
+        <label>iostream</label>
       </node>
       <node id="6">
         <label>memory</label>
       </node>
       <node id="4">
         <label>source_location</label>
+      </node>
+      <node id="15">
+        <label>sstream</label>
       </node>
       <node id="7">
         <label>string</label>
@@ -866,7 +903,7 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="logging_8hpp" kindref="compound">NeoN/core/logging.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;NeoN/core/allocator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="allocator_8hpp" kindref="compound">NeoN/core/memory/allocator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
@@ -907,20 +944,22 @@
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
 <codeline lineno="53" refid="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" kindref="member">free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{<sp/>allocContext_-&gt;free(<ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>);<sp/>}</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="63" refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">)<sp/><ref refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" kindref="member">createKokkosView</ref>(ValueType*<sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::View&lt;ValueType*,<sp/>Kokkos::DefaultExecutionSpace,<sp/>Kokkos::MemoryUnmanaged&gt;(</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>,<sp/>size</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="70" refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" kindref="member">name</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;GPUExecutor&quot;</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="55" refid="classNeoN_1_1GPUExecutor_1a96fc9e687c8ce3a43536cfeedd0feaec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref><sp/><ref refid="classNeoN_1_1GPUExecutor_1a96fc9e687c8ce3a43536cfeedd0feaec" kindref="member">memorySpace</ref>()<sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">const</ref><sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">noexcept</ref><sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32" kindref="member">MemorySpace::GPU</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="65" refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">)<sp/><ref refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" kindref="member">createKokkosView</ref>(ValueType*<sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::View&lt;ValueType*,<sp/>Kokkos::DefaultExecutionSpace,<sp/>Kokkos::MemoryUnmanaged&gt;(</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">ptr</ref>,<sp/>size</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72" refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kindref="member">exec</ref><sp/><ref refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" kindref="member">underlyingExec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kindref="member">exec</ref><sp/>{};<sp/>}</highlight></codeline>
-<codeline lineno="73"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" kindref="member">name</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;GPUExecutor&quot;</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kindref="member">exec</ref><sp/><ref refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" kindref="member">underlyingExec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kindref="member">exec</ref><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp"/>
   </compounddef>

@@ -3,8 +3,9 @@
   <compounddef id="classNeoN_1_1AllocatorStrategy" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::AllocatorStrategy</compoundname>
     <derivedcompoundref refid="classNeoN_1_1DefaultAllocator" prot="public" virt="non-virtual">NeoN::DefaultAllocator</derivedcompoundref>
-    <derivedcompoundref refid="classNeoN_1_1MempoolAllocator" prot="public" virt="non-virtual">NeoN::MempoolAllocator</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1KokkosMempoolAllocactor" prot="public" virt="non-virtual">NeoN::KokkosMempoolAllocactor</derivedcompoundref>
     <derivedcompoundref refid="classNeoN_1_1UmpireAllocator" prot="public" virt="non-virtual">NeoN::UmpireAllocator</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1UmpirePoolAllocator" prot="public" virt="non-virtual">NeoN::UmpirePoolAllocator</derivedcompoundref>
     <includes refid="allocator_8hpp" local="no">allocator.hpp</includes>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classNeoN_1_1AllocatorStrategy_1a3905c8c5f49fca35e0dcce51ba78e634" prot="protected" static="no" mutable="no">
@@ -19,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="33" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="33" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="28" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="28" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -40,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="38" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="38" bodyend="38"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="33" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="33" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void *</type>
@@ -48,9 +49,10 @@
         <argsstring>(size_t size)=0</argsstring>
         <name>alloc</name>
         <qualifiedname>NeoN::AllocatorStrategy::alloc</qualifiedname>
-        <reimplementedby refid="classNeoN_1_1MempoolAllocator_1afa4f8a0e361b84e62c7c6869d9d9c2b6">alloc</reimplementedby>
-        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a06db2d22c51dd1573d37eb44ea0285ba">alloc</reimplementedby>
         <reimplementedby refid="classNeoN_1_1DefaultAllocator_1a57fdf27b6735af887f024380527fdf78">alloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1KokkosMempoolAllocactor_1a41281aaa093f4911d90643ddf35b765d">alloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a06db2d22c51dd1573d37eb44ea0285ba">alloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1abf8f730115fe03ebccc11fe32268f822">alloc</reimplementedby>
         <param>
           <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
           <declname>size</declname>
@@ -62,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="41" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="36" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a7fd6091797b5f980d130c26dce8a7c3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
@@ -70,9 +72,10 @@
         <argsstring>(void *ptr, size_t size)=0</argsstring>
         <name>realloc</name>
         <qualifiedname>NeoN::AllocatorStrategy::realloc</qualifiedname>
-        <reimplementedby refid="classNeoN_1_1MempoolAllocator_1a0c3aca81f22994375a4080244fd07d67">realloc</reimplementedby>
-        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1aeb70f22157d079457e43419895e1a728">realloc</reimplementedby>
         <reimplementedby refid="classNeoN_1_1DefaultAllocator_1ae09f29958a14ef50e59c5605fc216aa9">realloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1KokkosMempoolAllocactor_1a471bfb34b1f5f76b2529dce3e1bf7e10">realloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1aeb70f22157d079457e43419895e1a728">realloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1aa4b57ea2d673af3080020c1938194c5b">realloc</reimplementedby>
         <param>
           <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
           <declname>ptr</declname>
@@ -88,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="44" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="39" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref></type>
@@ -96,9 +99,10 @@
         <argsstring>(void *ptr)=0</argsstring>
         <name>free</name>
         <qualifiedname>NeoN::AllocatorStrategy::free</qualifiedname>
-        <reimplementedby refid="classNeoN_1_1MempoolAllocator_1abb97e7a61e7e739230d57ee31620021c">free</reimplementedby>
-        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a6d23931dc799c3a05a272878101c3039">free</reimplementedby>
         <reimplementedby refid="classNeoN_1_1DefaultAllocator_1a522d881577f73e5856785007fa894799">free</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1KokkosMempoolAllocactor_1ab869d9ceda4eda38495b5d65e406b702">free</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a6d23931dc799c3a05a272878101c3039">free</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1a9a2063c06aaeedf7a2f66f1d3d560e3c">free</reimplementedby>
         <param>
           <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
           <declname>ptr</declname>
@@ -110,7 +114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="47" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="42" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1ad5d883bae20050e38db1e462f1b64db2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -124,7 +128,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="49" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="49" bodyend="49"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="44" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="44" bodyend="44"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -143,8 +147,8 @@
         </childnode>
       </node>
       <node id="3">
-        <label>NeoN::MempoolAllocator</label>
-        <link refid="classNeoN_1_1MempoolAllocator"/>
+        <label>NeoN::KokkosMempoolAllocactor</label>
+        <link refid="classNeoN_1_1KokkosMempoolAllocactor"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
@@ -154,8 +158,14 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="5">
+        <label>NeoN::UmpirePoolAllocator</label>
+        <link refid="classNeoN_1_1UmpirePoolAllocator"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
     </inheritancegraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="28" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="29" bodyend="50"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="24" bodyend="45"/>
     <listofallmembers>
       <member refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" prot="public" virt="pure-virtual"><scope>NeoN::AllocatorStrategy</scope><name>alloc</name></member>
       <member refid="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88" prot="public" virt="pure-virtual"><scope>NeoN::AllocatorStrategy</scope><name>free</name></member>

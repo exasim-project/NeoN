@@ -1,0 +1,106 @@
+\doxysection{umpire.\+hpp}
+\hypertarget{umpire_8hpp_source}{}\label{umpire_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/umpire.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/umpire.hpp}}
+\mbox{\hyperlink{umpire_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{allocator_8hpp}{NeoN/core/memory/allocator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}umpire/strategy/QuickPool.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}umpire/ResourceManager.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00015}\mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler}{00015}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler}{UmpireMempoolHandler}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00017}00017\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00019}00019\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ hasPool(\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ memSpace)}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00020}00020\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00021}00021\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ rm\ =\ umpire::ResourceManager::getInstance();}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00022}00022\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ names\ =\ rm.getAllocatorNames();}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ =\ (memSpace\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{MemorySpace::GPU}})\ ?\ \textcolor{stringliteral}{"{}DEVICE\_POOL"{}}\ :\ \textcolor{stringliteral}{"{}HOST\_POOL"{}};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ n\ :\ names)}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00027}00027\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \_\_FILE\_\_\ <<\ \textcolor{stringliteral}{"{}\ name\ "{}}\ <<\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ <<\ \textcolor{stringliteral}{"{}\ n\ "{}}\ <<\ n\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00028}00028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ ==\ n)}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00034}00034\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00036}00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler_a106e827017d6dc72ab6b90d209e42ef6}{00038}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler_a106e827017d6dc72ab6b90d209e42ef6}{setupUmpirePool}}(\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ memSpace,\ \textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00039}00039\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ rm\ =\ umpire::ResourceManager::getInstance();}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ nothing\ if\ pool\ already\ exists}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasPool(memSpace))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (memSpace\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{MemorySpace::GPU}})}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ allocator\ =\ rm.getAllocator(\textcolor{stringliteral}{"{}DEVICE"{}});}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ pooledAllocator\ =}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm.makeAllocator<umpire::strategy::QuickPool>(\textcolor{stringliteral}{"{}DEVICE\_POOL"{}},\ allocator,\ size);}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (memSpace\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{MemorySpace::CPU}})}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ allocator\ =\ rm.getAllocator(\textcolor{stringliteral}{"{}HOST"{}});}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ pooledAllocator\ =}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm.makeAllocator<umpire::strategy::QuickPool>(\textcolor{stringliteral}{"{}HOST\_POOL"{}},\ allocator,\ size);}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00057}00057\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler_a31a60c3ec7dd14ec226baa2575bf8b1e}{00059}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classNeoN_1_1UmpireMempoolHandler_a31a60c3ec7dd14ec226baa2575bf8b1e}{getUmpirePool}}(\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ memSpace)}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ rm\ =\ umpire::ResourceManager::getInstance();}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (memSpace\ ==\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{MemorySpace::GPU}})}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rm.getAllocator(\textcolor{stringliteral}{"{}DEVICE\_POOL"{}});}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rm.getAllocator(\textcolor{stringliteral}{"{}HOST\_POOL"{}});}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00067}00067\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00068}00068\ \};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1UmpireAllocator}{00071}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1UmpireAllocator}{UmpireAllocator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{AllocatorStrategy}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00072}00072\ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00074}00074\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a06db2d22c51dd1573d37eb44ea0285ba}{00076}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a06db2d22c51dd1573d37eb44ea0285ba}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1UmpireAllocator_aeb70f22157d079457e43419895e1a728}{00078}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_aeb70f22157d079457e43419895e1a728}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a06db2d22c51dd1573d37eb44ea0285ba}{ptr}},\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a6d23931dc799c3a05a272878101c3039}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a6d23931dc799c3a05a272878101c3039}{free}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a06db2d22c51dd1573d37eb44ea0285ba}{ptr}})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a091bb0b8aa44549078c53f853604bb39}{00082}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1UmpireAllocator_a091bb0b8aa44549078c53f853604bb39}{\string~UmpireAllocator}}()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00083}00083\ \};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00086}\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator}{00086}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator}{UmpirePoolAllocator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{AllocatorStrategy}}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00087}00087\ \{}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00089}00089\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00091}\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_abf8f730115fe03ebccc11fe32268f822}{00091}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_abf8f730115fe03ebccc11fe32268f822}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_aa4b57ea2d673af3080020c1938194c5b}{00093}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_aa4b57ea2d673af3080020c1938194c5b}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_abf8f730115fe03ebccc11fe32268f822}{ptr}},\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_a9a2063c06aaeedf7a2f66f1d3d560e3c}{00095}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_a9a2063c06aaeedf7a2f66f1d3d560e3c}{free}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_abf8f730115fe03ebccc11fe32268f822}{ptr}})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_a3cc68bdd08c69055c4604e606fa13783}{00097}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator_a3cc68bdd08c69055c4604e606fa13783}{\string~UmpirePoolAllocator}}()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00098}00098\ \};}
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{umpire_8hpp_source_l00100}00100\ \}}
+
+\end{DoxyCode}

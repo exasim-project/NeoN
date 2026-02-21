@@ -9,7 +9,7 @@
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00006}00006\ }
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{logging_8hpp}{NeoN/core/logging.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}NeoN/core/allocator.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{allocator_8hpp}{NeoN/core/memory/allocator.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00009}00009\ }
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00011}00011\ }
@@ -44,22 +44,24 @@
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00046}00046\ }
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e}{00047}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a6de2b283aa4c6c325548a0654063d08e}{free}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}})\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ allocContext\_-\/>free(\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}});\ \}}
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00048}00048\ }
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}{00057}}\ \ \ \ \ \textcolor{keyword}{decltype}(\textcolor{keyword}{auto})\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}{createKokkosView}}(ValueType*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{const}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00058}00058\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::View<ValueType*,\ Kokkos::HostSpace,\ Kokkos::MemoryUnmanaged>(\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ size);}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00060}00060\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}{00062}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{newSize}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00063}00063\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_realloc<exec>(\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{newSize}});}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00065}00065\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00066}00066\ }
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}{00067}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SerialExecutor"{}};\ \};}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00049}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_a539b9c5a363c51e8252347df76db7f11}{00049}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a539b9c5a363c51e8252347df76db7f11}{memorySpace}}()\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{const}}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{noexcept}}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{MemorySpace::CPU}};\ \}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}{00059}}\ \ \ \ \ \textcolor{keyword}{decltype}(\textcolor{keyword}{auto})\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_aa80fc6ac2a2a9afe4e016a193f6491c4}{createKokkosView}}(ValueType*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::View<ValueType*,\ Kokkos::HostSpace,\ Kokkos::MemoryUnmanaged>(\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ size);}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}{00064}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a1b87e2e488d9a0ed7a8d70cf11ff0b87}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{newSize}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00065}00065\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_realloc<exec>(\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{ptr}},\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ab84847cc5fa82cabb2c2a4fb104d278a}{newSize}});}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00067}00067\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{exec}}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba}{underlyingExec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{exec}}\ \{\};\ \}}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00070}00070\ \};}
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00072}00072\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}{00069}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_adc4d113ee22639ce051255008f20cb97}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SerialExecutor"{}};\ \};}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba}{00071}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{exec}}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_ae48dc86dfa9dea8457fe1d2a8b02e9ba}{underlyingExec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor_a618322de4c6d6abddd669e5eee72269f}{exec}}\ \{\};\ \}}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00072}00072\ \};}
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{serialExecutor_8hpp_source_l00074}00074\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

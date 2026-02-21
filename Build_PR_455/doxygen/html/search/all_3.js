@@ -25,7 +25,7 @@ var searchData=
   ['demangle_2ehpp_22',['demangle.hpp',['../demangle_8hpp.html',1,'']]],
   ['derivedclass_23',['derivedClass',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a5ab28273ae4c40a351d732aa503125f2',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['derivedclassdocumentation_24',['DerivedClassDocumentation',['../classNeoN_1_1DerivedClassDocumentation.html',1,'NeoN']]],
-  ['destroy_25',['destroy',['../classNeoN_1_1Mempool.html#ac3fe4d44c505a8bd117d496c126113c9',1,'NeoN::Mempool']]],
+  ['destroy_25',['destroy',['../classNeoN_1_1KokkosMempoolHandler.html#a5bbb6e194c98ef597e59431294f4a6ba',1,'NeoN::KokkosMempoolHandler']]],
   ['diag_26',['diag',['../classNeoN_1_1la_1_1Matrix.html#a979c3429572d3ca0afad7dc8acf90475',1,'NeoN::la::Matrix']]],
   ['diagidx_27',['diagIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a624aa26b24cb7c4f0450afeecf0d2944',1,'NeoN::la::FaceToMatrixAddress']]],
   ['diagoffset_28',['diagoffset',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a8e47d177565285c1eba0a43eca001e8a',1,'NeoN::la::FaceToMatrixAddress::diagOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a72862f12409e122f38b1dd0e703bdd55',1,'NeoN::la::FaceToMatrixAddress::diagOffset()']]],
