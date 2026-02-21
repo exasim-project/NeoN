@@ -1,5 +1,5 @@
 \doxysection{mempool.\+hpp}
-\hypertarget{mempool_8hpp_source}{}\label{mempool_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/mempool.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/mempool.hpp}}
+\hypertarget{mempool_8hpp_source}{}\label{mempool_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/mempool.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/mempool.hpp}}
 \mbox{\hyperlink{mempool_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
@@ -39,7 +39,7 @@
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00035}00035\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ptr\_)}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ ptr\_\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{classNeoN_1_1Mempool}{Mempool<MemorySpaceIn>}}();}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ ptr\_\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{Mempool<MemorySpaceIn>}}();}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ inconsistent\ mem\ requested}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *ptr\_;}
@@ -56,9 +56,9 @@
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00052}00052\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00053}00053\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ existing\ interface\ goes\ here}}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{00055}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{getSize}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_;\ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{00055}}\ \ \ \ \ [[\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{nodiscard}}]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a0ea905499fccc71b649c42a2c215e56d}{getSize}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_;\ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00056}00056\ }
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{00057}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{initialized}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_\ !=\ 0;\ \}}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{00057}}\ \ \ \ \ [[\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{nodiscard}}]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a3754305c92f41cc35e572ce85fe34763}{initialized}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_\ !=\ 0;\ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00058}00058\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1Mempool_ae33a329e20e90e487b0a3fe13c8cac7a}{00059}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_ae33a329e20e90e487b0a3fe13c8cac7a}{setSize}}(\textcolor{keywordtype}{size\_t}\ size)}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00060}00060\ \ \ \ \ \{}
@@ -66,8 +66,8 @@
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00062}00062\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ >\ 0)}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ m\ \{\};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_\ =\ std::make\_shared<Kokkos::MemoryPool<MemorySpace>>(m,\ size);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{m}}\ \{\};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_\ =\ std::make\_shared<Kokkos::MemoryPool<MemorySpace>>(\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{m}},\ size);}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00068}00068\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00069}00069\ }
@@ -75,26 +75,26 @@
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00071}00071\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!mempool\_)}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \_\_FILE\_\_\ <<\ \textcolor{stringliteral}{"{}:"{}}\ <<\ \_\_LINE\_\_\ <<\ \textcolor{stringliteral}{"{}error\(\backslash\)n"{}};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{\_\_FILE\_\_}}\ <<\ \textcolor{stringliteral}{"{}:"{}}\ <<\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{\_\_LINE\_\_}}\ <<\ \textcolor{stringliteral}{"{}error\(\backslash\)n"{}};}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ mempool\_-\/>print\_state(std::cout);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ ptr\ =\ mempool\_-\/>allocate(size);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ptr;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{ptr}}\ =\ mempool\_-\/>allocate(size);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{ptr}};}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00079}00079\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00080}00080\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{00082}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{free}}(T*\ ptr)}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{00082}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Mempool_aeb693f437a5e676b5c3c067e5bab3ca3}{free}}(\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{T}}*\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{ptr}})}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00083}00083\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ mempool\_-\/>deallocate(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(ptr),\ 0);}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ mempool\_-\/>deallocate(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{ptr}}),\ 0);}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00085}00085\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00086}00086\ }
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00087}\mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{00087}}\ \ \ \ \ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ \mbox{\hyperlink{classNeoN_1_1Mempool_a7d3458464593c8254b26f7205797967d}{getStatistics}}()}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00088}00088\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mempool\_)}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ stats\ \{\};}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_-\/>get\_usage\_statistics(stats);}
-\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stats;}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Kokkos::MemoryPool<MemorySpace>::usage\_statistics\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{stats}}\ \{\};}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ mempool\_-\/>get\_usage\_statistics(\mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{stats}});}
+\DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Mempool_a40f5e6cd7572220456d994be87fca73f}{stats}};}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00095}00095\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mempool_8hpp_source_l00096}00096\ \};}
