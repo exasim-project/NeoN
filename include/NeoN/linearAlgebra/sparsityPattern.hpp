@@ -20,6 +20,7 @@ namespace NeoN::la
 template<typename IndexType>
 struct SparsityView
 {
+    KOKKOS_INLINE_FUNCTION
     SparsityView(View<const IndexType> colIdxsView, View<const IndexType> rowOffsView)
         : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 

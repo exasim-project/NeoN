@@ -38,6 +38,8 @@ target_sources(
           "linearAlgebra/ginkgo.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/sparsityPattern.cpp"
+          "linearAlgebra/blockVector.cpp"
+          "linearAlgebra/blockMatrix.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
