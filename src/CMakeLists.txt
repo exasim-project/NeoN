@@ -40,6 +40,7 @@ target_sources(
           "linearAlgebra/sparsityPattern.cpp"
           "linearAlgebra/blockVector.cpp"
           "linearAlgebra/blockMatrix.cpp"
+          "linearAlgebra/blockSolve.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"

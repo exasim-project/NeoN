@@ -13,6 +13,7 @@ neon_unit_test(blockMatrix)
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
+  neon_unit_test(blockSolve)
 endif()
 
 if(NeoN_WITH_PETSC)
