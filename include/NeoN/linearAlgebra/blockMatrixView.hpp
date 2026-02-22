@@ -16,29 +16,28 @@ namespace NeoN::la
 
 /**
  * @struct BlockView
- * @brief Device-safe, mdspan-like view into a single CSR block.
+ * @brief Device-safe view into an nBlocks x nBlocks dense coupling matrix.
  *
- * Wraps a values slice and a shared sparsity pattern, providing 2D element
- * access via operator()(row, col) and direct offset access via operator[].
+ * Represents the coupling between field components at a single CSR position
+ * (cell pair). Stored in column-major order: operator()(i, j) accesses
+ * values[i + j * nBlocks].
  */
 struct BlockView
 {
-    View<scalar> values;
-    SparsityView<localIdx> sparsity;
+    View<scalar> values; ///< Column-major data, size = nBlocks * nBlocks
+    localIdx nBlocks;
 
     /**
-     * @brief 2D element access (mdspan-like).
-     * @param i Row index within this block.
-     * @param j Column index within this block.
-     * @return Reference to the scalar value at (i, j).
+     * @brief 2D access into the coupling matrix.
+     * @param i Row (field component row).
+     * @param j Column (field component column).
+     * @return Reference to the coupling value.
      */
     KOKKOS_INLINE_FUNCTION
-    scalar& operator()(localIdx i, localIdx j) const { return values[sparsity.entry(i, j)]; }
+    scalar& operator()(localIdx i, localIdx j) const { return values[i + j * nBlocks]; }
 
     /**
-     * @brief Direct offset access into the values array.
-     * @param offset The flat offset into the block's values.
-     * @return Reference to the scalar value.
+     * @brief Flat offset access.
      */
     KOKKOS_INLINE_FUNCTION
     scalar& operator[](localIdx offset) const { return values[offset]; }
@@ -46,81 +45,72 @@ struct BlockView
 
 /**
  * @struct BlockRowView
- * @brief Device-safe view into a single block row.
+ * @brief Device-safe view into selected rows of a coupling matrix.
  *
- * Returned by BlockMatrixView::row(I). An expression assembles into exactly
- * one BlockRowView. operator()(J) computes the BlockView for block (I, J)
- * on-the-fly from the flat values array.
+ * Returned by BlockMatrixView::rowView(k, startRow, endRow). Represents a
+ * rectangular nRows x nBlocks sub-matrix of the coupling matrix at CSR
+ * position k. The underlying column-major stride is nBlocks (the full
+ * coupling matrix height), so operator()(i, j) = values[i + j * nBlocks].
  */
 struct BlockRowView
 {
-    SparsityView<localIdx> sparsity;
-    View<scalar> allValues; ///< Full flat values array
-    localIdx rowIndex;      ///< Block row I
-    localIdx nBlocks;
-    localIdx nnz; ///< Non-zeros per block in the shared sparsity
+    View<scalar> values; ///< Subview starting at startRow within the coupling matrix
+    localIdx nBlocks;    ///< Number of columns (and column-major stride)
+    localIdx nRows;      ///< Number of selected rows (endRow - startRow)
 
     /**
-     * @brief Access block column J in this row as a BlockView.
+     * @brief 2D access into the rectangular sub-matrix.
+     * @param i Row index (0 .. nRows - 1).
+     * @param j Column index (0 .. nBlocks - 1).
+     * @return Reference to the coupling value.
      */
     KOKKOS_INLINE_FUNCTION
-    BlockView operator()(localIdx j) const
-    {
-        localIdx offset = (rowIndex * nBlocks + j) * nnz;
-        return BlockView {allValues.subview(offset, nnz), sparsity};
-    }
+    scalar& operator()(localIdx i, localIdx j) const { return values[i + j * nBlocks]; }
 };
 
 /**
  * @struct BlockMatrixView
  * @brief Device-safe view into the full block matrix structure.
  *
- * Provides (I, J) -> BlockView lookup, row extraction, and global entry access.
- * All nBlocks^2 blocks share a single sparsity pattern. Block (I, J) occupies
- * values slice [(I * nBlocks + J) * nnz, ... + nnz).
+ * Values are interleaved by CSR position: at each of the nnz non-zero
+ * positions, an nBlocks x nBlocks column-major coupling matrix is stored.
+ * operator()(k) returns the BlockView at CSR position k.
+ * rowView(k, startRow, endRow) returns a rectangular BlockRowView.
  */
 struct BlockMatrixView
 {
     SparsityView<localIdx> sparsity;
-    View<scalar> allValues; ///< Size = nBlocks^2 * nnz
+    View<scalar> allValues; ///< Size = nnz * nBlocks^2
     localIdx nBlocks;
-    localIdx nCells; ///< Number of cells (rows in each inner block)
-    localIdx nnz;    ///< Non-zeros per block
+    localIdx nCells; ///< Number of cells (rows in the sparsity pattern)
+    localIdx nnz;    ///< Total number of non-zeros in the sparsity pattern
 
     /**
-     * @brief Access block (I, J) as a BlockView (computed on-the-fly).
+     * @brief Access the coupling matrix at CSR position k.
+     * @param k Global CSR non-zero index.
+     * @return BlockView for the nBlocks x nBlocks coupling matrix.
      */
     KOKKOS_INLINE_FUNCTION
-    BlockView operator()(localIdx i, localIdx j) const
+    BlockView operator()(localIdx k) const
     {
-        localIdx offset = (i * nBlocks + j) * nnz;
-        return BlockView {allValues.subview(offset, nnz), sparsity};
+        localIdx nb2 = nBlocks * nBlocks;
+        return BlockView {allValues.subview(k * nb2, nb2), nBlocks};
     }
 
     /**
-     * @brief Extract block row I as a BlockRowView.
+     * @brief View into selected rows of the coupling matrix at CSR position k.
+     * @param k Global CSR non-zero index.
+     * @param startRow First row (inclusive).
+     * @param endRow Last row (exclusive).
+     * @return BlockRowView for the nRows x nBlocks rectangular sub-matrix.
      */
     KOKKOS_INLINE_FUNCTION
-    BlockRowView row(localIdx i) const
+    BlockRowView rowView(localIdx k, localIdx startRow, localIdx endRow) const
     {
-        return BlockRowView {sparsity, allValues, i, nBlocks, nnz};
-    }
-
-    /**
-     * @brief Global (row, col) access — routes to the correct block.
-     * @param row Global row index (0 .. nBlocks * nCells - 1).
-     * @param col Global column index (0 .. nBlocks * nCells - 1).
-     */
-    KOKKOS_INLINE_FUNCTION
-    scalar& entry(localIdx row, localIdx col) const
-    {
-        localIdx I = row / nCells;
-        localIdx J = col / nCells;
-        localIdx localRow = row - I * nCells;
-        localIdx localCol = col - J * nCells;
-        localIdx offset = (I * nBlocks + J) * nnz;
-        auto blockValues = allValues.subview(offset, nnz);
-        return blockValues[sparsity.entry(localRow, localCol)];
+        localIdx nb2 = nBlocks * nBlocks;
+        localIdx nRows = endRow - startRow;
+        localIdx viewSize = (nBlocks - 1) * nBlocks + nRows;
+        return BlockRowView {allValues.subview(k * nb2 + startRow, viewSize), nBlocks, nRows};
     }
 };
 

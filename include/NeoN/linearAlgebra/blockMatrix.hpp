@@ -9,7 +9,6 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/blockMatrixView.hpp"
-#include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 namespace NeoN::la
@@ -19,9 +18,9 @@ namespace NeoN::la
  * @class BlockMatrix
  * @brief A block-structured sparse matrix with shared sparsity across all blocks.
  *
- * Stores nBlocks^2 blocks in a single flat values array. All blocks share the same
- * mesh-derived sparsity pattern. Block (I, J) occupies values slice
- * [(I * nBlocks + J) * nnz, ... + nnz).
+ * Values are interleaved by CSR position: at each of the nnz non-zero positions,
+ * an nBlocks x nBlocks column-major coupling matrix is stored. Total values size
+ * is nnz * nBlocks^2.
  */
 class BlockMatrix
 {
@@ -66,13 +65,6 @@ public:
     /** @brief Access the flat values vector (const). */
     [[nodiscard]] const Vector<scalar>& values() const;
 
-    /**
-     * @brief Flatten all blocks into a single monolithic CSR matrix.
-     *
-     * Runs on the host (builds CSR arrays), then copies to the target executor.
-     */
-    [[nodiscard]] CSRMatrix<scalar, localIdx> monolithic() const;
-
     /** @brief Device-safe view (only on lvalues). */
     [[nodiscard]] BlockMatrixView view() &;
 
@@ -87,7 +79,7 @@ private:
     Executor exec_;
     localIdx nBlocks_;
     std::shared_ptr<SparsityPattern<localIdx>> sparsity_;
-    Vector<scalar> values_; ///< Size = nBlocks^2 * nnz
+    Vector<scalar> values_; ///< Size = nnz * nBlocks^2 (interleaved by CSR position)
 };
 
 } // namespace NeoN::la
