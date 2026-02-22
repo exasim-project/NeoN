@@ -14,7 +14,6 @@
     <innerclass refid="classNeoN_1_1CollectionMixin" prot="public">NeoN::CollectionMixin</innerclass>
     <innerclass refid="classNeoN_1_1CPUExecutor" prot="public">NeoN::CPUExecutor</innerclass>
     <innerclass refid="classNeoN_1_1Database" prot="public">NeoN::Database</innerclass>
-    <innerclass refid="classNeoN_1_1DefaultAllocator" prot="public">NeoN::DefaultAllocator</innerclass>
     <innerclass refid="classNeoN_1_1DerivedClassDocumentation" prot="public">NeoN::DerivedClassDocumentation</innerclass>
     <innerclass refid="classNeoN_1_1Dictionary" prot="public">NeoN::Dictionary</innerclass>
     <innerclass refid="classNeoN_1_1DimensionMismatch" prot="public">NeoN::DimensionMismatch</innerclass>
@@ -22,8 +21,7 @@
     <innerclass refid="classNeoN_1_1Error" prot="public">NeoN::Error</innerclass>
     <innerclass refid="classNeoN_1_1Field" prot="public">NeoN::Field</innerclass>
     <innerclass refid="classNeoN_1_1GPUExecutor" prot="public">NeoN::GPUExecutor</innerclass>
-    <innerclass refid="classNeoN_1_1KokkosMempoolAllocactor" prot="public">NeoN::KokkosMempoolAllocactor</innerclass>
-    <innerclass refid="classNeoN_1_1KokkosMempoolHandler" prot="public">NeoN::KokkosMempoolHandler</innerclass>
+    <innerclass refid="classNeoN_1_1KokkosAllocator" prot="public">NeoN::KokkosAllocator</innerclass>
     <innerclass refid="classNeoN_1_1NeoNException" prot="public">NeoN::NeoNException</innerclass>
     <innerclass refid="structNeoN_1_1Parameters" prot="public">NeoN::Parameters</innerclass>
     <innerclass refid="structNeoN_1_1RegisterDocumentation" prot="public">NeoN::RegisterDocumentation</innerclass>
@@ -72,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="16" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="17" bodyend="20"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="14" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="15" bodyend="18"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
@@ -124,6 +122,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/input.hpp" line="15" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/input.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceNeoN_1ad21f9c627e11e11f4e33dd1717971ce6" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">KokkosAllocator</ref></type>
+        <definition>using NeoN::DefaultAllocator = typedef KokkosAllocator</definition>
+        <argsstring></argsstring>
+        <name>DefaultAllocator</name>
+        <qualifiedname>NeoN::DefaultAllocator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="33" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" prot="public" static="no">
         <type>int32_t</type>
@@ -904,7 +916,7 @@
         <param>
           <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1AllocatorStrategy" kindref="compound">AllocatorStrategy</ref> &gt;</type>
           <declname>strategy</declname>
-          <defval>std::make_unique&lt; <ref refid="classNeoN_1_1DefaultAllocator" kindref="compound">DefaultAllocator</ref> &gt;()</defval>
+          <defval>std::make_unique&lt; <ref refid="namespaceNeoN_1ad21f9c627e11e11f4e33dd1717971ce6" kindref="member">DefaultAllocator</ref> &gt;()</defval>
         </param>
         <briefdescription>
         </briefdescription>

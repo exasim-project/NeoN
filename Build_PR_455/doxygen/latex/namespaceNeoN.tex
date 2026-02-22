@@ -42,8 +42,6 @@ class \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}
 \begin{DoxyCompactList}\small\item\em Executor for handling multicore CPU based parallelization. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Database}{Database}}
 \item 
-class \mbox{\hyperlink{classNeoN_1_1DefaultAllocator}{Default\+Allocator}}
-\item 
 class \mbox{\hyperlink{classNeoN_1_1DerivedClassDocumentation}{Derived\+Class\+Documentation}}
 \begin{DoxyCompactList}\small\item\em Class representing the documentation for a derived class. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}
@@ -58,9 +56,7 @@ class \mbox{\hyperlink{classNeoN_1_1Field}{Field}}
 \begin{DoxyCompactList}\small\item\em Represents the domain fields for a computational domain. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}}
 \begin{DoxyCompactList}\small\item\em Executor for GPU offloading. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1KokkosMempoolAllocactor}{Kokkos\+Mempool\+Allocactor}}
-\begin{DoxyCompactList}\small\item\em allocate and free memory via mempool \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1KokkosMempoolHandler}{Kokkos\+Mempool\+Handler}}
+class \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+NException}}
 \begin{DoxyCompactList}\small\item\em Custom exception class for \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
@@ -113,6 +109,8 @@ using \mbox{\hyperlink{namespaceNeoN_a957a55577aca9a487c3965676ad7dd12}{Document
 using \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} = std\+::variant$<$ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}, \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}, \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}} $>$
 \item 
 using \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} = std\+::variant$<$ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}, \mbox{\hyperlink{classNeoN_1_1TokenList}{Token\+List}} $>$
+\item 
+using \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}} = \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}
 \item 
 using \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} = int32\+\_\+t
 \item 
@@ -178,7 +176,7 @@ std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caa
 \item 
 void \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
 \item 
-\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{namespaceNeoN_a979e8785178e66d261937543c92278fb}{create\+Default\+Executor}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$ strategy=std\+::make\+\_\+unique$<$ \mbox{\hyperlink{classNeoN_1_1DefaultAllocator}{Default\+Allocator}} $>$())
+\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{namespaceNeoN_a979e8785178e66d261937543c92278fb}{create\+Default\+Executor}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$ strategy=std\+::make\+\_\+unique$<$ \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}} $>$())
 \item 
 std\+::string \mbox{\hyperlink{namespaceNeoN_a50baac41379fe63de57061ff0e371bc2}{executor\+Name}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
 \item 
@@ -304,6 +302,16 @@ constexpr \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scal
 
 
 \doxysubsection{Typedef Documentation}
+\Hypertarget{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}\label{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6} 
+\index{NeoN@{NeoN}!DefaultAllocator@{DefaultAllocator}}
+\index{DefaultAllocator@{DefaultAllocator}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{DefaultAllocator}{DefaultAllocator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Neo\+N\+::\+Default\+Allocator}} = typedef \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}}
+
+
+
+Definition at line \mbox{\hyperlink{kokkos_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{kokkos_8hpp_source}{kokkos.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_a957a55577aca9a487c3965676ad7dd12}\label{namespaceNeoN_a957a55577aca9a487c3965676ad7dd12} 
 \index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
 \index{DocumentValidator@{DocumentValidator}!NeoN@{NeoN}}
@@ -479,7 +487,7 @@ GPU&\\
 \end{DoxyEnumFields}
 
 
-Definition at line \mbox{\hyperlink{allocator_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{allocator_8hpp_source}{allocator.\+hpp}}.
+Definition at line \mbox{\hyperlink{allocator_8hpp_source_l00014}{14}} of file \mbox{\hyperlink{allocator_8hpp_source}{allocator.\+hpp}}.
 
 
 
@@ -523,7 +531,7 @@ A 1D mesh in 3D space in which each cell has a left and a right face. The 1D mes
 \index{NeoN@{NeoN}!createDefaultExecutor@{createDefaultExecutor}}
 \index{createDefaultExecutor@{createDefaultExecutor}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{createDefaultExecutor()}{createDefaultExecutor()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} Neo\+N\+::create\+Default\+Executor (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$}]{strategy = {\ttfamily std\+:\+:make\+\_\+unique$<$\mbox{\hyperlink{classNeoN_1_1DefaultAllocator}{Default\+Allocator}}$>$()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} Neo\+N\+::create\+Default\+Executor (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$}]{strategy = {\ttfamily std\+:\+:make\+\_\+unique$<$\mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}}$>$()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
