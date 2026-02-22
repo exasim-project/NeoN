@@ -6,6 +6,9 @@ import xmltodict
 import json
 import os
 
+from pathlib import Path
+import pandas as pd
+
 
 def parse_xml_dict(d):
     """takes the catch2 xml dict, performs clean-up and returns a
@@ -56,9 +59,37 @@ def parse_xml_dict(d):
             })
     return records
 
+def convert(root, fn):
+    xml_file = Path(root) / fn
+    try:
+        with open(xml_file, "r") as fh:
+            d = xmltodict.parse(fh.read())
+            res = parse_xml_dict(d)
+        with open(Path(root)/fn.replace("xml", "json"), "w") as outfile:
+            json.dump(res, outfile)
+    except Exception as e:
+        print(e)
+
+def display(root, fn):
+    fn = fn.replace("xml", "json")
+    df = pd.read_json(Path(root)/fn)
+    pd.set_option('display.float_format', lambda x: f'{x:.4f}')
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width',1000)
+    try:
+        print(f"\n{fn}")
+        print(df.pivot(columns=["test_case", "executor"], values="mean", index=["size"]))
+    except:
+        pass
 
 def main():
-    _, _, files = next(os.walk("."))
+    mode = sys.argv[1]
+    modes= ["convert", "display"]
+    if not mode in  modes:
+        print(f"{mode} not a valid modes, {modes}")
+
+    src = sys.argv[2]
+    root, _, files = next(os.walk(src))
     for xml_file in files:
         if not xml_file.endswith(".xml"):
             continue

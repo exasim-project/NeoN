@@ -80,6 +80,8 @@ public:
 
     std::string getName() const { return "SurfaceIntegrate"; }
 
+    Dictionary getConfig() const { return {}; }
+
 private:
 
     const SurfaceField<ValueType>& flux_;

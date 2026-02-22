@@ -228,11 +228,11 @@ void DdtOperator<ValueType>::read(const Input& input)
         return;
     }
 
-    // NF_ERROR_EXIT(std::format(
-    //     "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2.",
-    //     schemeName,
-    //     this->field_.name
-    //));
+    NF_ERROR_EXIT(fmt::format(
+        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2."),
+        schemeName,
+        this->field_.name
+    ));
 }
 
 // instantiate the template class

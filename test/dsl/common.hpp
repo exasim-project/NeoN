@@ -5,6 +5,7 @@
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
+#include <catch2/matchers/catch_matchers_all.hpp>
 #include <catch2/catch_approx.hpp>
 
 #include <random>
@@ -22,6 +23,44 @@ using localIdx = NeoN::localIdx;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
 using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
+
+struct ApproxScalar
+{
+    NeoN::scalar margin;
+    bool operator()(double rhs, double lhs) const
+    {
+        return Catch::Approx(rhs).margin(margin) == lhs;
+    }
+};
+
+/* comparison function for volumeFields */
+template<typename FieldType, typename Compare>
+void compare(const FieldType& a, const FieldType& b, Compare comp)
+{
+    auto aHost = a.copyToHost();
+    auto bHost = b.copyToHost();
+    REQUIRE(aHost.size() == bHost.size());
+    REQUIRE_THAT(aHost.view(), Catch::Matchers::RangeEquals(bHost.view(), comp));
+}
+
+template<typename VectorValueType>
+void randomizeVector(fvcc::VolumeField<VectorValueType>& a)
+{
+    // std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    // std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    // std::uniform_real_distribution<> dis(1.0, 2.0);
+
+    auto b = NeoN::Vector<VectorValueType>(NeoN::SerialExecutor(), a.size());
+    auto bV = b.view();
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        bV[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    }
+    auto c = b.copyToExecutor(a.exec());
+    a.internalVector() = c;
+}
+
 
 /* helper struct to create a vector in the database
  */
@@ -140,6 +179,7 @@ struct CreateSurfaceVector
 
 /* A dummy implementation of a SpatialOperator
  * following the SpatialOperator interface */
+// FIXME remove this Dummy operator
 template<typename ValueType>
 class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
 {
@@ -197,6 +237,8 @@ public:
     }
 
     std::string getName() const { return "Dummy"; }
+
+    NeoN::Dictionary getConfig() const { return {}; }
 };
 
 /* A dummy implementation of a SpatialOperator

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_unit_test(matrix)
+neon_unit_test(matrixIterator)
 neon_unit_test(linearSystem)
 neon_unit_test(cooSparsityPattern)
 neon_unit_test(csrSparsityPattern)

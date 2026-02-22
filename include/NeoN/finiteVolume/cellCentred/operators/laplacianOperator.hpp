@@ -203,6 +203,18 @@ public:
 
     std::string getName() const { return "LaplacianOperator"; }
 
+    // TODO make this private and let only friends use it
+    Dictionary getConfig() const
+    {
+        const auto& ret = this->getVector();
+        const auto& coeff = this->getCoefficient();
+        return {
+            {"field", detail::RefHolder<VolumeField<ValueType>> {ret}},
+            {"coeff", detail::RefHolder<dsl::Coeff> {coeff}},
+            {"gamma", detail::RefHolder<SurfaceField<NeoN::scalar>> {gamma_}}
+        };
+    }
+
 private:
 
     const SurfaceField<scalar>& gamma_;

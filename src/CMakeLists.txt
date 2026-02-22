@@ -59,6 +59,8 @@ target_sources(
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"
@@ -88,7 +90,6 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
-target_link_libraries(NeoN PUBLIC umpire)
 
 if(WIN32)
   set_target_properties(
