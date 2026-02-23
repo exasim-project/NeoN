@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "NeoN/core/dictionary.hpp"
@@ -11,6 +14,7 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/linearAlgebra/blockDsl.hpp"
 #include "NeoN/linearAlgebra/blockMatrix.hpp"
 #include "NeoN/linearAlgebra/blockVector.hpp"
 
@@ -18,72 +22,12 @@ namespace NeoN::la
 {
 
 /**
- * @struct SourceTerm
- * @brief Lightweight host-side term: coefficient * field.
- */
-struct SourceTerm
-{
-    scalar coefficient;
-    Vector<scalar>* field;
-};
-
-using SourceExpression = std::vector<SourceTerm>;
-
-/**
- * @brief Create a source term from a coefficient and field reference.
- */
-SourceTerm source(scalar coeff, Vector<scalar>& field);
-
-/**
- * @brief Combine two source terms into an expression.
- */
-SourceExpression operator+(const SourceTerm& a, const SourceTerm& b);
-
-/**
- * @brief Append a source term to an existing expression.
- */
-SourceExpression operator+(SourceExpression terms, const SourceTerm& t);
-
-/**
- * @class BlockExpression
- * @brief Per-equation expression that accumulates source terms.
- *
- * Each BlockExpression represents one block-row of the coupled system
- * and records which fields contribute (and with what coefficient).
- */
-class BlockExpression
-{
-
-public:
-
-    BlockExpression(localIdx equationIndex, const std::vector<Vector<scalar>*>& fields);
-
-    BlockExpression& operator=(const SourceTerm& term);
-    BlockExpression& operator=(const SourceExpression& terms);
-
-    [[nodiscard]] localIdx equationIndex() const;
-    [[nodiscard]] const SourceExpression& terms() const;
-
-    /**
-     * @brief Find the column index of a field pointer (linear search over fields).
-     * @return Column index in [0, nBlocks), or -1 if not found.
-     */
-    [[nodiscard]] localIdx fieldIndex(const Vector<scalar>* field) const;
-
-private:
-
-    localIdx equationIndex_;
-    std::vector<Vector<scalar>*> fields_;
-    SourceExpression terms_;
-};
-
-/**
  * @class BlockLinearSystem
  * @brief Orchestrator that owns a block matrix, RHS, and solution vectors.
  *
  * Ties together BlockMatrix, BlockVector, and BlockSolve with expression-driven
- * assembly using simple source(coeff, field) terms. This is a minimal first
- * integration: only host-side source() terms (diagonal coupling entries).
+ * assembly using bdsl operators. Operators carry field names; BlockLinearSystem
+ * maps names to block columns during assembly.
  */
 class BlockLinearSystem
 {
@@ -91,24 +35,30 @@ class BlockLinearSystem
 public:
 
     /**
-     * @brief Construct from executor, field pointers, sparsity, and solver config.
+     * @brief Construct with named fields for bdsl-based assembly.
      */
     BlockLinearSystem(
         const Executor& exec,
+        std::vector<std::string> fieldNames,
         std::vector<Vector<scalar>*> fields,
         std::shared_ptr<SparsityPattern<localIdx>> sparsity,
         const Dictionary& solverDict
     );
 
     /**
-     * @brief Access both expressions for 2-field systems (structured binding).
+     * @brief Access N expressions for structured binding.
      */
-    std::pair<BlockExpression&, BlockExpression&> expressions();
+    template<std::size_t N>
+    auto expressions()
+    {
+        return [this]<std::size_t... I>(std::index_sequence<I...>)
+        { return std::forward_as_tuple(expressions_[I]...); }(std::make_index_sequence<N> {});
+    }
 
     /**
-     * @brief Access the i-th expression (general N-field access).
+     * @brief Access the i-th expression.
      */
-    BlockExpression& expression(localIdx i);
+    bdsl::BlockExpression<scalar>& expression(localIdx i);
 
     /**
      * @brief Set the RHS vector for equation i.
@@ -116,12 +66,12 @@ public:
     void setRhs(localIdx i, const Vector<scalar>& rhs);
 
     /**
-     * @brief Assemble source terms into block matrix coupling entries.
+     * @brief Assemble operators into block matrix coupling entries.
      */
     void assemble();
 
     /**
-     * @brief Gather fields → solve → scatter back to fields.
+     * @brief Gather fields, solve, scatter back to fields.
      */
     void solve();
 
@@ -137,7 +87,8 @@ private:
     BlockMatrix matrix_;
     BlockVector rhs_;
     BlockVector solution_;
-    std::vector<BlockExpression> expressions_;
+    std::vector<std::string> fieldNames_;
+    std::vector<bdsl::BlockExpression<scalar>> expressions_;
 };
 
 } // namespace NeoN::la

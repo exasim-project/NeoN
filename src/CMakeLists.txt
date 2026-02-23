@@ -43,6 +43,8 @@ target_sources(
           "linearAlgebra/blockMatrix.cpp"
           "linearAlgebra/blockSolver.cpp"
           "linearAlgebra/blockLinearSystem.cpp"
+          "linearAlgebra/blockDsl.cpp"
+          "linearAlgebra/bdsl/source.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"

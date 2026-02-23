@@ -6,12 +6,14 @@
 #include "catch2_common.hpp"
 
 #include "NeoN/NeoN.hpp"
+#include "NeoN/linearAlgebra/blockDsl.hpp"
 #include "NeoN/linearAlgebra/blockLinearSystem.hpp"
 
 TEST_CASE("BlockLinearSystem")
 {
     using namespace NeoN;
     using namespace NeoN::la;
+    using namespace NeoN::bdsl;
 
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -33,11 +35,11 @@ TEST_CASE("BlockLinearSystem")
              {"criteria", Dictionary {{{"iteration", 10}, {"relative_residual_norm", 1e-10}}}}}
         };
 
-        BlockLinearSystem system(exec, {&a, &b}, sp, solverDict);
+        BlockLinearSystem system(exec, {"a", "b"}, {&a, &b}, sp, solverDict);
 
-        auto [aExpr, bExpr] = system.expressions();
-        aExpr = source(4.0, a) + source(1.0, b);
-        bExpr = source(1.0, a) + source(3.0, b);
+        auto [aExpr, bExpr] = system.expressions<2>();
+        aExpr = imp::source(4.0, a, "a") + imp::source(1.0, b, "b");
+        bExpr = imp::source(1.0, a, "a") + imp::source(3.0, b, "b");
 
         system.setRhs(0, Vector<scalar>(exec, std::vector<scalar> {11.0}));
         system.setRhs(1, Vector<scalar>(exec, std::vector<scalar> {11.0}));
@@ -69,10 +71,10 @@ TEST_CASE("BlockLinearSystem")
              {"criteria", Dictionary {{{"iteration", 10}, {"relative_residual_norm", 1e-10}}}}}
         };
 
-        BlockLinearSystem system(exec, {&a, &b}, sp, solverDict);
+        BlockLinearSystem system(exec, {"a", "b"}, {&a, &b}, sp, solverDict);
 
-        system.expression(0) = source(4.0, a);
-        system.expression(1) = source(3.0, b);
+        system.expression(0) = imp::source(4.0, a, "a");
+        system.expression(1) = imp::source(3.0, b, "b");
 
         system.setRhs(0, Vector<scalar>(exec, std::vector<scalar> {8.0}));
         system.setRhs(1, Vector<scalar>(exec, std::vector<scalar> {9.0}));
@@ -103,11 +105,11 @@ TEST_CASE("BlockLinearSystem")
              {"criteria", Dictionary {{{"iteration", 100}, {"relative_residual_norm", 1e-10}}}}}
         };
 
-        BlockLinearSystem system(exec, {&a, &b}, sp, solverDict);
+        BlockLinearSystem system(exec, {"a", "b"}, {&a, &b}, sp, solverDict);
 
-        auto [aExpr, bExpr] = system.expressions();
-        aExpr = source(4.0, a) + source(1.0, b);
-        bExpr = source(1.0, a) + source(3.0, b);
+        auto [aExpr, bExpr] = system.expressions<2>();
+        aExpr = imp::source(4.0, a, "a") + imp::source(1.0, b, "b");
+        bExpr = imp::source(1.0, a, "a") + imp::source(3.0, b, "b");
 
         // RHS: same for each cell → a=2, b=3 per cell
         system.setRhs(0, Vector<scalar>(exec, std::vector<scalar> {11.0, 11.0, 11.0}));

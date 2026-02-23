@@ -16,6 +16,7 @@ if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
   neon_unit_test(blockSolve)
   neon_unit_test(blockLinearSystem)
+  neon_unit_test(blockDsl)
 endif()
 
 if(NeoN_WITH_PETSC)
