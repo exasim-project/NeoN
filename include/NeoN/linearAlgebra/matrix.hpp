@@ -29,6 +29,7 @@ struct MatrixView
      * @param colIdxsView View of the column indices for each non-zero value.
      * @param rowOffsView View of the starting index in values/colIdxs for each row.
      */
+    KOKKOS_INLINE_FUNCTION
     MatrixView(const View<ValueType> valueView, SparsityViewType sparsityView)
         : values(valueView), sparsity(sparsityView) {};
 

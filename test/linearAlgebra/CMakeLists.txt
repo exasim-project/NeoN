@@ -7,6 +7,8 @@ neon_unit_test(linearSystem)
 neon_unit_test(sparsityPattern)
 neon_unit_test(faceToMatrixAddress)
 neon_unit_test(utilities)
+neon_unit_test(blockVector)
+neon_unit_test(blockMatrix)
 
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
