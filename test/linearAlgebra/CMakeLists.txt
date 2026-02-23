@@ -9,11 +9,13 @@ neon_unit_test(faceToMatrixAddress)
 neon_unit_test(utilities)
 neon_unit_test(blockVector)
 neon_unit_test(blockMatrix)
+neon_unit_test(blockSparsityPattern)
 
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
   neon_unit_test(blockSolve)
+  neon_unit_test(blockLinearSystem)
 endif()
 
 if(NeoN_WITH_PETSC)

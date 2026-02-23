@@ -32,8 +32,9 @@ TEST_CASE("BlockMatrix")
         REQUIRE(bm.values().size() == 4); // nnz * nBlocks^2 = 1 * 4
     }
 
-    // Interleaved column-major layout at CSR position 0:
-    // coupling(0,0)=4, coupling(1,0)=1, coupling(0,1)=1, coupling(1,1)=3
+    // Monolithic CSR layout: for 1 cell, 1 nnz, 2 blocks:
+    // monoRowOffs = {0, 2, 4}, values = [coupling(0,0), coupling(0,1), coupling(1,0),
+    // coupling(1,1)]
     SECTION("Construct with values " + execName)
     {
         Vector<scalar> vals(exec, std::vector<scalar> {4.0, 1.0, 1.0, 3.0});
@@ -239,18 +240,17 @@ TEST_CASE("BlockMatrix - multi-cell")
             Vector<localIdx>(exec, std::vector<localIdx> {0, 2, 5, 7})
         );
 
-        // Interleaved layout: 7 coupling matrices, each 2x2 column-major [a00, a10, a01, a11]
-        // pos 0 (0->0): [2, 0.5, 0.5, 3]
-        // pos 1 (0->1): [-1, 0, 0, -1]
-        // pos 3 (1->1): [2, 0.5, 0.5, 3]
+        // Interleaved layout: at each CSR position, a column-major nBlocks x nBlocks coupling
+        // Diagonal couplings: (0,0)=2, (1,0)=0.5, (0,1)=0.5, (1,1)=3
+        // Off-diagonal couplings: (0,0)=-1, (1,0)=0, (0,1)=0, (1,1)=-1
         std::vector<scalar> valsVec = {
-            2,  0.5, 0.5, 3,  // pos 0
-            -1, 0,   0,   -1, // pos 1
-            -1, 0,   0,   -1, // pos 2
-            2,  0.5, 0.5, 3,  // pos 3
-            -1, 0,   0,   -1, // pos 4
-            -1, 0,   0,   -1, // pos 5
-            2,  0.5, 0.5, 3   // pos 6
+            2,  0.5, 0.5, 3,  // pos 0: cell 0->0 diagonal
+            -1, 0,   0,   -1, // pos 1: cell 0->1 off-diagonal
+            -1, 0,   0,   -1, // pos 2: cell 1->0 off-diagonal
+            2,  0.5, 0.5, 3,  // pos 3: cell 1->1 diagonal
+            -1, 0,   0,   -1, // pos 4: cell 1->2 off-diagonal
+            -1, 0,   0,   -1, // pos 5: cell 2->1 off-diagonal
+            2,  0.5, 0.5, 3   // pos 6: cell 2->2 diagonal
         };
         Vector<scalar> vals(exec, valsVec);
         BlockMatrix bm(exec, 2, sp3, vals);
@@ -303,14 +303,15 @@ TEST_CASE("BlockMatrix - multi-cell")
             Vector<localIdx>(exec, std::vector<localIdx> {0, 2, 5, 7})
         );
 
+        // Interleaved layout: at each CSR position, a column-major nBlocks x nBlocks coupling
         std::vector<scalar> valsVec = {
-            2,  0.5, 0.5, 3,  // pos 0
-            -1, 0,   0,   -1, // pos 1
-            -1, 0,   0,   -1, // pos 2
-            2,  0.5, 0.5, 3,  // pos 3
-            -1, 0,   0,   -1, // pos 4
-            -1, 0,   0,   -1, // pos 5
-            2,  0.5, 0.5, 3   // pos 6
+            2,  0.5, 0.5, 3,  // pos 0: cell 0->0 diagonal
+            -1, 0,   0,   -1, // pos 1: cell 0->1 off-diagonal
+            -1, 0,   0,   -1, // pos 2: cell 1->0 off-diagonal
+            2,  0.5, 0.5, 3,  // pos 3: cell 1->1 diagonal
+            -1, 0,   0,   -1, // pos 4: cell 1->2 off-diagonal
+            -1, 0,   0,   -1, // pos 5: cell 2->1 off-diagonal
+            2,  0.5, 0.5, 3   // pos 6: cell 2->2 diagonal
         };
         Vector<scalar> vals(exec, valsVec);
         BlockMatrix bm(exec, 2, sp3, vals);
