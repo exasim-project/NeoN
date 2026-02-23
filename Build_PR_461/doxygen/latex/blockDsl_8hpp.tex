@@ -1,0 +1,42 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/block\+Dsl.hpp File Reference}
+\hypertarget{blockDsl_8hpp}{}\label{blockDsl_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockDsl.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockDsl.hpp}}
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/vector/vector.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/block\+Matrix\+View.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm}{Neo\+N\+::bdsl\+::\+Block\+Source\+Term}}
+\begin{DoxyCompactList}\small\item\em A source term that targets a named field in a block-\/coupled system. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Neo\+N\+::bdsl\+::\+Spatial\+Operator$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Type-\/erased wrapper for block spatial operators. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{Neo\+N\+::bdsl\+::\+Block\+Expression$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Per-\/equation expression that accumulates block spatial operators. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1bdsl}{Neo\+N\+::bdsl}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1bdsl_1_1imp}{Neo\+N\+::bdsl\+::imp}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Concepts}
+\begin{DoxyCompactItemize}
+\item 
+concept \mbox{\hyperlink{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}{Neo\+N\+::bdsl\+::\+Is\+Block\+Spatial\+Operator}}
+\begin{DoxyCompactList}\small\item\em Concept for types that can act as block spatial operators. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1bdsl_affa67451164e1f28cb337c6873693870}{Neo\+N\+::bdsl\+::operator+}} (\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ a, \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ b)
+\begin{DoxyCompactList}\small\item\em Combine two spatial operators into a vector. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1bdsl_a32962e7c19685b6b3734ca9400c5255d}{Neo\+N\+::bdsl\+::operator+}} (std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ $>$ ops, \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ op)
+\begin{DoxyCompactList}\small\item\em Append a spatial operator to a vector. \end{DoxyCompactList}\end{DoxyCompactItemize}

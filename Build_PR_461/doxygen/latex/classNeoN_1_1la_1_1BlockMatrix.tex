@@ -1,0 +1,190 @@
+\doxysection{NeoN\+::la\+::Block\+Matrix Class Reference}
+\hypertarget{classNeoN_1_1la_1_1BlockMatrix}{}\label{classNeoN_1_1la_1_1BlockMatrix}\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+
+
+A block-\/structured sparse matrix with shared sparsity across all blocks.  
+
+
+
+
+{\ttfamily \#include $<$block\+Matrix.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_af407e05fd80035d0f6c56207d1a4b822}{Block\+Matrix}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a018d67c31343e8f38904cfcc5d0d78ee}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aab5eb1000ee85292925bc1d3fe703200}{n\+Blocks}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_ad5dd8207f41aa9c0c1cf1e18abd1d01d}{sparsity}})
+\begin{DoxyCompactList}\small\item\em Construct from n\+Blocks and shared sparsity. Values are zero-\/initialized. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aa4890e799c1c1f67521d9d7734f004d5}{Block\+Matrix}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a018d67c31343e8f38904cfcc5d0d78ee}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aab5eb1000ee85292925bc1d3fe703200}{n\+Blocks}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_ad5dd8207f41aa9c0c1cf1e18abd1d01d}{sparsity}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aa49542324d986c19beb8c79acfcb1e7b}{values}})
+\begin{DoxyCompactList}\small\item\em Construct with pre-\/built values (size must be n\+Blocks\texorpdfstring{$^\wedge$}{\string^}2 \texorpdfstring{$\ast$}{*} nnz). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aab5eb1000ee85292925bc1d3fe703200}{n\+Blocks}} () const
+\begin{DoxyCompactList}\small\item\em Number of blocks per dimension. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a62cbd80de19a94a915b99ec97ef4fec9}{n\+Cells}} () const
+\begin{DoxyCompactList}\small\item\em Number of cells (rows in each inner block). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a2caa057075b13c4137de1d58ae15f36d}{nnz}} () const
+\begin{DoxyCompactList}\small\item\em Number of non-\/zeros per inner block. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a7ab2dff0bdb18e0d83b60bf3dbe51f88}{total\+Size}} () const
+\begin{DoxyCompactList}\small\item\em Total number of monolithic rows (n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells). \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_ad5dd8207f41aa9c0c1cf1e18abd1d01d}{sparsity}} () const
+\begin{DoxyCompactList}\small\item\em Access the shared sparsity pattern. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_aa49542324d986c19beb8c79acfcb1e7b}{values}} ()
+\begin{DoxyCompactList}\small\item\em Access the flat values vector. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a9d41afe65dbad0f566667fca30fd744e}{values}} () const
+\begin{DoxyCompactList}\small\item\em Access the flat values vector (const). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{Block\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_ace7cea8e1fbd5ee91f997410d3691733}{view}} () \&
+\begin{DoxyCompactList}\small\item\em Device-\/safe view (only on lvalues). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{Block\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a3e36ecfb2728fdd35c9a837fc15a45f4}{view}} () \&\&=delete
+\begin{DoxyCompactList}\small\item\em Prevent \doxylink{classNeoN_1_1la_1_1BlockMatrix_ace7cea8e1fbd5ee91f997410d3691733}{view()} on temporaries. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_1_1la_aacbefd6854dc28c71fb45c33d372d731}{Block\+CSRMatrix}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a155cfd2764163d9a8d36c58b1e7a7528}{block\+CSRMatrix}} () const
+\begin{DoxyCompactList}\small\item\em Access the underlying block CSR matrix. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix_a018d67c31343e8f38904cfcc5d0d78ee}{exec}} () const
+\begin{DoxyCompactList}\small\item\em Get the executor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A block-\/structured sparse matrix with shared sparsity across all blocks. 
+
+Values are stored in monolithic CSR order\+: the n\+Blocks\texorpdfstring{$\ast$}{*}n\+Cells monolithic rows are laid out contiguously. Total values size is n\+Blocks\texorpdfstring{$^\wedge$}{\string^}2 \texorpdfstring{$\ast$}{*} nnz. 
+
+Definition at line \mbox{\hyperlink{blockMatrix_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{blockMatrix_8hpp_source}{block\+Matrix.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_af407e05fd80035d0f6c56207d1a4b822}\label{classNeoN_1_1la_1_1BlockMatrix_af407e05fd80035d0f6c56207d1a4b822} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!BlockMatrix@{BlockMatrix}}
+\index{BlockMatrix@{BlockMatrix}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{BlockMatrix()}{BlockMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Matrix\+::\+Block\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Blocks,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{sparsity }\end{DoxyParamCaption})}
+
+
+
+Construct from n\+Blocks and shared sparsity. Values are zero-\/initialized. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_aa4890e799c1c1f67521d9d7734f004d5}\label{classNeoN_1_1la_1_1BlockMatrix_aa4890e799c1c1f67521d9d7734f004d5} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!BlockMatrix@{BlockMatrix}}
+\index{BlockMatrix@{BlockMatrix}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{BlockMatrix()}{BlockMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Matrix\+::\+Block\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Blocks,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{sparsity,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{values }\end{DoxyParamCaption})}
+
+
+
+Construct with pre-\/built values (size must be n\+Blocks\texorpdfstring{$^\wedge$}{\string^}2 \texorpdfstring{$\ast$}{*} nnz). 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a155cfd2764163d9a8d36c58b1e7a7528}\label{classNeoN_1_1la_1_1BlockMatrix_a155cfd2764163d9a8d36c58b1e7a7528} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!blockCSRMatrix@{blockCSRMatrix}}
+\index{blockCSRMatrix@{blockCSRMatrix}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{blockCSRMatrix()}{blockCSRMatrix()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_1_1la_aacbefd6854dc28c71fb45c33d372d731}{Block\+CSRMatrix}} \& Neo\+N\+::la\+::\+Block\+Matrix\+::block\+CSRMatrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Access the underlying block CSR matrix. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a018d67c31343e8f38904cfcc5d0d78ee}\label{classNeoN_1_1la_1_1BlockMatrix_a018d67c31343e8f38904cfcc5d0d78ee} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!exec@{exec}}
+\index{exec@{exec}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& Neo\+N\+::la\+::\+Block\+Matrix\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the executor. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_aab5eb1000ee85292925bc1d3fe703200}\label{classNeoN_1_1la_1_1BlockMatrix_aab5eb1000ee85292925bc1d3fe703200} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!nBlocks@{nBlocks}}
+\index{nBlocks@{nBlocks}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{nBlocks()}{nBlocks()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Matrix\+::n\+Blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of blocks per dimension. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a62cbd80de19a94a915b99ec97ef4fec9}\label{classNeoN_1_1la_1_1BlockMatrix_a62cbd80de19a94a915b99ec97ef4fec9} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!nCells@{nCells}}
+\index{nCells@{nCells}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{nCells()}{nCells()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Matrix\+::n\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of cells (rows in each inner block). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a2caa057075b13c4137de1d58ae15f36d}\label{classNeoN_1_1la_1_1BlockMatrix_a2caa057075b13c4137de1d58ae15f36d} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!nnz@{nnz}}
+\index{nnz@{nnz}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{nnz()}{nnz()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Matrix\+::nnz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of non-\/zeros per inner block. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_ad5dd8207f41aa9c0c1cf1e18abd1d01d}\label{classNeoN_1_1la_1_1BlockMatrix_ad5dd8207f41aa9c0c1cf1e18abd1d01d} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!sparsity@{sparsity}}
+\index{sparsity@{sparsity}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{sparsity()}{sparsity()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& Neo\+N\+::la\+::\+Block\+Matrix\+::sparsity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Access the shared sparsity pattern. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a7ab2dff0bdb18e0d83b60bf3dbe51f88}\label{classNeoN_1_1la_1_1BlockMatrix_a7ab2dff0bdb18e0d83b60bf3dbe51f88} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!totalSize@{totalSize}}
+\index{totalSize@{totalSize}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{totalSize()}{totalSize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Matrix\+::total\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Total number of monolithic rows (n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_aa49542324d986c19beb8c79acfcb1e7b}\label{classNeoN_1_1la_1_1BlockMatrix_aa49542324d986c19beb8c79acfcb1e7b} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!values@{values}}
+\index{values@{values}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{values()}{values()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::la\+::\+Block\+Matrix\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Access the flat values vector. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a9d41afe65dbad0f566667fca30fd744e}\label{classNeoN_1_1la_1_1BlockMatrix_a9d41afe65dbad0f566667fca30fd744e} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!values@{values}}
+\index{values@{values}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{values()}{values()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::la\+::\+Block\+Matrix\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Access the flat values vector (const). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_ace7cea8e1fbd5ee91f997410d3691733}\label{classNeoN_1_1la_1_1BlockMatrix_ace7cea8e1fbd5ee91f997410d3691733} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!view@{view}}
+\index{view@{view}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{Block\+Matrix\+View}} Neo\+N\+::la\+::\+Block\+Matrix\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&}
+
+
+
+Device-\/safe view (only on lvalues). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockMatrix_a3e36ecfb2728fdd35c9a837fc15a45f4}\label{classNeoN_1_1la_1_1BlockMatrix_a3e36ecfb2728fdd35c9a837fc15a45f4} 
+\index{NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}!view@{view}}
+\index{view@{view}!NeoN::la::BlockMatrix@{NeoN::la::BlockMatrix}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{Block\+Matrix\+View}} Neo\+N\+::la\+::\+Block\+Matrix\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Prevent \doxylink{classNeoN_1_1la_1_1BlockMatrix_ace7cea8e1fbd5ee91f997410d3691733}{view()} on temporaries. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockMatrix_8hpp}{block\+Matrix.\+hpp}}\end{DoxyCompactItemize}

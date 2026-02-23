@@ -1,0 +1,161 @@
+\doxysection{NeoN\+::la\+::Block\+Sparsity\+Pattern Class Reference}
+\hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern}{}\label{classNeoN_1_1la_1_1BlockSparsityPattern}\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+
+
+Monolithic sparsity pattern expanded from a base per-\/block sparsity.  
+
+
+
+
+{\ttfamily \#include $<$block\+Sparsity\+Pattern.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::la\+::Block\+Sparsity\+Pattern\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1la_1_1BlockSparsityPattern}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_a64fcda17f4061f69cb2e50514b261fba}{Block\+Sparsity\+Pattern}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_aea2f9d6eeec5831296dc6b834e943c35}{n\+Blocks}}, const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&base\+Sparsity)
+\begin{DoxyCompactList}\small\item\em Construct from n\+Blocks and base sparsity. Computes expanded col\+Idxs/row\+Offs. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_a30539de33cc604d8909150b343dac59e}{Block\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy constructor (copies base \doxylink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern} + metadata). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_aea2f9d6eeec5831296dc6b834e943c35}{n\+Blocks}} () const
+\begin{DoxyCompactList}\small\item\em Number of blocks per dimension. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_aa7df4a94c472fd87d9a6e9140a4b444f}{n\+Cells}} () const
+\begin{DoxyCompactList}\small\item\em Number of cells (rows in each inner block). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_a7f9f4e6824c513d74a1ff2a226fe1d55}{base\+Nnz}} () const
+\begin{DoxyCompactList}\small\item\em Number of non-\/zeros per inner block. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_a6280b4551469e2c66eed07046b856ed8}{copy\+To\+Host}} () const
+\begin{DoxyCompactList}\small\item\em Copy the pattern to host (preserving block metadata). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern_a1c43c84a0ec8ae870d968e642009fd71}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\begin{DoxyCompactList}\small\item\em Copy the pattern to a destination executor (preserving block metadata). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Neo\+N\+::la\+::\+Sparsity\+Pattern$<$ local\+Idx $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a19a8627fea8797b87f89ab835447e4dd}{Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}} \&sp)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a3a714d439a38f3b32cfb20464a505134}{Sparsity\+Pattern}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&\&col\+Idx, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&\&row\+Offs)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ad7347002f6d3067df91f2f3ba031d2b2}{copy\+To\+Host}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ac641d84e05a44482929a8950989d31e3}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a854bd59fe7eef6d6b7f70349889008ff}{\texorpdfstring{$\sim$}{\string~}\+Sparsity\+Pattern}} ()=default
+\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ae4b82bd30056f2de921caac413188874}{exec}} () const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a128489222747442beb58f55737011bd9}{col\+Idxs}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a1204fbba9c4874c398fc5b3506d5ebdb}{col\+Idxs}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aa666c1622a3e3b65136f4e21b5ae8906}{row\+Offs}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_a5880bbe18a388050ffbbc8995bcb316d}{row\+Offs}} ()
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_abb9aa60e53805072d10d4248246146f5}{row\+Offs}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} celli) const
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_ada1ef7649ee474a20904710808dffb52}{rows}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aab4df6bce8fc0b006440a4b3d9172f0d}{nnz}} () const
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_af160cc7dc0d5e96bdbbaf65965ef0c31}{view}} () const
+\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Types inherited from \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Neo\+N\+::la\+::\+Sparsity\+Pattern$<$ local\+Idx $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern_aa85ef66c196ad25925c03b32f514ac0a}{Sparsity\+Index\+Type}} = \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Monolithic sparsity pattern expanded from a base per-\/block sparsity. 
+
+Given n\+Blocks and a base sparsity (n\+Cells rows, base\+Nnz non-\/zeros), computes the expanded monolithic pattern with n\+Blocks\texorpdfstring{$\ast$}{*}n\+Cells rows and n\+Blocks\texorpdfstring{$^\wedge$}{\string^}2\texorpdfstring{$\ast$}{*}base\+Nnz non-\/zeros. The expansion only depends on n\+Blocks + base sparsity, so it is computed once at construction. 
+
+Definition at line \mbox{\hyperlink{blockSparsityPattern_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{blockSparsityPattern_8hpp_source}{block\+Sparsity\+Pattern.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_a64fcda17f4061f69cb2e50514b261fba}\label{classNeoN_1_1la_1_1BlockSparsityPattern_a64fcda17f4061f69cb2e50514b261fba} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!BlockSparsityPattern@{BlockSparsityPattern}}
+\index{BlockSparsityPattern@{BlockSparsityPattern}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{BlockSparsityPattern()}{BlockSparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::\+Block\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Blocks,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{base\+Sparsity }\end{DoxyParamCaption})}
+
+
+
+Construct from n\+Blocks and base sparsity. Computes expanded col\+Idxs/row\+Offs. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_a30539de33cc604d8909150b343dac59e}\label{classNeoN_1_1la_1_1BlockSparsityPattern_a30539de33cc604d8909150b343dac59e} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!BlockSparsityPattern@{BlockSparsityPattern}}
+\index{BlockSparsityPattern@{BlockSparsityPattern}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{BlockSparsityPattern()}{BlockSparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::\+Block\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copy constructor (copies base \doxylink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern} + metadata). 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_a7f9f4e6824c513d74a1ff2a226fe1d55}\label{classNeoN_1_1la_1_1BlockSparsityPattern_a7f9f4e6824c513d74a1ff2a226fe1d55} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!baseNnz@{baseNnz}}
+\index{baseNnz@{baseNnz}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{baseNnz()}{baseNnz()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::base\+Nnz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of non-\/zeros per inner block. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_a1c43c84a0ec8ae870d968e642009fd71}\label{classNeoN_1_1la_1_1BlockSparsityPattern_a1c43c84a0ec8ae870d968e642009fd71} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const}
+
+
+
+Copy the pattern to a destination executor (preserving block metadata). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_a6280b4551469e2c66eed07046b856ed8}\label{classNeoN_1_1la_1_1BlockSparsityPattern_a6280b4551469e2c66eed07046b856ed8} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSparsityPattern}{Block\+Sparsity\+Pattern}} Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Copy the pattern to host (preserving block metadata). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_aea2f9d6eeec5831296dc6b834e943c35}\label{classNeoN_1_1la_1_1BlockSparsityPattern_aea2f9d6eeec5831296dc6b834e943c35} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!nBlocks@{nBlocks}}
+\index{nBlocks@{nBlocks}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{nBlocks()}{nBlocks()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::n\+Blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of blocks per dimension. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockSparsityPattern_aa7df4a94c472fd87d9a6e9140a4b444f}\label{classNeoN_1_1la_1_1BlockSparsityPattern_aa7df4a94c472fd87d9a6e9140a4b444f} 
+\index{NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}!nCells@{nCells}}
+\index{nCells@{nCells}!NeoN::la::BlockSparsityPattern@{NeoN::la::BlockSparsityPattern}}
+\doxysubsubsection{\texorpdfstring{nCells()}{nCells()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Sparsity\+Pattern\+::n\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of cells (rows in each inner block). 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockSparsityPattern_8hpp}{block\+Sparsity\+Pattern.\+hpp}}\end{DoxyCompactItemize}

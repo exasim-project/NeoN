@@ -1,0 +1,74 @@
+\doxysection{block\+Linear\+System.\+hpp}
+\hypertarget{blockLinearSystem_8hpp_source}{}\label{blockLinearSystem_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockLinearSystem.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockLinearSystem.hpp}}
+\mbox{\hyperlink{blockLinearSystem_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{dictionary_8hpp}{NeoN/core/dictionary.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockDsl_8hpp}{NeoN/linearAlgebra/blockDsl.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockMatrix_8hpp}{NeoN/linearAlgebra/blockMatrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockVector_8hpp}{NeoN/linearAlgebra/blockVector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00021}\mbox{\hyperlink{namespaceNeoN_1_1la}{00021}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem}{00032}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem}{BlockLinearSystem}}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00035}00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6ba7a8786b6819eef1d75edbcbef875d}{00040}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6ba7a8786b6819eef1d75edbcbef875d}{BlockLinearSystem}}(}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ std::vector<std::string>\ fieldNames,}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ std::vector<\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}*>\ fields,}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ std::shared\_ptr<\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern<localIdx>}}>\ sparsity,}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ solverDict}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00046}00046\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{template}<std::\textcolor{keywordtype}{size\_t}\ N>}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_acbcfadd9763481e5254a4eed3f6faaec}{00052}}\ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_acbcfadd9763481e5254a4eed3f6faaec}{expressions}}()}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ [\textcolor{keyword}{this}]<std::size\_t...\ I>(std::index\_sequence<I...>)}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \{\ \textcolor{keywordflow}{return}\ std::forward\_as\_tuple(expressions\_[I]...);\ \}(std::make\_index\_sequence<N>\ \{\});}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a73742c6539b31dcbcd54005f9c5f9794}{00061}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{bdsl::BlockExpression<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a73742c6539b31dcbcd54005f9c5f9794}{expression}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i);}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a376491ee64055c6b7f9883c89fce689c}{00066}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a376491ee64055c6b7f9883c89fce689c}{setRhs}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}{rhs}});}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_add44bcf8cca2d1c3805aff00e071318f}{00071}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_add44bcf8cca2d1c3805aff00e071318f}{assemble}}();}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6869dd493cd48e25eb37014067ccff88}{00076}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6869dd493cd48e25eb37014067ccff88}{solve}}();}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a09af9248de081e1448fad38a195fc4a6}{00078}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{BlockMatrix}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a09af9248de081e1448fad38a195fc4a6}{matrix}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}{00079}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{BlockVector}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}{rhs}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00081}00081\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00083}00083\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00084}00084\ \ \ \ \ std::vector<Vector<scalar>*>\ fields\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00085}00085\ \ \ \ \ std::shared\_ptr<SparsityPattern<localIdx>>\ sparsity\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00086}00086\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ solverDict\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00087}00087\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{BlockMatrix}}\ matrix\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00088}00088\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{BlockVector}}\ rhs\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00089}00089\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{BlockVector}}\ solution\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00090}00090\ \ \ \ \ std::vector<std::string>\ fieldNames\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00091}00091\ \ \ \ \ std::vector<bdsl::BlockExpression<scalar>>\ expressions\_;}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00092}00092\ \};}
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{blockLinearSystem_8hpp_source_l00094}00094\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+
+\end{DoxyCode}

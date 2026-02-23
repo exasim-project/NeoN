@@ -1,0 +1,35 @@
+\doxysection{block\+Vector\+View.\+hpp}
+\hypertarget{blockVectorView_8hpp_source}{}\label{blockVectorView_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockVectorView.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockVectorView.hpp}}
+\mbox{\hyperlink{blockVectorView_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00023}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{00023}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{BlockVectorView}}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00025}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}{00025}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<scalar>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}{data}};\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00026}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_abd37ad128426d7965a385c1f040a8a79}{00026}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_abd37ad128426d7965a385c1f040a8a79}{nBlocks}};}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00027}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}{00027}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}{nCells}};}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00034}00034\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00035}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a790dcf05cce92d2ca8079bc2b2e1f23c}{00035}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<scalar>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a790dcf05cce92d2ca8079bc2b2e1f23c}{operator()}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}{data}}.\mbox{\hyperlink{classNeoN_1_1View_a0808f06e3d1be03831c5f0e30063aaa8}{subview}}(i\ *\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}{nCells}},\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}{nCells}});\ \}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00042}00042\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00043}\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a79a49dc2693e142b779a6a088983825e}{00043}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\&\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a79a49dc2693e142b779a6a088983825e}{operator[]}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ globalIndex)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}{data}}[globalIndex];\ \}}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00044}00044\ \};}
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{blockVectorView_8hpp_source_l00046}00046\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+
+\end{DoxyCode}

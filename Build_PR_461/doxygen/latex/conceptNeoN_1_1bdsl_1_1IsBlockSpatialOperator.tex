@@ -1,0 +1,42 @@
+\doxysection{NeoN\+::bdsl\+::Is\+Block\+Spatial\+Operator Concept Reference}
+\hypertarget{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}{}\label{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}\index{NeoN::bdsl::IsBlockSpatialOperator@{NeoN::bdsl::IsBlockSpatialOperator}}
+
+
+Concept for types that can act as block spatial operators.  
+
+
+
+
+{\ttfamily \#include $<$block\+Dsl.\+hpp$>$}
+
+\doxysubsection{Concept definition}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}{NeoN::bdsl::IsBlockSpatialOperator}}\ =\ \ \textcolor{keyword}{requires}(T\ \textcolor{keyword}{const}\ t)\ \{}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.getFieldName()}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::convertible\_to<std::string>;}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.getName()}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::convertible\_to<std::string>;}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.implicitOperation(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<la::BlockMatrixView>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<la::SparsityView<localIdx>>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<const\ Executor\&>()}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::same\_as<void>;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Detailed Description}
+Concept for types that can act as block spatial operators. 
+
+Definition at line \mbox{\hyperlink{blockDsl_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{blockDsl_8hpp_source}{block\+Dsl.\+hpp}}.
+

@@ -1,0 +1,79 @@
+\doxysection{NeoN\+::la\+::Block\+Solver Class Reference}
+\hypertarget{classNeoN_1_1la_1_1BlockSolver}{}\label{classNeoN_1_1la_1_1BlockSolver}\index{NeoN::la::BlockSolver@{NeoN::la::BlockSolver}}
+
+
+\doxylink{classNeoN_1_1la_1_1Solver}{Solver} for block-\/coupled linear systems that calls Ginkgo directly with zero-\/copy views.  
+
+
+
+
+{\ttfamily \#include $<$block\+Solver.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockSolver_a1366067d7adde1b1c72e6ec54d1ea7de}{Block\+Solver}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&solver\+Dict)
+\begin{DoxyCompactList}\small\item\em Construct from executor and solver configuration dictionary. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockSolver_a7badf0d4cacff004c55e594457d076a5}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{Block\+Matrix}} \&matrix, const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \&rhs, \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \&solution) const
+\begin{DoxyCompactList}\small\item\em Solve the block linear system A \texorpdfstring{$\ast$}{*} solution = rhs with zero-\/copy Ginkgo views. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{classNeoN_1_1la_1_1Solver}{Solver} for block-\/coupled linear systems that calls Ginkgo directly with zero-\/copy views. 
+
+Unlike the free function la\+::solve() which deep-\/copies through \doxylink{namespaceNeoN_1_1la_ac19cc6fa4f17dd75962891309709bca8}{to\+CSR()} and \doxylink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}, \doxylink{classNeoN_1_1la_1_1BlockSolver}{Block\+Solver} wraps Block\+Matrix/\+Block\+Vector data directly into Ginkgo arrays and matrices without any intermediate copies. 
+
+Definition at line \mbox{\hyperlink{blockSolver_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{blockSolver_8hpp_source}{block\+Solver.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockSolver_a1366067d7adde1b1c72e6ec54d1ea7de}\label{classNeoN_1_1la_1_1BlockSolver_a1366067d7adde1b1c72e6ec54d1ea7de} 
+\index{NeoN::la::BlockSolver@{NeoN::la::BlockSolver}!BlockSolver@{BlockSolver}}
+\index{BlockSolver@{BlockSolver}!NeoN::la::BlockSolver@{NeoN::la::BlockSolver}}
+\doxysubsubsection{\texorpdfstring{BlockSolver()}{BlockSolver()}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Solver\+::\+Block\+Solver (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{solver\+Dict }\end{DoxyParamCaption})}
+
+
+
+Construct from executor and solver configuration dictionary. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & The executor (serial, CPU, or GPU). \\
+\hline
+{\em solver\+Dict} & \doxylink{classNeoN_1_1Dictionary}{Dictionary} with solver backend, type, and criteria. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockSolver_a7badf0d4cacff004c55e594457d076a5}\label{classNeoN_1_1la_1_1BlockSolver_a7badf0d4cacff004c55e594457d076a5} 
+\index{NeoN::la::BlockSolver@{NeoN::la::BlockSolver}!solve@{solve}}
+\index{solve@{solve}!NeoN::la::BlockSolver@{NeoN::la::BlockSolver}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Block\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{Block\+Matrix}} \&}]{matrix,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \&}]{rhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \&}]{solution }\end{DoxyParamCaption}) const}
+
+
+
+Solve the block linear system A \texorpdfstring{$\ast$}{*} solution = rhs with zero-\/copy Ginkgo views. 
+
+The solution vector serves as the initial guess on input.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The block-\/structured sparse matrix (values already in monolithic CSR order). \\
+\hline
+{\em rhs} & The block right-\/hand side vector. \\
+\hline
+{\em solution} & The block solution vector (input\+: initial guess, output\+: solution). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats} Convergence statistics from the solve. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockSolver_8hpp}{block\+Solver.\+hpp}}\end{DoxyCompactItemize}
