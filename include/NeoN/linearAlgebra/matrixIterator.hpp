@@ -82,23 +82,25 @@ public:
 
     struct CellBasedData
     {
+        localIdx size;
+
         // provide mapping between face and cell idx
         // faces per cell
         SegmentedVector<localIdx, localIdx> cellFaces;
 
-        // neighbour cell for each face (or -1 if boundary)
+        // that seems incorrect: neighbour cell for each face (or -1 if boundary)
+        // mapping between face id and cell id
         Vector<localIdx> faceNeighbour;
 
         // sign for face contribution (+1 if owner, -1 if neighbour)
         Vector<scalar> faceSign;
 
-        // pre-computed column index in matrix
         Vector<localIdx> matrixColumnIdx;
     };
 
     std::string name() const override { return "CellBased"; }
 
-    size_t size() const override { return 0; };
+    size_t size() const override { return cellBasedIteratorData_->size; };
 
     ~CellBasedIterator() override {}
 
@@ -181,8 +183,7 @@ public:
         );
 
         return std::make_shared<CellBasedData>(
-            cellFaces, faceNeighbour, faceSign, matrixColumnIdx
-
+            mesh.nCells(), cellFaces, faceNeighbour, faceSign, matrixColumnIdx
         );
     }
 
