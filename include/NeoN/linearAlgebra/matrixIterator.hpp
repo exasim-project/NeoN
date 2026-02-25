@@ -82,12 +82,16 @@ public:
 
     struct CellBasedData
     {
+        // provide mapping between face and cell idx
         // faces per cell
         SegmentedVector<localIdx, localIdx> cellFaces;
+
         // neighbour cell for each face (or -1 if boundary)
         Vector<localIdx> faceNeighbour;
+
         // sign for face contribution (+1 if owner, -1 if neighbour)
         Vector<scalar> faceSign;
+
         // pre-computed column index in matrix
         Vector<localIdx> matrixColumnIdx;
     };
