@@ -59,7 +59,7 @@ var searchData=
   ['create1duniformmesh_56',['create1DUniformMesh',['../namespaceNeoN.html#a68aef096b241e8512e81ffb579a55030',1,'NeoN']]],
   ['createcalculatedbcs_57',['createCalculatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ab918b7425253d07393f1e18b71aa4e22',1,'NeoN::finiteVolume::cellCentred']]],
   ['createdefaultexecutor_58',['createDefaultExecutor',['../namespaceNeoN.html#a979e8785178e66d261937543c92278fb',1,'NeoN']]],
-  ['createemptylinearsystem_59',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#a2a83829a38dad931ef72287214b5d444',1,'NeoN::la']]],
+  ['createemptylinearsystem_59',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#a5c6770997d2a237cb5e1e6f2036c46a7',1,'NeoN::la']]],
   ['createextrapolatedbcs_60',['createExtrapolatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac219f7675251df9d46327915c48c74e4',1,'NeoN::finiteVolume::cellCentred']]],
   ['createfluxcorrbcsfromu_61',['createFluxCorrBCsFromU',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a616a3a0d2d9285da79f5301efe88d399',1,'NeoN::finiteVolume::cellCentred']]],
   ['createfromexistingvector_62',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],

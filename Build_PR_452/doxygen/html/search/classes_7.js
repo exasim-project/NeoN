@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['kokkosallocator_0',['KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html',1,'NeoN']]],
-  ['kokkosmempoolallocactor_1',['KokkosMempoolAllocactor',['../classKokkosMempoolAllocactor.html',1,'']]]
+  ['kokkosallocactor_0',['KokkosAllocactor',['../classKokkosAllocactor.html',1,'']]],
+  ['kokkosallocator_1',['KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html',1,'NeoN']]]
 ];
