@@ -36,7 +36,7 @@ var searchData=
   ['solverstatsentry_33',['SolverStatsEntry',['../structNeoN_1_1la_1_1SolverStatsEntry.html',1,'NeoN::la']]],
   ['solvetime_34',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
   ['sortedkeys_35',['sortedKeys',['../classNeoN_1_1CollectionMixin.html#aee4265b72483f00cc9057213b6e930dc',1,'NeoN::CollectionMixin']]],
-  ['source_36',['source',['../namespaceNeoN_1_1dsl_1_1imp.html#a24af30e06fc5eec576cd9afc2a43ee42',1,'NeoN::dsl::imp::source()'],['../namespaceNeoN_1_1dsl_1_1exp.html#ade69eba606ca70973b8c301490b5b71b',1,'NeoN::dsl::exp::source()']]],
+  ['source_36',['source',['../namespaceNeoN_1_1dsl_1_1imp.html#a24af30e06fc5eec576cd9afc2a43ee42',1,'NeoN::dsl::imp::source()'],['../namespaceNeoN_1_1dsl_1_1exp.html#a1af72d0f302573a202dd802e69062214',1,'NeoN::dsl::exp::source()']]],
   ['sourceterm_37',['sourceterm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html',1,'NeoN::finiteVolume::cellCentred::SourceTerm&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#aec6d944ccbfda211e2cbf002f08f814a',1,'NeoN::finiteVolume::cellCentred::SourceTerm::SourceTerm()']]],
   ['sourceterm_2ehpp_38',['sourceTerm.hpp',['../sourceTerm_8hpp.html',1,'']]],
   ['sparsity_39',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView::sparsity'],['../classNeoN_1_1la_1_1Matrix.html#aae45d61e9077a6ccf5870200b777ebc2',1,'NeoN::la::Matrix::sparsity()']]],
