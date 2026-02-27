@@ -2,6 +2,26 @@
 #
 # SPDX-License-Identifier: MIT
 
+import os
+import sys
+from pathlib import Path
+import importlib.util
+
+_neon_so_dir = os.environ.get("NEON_BINDINGS_PATH")
+if _neon_so_dir:
+
+    _project_root = Path(__file__).parents[2]
+    _init_file = _project_root / "src" / "neon" / "__init__.py"
+
+    spec = importlib.util.spec_from_file_location(
+        "neon",
+        str(_init_file),
+        submodule_search_locations=[_neon_so_dir],
+    )
+    _neon_module = importlib.util.module_from_spec(spec)
+    sys.modules["neon"] = _neon_module
+    spec.loader.exec_module(_neon_module)
+
 import pytest
 import neon
 

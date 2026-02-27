@@ -13,6 +13,9 @@ function(neon_bindings_test TEST)
     NAME neon_bindings_test_${TEST}
     COMMAND ${Python_EXECUTABLE} -m pytest -vv -rs ${CMAKE_CURRENT_SOURCE_DIR}/test_${TEST}.py
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
+  set_tests_properties(
+    neon_bindings_test_${TEST} PROPERTIES ENVIRONMENT
+                                          "NEON_BINDINGS_PATH=${CMAKE_BINARY_DIR}/bindings/neon")
 endfunction()
 
 if(NeoN_BUILD_PYTHON_BINDINGS)
