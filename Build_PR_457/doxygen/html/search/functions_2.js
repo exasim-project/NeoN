@@ -14,7 +14,7 @@ var searchData=
   ['collectionmixin_11',['collectionmixin',['../classNeoN_1_1CollectionMixin.html#a5c533ffeda2bfb3b0dd6140a9b33933b',1,'NeoN::CollectionMixin::CollectionMixin(NeoN::Database &amp;db, std::string name)'],['../classNeoN_1_1CollectionMixin.html#abaa1804d768e094625d6253d972e0dfb',1,'NeoN::CollectionMixin::CollectionMixin(const CollectionMixin &amp;)=delete'],['../classNeoN_1_1CollectionMixin.html#a7c8d6846fe92a5dd9319e877a45c0d97',1,'NeoN::CollectionMixin::CollectionMixin(CollectionMixin &amp;&amp;)=default']]],
   ['computeconum_12',['computeCoNum',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a751725b9a4effad3dcab6822807b10e1',1,'NeoN::finiteVolume::cellCentred']]],
   ['computedivexp_13',['computeDivExp',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#adebf18ffc07511e7a497371f83f92fc3',1,'NeoN::finiteVolume::cellCentred']]],
-  ['computedivimp_14',['computeDivImp',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac16606526899c5dd302bf3d34a1dd541',1,'NeoN::finiteVolume::cellCentred']]],
+  ['computedivimp_14',['computeDivImp',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a91df1880106d9d15a41fd75153aac3f7',1,'NeoN::finiteVolume::cellCentred']]],
   ['computefacenormalgrad_15',['computeFaceNormalGrad',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ad5c0aa904c7545c5c4ba1b1a833261c9',1,'NeoN::finiteVolume::cellCentred']]],
   ['computelaplacianexp_16',['computeLaplacianExp',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a1827d771a724a1436e1ece864c4fc8a7',1,'NeoN::finiteVolume::cellCentred']]],
   ['computelaplacianimpl_17',['computeLaplacianImpl',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a51a46d9902e6dd3ea863abaf3c7f9f33',1,'NeoN::finiteVolume::cellCentred']]],
