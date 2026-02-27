@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
+set(Python_FIND_VIRTUALENV FIRST)
 find_package(Python COMPONENTS Interpreter Development)
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
