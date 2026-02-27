@@ -25,12 +25,11 @@ void computeDivExp(
 
 template<typename ValueType>
 void computeDivImp(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
     const SurfaceInterpolation<ValueType>& surfInterp,
-    const dsl::Coeff operatorScaling,
-    const la::SparsityPattern& sparsityPattern
+    const dsl::Coeff operatorScaling
 );
 
 /* @brief
@@ -94,14 +93,12 @@ public:
     };
 
     virtual void
-    div(la::LinearSystem<ValueType, localIdx>& ls,
+    div(la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        computeDivImp(
-            ls, faceFlux, phi, surfaceInterpolation_, operatorScaling, this->getSparsityPattern()
-        );
+        computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
