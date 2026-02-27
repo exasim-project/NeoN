@@ -233,6 +233,9 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     set(DEV_MODULE Development.Module)
   endif()
 
+  if(DEFINED ENV{VIRTUAL_ENV})
+    set(Python_ROOT_DIR "$ENV{VIRTUAL_ENV}")
+  endif()
   find_package(
     Python
     COMPONENTS Interpreter ${DEV_MODULE}
