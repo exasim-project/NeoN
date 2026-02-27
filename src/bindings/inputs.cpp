@@ -189,7 +189,9 @@ void registerInputs(nb::module_& m)
                 if (!self.contains(key))
                     throw nb::key_error(("Key '" + key + "' not found in Dictionary").c_str());
                 if (!self.isDict(key))
-                    throw nb::type_error(("Value for key '" + key + "' is not a sub-dictionary").c_str());
+                    throw nb::type_error(
+                        ("Value for key '" + key + "' is not a sub-dictionary").c_str()
+                    );
                 return self.subDict(key);
             },
             "key"_a,

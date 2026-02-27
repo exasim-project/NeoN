@@ -131,15 +131,15 @@ void registerSurfaceField(nb::module_& m)
         .def_rw("name", &fvcc::SurfaceField<NeoN::scalar>::name)
         .def(
             "__add__",
-            [](const fvcc::SurfaceField<NeoN::scalar>& a,
-               const fvcc::SurfaceField<NeoN::scalar>& b) { return a + b; },
+            [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
+            { return a + b; },
             "other"_a,
             "Element-wise addition of two scalar surface fields"
         )
         .def(
             "__mul__",
-            [](const fvcc::SurfaceField<NeoN::scalar>& a,
-               const fvcc::SurfaceField<NeoN::scalar>& b) { return a * b; },
+            [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
+            { return a * b; },
             "other"_a,
             "Element-wise multiplication of two scalar surface fields"
         );

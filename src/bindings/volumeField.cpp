@@ -132,8 +132,7 @@ void registerVolumeField(nb::module_& m)
         .def_rw("name", &fvcc::VolumeField<NeoN::scalar>::name)
         .def(
             "assign",
-            [](fvcc::VolumeField<NeoN::scalar>& self,
-               const fvcc::VolumeField<NeoN::scalar>& other)
+            [](fvcc::VolumeField<NeoN::scalar>& self, const fvcc::VolumeField<NeoN::scalar>& other)
             { self.internalVector() = other.internalVector(); },
             "other"_a,
             "Deep-copy internal vector from another scalar field (mirrors C++ = operator)"
@@ -218,8 +217,7 @@ void registerVolumeField(nb::module_& m)
         .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name)
         .def(
             "assign",
-            [](fvcc::VolumeField<NeoN::Vec3>& self,
-               const fvcc::VolumeField<NeoN::Vec3>& other)
+            [](fvcc::VolumeField<NeoN::Vec3>& self, const fvcc::VolumeField<NeoN::Vec3>& other)
             { self.internalVector() = other.internalVector(); },
             "other"_a,
             "Deep-copy internal vector from another Vec3 field (mirrors C++ = operator)"
