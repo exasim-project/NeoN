@@ -20,7 +20,7 @@ namespace NeoN::bindings
 template<typename ValueType>
 void declare_linear_system(nb::module_& m, const std::string& suffix)
 {
-    using LS = la::LinearSystem<ValueType, localIdx>;
+    using LS = la::LinearSystem<ValueType>;
 
     nb::class_<LS>(m, ("LinearSystem" + suffix).c_str())
         .def("reset", &LS::reset)
@@ -29,15 +29,17 @@ void declare_linear_system(nb::module_& m, const std::string& suffix)
 
 void registerLinearAlgebra(nb::module_& m)
 {
-    nb::class_<la::SparsityPattern>(m, "SparsityPattern")
-        .def("rows", &la::SparsityPattern::rows)
-        .def("nnz", &la::SparsityPattern::nnz);
+    nb::class_<la::SparsityPattern<localIdx>>(m, "SparsityPattern")
+        .def("rows", &la::SparsityPattern<localIdx>::rows)
+        .def("nnz", &la::SparsityPattern<localIdx>::nnz);
 
-    nb::class_<la::SolverStats>(m, "SolverStats")
-        .def_rw("num_iter", &la::SolverStats::numIter)
-        .def_rw("initial_residual", &la::SolverStats::initResNorm)
-        .def_rw("final_residual", &la::SolverStats::finalResNorm)
-        .def_rw("time", &la::SolverStats::solveTime);
+    nb::class_<la::SolverStatsEntry>(m, "SolverStatsEntry")
+        .def_rw("num_iter", &la::SolverStatsEntry::numIter)
+        .def_rw("initial_residual", &la::SolverStatsEntry::initResNorm)
+        .def_rw("final_residual", &la::SolverStatsEntry::finalResNorm)
+        .def_rw("time", &la::SolverStatsEntry::solveTime);
+
+    nb::class_<la::SolverStats>(m, "SolverStats").def_rw("entries", &la::SolverStats::entries);
 
     declare_linear_system<scalar>(m, "Scalar");
     declare_linear_system<Vec3>(m, "Vector");
