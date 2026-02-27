@@ -112,4 +112,7 @@ jobs:
 
       - name: Execute unit tests NeoN
         run: |
+          uv venv
+          uv sync --no-install-project --all-extras -v
+          source .venv/bin/activate
           ctest --preset ${{matrix.preset}}
