@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Read a CGNS mesh, write it to VTU, and visualize with pyvista."""
+"""Read a CGNS mesh, write it to VTM, and visualize with pyvista."""
 
 import os
 
@@ -19,5 +19,5 @@ mesh = neon.read_cgns(cgns_path, exec)
 
 print(f"Cells: {mesh.n_cells}, Faces: {mesh.n_faces}")
 
-neon.write_vtu(mesh, "/tmp/cavity2d.vtu")
-pv.read("/tmp/cavity2d.vtu").plot(show_edges=True)
+neon.write_vtm(mesh, "/tmp/cavity2d.vtm")
+pv.read("/tmp/cavity2d.vtm").plot(show_edges=True)

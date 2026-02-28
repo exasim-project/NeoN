@@ -14,8 +14,10 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include <vtkHDFReader.h>
+#include <vtkMultiBlockDataSet.h>
 #include <vtkNew.h>
 #include <vtkPartitionedDataSet.h>
+#include <vtkPartitionedDataSetCollection.h>
 #include <vtkPoints.h>
 #include <vtkUnstructuredGrid.h>
 
@@ -42,6 +44,26 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     }
 
     vtkUnstructuredGrid* grid = vtkUnstructuredGrid::SafeDownCast(output);
+    if (!grid)
+    {
+        auto* pdc = vtkPartitionedDataSetCollection::SafeDownCast(output);
+        if (pdc && pdc->GetNumberOfPartitionedDataSets() > 0)
+        {
+            auto* pds0 = pdc->GetPartitionedDataSet(0);
+            if (pds0 && pds0->GetNumberOfPartitions() > 0)
+            {
+                grid = vtkUnstructuredGrid::SafeDownCast(pds0->GetPartition(0));
+            }
+        }
+    }
+    if (!grid)
+    {
+        auto* mb = vtkMultiBlockDataSet::SafeDownCast(output);
+        if (mb && mb->GetNumberOfBlocks() > 0)
+        {
+            grid = vtkUnstructuredGrid::SafeDownCast(mb->GetBlock(0));
+        }
+    }
     if (!grid)
     {
         auto* pds = vtkPartitionedDataSet::SafeDownCast(output);

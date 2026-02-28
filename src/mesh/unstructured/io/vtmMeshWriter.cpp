@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/mesh/unstructured/io/vtkHdfMeshWriter.hpp"
+#include "NeoN/mesh/unstructured/io/vtmMeshWriter.hpp"
 #include "NeoN/mesh/unstructured/io/meshConverter.hpp"
 
-#include <vtkHDFWriter.h>
 #include <vtkNew.h>
+#include <vtkXMLMultiBlockDataWriter.h>
 
 #include <string>
 
@@ -14,13 +14,13 @@
 namespace NeoN::io
 {
 
-void writeVtkHdf(const UnstructuredMesh& mesh, const std::string& filePath)
+void writeVtm(const UnstructuredMesh& mesh, const std::string& filePath)
 {
-    auto pdc = buildPartitionedMesh(mesh);
+    auto mb = buildMultiBlockMesh(mesh);
 
-    vtkNew<vtkHDFWriter> writer;
+    vtkNew<vtkXMLMultiBlockDataWriter> writer;
     writer->SetFileName(filePath.c_str());
-    writer->SetInputData(pdc.Get());
+    writer->SetInputData(mb.Get());
     writer->Write();
 }
 

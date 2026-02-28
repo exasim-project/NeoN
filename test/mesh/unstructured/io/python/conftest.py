@@ -128,8 +128,8 @@ def run_roundtrip(tool, input_path, output_path):
     return result.stdout
 
 
-def run_cgns_to_vtu(tool, input_path, output_path):
-    """Run the C++ cgnsToVtu tool and assert it succeeds."""
+def run_cgns_to_vtm(tool, input_path, output_path):
+    """Run the C++ cgnsToVtu tool (writes VTM multiblock) and assert it succeeds."""
     result = subprocess.run(
         [str(tool), str(input_path), str(output_path)],
         capture_output=True,
@@ -143,3 +143,11 @@ def run_cgns_to_vtu(tool, input_path, output_path):
         f"cgnsToVtu failed (rc={result.returncode}):\n" + "\n".join(fatal_lines)
     )
     return result.stdout
+
+
+def extract_volume_block(vtm_path):
+    """Read a VTM file and extract block 0 (the internalMesh / volume grid)."""
+    mb = pv.read(str(vtm_path))
+    if isinstance(mb, pv.MultiBlock):
+        return mb[0]
+    return mb

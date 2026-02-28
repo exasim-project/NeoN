@@ -10,10 +10,9 @@ Verifies that:
 """
 
 import numpy as np
-import pyvista as pv
 import pytest
 
-from conftest import extract_grid, run_roundtrip, run_cgns_to_vtu
+from conftest import extract_grid, extract_volume_block, run_roundtrip, run_cgns_to_vtm
 
 
 VOLUME_TYPES = [10, 12, 13, 14]  # TET, HEX, WEDGE, PYRA
@@ -42,33 +41,33 @@ class TestCrossFormatSingleTet:
         self, single_tet_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "tet_rt.cgns"
-        vtu_out = tmp_path / "tet.vtu"
+        vtm_out = tmp_path / "tet.vtm"
         run_roundtrip(roundtrip_tool, single_tet_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, single_tet_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, single_tet_path, vtm_out)
         cgns_grid = extract_grid(cgns_out)
-        vtu_grid = pv.read(str(vtu_out))
+        vtu_grid = extract_volume_block(vtm_out)
         assert cgns_grid.n_points == vtu_grid.n_points
 
     def test_volume_consistent(
         self, single_tet_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "tet_rt.cgns"
-        vtu_out = tmp_path / "tet.vtu"
+        vtm_out = tmp_path / "tet.vtm"
         run_roundtrip(roundtrip_tool, single_tet_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, single_tet_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, single_tet_path, vtm_out)
         cgns_vol = _total_volume(extract_grid(cgns_out))
-        vtu_vol = _total_volume(pv.read(str(vtu_out)))
+        vtu_vol = _total_volume(extract_volume_block(vtm_out))
         np.testing.assert_allclose(cgns_vol, vtu_vol, rtol=1e-10)
 
     def test_points_consistent(
         self, single_tet_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "tet_rt.cgns"
-        vtu_out = tmp_path / "tet.vtu"
+        vtm_out = tmp_path / "tet.vtm"
         run_roundtrip(roundtrip_tool, single_tet_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, single_tet_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, single_tet_path, vtm_out)
         cgns_pts = np.sort(extract_grid(cgns_out).points, axis=0)
-        vtu_pts = np.sort(pv.read(str(vtu_out)).points, axis=0)
+        vtu_pts = np.sort(extract_volume_block(vtm_out).points, axis=0)
         np.testing.assert_allclose(cgns_pts, vtu_pts, atol=1e-12)
 
 
@@ -79,33 +78,33 @@ class TestCrossFormatCube3D:
         self, cube3d_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "cube_rt.cgns"
-        vtu_out = tmp_path / "cube.vtu"
+        vtm_out = tmp_path / "cube.vtm"
         run_roundtrip(roundtrip_tool, cube3d_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, cube3d_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, cube3d_path, vtm_out)
         cgns_grid = extract_grid(cgns_out)
-        vtu_grid = pv.read(str(vtu_out))
+        vtu_grid = extract_volume_block(vtm_out)
         assert cgns_grid.n_points == vtu_grid.n_points
 
     def test_volume_consistent(
         self, cube3d_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "cube_rt.cgns"
-        vtu_out = tmp_path / "cube.vtu"
+        vtm_out = tmp_path / "cube.vtm"
         run_roundtrip(roundtrip_tool, cube3d_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, cube3d_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, cube3d_path, vtm_out)
         cgns_vol = _total_volume(extract_grid(cgns_out))
-        vtu_vol = _total_volume(pv.read(str(vtu_out)))
+        vtu_vol = _total_volume(extract_volume_block(vtm_out))
         np.testing.assert_allclose(cgns_vol, vtu_vol, rtol=1e-6)
 
     def test_sorted_volumes_consistent(
         self, cube3d_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "cube_rt.cgns"
-        vtu_out = tmp_path / "cube.vtu"
+        vtm_out = tmp_path / "cube.vtm"
         run_roundtrip(roundtrip_tool, cube3d_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, cube3d_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, cube3d_path, vtm_out)
         cgns_tets = extract_grid(cgns_out).extract_cells_by_type(10)
-        vtu_tets = pv.read(str(vtu_out)).extract_cells_by_type(10)
+        vtu_tets = extract_volume_block(vtm_out).extract_cells_by_type(10)
         cgns_vols = np.sort(np.abs(cgns_tets.compute_cell_sizes()["Volume"]))
         vtu_vols = np.sort(np.abs(vtu_tets.compute_cell_sizes()["Volume"]))
         np.testing.assert_allclose(cgns_vols, vtu_vols, rtol=1e-5)
@@ -118,22 +117,22 @@ class TestCrossFormatMixed:
         self, mixed_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "mixed_rt.cgns"
-        vtu_out = tmp_path / "mixed.vtu"
+        vtm_out = tmp_path / "mixed.vtm"
         run_roundtrip(roundtrip_tool, mixed_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, mixed_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, mixed_path, vtm_out)
         cgns_count = _volume_cell_count(extract_grid(cgns_out))
-        vtu_count = _volume_cell_count(pv.read(str(vtu_out)))
+        vtu_count = _volume_cell_count(extract_volume_block(vtm_out))
         assert cgns_count == vtu_count
 
     def test_volume_consistent(
         self, mixed_path, roundtrip_tool, vtu_tool, tmp_path
     ):
         cgns_out = tmp_path / "mixed_rt.cgns"
-        vtu_out = tmp_path / "mixed.vtu"
+        vtm_out = tmp_path / "mixed.vtm"
         run_roundtrip(roundtrip_tool, mixed_path, cgns_out)
-        run_cgns_to_vtu(vtu_tool, mixed_path, vtu_out)
+        run_cgns_to_vtm(vtu_tool, mixed_path, vtm_out)
         cgns_vol = _total_volume(extract_grid(cgns_out))
-        vtu_vol = _total_volume(pv.read(str(vtu_out)))
+        vtu_vol = _total_volume(extract_volume_block(vtm_out))
         np.testing.assert_allclose(cgns_vol, vtu_vol, rtol=1e-4)
 
 

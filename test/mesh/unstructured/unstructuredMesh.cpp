@@ -193,13 +193,13 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(patchNames.size() == 6);
 
         // Patch names must match the boundary order:
-        // left, right, bottom, top, front, back
-        REQUIRE(patchNames[0] == "left");
-        REQUIRE(patchNames[1] == "right");
-        REQUIRE(patchNames[2] == "bottom");
-        REQUIRE(patchNames[3] == "top");
-        REQUIRE(patchNames[4] == "front");
-        REQUIRE(patchNames[5] == "back");
+        // xmin, xmax, ymin, ymax, zmin, zmax
+        REQUIRE(patchNames[0] == "xmin");
+        REQUIRE(patchNames[1] == "xmax");
+        REQUIRE(patchNames[2] == "ymin");
+        REQUIRE(patchNames[3] == "ymax");
+        REQUIRE(patchNames[4] == "zmin");
+        REQUIRE(patchNames[5] == "zmax");
     }
 
     SECTION("Can create a uniform 2D grid with non-unit domain " + execName)
@@ -222,6 +222,63 @@ TEST_CASE("Unstructured Mesh")
         auto hostVols = mesh.cellVolumes().copyToHost();
         for (NeoN::localIdx c = 0; c < 6; ++c)
             REQUIRE(hostVols.view()[c] == Catch::Approx(1.0));
+    }
+
+    SECTION("2D grid patch face centres lie on correct planes (3x2) " + execName)
+    {
+        // Domain: [xmin, xmax] x [ymin, ymax] x [zmin, zmax] (one cell thick in z)
+        // Boundary patches and the planes they must lie on:
+        //   patch 0 "xmin"  — x = xmin plane  (ny    = 2 faces)
+        //   patch 1 "xmax"  — x = xmax plane  (ny    = 2 faces)
+        //   patch 2 "ymin"  — y = ymin plane  (nx    = 3 faces)
+        //   patch 3 "ymax"  — y = ymax plane  (nx    = 3 faces)
+        //   patch 4 "zmin"  — z = zmin plane  (nx*ny = 6 faces)
+        //   patch 5 "zmax"  — z = zmax plane  (nx*ny = 6 faces)
+        NeoN::localIdx nx = 3;
+        NeoN::localIdx ny = 2;
+        NeoN::scalar xmin = 0.0;
+        NeoN::scalar xmax = 3.0;
+        NeoN::scalar ymin = 0.0;
+        NeoN::scalar ymax = 2.0;
+        NeoN::scalar zmin = 0.0;
+        NeoN::scalar zmax = 1.0; // fixed slab thickness
+        auto mesh = NeoN::createUniform2DGrid(exec, nx, ny, xmax, ymax);
+
+        auto& bm = mesh.boundaryMesh();
+        auto& offset = bm.offset();
+        REQUIRE(offset.size() == 7);
+        REQUIRE(offset[1] - offset[0] == 2); // left
+        REQUIRE(offset[2] - offset[1] == 2); // right
+        REQUIRE(offset[3] - offset[2] == 3); // bottom
+        REQUIRE(offset[4] - offset[3] == 3); // top
+        REQUIRE(offset[5] - offset[4] == 6); // front
+        REQUIRE(offset[6] - offset[5] == 6); // back
+
+        auto hostCf = bm.cf().copyToHost();
+
+        // left (patch 0): all face centres on x = xmin plane
+        for (NeoN::localIdx f = offset[0]; f < offset[1]; ++f)
+            REQUIRE(hostCf.view()[f][0] == Catch::Approx(xmin).margin(1e-10));
+
+        // right (patch 1): all face centres on x = xmax plane
+        for (NeoN::localIdx f = offset[1]; f < offset[2]; ++f)
+            REQUIRE(hostCf.view()[f][0] == Catch::Approx(xmax).margin(1e-10));
+
+        // bottom (patch 2): all face centres on y = ymin plane
+        for (NeoN::localIdx f = offset[2]; f < offset[3]; ++f)
+            REQUIRE(hostCf.view()[f][1] == Catch::Approx(ymin).margin(1e-10));
+
+        // top (patch 3): all face centres on y = ymax plane
+        for (NeoN::localIdx f = offset[3]; f < offset[4]; ++f)
+            REQUIRE(hostCf.view()[f][1] == Catch::Approx(ymax).margin(1e-10));
+
+        // front (patch 4): all face centres on z = zmin plane
+        for (NeoN::localIdx f = offset[4]; f < offset[5]; ++f)
+            REQUIRE(hostCf.view()[f][2] == Catch::Approx(zmin).margin(1e-10));
+
+        // back (patch 5): all face centres on z = zmax plane
+        for (NeoN::localIdx f = offset[5]; f < offset[6]; ++f)
+            REQUIRE(hostCf.view()[f][2] == Catch::Approx(zmax).margin(1e-10));
     }
 
     SECTION("Can create a uniform 3D grid (2x2x2) " + execName)
@@ -295,6 +352,64 @@ TEST_CASE("Unstructured Mesh")
             REQUIRE(hostVols.view()[c] == Catch::Approx(1.0));
     }
 
+    SECTION("3D grid patch face centres lie on correct planes (3x2x4) " + execName)
+    {
+        // Domain: [xmin, xmax] x [ymin, ymax] x [zmin, zmax]
+        // Boundary patches and the planes they must lie on:
+        //   patch 0 "xmin"  — x = xmin plane  (ny*nz = 8  faces)
+        //   patch 1 "xmax"  — x = xmax plane  (ny*nz = 8  faces)
+        //   patch 2 "ymin"  — y = ymin plane  (nx*nz = 12 faces)
+        //   patch 3 "ymax"  — y = ymax plane  (nx*nz = 12 faces)
+        //   patch 4 "zmin"  — z = zmin plane  (nx*ny = 6  faces)
+        //   patch 5 "zmax"  — z = zmax plane  (nx*ny = 6  faces)
+        NeoN::localIdx nx = 3;
+        NeoN::localIdx ny = 2;
+        NeoN::localIdx nz = 4;
+        NeoN::scalar xmin = 0.0;
+        NeoN::scalar xmax = 3.0;
+        NeoN::scalar ymin = 0.0;
+        NeoN::scalar ymax = 2.0;
+        NeoN::scalar zmin = 0.0;
+        NeoN::scalar zmax = 4.0;
+        auto mesh = NeoN::createUniform3DGrid(exec, nx, ny, nz, xmax, ymax, zmax);
+
+        auto& bm = mesh.boundaryMesh();
+        auto& offset = bm.offset();
+        REQUIRE(offset.size() == 7);
+        REQUIRE(offset[1] - offset[0] == 8);  // left
+        REQUIRE(offset[2] - offset[1] == 8);  // right
+        REQUIRE(offset[3] - offset[2] == 12); // bottom
+        REQUIRE(offset[4] - offset[3] == 12); // top
+        REQUIRE(offset[5] - offset[4] == 6);  // front
+        REQUIRE(offset[6] - offset[5] == 6);  // back
+
+        auto hostCf = bm.cf().copyToHost();
+
+        // left (patch 0): all face centres on x = xmin plane
+        for (NeoN::localIdx f = offset[0]; f < offset[1]; ++f)
+            REQUIRE(hostCf.view()[f][0] == Catch::Approx(xmin).margin(1e-10));
+
+        // right (patch 1): all face centres on x = xmax plane
+        for (NeoN::localIdx f = offset[1]; f < offset[2]; ++f)
+            REQUIRE(hostCf.view()[f][0] == Catch::Approx(xmax).margin(1e-10));
+
+        // bottom (patch 2): all face centres on y = ymin plane
+        for (NeoN::localIdx f = offset[2]; f < offset[3]; ++f)
+            REQUIRE(hostCf.view()[f][1] == Catch::Approx(ymin).margin(1e-10));
+
+        // top (patch 3): all face centres on y = ymax plane
+        for (NeoN::localIdx f = offset[3]; f < offset[4]; ++f)
+            REQUIRE(hostCf.view()[f][1] == Catch::Approx(ymax).margin(1e-10));
+
+        // front (patch 4): all face centres on z = zmin plane
+        for (NeoN::localIdx f = offset[4]; f < offset[5]; ++f)
+            REQUIRE(hostCf.view()[f][2] == Catch::Approx(zmin).margin(1e-10));
+
+        // back (patch 5): all face centres on z = zmax plane
+        for (NeoN::localIdx f = offset[5]; f < offset[6]; ++f)
+            REQUIRE(hostCf.view()[f][2] == Catch::Approx(zmax).margin(1e-10));
+    }
+
     SECTION("Uniform 3D grid stores face node connectivity in stencilDB " + execName)
     {
         NeoN::localIdx nx = 2;
@@ -320,11 +435,11 @@ TEST_CASE("Unstructured Mesh")
             *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
 
         REQUIRE(patchNames.size() == 6);
-        REQUIRE(patchNames[0] == "left");
-        REQUIRE(patchNames[1] == "right");
-        REQUIRE(patchNames[2] == "bottom");
-        REQUIRE(patchNames[3] == "top");
-        REQUIRE(patchNames[4] == "front");
-        REQUIRE(patchNames[5] == "back");
+        REQUIRE(patchNames[0] == "xmin");
+        REQUIRE(patchNames[1] == "xmax");
+        REQUIRE(patchNames[2] == "ymin");
+        REQUIRE(patchNames[3] == "ymax");
+        REQUIRE(patchNames[4] == "zmin");
+        REQUIRE(patchNames[5] == "zmax");
     }
 }

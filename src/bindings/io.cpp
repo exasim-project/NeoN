@@ -7,7 +7,7 @@
 #include <nanobind/stl/variant.h>
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/mesh/unstructured/io/vtuMeshWriter.hpp"
+#include "NeoN/mesh/unstructured/io/vtmMeshWriter.hpp"
 #include "NeoN/mesh/unstructured/io/cgnsMeshWriter.hpp"
 #include "NeoN/mesh/unstructured/io/vtkHdfMeshWriter.hpp"
 #include "NeoN/mesh/unstructured/io/cgnsMeshReader.hpp"
@@ -24,11 +24,11 @@ namespace NeoN::bindings
 void registerIO(nb::module_& m)
 {
     m.def(
-        "write_vtu",
-        &NeoN::io::writeVtu,
+        "write_vtm",
+        &NeoN::io::writeVtm,
         "mesh"_a,
         "filepath"_a,
-        "Write mesh to VTU (VTK XML unstructured grid) format."
+        "Write mesh to VTM (multi-block) format with named boundary patches."
     );
 
     m.def("write_cgns", &NeoN::io::writeCgns, "mesh"_a, "filepath"_a, "Write mesh to CGNS format.");

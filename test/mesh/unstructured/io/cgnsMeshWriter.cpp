@@ -116,4 +116,19 @@ TEST_CASE("CgnsMeshWriter")
 
         std::filesystem::remove("output_singleTet_pts.cgns");
     }
+
+    SECTION("Uniform 2D mesh roundtrip preserves 6 boundaries " + execName)
+    {
+        auto mesh = NeoN::createUniform2DGrid(exec, 2, 2);
+        REQUIRE(mesh.nBoundaries() == 6);
+
+        NeoN::io::writeCgns(mesh, "output_uniform2d.cgns");
+        auto mesh2 = NeoN::io::readCgns("output_uniform2d.cgns", exec);
+
+        REQUIRE(mesh2.nBoundaries() == 6);
+        REQUIRE(mesh2.nCells() == 4);
+        REQUIRE(mesh2.nBoundaryFaces() == mesh.nBoundaryFaces());
+
+        std::filesystem::remove("output_uniform2d.cgns");
+    }
 }

@@ -9,19 +9,19 @@ import neon
 
 
 def test_io_bindings_exist():
-    assert hasattr(neon, 'write_vtu')
+    assert hasattr(neon, 'write_vtm')
     assert hasattr(neon, 'write_cgns')
     assert hasattr(neon, 'write_vtk_hdf')
     assert hasattr(neon, 'read_cgns')
     assert hasattr(neon, 'read_vtk_hdf')
 
 
-def test_write_vtu_creates_file():
+def test_write_vtm_creates_file():
     exec = neon.SerialExecutor()
     mesh = neon.create_uniform_2d_mesh(exec, 4, 4)
     with tempfile.TemporaryDirectory() as tmpdir:
-        path = os.path.join(tmpdir, "grid.vtu")
-        neon.write_vtu(mesh, path)
+        path = os.path.join(tmpdir, "grid.vtm")
+        neon.write_vtm(mesh, path)
         assert os.path.isfile(path)
         assert os.path.getsize(path) > 0
 

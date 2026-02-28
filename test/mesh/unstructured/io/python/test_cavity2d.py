@@ -10,10 +10,9 @@ so round-trip tests for 2D triangle meshes are marked xfail.
 """
 
 import numpy as np
-import pyvista as pv
 import pytest
 
-from conftest import extract_grid, run_roundtrip, run_cgns_to_vtu
+from conftest import extract_grid, extract_volume_block, run_roundtrip, run_cgns_to_vtm
 
 
 class TestCavity2DReference:
@@ -59,18 +58,18 @@ class TestCavity2DVtu:
     """Cavity 2D VTU export tests."""
 
     def test_vtu_point_count_matches(self, cavity2d_path, vtu_tool, tmp_path):
-        out = tmp_path / "cavity2D.vtu"
-        run_cgns_to_vtu(vtu_tool, cavity2d_path, out)
+        out = tmp_path / "cavity2D.vtm"
+        run_cgns_to_vtm(vtu_tool, cavity2d_path, out)
         ref = extract_grid(cavity2d_path)
-        result = pv.read(str(out))
+        result = extract_volume_block(out)
         assert result.n_points == ref.n_points
 
     @pytest.mark.xfail(reason="NeoN only supports 3D cell types; 2D triangles not exported to VTU")
     def test_vtu_cell_count_matches(self, cavity2d_path, vtu_tool, tmp_path):
-        out = tmp_path / "cavity2D.vtu"
-        run_cgns_to_vtu(vtu_tool, cavity2d_path, out)
+        out = tmp_path / "cavity2D.vtm"
+        run_cgns_to_vtm(vtu_tool, cavity2d_path, out)
         ref = extract_grid(cavity2d_path)
-        result = pv.read(str(out))
+        result = extract_volume_block(out)
         ref_cells = sum(ref.extract_cells_by_type(t).n_cells for t in [5, 7, 9, 10, 12])
         out_cells = sum(
             result.extract_cells_by_type(t).n_cells for t in [5, 7, 9, 10, 12]

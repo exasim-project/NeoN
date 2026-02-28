@@ -14,9 +14,9 @@ def test_create_uniform_2d_mesh_topology():
     mesh = neon.create_uniform_2d_mesh(exec, 3, 2)
 
     assert mesh.n_cells() == 6
-    assert mesh.n_boundaries() == 6  # left, right, bottom, top, front, back
+    assert mesh.n_boundaries() == 6  # xmin, xmax, ymin, ymax, zmin, zmax
     assert mesh.n_internal_faces() == 7
-    # boundary: left(2) + right(2) + bottom(3) + top(3) + front(6) + back(6) = 22
+    # boundary: xmin(2) + xmax(2) + ymin(3) + ymax(3) + zmin(6) + zmax(6) = 22
     assert mesh.n_boundary_faces() == 22
     assert mesh.n_faces() == 29
 

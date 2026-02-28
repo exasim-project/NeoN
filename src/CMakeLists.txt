@@ -40,6 +40,10 @@ target_sources(
           "linearAlgebra/sparsityPattern.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
+          "mesh/unstructured/createSingleCellMesh.cpp"
+          "mesh/unstructured/create1DUniformMesh.cpp"
+          "mesh/unstructured/createUniform2DGrid.cpp"
+          "mesh/unstructured/createUniform3DGrid.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/basicGeometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/cellToFaceStencil.cpp"
@@ -81,9 +85,14 @@ endif()
 if(NeoN_WITH_VTK)
   target_sources(
     NeoN
-    PRIVATE "mesh/unstructured/io/meshConverter.cpp" "mesh/unstructured/io/cgnsMeshReader.cpp"
-            "mesh/unstructured/io/cgnsMeshWriter.cpp" "mesh/unstructured/io/vtuMeshWriter.cpp"
-            "mesh/unstructured/io/vtkHdfMeshReader.cpp" "mesh/unstructured/io/vtkHdfMeshWriter.cpp")
+    PRIVATE "mesh/unstructured/io/meshConnectivity.cpp"
+            "mesh/unstructured/io/meshGeometry.cpp"
+            "mesh/unstructured/io/meshConverter.cpp"
+            "mesh/unstructured/io/cgnsMeshReader.cpp"
+            "mesh/unstructured/io/cgnsMeshWriter.cpp"
+            "mesh/unstructured/io/vtmMeshWriter.cpp"
+            "mesh/unstructured/io/vtkHdfMeshReader.cpp"
+            "mesh/unstructured/io/vtkHdfMeshWriter.cpp")
   target_link_libraries(
     NeoN
     PUBLIC VTK::CommonCore
