@@ -445,13 +445,26 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     // Compute geometry (after potential face reordering)
     auto geom = computeGeometry(hostPoints, topo, nCells);
 
+    // Get host views for boundary mesh construction
+    auto hostGeom = MeshGeometry {
+        geom.cellVolumes.copyToHost(),
+        geom.cellCentres.copyToHost(),
+        geom.faceAreas.copyToHost(),
+        geom.faceCentres.copyToHost(),
+        geom.magFaceAreas.copyToHost()
+    };
+    auto hFaceCentres = hostGeom.faceCentres.view();
+    auto hCellCentres = hostGeom.cellCentres.view();
+    auto hFaceAreas = hostGeom.faceAreas.view();
+    auto hMagFaceAreas = hostGeom.magFaceAreas.view();
+
     // Build NeoN vectors on the target executor
     vectorVector meshPoints(exec, hostPoints);
-    scalarVector cellVolumes(exec, geom.cellVolumes);
-    vectorVector cellCentres(exec, geom.cellCentres);
-    vectorVector faceAreasVec(exec, geom.faceAreas);
-    vectorVector faceCentresVec(exec, geom.faceCentres);
-    scalarVector magFaceAreasVec(exec, geom.magFaceAreas);
+    auto cellVolumes = geom.cellVolumes.copyToExecutor(exec);
+    auto cellCentres = geom.cellCentres.copyToExecutor(exec);
+    auto faceAreasVec = geom.faceAreas.copyToExecutor(exec);
+    auto faceCentresVec = geom.faceCentres.copyToExecutor(exec);
+    auto magFaceAreasVec = geom.magFaceAreas.copyToExecutor(exec);
     labelVector faceOwnerVec(exec, topo.faceOwner);
 
     // faceNeighbour only covers internal faces
@@ -471,16 +484,15 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     for (localIdx i = 0; i < nBoundaryFaces; ++i)
     {
         auto bi = static_cast<std::size_t>(i);
-        auto fi = static_cast<std::size_t>(nInternalFaces + i);
+        localIdx fi = nInternalFaces + i;
 
-        localIdx ownerCell = topo.faceOwner[fi];
-        auto oi = static_cast<std::size_t>(ownerCell);
+        localIdx ownerCell = topo.faceOwner[static_cast<std::size_t>(fi)];
 
         bndFaceCells[bi] = static_cast<label>(ownerCell);
-        bndCf[bi] = geom.faceCentres[fi];
-        bndCn[bi] = geom.cellCentres[oi];
-        bndSf[bi] = geom.faceAreas[fi];
-        bndMagSf[bi] = geom.magFaceAreas[fi];
+        bndCf[bi] = hFaceCentres[fi];
+        bndCn[bi] = hCellCentres[ownerCell];
+        bndSf[bi] = hFaceAreas[fi];
+        bndMagSf[bi] = hMagFaceAreas[fi];
 
         // Unit normal
         if (bndMagSf[bi] > 1e-30)

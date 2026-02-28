@@ -86,10 +86,14 @@ TEST_CASE("MeshConverter geometry")
         auto topo = NeoN::io::buildFaceTopology(conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
-        REQUIRE(geom.cellVolumes[0] == Catch::Approx(1.0 / 6.0).margin(1e-12));
-        REQUIRE(geom.cellCentres[0][0] == Catch::Approx(0.25).margin(1e-10));
-        REQUIRE(geom.cellCentres[0][1] == Catch::Approx(0.25).margin(1e-10));
-        REQUIRE(geom.cellCentres[0][2] == Catch::Approx(0.25).margin(1e-10));
+        auto hostVol = geom.cellVolumes.copyToHost();
+        auto hostCC = geom.cellCentres.copyToHost();
+        auto hVol = hostVol.view();
+        auto hCC = hostCC.view();
+        REQUIRE(hVol[0] == Catch::Approx(1.0 / 6.0).margin(1e-12));
+        REQUIRE(hCC[0][0] == Catch::Approx(0.25).margin(1e-10));
+        REQUIRE(hCC[0][1] == Catch::Approx(0.25).margin(1e-10));
+        REQUIRE(hCC[0][2] == Catch::Approx(0.25).margin(1e-10));
     }
 
     SECTION("Unit cube hex volume")
@@ -106,10 +110,14 @@ TEST_CASE("MeshConverter geometry")
         auto topo = NeoN::io::buildFaceTopology(conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
-        REQUIRE(geom.cellVolumes[0] == Catch::Approx(1.0).margin(1e-12));
-        REQUIRE(geom.cellCentres[0][0] == Catch::Approx(0.5).margin(1e-10));
-        REQUIRE(geom.cellCentres[0][1] == Catch::Approx(0.5).margin(1e-10));
-        REQUIRE(geom.cellCentres[0][2] == Catch::Approx(0.5).margin(1e-10));
+        auto hostVol = geom.cellVolumes.copyToHost();
+        auto hostCC = geom.cellCentres.copyToHost();
+        auto hVol = hostVol.view();
+        auto hCC = hostCC.view();
+        REQUIRE(hVol[0] == Catch::Approx(1.0).margin(1e-12));
+        REQUIRE(hCC[0][0] == Catch::Approx(0.5).margin(1e-10));
+        REQUIRE(hCC[0][1] == Catch::Approx(0.5).margin(1e-10));
+        REQUIRE(hCC[0][2] == Catch::Approx(0.5).margin(1e-10));
     }
 
     SECTION("Two tets total volume")
@@ -125,7 +133,9 @@ TEST_CASE("MeshConverter geometry")
         auto topo = NeoN::io::buildFaceTopology(conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 2);
 
-        NeoN::scalar totalVol = geom.cellVolumes[0] + geom.cellVolumes[1];
+        auto hostVol = geom.cellVolumes.copyToHost();
+        auto hVol = hostVol.view();
+        NeoN::scalar totalVol = hVol[0] + hVol[1];
         REQUIRE(totalVol == Catch::Approx(2.0 / 6.0).margin(1e-12));
     }
 }
