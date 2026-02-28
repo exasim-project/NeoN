@@ -78,6 +78,22 @@ target_link_libraries(NeoN PUBLIC NeoN_public_api)
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
 endif()
+if(NeoN_WITH_VTK)
+  target_sources(
+    NeoN
+    PRIVATE "mesh/unstructured/io/meshConverter.cpp" "mesh/unstructured/io/cgnsMeshReader.cpp"
+            "mesh/unstructured/io/cgnsMeshWriter.cpp" "mesh/unstructured/io/vtuMeshWriter.cpp"
+            "mesh/unstructured/io/vtkHdfMeshReader.cpp" "mesh/unstructured/io/vtkHdfMeshWriter.cpp")
+  target_link_libraries(
+    NeoN
+    PUBLIC VTK::CommonCore
+           VTK::CommonDataModel
+           VTK::IOXML
+           VTK::IOCGNSReader
+           VTK::IOHDF
+           VTK::cgns
+           VTK::FiltersCore)
+endif()
 if(WIN32)
   set_target_properties(
     NeoN
