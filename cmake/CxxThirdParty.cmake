@@ -252,8 +252,15 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
 endif()
 
 if(${NeoN_WITH_VTK})
-  find_package(VTK ${NeoN_VTK_VERSION} QUIET COMPONENTS CommonCore CommonDataModel IOXML IOLegacy
-                                                         IOCGNSReader IOHDF FiltersCore)
+  find_package(
+    VTK ${NeoN_VTK_VERSION} QUIET
+    COMPONENTS CommonCore
+               CommonDataModel
+               IOXML
+               IOLegacy
+               IOCGNSReader
+               IOHDF
+               FiltersCore)
   if(VTK_FOUND)
     message(STATUS "Using system-installed VTK (version: ${VTK_VERSION})")
   else()

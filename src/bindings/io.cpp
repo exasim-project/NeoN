@@ -31,13 +31,7 @@ void registerIO(nb::module_& m)
         "Write mesh to VTU (VTK XML unstructured grid) format."
     );
 
-    m.def(
-        "write_cgns",
-        &NeoN::io::writeCgns,
-        "mesh"_a,
-        "filepath"_a,
-        "Write mesh to CGNS format."
-    );
+    m.def("write_cgns", &NeoN::io::writeCgns, "mesh"_a, "filepath"_a, "Write mesh to CGNS format.");
 
     m.def(
         "write_vtk_hdf",
@@ -47,13 +41,7 @@ void registerIO(nb::module_& m)
         "Write mesh to VTK HDF5 format."
     );
 
-    m.def(
-        "read_cgns",
-        &NeoN::io::readCgns,
-        "filepath"_a,
-        "exec"_a,
-        "Read mesh from CGNS file."
-    );
+    m.def("read_cgns", &NeoN::io::readCgns, "filepath"_a, "exec"_a, "Read mesh from CGNS file.");
 
     m.def(
         "read_vtk_hdf",
