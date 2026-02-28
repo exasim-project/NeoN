@@ -334,5 +334,31 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  */
 UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells);
 
+/** @brief A factory function for a uniform 2D mesh (OpenFOAM-style hex slab)
+ *
+ * Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1].
+ * One cell thick in z, like OpenFOAM 2D meshes.
+ * Six boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly),
+ * front (z=0), back (z=1).
+ */
+UnstructuredMesh createUniform2DGrid(
+    const Executor exec, localIdx nx, localIdx ny, scalar Lx = 1.0, scalar Ly = 1.0
+);
+
+/** @brief A factory function for a uniform 3D hex mesh
+ *
+ * Creates an nx × ny × nz structured hex mesh on [0,Lx] × [0,Ly] × [0,Lz].
+ * Six boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly),
+ * front (z=0), back (z=Lz).
+ */
+UnstructuredMesh createUniform3DGrid(
+    const Executor exec,
+    localIdx nx,
+    localIdx ny,
+    localIdx nz,
+    scalar Lx = 1.0,
+    scalar Ly = 1.0,
+    scalar Lz = 1.0
+);
 
 } // namespace NeoN

@@ -26,6 +26,9 @@ void registerInitialization(nanobind::module_& m);
 void registerLinearAlgebra(nanobind::module_& m);
 void registerDSL(nanobind::module_& m);
 
+// IO bindings
+void registerIO(nanobind::module_& m);
+
 // Database bindings
 void registerDocument(nanobind::module_& m);
 void registerCollection(nanobind::module_& m);

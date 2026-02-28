@@ -195,6 +195,46 @@ void registerUnstructuredMesh(nb::module_& m)
         "Each cell has a left and right face. Useful for 1D simulations\n"
         "and testing finite volume schemes."
     );
+
+    m.def(
+        "create_uniform_2d_mesh",
+        &NeoN::createUniform2DGrid,
+        "exec"_a,
+        "nx"_a,
+        "ny"_a,
+        "Lx"_a = 1.0,
+        "Ly"_a = 1.0,
+        "Create a uniform 2D quad mesh on [0,Lx] x [0,Ly].\n\n"
+        "Args:\n"
+        "    exec: Executor for parallel operations\n"
+        "    nx: Number of cells in x direction\n"
+        "    ny: Number of cells in y direction\n"
+        "    Lx: Domain length in x (default 1.0)\n"
+        "    Ly: Domain length in y (default 1.0)\n\n"
+        "Creates nx*ny quad cells with 4 boundary patches (left, right, bottom, top)."
+    );
+
+    m.def(
+        "create_uniform_3d_mesh",
+        &NeoN::createUniform3DGrid,
+        "exec"_a,
+        "nx"_a,
+        "ny"_a,
+        "nz"_a,
+        "Lx"_a = 1.0,
+        "Ly"_a = 1.0,
+        "Lz"_a = 1.0,
+        "Create a uniform 3D hex mesh on [0,Lx] x [0,Ly] x [0,Lz].\n\n"
+        "Args:\n"
+        "    exec: Executor for parallel operations\n"
+        "    nx: Number of cells in x direction\n"
+        "    ny: Number of cells in y direction\n"
+        "    nz: Number of cells in z direction\n"
+        "    Lx: Domain length in x (default 1.0)\n"
+        "    Ly: Domain length in y (default 1.0)\n"
+        "    Lz: Domain length in z (default 1.0)\n\n"
+        "Creates nx*ny*nz hex cells with 6 boundary patches."
+    );
 }
 
 } // namespace NeoN::bindings

@@ -354,6 +354,7 @@ CellConnectivity rebuildCellConnectivity(
 )
 {
     // VTK cell type constants
+    constexpr int VTK_QUAD_TYPE = 9;
     constexpr int VTK_TETRA_TYPE = 10;
     constexpr int VTK_HEXAHEDRON_TYPE = 12;
     constexpr int VTK_WEDGE_TYPE = 13;
@@ -381,11 +382,13 @@ CellConnectivity rebuildCellConnectivity(
     {
         auto ci = static_cast<std::size_t>(c);
 
-        // Collect unique nodes
+        // Collect unique nodes and check max nodes per face
         std::set<localIdx> nodeSet;
+        std::size_t maxNodesPerFace = 0;
         for (localIdx f : cellFaces[ci])
         {
             auto fi = static_cast<std::size_t>(f);
+            maxNodesPerFace = std::max(maxNodesPerFace, faceNodes[fi].size());
             for (localIdx n : faceNodes[fi])
             {
                 nodeSet.insert(n);
@@ -397,7 +400,13 @@ CellConnectivity rebuildCellConnectivity(
         localIdx nCellFaces = static_cast<localIdx>(cellFaces[ci].size());
         localIdx nCellNodes = static_cast<localIdx>(nodeSet.size());
 
-        if (nCellFaces == 4 && nCellNodes == 4) conn.cellTypes[ci] = VTK_TETRA_TYPE;
+        if (maxNodesPerFace <= 2)
+        {
+            // 2D cell: faces are edges
+            conn.cellTypes[ci] = VTK_QUAD_TYPE;
+        }
+        else if (nCellFaces == 4 && nCellNodes == 4)
+            conn.cellTypes[ci] = VTK_TETRA_TYPE;
         else if (nCellFaces == 6 && nCellNodes == 8)
             conn.cellTypes[ci] = VTK_HEXAHEDRON_TYPE;
         else if (nCellFaces == 5 && nCellNodes == 6)
@@ -426,6 +435,7 @@ std::vector<CellInfo> rebuildCellInfo(
 )
 {
     // VTK cell type constants
+    constexpr int VTK_QUAD_TYPE = 9;
     constexpr int VTK_TETRA_TYPE = 10;
     constexpr int VTK_HEXAHEDRON_TYPE = 12;
     constexpr int VTK_WEDGE_TYPE = 13;
@@ -468,7 +478,20 @@ std::vector<CellInfo> rebuildCellInfo(
         localIdx nCellFaces = static_cast<localIdx>(cell.cellFaceNodes.size());
         localIdx nCellNodes = static_cast<localIdx>(cell.nodeIds.size());
 
-        if (nCellFaces == 4 && nCellNodes == 4) cell.cellType = VTK_TETRA_TYPE;
+        // Check max nodes per face to distinguish 2D (edges with 2 nodes) from 3D
+        std::size_t maxNodesPerFace = 0;
+        for (const auto& fn : cell.cellFaceNodes)
+        {
+            maxNodesPerFace = std::max(maxNodesPerFace, fn.size());
+        }
+
+        if (maxNodesPerFace <= 2)
+        {
+            // 2D cell: faces are edges
+            cell.cellType = VTK_QUAD_TYPE;
+        }
+        else if (nCellFaces == 4 && nCellNodes == 4)
+            cell.cellType = VTK_TETRA_TYPE;
         else if (nCellFaces == 6 && nCellNodes == 8)
             cell.cellType = VTK_HEXAHEDRON_TYPE;
         else if (nCellFaces == 5 && nCellNodes == 6)
@@ -484,6 +507,50 @@ std::vector<CellInfo> rebuildCellInfo(
     }
 
     return cells;
+}
+
+
+std::vector<localIdx> orderQuadNodes(const CellInfo& cell)
+{
+    // Chain edges to get nodes in connected order around the quad.
+    // Each edge (face) has 2 nodes. Start from first edge and follow connectivity.
+    auto& edges = cell.cellFaceNodes;
+    std::vector<localIdx> ordered;
+    ordered.reserve(4);
+
+    // Start with the first edge
+    ordered.push_back(edges[0][0]);
+    ordered.push_back(edges[0][1]);
+
+    // Build adjacency: for each node, which edges contain it
+    std::map<localIdx, std::vector<std::size_t>> nodeToEdges;
+    for (std::size_t ei = 0; ei < edges.size(); ++ei)
+    {
+        for (localIdx n : edges[ei])
+        {
+            nodeToEdges[n].push_back(ei);
+        }
+    }
+
+    std::set<std::size_t> usedEdges;
+    usedEdges.insert(0);
+
+    // Follow the chain: last node of ordered → find next unused edge containing it
+    for (int step = 0; step < 2; ++step)
+    {
+        localIdx lastNode = ordered.back();
+        for (std::size_t ei : nodeToEdges[lastNode])
+        {
+            if (usedEdges.count(ei)) continue;
+            usedEdges.insert(ei);
+            // Add the other node of this edge
+            localIdx other = (edges[ei][0] == lastNode) ? edges[ei][1] : edges[ei][0];
+            ordered.push_back(other);
+            break;
+        }
+    }
+
+    return ordered;
 }
 
 

@@ -36,6 +36,7 @@ nanobind_add_module(
   containerFreeFunctions.cpp
   boundaryMesh.cpp
   unstructuredMesh.cpp
+  io.cpp
   surfaceField.cpp
   volumeField.cpp
   surfaceInterpolation.cpp
@@ -51,11 +52,21 @@ nanobind_add_module(
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
+# Copy __init__.py next to the .so for both build and install
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
+               ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py COPYONLY)
+
 # Installation
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
+    DESTINATION neon
+    COMPONENT python)
 else()
   # Standalone installation
   install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
 endif()

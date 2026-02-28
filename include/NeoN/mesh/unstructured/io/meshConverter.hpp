@@ -95,6 +95,9 @@ std::vector<CellInfo> rebuildCellInfo(
     localIdx nFaces
 );
 
+/// Order quad nodes: returns [n0, n1, n2, n3] in connected edge order (0-based).
+std::vector<localIdx> orderQuadNodes(const CellInfo& cell);
+
 /// Order tet nodes: returns [base0, base1, base2, apex] (0-based).
 std::vector<localIdx> orderTetNodes(const CellInfo& cell);
 

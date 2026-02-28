@@ -86,6 +86,9 @@ void writeVtkHdf(const UnstructuredMesh& mesh, const std::string& filePath)
 
         switch (cell.cellType)
         {
+        case 9: // VTK_QUAD
+            ordered = orderQuadNodes(cell);
+            break;
         case 10: // VTK_TETRA
             ordered = orderTetNodes(cell);
             break;

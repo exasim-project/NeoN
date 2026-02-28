@@ -32,6 +32,7 @@ namespace
 // Map VTK cell type ID to CGNS element type
 CGNS_ENUMT(ElementType_t) vtkTypeToCgns(int vtkType)
 {
+    constexpr int VTK_QUAD_TYPE = 9;
     constexpr int VTK_TETRA_TYPE = 10;
     constexpr int VTK_HEXAHEDRON_TYPE = 12;
     constexpr int VTK_WEDGE_TYPE = 13;
@@ -39,6 +40,8 @@ CGNS_ENUMT(ElementType_t) vtkTypeToCgns(int vtkType)
 
     switch (vtkType)
     {
+    case VTK_QUAD_TYPE:
+        return CGNS_ENUMV(QUAD_4);
     case VTK_TETRA_TYPE:
         return CGNS_ENUMV(TETRA_4);
     case VTK_HEXAHEDRON_TYPE:
@@ -119,9 +122,12 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
         throw std::runtime_error("Failed to open CGNS file for writing: " + filePath);
     }
 
+    // Determine dimensionality from cell types
+    bool is2D = !cells.empty() && cells[0].cellType == 9; // VTK_QUAD
+
     // Write base
     int baseIdx = 0;
-    int cellDim = 3;
+    int cellDim = is2D ? 2 : 3;
     int physDim = 3;
     if (cg_base_write(fn, "NeoNBase", cellDim, physDim, &baseIdx) != CG_OK)
     {
@@ -181,6 +187,10 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
 
         switch (elemType)
         {
+        case CGNS_ENUMV(QUAD_4):
+            nodesPerElem = 4;
+            secName = "Quad";
+            break;
         case CGNS_ENUMV(TETRA_4):
             nodesPerElem = 4;
             secName = "Tetra";
@@ -207,7 +217,11 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
         for (std::size_t ci : cellIndices)
         {
             std::vector<cgsize_t> orderedNodes;
-            if (elemType == CGNS_ENUMV(TETRA_4))
+            if (elemType == CGNS_ENUMV(QUAD_4))
+            {
+                orderedNodes = toCgnsNodes(orderQuadNodes(cells[ci]));
+            }
+            else if (elemType == CGNS_ENUMV(TETRA_4))
             {
                 orderedNodes = toCgnsNodes(orderTetNodes(cells[ci]));
             }
@@ -264,7 +278,9 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
         localIdx nFaceNodes = static_cast<localIdx>(faceNodes[firstFaceIdx].size());
 
         CGNS_ENUMT(ElementType_t) faceType;
-        if (nFaceNodes == 3) faceType = CGNS_ENUMV(TRI_3);
+        if (nFaceNodes == 2) faceType = CGNS_ENUMV(BAR_2);
+        else if (nFaceNodes == 3)
+            faceType = CGNS_ENUMV(TRI_3);
         else if (nFaceNodes == 4)
             faceType = CGNS_ENUMV(QUAD_4);
         else
