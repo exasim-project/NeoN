@@ -1,0 +1,431 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1io" kind="namespace" language="C++">
+    <compoundname>NeoN::io</compoundname>
+    <innerclass refid="structNeoN_1_1io_1_1CellConnectivity" prot="public">NeoN::io::CellConnectivity</innerclass>
+    <innerclass refid="structNeoN_1_1io_1_1CellInfo" prot="public">NeoN::io::CellInfo</innerclass>
+    <innerclass refid="structNeoN_1_1io_1_1FaceTopology" prot="public">NeoN::io::FaceTopology</innerclass>
+    <innerclass refid="structNeoN_1_1io_1_1MeshGeometry" prot="public">NeoN::io::MeshGeometry</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa1770aba321871d9f9746ee91a971b74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>
+        <definition>UnstructuredMesh NeoN::io::readCgns</definition>
+        <argsstring>(const std::string &amp;filePath, const Executor &amp;exec)</argsstring>
+        <name>readCgns</name>
+        <qualifiedname>NeoN::io::readCgns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filePath</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+<para>Read a CGNS file and return an <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> on the given executor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Uses VTK&apos;s CGNS reader internally to parse the file, then extracts points, cell connectivity, boundary conditions, and computes face topology and geometric quantities.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the .cgns file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>exec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The executor to use for the mesh data. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The constructed <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/cgnsMeshReader.hpp" line="26" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/cgnsMeshReader.hpp" declline="26" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a8dc5a5f4b33ee9bc204873bbcd029128" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::io::writeCgns</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const std::string &amp;filePath)</argsstring>
+        <name>writeCgns</name>
+        <qualifiedname>NeoN::io::writeCgns</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filePath</declname>
+        </param>
+        <briefdescription>
+<para>Write an <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> to a CGNS file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Writes the mesh points, cell connectivity, and boundary conditions using the CGNS mid-level C API. Cell connectivity is recovered from the face topology stored in the mesh.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh to write. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output path (must end in .cgns). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/cgnsMeshWriter.hpp" line="24" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/cgnsMeshWriter.hpp" declline="24" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1abc86266576b6d195bd8fe90c30004422" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref></type>
+        <definition>FaceTopology NeoN::io::buildFaceTopology</definition>
+        <argsstring>(const CellConnectivity &amp;connectivity)</argsstring>
+        <name>buildFaceTopology</name>
+        <qualifiedname>NeoN::io::buildFaceTopology</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellConnectivity" kindref="compound">CellConnectivity</ref> &amp;</type>
+          <declname>connectivity</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Build face topology from cell-to-node connectivity.</para>
+<para>Each cell&apos;s faces are identified using element-type face templates, then deduplicated using canonical (sorted) face keys. Shared faces become internal faces; unshared faces become boundary faces. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="63" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="63" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a1e16fd98da9b45df9474890177e59751" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1MeshGeometry" kindref="compound">MeshGeometry</ref></type>
+        <definition>MeshGeometry NeoN::io::computeGeometry</definition>
+        <argsstring>(const std::vector&lt; Vec3 &gt; &amp;points, const FaceTopology &amp;topo, localIdx nCells)</argsstring>
+        <name>computeGeometry</name>
+        <qualifiedname>NeoN::io::computeGeometry</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref> &amp;</type>
+          <declname>topo</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute all geometric quantities from points and face topology.</para>
+<para>Face areas via triangulation from centroid, cell centres as average of touching face centres, cell volumes via tetrahedral decomposition. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="70" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="70" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a7324ca8a72175a063328b3c99674f473" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1CellConnectivity" kindref="compound">CellConnectivity</ref></type>
+        <definition>CellConnectivity NeoN::io::rebuildCellConnectivity</definition>
+        <argsstring>(const std::vector&lt; label &gt; &amp;faceOwner, const std::vector&lt; label &gt; &amp;faceNeighbour, const std::vector&lt; std::vector&lt; localIdx &gt; &gt; &amp;faceNodes, localIdx nCells, localIdx nInternalFaces, localIdx nFaces)</argsstring>
+        <name>rebuildCellConnectivity</name>
+        <qualifiedname>NeoN::io::rebuildCellConnectivity</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt; &amp;</type>
+          <declname>faceOwner</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt; &amp;</type>
+          <declname>faceNeighbour</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nFaces</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reconstruct cell-to-node connectivity from face topology.</para>
+<para>Collects faces per cell via faceOwner/faceNeighbour, builds unique node set, determines element type from face/node counts. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="76" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="76" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a000f69f9e9583cbe50916f4480b4b463" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &gt;</type>
+        <definition>std::vector&lt; CellInfo &gt; NeoN::io::rebuildCellInfo</definition>
+        <argsstring>(const std::vector&lt; label &gt; &amp;faceOwner, const std::vector&lt; label &gt; &amp;faceNeighbour, const std::vector&lt; std::vector&lt; localIdx &gt; &gt; &amp;faceNodes, localIdx nCells, localIdx nInternalFaces, localIdx nFaces)</argsstring>
+        <name>rebuildCellInfo</name>
+        <qualifiedname>NeoN::io::rebuildCellInfo</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt; &amp;</type>
+          <declname>faceOwner</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt; &amp;</type>
+          <declname>faceNeighbour</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nFaces</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reconstruct per-cell info including face-node lists from face topology.</para>
+<para>Like rebuildCellConnectivity but also stores cellFaceNodes per cell, needed by node ordering functions and writers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="89" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="89" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a8f4a148660a9e4a7e5e83711fc0c39db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>std::vector&lt; localIdx &gt; NeoN::io::orderQuadNodes</definition>
+        <argsstring>(const CellInfo &amp;cell)</argsstring>
+        <name>orderQuadNodes</name>
+        <qualifiedname>NeoN::io::orderQuadNodes</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &amp;</type>
+          <declname>cell</declname>
+        </param>
+        <briefdescription>
+<para>Order quad nodes: returns [n0, n1, n2, n3] in connected edge order (0-based). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="99" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="99" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a087033779ae71cf180cdcf695e47e585" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>std::vector&lt; localIdx &gt; NeoN::io::orderTetNodes</definition>
+        <argsstring>(const CellInfo &amp;cell)</argsstring>
+        <name>orderTetNodes</name>
+        <qualifiedname>NeoN::io::orderTetNodes</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &amp;</type>
+          <declname>cell</declname>
+        </param>
+        <briefdescription>
+<para>Order tet nodes: returns [base0, base1, base2, apex] (0-based). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="102" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="102" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a94e312a0bfeee41352229fc08a9e3ab2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>std::vector&lt; localIdx &gt; NeoN::io::orderHexNodes</definition>
+        <argsstring>(const CellInfo &amp;cell)</argsstring>
+        <name>orderHexNodes</name>
+        <qualifiedname>NeoN::io::orderHexNodes</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &amp;</type>
+          <declname>cell</declname>
+        </param>
+        <briefdescription>
+<para>Order hex nodes: returns [bottom0..3, top0..3] (0-based). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="105" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="105" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa670a870fea415f8f42e8f18677c5cef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>std::vector&lt; localIdx &gt; NeoN::io::orderPyramidNodes</definition>
+        <argsstring>(const CellInfo &amp;cell)</argsstring>
+        <name>orderPyramidNodes</name>
+        <qualifiedname>NeoN::io::orderPyramidNodes</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &amp;</type>
+          <declname>cell</declname>
+        </param>
+        <briefdescription>
+<para>Order pyramid nodes: returns [base0..3, apex] (0-based). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="108" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="108" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a03dbce7873dcab66fbf8597d71d55596" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>std::vector&lt; localIdx &gt; NeoN::io::orderWedgeNodes</definition>
+        <argsstring>(const CellInfo &amp;cell)</argsstring>
+        <name>orderWedgeNodes</name>
+        <qualifiedname>NeoN::io::orderWedgeNodes</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref> &amp;</type>
+          <declname>cell</declname>
+        </param>
+        <briefdescription>
+<para>Order wedge/prism nodes: returns [bottom0..2, top0..2] (0-based). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="111" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="111" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1afe1f34524c23462827c093823ea54b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1CellConnectivity" kindref="compound">CellConnectivity</ref></type>
+        <definition>CellConnectivity NeoN::io::extractCellConnectivity</definition>
+        <argsstring>(vtkUnstructuredGrid *grid)</argsstring>
+        <name>extractCellConnectivity</name>
+        <qualifiedname>NeoN::io::extractCellConnectivity</qualifiedname>
+        <param>
+          <type>vtkUnstructuredGrid *</type>
+          <declname>grid</declname>
+        </param>
+        <briefdescription>
+<para>Extract cell connectivity from a VTK unstructured grid. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="114" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="114" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a763a7fd019106ad2ca462c7745cdf10c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>
+        <definition>UnstructuredMesh NeoN::io::readVtkHdf</definition>
+        <argsstring>(const std::string &amp;filePath, const Executor &amp;exec)</argsstring>
+        <name>readVtkHdf</name>
+        <qualifiedname>NeoN::io::readVtkHdf</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filePath</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtkHdfMeshReader.hpp" line="15" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtkHdfMeshReader.hpp" declline="15" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a4bd7adf5710c43c1f000ebc6f06e04ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::io::writeVtkHdf</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const std::string &amp;filePath)</argsstring>
+        <name>writeVtkHdf</name>
+        <qualifiedname>NeoN::io::writeVtkHdf</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filePath</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtkHdfMeshWriter.hpp" line="14" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtkHdfMeshWriter.hpp" declline="14" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a5c5c1463c879611ce84d10378772cd31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::io::writeVtu</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const std::string &amp;filePath)</argsstring>
+        <name>writeVtu</name>
+        <qualifiedname>NeoN::io::writeVtu</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filePath</declname>
+        </param>
+        <briefdescription>
+<para>Write an <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> to a VTU file for ParaView visualization. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Writes points and cell connectivity using VTK&apos;s XML unstructured grid format. Cell connectivity is recovered from the face topology stored in the mesh&apos;s stencilDB.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh to write. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output path (must end in .vtu). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtuMeshWriter.hpp" line="24" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/vtuMeshWriter.hpp" declline="24" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/cgnsMeshReader.hpp" line="12" column="1"/>
+  </compounddef>
+</doxygen>
