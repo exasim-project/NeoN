@@ -76,8 +76,8 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00072}00072\ }
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00073}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_a56c94ac6f978f443557c31a7c60c3717}{00073}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_a56c94ac6f978f443557c31a7c60c3717}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls)\textcolor{keyword}{\ const}}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00074}00074\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>name()\ ==\ \textcolor{stringliteral}{"{}FaceBased"{}})}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ I\ dont\ know\ how\ we\ can\ end\ up\ with\ a\ nullptr\ here\ double\ check}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()\ ==\ \textcolor{keyword}{nullptr})}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aa9012564297d8cd0d135bef94cd86298}{computeDivLapImplFace}}(}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
@@ -90,75 +90,93 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffA\_,}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffB\_}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>name()\ ==\ \textcolor{stringliteral}{"{}CellBased"{}})}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a2e3640ee091cd99a760336bb0c53d527}{computeDivLapImplCell}}(}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flux\_,}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gamma\_,}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *divSurfaceInterpolation\_.get(),}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ *lapSurfaceInterpolation\_.get(),}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *faceNormalGradient\_.get(),}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffA\_,}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffB\_,}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::dynamic\_pointer\_cast<la::CellBasedIterator>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>get())}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00105}00105\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00106}00106\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00107}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ab457b2471ad7e4682860fa54e26f5fd5}{00107}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ab457b2471ad7e4682860fa54e26f5fd5}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00108}00108\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.mesh();}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{TokenList}}\ laplTokens;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{TokenList}}\ divTokens;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<Dictionary>(input))}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<Dictionary>(input);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ lapSchemeName\ =\ \textcolor{stringliteral}{"{}laplacian("{}}\ +\ gamma\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.name\ +\ \textcolor{stringliteral}{"{})"{}};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ divSchemeName\ =\ \textcolor{stringliteral}{"{}div("{}}\ +\ flux\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().name\ +\ \textcolor{stringliteral}{"{})"{}};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ laplTokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}laplacianSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(lapSchemeName);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ divTokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}divSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(divSchemeName);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}only\ dictionary\ input\ supported"{}});}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ laplTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ divTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ lapSurfaceInterpolation\_\ =}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SurfaceInterpolation<ValueType>>(this-\/>exec(),\ mesh,}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ laplTokens);}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ divSurfaceInterpolation\_\ =}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SurfaceInterpolation<ValueType>>(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.exec(),\ mesh,\ divTokens);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ laplTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ faceNormalGradient\_\ =}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<FaceNormalGradient<ValueType>>(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.exec(),\ mesh,\ laplTokens);}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00134}00134\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00135}00135\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00136}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ae07c018951e124e2f62476c9d0ddc271}{00136}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ae07c018951e124e2f62476c9d0ddc271}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FusedDivLapOperator"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00137}00137\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00138}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ad08e7aa9f5cba35f58581507d0b493c6}{00138}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ad08e7aa9f5cba35f58581507d0b493c6}{getConfig}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00139}00139\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00140}00140\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00141}00141\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{comment}{//\ SurfaceInterpolation<ValueType>\ surfaceInterpolation\_;}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00143}00143\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00144}00144\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ coeffA\_;\ \textcolor{comment}{//\ div\ coeff}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00145}00145\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ coeffB\_;\ \textcolor{comment}{//\ lap\ coeff}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00146}00146\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ gamma\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00148}00148\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00149}00149\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00150}00150\ \ \ \ \ std::shared\_ptr<SurfaceInterpolation<ValueType>>\ divSurfaceInterpolation\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00151}00151\ \ \ \ \ \textcolor{comment}{//\ std::shared\_ptr<SurfaceInterpolation<scalar>>\ lapSurfaceInterpolation\_;}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00152}00152\ \ \ \ \ std::shared\_ptr<FaceNormalGradient<ValueType>>\ faceNormalGradient\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00153}00153\ \};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00154}00154\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00155}00155\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDivLaplacian<scalar>;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00156}00156\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDivLaplacian<Vec3>;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>name()\ ==\ \textcolor{stringliteral}{"{}CellBased"{}})}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a2e3640ee091cd99a760336bb0c53d527}{computeDivLapImplCell}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flux\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gamma\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *divSurfaceInterpolation\_.get(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ *lapSurfaceInterpolation\_.get(),}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *faceNormalGradient\_.get(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffA\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffB\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::dynamic\_pointer\_cast<la::CellBasedIterator>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>get())}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a32005e5ba7dd66c7d61bf52b495e6224}{getMeshIterator}}()-\/>name()\ ==\ \textcolor{stringliteral}{"{}FaceBased"{}})}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aa9012564297d8cd0d135bef94cd86298}{computeDivLapImplFace}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flux\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gamma\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *divSurfaceInterpolation\_.get(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ *lapSurfaceInterpolation\_.get(),}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *faceNormalGradient\_.get(),}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffA\_,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coeffB\_}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00123}00123\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00125}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ab457b2471ad7e4682860fa54e26f5fd5}{00125}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ab457b2471ad7e4682860fa54e26f5fd5}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00126}00126\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.mesh();}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{TokenList}}\ laplTokens;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{TokenList}}\ divTokens;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<Dictionary>(input))}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<Dictionary>(input);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ lapSchemeName\ =\ \textcolor{stringliteral}{"{}laplacian("{}}\ +\ gamma\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.name\ +\ \textcolor{stringliteral}{"{})"{}};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ divSchemeName\ =\ \textcolor{stringliteral}{"{}div("{}}\ +\ flux\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().name\ +\ \textcolor{stringliteral}{"{})"{}};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ laplTokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}laplacianSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(lapSchemeName);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ divTokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}divSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(divSchemeName);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}only\ dictionary\ input\ supported"{}});}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ laplTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ divTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ lapSurfaceInterpolation\_\ =}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SurfaceInterpolation<ValueType>>(this-\/>exec(),\ mesh,}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ laplTokens);}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ divSurfaceInterpolation\_\ =}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SurfaceInterpolation<ValueType>>(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.exec(),\ mesh,\ divTokens);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ laplTokens.\mbox{\hyperlink{classNeoN_1_1TokenList_ab18b639ac9728b182802418daf6e731c}{remove}}(0);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ faceNormalGradient\_\ =}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<FaceNormalGradient<ValueType>>(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a0de3b4d1a53e4d2f2da658917d6addbf}{field\_}}.exec(),\ mesh,\ laplTokens);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00152}00152\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00154}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ae07c018951e124e2f62476c9d0ddc271}{00154}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ae07c018951e124e2f62476c9d0ddc271}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FusedDivLapOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00156}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ad08e7aa9f5cba35f58581507d0b493c6}{00156}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian_ad08e7aa9f5cba35f58581507d0b493c6}{getConfig}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00157}00157\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00158}00158\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00158}00158\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{comment}{//\ SurfaceInterpolation<ValueType>\ surfaceInterpolation\_;}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00162}00162\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ coeffA\_;\ \textcolor{comment}{//\ div\ coeff}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00163}00163\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ coeffB\_;\ \textcolor{comment}{//\ lap\ coeff}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ gamma\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00166}00166\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00168}00168\ \ \ \ \ std::shared\_ptr<SurfaceInterpolation<ValueType>>\ divSurfaceInterpolation\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{comment}{//\ std::shared\_ptr<SurfaceInterpolation<scalar>>\ lapSurfaceInterpolation\_;}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00170}00170\ \ \ \ \ std::shared\_ptr<FaceNormalGradient<ValueType>>\ faceNormalGradient\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00171}00171\ \};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00173}00173\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDivLaplacian<scalar>;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00174}00174\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDivLaplacian<Vec3>;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00176}00176\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
