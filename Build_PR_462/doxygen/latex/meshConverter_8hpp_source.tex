@@ -8,89 +8,32 @@
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00004}00004\ }
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00006}00006\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <vector>}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00013}00013\ \textcolor{keyword}{class\ }vtkUnstructuredGrid;}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00014}00014\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshConnectivity_8hpp}{NeoN/mesh/unstructured/io/meshConnectivity.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshGeometry_8hpp}{NeoN/mesh/unstructured/io/meshGeometry.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <vtkMultiBlockDataSet.h>}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <vtkPartitionedDataSetCollection.h>}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <vtkSmartPointer.h>}}
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00019}\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{00019}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{CellConnectivity}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00020}00020\ \{}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00021}\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_acd29cb6ee0b03c34ad4f33321852ddf0}{00021}}\ \ \ \ \ std::vector<std::vector<localIdx>>\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_acd29cb6ee0b03c34ad4f33321852ddf0}{cellToNodes}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00022}\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_a27d5e20ffac64f2bde04e6b00b01eaae}{00022}}\ \ \ \ \ std::vector<int>\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_a27d5e20ffac64f2bde04e6b00b01eaae}{cellTypes}};\ \textcolor{comment}{//\ VTK\ cell\ type\ IDs\ (10=TET,\ 12=HEX,\ etc.)}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00023}\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_a394a0286e4a27a1ffa5a061aaa6b862c}{00023}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity_a394a0286e4a27a1ffa5a061aaa6b862c}{nCells}}\ \{\};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00024}00024\ \};}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00020}00020\ \textcolor{keyword}{class\ }vtkUnstructuredGrid;}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00021}00021\ \textcolor{keyword}{class\ }vtkPartitionedDataSetCollection;}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00023}00023\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00024}00024\ \{}
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00026}00026\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00028}\mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{00028}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00029}00029\ \{}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00030}\mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a589a610c40210be3a94f35fc2488bc61}{00030}}\ \ \ \ \ std::vector<localIdx>\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a589a610c40210be3a94f35fc2488bc61}{nodeIds}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ unique\ node\ IDs\ for\ this\ cell}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00031}\mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a1ac2a5db27162a2fa365e52b4c0b53ec}{00031}}\ \ \ \ \ std::vector<std::vector<localIdx>>\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a1ac2a5db27162a2fa365e52b4c0b53ec}{cellFaceNodes}};\ \textcolor{comment}{//\ nodes\ of\ each\ face\ of\ this\ cell}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00032}\mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a968f90f3ba6886516e2796d82207ae14}{00032}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo_a968f90f3ba6886516e2796d82207ae14}{cellType}}\ \{\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VTK\ cell\ type\ ID}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00033}00033\ \};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00034}00034\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00037}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{00037}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{FaceTopology}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00038}00038\ \{}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00039}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a935dd7c7e96bd87a4f36066ebf339701}{00039}}\ \ \ \ \ std::vector<localIdx>\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a935dd7c7e96bd87a4f36066ebf339701}{faceOwner}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00040}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a73a83ee5aed6aeeca65f03fd95fe4cac}{00040}}\ \ \ \ \ std::vector<localIdx>\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a73a83ee5aed6aeeca65f03fd95fe4cac}{faceNeighbour}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00041}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a4ef3a6673e708483e8059015a6b67b5f}{00041}}\ \ \ \ \ std::vector<std::vector<localIdx>>\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a4ef3a6673e708483e8059015a6b67b5f}{faceNodes}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00042}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a84d41be5f847c1159e1132d7413d4f9a}{00042}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_a84d41be5f847c1159e1132d7413d4f9a}{nInternalFaces}}\ \{\};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00043}\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_ab7b21e3373ad153eee5f0780abe26cda}{00043}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology_ab7b21e3373ad153eee5f0780abe26cda}{nBoundaryFaces}}\ \{\};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00044}00044\ \};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}{00031}}\ vtkSmartPointer<vtkMultiBlockDataSet>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}{buildMultiBlockMesh}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00038}\mbox{\hyperlink{namespaceNeoN_1_1io_a758f90dc2e38df6f179bfd6590dfe807}{00038}}\ vtkSmartPointer<vtkPartitionedDataSetCollection>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a758f90dc2e38df6f179bfd6590dfe807}{buildPartitionedMesh}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00045}\mbox{\hyperlink{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}{00045}}\ std::vector<std::string>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}{multiBlockPatchNames}}(vtkMultiBlockDataSet*\ boundary);}
 \DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00046}00046\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00048}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry}{00048}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry}{MeshGeometry}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00049}00049\ \{}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00050}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_af0050d96eb8f57aa3d601187b5ab2480}{00050}}\ \ \ \ \ std::vector<scalar>\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_af0050d96eb8f57aa3d601187b5ab2480}{cellVolumes}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00051}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_ab89f21da6b368b309493e446249ce7f1}{00051}}\ \ \ \ \ std::vector<Vec3>\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_ab89f21da6b368b309493e446249ce7f1}{cellCentres}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00052}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_a0ab1084857dafc2fe8221ecf7014fe28}{00052}}\ \ \ \ \ std::vector<Vec3>\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_a0ab1084857dafc2fe8221ecf7014fe28}{faceAreas}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00053}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_a32a8ea8b9dc1d8b086dc074b6412359c}{00053}}\ \ \ \ \ std::vector<Vec3>\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_a32a8ea8b9dc1d8b086dc074b6412359c}{faceCentres}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00054}\mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_ae7fd085250e8d39e6d2a6a2881edc949}{00054}}\ \ \ \ \ std::vector<scalar>\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry_ae7fd085250e8d39e6d2a6a2881edc949}{magFaceAreas}};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00055}00055\ \};}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00056}00056\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00063}\mbox{\hyperlink{namespaceNeoN_1_1io_abc86266576b6d195bd8fe90c30004422}{00063}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{FaceTopology}}\ \mbox{\hyperlink{namespaceNeoN_1_1io_abc86266576b6d195bd8fe90c30004422}{buildFaceTopology}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{CellConnectivity}}\&\ connectivity);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00064}00064\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00069}00069\ \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry}{MeshGeometry}}}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00070}\mbox{\hyperlink{namespaceNeoN_1_1io_a1e16fd98da9b45df9474890177e59751}{00070}}\ \mbox{\hyperlink{namespaceNeoN_1_1io_a1e16fd98da9b45df9474890177e59751}{computeGeometry}}(\textcolor{keyword}{const}\ std::vector<Vec3>\&\ points,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{FaceTopology}}\&\ topo,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00076}\mbox{\hyperlink{namespaceNeoN_1_1io_a7324ca8a72175a063328b3c99674f473}{00076}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{CellConnectivity}}\ \mbox{\hyperlink{namespaceNeoN_1_1io_a7324ca8a72175a063328b3c99674f473}{rebuildCellConnectivity}}(}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00077}00077\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<label>\&\ faceOwner,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<label>\&\ faceNeighbour,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<localIdx>>\&\ faceNodes,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00080}00080\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00081}00081\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nInternalFaces,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00082}00082\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nFaces}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00083}00083\ );}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00089}\mbox{\hyperlink{namespaceNeoN_1_1io_a000f69f9e9583cbe50916f4480b4b463}{00089}}\ std::vector<CellInfo>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a000f69f9e9583cbe50916f4480b4b463}{rebuildCellInfo}}(}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<label>\&\ faceOwner,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<label>\&\ faceNeighbour,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<localIdx>>\&\ faceNodes,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00093}00093\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00094}00094\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nInternalFaces,}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00095}00095\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nFaces}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00096}00096\ );}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00097}00097\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00099}\mbox{\hyperlink{namespaceNeoN_1_1io_a8f4a148660a9e4a7e5e83711fc0c39db}{00099}}\ std::vector<localIdx>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a8f4a148660a9e4a7e5e83711fc0c39db}{orderQuadNodes}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}\&\ cell);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00100}00100\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00102}\mbox{\hyperlink{namespaceNeoN_1_1io_a087033779ae71cf180cdcf695e47e585}{00102}}\ std::vector<localIdx>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a087033779ae71cf180cdcf695e47e585}{orderTetNodes}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}\&\ cell);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00103}00103\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00105}\mbox{\hyperlink{namespaceNeoN_1_1io_a94e312a0bfeee41352229fc08a9e3ab2}{00105}}\ std::vector<localIdx>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a94e312a0bfeee41352229fc08a9e3ab2}{orderHexNodes}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}\&\ cell);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00106}00106\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00108}\mbox{\hyperlink{namespaceNeoN_1_1io_aa670a870fea415f8f42e8f18677c5cef}{00108}}\ std::vector<localIdx>\ \mbox{\hyperlink{namespaceNeoN_1_1io_aa670a870fea415f8f42e8f18677c5cef}{orderPyramidNodes}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}\&\ cell);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00109}00109\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00111}\mbox{\hyperlink{namespaceNeoN_1_1io_a03dbce7873dcab66fbf8597d71d55596}{00111}}\ std::vector<localIdx>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a03dbce7873dcab66fbf8597d71d55596}{orderWedgeNodes}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{CellInfo}}\&\ cell);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00112}00112\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00114}\mbox{\hyperlink{namespaceNeoN_1_1io_afe1f34524c23462827c093823ea54b6e}{00114}}\ \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{CellConnectivity}}\ \mbox{\hyperlink{namespaceNeoN_1_1io_afe1f34524c23462827c093823ea54b6e}{extractCellConnectivity}}(vtkUnstructuredGrid*\ grid);}
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00116}00116\ }
-\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00117}00117\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00048}00048\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
 
 \end{DoxyCode}
