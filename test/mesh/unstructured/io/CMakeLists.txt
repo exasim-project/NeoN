@@ -5,4 +5,5 @@
 if(NeoN_WITH_VTK)
   neon_unit_test(meshConnectivity)
   neon_unit_test(meshGeometry)
+  neon_unit_test(meshConverter)
 endif()
