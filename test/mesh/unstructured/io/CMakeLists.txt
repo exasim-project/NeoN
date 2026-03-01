@@ -14,6 +14,7 @@ if(NeoN_WITH_VTK)
   neon_unit_test(meshConverter)
   neon_unit_test(vtkHdfMeshWriter)
   neon_unit_test(vtkHdfMeshReader)
+  neon_unit_test(fieldWriter)
 
   add_executable(nn_cgnsRoundTrip tools/cgnsRoundTrip.cpp)
   target_link_libraries(nn_cgnsRoundTrip PRIVATE NeoN NeoN_warnings NeoN_options)

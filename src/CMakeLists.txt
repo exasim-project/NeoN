@@ -97,7 +97,8 @@ if(NeoN_WITH_VTK)
             "mesh/unstructured/io/cgnsMeshWriter.cpp"
             "mesh/unstructured/io/vtmMeshWriter.cpp"
             "mesh/unstructured/io/vtkHdfMeshReader.cpp"
-            "mesh/unstructured/io/vtkHdfMeshWriter.cpp")
+            "mesh/unstructured/io/vtkHdfMeshWriter.cpp"
+            "mesh/unstructured/io/fieldWriter.cpp")
   target_link_libraries(
     NeoN
     PUBLIC VTK::CommonCore
