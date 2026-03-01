@@ -76,7 +76,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">meshConverter.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -85,10 +86,12 @@ $(function() {
 <code>#include &quot;<a class="el" href="label_8hpp_source.html">NeoN/core/primitives/label.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="scalar_8hpp_source.html">NeoN/core/primitives/scalar.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="vec3_8hpp_source.html">NeoN/core/primitives/vec3.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="boundaryMesh_8hpp_source.html">NeoN/mesh/unstructured/boundaryMesh.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="unstructuredMesh_8hpp_source.html">NeoN/mesh/unstructured/unstructuredMesh.hpp</a>&quot;</code><br />
 <code>#include &lt;vtkMultiBlockDataSet.h&gt;</code><br />
 <code>#include &lt;vtkPartitionedDataSetCollection.h&gt;</code><br />
 <code>#include &lt;vtkSmartPointer.h&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="meshConverter_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -102,12 +105,23 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ae8d8d7457c89954f6b4ce7b696e9e08d" id="r_ae8d8d7457c89954f6b4ce7b696e9e08d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1BoundaryMesh.html">BoundaryMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#ae8d8d7457c89954f6b4ce7b696e9e08d">NeoN::io::buildBoundaryMesh</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceOwner, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceCentres, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;cellCentres, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceAreas, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;magFaceAreas, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaryFaces, const std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;patchOffsets)</td></tr>
+<tr class="separator:ae8d8d7457c89954f6b4ce7b696e9e08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d43dce3df985dbecc5d11661bec5aa1" id="r_a2d43dce3df985dbecc5d11661bec5aa1"><td class="memItemLeft" align="right" valign="top">vtkSmartPointer&lt; vtkMultiBlockDataSet &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a2d43dce3df985dbecc5d11661bec5aa1">NeoN::io::buildMultiBlockMesh</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a2d43dce3df985dbecc5d11661bec5aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a758f90dc2e38df6f179bfd6590dfe807" id="r_a758f90dc2e38df6f179bfd6590dfe807"><td class="memItemLeft" align="right" valign="top">vtkSmartPointer&lt; vtkPartitionedDataSetCollection &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a758f90dc2e38df6f179bfd6590dfe807">NeoN::io::buildPartitionedMesh</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a758f90dc2e38df6f179bfd6590dfe807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e515ebfe551ca22d2e5f442474d0f6b" id="r_a8e515ebfe551ca22d2e5f442474d0f6b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a8e515ebfe551ca22d2e5f442474d0f6b">NeoN::io::multiBlockPatchNames</a> (vtkMultiBlockDataSet *boundary)</td></tr>
 <tr class="separator:a8e515ebfe551ca22d2e5f442474d0f6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2e985e3118a3b38425be2b9914325067" id="r_a2e985e3118a3b38425be2b9914325067"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a2e985e3118a3b38425be2b9914325067">NeoN::io::stencilFaceNodes</a> = &quot;io::faceNodes&quot;</td></tr>
+<tr class="memdesc:a2e985e3118a3b38425be2b9914325067"><td class="mdescLeft">&#160;</td><td class="mdescRight">StencilDB key for face-node connectivity (<a class="el" href="classNeoN_1_1SegmentedVector.html">SegmentedVector&lt;localIdx,localIdx&gt;</a>).  <br /></td></tr>
+<tr class="separator:a2e985e3118a3b38425be2b9914325067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19e71a61c08dfb935ab757b9fb11f01a" id="r_a19e71a61c08dfb935ab757b9fb11f01a"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a19e71a61c08dfb935ab757b9fb11f01a">NeoN::io::stencilPatchNames</a> = &quot;io::patchNames&quot;</td></tr>
+<tr class="memdesc:a19e71a61c08dfb935ab757b9fb11f01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">StencilDB key for patch names (std::vector&lt;std::string&gt;).  <br /></td></tr>
+<tr class="separator:a19e71a61c08dfb935ab757b9fb11f01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
