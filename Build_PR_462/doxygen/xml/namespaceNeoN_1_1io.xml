@@ -320,6 +320,266 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/vtkExtraction.hpp" line="17" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/vtkExtraction.hpp" declline="17" declcolumn="1"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1aca2e6b2326e03faab43b9e59b4041ead" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        <definition>SegmentedVector&lt; localIdx, localIdx &gt; NeoN::io::buildCellToFaceMapping</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; localIdx &gt; &amp;faceOwner, const Vector&lt; localIdx &gt; &amp;faceNeighbour, localIdx nInternalFaces, localIdx nCells)</argsstring>
+        <name>buildCellToFaceMapping</name>
+        <qualifiedname>NeoN::io::buildCellToFaceMapping</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceOwner</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNeighbour</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>Build a cell-to-face mapping as a <ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" line="18" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" declline="18" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1af6b8777f6928915fb8bc082a8ffa3a4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeCellCentres</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;faceCentres, SegmentedVector&lt; localIdx, localIdx &gt; &amp;cellFaces, localIdx nCells)</argsstring>
+        <name>computeCellCentres</name>
+        <qualifiedname>NeoN::io::computeCellCentres</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>faceCentres</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>cellFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>Compute cell centres as average of face centres per cell. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" line="27" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" declline="27" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1ac04f3b745144ef8269e53526d4dbd6e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
+        <definition>Vector&lt; scalar &gt; NeoN::io::computeCellVolumes</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, const Vector&lt; Vec3 &gt; &amp;faceCentres, const Vector&lt; Vec3 &gt; &amp;cellCentres, SegmentedVector&lt; localIdx, localIdx &gt; &amp;cellFaces, localIdx nCells)</argsstring>
+        <name>computeCellVolumes</name>
+        <qualifiedname>NeoN::io::computeCellVolumes</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>faceCentres</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>cellCentres</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>cellFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>Compute cell volumes via tetrahedral decomposition. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" line="35" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/cellGeometry.hpp" declline="35" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa15f3e549630a8e501756aba44c09110" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1MeshGeometry" kindref="compound">MeshGeometry</ref></type>
+        <definition>MeshGeometry NeoN::io::computeGeometry</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, const Vector&lt; localIdx &gt; &amp;faceOwner, const Vector&lt; localIdx &gt; &amp;faceNeighbour, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, localIdx nInternalFaces, localIdx nCells)</argsstring>
+        <name>computeGeometry</name>
+        <qualifiedname>NeoN::io::computeGeometry</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceOwner</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNeighbour</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>Compute all geometric quantities from device vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/computeGeometry.hpp" line="21" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/computeGeometry.hpp" declline="21" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1a1e16fd98da9b45df9474890177e59751" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1io_1_1MeshGeometry" kindref="compound">MeshGeometry</ref></type>
+        <definition>MeshGeometry NeoN::io::computeGeometry</definition>
+        <argsstring>(const std::vector&lt; Vec3 &gt; &amp;points, const FaceTopology &amp;topo, localIdx nCells)</argsstring>
+        <name>computeGeometry</name>
+        <qualifiedname>NeoN::io::computeGeometry</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref> &amp;</type>
+          <declname>topo</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>Overload: compute from std::vector and <ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/computeGeometry.hpp" line="33" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/computeGeometry.hpp" declline="33" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1ac2dee2dc83d8a51a3d4c4db635351898" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeFaceCentres</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes)</argsstring>
+        <name>computeFaceCentres</name>
+        <qualifiedname>NeoN::io::computeFaceCentres</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <briefdescription>
+<para>Compute face centres as the average of face node positions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" line="18" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" declline="18" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa04c70577ad51b581b1aed3193be8544" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeFaceAreas</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, const Vector&lt; Vec3 &gt; &amp;faceCentres)</argsstring>
+        <name>computeFaceAreas</name>
+        <qualifiedname>NeoN::io::computeFaceAreas</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <declname>faceNodes</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>faceCentres</declname>
+        </param>
+        <briefdescription>
+<para>Compute face area vectors via triangulation from face centre. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" line="23" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" declline="23" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1io_1ab05913a98a3fc10016fbd5f74437bb12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
+        <definition>Vector&lt; scalar &gt; NeoN::io::computeMagFaceAreas</definition>
+        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;faceAreas)</argsstring>
+        <name>computeMagFaceAreas</name>
+        <qualifiedname>NeoN::io::computeMagFaceAreas</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>faceAreas</declname>
+        </param>
+        <briefdescription>
+<para>Compute magnitude of face area vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" line="31" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/geometry/faceGeometry.hpp" declline="31" declcolumn="8"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1io_1a2d43dce3df985dbecc5d11661bec5aa1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>vtkSmartPointer&lt; vtkMultiBlockDataSet &gt;</type>
         <definition>vtkSmartPointer&lt; vtkMultiBlockDataSet &gt; NeoN::io::buildMultiBlockMesh</definition>
@@ -379,266 +639,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" line="45" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp" declline="45" declcolumn="13"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1ac2dee2dc83d8a51a3d4c4db635351898" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
-        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeFaceCentres</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes)</argsstring>
-        <name>computeFaceCentres</name>
-        <qualifiedname>NeoN::io::computeFaceCentres</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>points</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNodes</declname>
-        </param>
-        <briefdescription>
-<para>Compute face centres as the average of face node positions. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="32" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="32" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa04c70577ad51b581b1aed3193be8544" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
-        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeFaceAreas</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, const Vector&lt; Vec3 &gt; &amp;faceCentres)</argsstring>
-        <name>computeFaceAreas</name>
-        <qualifiedname>NeoN::io::computeFaceAreas</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>points</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNodes</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>faceCentres</declname>
-        </param>
-        <briefdescription>
-<para>Compute face area vectors via triangulation from face centre. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="37" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="37" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1ab05913a98a3fc10016fbd5f74437bb12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
-        <definition>Vector&lt; scalar &gt; NeoN::io::computeMagFaceAreas</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;faceAreas)</argsstring>
-        <name>computeMagFaceAreas</name>
-        <qualifiedname>NeoN::io::computeMagFaceAreas</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>faceAreas</declname>
-        </param>
-        <briefdescription>
-<para>Compute magnitude of face area vectors. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="45" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="45" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1aca2e6b2326e03faab43b9e59b4041ead" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
-        <definition>SegmentedVector&lt; localIdx, localIdx &gt; NeoN::io::buildCellToFaceMapping</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; localIdx &gt; &amp;faceOwner, const Vector&lt; localIdx &gt; &amp;faceNeighbour, localIdx nInternalFaces, localIdx nCells)</argsstring>
-        <name>buildCellToFaceMapping</name>
-        <qualifiedname>NeoN::io::buildCellToFaceMapping</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceOwner</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNeighbour</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nInternalFaces</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nCells</declname>
-        </param>
-        <briefdescription>
-<para>Build a cell-to-face mapping as a <ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="48" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="48" declcolumn="17"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1af6b8777f6928915fb8bc082a8ffa3a4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
-        <definition>Vector&lt; Vec3 &gt; NeoN::io::computeCellCentres</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;faceCentres, SegmentedVector&lt; localIdx, localIdx &gt; &amp;cellFaces, localIdx nCells)</argsstring>
-        <name>computeCellCentres</name>
-        <qualifiedname>NeoN::io::computeCellCentres</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>faceCentres</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>cellFaces</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nCells</declname>
-        </param>
-        <briefdescription>
-<para>Compute cell centres as average of face centres per cell. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="57" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="57" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1ac04f3b745144ef8269e53526d4dbd6e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
-        <definition>Vector&lt; scalar &gt; NeoN::io::computeCellVolumes</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, const Vector&lt; Vec3 &gt; &amp;faceCentres, const Vector&lt; Vec3 &gt; &amp;cellCentres, SegmentedVector&lt; localIdx, localIdx &gt; &amp;cellFaces, localIdx nCells)</argsstring>
-        <name>computeCellVolumes</name>
-        <qualifiedname>NeoN::io::computeCellVolumes</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>points</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNodes</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>faceCentres</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>cellCentres</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>cellFaces</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nCells</declname>
-        </param>
-        <briefdescription>
-<para>Compute cell volumes via tetrahedral decomposition. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="65" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="65" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1aa15f3e549630a8e501756aba44c09110" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structNeoN_1_1io_1_1MeshGeometry" kindref="compound">MeshGeometry</ref></type>
-        <definition>MeshGeometry NeoN::io::computeGeometry</definition>
-        <argsstring>(const Executor &amp;exec, const Vector&lt; Vec3 &gt; &amp;points, const Vector&lt; localIdx &gt; &amp;faceOwner, const Vector&lt; localIdx &gt; &amp;faceNeighbour, SegmentedVector&lt; localIdx, localIdx &gt; &amp;faceNodes, localIdx nInternalFaces, localIdx nCells)</argsstring>
-        <name>computeGeometry</name>
-        <qualifiedname>NeoN::io::computeGeometry</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
-          <declname>exec</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>points</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceOwner</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNeighbour</declname>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
-          <declname>faceNodes</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nInternalFaces</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nCells</declname>
-        </param>
-        <briefdescription>
-<para>Compute all geometric quantities from device vectors. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="76" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="76" declcolumn="14"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1io_1a1e16fd98da9b45df9474890177e59751" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structNeoN_1_1io_1_1MeshGeometry" kindref="compound">MeshGeometry</ref></type>
-        <definition>MeshGeometry NeoN::io::computeGeometry</definition>
-        <argsstring>(const std::vector&lt; Vec3 &gt; &amp;points, const FaceTopology &amp;topo, localIdx nCells)</argsstring>
-        <name>computeGeometry</name>
-        <qualifiedname>NeoN::io::computeGeometry</qualifiedname>
-        <param>
-          <type>const std::vector&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>points</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref> &amp;</type>
-          <declname>topo</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nCells</declname>
-        </param>
-        <briefdescription>
-<para>Legacy overload: compute from std::vector and <ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref>. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" line="88" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshGeometry.hpp" declline="88" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1io_1a763a7fd019106ad2ca462c7745cdf10c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>

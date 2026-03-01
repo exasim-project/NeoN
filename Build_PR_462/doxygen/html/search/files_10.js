@@ -6,5 +6,5 @@ var searchData=
   ['timeintegration_2ehpp_3',['timeIntegration.hpp',['../timeIntegration_8hpp.html',1,'']]],
   ['tokenlist_2ehpp_4',['tokenList.hpp',['../tokenList_8hpp.html',1,'']]],
   ['traits_2ehpp_5',['traits.hpp',['../traits_8hpp.html',1,'']]],
-  ['types_2ehpp_6',['types.hpp',['../types_8hpp.html',1,'']]]
+  ['types_2ehpp_6',['types.hpp',['../connectivity_2types_8hpp.html',1,'(Global Namespace)'],['../geometry_2types_8hpp.html',1,'(Global Namespace)']]]
 ];
