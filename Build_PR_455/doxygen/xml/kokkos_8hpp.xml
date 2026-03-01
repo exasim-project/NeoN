@@ -2,14 +2,13 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="kokkos_8hpp" kind="file" language="C++">
     <compoundname>kokkos.hpp</compoundname>
-    <includes refid="memory_2allocator_8hpp" local="yes">NeoN/core/memory/allocator.hpp</includes>
+    <includes local="no">Kokkos_Core.hpp</includes>
+    <includes refid="allocator_8hpp" local="yes">NeoN/core/memory/allocator.hpp</includes>
     <includedby refid="executor_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp</includedby>
     <incdepgraph>
-      <node id="3">
+      <node id="4">
         <label>NeoN/core/error.hpp</label>
         <link refid="error_8hpp"/>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
@@ -20,15 +19,19 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>info.hpp</label>
         <link refid="info_8hpp"/>
       </node>
-      <node id="2">
+      <node id="3">
         <label>NeoN/core/memory/allocator.hpp</label>
-        <link refid="memory_2allocator_8hpp"/>
-        <childnode refid="3" relation="include">
+        <link refid="allocator_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -36,20 +39,28 @@
         <link refid="kokkos_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="4">
-        <label>cstdlib</label>
+      <node id="2">
+        <label>Kokkos_Core.hpp</label>
       </node>
       <node id="5">
-        <label>exception</label>
+        <label>cstdlib</label>
       </node>
       <node id="6">
-        <label>iostream</label>
-      </node>
-      <node id="8">
-        <label>sstream</label>
+        <label>exception</label>
       </node>
       <node id="7">
+        <label>iostream</label>
+      </node>
+      <node id="11">
+        <label>memory</label>
+      </node>
+      <node id="9">
+        <label>sstream</label>
+      </node>
+      <node id="8">
         <label>string</label>
       </node>
     </incdepgraph>
@@ -861,31 +872,33 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="memory_2allocator_8hpp" kindref="compound">NeoN/core/memory/allocator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
-<codeline lineno="11"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="16" refid="classNeoN_1_1KokkosAllocator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">KokkosAllocator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1AllocatorStrategy" kindref="compound">AllocatorStrategy</ref></highlight></codeline>
-<codeline lineno="17"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="allocator_8hpp" kindref="compound">NeoN/core/memory/allocator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="classNeoN_1_1KokkosAllocator" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">KokkosAllocator</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1AllocatorStrategy" kindref="compound">AllocatorStrategy</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21" refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" kindref="member">GPUMemSpace</ref><sp/>=<sp/>Kokkos::DefaultExecutionSpace::memory_space;</highlight></codeline>
-<codeline lineno="22" refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" kindref="member">CPUMemSpace</ref><sp/>=<sp/>Kokkos::HostSpace;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24" refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">alloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" kindref="member">GPUMemSpace</ref><sp/>=<sp/>Kokkos::DefaultExecutionSpace::memory_space;</highlight></codeline>
+<codeline lineno="24" refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" kindref="member">CPUMemSpace</ref><sp/>=<sp/>Kokkos::HostSpace;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" kindref="member">realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="26" refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">alloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="28" refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" kindref="member">free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">ptr</ref>)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28" refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" kindref="member">realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30" refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" kindref="member">~KokkosAllocator</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
-<codeline lineno="31"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="namespaceNeoN_1ad21f9c627e11e11f4e33dd1717971ce6" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">DefaultAllocator</ref><sp/>=<sp/><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">KokkosAllocator</ref>;</highlight></codeline>
+<codeline lineno="30" refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" kindref="member">free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kindref="member">ptr</ref>)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" kindref="member">~KokkosAllocator</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="35" refid="namespaceNeoN_1ad21f9c627e11e11f4e33dd1717971ce6" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">DefaultAllocator</ref><sp/>=<sp/><ref refid="classNeoN_1_1KokkosAllocator" kindref="compound">KokkosAllocator</ref>;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp"/>
   </compounddef>

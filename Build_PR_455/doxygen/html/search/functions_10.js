@@ -16,7 +16,7 @@ var searchData=
   ['setlogger_13',['setlogger',['../namespaceNeoN.html#a2e077c76f6a45a0a9a1556e8bad5bb54',1,'NeoN::setLogger()'],['../classNeoN_1_1Logging_1_1SupportsLoggingMixin.html#a5c05a02dde4c15bb400c32a2361e84ce',1,'NeoN::Logging::SupportsLoggingMixin::setLogger()'],['../namespaceNeoN_1_1Logging.html#a02663648b70255c0e7ec3fad5271a862',1,'NeoN::Logging::setLogger()']]],
   ['setmemspace_14',['setMemSpace',['../classNeoN_1_1AllocatorStrategy.html#a352505b0c16b94ff5e70e6bae2c0d588',1,'NeoN::AllocatorStrategy']]],
   ['setneondefaultpattern_15',['setNeonDefaultPattern',['../namespaceNeoN_1_1Logging.html#a1a0d1b85be89d1c39fe586c4000ed6b5',1,'NeoN::Logging']]],
-  ['setstrategy_16',['setStrategy',['../classNeoN_1_1AllocatorContext.html#ad2f32daf35c429b85bbd03cacd736b4e',1,'NeoN::AllocatorContext']]],
+  ['setstrategy_16',['setStrategy',['../classNeoN_1_1AllocatorContext.html#ade2fc5ee44d0e33a7098fe6390b8ffab',1,'NeoN::AllocatorContext']]],
   ['setsymmetryvalue_17',['setSymmetryValue',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a441e4f821471c83004cfef5b1b757259',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
   ['setsymmetryvalue_3c_20neon_3a_3ascalar_20_3e_18',['setSymmetryValue&lt; NeoN::scalar &gt;',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a796f3a5b7d1ef50cf6147e53631e77bd',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
   ['setsymmetryvalue_3c_20neon_3a_3avec3_20_3e_19',['setSymmetryValue&lt; NeoN::Vec3 &gt;',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#aec1cc4bb760073caeda2d2e0cf24cab7',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
