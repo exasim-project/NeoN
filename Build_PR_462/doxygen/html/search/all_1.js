@@ -33,7 +33,7 @@ var searchData=
   ['boundarytypes_30',['boundaryTypes',['../classNeoN_1_1BoundaryData.html#a60a1ed15ef5cadb62c0512a285ed8629',1,'NeoN::BoundaryData']]],
   ['bounds_31',['bounds',['../classNeoN_1_1SegmentedVectorView.html#ae951634d8f5ebd5fb95d7e165af78ccc',1,'NeoN::SegmentedVectorView']]],
   ['buildcelltofacemapping_32',['buildCellToFaceMapping',['../namespaceNeoN_1_1io.html#aca2e6b2326e03faab43b9e59b4041ead',1,'NeoN::io']]],
-  ['buildfacetopology_33',['buildFaceTopology',['../namespaceNeoN_1_1io.html#abc86266576b6d195bd8fe90c30004422',1,'NeoN::io']]],
+  ['buildfacetopology_33',['buildFaceTopology',['../namespaceNeoN_1_1io.html#ab1a91bc824b8a0e66710ebd94de760bd',1,'NeoN::io']]],
   ['buildmultiblockmesh_34',['buildMultiBlockMesh',['../namespaceNeoN_1_1io.html#a2d43dce3df985dbecc5d11661bec5aa1',1,'NeoN::io']]],
   ['buildpartitionedmesh_35',['buildPartitionedMesh',['../namespaceNeoN_1_1io.html#a758f90dc2e38df6f179bfd6590dfe807',1,'NeoN::io']]]
 ];

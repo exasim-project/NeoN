@@ -6,7 +6,7 @@
 struct \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}}
 \begin{DoxyCompactList}\small\item\em Cell connectivity\+: cell-\/to-\/node mapping and element type per cell. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}}
-\begin{DoxyCompactList}\small\item\em Per-\/cell info with face-\/node lists for node ordering. \end{DoxyCompactList}\item 
+\item 
 struct \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{Face\+Topology}}
 \begin{DoxyCompactList}\small\item\em Face topology\+: owner/neighbour, face-\/to-\/node, internal/boundary split. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry}{Mesh\+Geometry}}
@@ -18,11 +18,11 @@ struct \mbox{\hyperlink{structNeoN_1_1io_1_1MeshGeometry}{Mesh\+Geometry}}
 \begin{DoxyCompactList}\small\item\em Read a CGNS file and return an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} on the given executor. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespaceNeoN_1_1io_a8dc5a5f4b33ee9bc204873bbcd029128}{write\+Cgns}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const std\+::string \&file\+Path)
 \begin{DoxyCompactList}\small\item\em Write an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} to a CGNS file. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{Face\+Topology}} \mbox{\hyperlink{namespaceNeoN_1_1io_abc86266576b6d195bd8fe90c30004422}{build\+Face\+Topology}} (const \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \&connectivity)
+\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \mbox{\hyperlink{namespaceNeoN_1_1io_a262c881202bb5c3c51330415c1d33f61}{rebuild\+Cell\+Connectivity}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Owner, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Neighbour, const \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Nodes, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Faces)
 \item 
-\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \mbox{\hyperlink{namespaceNeoN_1_1io_a7324ca8a72175a063328b3c99674f473}{rebuild\+Cell\+Connectivity}} (const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&face\+Owner, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&face\+Neighbour, const std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&face\+Nodes, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Faces)
+std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a23d8adee9cd49428ab8e0126037338fe}{rebuild\+Cell\+Info}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Owner, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Neighbour, const \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Nodes, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Faces)
 \item 
-std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a000f69f9e9583cbe50916f4480b4b463}{rebuild\+Cell\+Info}} (const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&face\+Owner, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&face\+Neighbour, const std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&face\+Nodes, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Faces)
+\mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{Face\+Topology}} \mbox{\hyperlink{namespaceNeoN_1_1io_ab1a91bc824b8a0e66710ebd94de760bd}{build\+Face\+Topology}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \&connectivity)
 \item 
 std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a8f4a148660a9e4a7e5e83711fc0c39db}{order\+Quad\+Nodes}} (const \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} \&cell)
 \begin{DoxyCompactList}\small\item\em Order quad nodes\+: returns \mbox{[}n0, n1, n2, n3\mbox{]} in connected edge order (0-\/based). \end{DoxyCompactList}\item 
@@ -34,8 +34,8 @@ std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcab
 \begin{DoxyCompactList}\small\item\em Order pyramid nodes\+: returns \mbox{[}base0..3, apex\mbox{]} (0-\/based). \end{DoxyCompactList}\item 
 std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a03dbce7873dcab66fbf8597d71d55596}{order\+Wedge\+Nodes}} (const \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} \&cell)
 \begin{DoxyCompactList}\small\item\em Order wedge/prism nodes\+: returns \mbox{[}bottom0..2, top0..2\mbox{]} (0-\/based). \end{DoxyCompactList}\item 
-\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \mbox{\hyperlink{namespaceNeoN_1_1io_afe1f34524c23462827c093823ea54b6e}{extract\+Cell\+Connectivity}} (vtk\+Unstructured\+Grid \texorpdfstring{$\ast$}{*}grid)
-\begin{DoxyCompactList}\small\item\em Extract cell connectivity from a VTK unstructured grid. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \mbox{\hyperlink{namespaceNeoN_1_1io_afc6dc3ec2e93e5e1fffe0c98dbb64ccf}{extract\+Cell\+Connectivity}} (vtk\+Unstructured\+Grid \texorpdfstring{$\ast$}{*}grid, const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec=\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}} \{\})
+\item 
 vtk\+Smart\+Pointer$<$ vtk\+Multi\+Block\+Data\+Set $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}{build\+Multi\+Block\+Mesh}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
 vtk\+Smart\+Pointer$<$ vtk\+Partitioned\+Data\+Set\+Collection $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a758f90dc2e38df6f179bfd6590dfe807}{build\+Partitioned\+Mesh}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
@@ -79,15 +79,15 @@ void \mbox{\hyperlink{namespaceNeoN_1_1io_a5c5c1463c879611ce84d10378772cd31}{wri
 
 Build a cell-\/to-\/face mapping as a \doxylink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}. 
 
-\Hypertarget{namespaceNeoN_1_1io_abc86266576b6d195bd8fe90c30004422}\label{namespaceNeoN_1_1io_abc86266576b6d195bd8fe90c30004422} 
+\Hypertarget{namespaceNeoN_1_1io_ab1a91bc824b8a0e66710ebd94de760bd}\label{namespaceNeoN_1_1io_ab1a91bc824b8a0e66710ebd94de760bd} 
 \index{NeoN::io@{NeoN::io}!buildFaceTopology@{buildFaceTopology}}
 \index{buildFaceTopology@{buildFaceTopology}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{buildFaceTopology()}{buildFaceTopology()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{Face\+Topology}} Neo\+N\+::io\+::build\+Face\+Topology (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \&}]{connectivity }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1FaceTopology}{Face\+Topology}} Neo\+N\+::io\+::build\+Face\+Topology (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} \&}]{connectivity }\end{DoxyParamCaption})}
 
 Build face topology from cell-\/to-\/node connectivity.
 
-Each cell\textquotesingle{}s faces are identified using element-\/type face templates, then deduplicated using canonical (sorted) face keys. Shared faces become internal faces; unshared faces become boundary faces. \Hypertarget{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}\label{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1} 
+Each cell\textquotesingle{}s faces are identified using element-\/type face templates, then deduplicated using canonical (sorted) face keys. Shared faces become internal faces; unshared faces become boundary faces. The deduplication runs on the host; results are copied to exec. \Hypertarget{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}\label{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1} 
 \index{NeoN::io@{NeoN::io}!buildMultiBlockMesh@{buildMultiBlockMesh}}
 \index{buildMultiBlockMesh@{buildMultiBlockMesh}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{buildMultiBlockMesh()}{buildMultiBlockMesh()}}
@@ -173,17 +173,13 @@ Legacy overload\+: compute from std\+::vector and \doxylink{structNeoN_1_1io_1_1
 
 Compute magnitude of face area vectors. 
 
-\Hypertarget{namespaceNeoN_1_1io_afe1f34524c23462827c093823ea54b6e}\label{namespaceNeoN_1_1io_afe1f34524c23462827c093823ea54b6e} 
+\Hypertarget{namespaceNeoN_1_1io_afc6dc3ec2e93e5e1fffe0c98dbb64ccf}\label{namespaceNeoN_1_1io_afc6dc3ec2e93e5e1fffe0c98dbb64ccf} 
 \index{NeoN::io@{NeoN::io}!extractCellConnectivity@{extractCellConnectivity}}
 \index{extractCellConnectivity@{extractCellConnectivity}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{extractCellConnectivity()}{extractCellConnectivity()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} Neo\+N\+::io\+::extract\+Cell\+Connectivity (\begin{DoxyParamCaption}\item[{vtk\+Unstructured\+Grid \texorpdfstring{$\ast$}{*}}]{grid }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} Neo\+N\+::io\+::extract\+Cell\+Connectivity (\begin{DoxyParamCaption}\item[{vtk\+Unstructured\+Grid \texorpdfstring{$\ast$}{*}}]{grid,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec = {\ttfamily \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}~\{\}} }\end{DoxyParamCaption})}
 
-
-
-Extract cell connectivity from a VTK unstructured grid. 
-
-\Hypertarget{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}\label{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b} 
+Extract cell connectivity from a VTK unstructured grid. Results are placed on exec (default\+: \doxylink{classNeoN_1_1SerialExecutor}{Serial\+Executor}). \Hypertarget{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}\label{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b} 
 \index{NeoN::io@{NeoN::io}!multiBlockPatchNames@{multiBlockPatchNames}}
 \index{multiBlockPatchNames@{multiBlockPatchNames}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{multiBlockPatchNames()}{multiBlockPatchNames()}}
@@ -269,23 +265,23 @@ The constructed \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}.
 \doxysubsubsection{\texorpdfstring{readVtkHdf()}{readVtkHdf()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} Neo\+N\+::io\+::read\+Vtk\+Hdf (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+Path,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1io_a7324ca8a72175a063328b3c99674f473}\label{namespaceNeoN_1_1io_a7324ca8a72175a063328b3c99674f473} 
+\Hypertarget{namespaceNeoN_1_1io_a262c881202bb5c3c51330415c1d33f61}\label{namespaceNeoN_1_1io_a262c881202bb5c3c51330415c1d33f61} 
 \index{NeoN::io@{NeoN::io}!rebuildCellConnectivity@{rebuildCellConnectivity}}
 \index{rebuildCellConnectivity@{rebuildCellConnectivity}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{rebuildCellConnectivity()}{rebuildCellConnectivity()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} Neo\+N\+::io\+::rebuild\+Cell\+Connectivity (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&}]{face\+Owner,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&}]{face\+Neighbour,  }\item[{const std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{face\+Nodes,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Internal\+Faces,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Faces }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1io_1_1CellConnectivity}{Cell\+Connectivity}} Neo\+N\+::io\+::rebuild\+Cell\+Connectivity (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Owner,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Neighbour,  }\item[{const \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Nodes,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Internal\+Faces,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Faces }\end{DoxyParamCaption})}
 
 Reconstruct cell-\/to-\/node connectivity from face topology.
 
-Collects faces per cell via face\+Owner/face\+Neighbour, builds unique node set, determines element type from face/node counts. \Hypertarget{namespaceNeoN_1_1io_a000f69f9e9583cbe50916f4480b4b463}\label{namespaceNeoN_1_1io_a000f69f9e9583cbe50916f4480b4b463} 
+Collects faces per cell via face\+Owner/face\+Neighbour, builds unique node set, determines element type from face/node counts. Runs on the host (copies inputs); results are placed on exec. \Hypertarget{namespaceNeoN_1_1io_a23d8adee9cd49428ab8e0126037338fe}\label{namespaceNeoN_1_1io_a23d8adee9cd49428ab8e0126037338fe} 
 \index{NeoN::io@{NeoN::io}!rebuildCellInfo@{rebuildCellInfo}}
 \index{rebuildCellInfo@{rebuildCellInfo}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{rebuildCellInfo()}{rebuildCellInfo()}}
-{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} $>$ Neo\+N\+::io\+::rebuild\+Cell\+Info (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&}]{face\+Owner,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \&}]{face\+Neighbour,  }\item[{const std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{face\+Nodes,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Internal\+Faces,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Faces }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{structNeoN_1_1io_1_1CellInfo}{Cell\+Info}} $>$ Neo\+N\+::io\+::rebuild\+Cell\+Info (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Owner,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Neighbour,  }\item[{const \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{face\+Nodes,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Internal\+Faces,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Faces }\end{DoxyParamCaption})}
 
 Reconstruct per-\/cell info including face-\/node lists from face topology.
 
-Like rebuild\+Cell\+Connectivity but also stores cell\+Face\+Nodes per cell, needed by node ordering functions and writers. \Hypertarget{namespaceNeoN_1_1io_a8dc5a5f4b33ee9bc204873bbcd029128}\label{namespaceNeoN_1_1io_a8dc5a5f4b33ee9bc204873bbcd029128} 
+Like rebuild\+Cell\+Connectivity but also stores cell\+Face\+Nodes per cell, needed by node ordering functions and writers. Always host-\/side. \Hypertarget{namespaceNeoN_1_1io_a8dc5a5f4b33ee9bc204873bbcd029128}\label{namespaceNeoN_1_1io_a8dc5a5f4b33ee9bc204873bbcd029128} 
 \index{NeoN::io@{NeoN::io}!writeCgns@{writeCgns}}
 \index{writeCgns@{writeCgns}!NeoN::io@{NeoN::io}}
 \doxysubsubsection{\texorpdfstring{writeCgns()}{writeCgns()}}

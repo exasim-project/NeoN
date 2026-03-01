@@ -87,7 +87,6 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell connectivity: cell-to-node mapping and element type per cell.  <a href="structNeoN_1_1io_1_1CellConnectivity.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-cell info with face-node lists for node ordering.  <a href="structNeoN_1_1io_1_1CellInfo.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1io_1_1FaceTopology.html">FaceTopology</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Face topology: owner/neighbour, face-to-node, internal/boundary split.  <a href="structNeoN_1_1io_1_1FaceTopology.html#details">More...</a><br /></td></tr>
@@ -104,12 +103,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a8dc5a5f4b33ee9bc204873bbcd029128" id="r_a8dc5a5f4b33ee9bc204873bbcd029128"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a8dc5a5f4b33ee9bc204873bbcd029128">writeCgns</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const std::string &amp;filePath)</td></tr>
 <tr class="memdesc:a8dc5a5f4b33ee9bc204873bbcd029128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write an <a class="el" href="classNeoN_1_1UnstructuredMesh.html" title="Represents an unstructured mesh in NeoN.">UnstructuredMesh</a> to a CGNS file.  <br /></td></tr>
 <tr class="separator:a8dc5a5f4b33ee9bc204873bbcd029128"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc86266576b6d195bd8fe90c30004422" id="r_abc86266576b6d195bd8fe90c30004422"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1FaceTopology.html">FaceTopology</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#abc86266576b6d195bd8fe90c30004422">buildFaceTopology</a> (const <a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> &amp;connectivity)</td></tr>
-<tr class="separator:abc86266576b6d195bd8fe90c30004422"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7324ca8a72175a063328b3c99674f473" id="r_a7324ca8a72175a063328b3c99674f473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a7324ca8a72175a063328b3c99674f473">rebuildCellConnectivity</a> (const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;faceOwner, const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;faceNeighbour, const std::vector&lt; std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;faceNodes, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nCells, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nFaces)</td></tr>
-<tr class="separator:a7324ca8a72175a063328b3c99674f473"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a000f69f9e9583cbe50916f4480b4b463" id="r_a000f69f9e9583cbe50916f4480b4b463"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a000f69f9e9583cbe50916f4480b4b463">rebuildCellInfo</a> (const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;faceOwner, const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;faceNeighbour, const std::vector&lt; std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;faceNodes, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nCells, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nFaces)</td></tr>
-<tr class="separator:a000f69f9e9583cbe50916f4480b4b463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a262c881202bb5c3c51330415c1d33f61" id="r_a262c881202bb5c3c51330415c1d33f61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a262c881202bb5c3c51330415c1d33f61">rebuildCellConnectivity</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceOwner, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceNeighbour, const <a class="el" href="classNeoN_1_1SegmentedVector.html">SegmentedVector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceNodes, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nCells, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nFaces)</td></tr>
+<tr class="separator:a262c881202bb5c3c51330415c1d33f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23d8adee9cd49428ab8e0126037338fe" id="r_a23d8adee9cd49428ab8e0126037338fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a23d8adee9cd49428ab8e0126037338fe">rebuildCellInfo</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceOwner, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceNeighbour, const <a class="el" href="classNeoN_1_1SegmentedVector.html">SegmentedVector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;faceNodes, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nCells, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nFaces)</td></tr>
+<tr class="separator:a23d8adee9cd49428ab8e0126037338fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a91bc824b8a0e66710ebd94de760bd" id="r_ab1a91bc824b8a0e66710ebd94de760bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1FaceTopology.html">FaceTopology</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#ab1a91bc824b8a0e66710ebd94de760bd">buildFaceTopology</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, const <a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> &amp;connectivity)</td></tr>
+<tr class="separator:ab1a91bc824b8a0e66710ebd94de760bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f4a148660a9e4a7e5e83711fc0c39db" id="r_a8f4a148660a9e4a7e5e83711fc0c39db"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a8f4a148660a9e4a7e5e83711fc0c39db">orderQuadNodes</a> (const <a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a> &amp;cell)</td></tr>
 <tr class="memdesc:a8f4a148660a9e4a7e5e83711fc0c39db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order quad nodes: returns [n0, n1, n2, n3] in connected edge order (0-based).  <br /></td></tr>
 <tr class="separator:a8f4a148660a9e4a7e5e83711fc0c39db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,9 +124,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a03dbce7873dcab66fbf8597d71d55596" id="r_a03dbce7873dcab66fbf8597d71d55596"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a03dbce7873dcab66fbf8597d71d55596">orderWedgeNodes</a> (const <a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a> &amp;cell)</td></tr>
 <tr class="memdesc:a03dbce7873dcab66fbf8597d71d55596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order wedge/prism nodes: returns [bottom0..2, top0..2] (0-based).  <br /></td></tr>
 <tr class="separator:a03dbce7873dcab66fbf8597d71d55596"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe1f34524c23462827c093823ea54b6e" id="r_afe1f34524c23462827c093823ea54b6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#afe1f34524c23462827c093823ea54b6e">extractCellConnectivity</a> (vtkUnstructuredGrid *grid)</td></tr>
-<tr class="memdesc:afe1f34524c23462827c093823ea54b6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract cell connectivity from a VTK unstructured grid.  <br /></td></tr>
-<tr class="separator:afe1f34524c23462827c093823ea54b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc6dc3ec2e93e5e1fffe0c98dbb64ccf" id="r_afc6dc3ec2e93e5e1fffe0c98dbb64ccf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#afc6dc3ec2e93e5e1fffe0c98dbb64ccf">extractCellConnectivity</a> (vtkUnstructuredGrid *grid, const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec=<a class="el" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {})</td></tr>
+<tr class="separator:afc6dc3ec2e93e5e1fffe0c98dbb64ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d43dce3df985dbecc5d11661bec5aa1" id="r_a2d43dce3df985dbecc5d11661bec5aa1"><td class="memItemLeft" align="right" valign="top">vtkSmartPointer&lt; vtkMultiBlockDataSet &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a2d43dce3df985dbecc5d11661bec5aa1">buildMultiBlockMesh</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a2d43dce3df985dbecc5d11661bec5aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a758f90dc2e38df6f179bfd6590dfe807" id="r_a758f90dc2e38df6f179bfd6590dfe807"><td class="memItemLeft" align="right" valign="top">vtkSmartPointer&lt; vtkPartitionedDataSetCollection &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1io.html#a758f90dc2e38df6f179bfd6590dfe807">buildPartitionedMesh</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
@@ -218,8 +216,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="abc86266576b6d195bd8fe90c30004422" name="abc86266576b6d195bd8fe90c30004422"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc86266576b6d195bd8fe90c30004422">&#9670;&#160;</a></span>buildFaceTopology()</h2>
+<a id="ab1a91bc824b8a0e66710ebd94de760bd" name="ab1a91bc824b8a0e66710ebd94de760bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a91bc824b8a0e66710ebd94de760bd">&#9670;&#160;</a></span>buildFaceTopology()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -227,14 +225,24 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structNeoN_1_1io_1_1FaceTopology.html">FaceTopology</a> NeoN::io::buildFaceTopology </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> &amp;&#160;</td>
-          <td class="paramname"><em>connectivity</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td>
+          <td class="paramname"><em>exec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> &amp;&#160;</td>
+          <td class="paramname"><em>connectivity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Build face topology from cell-to-node connectivity.</p>
-<p>Each cell's faces are identified using element-type face templates, then deduplicated using canonical (sorted) face keys. Shared faces become internal faces; unshared faces become boundary faces. </p>
+<p>Each cell's faces are identified using element-type face templates, then deduplicated using canonical (sorted) face keys. Shared faces become internal faces; unshared faces become boundary faces. The deduplication runs on the host; results are copied to exec. </p>
 
 </div>
 </div>
@@ -584,8 +592,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afe1f34524c23462827c093823ea54b6e" name="afe1f34524c23462827c093823ea54b6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe1f34524c23462827c093823ea54b6e">&#9670;&#160;</a></span>extractCellConnectivity()</h2>
+<a id="afc6dc3ec2e93e5e1fffe0c98dbb64ccf" name="afc6dc3ec2e93e5e1fffe0c98dbb64ccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6dc3ec2e93e5e1fffe0c98dbb64ccf">&#9670;&#160;</a></span>extractCellConnectivity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -594,13 +602,22 @@ Functions</h2></td></tr>
           <td class="memname"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> NeoN::io::extractCellConnectivity </td>
           <td>(</td>
           <td class="paramtype">vtkUnstructuredGrid *&#160;</td>
-          <td class="paramname"><em>grid</em></td><td>)</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td>
+          <td class="paramname"><em>exec</em> = <code><a class="el" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>&#160;{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Extract cell connectivity from a VTK unstructured grid. </p>
+<p>Extract cell connectivity from a VTK unstructured grid. Results are placed on exec (default: <a class="el" href="classNeoN_1_1SerialExecutor.html" title="Reference executor for serial CPU execution.">SerialExecutor</a>). </p>
 
 </div>
 </div>
@@ -791,8 +808,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7324ca8a72175a063328b3c99674f473" name="a7324ca8a72175a063328b3c99674f473"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7324ca8a72175a063328b3c99674f473">&#9670;&#160;</a></span>rebuildCellConnectivity()</h2>
+<a id="a262c881202bb5c3c51330415c1d33f61" name="a262c881202bb5c3c51330415c1d33f61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a262c881202bb5c3c51330415c1d33f61">&#9670;&#160;</a></span>rebuildCellConnectivity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -800,19 +817,25 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structNeoN_1_1io_1_1CellConnectivity.html">CellConnectivity</a> NeoN::io::rebuildCellConnectivity </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td>
+          <td class="paramname"><em>exec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceOwner</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceNeighbour</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1SegmentedVector.html">SegmentedVector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceNodes</em>, </td>
         </tr>
         <tr>
@@ -841,12 +864,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Reconstruct cell-to-node connectivity from face topology.</p>
-<p>Collects faces per cell via faceOwner/faceNeighbour, builds unique node set, determines element type from face/node counts. </p>
+<p>Collects faces per cell via faceOwner/faceNeighbour, builds unique node set, determines element type from face/node counts. Runs on the host (copies inputs); results are placed on exec. </p>
 
 </div>
 </div>
-<a id="a000f69f9e9583cbe50916f4480b4b463" name="a000f69f9e9583cbe50916f4480b4b463"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a000f69f9e9583cbe50916f4480b4b463">&#9670;&#160;</a></span>rebuildCellInfo()</h2>
+<a id="a23d8adee9cd49428ab8e0126037338fe" name="a23d8adee9cd49428ab8e0126037338fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23d8adee9cd49428ab8e0126037338fe">&#9670;&#160;</a></span>rebuildCellInfo()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -854,19 +877,19 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::vector&lt; <a class="el" href="structNeoN_1_1io_1_1CellInfo.html">CellInfo</a> &gt; NeoN::io::rebuildCellInfo </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceOwner</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceNeighbour</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1SegmentedVector.html">SegmentedVector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>faceNodes</em>, </td>
         </tr>
         <tr>
@@ -895,7 +918,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Reconstruct per-cell info including face-node lists from face topology.</p>
-<p>Like rebuildCellConnectivity but also stores cellFaceNodes per cell, needed by node ordering functions and writers. </p>
+<p>Like rebuildCellConnectivity but also stores cellFaceNodes per cell, needed by node ordering functions and writers. Always host-side. </p>
 
 </div>
 </div>
