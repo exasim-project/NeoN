@@ -7,3 +7,5 @@ if(NeoN_ENABLE_MPI_SUPPORT)
 endif()
 
 neon_unit_test(unstructuredMesh)
+
+add_subdirectory(io)
