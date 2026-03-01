@@ -32,6 +32,9 @@ NB_MODULE(_neon, m)
     // IO bindings
     NeoN::bindings::registerIO(m);
 
+    // Partition bindings
+    NeoN::bindings::registerPartition(m);
+
     // Database bindings
     NeoN::bindings::registerDocument(m);
     NeoN::bindings::registerCollection(m);

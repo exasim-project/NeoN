@@ -67,6 +67,16 @@ if(NeoN_ENABLE_MPI_SUPPORT)
                               "mesh/unstructured/communicator.cpp")
 endif()
 
+if(NeoN_WITH_METIS)
+  target_sources(
+    NeoN
+    PRIVATE "mesh/unstructured/partition/dualGraph.cpp"
+            "mesh/unstructured/partition/partitionMesh.cpp"
+            "mesh/unstructured/partition/extractSubMesh.cpp")
+  target_link_libraries(NeoN PRIVATE METIS::METIS)
+  target_compile_definitions(NeoN PUBLIC NeoN_WITH_METIS)
+endif()
+
 if(NeoN_BUILD_PYTHON_BINDINGS)
   add_subdirectory(bindings)
 endif()

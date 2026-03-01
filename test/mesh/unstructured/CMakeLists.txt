@@ -9,3 +9,4 @@ endif()
 neon_unit_test(unstructuredMesh)
 
 add_subdirectory(io)
+add_subdirectory(partition)

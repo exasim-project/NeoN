@@ -37,6 +37,7 @@ nanobind_add_module(
   boundaryMesh.cpp
   unstructuredMesh.cpp
   io.cpp
+  partition.cpp
   surfaceField.cpp
   volumeField.cpp
   surfaceInterpolation.cpp

@@ -52,6 +52,7 @@ option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_VTK "Build NeoN with VTK support" OFF)
+option(NeoN_WITH_METIS "Enable METIS graph partitioning" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
