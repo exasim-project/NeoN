@@ -29,54 +29,53 @@ TEST_CASE("Unstructured Mesh")
 
         NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, nCells);
 
+        // 1D mesh now delegates to createUniform3DGrid(exec, 4, 1, 1)
+        // → hex slab topology with 6 patches
+        // nInternalFaces: x:(4-1)*1*1=3, y:0, z:0 → 3
+        // nBoundaryFaces: left(1)+right(1)+bottom(4)+top(4)+front(4)+back(4) = 18
         REQUIRE(mesh.nCells() == 4);
-        REQUIRE(mesh.nBoundaryFaces() == 2);
         REQUIRE(mesh.nInternalFaces() == 3);
-        REQUIRE(mesh.nBoundaries() == 2);
-        REQUIRE(mesh.nFaces() == 5);
+        REQUIRE(mesh.nBoundaryFaces() == 18);
+        REQUIRE(mesh.nBoundaries() == 6);
+        REQUIRE(mesh.nFaces() == 21);
 
-        // Verify mesh points
-        // bc  [   internal  ]  bc
-        // 0.0 [ 0.25 | 0.50 ] 1.0
+        // Verify point count: (4+1)*(1+1)*(1+1) = 20
         auto hostPoints = mesh.points().copyToHost();
-        REQUIRE(hostPoints.view()[0][0] == 0.25);
-        REQUIRE(hostPoints.view()[1][0] == 0.5);
-        REQUIRE(hostPoints.view()[3][0] == 0.0);
-        REQUIRE(hostPoints.view()[nCells][0] == 1.0);
+        REQUIRE(hostPoints.size() == 20);
 
-        // Verify cell centers
+        // Verify cell centres at (i+0.5)*0.25, 0.5, 0.5
         auto hostCellCentres = mesh.cellCentres().copyToHost();
-        REQUIRE(hostCellCentres.view()[0][0] == 0.125);
-        REQUIRE(hostCellCentres.view()[1][0] == 0.375);
-        REQUIRE(hostCellCentres.view()[2][0] == 0.625);
-        REQUIRE(hostCellCentres.view()[3][0] == 0.875);
+        REQUIRE(hostCellCentres.view()[0][0] == Catch::Approx(0.125));
+        REQUIRE(hostCellCentres.view()[0][1] == Catch::Approx(0.5));
+        REQUIRE(hostCellCentres.view()[0][2] == Catch::Approx(0.5));
+        REQUIRE(hostCellCentres.view()[1][0] == Catch::Approx(0.375));
+        REQUIRE(hostCellCentres.view()[2][0] == Catch::Approx(0.625));
+        REQUIRE(hostCellCentres.view()[3][0] == Catch::Approx(0.875));
 
-        // Verify face owners
-        // |_3 0 |_0 1 |_1 2 |_2 3 |_4
+        // Verify internal face owners/neighbours (x-direction)
         auto hostFaceOwner = mesh.faceOwner().copyToHost();
+        auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
         REQUIRE(hostFaceOwner.view()[0] == 0);
         REQUIRE(hostFaceOwner.view()[1] == 1);
         REQUIRE(hostFaceOwner.view()[2] == 2);
-        REQUIRE(hostFaceOwner.view()[3] == 0);
-        REQUIRE(hostFaceOwner.view()[4] == 3);
-
-        // Verify face neighbors
-        // |_3 0 |_0 1 |_1 2 |_2 3 |_4
-        auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
         REQUIRE(hostFaceNeighbour.view()[0] == 1);
         REQUIRE(hostFaceNeighbour.view()[1] == 2);
         REQUIRE(hostFaceNeighbour.view()[2] == 3);
 
-        // Verify boundary mesh
+        // Verify boundary mesh: first 2 boundary faces are xmin/xmax
         auto hostBoundaryFaceCells = mesh.boundaryMesh().faceCells().copyToHost();
         auto hostBoundaryCn = mesh.boundaryMesh().cn().copyToHost();
         auto hostBoundaryDelta = mesh.boundaryMesh().delta().copyToHost();
-        REQUIRE(hostBoundaryFaceCells.view()[0] == 0);
-        REQUIRE(hostBoundaryFaceCells.view()[1] == 3);
-        REQUIRE(hostBoundaryCn.view()[0][0] == 0.125);
-        REQUIRE(hostBoundaryCn.view()[1][0] == 0.875);
-        REQUIRE(hostBoundaryDelta.view()[0][0] == -0.125);
-        REQUIRE(hostBoundaryDelta.view()[1][0] == 0.125);
+        REQUIRE(hostBoundaryFaceCells.view()[0] == 0); // xmin face → cell 0
+        REQUIRE(hostBoundaryFaceCells.view()[1] == 3); // xmax face → cell 3
+        REQUIRE(hostBoundaryCn.view()[0][0] == Catch::Approx(0.125));
+        REQUIRE(hostBoundaryCn.view()[1][0] == Catch::Approx(0.875));
+        REQUIRE(hostBoundaryDelta.view()[0][0] == Catch::Approx(-0.125));
+        REQUIRE(hostBoundaryDelta.view()[1][0] == Catch::Approx(0.125));
+
+        // Verify stencilDB has faceNodes and patchNames
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilFaceNodes)));
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
     }
 
     SECTION("Can create a uniform 2D grid (OpenFOAM-style hex slab) " + execName)
@@ -192,8 +191,9 @@ TEST_CASE("Unstructured Mesh")
         // stencilDB must contain std::string(NeoN::io::stencilPatchNames)
         REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
 
-        auto& patchNames =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
+        auto& patchNames = *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(
+            std::string(NeoN::io::stencilPatchNames)
+        );
 
         // Must have one entry per boundary (6 patches)
         REQUIRE(patchNames.size() == 6);
@@ -443,8 +443,9 @@ TEST_CASE("Unstructured Mesh")
 
         REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
 
-        auto& patchNames =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
+        auto& patchNames = *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(
+            std::string(NeoN::io::stencilPatchNames)
+        );
 
         REQUIRE(patchNames.size() == 6);
         REQUIRE(patchNames[0] == "xmin");

@@ -20,19 +20,37 @@ TEST_CASE("Courant Number")
     {
         NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, 4);
         std::vector<fvcc::SurfaceBoundary<NeoN::scalar>> bcs {};
-        for (auto patchi : I<NeoN::localIdx> {0, 1})
+        // xmin/xmax patches: fixedValue = 1.0
+        for (NeoN::localIdx patchi = 0; patchi < 2; ++patchi)
         {
             NeoN::Dictionary dict;
             dict.insert("type", std::string("fixedValue"));
             dict.insert("fixedValue", 1.0);
             bcs.push_back(fvcc::SurfaceBoundary<NeoN::scalar>(mesh, dict, patchi));
         }
+        // y/z patches: fixedValue = 0.0 (not relevant for 1D flow)
+        for (NeoN::localIdx patchi = 2; patchi < mesh.nBoundaries(); ++patchi)
+        {
+            NeoN::Dictionary dict;
+            dict.insert("type", std::string("fixedValue"));
+            dict.insert("fixedValue", 0.0);
+            bcs.push_back(fvcc::SurfaceBoundary<NeoN::scalar>(mesh, dict, patchi));
+        }
 
         fvcc::SurfaceField<NeoN::scalar> sf(exec, "sf", mesh, bcs);
-        NeoN::fill(sf.internalVector(), 1.0);
+        // Only x-direction internal faces carry flux
+        NeoN::fill(sf.internalVector(), 0.0);
+        auto sfView = sf.internalVector().view();
+        auto nI = mesh.nInternalFaces();
+        NeoN::parallelFor(
+            exec, {0, nI}, NEON_LAMBDA(const NeoN::localIdx i) { sfView[i] = 1.0; }
+        );
         sf.correctBoundaryConditions();
 
         // use arbitrary time step size of 0.01
+        // For (4,1,1) mesh with x-only flux=1.0: each cell sees 2 x-faces
+        // sum|flux| = 2.0, cellVol = 0.25
+        // CoNum = 0.5 * 2.0/0.25 * 0.01 = 0.04
         const auto [maxCoNum, meanCoNum] = fvcc::computeCoNum(sf, 0.01);
 
         REQUIRE(maxCoNum == 0.04);

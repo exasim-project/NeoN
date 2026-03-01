@@ -43,6 +43,7 @@ target_sources(
           "mesh/unstructured/createSingleCellMesh.cpp"
           "mesh/unstructured/create1DUniformMesh.cpp"
           "mesh/unstructured/createUniform2DGrid.cpp"
+          "mesh/unstructured/uniformGridHelpers.cpp"
           "mesh/unstructured/createUniform3DGrid.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/basicGeometryScheme.cpp"

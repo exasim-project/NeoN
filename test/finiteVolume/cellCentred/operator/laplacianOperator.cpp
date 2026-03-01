@@ -52,6 +52,17 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             ),
             1
         ));
+        // y/z patches: no variation in those directions → fixedGradient=0
+        for (localIdx p = 2; p < mesh.nBoundaries(); ++p)
+        {
+            bcs.push_back(fvcc::VolumeBoundary<TestType>(
+                mesh,
+                Dictionary(
+                    {{"type", std::string("fixedGradient")}, {"fixedGradient", zero<TestType>()}}
+                ),
+                p
+            ));
+        }
 
         auto phi = fvcc::VolumeField<TestType>(exec, "phi", mesh, bcs);
         parallelFor(
