@@ -9,10 +9,7 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/segmentedVector.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/mesh/unstructured/io/connectivity/types.hpp"
 #include "NeoN/mesh/unstructured/io/geometry/types.hpp"
-
-#include <vector>
 
 namespace NeoN::io
 {
@@ -27,9 +24,5 @@ MeshGeometry computeGeometry(
     localIdx nInternalFaces,
     localIdx nCells
 );
-
-/// Overload: compute from std::vector and FaceTopology.
-MeshGeometry
-computeGeometry(const std::vector<Vec3>& points, const FaceTopology& topo, localIdx nCells);
 
 } // namespace NeoN::io

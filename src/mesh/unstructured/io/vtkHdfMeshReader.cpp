@@ -101,8 +101,12 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     localIdx nBoundaries = (nBoundaryFaces > 0) ? 1 : 0;
     std::vector<localIdx> patchOffsets = {0, nBoundaryFaces};
 
-    // computeGeometry returns MeshGeometry on SerialExecutor (host) — no copyToHost needed.
-    auto geom = computeGeometry(hostPoints, topo, nCells);
+    Vector<Vec3> devicePoints(serial, hostPoints);
+    auto faceNodesCopy = topo.faceNodes;
+    auto geom = computeGeometry(
+        serial, devicePoints, topo.faceOwner, topo.faceNeighbour,
+        faceNodesCopy, topo.nInternalFaces, nCells
+    );
 
     // Build NeoN vectors on the target executor
     vectorVector meshPoints(exec, hostPoints);

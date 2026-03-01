@@ -38,28 +38,4 @@ MeshGeometry computeGeometry(
     };
 }
 
-
-MeshGeometry
-computeGeometry(const std::vector<Vec3>& points, const FaceTopology& topo, localIdx nCells)
-{
-    SerialExecutor exec;
-
-    // Convert points to NeoN Vector
-    Vector<Vec3> devicePoints(exec, points);
-
-    // faceNodes needs a non-const copy since computeGeometry takes SegmentedVector&.
-    auto faceNodesCopy = topo.faceNodes;
-
-    return computeGeometry(
-        exec,
-        devicePoints,
-        topo.faceOwner,
-        topo.faceNeighbour,
-        faceNodesCopy,
-        topo.nInternalFaces,
-        nCells
-    );
-}
-
-
 } // namespace NeoN::io

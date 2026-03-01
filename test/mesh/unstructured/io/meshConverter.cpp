@@ -68,7 +68,12 @@ TEST_CASE("MeshConverter geometry")
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
         auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
         auto topo = NeoN::io::buildFaceTopology(serial, conn);
-        auto geom = NeoN::io::computeGeometry(pts, topo, 1);
+        NeoN::Vector<NeoN::Vec3> points(serial, pts);
+        auto faceNodesCopy = topo.faceNodes;
+        auto geom = NeoN::io::computeGeometry(
+            serial, points, topo.faceOwner, topo.faceNeighbour,
+            faceNodesCopy, topo.nInternalFaces, 1
+        );
 
         auto hostVol = geom.cellVolumes.copyToHost();
         auto hostCC = geom.cellCentres.copyToHost();
@@ -87,7 +92,12 @@ TEST_CASE("MeshConverter geometry")
         };
         auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
         auto topo = NeoN::io::buildFaceTopology(serial, conn);
-        auto geom = NeoN::io::computeGeometry(pts, topo, 1);
+        NeoN::Vector<NeoN::Vec3> points(serial, pts);
+        auto faceNodesCopy = topo.faceNodes;
+        auto geom = NeoN::io::computeGeometry(
+            serial, points, topo.faceOwner, topo.faceNeighbour,
+            faceNodesCopy, topo.nInternalFaces, 1
+        );
 
         auto hostVol = geom.cellVolumes.copyToHost();
         auto hostCC = geom.cellCentres.copyToHost();
@@ -104,7 +114,12 @@ TEST_CASE("MeshConverter geometry")
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {0, 0, -1}};
         auto conn = makeCellConn(serial, {{0, 1, 2, 3}, {0, 1, 2, 4}}, {10, 10});
         auto topo = NeoN::io::buildFaceTopology(serial, conn);
-        auto geom = NeoN::io::computeGeometry(pts, topo, 2);
+        NeoN::Vector<NeoN::Vec3> points(serial, pts);
+        auto faceNodesCopy = topo.faceNodes;
+        auto geom = NeoN::io::computeGeometry(
+            serial, points, topo.faceOwner, topo.faceNeighbour,
+            faceNodesCopy, topo.nInternalFaces, 2
+        );
 
         auto hostVol = geom.cellVolumes.copyToHost();
         auto hVol = hostVol.view();
