@@ -84,7 +84,10 @@ if(NeoN_WITH_VTK)
     PRIVATE "mesh/unstructured/io/connectivity/faceTopology.cpp"
             "mesh/unstructured/io/connectivity/cellReconstruction.cpp"
             "mesh/unstructured/io/connectivity/nodeOrdering.cpp"
-            "mesh/unstructured/io/connectivity/vtkExtraction.cpp")
+            "mesh/unstructured/io/connectivity/vtkExtraction.cpp"
+            "mesh/unstructured/io/geometry/faceGeometry.cpp"
+            "mesh/unstructured/io/geometry/cellGeometry.cpp"
+            "mesh/unstructured/io/geometry/computeGeometry.cpp")
   target_link_libraries(
     NeoN
     PUBLIC VTK::CommonCore
