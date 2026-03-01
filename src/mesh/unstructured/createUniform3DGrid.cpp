@@ -5,6 +5,7 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/segmentedVector.hpp"
 
 #include <memory>
 #include <vector>
@@ -287,9 +288,7 @@ UnstructuredMesh createUniform3DGrid(
 
     // --- Face node connectivity for IO writers ---
     // Every face is a quad (4 nodes).
-    auto faceNodesPtr =
-        std::make_shared<std::vector<std::vector<localIdx>>>(static_cast<size_t>(nFaces));
-    auto& faceNodesVec = *faceNodesPtr;
+    std::vector<std::vector<localIdx>> faceNodesVec(static_cast<size_t>(nFaces));
 
     localIdx fnId = 0;
 
@@ -412,6 +411,20 @@ UnstructuredMesh createUniform3DGrid(
         boundaryMesh
     );
 
+    // Convert to SegmentedVector for stencilDB (new canonical type for io::faceNodes)
+    std::vector<localIdx> fnValues, fnOffsets;
+    fnOffsets.push_back(0);
+    for (const auto& face : faceNodesVec)
+    {
+        fnValues.insert(fnValues.end(), face.begin(), face.end());
+        fnOffsets.push_back(
+            static_cast<localIdx>(fnOffsets.back() + static_cast<localIdx>(face.size()))
+        );
+    }
+    SerialExecutor serial;
+    auto faceNodesPtr = std::make_shared<SegmentedVector<localIdx, localIdx>>(
+        Vector<localIdx>(serial, fnValues), Vector<localIdx>(serial, fnOffsets)
+    );
     mesh.stencilDB().insert(std::string("io::faceNodes"), faceNodesPtr);
 
     auto patchNames = std::make_shared<std::vector<std::string>>(

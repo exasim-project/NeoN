@@ -339,9 +339,10 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     }
 
     // Extract cell connectivity and build face topology via meshConverter
-    auto conn = extractCellConnectivity(grid);
+    SerialExecutor serial;
+    auto conn = extractCellConnectivity(grid, serial);
     localIdx nCells = conn.nCells;
-    auto topo = buildFaceTopology(conn);
+    auto topo = buildFaceTopology(serial, conn);
 
     localIdx nInternalFaces = topo.nInternalFaces;
     localIdx nBoundaryFaces = topo.nBoundaryFaces;
@@ -356,11 +357,18 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     if (!bcData.patches.empty() && !bcData.boundaryElements.empty())
     {
         // Build a mapping from boundary face canonical key → boundary face index (0-based)
+        // Access topo.faceNodes via view (built on SerialExecutor → host-accessible)
+        auto fnView = topo.faceNodes.view();
+        auto owView = topo.faceOwner.view();
+
         std::unordered_map<detail::FaceKey, localIdx, detail::FaceKeyHash> bndFaceMap;
         for (localIdx f = nInternalFaces; f < nFaces; ++f)
         {
-            auto fi = static_cast<std::size_t>(f);
-            detail::FaceKey key = detail::makeFaceKey(topo.faceNodes[fi]);
+            auto [start, end] = fnView.bounds(f);
+            std::vector<localIdx> faceNodeVec;
+            for (auto n = start; n < end; ++n)
+                faceNodeVec.push_back(fnView.values[n]);
+            detail::FaceKey key = detail::makeFaceKey(faceNodeVec);
             bndFaceMap[key] = f - nInternalFaces;
         }
 
@@ -397,10 +405,12 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
         {
             for (localIdx idx : patchFaceIndices[p])
             {
-                auto fi = static_cast<std::size_t>(nInternalFaces + idx);
+                localIdx fi = nInternalFaces + idx;
                 detail::FaceData fd;
-                fd.owner = topo.faceOwner[fi];
-                fd.nodes = topo.faceNodes[fi];
+                fd.owner = owView[fi];
+                auto [start, end] = fnView.bounds(fi);
+                for (auto n = start; n < end; ++n)
+                    fd.nodes.push_back(fnView.values[n]);
                 reorderedBndFaces.push_back(fd);
                 matched[static_cast<std::size_t>(idx)] = true;
             }
@@ -414,10 +424,12 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
             if (!matched[static_cast<std::size_t>(i)])
             {
                 hasUnmatched = true;
-                auto fi = static_cast<std::size_t>(nInternalFaces + i);
+                localIdx fi = nInternalFaces + i;
                 detail::FaceData fd;
-                fd.owner = topo.faceOwner[fi];
-                fd.nodes = topo.faceNodes[fi];
+                fd.owner = owView[fi];
+                auto [start, end] = fnView.bounds(fi);
+                for (auto n = start; n < end; ++n)
+                    fd.nodes.push_back(fnView.values[n]);
                 reorderedBndFaces.push_back(fd);
             }
         }
@@ -427,12 +439,41 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
             patchOffsets.push_back(static_cast<localIdx>(reorderedBndFaces.size()));
         }
 
-        // Update topology with reordered boundary faces
+        // Update topology with reordered boundary faces.
+        // faceOwner: write in-place via view (data is on host / SerialExecutor).
         for (localIdx i = 0; i < static_cast<localIdx>(reorderedBndFaces.size()); ++i)
         {
-            auto fi = static_cast<std::size_t>(nInternalFaces + i);
-            topo.faceOwner[fi] = reorderedBndFaces[static_cast<std::size_t>(i)].owner;
-            topo.faceNodes[fi] = reorderedBndFaces[static_cast<std::size_t>(i)].nodes;
+            owView[nInternalFaces + i] = reorderedBndFaces[static_cast<std::size_t>(i)].owner;
+        }
+
+        // faceNodes: rebuild SegmentedVector with reordered boundary face data.
+        // (fnView references the old topo.faceNodes; read it before reassigning.)
+        {
+            std::vector<localIdx> newValues;
+            std::vector<localIdx> newSizes;
+            for (localIdx f = 0; f < nInternalFaces; ++f)
+            {
+                auto [s, e] = fnView.bounds(f);
+                newSizes.push_back(e - s);
+                for (auto n = s; n < e; ++n)
+                    newValues.push_back(fnView.values[n]);
+            }
+            for (const auto& fd : reorderedBndFaces)
+            {
+                newSizes.push_back(static_cast<localIdx>(fd.nodes.size()));
+                for (localIdx n : fd.nodes)
+                    newValues.push_back(n);
+            }
+            std::vector<localIdx> newOffsets;
+            newOffsets.reserve(newSizes.size() + 1);
+            newOffsets.push_back(0);
+            for (localIdx sz : newSizes)
+                newOffsets.push_back(newOffsets.back() + sz);
+
+            topo.faceNodes = SegmentedVector<localIdx, localIdx>(
+                Vector<localIdx>(serial, newValues), Vector<localIdx>(serial, newOffsets)
+            );
+            // fnView is now dangling — do not use it after this point.
         }
     }
     else
@@ -465,10 +506,8 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     auto faceAreasVec = geom.faceAreas.copyToExecutor(exec);
     auto faceCentresVec = geom.faceCentres.copyToExecutor(exec);
     auto magFaceAreasVec = geom.magFaceAreas.copyToExecutor(exec);
-    labelVector faceOwnerVec(exec, topo.faceOwner);
-
-    // faceNeighbour only covers internal faces
-    labelVector faceNeighbourVec(exec, topo.faceNeighbour);
+    auto faceOwnerVec = topo.faceOwner.copyToExecutor(exec);
+    auto faceNeighbourVec = topo.faceNeighbour.copyToExecutor(exec);
 
     // Build BoundaryMesh
     std::vector<label> bndFaceCells(static_cast<std::size_t>(nBoundaryFaces));
@@ -486,7 +525,7 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
         auto bi = static_cast<std::size_t>(i);
         localIdx fi = nInternalFaces + i;
 
-        localIdx ownerCell = topo.faceOwner[static_cast<std::size_t>(fi)];
+        localIdx ownerCell = topo.faceOwner.view()[fi];
 
         bndFaceCells[bi] = static_cast<label>(ownerCell);
         bndCf[bi] = hFaceCentres[fi];
@@ -548,7 +587,7 @@ UnstructuredMesh readCgns(const std::string& filePath, const Executor& exec)
     );
 
     // Store face node connectivity in stencilDB for writer round-trip
-    auto faceNodePtr = std::make_shared<std::vector<std::vector<localIdx>>>(topo.faceNodes);
+    auto faceNodePtr = std::make_shared<SegmentedVector<localIdx, localIdx>>(topo.faceNodes);
     mesh.stencilDB().insert(std::string("io::faceNodes"), faceNodePtr);
 
     // Store patch names in stencilDB

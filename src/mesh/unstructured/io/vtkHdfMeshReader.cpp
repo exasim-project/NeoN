@@ -90,9 +90,10 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     }
 
     // Build face topology and geometry via meshConverter
-    auto conn = extractCellConnectivity(grid);
+    SerialExecutor serial;
+    auto conn = extractCellConnectivity(grid, serial);
     localIdx nCells = conn.nCells;
-    auto topo = buildFaceTopology(conn);
+    auto topo = buildFaceTopology(serial, conn);
 
     localIdx nInternalFaces = topo.nInternalFaces;
     localIdx nBoundaryFaces = topo.nBoundaryFaces;
@@ -124,8 +125,8 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     auto faceAreasVec = geom.faceAreas.copyToExecutor(exec);
     auto faceCentresVec = geom.faceCentres.copyToExecutor(exec);
     auto magFaceAreasVec = geom.magFaceAreas.copyToExecutor(exec);
-    labelVector faceOwnerVec(exec, topo.faceOwner);
-    labelVector faceNeighbourVec(exec, topo.faceNeighbour);
+    auto faceOwnerVec = topo.faceOwner.copyToExecutor(exec);
+    auto faceNeighbourVec = topo.faceNeighbour.copyToExecutor(exec);
 
     // Build BoundaryMesh
     std::vector<label> bndFaceCells(static_cast<std::size_t>(nBoundaryFaces));
@@ -143,7 +144,7 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
         auto bi = static_cast<std::size_t>(i);
         localIdx fi = nInternalFaces + i;
 
-        localIdx ownerCell = topo.faceOwner[static_cast<std::size_t>(fi)];
+        localIdx ownerCell = topo.faceOwner.view()[fi];
 
         bndFaceCells[bi] = static_cast<label>(ownerCell);
         bndCf[bi] = hFaceCentres[fi];
@@ -194,7 +195,7 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     );
 
     // Store face node connectivity for writer round-trip
-    auto faceNodePtr = std::make_shared<std::vector<std::vector<localIdx>>>(topo.faceNodes);
+    auto faceNodePtr = std::make_shared<SegmentedVector<localIdx, localIdx>>(topo.faceNodes);
     mesh.stencilDB().insert(std::string("io::faceNodes"), faceNodePtr);
 
     return mesh;

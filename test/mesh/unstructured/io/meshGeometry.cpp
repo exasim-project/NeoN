@@ -9,6 +9,39 @@
 #include "NeoN/mesh/unstructured/io/meshConnectivity.hpp"
 
 
+namespace
+{
+
+/// Build a CellConnectivity with NeoN types from host vectors.
+NeoN::io::CellConnectivity makeCellConn(
+    const NeoN::Executor& exec,
+    std::vector<std::vector<NeoN::localIdx>> cells,
+    std::vector<int32_t> types
+)
+{
+    NeoN::SerialExecutor serial;
+    std::vector<NeoN::localIdx> values, offsets;
+    offsets.push_back(0);
+    for (auto& c : cells)
+    {
+        values.insert(values.end(), c.begin(), c.end());
+        offsets.push_back(
+            static_cast<NeoN::localIdx>(offsets.back() + static_cast<NeoN::localIdx>(c.size()))
+        );
+    }
+    return NeoN::io::CellConnectivity {
+        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>(
+            NeoN::Vector<NeoN::localIdx>(serial, values).copyToExecutor(exec),
+            NeoN::Vector<NeoN::localIdx>(serial, offsets).copyToExecutor(exec)
+        ),
+        NeoN::Vector<int32_t>(serial, types).copyToExecutor(exec),
+        static_cast<NeoN::localIdx>(cells.size())
+    };
+}
+
+} // anonymous namespace
+
+
 TEST_CASE("computeFaceCentres")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -105,18 +138,11 @@ TEST_CASE("buildCellToFaceMapping")
 
     SECTION("Two tets sharing a face " + execName)
     {
-        // Build topology from connectivity
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}, {0, 1, 2, 4}};
-        conn.cellTypes = {10, 10};
-        conn.nCells = 2;
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3}, {0, 1, 2, 4}}, {10, 10});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         auto cellFaces = NeoN::io::buildCellToFaceMapping(
-            exec, faceOwner, faceNeighbour, topo.nInternalFaces, 2
+            exec, topo.faceOwner, topo.faceNeighbour, topo.nInternalFaces, 2
         );
 
         REQUIRE(cellFaces.numSegments() == 2);
@@ -139,39 +165,16 @@ TEST_CASE("computeCellCentres")
     SECTION("Single tet cell centre " + execName)
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         NeoN::Vector<NeoN::Vec3> points(exec, pts);
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
+        // faceNodes is already on exec; make non-const copy for kernels
+        auto faceNodesCopy = topo.faceNodes;
 
-        // Build faceNodes SegmentedVector
-        std::vector<NeoN::localIdx> flatValues;
-        std::vector<NeoN::localIdx> sizes;
-        for (const auto& fn : topo.faceNodes)
-        {
-            sizes.push_back(static_cast<NeoN::localIdx>(fn.size()));
-            flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-        }
-        NeoN::Vector<NeoN::localIdx> intervals(exec, sizes);
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx> faceNodes(intervals);
-        NeoN::Vector<NeoN::localIdx> flatVals(exec, flatValues);
-        auto srcView = flatVals.view();
-        auto [dstValues, dstSeg] = faceNodes.views();
-        NeoN::parallelFor(
-            exec,
-            {0, flatVals.size()},
-            NEON_LAMBDA(const NeoN::localIdx i) { dstValues[i] = srcView[i]; },
-            "copyFN"
-        );
-
-        auto faceCentres = NeoN::io::computeFaceCentres(exec, points, faceNodes);
+        auto faceCentres = NeoN::io::computeFaceCentres(exec, points, faceNodesCopy);
         auto cellFaces = NeoN::io::buildCellToFaceMapping(
-            exec, faceOwner, faceNeighbour, topo.nInternalFaces, 1
+            exec, topo.faceOwner, topo.faceNeighbour, topo.nInternalFaces, 1
         );
         auto cellCentres = NeoN::io::computeCellCentres(exec, faceCentres, cellFaces, 1);
 
@@ -191,42 +194,19 @@ TEST_CASE("computeCellVolumes")
     SECTION("Single tet volume = 1/6 " + execName)
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         NeoN::Vector<NeoN::Vec3> points(exec, pts);
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
+        auto faceNodesCopy = topo.faceNodes;
 
-        std::vector<NeoN::localIdx> flatValues;
-        std::vector<NeoN::localIdx> sizes;
-        for (const auto& fn : topo.faceNodes)
-        {
-            sizes.push_back(static_cast<NeoN::localIdx>(fn.size()));
-            flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-        }
-        NeoN::Vector<NeoN::localIdx> intervals(exec, sizes);
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx> faceNodes(intervals);
-        NeoN::Vector<NeoN::localIdx> flatVals(exec, flatValues);
-        auto srcView = flatVals.view();
-        auto [dstValues, dstSeg] = faceNodes.views();
-        NeoN::parallelFor(
-            exec,
-            {0, flatVals.size()},
-            NEON_LAMBDA(const NeoN::localIdx i) { dstValues[i] = srcView[i]; },
-            "copyFN"
-        );
-
-        auto faceCentres = NeoN::io::computeFaceCentres(exec, points, faceNodes);
+        auto faceCentres = NeoN::io::computeFaceCentres(exec, points, faceNodesCopy);
         auto cellFaces = NeoN::io::buildCellToFaceMapping(
-            exec, faceOwner, faceNeighbour, topo.nInternalFaces, 1
+            exec, topo.faceOwner, topo.faceNeighbour, topo.nInternalFaces, 1
         );
         auto cellCentres = NeoN::io::computeCellCentres(exec, faceCentres, cellFaces, 1);
         auto cellVolumes = NeoN::io::computeCellVolumes(
-            exec, points, faceNodes, faceCentres, cellCentres, cellFaces, 1
+            exec, points, faceNodesCopy, faceCentres, cellCentres, cellFaces, 1
         );
 
         auto hostVol = cellVolumes.copyToHost();
@@ -243,37 +223,14 @@ TEST_CASE("computeGeometry full pipeline")
     SECTION("Single tet " + execName)
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         NeoN::Vector<NeoN::Vec3> points(exec, pts);
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
-
-        std::vector<NeoN::localIdx> flatValues;
-        std::vector<NeoN::localIdx> sizes;
-        for (const auto& fn : topo.faceNodes)
-        {
-            sizes.push_back(static_cast<NeoN::localIdx>(fn.size()));
-            flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-        }
-        NeoN::Vector<NeoN::localIdx> intervals(exec, sizes);
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx> faceNodes(intervals);
-        NeoN::Vector<NeoN::localIdx> flatVals(exec, flatValues);
-        auto srcView = flatVals.view();
-        auto [dstValues, dstSeg] = faceNodes.views();
-        NeoN::parallelFor(
-            exec,
-            {0, flatVals.size()},
-            NEON_LAMBDA(const NeoN::localIdx i) { dstValues[i] = srcView[i]; },
-            "copyFN"
-        );
+        auto faceNodesCopy = topo.faceNodes;
 
         auto geom = NeoN::io::computeGeometry(
-            exec, points, faceOwner, faceNeighbour, faceNodes, topo.nInternalFaces, 1
+            exec, points, topo.faceOwner, topo.faceNeighbour, faceNodesCopy, topo.nInternalFaces, 1
         );
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -291,37 +248,14 @@ TEST_CASE("computeGeometry full pipeline")
         std::vector<NeoN::Vec3> pts = {
             {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}
         };
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12};
-        conn.nCells = 1;
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         NeoN::Vector<NeoN::Vec3> points(exec, pts);
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
-
-        std::vector<NeoN::localIdx> flatValues;
-        std::vector<NeoN::localIdx> sizes;
-        for (const auto& fn : topo.faceNodes)
-        {
-            sizes.push_back(static_cast<NeoN::localIdx>(fn.size()));
-            flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-        }
-        NeoN::Vector<NeoN::localIdx> intervals(exec, sizes);
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx> faceNodes(intervals);
-        NeoN::Vector<NeoN::localIdx> flatVals(exec, flatValues);
-        auto srcView = flatVals.view();
-        auto [dstValues, dstSeg] = faceNodes.views();
-        NeoN::parallelFor(
-            exec,
-            {0, flatVals.size()},
-            NEON_LAMBDA(const NeoN::localIdx i) { dstValues[i] = srcView[i]; },
-            "copyFN"
-        );
+        auto faceNodesCopy = topo.faceNodes;
 
         auto geom = NeoN::io::computeGeometry(
-            exec, points, faceOwner, faceNeighbour, faceNodes, topo.nInternalFaces, 1
+            exec, points, topo.faceOwner, topo.faceNeighbour, faceNodesCopy, topo.nInternalFaces, 1
         );
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -337,37 +271,14 @@ TEST_CASE("computeGeometry full pipeline")
     SECTION("Two tets sharing a face " + execName)
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {0, 0, -1}};
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}, {0, 1, 2, 4}};
-        conn.cellTypes = {10, 10};
-        conn.nCells = 2;
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(exec, {{0, 1, 2, 3}, {0, 1, 2, 4}}, {10, 10});
+        auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
         NeoN::Vector<NeoN::Vec3> points(exec, pts);
-        NeoN::Vector<NeoN::localIdx> faceOwner(exec, topo.faceOwner);
-        NeoN::Vector<NeoN::localIdx> faceNeighbour(exec, topo.faceNeighbour);
-
-        std::vector<NeoN::localIdx> flatValues;
-        std::vector<NeoN::localIdx> sizes;
-        for (const auto& fn : topo.faceNodes)
-        {
-            sizes.push_back(static_cast<NeoN::localIdx>(fn.size()));
-            flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-        }
-        NeoN::Vector<NeoN::localIdx> intervals(exec, sizes);
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx> faceNodes(intervals);
-        NeoN::Vector<NeoN::localIdx> flatVals(exec, flatValues);
-        auto srcView = flatVals.view();
-        auto [dstValues, dstSeg] = faceNodes.views();
-        NeoN::parallelFor(
-            exec,
-            {0, flatVals.size()},
-            NEON_LAMBDA(const NeoN::localIdx i) { dstValues[i] = srcView[i]; },
-            "copyFN"
-        );
+        auto faceNodesCopy = topo.faceNodes;
 
         auto geom = NeoN::io::computeGeometry(
-            exec, points, faceOwner, faceNeighbour, faceNodes, topo.nInternalFaces, 2
+            exec, points, topo.faceOwner, topo.faceNeighbour, faceNodesCopy, topo.nInternalFaces, 2
         );
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -383,13 +294,9 @@ TEST_CASE("computeGeometry legacy overload")
     SECTION("Single tet via legacy API")
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        NeoN::SerialExecutor serial;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -407,13 +314,9 @@ TEST_CASE("computeGeometry legacy overload")
         std::vector<NeoN::Vec3> pts = {
             {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}
         };
-
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12};
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        NeoN::SerialExecutor serial;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
         auto hostVol = geom.cellVolumes.copyToHost();

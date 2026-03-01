@@ -10,75 +10,79 @@
 #include <set>
 
 
-TEST_CASE("meshConnectivity header provides CellConnectivity")
+namespace
 {
-    NeoN::io::CellConnectivity conn;
-    conn.cellToNodes = {{0, 1, 2, 3}};
-    conn.cellTypes = {10};
-    conn.nCells = 1;
+
+// Helper: build a single-tet CellConnectivity on the given executor.
+// Nodes 0,1,2,3 — VTK type 10 (VTK_TETRA).
+NeoN::io::CellConnectivity makeTetConn(const NeoN::Executor& exec)
+{
+    std::vector<NeoN::localIdx> values = {0, 1, 2, 3};
+    std::vector<NeoN::localIdx> offsets = {0, 4}; // one segment [0,4)
+    NeoN::Vector<NeoN::localIdx> valVec(exec, values);
+    NeoN::Vector<NeoN::localIdx> offVec(exec, offsets);
+
+    return NeoN::io::CellConnectivity {
+        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>(valVec, offVec),
+        NeoN::Vector<int32_t>(exec, std::vector<int32_t> {10}),
+        1
+    };
+}
+
+} // anonymous namespace
+
+
+TEST_CASE("CellConnectivity uses NeoN SegmentedVector and Vector types")
+{
+    NeoN::SerialExecutor exec;
+    auto conn = makeTetConn(exec);
 
     REQUIRE(conn.nCells == 1);
+    REQUIRE(conn.cellTypes.size() == 1);
+    REQUIRE(conn.cellToNodes.numSegments() == 1);
 }
 
 
-TEST_CASE("meshConnectivity header provides FaceTopology and buildFaceTopology")
+TEST_CASE("buildFaceTopology takes Executor and returns NeoN FaceTopology")
 {
-    NeoN::io::CellConnectivity conn;
-    conn.cellToNodes = {{0, 1, 2, 3}};
-    conn.cellTypes = {10};
-    conn.nCells = 1;
+    NeoN::SerialExecutor exec;
+    auto conn = makeTetConn(exec);
+    auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
-    auto topo = NeoN::io::buildFaceTopology(conn);
     REQUIRE(topo.nInternalFaces == 0);
     REQUIRE(topo.nBoundaryFaces == 4);
+    REQUIRE(topo.faceOwner.size() == 4);
+    REQUIRE(topo.faceNeighbour.size() == 0);
+    REQUIRE(topo.faceNodes.numSegments() == 4);
 }
 
 
-TEST_CASE("meshConnectivity header provides rebuildCellConnectivity")
+TEST_CASE("rebuildCellConnectivity takes NeoN types as input and output")
 {
-    NeoN::io::CellConnectivity conn;
-    conn.cellToNodes = {{0, 1, 2, 3}};
-    conn.cellTypes = {10};
-    conn.nCells = 1;
+    NeoN::SerialExecutor exec;
+    auto conn = makeTetConn(exec);
+    auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
-    auto topo = NeoN::io::buildFaceTopology(conn);
-
-    std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-    std::vector<NeoN::label> faceNeighbour(topo.faceNeighbour.begin(), topo.faceNeighbour.end());
-
+    NeoN::localIdx nFaces = topo.nInternalFaces + topo.nBoundaryFaces;
     auto rebuilt = NeoN::io::rebuildCellConnectivity(
-        faceOwner,
-        faceNeighbour,
-        topo.faceNodes,
-        1,
-        topo.nInternalFaces,
-        static_cast<NeoN::localIdx>(topo.faceOwner.size())
+        exec, topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
     );
 
     REQUIRE(rebuilt.nCells == 1);
-    REQUIRE(rebuilt.cellTypes[0] == 10);
+    auto hostTypes = rebuilt.cellTypes.copyToHost();
+    REQUIRE(hostTypes.view()[0] == 10);
 }
 
 
-TEST_CASE("meshConnectivity header provides CellInfo and rebuildCellInfo")
+TEST_CASE("rebuildCellInfo takes NeoN types")
 {
-    NeoN::io::CellConnectivity conn;
-    conn.cellToNodes = {{0, 1, 2, 3}};
-    conn.cellTypes = {10};
-    conn.nCells = 1;
+    NeoN::SerialExecutor exec;
+    auto conn = makeTetConn(exec);
+    auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
-    auto topo = NeoN::io::buildFaceTopology(conn);
-
-    std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-    std::vector<NeoN::label> faceNeighbour(topo.faceNeighbour.begin(), topo.faceNeighbour.end());
-
+    NeoN::localIdx nFaces = topo.nInternalFaces + topo.nBoundaryFaces;
     auto cells = NeoN::io::rebuildCellInfo(
-        faceOwner,
-        faceNeighbour,
-        topo.faceNodes,
-        1,
-        topo.nInternalFaces,
-        static_cast<NeoN::localIdx>(topo.faceOwner.size())
+        topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
     );
 
     REQUIRE(cells.size() == 1);
@@ -88,25 +92,15 @@ TEST_CASE("meshConnectivity header provides CellInfo and rebuildCellInfo")
 }
 
 
-TEST_CASE("meshConnectivity header provides node ordering functions")
+TEST_CASE("node ordering functions work with CellInfo from NeoN-typed topology")
 {
-    NeoN::io::CellConnectivity conn;
-    conn.cellToNodes = {{0, 1, 2, 3}};
-    conn.cellTypes = {10};
-    conn.nCells = 1;
+    NeoN::SerialExecutor exec;
+    auto conn = makeTetConn(exec);
+    auto topo = NeoN::io::buildFaceTopology(exec, conn);
 
-    auto topo = NeoN::io::buildFaceTopology(conn);
-
-    std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-    std::vector<NeoN::label> faceNeighbour(topo.faceNeighbour.begin(), topo.faceNeighbour.end());
-
+    NeoN::localIdx nFaces = topo.nInternalFaces + topo.nBoundaryFaces;
     auto cells = NeoN::io::rebuildCellInfo(
-        faceOwner,
-        faceNeighbour,
-        topo.faceNodes,
-        1,
-        topo.nInternalFaces,
-        static_cast<NeoN::localIdx>(topo.faceOwner.size())
+        topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
     );
 
     auto ordered = NeoN::io::orderTetNodes(cells[0]);

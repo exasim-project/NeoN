@@ -32,10 +32,8 @@ void writeVtu(const UnstructuredMesh& mesh, const std::string& filePath)
     localIdx nInternalFaces = mesh.nInternalFaces();
     localIdx nFaces = mesh.nFaces();
 
-    // Copy data to host
+    // Copy points to host
     auto hostPoints = mesh.points().copyToHost();
-    auto hostFaceOwner = mesh.faceOwner().copyToHost();
-    auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
     localIdx nPoints = hostPoints.size();
 
     // Retrieve face node connectivity from stencilDB
@@ -45,23 +43,13 @@ void writeVtu(const UnstructuredMesh& mesh, const std::string& filePath)
                                  "Only meshes created by readCgns can be written.");
     }
     auto& faceNodes =
-        *mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<localIdx>>>>("io::faceNodes");
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        );
 
-    // Convert faceOwner/faceNeighbour to std::vector
-    std::vector<label> faceOwnerVec(static_cast<std::size_t>(nFaces));
-    for (localIdx i = 0; i < nFaces; ++i)
-    {
-        faceOwnerVec[static_cast<std::size_t>(i)] = hostFaceOwner.view()[i];
-    }
-    std::vector<label> faceNeighbourVec(static_cast<std::size_t>(nInternalFaces));
-    for (localIdx i = 0; i < nInternalFaces; ++i)
-    {
-        faceNeighbourVec[static_cast<std::size_t>(i)] = hostFaceNeighbour.view()[i];
-    }
-
-    // Rebuild cell info via meshConverter
-    auto cells =
-        rebuildCellInfo(faceOwnerVec, faceNeighbourVec, faceNodes, nCells, nInternalFaces, nFaces);
+    // Rebuild cell info (rebuildCellInfo copies inputs to host internally)
+    auto cells = rebuildCellInfo(
+        mesh.faceOwner(), mesh.faceNeighbour(), faceNodes, nCells, nInternalFaces, nFaces
+    );
 
     // Build VTK points
     vtkNew<vtkPoints> vtkPts;

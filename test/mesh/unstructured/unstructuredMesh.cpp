@@ -139,16 +139,22 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.stencilDB().contains("io::faceNodes"));
 
         auto& faceNodes =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
-                "io::faceNodes"
-            );
+            *mesh.stencilDB()
+                 .get<std::shared_ptr<NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>>>(
+                     "io::faceNodes"
+                 );
 
         // Must have one entry per face
-        REQUIRE(static_cast<NeoN::localIdx>(faceNodes.size()) == mesh.nFaces());
+        auto hostFN = faceNodes.copyToHost();
+        auto fnView = hostFN.view();
+        REQUIRE(static_cast<NeoN::localIdx>(hostFN.numSegments()) == mesh.nFaces());
 
         // Each face is a quad → 4 nodes per face
-        for (auto& fn : faceNodes)
-            REQUIRE(fn.size() == 4);
+        for (NeoN::localIdx f = 0; f < hostFN.numSegments(); ++f)
+        {
+            auto [s, e] = fnView.bounds(f);
+            REQUIRE(e - s == 4);
+        }
 
         // Verify specific face nodes for first vertical internal face (between cell 0 and cell 1)
         // In a 2x2 grid on [0,1]x[0,1]x[0,1], points are indexed as:
@@ -168,8 +174,8 @@ TEST_CASE("Unstructured Mesh")
         // First vertical internal face (i=0, j=0): between cell(0,0) and cell(1,0)
         // at x=dx, connects bottom pt(1,0,0)=1, pt(1,1,0)=4,
         //                     top pt(1,0,1)=10, pt(1,1,1)=13
-        auto& firstVertFace = faceNodes[0];
-        std::vector<NeoN::localIdx> sorted(firstVertFace.begin(), firstVertFace.end());
+        auto [s0, e0] = fnView.bounds(0);
+        std::vector<NeoN::localIdx> sorted(fnView.values.begin() + s0, fnView.values.begin() + e0);
         std::sort(sorted.begin(), sorted.end());
         REQUIRE(sorted[0] == 1);
         REQUIRE(sorted[1] == 4);
@@ -420,14 +426,20 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.stencilDB().contains("io::faceNodes"));
 
         auto& faceNodes =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
-                "io::faceNodes"
-            );
+            *mesh.stencilDB()
+                 .get<std::shared_ptr<NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>>>(
+                     "io::faceNodes"
+                 );
 
-        REQUIRE(static_cast<NeoN::localIdx>(faceNodes.size()) == mesh.nFaces());
+        auto hostFN = faceNodes.copyToHost();
+        auto fnView = hostFN.view();
+        REQUIRE(static_cast<NeoN::localIdx>(hostFN.numSegments()) == mesh.nFaces());
 
-        for (auto& fn : faceNodes)
-            REQUIRE(fn.size() == 4);
+        for (NeoN::localIdx f = 0; f < hostFN.numSegments(); ++f)
+        {
+            auto [s, e] = fnView.bounds(f);
+            REQUIRE(e - s == 4);
+        }
 
         REQUIRE(mesh.stencilDB().contains("io::patchNames"));
 

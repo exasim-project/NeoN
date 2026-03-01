@@ -169,10 +169,8 @@ SegmentedVector<localIdx, localIdx> buildCellToFaceMapping(
         "countFacesPerCell_boundary"
     );
 
-    // Step B: Build SegmentedVector from interval counts
     SegmentedVector<localIdx, localIdx> cellFaces(facesPerCell);
 
-    // Step C: Fill face indices per cell
     fill(facesPerCell, localIdx(0));
     auto [cfValues, cfSegments] = cellFaces.views();
 
@@ -321,37 +319,21 @@ computeGeometry(const std::vector<Vec3>& points, const FaceTopology& topo, local
 {
     SerialExecutor exec;
 
-    // Convert points
+    // Convert points to NeoN Vector
     Vector<Vec3> devicePoints(exec, points);
 
-    // Convert faceOwner/faceNeighbour
-    Vector<localIdx> faceOwner(exec, topo.faceOwner);
-    Vector<localIdx> faceNeighbour(exec, topo.faceNeighbour);
-
-    // Flatten faceNodes into SegmentedVector
-    std::vector<localIdx> flatValues;
-    std::vector<localIdx> sizes;
-    for (const auto& fn : topo.faceNodes)
-    {
-        sizes.push_back(static_cast<localIdx>(fn.size()));
-        flatValues.insert(flatValues.end(), fn.begin(), fn.end());
-    }
-    Vector<localIdx> intervals(exec, sizes);
-    SegmentedVector<localIdx, localIdx> faceNodes(intervals);
-
-    // Copy flat values into the segmented vector's values
-    Vector<localIdx> flatVals(exec, flatValues);
-    auto srcView = flatVals.view();
-    auto [dstValues, dstSegments] = faceNodes.views();
-    parallelFor(
-        exec,
-        {0, flatVals.size()},
-        NEON_LAMBDA(const localIdx i) { dstValues[i] = srcView[i]; },
-        "copyFaceNodeValues"
-    );
+    // faceOwner and faceNeighbour are already NeoN types in the new FaceTopology.
+    // faceNodes needs a non-const copy since computeGeometry takes SegmentedVector&.
+    auto faceNodesCopy = topo.faceNodes;
 
     return computeGeometry(
-        exec, devicePoints, faceOwner, faceNeighbour, faceNodes, topo.nInternalFaces, nCells
+        exec,
+        devicePoints,
+        topo.faceOwner,
+        topo.faceNeighbour,
+        faceNodesCopy,
+        topo.nInternalFaces,
+        nCells
     );
 }
 

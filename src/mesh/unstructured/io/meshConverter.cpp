@@ -47,10 +47,8 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
     localIdx nInternalFaces = mesh.nInternalFaces();
     localIdx nFaces = mesh.nFaces();
 
-    // Copy data to host
+    // Copy points data to host
     auto hostPoints = mesh.points().copyToHost();
-    auto hostFaceOwner = mesh.faceOwner().copyToHost();
-    auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
     localIdx nPoints = hostPoints.size();
 
     // Retrieve face node connectivity from stencilDB
@@ -60,23 +58,13 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
         );
     }
     auto& faceNodes =
-        *mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<localIdx>>>>("io::faceNodes");
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        );
 
-    // Convert faceOwner/faceNeighbour to std::vector
-    std::vector<label> faceOwnerVec(static_cast<std::size_t>(nFaces));
-    for (localIdx i = 0; i < nFaces; ++i)
-    {
-        faceOwnerVec[static_cast<std::size_t>(i)] = hostFaceOwner.view()[i];
-    }
-    std::vector<label> faceNeighbourVec(static_cast<std::size_t>(nInternalFaces));
-    for (localIdx i = 0; i < nInternalFaces; ++i)
-    {
-        faceNeighbourVec[static_cast<std::size_t>(i)] = hostFaceNeighbour.view()[i];
-    }
-
-    // Rebuild cell info
-    auto cells =
-        rebuildCellInfo(faceOwnerVec, faceNeighbourVec, faceNodes, nCells, nInternalFaces, nFaces);
+    // Rebuild cell info (rebuildCellInfo copies inputs to host internally)
+    auto cells = rebuildCellInfo(
+        mesh.faceOwner(), mesh.faceNeighbour(), faceNodes, nCells, nInternalFaces, nFaces
+    );
 
     // Build shared VTK points
     vtkNew<vtkPoints> vtkPts;
@@ -142,6 +130,10 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
         patchNames = *names;
     }
 
+    // Access faceNodes via host view (always stored on SerialExecutor)
+    auto hostFaceNodes = faceNodes.copyToHost();
+    auto fnView = hostFaceNodes.view();
+
     std::vector<vtkSmartPointer<vtkPolyData>> patches;
     std::vector<std::string> resolvedNames;
     for (localIdx b = 0; b < nBoundaries; ++b)
@@ -155,14 +147,14 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
         vtkNew<vtkCellArray> polys;
         for (localIdx i = patchStart; i < patchEnd; ++i)
         {
-            auto fi = static_cast<std::size_t>(nInternalFaces + i);
-            const auto& fn = faceNodes[fi];
+            localIdx fi = nInternalFaces + i;
+            auto [start, end] = fnView.bounds(fi);
 
             std::vector<vtkIdType> pts;
-            pts.reserve(fn.size());
-            for (localIdx n : fn)
+            pts.reserve(static_cast<std::size_t>(end - start));
+            for (auto n = start; n < end; ++n)
             {
-                pts.push_back(static_cast<vtkIdType>(n));
+                pts.push_back(static_cast<vtkIdType>(fnView.values[n]));
             }
             polys->InsertNextCell(static_cast<int>(pts.size()), pts.data());
         }

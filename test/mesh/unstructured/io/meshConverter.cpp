@@ -17,17 +17,47 @@
 #include <vtkUnstructuredGrid.h>
 
 
+namespace
+{
+
+/// Build a CellConnectivity with NeoN types from host vectors.
+NeoN::io::CellConnectivity makeCellConn(
+    const NeoN::Executor& exec,
+    std::vector<std::vector<NeoN::localIdx>> cells,
+    std::vector<int32_t> types
+)
+{
+    NeoN::SerialExecutor serial;
+    std::vector<NeoN::localIdx> values, offsets;
+    offsets.push_back(0);
+    for (auto& c : cells)
+    {
+        values.insert(values.end(), c.begin(), c.end());
+        offsets.push_back(
+            static_cast<NeoN::localIdx>(offsets.back() + static_cast<NeoN::localIdx>(c.size()))
+        );
+    }
+    return NeoN::io::CellConnectivity {
+        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>(
+            NeoN::Vector<NeoN::localIdx>(serial, values).copyToExecutor(exec),
+            NeoN::Vector<NeoN::localIdx>(serial, offsets).copyToExecutor(exec)
+        ),
+        NeoN::Vector<int32_t>(serial, types).copyToExecutor(exec),
+        static_cast<NeoN::localIdx>(cells.size())
+    };
+}
+
+} // anonymous namespace
+
+
 TEST_CASE("MeshConverter face topology")
 {
+    NeoN::SerialExecutor serial;
+
     SECTION("Single tet from raw connectivity")
     {
-        // 4 nodes, 1 TETRA_4 cell: nodes 0,1,2,3
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10}; // VTK_TETRA
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         REQUIRE(topo.nInternalFaces == 0);
         REQUIRE(topo.nBoundaryFaces == 4);
         REQUIRE(topo.faceOwner.size() == 4);
@@ -35,37 +65,24 @@ TEST_CASE("MeshConverter face topology")
 
     SECTION("Two tets sharing a face")
     {
-        // Nodes: 0-3 for tet1, shares face (0,1,2) with tet2 (0,1,2,4)
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}, {0, 1, 2, 4}};
-        conn.cellTypes = {10, 10};
-        conn.nCells = 2;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}, {0, 1, 2, 4}}, {10, 10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         REQUIRE(topo.nInternalFaces == 1);
         REQUIRE(topo.nBoundaryFaces == 6); // 4+4-2 = 6
     }
 
     SECTION("Single hex")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12}; // VTK_HEXAHEDRON
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         REQUIRE(topo.nInternalFaces == 0);
         REQUIRE(topo.nBoundaryFaces == 6);
     }
 
     SECTION("Single pyramid")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4}};
-        conn.cellTypes = {14}; // VTK_PYRAMID
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4}}, {14});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         REQUIRE(topo.nInternalFaces == 0);
         REQUIRE(topo.nBoundaryFaces == 5); // 1 quad + 4 tri
     }
@@ -74,16 +91,13 @@ TEST_CASE("MeshConverter face topology")
 
 TEST_CASE("MeshConverter geometry")
 {
+    NeoN::SerialExecutor serial;
+
     SECTION("Single tet volume and centres")
     {
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -101,13 +115,8 @@ TEST_CASE("MeshConverter geometry")
         std::vector<NeoN::Vec3> pts = {
             {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}
         };
-
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12};
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 1);
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -122,15 +131,9 @@ TEST_CASE("MeshConverter geometry")
 
     SECTION("Two tets total volume")
     {
-        // Two tets sharing face (0,1,2), total volume = 2 * (1/6)
         std::vector<NeoN::Vec3> pts = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {0, 0, -1}};
-
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}, {0, 1, 2, 4}};
-        conn.cellTypes = {10, 10};
-        conn.nCells = 2;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}, {0, 1, 2, 4}}, {10, 10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
         auto geom = NeoN::io::computeGeometry(pts, topo, 2);
 
         auto hostVol = geom.cellVolumes.copyToHost();
@@ -143,88 +146,70 @@ TEST_CASE("MeshConverter geometry")
 
 TEST_CASE("MeshConverter rebuild connectivity")
 {
+    NeoN::SerialExecutor serial;
+
     SECTION("Round-trip: build topology then rebuild connectivity")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
 
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        // Convert to the format expected by rebuildCellConnectivity
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto rebuilt = NeoN::io::rebuildCellConnectivity(
-            faceOwner,
-            faceNeighbour,
+            serial,
+            topo.faceOwner,
+            topo.faceNeighbour,
             topo.faceNodes,
             1,
             topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            nFaces
         );
 
         REQUIRE(rebuilt.nCells == 1);
-        REQUIRE(rebuilt.cellTypes[0] == 10); // VTK_TETRA
+        auto hostTypes = rebuilt.cellTypes.copyToHost();
+        REQUIRE(hostTypes.view()[0] == 10); // VTK_TETRA
         // Should have 4 unique nodes
-        REQUIRE(rebuilt.cellToNodes[0].size() == 4);
+        auto hostCTN = rebuilt.cellToNodes.copyToHost();
+        auto [s0, e0] = hostCTN.view().bounds(0);
+        REQUIRE(e0 - s0 == 4);
     }
 
     SECTION("Hex rebuild preserves type")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12};
-        conn.nCells = 1;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
 
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto rebuilt = NeoN::io::rebuildCellConnectivity(
-            faceOwner,
-            faceNeighbour,
+            serial,
+            topo.faceOwner,
+            topo.faceNeighbour,
             topo.faceNodes,
             1,
             topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            nFaces
         );
 
-        REQUIRE(rebuilt.cellTypes[0] == 12); // VTK_HEXAHEDRON
-        REQUIRE(rebuilt.cellToNodes[0].size() == 8);
+        auto hostTypes = rebuilt.cellTypes.copyToHost();
+        REQUIRE(hostTypes.view()[0] == 12); // VTK_HEXAHEDRON
+        auto hostCTN = rebuilt.cellToNodes.copyToHost();
+        auto [s0, e0] = hostCTN.view().bounds(0);
+        REQUIRE(e0 - s0 == 8);
     }
 }
 
 
 TEST_CASE("MeshConverter CellInfo rebuild")
 {
+    NeoN::SerialExecutor serial;
+
     SECTION("Single tet: CellInfo has cellFaceNodes and correct type")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3}};
-        conn.cellTypes = {10};
-        conn.nCells = 1;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3}}, {10});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
 
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto cells = NeoN::io::rebuildCellInfo(
-            faceOwner,
-            faceNeighbour,
-            topo.faceNodes,
-            1,
-            topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
         );
 
         REQUIRE(cells.size() == 1);
@@ -235,25 +220,12 @@ TEST_CASE("MeshConverter CellInfo rebuild")
 
     SECTION("Single hex: CellInfo has 6 faces and 8 nodes")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4, 5, 6, 7}};
-        conn.cellTypes = {12};
-        conn.nCells = 1;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4, 5, 6, 7}}, {12});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
 
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto cells = NeoN::io::rebuildCellInfo(
-            faceOwner,
-            faceNeighbour,
-            topo.faceNodes,
-            1,
-            topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
         );
 
         REQUIRE(cells.size() == 1);
@@ -264,25 +236,12 @@ TEST_CASE("MeshConverter CellInfo rebuild")
 
     SECTION("Pyramid: CellInfo has 5 faces and 5 nodes")
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {{0, 1, 2, 3, 4}};
-        conn.cellTypes = {14};
-        conn.nCells = 1;
+        auto conn = makeCellConn(serial, {{0, 1, 2, 3, 4}}, {14});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
 
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto cells = NeoN::io::rebuildCellInfo(
-            faceOwner,
-            faceNeighbour,
-            topo.faceNodes,
-            1,
-            topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
         );
 
         REQUIRE(cells.size() == 1);
@@ -295,28 +254,15 @@ TEST_CASE("MeshConverter CellInfo rebuild")
 
 TEST_CASE("MeshConverter node ordering")
 {
-    // Helper: build CellInfo from a synthetic cell
-    auto makeCellInfo = [](const std::vector<NeoN::localIdx>& cellNodes, int vtkType)
+    NeoN::SerialExecutor serial;
+
+    auto makeCellInfo = [&](const std::vector<NeoN::localIdx>& cellNodes, int vtkType)
     {
-        NeoN::io::CellConnectivity conn;
-        conn.cellToNodes = {cellNodes};
-        conn.cellTypes = {vtkType};
-        conn.nCells = 1;
-
-        auto topo = NeoN::io::buildFaceTopology(conn);
-
-        std::vector<NeoN::label> faceOwner(topo.faceOwner.begin(), topo.faceOwner.end());
-        std::vector<NeoN::label> faceNeighbour(
-            topo.faceNeighbour.begin(), topo.faceNeighbour.end()
-        );
-
+        auto conn = makeCellConn(serial, {cellNodes}, {static_cast<int32_t>(vtkType)});
+        auto topo = NeoN::io::buildFaceTopology(serial, conn);
+        auto nFaces = static_cast<NeoN::localIdx>(topo.faceOwner.size());
         auto cells = NeoN::io::rebuildCellInfo(
-            faceOwner,
-            faceNeighbour,
-            topo.faceNodes,
-            1,
-            topo.nInternalFaces,
-            static_cast<NeoN::localIdx>(topo.faceOwner.size())
+            topo.faceOwner, topo.faceNeighbour, topo.faceNodes, 1, topo.nInternalFaces, nFaces
         );
         return cells[0];
     };
@@ -327,7 +273,6 @@ TEST_CASE("MeshConverter node ordering")
         auto ordered = NeoN::io::orderTetNodes(cell);
         REQUIRE(ordered.size() == 4);
 
-        // All nodes should be from {0,1,2,3}
         std::set<NeoN::localIdx> nodeSet(ordered.begin(), ordered.end());
         REQUIRE(nodeSet.size() == 4);
         REQUIRE(nodeSet == std::set<NeoN::localIdx>({0, 1, 2, 3}));
@@ -354,15 +299,12 @@ TEST_CASE("MeshConverter node ordering")
         REQUIRE(nodeSet.size() == 5);
         REQUIRE(nodeSet == std::set<NeoN::localIdx>({0, 1, 2, 3, 4}));
 
-        // The last node should be the apex (not in any quad face)
-        // The first 4 should be the quad base face nodes
         std::set<NeoN::localIdx> baseNodes(ordered.begin(), ordered.begin() + 4);
         REQUIRE(baseNodes.size() == 4);
     }
 
     SECTION("orderWedgeNodes returns 6 nodes, all unique, 0-based")
     {
-        // VTK_WEDGE = 13, nodes 0-5
         auto cell = makeCellInfo({0, 1, 2, 3, 4, 5}, 13);
         auto ordered = NeoN::io::orderWedgeNodes(cell);
         REQUIRE(ordered.size() == 6);
@@ -412,7 +354,6 @@ TEST_CASE("buildMultiBlockMesh")
         auto* boundary = vtkMultiBlockDataSet::SafeDownCast(mb->GetBlock(1));
         REQUIRE(boundary != nullptr);
 
-        // Each patch sub-block should have metadata
         for (unsigned int i = 0; i < boundary->GetNumberOfBlocks(); ++i)
         {
             REQUIRE(boundary->HasMetaData(i));
@@ -426,7 +367,6 @@ TEST_CASE("buildMultiBlockMesh")
 
         auto* boundary = vtkMultiBlockDataSet::SafeDownCast(mb->GetBlock(1));
 
-        // 2x2 grid: xmin=2, xmax=2, ymin=2, ymax=2, zmin=4, zmax=4
         std::vector<int> expectedFaces = {2, 2, 2, 2, 4, 4};
         for (unsigned int i = 0; i < 6; ++i)
         {
@@ -437,14 +377,6 @@ TEST_CASE("buildMultiBlockMesh")
 
     SECTION("3D mesh patch names and geometry match (3x2x4)")
     {
-        // Domain: [xmin, xmax] x [ymin, ymax] x [zmin, zmax]
-        // Boundary patches and the planes they must lie on:
-        //   patch 0 "xmin"  — x = xmin plane  (ny*nz = 8  faces)
-        //   patch 1 "xmax"  — x = xmax plane  (ny*nz = 8  faces)
-        //   patch 2 "ymin"  — y = ymin plane  (nx*nz = 12 faces)
-        //   patch 3 "ymax"  — y = ymax plane  (nx*nz = 12 faces)
-        //   patch 4 "zmin"  — z = zmin plane  (nx*ny = 6  faces)
-        //   patch 5 "zmax"  — z = zmax plane  (nx*ny = 6  faces)
         double xmin = 0.0, xmax = 3.0;
         double ymin = 0.0, ymax = 2.0;
         double zmin = 0.0, zmax = 4.0;
@@ -457,8 +389,6 @@ TEST_CASE("buildMultiBlockMesh")
 
         REQUIRE(boundary->GetNumberOfBlocks() == 6);
 
-        // Use helper to read patch names (avoids VTK static key duplication
-        // between shared lib and test executable)
         auto patchNames = NeoN::io::multiBlockPatchNames(boundary);
         REQUIRE(patchNames.size() == 6);
 
@@ -467,7 +397,7 @@ TEST_CASE("buildMultiBlockMesh")
 
         struct PlaneCheck
         {
-            int axis; // 0=x, 1=y, 2=z
+            int axis;
             double value;
         };
         std::vector<PlaneCheck> checks = {
@@ -483,7 +413,6 @@ TEST_CASE("buildMultiBlockMesh")
             REQUIRE(patch != nullptr);
             REQUIRE(patch->GetNumberOfCells() == expectedFaces[p]);
 
-            // Verify all face centres lie on the expected plane
             auto cellCentres = vtkSmartPointer<vtkCellCenters>::New();
             cellCentres->SetInputData(patch);
             cellCentres->Update();
@@ -520,7 +449,6 @@ TEST_CASE("buildPartitionedMesh")
         auto mesh = NeoN::createUniform2DGrid(exec, 2, 2);
         auto pdc = NeoN::io::buildPartitionedMesh(mesh);
 
-        // 1 volume + 6 boundary patches
         REQUIRE(pdc->GetNumberOfPartitionedDataSets() == 7);
     }
 
@@ -542,7 +470,6 @@ TEST_CASE("buildPartitionedMesh")
         auto mesh = NeoN::createUniform2DGrid(exec, 2, 2);
         auto pdc = NeoN::io::buildPartitionedMesh(mesh);
 
-        // 2x2 grid: xmin=2, xmax=2, ymin=2, ymax=2, zmin=4, zmax=4
         std::vector<int> expectedFaces = {2, 2, 2, 2, 4, 4};
         for (unsigned int i = 0; i < 6; ++i)
         {
@@ -563,15 +490,12 @@ TEST_CASE("buildPartitionedMesh")
         auto* assembly = pdc->GetDataAssembly();
         REQUIRE(assembly != nullptr);
 
-        // Check internalMesh node exists under root
         auto internalNodes = assembly->SelectNodes({"//internalMesh"});
         REQUIRE(internalNodes.size() == 1);
 
-        // Check boundary node exists under root
         auto boundaryNodes = assembly->SelectNodes({"//boundary"});
         REQUIRE(boundaryNodes.size() == 1);
 
-        // Check patch nodes exist under boundary with correct names
         auto patchNodes = assembly->GetChildNodes(boundaryNodes[0]);
         REQUIRE(patchNodes.size() == 6);
 

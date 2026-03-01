@@ -77,43 +77,26 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
     localIdx nBoundaryFaces = mesh.nBoundaryFaces();
     localIdx nFaces = mesh.nFaces();
 
-    // Copy all data to host
+    // Copy points data to host
     auto hostPoints = mesh.points().copyToHost();
-    auto hostFaceOwner = mesh.faceOwner().copyToHost();
-    auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
     localIdx nPoints = hostPoints.size();
 
-    // Retrieve face node connectivity from stencilDB if stored during read
-    std::vector<std::vector<localIdx>> faceNodes;
-
-    if (mesh.stencilDB().contains("io::faceNodes"))
-    {
-        auto& stored = mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<localIdx>>>>(
-            "io::faceNodes"
-        );
-        faceNodes = *stored;
-    }
-    else
+    // Retrieve face node connectivity from stencilDB (stored during read)
+    if (!mesh.stencilDB().contains("io::faceNodes"))
     {
         throw std::runtime_error("writeCgns: face node connectivity not available in stencilDB. "
                                  "Only meshes created by readCgns can be written.");
     }
+    auto& faceNodes =
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        );
+    auto hostFaceNodes = faceNodes.copyToHost();
+    auto fnView = hostFaceNodes.view();
 
-    // Convert faceOwner/faceNeighbour to std::vector
-    std::vector<label> faceOwnerVec(static_cast<std::size_t>(nFaces));
-    for (localIdx i = 0; i < nFaces; ++i)
-    {
-        faceOwnerVec[static_cast<std::size_t>(i)] = hostFaceOwner.view()[i];
-    }
-    std::vector<label> faceNeighbourVec(static_cast<std::size_t>(nInternalFaces));
-    for (localIdx i = 0; i < nInternalFaces; ++i)
-    {
-        faceNeighbourVec[static_cast<std::size_t>(i)] = hostFaceNeighbour.view()[i];
-    }
-
-    // Rebuild cell info via meshConverter
-    auto cells =
-        rebuildCellInfo(faceOwnerVec, faceNeighbourVec, faceNodes, nCells, nInternalFaces, nFaces);
+    // Rebuild cell info (rebuildCellInfo copies inputs to host internally)
+    auto cells = rebuildCellInfo(
+        mesh.faceOwner(), mesh.faceNeighbour(), faceNodes, nCells, nInternalFaces, nFaces
+    );
 
     // Open CGNS file for writing
     int fn = 0;
@@ -274,8 +257,9 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
         if (patchSize == 0) continue;
 
         // Determine face element type from first face
-        auto firstFaceIdx = static_cast<std::size_t>(nInternalFaces + patchStart);
-        localIdx nFaceNodes = static_cast<localIdx>(faceNodes[firstFaceIdx].size());
+        localIdx firstFaceIdx = nInternalFaces + patchStart;
+        auto [firstStart, firstEnd] = fnView.bounds(firstFaceIdx);
+        localIdx nFaceNodes = firstEnd - firstStart;
 
         CGNS_ENUMT(ElementType_t) faceType;
         if (nFaceNodes == 2) faceType = CGNS_ENUMV(BAR_2);
@@ -291,10 +275,11 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
 
         for (localIdx i = patchStart; i < patchEnd; ++i)
         {
-            auto fi = static_cast<std::size_t>(nInternalFaces + i);
-            for (localIdx n : faceNodes[fi])
+            localIdx fi = nInternalFaces + i;
+            auto [start, end] = fnView.bounds(fi);
+            for (auto n = start; n < end; ++n)
             {
-                faceConn.push_back(static_cast<cgsize_t>(n + 1)); // 1-based
+                faceConn.push_back(static_cast<cgsize_t>(fnView.values[n] + 1)); // 1-based
             }
         }
 

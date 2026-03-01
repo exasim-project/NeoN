@@ -85,7 +85,10 @@ endif()
 if(NeoN_WITH_VTK)
   target_sources(
     NeoN
-    PRIVATE "mesh/unstructured/io/meshConnectivity.cpp"
+    PRIVATE "mesh/unstructured/io/connectivity/faceTopology.cpp"
+            "mesh/unstructured/io/connectivity/cellReconstruction.cpp"
+            "mesh/unstructured/io/connectivity/nodeOrdering.cpp"
+            "mesh/unstructured/io/connectivity/vtkExtraction.cpp"
             "mesh/unstructured/io/meshGeometry.cpp"
             "mesh/unstructured/io/meshConverter.cpp"
             "mesh/unstructured/io/cgnsMeshReader.cpp"
