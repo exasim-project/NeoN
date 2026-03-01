@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1io_1_1FieldSet" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::io::FieldSet</compoundname>
+    <includes refid="fieldWriter_8hpp" local="no">fieldWriter.hpp</includes>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classNeoN_1_1io_1_1FieldSet_1a66eee706e1bb88ede825d955c919ad0d" prot="private" static="no">
+        <type>std::variant&lt; std::reference_wrapper&lt; const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &gt;, std::reference_wrapper&lt; const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &gt; &gt;</type>
+        <definition>using NeoN::io::FieldSet::AnyField =  std::variant&lt; std::reference_wrapper&lt;const fvcc::VolumeField&lt;scalar&gt; &gt;, std::reference_wrapper&lt;const fvcc::VolumeField&lt;Vec3&gt; &gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>AnyField</name>
+        <qualifiedname>NeoN::io::FieldSet::AnyField</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="45" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1io_1_1FieldSet_1aa641efb917d1ba35243b5c2c6c0589fe" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; AnyField &gt;</type>
+        <definition>std::vector&lt;AnyField&gt; NeoN::io::FieldSet::fields_</definition>
+        <argsstring></argsstring>
+        <name>fields_</name>
+        <qualifiedname>NeoN::io::FieldSet::fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="48" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1io_1_1FieldSet_1a608e6b2f8644cad7235897ab022c29ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> &amp;</type>
+        <definition>FieldSet &amp; NeoN::io::FieldSet::add</definition>
+        <argsstring>(const fvcc::VolumeField&lt; scalar &gt; &amp;field)</argsstring>
+        <name>add</name>
+        <qualifiedname>NeoN::io::FieldSet::add</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Add a scalar VolumeField. Returns *this for chaining. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="38" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1io_1_1FieldSet_1a4cb07f8676738f4b5bae18524b96ab31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> &amp;</type>
+        <definition>FieldSet &amp; NeoN::io::FieldSet::add</definition>
+        <argsstring>(const fvcc::VolumeField&lt; Vec3 &gt; &amp;field)</argsstring>
+        <name>add</name>
+        <qualifiedname>NeoN::io::FieldSet::add</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">fvcc::VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Add a <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> VolumeField. Returns *this for chaining. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="41" column="14"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classNeoN_1_1io_1_1FieldSet_1a89077eb7bfbd763561c02c73166a9b1c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void writeVtm</definition>
+        <argsstring>(const UnstructuredMesh &amp;, const FieldSet &amp;, const std::string &amp;)</argsstring>
+        <name>writeVtm</name>
+        <qualifiedname>NeoN::io::FieldSet::writeVtm</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <defname>mesh</defname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> &amp;</type>
+          <defname>fields</defname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <defname>filePath</defname>
+        </param>
+        <briefdescription>
+<para>Write an <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> with all fields in a <ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> to a VTM file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Topology is built once; all fields are attached as CellData arrays.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh to write. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fields</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> containing the fields to include. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output path (must end in .vtm). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="50" column="17"/>
+      </memberdef>
+      <memberdef kind="friend" id="classNeoN_1_1io_1_1FieldSet_1ae4eeb3738a63dbb41141dc50e50c8c77" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void writeVtkHdf</definition>
+        <argsstring>(const UnstructuredMesh &amp;, const FieldSet &amp;, const std::string &amp;)</argsstring>
+        <name>writeVtkHdf</name>
+        <qualifiedname>NeoN::io::FieldSet::writeVtkHdf</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <defname>mesh</defname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> &amp;</type>
+          <defname>fields</defname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <defname>filePath</defname>
+        </param>
+        <briefdescription>
+<para>Write an <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> with all fields in a <ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> to a VTK HDF file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Topology is built once; all fields are attached as CellData arrays.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh to write. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fields</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> containing the fields to include. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output path (must end in .vtkhdf). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="51" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Accumulates references to VolumeFields for a single write pass. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Building VTK topology is expensive. <ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">FieldSet</ref> lets you add multiple fields and write them all in one pass (one topology build, multiple AddArray calls).</para>
+<para>Example: <programlisting><codeline><highlight class="normal"><ref refid="classNeoN_1_1io_1_1FieldSet" kindref="compound">NeoN::io::FieldSet</ref><sp/>fs;</highlight></codeline>
+<codeline><highlight class="normal">fs.<ref refid="classNeoN_1_1io_1_1FieldSet_1a608e6b2f8644cad7235897ab022c29ca" kindref="member">add</ref>(pressure).<ref refid="classNeoN_1_1io_1_1FieldSet_1a608e6b2f8644cad7235897ab022c29ca" kindref="member">add</ref>(velocity);</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="namespaceNeoN_1_1io_1add33bd3404d53e1e49541dd1b20501db" kindref="member">NeoN::io::writeVtm</ref>(mesh,<sp/>fs,<sp/></highlight><highlight class="stringliteral">&quot;output.vtm&quot;</highlight><highlight class="normal">);</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" line="33" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/fieldWriter.hpp" bodystart="34" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1a608e6b2f8644cad7235897ab022c29ca" prot="public" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>add</name></member>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1a4cb07f8676738f4b5bae18524b96ab31" prot="public" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>add</name></member>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1a66eee706e1bb88ede825d955c919ad0d" prot="private" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>AnyField</name></member>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1aa641efb917d1ba35243b5c2c6c0589fe" prot="private" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>fields_</name></member>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1ae4eeb3738a63dbb41141dc50e50c8c77" prot="private" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>writeVtkHdf</name></member>
+      <member refid="classNeoN_1_1io_1_1FieldSet_1a89077eb7bfbd763561c02c73166a9b1c" prot="private" virt="non-virtual"><scope>NeoN::io::FieldSet</scope><name>writeVtm</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
