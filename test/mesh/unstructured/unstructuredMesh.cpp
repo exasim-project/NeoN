@@ -135,13 +135,13 @@ TEST_CASE("Unstructured Mesh")
         NeoN::localIdx ny = 2;
         auto mesh = NeoN::createUniform2DGrid(exec, nx, ny);
 
-        // stencilDB must contain "io::faceNodes"
-        REQUIRE(mesh.stencilDB().contains("io::faceNodes"));
+        // stencilDB must contain std::string(NeoN::io::stencilFaceNodes)
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilFaceNodes)));
 
         auto& faceNodes =
             *mesh.stencilDB()
                  .get<std::shared_ptr<NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>>>(
-                     "io::faceNodes"
+                     std::string(NeoN::io::stencilFaceNodes)
                  );
 
         // Must have one entry per face
@@ -189,11 +189,11 @@ TEST_CASE("Unstructured Mesh")
         NeoN::localIdx ny = 2;
         auto mesh = NeoN::createUniform2DGrid(exec, nx, ny);
 
-        // stencilDB must contain "io::patchNames"
-        REQUIRE(mesh.stencilDB().contains("io::patchNames"));
+        // stencilDB must contain std::string(NeoN::io::stencilPatchNames)
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
 
         auto& patchNames =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
 
         // Must have one entry per boundary (6 patches)
         REQUIRE(patchNames.size() == 6);
@@ -423,12 +423,12 @@ TEST_CASE("Unstructured Mesh")
         NeoN::localIdx nz = 2;
         auto mesh = NeoN::createUniform3DGrid(exec, nx, ny, nz);
 
-        REQUIRE(mesh.stencilDB().contains("io::faceNodes"));
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilFaceNodes)));
 
         auto& faceNodes =
             *mesh.stencilDB()
                  .get<std::shared_ptr<NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>>>(
-                     "io::faceNodes"
+                     std::string(NeoN::io::stencilFaceNodes)
                  );
 
         auto hostFN = faceNodes.copyToHost();
@@ -441,10 +441,10 @@ TEST_CASE("Unstructured Mesh")
             REQUIRE(e - s == 4);
         }
 
-        REQUIRE(mesh.stencilDB().contains("io::patchNames"));
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
 
         auto& patchNames =
-            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
 
         REQUIRE(patchNames.size() == 6);
         REQUIRE(patchNames[0] == "xmin");

@@ -20,18 +20,18 @@ TEST_CASE("Boundary patch name preservation")
         auto mesh = NeoN::io::readCgns("meshFiles/cube3D.cgns", exec);
 
         // Verify patch names were stored in stencilDB
-        REQUIRE(mesh.stencilDB().contains("io::patchNames"));
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
         auto& names =
-            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
         REQUIRE(names->size() == 6);
 
         // Write and re-read
         NeoN::io::writeCgns(mesh, "output_bc_test.cgns");
         auto mesh2 = NeoN::io::readCgns("output_bc_test.cgns", exec);
 
-        REQUIRE(mesh2.stencilDB().contains("io::patchNames"));
+        REQUIRE(mesh2.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
         auto& names2 =
-            mesh2.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            mesh2.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
         REQUIRE(names2->size() == names->size());
 
         // Names must match (order preserved)
@@ -64,17 +64,17 @@ TEST_CASE("Boundary patch name preservation")
     {
         auto mesh = NeoN::io::readCgns("meshFiles/singleTet.cgns", exec);
 
-        REQUIRE(mesh.stencilDB().contains("io::patchNames"));
+        REQUIRE(mesh.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
         auto& names =
-            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
         REQUIRE(names->size() == 4);
 
         NeoN::io::writeCgns(mesh, "output_tet_bc.cgns");
         auto mesh2 = NeoN::io::readCgns("output_tet_bc.cgns", exec);
 
-        REQUIRE(mesh2.stencilDB().contains("io::patchNames"));
+        REQUIRE(mesh2.stencilDB().contains(std::string(NeoN::io::stencilPatchNames)));
         auto& names2 =
-            mesh2.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            mesh2.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(NeoN::io::stencilPatchNames));
         REQUIRE(names2->size() == names->size());
 
         for (std::size_t i = 0; i < names->size(); ++i)

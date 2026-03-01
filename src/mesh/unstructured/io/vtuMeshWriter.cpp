@@ -37,13 +37,13 @@ void writeVtu(const UnstructuredMesh& mesh, const std::string& filePath)
     localIdx nPoints = hostPoints.size();
 
     // Retrieve face node connectivity from stencilDB
-    if (!mesh.stencilDB().contains("io::faceNodes"))
+    if (!mesh.stencilDB().contains(std::string(stencilFaceNodes)))
     {
         throw std::runtime_error("writeVtu: face node connectivity not available in stencilDB. "
                                  "Only meshes created by readCgns can be written.");
     }
     auto& faceNodes =
-        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>(std::string(stencilFaceNodes)
         );
 
     // Rebuild cell info (rebuildCellInfo copies inputs to host internally)

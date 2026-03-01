@@ -46,23 +46,19 @@ SegmentedVector<localIdx, localIdx> buildCellToFaceMapping(
     auto ownerView = faceOwner.view();
     auto neiView = faceNeighbour.view();
 
-    // Internal faces contribute to both owner and neighbour
+    // Count: internal faces contribute to both owner and neighbour,
+    // boundary faces contribute to owner only.
     parallelFor(
         exec,
-        {0, nInternalFaces},
+        {0, nFaces},
         NEON_LAMBDA(const localIdx f) {
             Kokkos::atomic_increment(&fpcView[ownerView[f]]);
-            Kokkos::atomic_increment(&fpcView[neiView[f]]);
+            if (f < nInternalFaces)
+            {
+                Kokkos::atomic_increment(&fpcView[neiView[f]]);
+            }
         },
-        "countFacesPerCell_internal"
-    );
-
-    // Boundary faces contribute to owner only
-    parallelFor(
-        exec,
-        {nInternalFaces, nFaces},
-        NEON_LAMBDA(const localIdx f) { Kokkos::atomic_increment(&fpcView[ownerView[f]]); },
-        "countFacesPerCell_boundary"
+        "countFacesPerCell"
     );
 
     SegmentedVector<localIdx, localIdx> cellFaces(facesPerCell);
@@ -70,29 +66,22 @@ SegmentedVector<localIdx, localIdx> buildCellToFaceMapping(
     fill(facesPerCell, localIdx(0));
     auto [cfValues, cfSegments] = cellFaces.views();
 
+    // Fill: same pattern as counting.
     parallelFor(
         exec,
-        {0, nInternalFaces},
+        {0, nFaces},
         NEON_LAMBDA(const localIdx f) {
             auto own = ownerView[f];
             auto pos = Kokkos::atomic_fetch_add(&fpcView[own], localIdx(1));
             cfValues[cfSegments[own] + pos] = f;
-            auto nei = neiView[f];
-            pos = Kokkos::atomic_fetch_add(&fpcView[nei], localIdx(1));
-            cfValues[cfSegments[nei] + pos] = f;
+            if (f < nInternalFaces)
+            {
+                auto nei = neiView[f];
+                pos = Kokkos::atomic_fetch_add(&fpcView[nei], localIdx(1));
+                cfValues[cfSegments[nei] + pos] = f;
+            }
         },
-        "fillCellFaces_internal"
-    );
-
-    parallelFor(
-        exec,
-        {nInternalFaces, nFaces},
-        NEON_LAMBDA(const localIdx f) {
-            auto own = ownerView[f];
-            auto pos = Kokkos::atomic_fetch_add(&fpcView[own], localIdx(1));
-            cfValues[cfSegments[own] + pos] = f;
-        },
-        "fillCellFaces_boundary"
+        "fillCellFaces"
     );
 
     return cellFaces;

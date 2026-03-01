@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/mesh/unstructured/io/meshConverter.hpp"
 
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/segmentedVector.hpp"
@@ -425,12 +426,12 @@ UnstructuredMesh createUniform3DGrid(
     auto faceNodesPtr = std::make_shared<SegmentedVector<localIdx, localIdx>>(
         Vector<localIdx>(serial, fnValues), Vector<localIdx>(serial, fnOffsets)
     );
-    mesh.stencilDB().insert(std::string("io::faceNodes"), faceNodesPtr);
+    mesh.stencilDB().insert(std::string(io::stencilFaceNodes), faceNodesPtr);
 
     auto patchNames = std::make_shared<std::vector<std::string>>(
         std::vector<std::string> {"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}
     );
-    mesh.stencilDB().insert(std::string("io::patchNames"), patchNames);
+    mesh.stencilDB().insert(std::string(io::stencilPatchNames), patchNames);
 
     return mesh;
 }

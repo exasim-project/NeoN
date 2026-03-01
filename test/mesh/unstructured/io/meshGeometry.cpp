@@ -4,42 +4,12 @@
 
 #define CATCH_CONFIG_RUNNER
 #include "catch2_common.hpp"
+#include "testHelpers.hpp"
 
 #include "NeoN/mesh/unstructured/io/meshGeometry.hpp"
 #include "NeoN/mesh/unstructured/io/meshConnectivity.hpp"
 
-
-namespace
-{
-
-/// Build a CellConnectivity with NeoN types from host vectors.
-NeoN::io::CellConnectivity makeCellConn(
-    const NeoN::Executor& exec,
-    std::vector<std::vector<NeoN::localIdx>> cells,
-    std::vector<int32_t> types
-)
-{
-    NeoN::SerialExecutor serial;
-    std::vector<NeoN::localIdx> values, offsets;
-    offsets.push_back(0);
-    for (auto& c : cells)
-    {
-        values.insert(values.end(), c.begin(), c.end());
-        offsets.push_back(
-            static_cast<NeoN::localIdx>(offsets.back() + static_cast<NeoN::localIdx>(c.size()))
-        );
-    }
-    return NeoN::io::CellConnectivity {
-        NeoN::SegmentedVector<NeoN::localIdx, NeoN::localIdx>(
-            NeoN::Vector<NeoN::localIdx>(serial, values).copyToExecutor(exec),
-            NeoN::Vector<NeoN::localIdx>(serial, offsets).copyToExecutor(exec)
-        ),
-        NeoN::Vector<int32_t>(serial, types).copyToExecutor(exec),
-        static_cast<NeoN::localIdx>(cells.size())
-    };
-}
-
-} // anonymous namespace
+using NeoN::test::makeCellConn;
 
 
 TEST_CASE("computeFaceCentres")

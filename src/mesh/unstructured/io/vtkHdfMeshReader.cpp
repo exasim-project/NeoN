@@ -10,7 +10,6 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
-#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include <vtkHDFReader.h>
@@ -21,7 +20,6 @@
 #include <vtkPoints.h>
 #include <vtkUnstructuredGrid.h>
 
-#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -103,20 +101,8 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     localIdx nBoundaries = (nBoundaryFaces > 0) ? 1 : 0;
     std::vector<localIdx> patchOffsets = {0, nBoundaryFaces};
 
+    // computeGeometry returns MeshGeometry on SerialExecutor (host) — no copyToHost needed.
     auto geom = computeGeometry(hostPoints, topo, nCells);
-
-    // Get host views for boundary mesh construction
-    auto hostGeom = MeshGeometry {
-        geom.cellVolumes.copyToHost(),
-        geom.cellCentres.copyToHost(),
-        geom.faceAreas.copyToHost(),
-        geom.faceCentres.copyToHost(),
-        geom.magFaceAreas.copyToHost()
-    };
-    auto hFaceCentres = hostGeom.faceCentres.view();
-    auto hCellCentres = hostGeom.cellCentres.view();
-    auto hFaceAreas = hostGeom.faceAreas.view();
-    auto hMagFaceAreas = hostGeom.magFaceAreas.view();
 
     // Build NeoN vectors on the target executor
     vectorVector meshPoints(exec, hostPoints);
@@ -128,51 +114,16 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
     auto faceOwnerVec = topo.faceOwner.copyToExecutor(exec);
     auto faceNeighbourVec = topo.faceNeighbour.copyToExecutor(exec);
 
-    // Build BoundaryMesh
-    std::vector<label> bndFaceCells(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndCf(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndCn(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndSf(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<scalar> bndMagSf(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndNf(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndDelta(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<scalar> bndWeights(static_cast<std::size_t>(nBoundaryFaces));
-    std::vector<scalar> bndDeltaCoeffs(static_cast<std::size_t>(nBoundaryFaces));
-
-    for (localIdx i = 0; i < nBoundaryFaces; ++i)
-    {
-        auto bi = static_cast<std::size_t>(i);
-        localIdx fi = nInternalFaces + i;
-
-        localIdx ownerCell = topo.faceOwner.view()[fi];
-
-        bndFaceCells[bi] = static_cast<label>(ownerCell);
-        bndCf[bi] = hFaceCentres[fi];
-        bndCn[bi] = hCellCentres[ownerCell];
-        bndSf[bi] = hFaceAreas[fi];
-        bndMagSf[bi] = hMagFaceAreas[fi];
-
-        if (bndMagSf[bi] > 1e-30) bndNf[bi] = bndSf[bi] * (1.0 / bndMagSf[bi]);
-        else
-            bndNf[bi] = Vec3 {0.0, 0.0, 0.0};
-
-        bndDelta[bi] = bndCf[bi] - bndCn[bi];
-        scalar magDelta = mag(bndDelta[bi]);
-        bndDeltaCoeffs[bi] = (magDelta > 1e-30) ? 1.0 / magDelta : 0.0;
-        bndWeights[bi] = 1.0;
-    }
-
-    BoundaryMesh boundaryMesh(
+    // Build BoundaryMesh from host geometry
+    auto boundaryMesh = buildBoundaryMesh(
         exec,
-        labelVector(exec, bndFaceCells),
-        vectorVector(exec, bndCf),
-        vectorVector(exec, bndCn),
-        vectorVector(exec, bndSf),
-        scalarVector(exec, bndMagSf),
-        vectorVector(exec, bndNf),
-        vectorVector(exec, bndDelta),
-        scalarVector(exec, bndWeights),
-        scalarVector(exec, bndDeltaCoeffs),
+        topo.faceOwner,
+        geom.faceCentres,
+        geom.cellCentres,
+        geom.faceAreas,
+        geom.magFaceAreas,
+        nInternalFaces,
+        nBoundaryFaces,
         patchOffsets
     );
 
@@ -196,7 +147,7 @@ UnstructuredMesh readVtkHdf(const std::string& filePath, const Executor& exec)
 
     // Store face node connectivity for writer round-trip
     auto faceNodePtr = std::make_shared<SegmentedVector<localIdx, localIdx>>(topo.faceNodes);
-    mesh.stencilDB().insert(std::string("io::faceNodes"), faceNodePtr);
+    mesh.stencilDB().insert(std::string(stencilFaceNodes), faceNodePtr);
 
     return mesh;
 }

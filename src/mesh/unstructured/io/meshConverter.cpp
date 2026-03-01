@@ -52,13 +52,13 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
     localIdx nPoints = hostPoints.size();
 
     // Retrieve face node connectivity from stencilDB
-    if (!mesh.stencilDB().contains("io::faceNodes"))
+    if (!mesh.stencilDB().contains(std::string(stencilFaceNodes)))
     {
         throw std::runtime_error("buildMeshData: face node connectivity not available in stencilDB."
         );
     }
     auto& faceNodes =
-        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>(std::string(stencilFaceNodes)
         );
 
     // Rebuild cell info (rebuildCellInfo copies inputs to host internally)
@@ -123,10 +123,10 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
     localIdx nBoundaries = mesh.nBoundaries();
 
     std::vector<std::string> patchNames;
-    if (mesh.stencilDB().contains("io::patchNames"))
+    if (mesh.stencilDB().contains(std::string(stencilPatchNames)))
     {
         auto& names =
-            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+            mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(stencilPatchNames));
         patchNames = *names;
     }
 
@@ -176,6 +176,80 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
 }
 
 } // anonymous namespace
+
+
+BoundaryMesh buildBoundaryMesh(
+    const Executor& exec,
+    const Vector<localIdx>& faceOwner,
+    const Vector<Vec3>& faceCentres,
+    const Vector<Vec3>& cellCentres,
+    const Vector<Vec3>& faceAreas,
+    const Vector<scalar>& magFaceAreas,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    const std::vector<localIdx>& patchOffsets
+)
+{
+    auto owView = faceOwner.view();
+    auto hFaceCentres = faceCentres.view();
+    auto hCellCentres = cellCentres.view();
+    auto hFaceAreas = faceAreas.view();
+    auto hMagFaceAreas = magFaceAreas.view();
+
+    std::vector<label> bndFaceCells(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<Vec3> bndCf(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<Vec3> bndCn(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<Vec3> bndSf(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<scalar> bndMagSf(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<Vec3> bndNf(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<Vec3> bndDelta(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<scalar> bndWeights(static_cast<std::size_t>(nBoundaryFaces));
+    std::vector<scalar> bndDeltaCoeffs(static_cast<std::size_t>(nBoundaryFaces));
+
+    for (localIdx i = 0; i < nBoundaryFaces; ++i)
+    {
+        auto bi = static_cast<std::size_t>(i);
+        localIdx fi = nInternalFaces + i;
+
+        localIdx ownerCell = owView[fi];
+
+        bndFaceCells[bi] = static_cast<label>(ownerCell);
+        bndCf[bi] = hFaceCentres[fi];
+        bndCn[bi] = hCellCentres[ownerCell];
+        bndSf[bi] = hFaceAreas[fi];
+        bndMagSf[bi] = hMagFaceAreas[fi];
+
+        if (bndMagSf[bi] > 1e-30)
+        {
+            bndNf[bi] = bndSf[bi] * (1.0 / bndMagSf[bi]);
+        }
+        else
+        {
+            bndNf[bi] = Vec3 {0.0, 0.0, 0.0};
+        }
+
+        bndDelta[bi] = bndCf[bi] - bndCn[bi];
+
+        scalar magDelta = mag(bndDelta[bi]);
+        bndDeltaCoeffs[bi] = (magDelta > 1e-30) ? 1.0 / magDelta : 0.0;
+
+        bndWeights[bi] = 1.0;
+    }
+
+    return BoundaryMesh(
+        exec,
+        labelVector(exec, bndFaceCells),
+        vectorVector(exec, bndCf),
+        vectorVector(exec, bndCn),
+        vectorVector(exec, bndSf),
+        scalarVector(exec, bndMagSf),
+        vectorVector(exec, bndNf),
+        vectorVector(exec, bndDelta),
+        scalarVector(exec, bndWeights),
+        scalarVector(exec, bndDeltaCoeffs),
+        patchOffsets
+    );
+}
 
 
 vtkSmartPointer<vtkMultiBlockDataSet> buildMultiBlockMesh(const UnstructuredMesh& mesh)

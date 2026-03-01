@@ -82,13 +82,13 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
     localIdx nPoints = hostPoints.size();
 
     // Retrieve face node connectivity from stencilDB (stored during read)
-    if (!mesh.stencilDB().contains("io::faceNodes"))
+    if (!mesh.stencilDB().contains(std::string(stencilFaceNodes)))
     {
         throw std::runtime_error("writeCgns: face node connectivity not available in stencilDB. "
                                  "Only meshes created by readCgns can be written.");
     }
     auto& faceNodes =
-        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>("io::faceNodes"
+        *mesh.stencilDB().get<std::shared_ptr<SegmentedVector<localIdx, localIdx>>>(std::string(stencilFaceNodes)
         );
     auto hostFaceNodes = faceNodes.copyToHost();
     auto fnView = hostFaceNodes.view();
@@ -285,10 +285,10 @@ void writeCgns(const UnstructuredMesh& mesh, const std::string& filePath)
 
         // Retrieve patch name from stencilDB if available
         std::string patchName = "patch_" + std::to_string(b);
-        if (mesh.stencilDB().contains("io::patchNames"))
+        if (mesh.stencilDB().contains(std::string(stencilPatchNames)))
         {
             auto& names =
-                mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>("io::patchNames");
+                mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(std::string(stencilPatchNames));
             if (static_cast<std::size_t>(b) < names->size())
             {
                 patchName = (*names)[static_cast<std::size_t>(b)];
