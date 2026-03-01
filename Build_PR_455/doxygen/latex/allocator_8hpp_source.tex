@@ -1,91 +1,12 @@
 \doxysection{allocator.\+hpp}
-\hypertarget{allocator_8hpp_source}{}\label{allocator_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp}}
+\hypertarget{allocator_8hpp_source}{}\label{allocator_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/allocator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/allocator.hpp}}
 \mbox{\hyperlink{allocator_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00001}00001\ \textcolor{preprocessor}{\#ifndef\ ALLOCATOR\_H\_}}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00002}00002\ \textcolor{preprocessor}{\#define\ ALLOCATOR\_H\_}}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00003}00003\ }
 \DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00004}00004\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00006}00006\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00009}00009\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00010}00010\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00011}00011\ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00013}00013\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00014}\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{00014}}\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00015}00015\ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00016}00016\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{CPU}},}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00017}00017\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{GPU}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00018}00018\ \};}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00019}00019\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00020}00020\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00021}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{00021}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{AllocatorStrategy}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00022}00022\ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00023}00023\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00024}00024\ \textcolor{keyword}{protected}:}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a3905c8c5f49fca35e0dcce51ba78e634}{00026}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a3905c8c5f49fca35e0dcce51ba78e634}{memSpace\_}};}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00028}00028\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a352505b0c16b94ff5e70e6bae2c0d588}{00031}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a352505b0c16b94ff5e70e6bae2c0d588}{setMemSpace}}(\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{MemorySpace}}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{memSpace}})\ \{\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a3905c8c5f49fca35e0dcce51ba78e634}{memSpace\_}}\ =\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{memSpace}};\ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00032}00032\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{00034}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a7fd6091797b5f980d130c26dce8a7c3c}{00037}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a7fd6091797b5f980d130c26dce8a7c3c}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{ptr}},\ \textcolor{keywordtype}{size\_t}\ size)\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00038}00038\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a9e790e5347a62749bca6056c97f74d88}{00040}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a9e790e5347a62749bca6056c97f74d88}{free}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_a23a27cf665cc2fb65246238c3e765e2f}{ptr}})\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00041}00041\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_ad5d883bae20050e38db1e462f1b64db2}{00042}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy_ad5d883bae20050e38db1e462f1b64db2}{\string~AllocatorStrategy}}()\ \{\}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00043}00043\ \};}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00044}00044\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00045}00045\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1AllocatorContext}{00046}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1AllocatorContext}{AllocatorContext}}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00047}00047\ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00048}00048\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00049}00049\ \ \ \ \ std::unique\_ptr<AllocatorStrategy>\ strategy\ \{\};}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00050}00050\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00051}00051\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ad2f32daf35c429b85bbd03cacd736b4e}{00053}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ad2f32daf35c429b85bbd03cacd736b4e}{setStrategy}}(std::unique\_ptr<AllocatorStrategy>\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{strategy\_}})}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00054}00054\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ strategy\ =\ std::move(\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{strategy\_}});}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00056}00056\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{00060}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{alloc}}(\textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{elements}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00061}00061\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!strategy)}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ allocator\ set"{}});}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}}*\textcolor{keyword}{>}(strategy-\/>alloc(\textcolor{keyword}{sizeof}(\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}})\ *\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{elements}}));}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00067}00067\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_aba3cb41fadcfe95fb7b8fc45cc05681a}{00071}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_aba3cb41fadcfe95fb7b8fc45cc05681a}{realloc}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{ptr}},\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{elements}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00072}00072\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!strategy)}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ allocator\ set"{}});}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}}*\textcolor{keyword}{>}(strategy-\/>realloc(\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{ptr}},\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{T}})\ *\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{elements}}));}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00078}00078\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab112185aaae434981e609a47419921f6}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab112185aaae434981e609a47419921f6}{free}}(\textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{ptr}})\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!strategy)}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ allocator\ set"{}});}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strategy-\/>free(\mbox{\hyperlink{classNeoN_1_1AllocatorContext_ab88bd12b088cc31e78684f5e9d03ce5a}{ptr}});}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00087}00087\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00088}00088\ \};}
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00089}00089\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00090}00090\ }
-\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00091}00091\ \}}
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{allocator_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ ALLOCATOR\_H\_}}
 
 \end{DoxyCode}
