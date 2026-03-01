@@ -1,0 +1,39 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/io/mesh\+Converter.hpp File Reference}
+\hypertarget{meshConverter_8hpp}{}\label{meshConverter_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp}}
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/io/mesh\+Connectivity.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/io/mesh\+Geometry.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/boundary\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include $<$vtk\+Multi\+Block\+Data\+Set.\+h$>$}\newline
+{\ttfamily \#include $<$vtk\+Partitioned\+Data\+Set\+Collection.\+h$>$}\newline
+{\ttfamily \#include $<$vtk\+Smart\+Pointer.\+h$>$}\newline
+{\ttfamily \#include $<$string\+\_\+view$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1io}{Neo\+N\+::io}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \mbox{\hyperlink{namespaceNeoN_1_1io_ae8d8d7457c89954f6b4ce7b696e9e08d}{Neo\+N\+::io\+::build\+Boundary\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&face\+Owner, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&face\+Centres, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&cell\+Centres, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&face\+Areas, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&mag\+Face\+Areas, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Boundary\+Faces, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&patch\+Offsets)
+\item 
+vtk\+Smart\+Pointer$<$ vtk\+Multi\+Block\+Data\+Set $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a2d43dce3df985dbecc5d11661bec5aa1}{Neo\+N\+::io\+::build\+Multi\+Block\+Mesh}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\item 
+vtk\+Smart\+Pointer$<$ vtk\+Partitioned\+Data\+Set\+Collection $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a758f90dc2e38df6f179bfd6590dfe807}{Neo\+N\+::io\+::build\+Partitioned\+Mesh}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}{Neo\+N\+::io\+::multi\+Block\+Patch\+Names}} (vtk\+Multi\+Block\+Data\+Set \texorpdfstring{$\ast$}{*}boundary)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr std\+::string\+\_\+view \mbox{\hyperlink{namespaceNeoN_1_1io_a2e985e3118a3b38425be2b9914325067}{Neo\+N\+::io\+::stencil\+Face\+Nodes}} = "{}io\+::face\+Nodes"{}
+\begin{DoxyCompactList}\small\item\em Stencil\+DB key for face-\/node connectivity (\doxylink{classNeoN_1_1SegmentedVector}{Segmented\+Vector$<$local\+Idx,local\+Idx$>$}). \end{DoxyCompactList}\item 
+constexpr std\+::string\+\_\+view \mbox{\hyperlink{namespaceNeoN_1_1io_a19e71a61c08dfb935ab757b9fb11f01a}{Neo\+N\+::io\+::stencil\+Patch\+Names}} = "{}io\+::patch\+Names"{}
+\begin{DoxyCompactList}\small\item\em Stencil\+DB key for patch names (std\+::vector$<$std\+::string$>$). \end{DoxyCompactList}\end{DoxyCompactItemize}
