@@ -248,15 +248,7 @@ if(nlohmann_json_POPULATED)
   install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
 endif()
 
-# install internal umpire version
-if(umpire_POPULATED)
-  install(
-    TARGETS umpire
-    EXPORT UmpireTargets
-    INCLUDES
-    DESTINATION include)
-  install(EXPORT UmpireTargets)
-endif()
+# umpire installs its own targets when fetched via CPM
 
 # install internal cpptrace version
 if(cpptrace_POPULATED)
@@ -285,8 +277,8 @@ endif()
 # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
 # SundialsTargets NAMESPACE SUNDIALS::) endif()
 
-if(NOT kokkos_POPULATED)
+if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
   export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
 else()
-  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos")
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
 endif()
