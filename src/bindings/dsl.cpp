@@ -165,13 +165,10 @@ void registerDSL(nb::module_& m)
     exp_m.def("ddt", &dsl::exp::ddt<Vec3>);
     exp_m.def(
         "div",
-        [](const ScalarSurfField& flux, const ScalarVolField& phi) {
-            return dsl::exp::div(flux, phi);
-        }
+        [](const ScalarSurfField& flux, const ScalarVolField& phi)
+        { return dsl::exp::div(flux, phi); }
     );
-    exp_m.def(
-        "div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); }
-    );
+    exp_m.def("div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); });
     exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
