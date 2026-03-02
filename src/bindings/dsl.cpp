@@ -163,18 +163,19 @@ void registerDSL(nb::module_& m)
     // Explicit factories
     exp_m.def("ddt", &dsl::exp::ddt<scalar>);
     exp_m.def("ddt", &dsl::exp::ddt<Vec3>);
-    exp_m.def("div", nb::overload_cast<const ScalarSurfField&, ScalarVolField&>(&dsl::exp::div));
-    exp_m.def("div", nb::overload_cast<const ScalarSurfField&>(&dsl::exp::div));
     exp_m.def(
-        "laplacian",
-        nb::overload_cast<const ScalarSurfField&, ScalarVolField&>(&dsl::exp::laplacian)
+        "div",
+        [](const ScalarSurfField& flux, const ScalarVolField& phi) {
+            return dsl::exp::div(flux, phi);
+        }
     );
     exp_m.def(
-        "laplacian",
-        nb::overload_cast<const ScalarSurfField&, VectorVolField&>(&dsl::exp::laplacian)
+        "div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); }
     );
+    exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
+    exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
-    exp_m.def("source", &dsl::exp::source);
+    exp_m.def("source", &dsl::exp::source<scalar>);
 
     // solve
     m.def(

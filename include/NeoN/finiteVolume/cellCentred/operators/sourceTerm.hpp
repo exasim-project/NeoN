@@ -26,8 +26,8 @@ public:
 
     SourceTerm(
         dsl::Operator::Type termType,
-        VolumeField<scalar>& coefficients,
-        VolumeField<ValueType>& field
+        const VolumeField<scalar>& coefficients,
+        const VolumeField<ValueType>& field
     );
 
     ~SourceTerm();
