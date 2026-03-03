@@ -17,9 +17,15 @@ namespace NeoN::io
  * Writes a vtkMultiBlockDataSet containing the volume grid as block 0 ("internalMesh")
  * and each boundary patch as subsequent vtkPolyData blocks with named patches.
  *
+ * When includeGhosts is true, ghost cells from partition boundaries are appended to
+ * the volume grid and a "ghostCells" cell data array (0=real, 1=ghost) is added.
+ *
  * @param mesh The mesh to write.
  * @param filePath Output path (must end in .vtm).
+ * @param includeGhosts Whether to include ghost cells (default: false).
  */
-void writeVtm(const UnstructuredMesh& mesh, const std::string& filePath);
+void writeVtm(
+    const UnstructuredMesh& mesh, const std::string& filePath, bool includeGhosts = false
+);
 
 } // namespace NeoN::io

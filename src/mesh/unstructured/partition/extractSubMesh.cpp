@@ -8,6 +8,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/label.hpp"
 
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -148,6 +149,32 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     }
 
     // -----------------------------------------------------------------------
+    // Step 2b: Collect unique ghost cells from proc-boundary faces
+    // -----------------------------------------------------------------------
+    std::unordered_map<localIdx, localIdx> ghostG2L; // global -> ghost-local index
+    std::vector<localIdx> ghostCellGlobalIds;
+
+    for (const auto& pf : procFaces)
+    {
+        if (ghostG2L.count(pf.globalOther) == 0)
+        {
+            ghostG2L[pf.globalOther] = static_cast<localIdx>(ghostCellGlobalIds.size());
+            ghostCellGlobalIds.push_back(pf.globalOther);
+        }
+    }
+
+    const localIdx nGhostCells = static_cast<localIdx>(ghostCellGlobalIds.size());
+
+    std::vector<scalar> ghostCellVols(static_cast<std::size_t>(nGhostCells));
+    std::vector<Vec3> ghostCellCentres(static_cast<std::size_t>(nGhostCells));
+    for (localIdx gi = 0; gi < nGhostCells; ++gi)
+    {
+        localIdx gc = ghostCellGlobalIds[static_cast<std::size_t>(gi)];
+        ghostCellVols[static_cast<std::size_t>(gi)] = cellVolV[gc];
+        ghostCellCentres[static_cast<std::size_t>(gi)] = cellCentV[gc];
+    }
+
+    // -----------------------------------------------------------------------
     // Step 3: Point collection — walk all sub-faces, collect unique point indices
     // -----------------------------------------------------------------------
     std::unordered_map<localIdx, localIdx> g2lPoint;
@@ -181,6 +208,87 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
         }
     }
 
+    // Record the sub-mesh point count before adding ghost-only points
+    const localIdx nSubPointsBeforeGhosts = static_cast<localIdx>(localPoints.size());
+
+    // -----------------------------------------------------------------------
+    // Step 3b: Ghost cell face-node collection
+    // -----------------------------------------------------------------------
+    // For each ghost cell, find all its faces in the global mesh and collect
+    // their node indices (remapped to local point numbering, extending as needed).
+    std::vector<std::vector<std::vector<localIdx>>> ghostCellFaceNodes(
+        static_cast<std::size_t>(nGhostCells)
+    );
+
+    if (nGhostCells > 0)
+    {
+        // Walk all global internal faces to find faces owned by ghost cells
+        for (localIdx f = 0; f < nInternal; ++f)
+        {
+            auto o = static_cast<localIdx>(ownerV[f]);
+            auto n = static_cast<localIdx>(neighbourV[f]);
+
+            auto itO = ghostG2L.find(o);
+            auto itN = ghostG2L.find(n);
+
+            if (itO != ghostG2L.end())
+            {
+                auto& gNodes = globalFaceNodes[static_cast<std::size_t>(f)];
+                std::vector<localIdx> mapped;
+                mapped.reserve(gNodes.size());
+                for (localIdx gp : gNodes)
+                {
+                    addPoint(gp);
+                    mapped.push_back(g2lPoint.at(gp));
+                }
+                ghostCellFaceNodes[static_cast<std::size_t>(itO->second)].push_back(mapped);
+            }
+            if (itN != ghostG2L.end())
+            {
+                auto& gNodes = globalFaceNodes[static_cast<std::size_t>(f)];
+                std::vector<localIdx> mapped;
+                mapped.reserve(gNodes.size());
+                for (localIdx gp : gNodes)
+                {
+                    addPoint(gp);
+                    mapped.push_back(g2lPoint.at(gp));
+                }
+                ghostCellFaceNodes[static_cast<std::size_t>(itN->second)].push_back(mapped);
+            }
+        }
+        // Walk boundary faces for ghost cells
+        for (localIdx b = 0; b < nBoundaries; ++b)
+        {
+            for (localIdx bi = bndOffset[static_cast<std::size_t>(b)];
+                 bi < bndOffset[static_cast<std::size_t>(b) + 1];
+                 ++bi)
+            {
+                auto c = static_cast<localIdx>(hBndFaceCells.view()[bi]);
+                auto it = ghostG2L.find(c);
+                if (it != ghostG2L.end())
+                {
+                    localIdx gf = nInternal + bi;
+                    auto& gNodes = globalFaceNodes[static_cast<std::size_t>(gf)];
+                    std::vector<localIdx> mapped;
+                    mapped.reserve(gNodes.size());
+                    for (localIdx gp : gNodes)
+                    {
+                        addPoint(gp);
+                        mapped.push_back(g2lPoint.at(gp));
+                    }
+                    ghostCellFaceNodes[static_cast<std::size_t>(it->second)].push_back(mapped);
+                }
+            }
+        }
+    }
+
+    // Ghost-only points (added beyond nSubPointsBeforeGhosts)
+    std::vector<Vec3> ghostPoints;
+    for (localIdx lp = nSubPointsBeforeGhosts; lp < static_cast<localIdx>(localPoints.size()); ++lp)
+    {
+        ghostPoints.push_back(pointsV[localPoints[static_cast<std::size_t>(lp)]]);
+    }
+
     // -----------------------------------------------------------------------
     // Step 4: Build sub-mesh face arrays
     // -----------------------------------------------------------------------
@@ -193,7 +301,7 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     const localIdx nProcFaces = static_cast<localIdx>(procFaces.size());
     const localIdx nSubBnd = nSubOrigBnd + nProcFaces;
     const localIdx nSubFaces = nSubInternal + nSubBnd;
-    const localIdx nSubPoints = static_cast<localIdx>(localPoints.size());
+    const localIdx nSubPoints = nSubPointsBeforeGhosts;
 
     // Sub-face arrays
     std::vector<Vec3> subFaceAreas(static_cast<std::size_t>(nSubFaces));
@@ -304,13 +412,24 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
         subBndOffset.push_back(static_cast<localIdx>(bndFaceCells.size()));
     }
 
-    // --- Fill proc-boundary faces ---
-    if (!procFaces.empty())
+    // --- Fill proc-boundary faces, grouped by neighbor partition ---
+    // Group proc faces by the partition of the neighboring cell
+    std::map<int, std::vector<std::size_t>> procFacesByNeighbor;
+    for (std::size_t i = 0; i < procFaces.size(); ++i)
     {
-        subPatchNames.push_back("procBoundary_" + std::to_string(partId));
+        int neighborPart = cellPart[static_cast<std::size_t>(procFaces[i].globalOther)];
+        procFacesByNeighbor[neighborPart].push_back(i);
+    }
 
-        for (const auto& pf : procFaces)
+    for (const auto& [neighborPartId, faceIndices] : procFacesByNeighbor)
+    {
+        subPatchNames.push_back(
+            "proc" + std::to_string(partId) + "to" + std::to_string(neighborPartId)
+        );
+
+        for (std::size_t idx : faceIndices)
         {
+            const auto& pf = procFaces[idx];
             std::size_t sz = static_cast<std::size_t>(subFaceId);
             Vec3 sf = faceAreasV[pf.globalFaceIdx];
             Vec3 fc = faceCentV[pf.globalFaceIdx];
@@ -418,6 +537,28 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     subMesh.stencilDB().insert(std::string("io::faceNodes"), subFaceNodesPtr);
     auto subPatchNamesPtr = std::make_shared<std::vector<std::string>>(subPatchNames);
     subMesh.stencilDB().insert(std::string("io::patchNames"), subPatchNamesPtr);
+    subMesh.stencilDB().insert(
+        std::string("partition::globalCellIds"), std::make_shared<std::vector<localIdx>>(localCells)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::ghostCellGlobalIds"),
+        std::make_shared<std::vector<localIdx>>(ghostCellGlobalIds)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::ghostCellVolumes"),
+        std::make_shared<std::vector<scalar>>(ghostCellVols)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::ghostCellCentres"),
+        std::make_shared<std::vector<Vec3>>(ghostCellCentres)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::ghostCellFaceNodes"),
+        std::make_shared<std::vector<std::vector<std::vector<localIdx>>>>(ghostCellFaceNodes)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::ghostPoints"), std::make_shared<std::vector<Vec3>>(ghostPoints)
+    );
 
     return subMesh;
 }

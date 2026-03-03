@@ -14,9 +14,9 @@
 namespace NeoN::io
 {
 
-void writeVtm(const UnstructuredMesh& mesh, const std::string& filePath)
+void writeVtm(const UnstructuredMesh& mesh, const std::string& filePath, bool includeGhosts)
 {
-    auto mb = buildMultiBlockMesh(mesh);
+    auto mb = buildMultiBlockMesh(mesh, includeGhosts);
 
     vtkNew<vtkXMLMultiBlockDataWriter> writer;
     writer->SetFileName(filePath.c_str());

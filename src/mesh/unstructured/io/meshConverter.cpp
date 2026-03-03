@@ -11,6 +11,7 @@
 #include "NeoN/core/vector/vector.hpp"
 
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
 #include <vtkCellType.h>
 #include <vtkCompositeDataSet.h>
 #include <vtkDataAssembly.h>
@@ -23,6 +24,9 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
+#include <vtkIntArray.h>
+
+#include <set>
 #include <vector>
 
 
@@ -186,9 +190,109 @@ MeshBuildData buildMeshData(const UnstructuredMesh& mesh)
 } // anonymous namespace
 
 
-vtkSmartPointer<vtkMultiBlockDataSet> buildMultiBlockMesh(const UnstructuredMesh& mesh)
+vtkSmartPointer<vtkMultiBlockDataSet>
+buildMultiBlockMesh(const UnstructuredMesh& mesh, bool includeGhosts)
 {
     auto data = buildMeshData(mesh);
+
+    vtkIdType nRealCells = data.volumeGrid->GetNumberOfCells();
+    vtkIdType nGhostCells = 0;
+
+    // Add ghost cells to volume grid if requested and available
+    if (includeGhosts && mesh.stencilDB().contains("partition::ghostCellFaceNodes"))
+    {
+        auto& ghostFaceNodes =
+            *mesh.stencilDB().get<std::shared_ptr<std::vector<std::vector<std::vector<localIdx>>>>>(
+                "partition::ghostCellFaceNodes"
+            );
+        auto& ghostPts =
+            *mesh.stencilDB().get<std::shared_ptr<std::vector<Vec3>>>("partition::ghostPoints");
+
+        // Add ghost-only points to VTK points
+        for (const auto& p : ghostPts)
+        {
+            data.vtkPts->InsertNextPoint(
+                static_cast<double>(p[0]), static_cast<double>(p[1]), static_cast<double>(p[2])
+            );
+        }
+
+        // Add ghost cells using their face-node connectivity
+        for (std::size_t gc = 0; gc < ghostFaceNodes.size(); ++gc)
+        {
+            const auto& cellFaces = ghostFaceNodes[gc];
+            if (cellFaces.empty()) continue;
+
+            // Collect unique nodes for this ghost cell
+            std::set<localIdx> nodeSet;
+            for (const auto& face : cellFaces)
+                for (localIdx n : face)
+                    nodeSet.insert(n);
+
+            // Build CellInfo for node ordering
+            CellInfo info;
+            info.nodeIds.assign(nodeSet.begin(), nodeSet.end());
+            info.cellFaceNodes = cellFaces;
+
+            localIdx nNodes = static_cast<localIdx>(info.nodeIds.size());
+            localIdx nFacesPerCell = static_cast<localIdx>(cellFaces.size());
+
+            // Determine VTK cell type from face/node count
+            if (nFacesPerCell == 4 && nNodes == 4) info.cellType = 9; // VTK_QUAD
+            else if (nFacesPerCell == 4 && nNodes == 4)
+                info.cellType = 10; // VTK_TETRA
+            else if (nFacesPerCell == 6 && nNodes == 8)
+                info.cellType = 12; // VTK_HEXAHEDRON
+            else if (nFacesPerCell == 5 && nNodes == 5)
+                info.cellType = 14; // VTK_PYRAMID
+            else if (nFacesPerCell == 5 && nNodes == 6)
+                info.cellType = 13; // VTK_WEDGE
+            else
+                info.cellType = 12; // fallback to hex
+
+            std::vector<localIdx> ordered;
+            switch (info.cellType)
+            {
+            case 9:
+                ordered = orderQuadNodes(info);
+                break;
+            case 10:
+                ordered = orderTetNodes(info);
+                break;
+            case 12:
+                ordered = orderHexNodes(info);
+                break;
+            case 14:
+                ordered = orderPyramidNodes(info);
+                break;
+            case 13:
+                ordered = orderWedgeNodes(info);
+                break;
+            default:
+                ordered = info.nodeIds;
+                break;
+            }
+
+            std::vector<vtkIdType> pts;
+            pts.reserve(ordered.size());
+            for (localIdx n : ordered)
+                pts.push_back(static_cast<vtkIdType>(n));
+
+            data.volumeGrid->InsertNextCell(
+                info.cellType, static_cast<int>(pts.size()), pts.data()
+            );
+            ++nGhostCells;
+        }
+
+        // Add "ghostCells" cell data: 0 for real cells, 1 for ghost cells
+        vtkNew<vtkIntArray> ghostArray;
+        ghostArray->SetName("ghostCells");
+        ghostArray->SetNumberOfTuples(nRealCells + nGhostCells);
+        for (vtkIdType i = 0; i < nRealCells; ++i)
+            ghostArray->SetValue(i, 0);
+        for (vtkIdType i = nRealCells; i < nRealCells + nGhostCells; ++i)
+            ghostArray->SetValue(i, 1);
+        data.volumeGrid->GetCellData()->AddArray(ghostArray);
+    }
 
     vtkSmartPointer<vtkMultiBlockDataSet> mb = vtkSmartPointer<vtkMultiBlockDataSet>::New();
 

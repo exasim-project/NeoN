@@ -28,7 +28,9 @@ void registerIO(nb::module_& m)
         &NeoN::io::writeVtm,
         "mesh"_a,
         "filepath"_a,
-        "Write mesh to VTM (multi-block) format with named boundary patches."
+        "include_ghosts"_a = false,
+        "Write mesh to VTM format. Set include_ghosts=True to append ghost cells "
+        "and add a ghostCells cell data array."
     );
 
     m.def("write_cgns", &NeoN::io::writeCgns, "mesh"_a, "filepath"_a, "Write mesh to CGNS format.");

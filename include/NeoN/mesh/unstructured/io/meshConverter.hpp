@@ -28,7 +28,11 @@ namespace NeoN::io
 /// Block 0 is "internalMesh" (vtkUnstructuredGrid with all volume cells).
 /// Block 1 is "boundary" (nested vtkMultiBlockDataSet with named patches).
 /// Patch names come from stencilDB "io::patchNames" if available.
-vtkSmartPointer<vtkMultiBlockDataSet> buildMultiBlockMesh(const UnstructuredMesh& mesh);
+///
+/// When includeGhosts is true, ghost cells from partition boundaries are appended
+/// to the volume grid and a "ghostCells" cell data array (0=real, 1=ghost) is added.
+vtkSmartPointer<vtkMultiBlockDataSet>
+buildMultiBlockMesh(const UnstructuredMesh& mesh, bool includeGhosts = false);
 
 /// Build a vtkPartitionedDataSetCollection with vtkDataAssembly.
 ///

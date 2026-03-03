@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
+
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #ifdef NeoN_WITH_METIS
 #include "NeoN/mesh/unstructured/partition/partitionMesh.hpp"
@@ -39,6 +42,54 @@ void registerPartition(nb::module_& m)
         "Inter-partition faces become a procBoundary patch."
     );
 #endif
+
+    m.def(
+        "get_patch_names",
+        [](const NeoN::UnstructuredMesh& mesh) -> std::vector<std::string>
+        {
+            if (mesh.stencilDB().contains("io::patchNames"))
+            {
+                return *mesh.stencilDB().get<std::shared_ptr<std::vector<std::string>>>(
+                    "io::patchNames"
+                );
+            }
+            return {};
+        },
+        "mesh"_a,
+        "Get boundary patch names from the mesh stencilDB."
+    );
+
+    m.def(
+        "get_global_cell_ids",
+        [](const NeoN::UnstructuredMesh& mesh) -> std::vector<NeoN::localIdx>
+        {
+            if (mesh.stencilDB().contains("partition::globalCellIds"))
+            {
+                return *mesh.stencilDB().get<std::shared_ptr<std::vector<NeoN::localIdx>>>(
+                    "partition::globalCellIds"
+                );
+            }
+            return {};
+        },
+        "mesh"_a,
+        "Get the global cell IDs for a partitioned sub-mesh."
+    );
+
+    m.def(
+        "get_ghost_cell_ids",
+        [](const NeoN::UnstructuredMesh& mesh) -> std::vector<NeoN::localIdx>
+        {
+            if (mesh.stencilDB().contains("partition::ghostCellGlobalIds"))
+            {
+                return *mesh.stencilDB().get<std::shared_ptr<std::vector<NeoN::localIdx>>>(
+                    "partition::ghostCellGlobalIds"
+                );
+            }
+            return {};
+        },
+        "mesh"_a,
+        "Get global cell IDs of ghost cells for a partitioned sub-mesh."
+    );
 }
 
 } // namespace NeoN::bindings

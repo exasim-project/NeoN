@@ -291,6 +291,57 @@ if(${NeoN_WITH_VTK})
   endif()
 endif()
 
+if(NeoN_WITH_METIS)
+  find_package(METIS QUIET)
+  if(NOT METIS_FOUND)
+    message(STATUS "System METIS not found — fetching GKlib + METIS via CPM.cmake...")
+    # Step 1: fetch and configure GKlib as a proper CMake target
+    cpmaddpackage(
+      NAME
+      GKlib
+      GITHUB_REPOSITORY
+      KarypisLab/GKlib
+      GIT_TAG
+      ${NeoN_GKLIB_GIT_TAG}
+      SYSTEM
+      YES)
+    # Step 2: download METIS source only (configure manually after creating build/xinclude)
+    cpmaddpackage(
+      NAME
+      METIS
+      GITHUB_REPOSITORY
+      KarypisLab/METIS
+      GIT_TAG
+      ${NeoN_METIS_GIT_TAG}
+      DOWNLOAD_ONLY
+      YES)
+    # KarypisLab/METIS requires build/xinclude/metis.h to exist before CMake runs
+    file(MAKE_DIRECTORY "${METIS_SOURCE_DIR}/build/xinclude")
+    file(READ "${METIS_SOURCE_DIR}/include/metis.h" _metis_h_content)
+    file(WRITE "${METIS_SOURCE_DIR}/build/xinclude/metis.h"
+         "#define IDXTYPEWIDTH 32\n#define REALTYPEWIDTH 32\n${_metis_h_content}")
+    file(COPY "${METIS_SOURCE_DIR}/include/CMakeLists.txt"
+         DESTINATION "${METIS_SOURCE_DIR}/build/xinclude")
+    # Set GKLIB_PATH so METIS can find GKlib headers and pre-built library
+    set(GKLIB_PATH
+        "${GKlib_SOURCE_DIR}"
+        CACHE PATH "GKlib path for METIS" FORCE)
+    set(METIS_INSTALL
+        OFF
+        CACHE BOOL "" FORCE)
+    set(SHARED
+        OFF
+        CACHE BOOL "" FORCE)
+    add_subdirectory("${METIS_SOURCE_DIR}" "${METIS_BINARY_DIR}" EXCLUDE_FROM_ALL)
+    # METIS uses legacy include_directories(); expose them as target properties
+    target_include_directories(metis PUBLIC "${METIS_SOURCE_DIR}/build/xinclude"
+                                            "${GKlib_SOURCE_DIR}/include")
+    if(NOT TARGET METIS::METIS)
+      add_library(METIS::METIS ALIAS metis)
+    endif()
+  endif()
+endif()
+
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
   cpmaddpackage(
     NAME
