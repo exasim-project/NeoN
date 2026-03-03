@@ -8,11 +8,13 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/label.hpp"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace NeoN::partition
@@ -477,6 +479,55 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     }
 
     // -----------------------------------------------------------------------
+    // Step 4b: Build communication maps (sendMap / receiveMap)
+    // -----------------------------------------------------------------------
+    int nParts = 0;
+    for (auto cp : cellPart)
+        if (cp >= nParts) nParts = cp + 1;
+
+    auto commSendMapPtr =
+        std::make_shared<std::vector<std::vector<localIdx>>>(static_cast<std::size_t>(nParts));
+    auto commReceiveMapPtr =
+        std::make_shared<std::vector<std::vector<localIdx>>>(static_cast<std::size_t>(nParts));
+    auto& commSendMap = *commSendMapPtr;
+    auto& commReceiveMap = *commReceiveMapPtr;
+
+    for (const auto& [neighborPartId, faceIndices] : procFacesByNeighbor)
+    {
+        struct CommTriple
+        {
+            localIdx sortKey;
+            localIdx localIndex;
+        };
+        std::vector<CommTriple> sendEntries, recvEntries;
+        std::unordered_set<localIdx> seenGlobalOther;
+
+        for (std::size_t idx : faceIndices)
+        {
+            const auto& pf = procFaces[idx];
+            if (seenGlobalOther.insert(pf.globalOther).second)
+            {
+                localIdx globalOwner = localCells[static_cast<std::size_t>(pf.subOwner)];
+                sendEntries.push_back({globalOwner, pf.subOwner});
+
+                localIdx ghostLocal = ghostG2L.at(pf.globalOther);
+                recvEntries.push_back({pf.globalOther, nSubCells + ghostLocal});
+            }
+        }
+
+        auto cmp = [](const CommTriple& a, const CommTriple& b) { return a.sortKey < b.sortKey; };
+        std::sort(sendEntries.begin(), sendEntries.end(), cmp);
+        std::sort(recvEntries.begin(), recvEntries.end(), cmp);
+
+        auto& sendVec = commSendMap[static_cast<std::size_t>(neighborPartId)];
+        auto& recvVec = commReceiveMap[static_cast<std::size_t>(neighborPartId)];
+        for (const auto& e : sendEntries)
+            sendVec.push_back(e.localIndex);
+        for (const auto& e : recvEntries)
+            recvVec.push_back(e.localIndex);
+    }
+
+    // -----------------------------------------------------------------------
     // Step 5: Sub-mesh geometric arrays
     // -----------------------------------------------------------------------
     const localIdx nSubBoundaries = static_cast<localIdx>(subPatchNames.size());
@@ -559,6 +610,10 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     subMesh.stencilDB().insert(
         std::string("partition::ghostPoints"), std::make_shared<std::vector<Vec3>>(ghostPoints)
     );
+    subMesh.stencilDB().insert(std::string("partition::nParts"), std::make_shared<int>(nParts));
+    subMesh.stencilDB().insert(std::string("partition::partId"), std::make_shared<int>(partId));
+    subMesh.stencilDB().insert(std::string("partition::commSendMap"), commSendMapPtr);
+    subMesh.stencilDB().insert(std::string("partition::commReceiveMap"), commReceiveMapPtr);
 
     return subMesh;
 }

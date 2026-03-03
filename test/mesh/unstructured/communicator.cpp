@@ -24,13 +24,13 @@ TEST_CASE("Communicator Vector Synchronization")
     for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         // we send the rank numbers
-        field(rank) = static_cast<int>(rank);
+        field.data()[rank] = static_cast<int>(rank);
 
         // just make sure its not a communicated value.
-        field(rank + mpiEnviron.sizeRank()) = static_cast<int>(mpiEnviron.sizeRank() + rank);
+        field.data()[rank + mpiEnviron.sizeRank()] = static_cast<int>(mpiEnviron.sizeRank() + rank);
 
         // set to 0.0 to check if the value is communicated
-        field(rank + 2 * mpiEnviron.sizeRank()) = 0;
+        field.data()[rank + 2 * mpiEnviron.sizeRank()] = 0;
     }
 
     // Set up buffer to local map, we will ignore global_idx
@@ -54,10 +54,13 @@ TEST_CASE("Communicator Vector Synchronization")
     // Check the values
     for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
-        REQUIRE(field(rank) == static_cast<int>(rank));
+        REQUIRE(field.data()[rank] == static_cast<int>(rank));
         REQUIRE(
-            field(rank + mpiEnviron.sizeRank()) == static_cast<int>(mpiEnviron.sizeRank() + rank)
+            field.data()[rank + mpiEnviron.sizeRank()]
+            == static_cast<int>(mpiEnviron.sizeRank() + rank)
         );
-        REQUIRE(field(rank + 2 * mpiEnviron.sizeRank()) == static_cast<int>(mpiEnviron.rank()));
+        REQUIRE(
+            field.data()[rank + 2 * mpiEnviron.sizeRank()] == static_cast<int>(mpiEnviron.rank())
+        );
     }
 }

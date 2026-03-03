@@ -35,6 +35,9 @@ NB_MODULE(_neon, m)
     // Partition bindings
     NeoN::bindings::registerPartition(m);
 
+    // MPI bindings (no-op when MPI disabled)
+    NeoN::bindings::registerMPI(m);
+
     // Database bindings
     NeoN::bindings::registerDocument(m);
     NeoN::bindings::registerCollection(m);

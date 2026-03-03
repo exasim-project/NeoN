@@ -132,6 +132,49 @@ declare_vector(nb::module_& m, const std::string& name, const std::string& doc =
                 },
                 nb::rv_policy::reference_internal,
                 "Get numpy array interface (CPU vectors only)"
+            )
+            .def(
+                "__getitem__",
+                [](NeoN::Vector<T>& self, NeoN::localIdx idx) -> T
+                {
+                    if (!onHost(self.exec()))
+                    {
+                        throw std::runtime_error("__getitem__ only works for CPU vectors. "
+                                                 "For GPU vectors, use copy_to_host() first.");
+                    }
+                    if (idx < 0 || idx >= self.size())
+                    {
+                        throw std::out_of_range(
+                            "Vector index " + std::to_string(idx) + " out of range [0, "
+                            + std::to_string(self.size()) + ")"
+                        );
+                    }
+                    return self.data()[static_cast<std::size_t>(idx)];
+                },
+                "idx"_a,
+                "Get element at index (CPU vectors only)"
+            )
+            .def(
+                "__setitem__",
+                [](NeoN::Vector<T>& self, NeoN::localIdx idx, T value)
+                {
+                    if (!onHost(self.exec()))
+                    {
+                        throw std::runtime_error("__setitem__ only works for CPU vectors. "
+                                                 "For GPU vectors, use copy_to_host() first.");
+                    }
+                    if (idx < 0 || idx >= self.size())
+                    {
+                        throw std::out_of_range(
+                            "Vector index " + std::to_string(idx) + " out of range [0, "
+                            + std::to_string(self.size()) + ")"
+                        );
+                    }
+                    self.data()[static_cast<std::size_t>(idx)] = value;
+                },
+                "idx"_a,
+                "value"_a,
+                "Set element at index (CPU vectors only)"
             );
 
 

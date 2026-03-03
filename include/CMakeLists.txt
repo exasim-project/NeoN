@@ -85,6 +85,7 @@ endif()
 
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_MPI_SUPPORT=1)
+  target_link_libraries(NeoN_public_api INTERFACE MPI::MPI_CXX)
   if(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT)
     target_compile_definitions(NeoN_public_api INTERFACE NF_REQUIRE_MPI_THREAD_SUPPORT=1)
   endif()

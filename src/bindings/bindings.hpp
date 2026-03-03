@@ -32,6 +32,9 @@ void registerIO(nanobind::module_& m);
 // Partition bindings
 void registerPartition(nanobind::module_& m);
 
+// MPI bindings
+void registerMPI(nanobind::module_& m);
+
 // Database bindings
 void registerDocument(nanobind::module_& m);
 void registerCollection(nanobind::module_& m);

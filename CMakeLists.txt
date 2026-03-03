@@ -66,6 +66,8 @@ option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
 option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
 option(NeoN_ENABLE_MPI "Enable MPI" ON)
 option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
+# Bridge: the option is NeoN_ENABLE_MPI, but all consumers check NeoN_ENABLE_MPI_SUPPORT
+set(NeoN_ENABLE_MPI_SUPPORT ${NeoN_ENABLE_MPI})
 option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
 mark_as_advanced(NeoN_ENABLE_WARNINGS)
 option(NeoN_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)

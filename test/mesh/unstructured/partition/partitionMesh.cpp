@@ -164,3 +164,73 @@ TEST_CASE("extractSubMesh - total cell count preserved")
     }
     REQUIRE(total == mesh.nCells());
 }
+
+// --- Cycle 7: communication maps in stencilDB ---
+
+TEST_CASE("extractSubMesh - stores matching comm send/receive maps")
+{
+    auto exec = NeoN::SerialExecutor {};
+    auto mesh = NeoN::createUniform2DGrid(exec, 4, 4); // 16 cells
+    constexpr int nParts = 4;
+    auto cellPart = NeoN::partition::partitionMesh(mesh, nParts);
+
+    // Extract all sub-meshes
+    std::vector<NeoN::UnstructuredMesh> subs;
+    for (int p = 0; p < nParts; ++p)
+        subs.push_back(NeoN::partition::extractSubMesh(mesh, cellPart, p));
+
+    for (int p = 0; p < nParts; ++p)
+    {
+        auto& sub = subs[static_cast<std::size_t>(p)];
+
+        // Check stencilDB keys exist
+        REQUIRE(sub.stencilDB().contains("partition::nParts"));
+        REQUIRE(sub.stencilDB().contains("partition::partId"));
+        REQUIRE(sub.stencilDB().contains("partition::commSendMap"));
+        REQUIRE(sub.stencilDB().contains("partition::commReceiveMap"));
+
+        auto storedNParts = *sub.stencilDB().get<std::shared_ptr<int>>("partition::nParts");
+        auto storedPartId = *sub.stencilDB().get<std::shared_ptr<int>>("partition::partId");
+        REQUIRE(storedNParts == nParts);
+        REQUIRE(storedPartId == p);
+
+        auto& sendMap =
+            *sub.stencilDB().get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
+                "partition::commSendMap"
+            );
+        auto& recvMap =
+            *sub.stencilDB().get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
+                "partition::commReceiveMap"
+            );
+
+        REQUIRE(sendMap.size() == static_cast<std::size_t>(nParts));
+        REQUIRE(recvMap.size() == static_cast<std::size_t>(nParts));
+
+        // Self-rank entries must be empty
+        REQUIRE(sendMap[static_cast<std::size_t>(p)].empty());
+        REQUIRE(recvMap[static_cast<std::size_t>(p)].empty());
+    }
+
+    // Cross-check: sendMap[p][q].size() == recvMap[q][p].size()
+    for (int p = 0; p < nParts; ++p)
+    {
+        auto& sendMapP = *subs[static_cast<std::size_t>(p)]
+                              .stencilDB()
+                              .get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
+                                  "partition::commSendMap"
+                              );
+        for (int q = 0; q < nParts; ++q)
+        {
+            if (p == q) continue;
+            auto& recvMapQ = *subs[static_cast<std::size_t>(q)]
+                                  .stencilDB()
+                                  .get<std::shared_ptr<std::vector<std::vector<NeoN::localIdx>>>>(
+                                      "partition::commReceiveMap"
+                                  );
+            REQUIRE(
+                sendMapP[static_cast<std::size_t>(q)].size()
+                == recvMapQ[static_cast<std::size_t>(p)].size()
+            );
+        }
+    }
+}
