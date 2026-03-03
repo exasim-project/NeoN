@@ -13,7 +13,7 @@ if(NeoN_ENABLE_MPI_SUPPORT)
   find_package(MPI 3.1 REQUIRED)
 endif()
 
-if(${NeoN_WITH_PETSC})
+if(NeoN_WITH_PETSC)
   find_package(MPI) # make it REQUIRED, if you want
   message("${MPI_CXX_COMPILER}")
   message("${MPI_C_COMPILER}")
@@ -64,7 +64,7 @@ cpmaddpackage(
   ${NeoN_CPPTRACE_VERSION}
   SYSTEM)
 
-if(${NeoN_WITH_SPDLOG})
+if(NeoN_WITH_SPDLOG)
   set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL OFF")
   cpmaddpackage(
     NAME
@@ -78,9 +78,9 @@ if(${NeoN_WITH_SPDLOG})
     SYSTEM)
 endif()
 
-if(${NeoN_WITH_UMPIRE})
+if(NeoN_WITH_UMPIRE)
   # BLT require CMAKE_CUDA_HOST_COMPILER to be set explicitly
-  if(${Kokkos_ENABLE_CUDA} AND "${CMAKE_CUDA_HOST_COMPILER}" STREQUAL "")
+  if(Kokkos_ENABLE_CUDA AND "${CMAKE_CUDA_HOST_COMPILER}" STREQUAL "")
     message(WARNING "Setting CMAKE_CUDA_HOST_COMPILER to ${CMAKE_CXX_COMPILER}"
                     " use -DCMAKE_CUDA_HOST_COMPILER to override")
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
@@ -105,7 +105,7 @@ if(${NeoN_WITH_UMPIRE})
     YES)
 endif()
 
-if(${NeoN_WITH_ADIOS2})
+if(NeoN_WITH_ADIOS2)
 
   set(ADIOS2_KOKKOS_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/adios2_kokkos.patch)
 
@@ -161,7 +161,7 @@ if(${NeoN_WITH_ADIOS2})
   endif()
 endif()
 
-if(${NeoN_WITH_SUNDIALS})
+if(NeoN_WITH_SUNDIALS)
 
   set(SUNDIALS_OPTIONS
       "BUILD_TESTING OFF"
@@ -203,7 +203,7 @@ if(${NeoN_WITH_SUNDIALS})
     ${SUNDIALS_CUDA_OPTIONS})
 endif()
 
-if(${NeoN_WITH_GINKGO})
+if(NeoN_WITH_GINKGO)
   # --- nlohmann_json ---
   find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
   if(NOT nlohmann_json_FOUND)
@@ -253,7 +253,7 @@ if(${NeoN_WITH_GINKGO})
   endif()
 endif()
 
-if(${NeoN_BUILD_PYTHON_BINDINGS})
+if(NeoN_BUILD_PYTHON_BINDINGS)
   if(CMAKE_VERSION VERSION_LESS 3.18)
     set(DEV_MODULE Development)
   else()
