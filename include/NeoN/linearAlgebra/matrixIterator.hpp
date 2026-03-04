@@ -85,16 +85,17 @@ public:
         localIdx size;
 
         // provide mapping between face and cell idx
-        // faces per cell
+        // faces per cell as offsets
         SegmentedVector<localIdx, localIdx> cellFaces;
 
-        // that seems incorrect: neighbour cell for each face (or -1 if boundary)
-        // mapping between face id and cell id
+        // mapping between face id and neighbour cell id
         Vector<localIdx> faceNeighbour;
 
+        // TODO scalar is unreasonable large here
         // sign for face contribution (+1 if owner, -1 if neighbour)
         Vector<scalar> faceSign;
 
+        // maps "row start + cell local face idx" to matrix address
         Vector<localIdx> matrixColumnIdx;
     };
 
@@ -171,11 +172,11 @@ public:
                     const auto rowStart = matrixRowOffs[celli];
                     if (isOwner)
                     {
-                        matrixColumnIdxV[startIdx + i] = rowStart + neiOffs[faceIdx];
+                        matrixColumnIdxV[startIdx + i] = rowStart + ownOffs[faceIdx];
                     }
                     else
                     {
-                        matrixColumnIdxV[startIdx + i] = rowStart + ownOffs[faceIdx];
+                        matrixColumnIdxV[startIdx + i] = rowStart + neiOffs[faceIdx];
                     }
                 }
             },
