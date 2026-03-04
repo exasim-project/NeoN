@@ -4,12 +4,15 @@
 
 #pragma once
 
+#include <optional>
+
 #include "Kokkos_Sort.hpp"
 
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/communicator.hpp"
 
 namespace NeoN
 {
@@ -224,6 +227,32 @@ public:
      */
     const Executor& exec() const;
 
+#ifdef NF_WITH_MPI_SUPPORT
+    /**
+     * @brief Set the communicator for distributed meshes.
+     * @param comm The communicator to set.
+     */
+    void setCommunicator(Communicator comm);
+
+    /**
+     * @brief Get the optional communicator.
+     * @return Reference to the optional communicator.
+     */
+    std::optional<Communicator>& communicator();
+
+    /**
+     * @brief Get the optional communicator (const).
+     * @return Const reference to the optional communicator.
+     */
+    const std::optional<Communicator>& communicator() const;
+#endif
+
+    /**
+     * @brief Check if this mesh is distributed (has a communicator).
+     * @return True if the mesh has a communicator set.
+     */
+    bool isDistributed() const;
+
 private:
 
     /**
@@ -315,6 +344,13 @@ private:
      * The stencil data base is used to register stencils.
      */
     mutable Dictionary stencilDataBase_;
+
+#ifdef NF_WITH_MPI_SUPPORT
+    /**
+     * @brief Optional communicator for distributed meshes.
+     */
+    mutable std::optional<Communicator> communicator_;
+#endif
 };
 
 /** @brief creates a mesh containing only a single cell

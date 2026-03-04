@@ -65,6 +65,9 @@ target_sources(
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
                               "mesh/unstructured/communicator.cpp")
+  if(NeoN_WITH_GINKGO)
+    target_sources(NeoN PRIVATE "linearAlgebra/distributedGinkgoSolver.cpp")
+  endif()
 endif()
 
 if(NeoN_WITH_METIS)

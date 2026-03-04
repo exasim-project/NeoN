@@ -13,6 +13,10 @@ if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
 endif()
 
+if(NeoN_WITH_GINKGO AND NeoN_ENABLE_MPI_SUPPORT)
+  neon_unit_test(distributedGinkgo MPI_SIZE 2)
+endif()
+
 if(NeoN_WITH_PETSC)
   neon_unit_test(petsc)
 endif()

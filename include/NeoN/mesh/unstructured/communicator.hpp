@@ -89,7 +89,7 @@ public:
      * @param commName The communication name, typically a file and line number.
      */
     template<typename valueType>
-    void startComm(Vector<valueType>& field, const std::string& commName)
+    void startComm(Vector<valueType>& field, const std::string& commName) const
     {
         NF_DEBUG_ASSERT(
             CommBuffer_.find(commName) == CommBuffer_.end() || (!CommBuffer_[commName]),
@@ -127,7 +127,7 @@ public:
      * @param commName The communication name, typically a file and line number.
      */
     template<typename valueType>
-    void finaliseComm(Vector<valueType>& field, std::string commName)
+    void finaliseComm(Vector<valueType>& field, std::string commName) const
     {
         NF_DEBUG_ASSERT(
             CommBuffer_.find(commName) != CommBuffer_.end() && CommBuffer_[commName],
@@ -140,7 +140,8 @@ public:
         {
             auto rankBuffer = CommBuffer_[commName]->getReceive<valueType>(rank);
             for (size_t data = 0; data < receiveMap_[rank].size(); ++data)
-                fieldData[static_cast<size_t>(receiveMap_[rank][data].local_idx)] = rankBuffer[data];
+                fieldData[static_cast<size_t>(receiveMap_[rank][data].local_idx)] =
+                    rankBuffer[data];
         }
         CommBuffer_[commName]->finaliseComm();
         CommBuffer_[commName] = nullptr;
@@ -148,11 +149,11 @@ public:
 
 private:
 
-    mpi::MPIEnvironment mpiEnviron_; /**< The MPI environment. */
-    CommMap sendMap_;                /**< The rank send map. */
-    CommMap receiveMap_;             /**< The rank receive map. */
-    std::vector<bufferType> buffers; /**< Communication buffers. */
-    std::unordered_map<std::string, bufferType*>
+    mpi::MPIEnvironment mpiEnviron_;         /**< The MPI environment. */
+    CommMap sendMap_;                        /**< The rank send map. */
+    CommMap receiveMap_;                     /**< The rank receive map. */
+    mutable std::vector<bufferType> buffers; /**< Communication buffers. */
+    mutable std::unordered_map<std::string, bufferType*>
         CommBuffer_; /**< The communication key to buffer map, nullptr indicates no assigned buffer.
                       */
 
@@ -160,13 +161,13 @@ private:
      * @brief Finds an uninitialized communication buffer.
      * @return An pointer to a free communication buffer, or nullptr if no free buffer is found.
      */
-    bufferType* findDuplexBuffer();
+    bufferType* findDuplexBuffer() const;
 
     /**
      * @brief Creates a new communication buffer with the given name.
      * @return pointer to the newly created buffer.
      */
-    bufferType* createNewDuplexBuffer();
+    bufferType* createNewDuplexBuffer() const;
 };
 #endif
 

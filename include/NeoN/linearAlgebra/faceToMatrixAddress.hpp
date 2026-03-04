@@ -44,6 +44,9 @@ class FaceToMatrixAddress
 
     Array<uint8_t> diagOffset_; //! mapping from celli to diagonal element offset
 
+    Array<uint8_t> procBoundaryOffset_; //! mapping from proc-boundary face index to ghost column
+                                        //! offset in owner row (empty for non-distributed meshes)
+
     // corresponding views
     View<uint8_t> ownerOffsetV_;
 
@@ -71,6 +74,16 @@ public:
         Array<uint8_t> ownerOffset,
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
+        std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+        std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+    );
+
+    /* @brief constructor with proc-boundary offset for distributed meshes */
+    FaceToMatrixAddress(
+        Array<uint8_t> ownerOffset,
+        Array<uint8_t> neighbourOffset,
+        Array<uint8_t> diagOffset,
+        Array<uint8_t> procBoundaryOffset,
         std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
         std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
     );
@@ -118,6 +131,9 @@ public:
 
     /*@brief getter for diagOffset */
     Array<uint8_t>& diagOffset();
+
+    /*@brief getter for procBoundaryOffset (empty when not distributed) */
+    const Array<uint8_t>& procBoundaryOffset() const;
 
     // TODO check performance
     /* @brief given a cell ID, the function returns index of the diagonal element  */

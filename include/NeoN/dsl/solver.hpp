@@ -21,6 +21,13 @@
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
+#ifdef NF_WITH_MPI_SUPPORT
+#include <mpi.h>
+#if NF_WITH_GINKGO
+#include "NeoN/linearAlgebra/distributedGinkgoSolver.hpp"
+#endif
+#endif
+
 
 namespace NeoN::dsl
 {
@@ -73,22 +80,93 @@ la::SolverStats iterativeSolveImpl(
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
-    auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
+    auto& mesh = solution.mesh();
 
-    // TODO move that to expression explicit operation or
-    // into functor ?
-    // subtract the explicit source term from the rhs
-    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
-    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
-    parallelFor(
-        solution.exec(),
-        {0, rhs.size()},
-        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
-    );
+    if (!mesh.isDistributed())
+    {
+        // Serial path (unchanged)
+        auto [sparsity, ls] = exp.assemble(mesh, t, dt, ps);
 
-    auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
-    return solver.solve(ls, solution.internalVector());
+        auto expTmp = exp.explicitOperation(mesh.nCells());
+        auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
+        parallelFor(
+            solution.exec(),
+            {0, rhs.size()},
+            NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        );
+
+        auto solver = la::Solver(solution.exec(), fvSolution);
+        fence(solution.exec());
+        return solver.solve(ls, solution.internalVector());
+    }
+
+#ifdef NF_WITH_MPI_SUPPORT
+    // Distributed outer iteration
+    int maxOuterIters = 50;
+    scalar outerTol = 1e-6;
+    if (fvSolution.contains("outerIterations"))
+    {
+        maxOuterIters = fvSolution.get<int>("outerIterations");
+    }
+    if (fvSolution.contains("outerTolerance"))
+    {
+        outerTol = fvSolution.get<scalar>("outerTolerance");
+    }
+
+    auto& comm = *mesh.communicator();
+
+    // Initial assembly to get sparsity pattern
+    auto [sparsity, ls] = exp.assemble(mesh, t, dt, ps);
+
+    la::SolverStats lastStats;
+    for (int outerIter = 0; outerIter < maxOuterIters; ++outerIter)
+    {
+        // 1. Sync ghost cells
+        comm.startComm(solution.internalVector(), "outerSolve");
+        comm.finaliseComm(solution.internalVector(), "outerSolve");
+
+        // 2. Update proc-boundary BCs with new ghost values
+        solution.correctBoundaryConditions();
+
+        // 3. Re-assemble with updated ghost values
+        ls.reset();
+        exp.assemble(t, dt, ls, ps);
+
+        // 4. Subtract explicit source term from RHS
+        auto expTmp = exp.explicitOperation(mesh.nCells());
+        auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
+        parallelFor(
+            solution.exec(),
+            {0, rhs.size()},
+            NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        );
+
+        // 5. Solve distributed system
+        fence(solution.exec());
+#if NF_WITH_GINKGO
+        if constexpr (std::is_same_v<typename VectorType::ElementType, scalar>)
+        {
+            la::DistributedGinkgoSolver distSolver(solution.exec(), fvSolution, mesh);
+            lastStats = distSolver.solve(ls, solution.internalVector());
+        }
+        else
+#endif
+        {
+            la::Solver localSolver(solution.exec(), fvSolution);
+            lastStats = localSolver.solve(ls, solution.internalVector());
+        }
+
+        // 6. Global convergence check
+        scalar localRes = lastStats.entries.back().finalResNorm;
+        scalar globalRes = 0.0;
+        MPI_Allreduce(&localRes, &globalRes, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        if (globalRes < outerTol) break;
+    }
+    return lastStats;
+#else
+    NF_ERROR_EXIT("Distributed solve requires MPI support");
+    return {};
+#endif
 }
 }
 

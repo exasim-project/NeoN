@@ -68,7 +68,21 @@ public:
     {
         if (mesh.nCells() != internalVector.size())
         {
-            NF_ERROR_EXIT("Inconsistent size of mesh and internal field detected");
+            bool hasPartition = mesh.stencilDB().contains("partition::nGhostCells");
+            if (hasPartition)
+            {
+                auto nGhosts = *mesh.stencilDB().template get<std::shared_ptr<localIdx>>(
+                    "partition::nGhostCells"
+                );
+                NF_ASSERT(
+                    mesh.nCells() + nGhosts == internalVector.size(),
+                    "Partitioned field size must be nCells + nGhosts"
+                );
+            }
+            else
+            {
+                NF_ERROR_EXIT("Inconsistent size of mesh and internal field detected");
+            }
         }
     }
 

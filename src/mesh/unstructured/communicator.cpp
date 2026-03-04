@@ -16,14 +16,14 @@ bool Communicator::isComplete(std::string commName)
     return CommBuffer_[commName]->isComplete();
 }
 
-Communicator::bufferType* Communicator::findDuplexBuffer()
+Communicator::bufferType* Communicator::findDuplexBuffer() const
 {
     for (auto it = buffers.begin(); it != buffers.end(); ++it)
         if (!it->isCommInit()) return &(*it);
     return nullptr;
 }
 
-Communicator::bufferType* Communicator::createNewDuplexBuffer()
+Communicator::bufferType* Communicator::createNewDuplexBuffer() const
 {
     // determine buffer size.
     std::vector<std::size_t> rankSendSize(mpiEnviron_.sizeRank());

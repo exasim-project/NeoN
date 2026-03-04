@@ -115,4 +115,21 @@ Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
 
 const Executor& UnstructuredMesh::exec() const { return exec_; }
 
+#ifdef NF_WITH_MPI_SUPPORT
+void UnstructuredMesh::setCommunicator(Communicator comm) { communicator_ = std::move(comm); }
+
+std::optional<Communicator>& UnstructuredMesh::communicator() { return communicator_; }
+
+const std::optional<Communicator>& UnstructuredMesh::communicator() const { return communicator_; }
+#endif
+
+bool UnstructuredMesh::isDistributed() const
+{
+#ifdef NF_WITH_MPI_SUPPORT
+    return communicator_.has_value();
+#else
+    return false;
+#endif
+}
+
 } // namespace NeoN

@@ -54,6 +54,7 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
     std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
+      procBoundaryOffset_(Array<uint8_t>(ownerOffset.exec(), 0)),
       ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
       diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern),
       rowOffsV_(sp_->rowOffs().view())
@@ -62,11 +63,28 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
 }
 
 template<typename IndexType, typename MeshType>
+FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
+    Array<uint8_t> ownerOffset,
+    Array<uint8_t> neighbourOffset,
+    Array<uint8_t> diagOffset,
+    Array<uint8_t> procBoundaryOffset,
+    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+)
+    : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
+      procBoundaryOffset_(procBoundaryOffset), ownerOffsetV_(ownerOffset_.view()),
+      neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()),
+      sp_(sparsityPattern), bsp_(boundarySparsityPattern), rowOffsV_(sp_->rowOffs().view())
+{
+    validate();
+}
+
+template<typename IndexType, typename MeshType>
 FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(const FaceToMatrixAddress& mi)
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
-      diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
-      neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()), sp_(mi.sp_),
-      bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
+      diagOffset_(mi.diagOffset_), procBoundaryOffset_(mi.procBoundaryOffset_),
+      ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
+      diagOffsetV_(diagOffset_.view()), sp_(mi.sp_), bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
 {
     validate();
 }
@@ -79,6 +97,7 @@ FaceToMatrixAddress<IndexType, MeshType>::copyToHost() const
         ownerOffset_.copyToHost(),
         neighbourOffset_.copyToHost(),
         diagOffset_.copyToHost(),
+        procBoundaryOffset_.copyToHost(),
         std::make_shared<SparsityPattern<IndexType>>(
             sp_->colIdxs().copyToHost(), sp_->rowOffs().copyToHost()
         ),
@@ -93,6 +112,12 @@ void FaceToMatrixAddress<IndexType, MeshType>::validate() const
 {
     NF_ASSERT(sp_ != nullptr, "LocalSparsityPattern cannot be a nullptr");
     NF_ASSERT(bsp_ != nullptr, "BoundarySparsityPattern cannot be a nullptr");
+}
+
+template<typename IndexType, typename MeshType>
+const Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::procBoundaryOffset() const
+{
+    return procBoundaryOffset_;
 }
 
 template class FaceToMatrixAddress<localIdx, UnstructuredMesh>;
@@ -129,14 +154,19 @@ void setSparsityPatternFaceToMatrixAddressSerial(
     Array<uint8_t>& diagOffs,
     Array<uint8_t>& ownOffs,
     Array<uint8_t>& neiOffs,
+    Array<uint8_t>& procBndOffs,
     Vector<IndexType>& rowOffs,
-    Vector<IndexType>& colIdx
+    Vector<IndexType>& colIdx,
+    const std::vector<localIdx>& procBoundaryGhostMap,
+    localIdx procBoundaryStartOffset
 )
 {
     // TODO: currently the whole algorithm is performed in serial on the host
     // move it to executor
     const auto nInternalFaces = mesh.nInternalFaces();
     auto nCells = mesh.nCells();
+    const auto nBoundaryFaces = static_cast<localIdx>(mesh.boundaryMesh().faceCells().size());
+    const localIdx nProcBoundaryFaces = nBoundaryFaces - procBoundaryStartOffset;
 
     // start with one to include the diagonal
     auto nFacesPerCellH = Vector<localIdx>(SerialExecutor {}, nCells, 1);
@@ -162,6 +192,17 @@ void setSparsityPatternFaceToMatrixAddressSerial(
         },
         "setSparsityPatternFaceToMatrixAddress::accumulateNonZeros"
     );
+
+    // Count proc-boundary ghost column entries (one per proc-boundary face, in owner row)
+    if (nProcBoundaryFaces > 0)
+    {
+        auto faceCellsH = mesh.boundaryMesh().faceCells().copyToHost();
+        auto faceCellsHV = faceCellsH.view();
+        for (localIdx bfi = procBoundaryStartOffset; bfi < nBoundaryFaces; ++bfi)
+        {
+            nFacesPerCellHV[faceCellsHV[bfi]]++;
+        }
+    }
 
     // get number of total non-zeros
     auto rowOffsH = rowOffs.copyToHost();
@@ -226,6 +267,28 @@ void setSparsityPatternFaceToMatrixAddressSerial(
         "setSparsityPatternFaceToMatrixAddress::computeUpperTriangular"
     );
 
+    // Fill ghost column entries for proc-boundary faces
+    if (nProcBoundaryFaces > 0)
+    {
+        auto faceCellsH = mesh.boundaryMesh().faceCells().copyToHost();
+        auto faceCellsHV = faceCellsH.view();
+        auto procBndOffsH = procBndOffs.copyToHost();
+        auto procBndOffsHV = procBndOffsH.view();
+
+        for (localIdx bfi = procBoundaryStartOffset; bfi < nBoundaryFaces; ++bfi)
+        {
+            auto own = faceCellsHV[bfi];
+            auto ghostColIdx =
+                procBoundaryGhostMap[static_cast<std::size_t>(bfi - procBoundaryStartOffset)];
+            auto segIdx = Kokkos::atomic_fetch_add(&nFacesPerCellHV[own], 1);
+            procBndOffsHV[bfi - procBoundaryStartOffset] = static_cast<uint8_t>(segIdx);
+            colIdxHV[rowOffsHV[own] + segIdx] = static_cast<IndexType>(ghostColIdx);
+        }
+
+        const auto exec = mesh.exec();
+        procBndOffs = procBndOffsH.copyToExecutor(exec);
+    }
+
     // NOTE copy back to device
     const auto exec = mesh.exec();
     ownOffs = ownOffsetH.copyToExecutor(exec);
@@ -241,24 +304,49 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 {
     const auto exec = mesh.exec();
     const auto nInternalFaces = mesh.nInternalFaces();
-    const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
+    const auto nBoundaryFaces = static_cast<localIdx>(mesh.boundaryMesh().faceCells().size());
     const auto nCells = mesh.nCells();
+
+    // Extract proc-boundary info for distributed meshes
+    std::vector<localIdx> procBoundaryGhostMap;
+    localIdx procBoundaryStartOffset = nBoundaryFaces; // default: no proc-boundary faces
+    if (mesh.stencilDB().contains("partition::procBoundaryGhostMap"))
+    {
+        procBoundaryStartOffset =
+            *mesh.stencilDB().get<std::shared_ptr<localIdx>>("partition::procBoundaryStartOffset");
+        procBoundaryGhostMap = *mesh.stencilDB().get<std::shared_ptr<std::vector<localIdx>>>(
+            "partition::procBoundaryGhostMap"
+        );
+    }
+    const localIdx nProcBoundaryFaces = nBoundaryFaces - procBoundaryStartOffset;
+
     Array<uint8_t> diagOffs(exec, nCells, 0);
     Array<uint8_t> ownOffs(exec, nInternalFaces, 0);
     Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
+    Array<uint8_t> procBndOffs(exec, nProcBoundaryFaces, 0);
     Vector<IndexType> rowOffs(exec, nCells + 1, 0);
-    Vector<IndexType> colIdx(exec, nCells + 2 * nInternalFaces, 0);
+    Vector<IndexType> colIdx(exec, nCells + 2 * nInternalFaces + nProcBoundaryFaces, 0);
     Vector<IndexType> bRowOffs(exec, nBoundaryFaces + 1, 0);
     Vector<IndexType> bColIdx(exec, nBoundaryFaces, 0);
 
-    setSparsityPatternFaceToMatrixAddressSerial(mesh, diagOffs, ownOffs, neiOffs, rowOffs, colIdx);
+    setSparsityPatternFaceToMatrixAddressSerial(
+        mesh,
+        diagOffs,
+        ownOffs,
+        neiOffs,
+        procBndOffs,
+        rowOffs,
+        colIdx,
+        procBoundaryGhostMap,
+        procBoundaryStartOffset
+    );
     auto sp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(colIdx), std::move(rowOffs));
     setBoundarySparsityPattern(mesh, diagOffs, bRowOffs, bColIdx);
     auto bsp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(bColIdx), std::move(bRowOffs));
     return std::make_shared<const FaceToMatrixAddress<IndexType>>(
-        ownOffs, neiOffs, diagOffs, sp, bsp
+        ownOffs, neiOffs, diagOffs, procBndOffs, sp, bsp
     );
 }
 

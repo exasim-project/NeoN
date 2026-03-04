@@ -423,6 +423,11 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
         procFacesByNeighbor[neighborPart].push_back(i);
     }
 
+    // Track proc-boundary face → ghost cell mapping (for ProcBoundary BC)
+    const localIdx procBoundaryStartOffset = static_cast<localIdx>(bndFaceCells.size());
+    std::vector<localIdx> procBoundaryGhostMap;
+    procBoundaryGhostMap.reserve(static_cast<std::size_t>(nProcFaces));
+
     for (const auto& [neighborPartId, faceIndices] : procFacesByNeighbor)
     {
         subPatchNames.push_back(
@@ -463,6 +468,10 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
             bndDelta.push_back(delta);
             bndWeights.push_back(wt);
             bndDeltaCoeffs.push_back(dc);
+
+            // Map this proc-boundary face to its ghost cell local index
+            localIdx ghostLocal = ghostG2L.at(pf.globalOther);
+            procBoundaryGhostMap.push_back(nSubCells + ghostLocal);
 
             // Face nodes
             auto& gNodes = globalFaceNodes[static_cast<std::size_t>(pf.globalFaceIdx)];
@@ -614,6 +623,20 @@ extractSubMesh(const UnstructuredMesh& mesh, const std::vector<int>& cellPart, i
     subMesh.stencilDB().insert(std::string("partition::partId"), std::make_shared<int>(partId));
     subMesh.stencilDB().insert(std::string("partition::commSendMap"), commSendMapPtr);
     subMesh.stencilDB().insert(std::string("partition::commReceiveMap"), commReceiveMapPtr);
+    subMesh.stencilDB().insert(
+        std::string("partition::nGlobalCells"), std::make_shared<localIdx>(nCells)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::nGhostCells"), std::make_shared<localIdx>(nGhostCells)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::procBoundaryGhostMap"),
+        std::make_shared<std::vector<localIdx>>(procBoundaryGhostMap)
+    );
+    subMesh.stencilDB().insert(
+        std::string("partition::procBoundaryStartOffset"),
+        std::make_shared<localIdx>(procBoundaryStartOffset)
+    );
 
     return subMesh;
 }
