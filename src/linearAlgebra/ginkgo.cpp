@@ -245,8 +245,8 @@ SolverStatsEntry solve_impl(
     std::unique_ptr<gko::LinOp> solver
 )
 {
-    Kokkos::Profiling::pushRegion("Ginkgo linear solver");
     exec->synchronize();
+    Kokkos::Profiling::pushRegion("Ginkgo linear solver");
     auto startEval = std::chrono::steady_clock::now();
 
     using vec = gko::matrix::Dense<scalar>;
@@ -294,8 +294,12 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
+    gkoExec_.synchronize();
+    Kokkos::Profiling::pushRegion("Create Ginkgo matrix and solver");
     auto gkoMtx = createGkoMtx(gkoExec_, sys.matrix());
     auto solver = factory_->generate(gkoMtx);
+    gkoExec_.synchronize();
+    Kokkos::Profiling::popRegion(); // Create Ginkgo matrix and solver
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
 
@@ -343,11 +347,16 @@ GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Ve
 {
     if (coupled_)
     {
+        gkoExec_.synchronize();
+        Kokkos::Profiling::pushRegion("Create Ginkgo matrix and solver");
         const auto gkoMtx = createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);
 
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
+
+        gkoExec_.synchronize();
+        Kokkos::Profiling::popRegion(); // Create Ginkgo matrix and solver
 
         auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
 
