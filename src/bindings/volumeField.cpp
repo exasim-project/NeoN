@@ -13,6 +13,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/tensorOps.hpp"
 #include "bindings.hpp"
 
 namespace nb = nanobind;
@@ -261,6 +262,13 @@ void registerVolumeField(nb::module_& m)
                 return result;
             },
             "Negate all elements"
+        )
+        .def(
+            "__pow__",
+            [](const fvcc::VolumeField<NeoN::scalar>& a, NeoN::scalar exp)
+            { return fvcc::pow(a, exp); },
+            "exp"_a,
+            "Element-wise power: field ** exp"
         );
 
     nb::class_<fvcc::VolumeField<NeoN::Vec3>>(

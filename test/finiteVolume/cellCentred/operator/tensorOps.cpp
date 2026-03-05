@@ -127,6 +127,91 @@ TEST_CASE("TensorFieldOps")
             }
         }
     }
+
+    SECTION("mag(Vec3Field) -> ScalarField" + execName)
+    {
+        auto vecBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+        fvcc::VolumeField<Vec3> v(exec, "v", mesh, vecBCs);
+        fill(v.internalVector(), Vec3(3.0, 4.0, 0.0));
+        v.correctBoundaryConditions();
+
+        auto result = fvcc::mag(v);
+        auto outHost = result.internalVector().copyToHost();
+        auto outHostView = outHost.view();
+        // mag((3,4,0)) = 5
+        for (int i = 0; i < result.size(); i++)
+        {
+            REQUIRE(outHostView[i] == Catch::Approx(5.0));
+        }
+    }
+
+    SECTION("inner(Vec3Field, Vec3Field) -> ScalarField" + execName)
+    {
+        auto vecBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+        fvcc::VolumeField<Vec3> v1(exec, "v1", mesh, vecBCs);
+        fvcc::VolumeField<Vec3> v2(exec, "v2", mesh, vecBCs);
+        fill(v1.internalVector(), Vec3(1.0, 2.0, 3.0));
+        fill(v2.internalVector(), Vec3(4.0, 5.0, 6.0));
+        v1.correctBoundaryConditions();
+        v2.correctBoundaryConditions();
+
+        auto result = fvcc::inner(v1, v2);
+        auto outHost = result.internalVector().copyToHost();
+        auto outHostView = outHost.view();
+        // inner((1,2,3), (4,5,6)) = 4+10+18 = 32
+        for (int i = 0; i < result.size(); i++)
+        {
+            REQUIRE(outHostView[i] == Catch::Approx(32.0));
+        }
+    }
+
+    SECTION("max(ScalarField, scalar) -> ScalarField" + execName)
+    {
+        auto scalarBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+        fvcc::VolumeField<scalar> f(exec, "f", mesh, scalarBCs);
+        fill(f.internalVector(), -2.0);
+        f.correctBoundaryConditions();
+
+        auto result = fvcc::max(f, 0.0);
+        auto outHost = result.internalVector().copyToHost();
+        auto outHostView = outHost.view();
+        for (int i = 0; i < result.size(); i++)
+        {
+            REQUIRE(outHostView[i] == Catch::Approx(0.0));
+        }
+    }
+
+    SECTION("min(ScalarField, scalar) -> ScalarField" + execName)
+    {
+        auto scalarBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+        fvcc::VolumeField<scalar> f(exec, "f", mesh, scalarBCs);
+        fill(f.internalVector(), 5.0);
+        f.correctBoundaryConditions();
+
+        auto result = fvcc::min(f, 3.0);
+        auto outHost = result.internalVector().copyToHost();
+        auto outHostView = outHost.view();
+        for (int i = 0; i < result.size(); i++)
+        {
+            REQUIRE(outHostView[i] == Catch::Approx(3.0));
+        }
+    }
+
+    SECTION("bound(ScalarField, scalar) in-place" + execName)
+    {
+        auto scalarBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+        fvcc::VolumeField<scalar> f(exec, "f", mesh, scalarBCs);
+        fill(f.internalVector(), -1.0);
+        f.correctBoundaryConditions();
+
+        fvcc::bound(f, 0.0);
+        auto outHost = f.internalVector().copyToHost();
+        auto outHostView = outHost.view();
+        for (int i = 0; i < f.size(); i++)
+        {
+            REQUIRE(outHostView[i] == Catch::Approx(0.0));
+        }
+    }
 }
 
 }
