@@ -294,11 +294,11 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    gkoExec_.synchronize();
+    gkoExec_->synchronize();
     Kokkos::Profiling::pushRegion("Create Ginkgo matrix and solver");
     auto gkoMtx = createGkoMtx(gkoExec_, sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    gkoExec_.synchronize();
+    gkoExec_->synchronize();
     Kokkos::Profiling::popRegion(); // Create Ginkgo matrix and solver
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
@@ -347,7 +347,7 @@ GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Ve
 {
     if (coupled_)
     {
-        gkoExec_.synchronize();
+        gkoExec_->synchronize();
         Kokkos::Profiling::pushRegion("Create Ginkgo matrix and solver");
         const auto gkoMtx = createGkoMtx(gkoExec_, sys);
         auto solver = factory_->generate(gkoMtx);
@@ -355,7 +355,7 @@ GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Ve
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
 
-        gkoExec_.synchronize();
+        gkoExec_->synchronize();
         Kokkos::Profiling::popRegion(); // Create Ginkgo matrix and solver
 
         auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
