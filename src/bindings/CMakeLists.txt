@@ -32,6 +32,8 @@ nanobind_add_module(
   executors.cpp
   scalar.cpp
   vec3.cpp
+  tensor.cpp
+  symmTensor.cpp
   vectors.cpp
   containerFreeFunctions.cpp
   boundaryMesh.cpp
@@ -44,6 +46,7 @@ nanobind_add_module(
   initialization.cpp
   linearAlgebra.cpp
   dsl.cpp
+  tensorOps.cpp
   database/document.cpp
   database/collection.cpp
   database/database.cpp)

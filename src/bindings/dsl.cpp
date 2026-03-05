@@ -21,6 +21,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGradVec3.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
 namespace nb = nanobind;
@@ -145,6 +146,7 @@ void registerDSL(nb::module_& m)
 
     declare_dsl_components<scalar>(m, "Scalar");
     declare_dsl_components<Vec3>(m, "Vector");
+    declare_dsl_components<Tensor>(m, "Tensor");
 
     using ScalarVolField = NeoN::finiteVolume::cellCentred::VolumeField<scalar>;
     using VectorVolField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
@@ -171,7 +173,16 @@ void registerDSL(nb::module_& m)
     exp_m.def("div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); });
     exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
-    exp_m.def("grad", &dsl::exp::grad);
+    exp_m.def(
+        "grad",
+        [](const ScalarVolField& phi) { return dsl::exp::grad(phi); },
+        "Gradient of a scalar field (returns Vec3)"
+    );
+    exp_m.def(
+        "grad",
+        [](const VectorVolField& phi) { return dsl::exp::grad(phi); },
+        "Gradient of a Vec3 field (returns Tensor)"
+    );
     exp_m.def("source", &dsl::exp::source<scalar>);
 
     // solve

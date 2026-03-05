@@ -24,7 +24,10 @@ void registerInputs(nanobind::module_& m);
 void registerCoNum(nanobind::module_& m);
 void registerInitialization(nanobind::module_& m);
 void registerLinearAlgebra(nanobind::module_& m);
+void registerTensor(nanobind::module_& m);
+void registerSymmTensor(nanobind::module_& m);
 void registerDSL(nanobind::module_& m);
+void registerTensorOps(nanobind::module_& m);
 
 // Database bindings
 void registerDocument(nanobind::module_& m);

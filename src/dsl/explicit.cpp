@@ -20,4 +20,11 @@ SpatialOperator<NeoN::Vec3> grad(const fvcc::VolumeField<NeoN::scalar>& phi)
     );
 }
 
+SpatialOperator<NeoN::Tensor> grad(const fvcc::VolumeField<NeoN::Vec3>& phi)
+{
+    return SpatialOperator<NeoN::Tensor>(
+        fvcc::GradOperator<NeoN::Tensor>(dsl::Operator::Type::Explicit, phi)
+    );
+}
+
 } // namespace NeoN

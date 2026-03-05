@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #include "boundary/volume/empty.hpp"
@@ -62,24 +63,38 @@ namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::VolumeBoundaryFactory<scalar>;
 template class fvcc::VolumeBoundaryFactory<Vec3>;
+template class fvcc::VolumeBoundaryFactory<Tensor>;
+template class fvcc::VolumeBoundaryFactory<SymmTensor>;
 
 template class fvcc::volumeBoundary::FixedValue<scalar>;
 template class fvcc::volumeBoundary::FixedValue<Vec3>;
+template class fvcc::volumeBoundary::FixedValue<Tensor>;
+template class fvcc::volumeBoundary::FixedValue<SymmTensor>;
 
 template class fvcc::volumeBoundary::FixedGradient<scalar>;
 template class fvcc::volumeBoundary::FixedGradient<Vec3>;
+template class fvcc::volumeBoundary::FixedGradient<Tensor>;
+template class fvcc::volumeBoundary::FixedGradient<SymmTensor>;
 
 template class fvcc::volumeBoundary::Calculated<scalar>;
 template class fvcc::volumeBoundary::Calculated<Vec3>;
+template class fvcc::volumeBoundary::Calculated<Tensor>;
+template class fvcc::volumeBoundary::Calculated<SymmTensor>;
 
 template class fvcc::volumeBoundary::Extrapolated<scalar>;
 template class fvcc::volumeBoundary::Extrapolated<Vec3>;
+template class fvcc::volumeBoundary::Extrapolated<Tensor>;
+template class fvcc::volumeBoundary::Extrapolated<SymmTensor>;
 
 template class fvcc::volumeBoundary::Empty<scalar>;
 template class fvcc::volumeBoundary::Empty<Vec3>;
+template class fvcc::volumeBoundary::Empty<Tensor>;
+template class fvcc::volumeBoundary::Empty<SymmTensor>;
 
 template class fvcc::volumeBoundary::Symmetry<scalar>;
 template class fvcc::volumeBoundary::Symmetry<Vec3>;
+template class fvcc::volumeBoundary::Symmetry<Tensor>;
+template class fvcc::volumeBoundary::Symmetry<SymmTensor>;
 
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;

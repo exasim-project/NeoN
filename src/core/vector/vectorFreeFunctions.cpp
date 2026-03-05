@@ -20,14 +20,7 @@ template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a* b; }
 {
-    if constexpr (std::is_same_v<ValueType, Vec3>)
-    {
-        auto viewA = vect.view();
-        parallelFor(
-            vect, NEON_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
-        );
-    }
-    else
+    if constexpr (std::is_arithmetic_v<ValueType>)
     {
         auto viewA = vect.view();
         parallelFor(
@@ -35,6 +28,13 @@ void scalarMul(Vector<ValueType>& vect, const scalar value)
             NEON_LAMBDA(const localIdx i)->ValueType {
                 return viewA[i] * static_cast<ValueType>(value);
             }
+        );
+    }
+    else
+    {
+        auto viewA = vect.view();
+        parallelFor(
+            vect, NEON_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
         );
     }
 }
@@ -178,5 +178,15 @@ NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 NN_VECTOR_OPERATOR_INSTANTIATION(float);
 NN_VECTOR_OPERATOR_INSTANTIATION(double);
 NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Vec3);
+
+#define NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(Type)                                              \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
+    template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
+
+NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(Tensor);
+NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(SymmTensor);
 
 } // namespace NeoN

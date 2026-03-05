@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/database/database.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/core/database/fieldDatabase.hpp"
@@ -131,5 +132,51 @@ private:
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
 };
+
+inline VolumeField<scalar> operator+(const VolumeField<scalar>& lhs, const VolumeField<scalar>& rhs)
+{
+    VolumeField<scalar> result(lhs);
+    result.internalVector() += rhs.internalVector();
+    result.boundaryData().value() += rhs.boundaryData().value();
+    return result;
+}
+
+inline VolumeField<scalar> operator-(const VolumeField<scalar>& lhs, const VolumeField<scalar>& rhs)
+{
+    VolumeField<scalar> result(lhs);
+    result.internalVector() -= rhs.internalVector();
+    result.boundaryData().value() -= rhs.boundaryData().value();
+    return result;
+}
+
+inline VolumeField<scalar> operator*(const VolumeField<scalar>& lhs, const VolumeField<scalar>& rhs)
+{
+    VolumeField<scalar> result(lhs);
+    result.internalVector() *= rhs.internalVector();
+    result.boundaryData().value() *= rhs.boundaryData().value();
+    return result;
+}
+
+inline VolumeField<scalar> operator/(const VolumeField<scalar>& lhs, const VolumeField<scalar>& rhs)
+{
+    VolumeField<scalar> result(lhs);
+    auto resultView = result.internalVector().view();
+    auto rhsView = rhs.internalVector().view();
+    parallelFor(
+        result.internalVector().exec(),
+        {0, result.internalVector().size()},
+        NEON_LAMBDA(const localIdx i) { resultView[i] /= rhsView[i]; },
+        "volumeFieldDiv"
+    );
+    auto bResultView = result.boundaryData().value().view();
+    auto bRhsView = rhs.boundaryData().value().view();
+    parallelFor(
+        result.boundaryData().value().exec(),
+        {0, result.boundaryData().value().size()},
+        NEON_LAMBDA(const localIdx i) { bResultView[i] /= bRhsView[i]; },
+        "volumeFieldDivBoundary"
+    );
+    return result;
+}
 
 } // namespace NeoN

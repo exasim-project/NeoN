@@ -59,4 +59,6 @@ laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<ValueType>&
 
 SpatialOperator<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
+SpatialOperator<Tensor> grad(const fvcc::VolumeField<Vec3>& phi);
+
 } // namespace NeoN

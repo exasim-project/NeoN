@@ -100,6 +100,72 @@ inline void setSymmetryValue<NeoN::Vec3>(
     );
 }
 
+// --- Tensor specialization (zero-gradient) ---
+template<>
+inline void setSymmetryValue<NeoN::Tensor>(
+    Field<NeoN::Tensor>& domainVector,
+    const UnstructuredMesh& mesh,
+    std::pair<localIdx, localIdx> range
+)
+{
+    const auto internalV = domainVector.internalVector().view();
+
+    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV] = views(
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue(),
+        mesh.boundaryMesh().faceCells()
+    );
+
+    NeoN::parallelFor(
+        domainVector.exec(),
+        range,
+        NEON_LAMBDA(const localIdx i) {
+            const localIdx owner = faceCellsV[i];
+            const auto v = internalV[owner];
+            refValueV[i] = v;
+            valueV[i] = v;
+            valueFractionV[i] = 0.0;
+            refGradV[i] = NeoN::zero<NeoN::Tensor>();
+        },
+        "setSymmetryValue(Tensor)"
+    );
+}
+
+// --- SymmTensor specialization (zero-gradient) ---
+template<>
+inline void setSymmetryValue<NeoN::SymmTensor>(
+    Field<NeoN::SymmTensor>& domainVector,
+    const UnstructuredMesh& mesh,
+    std::pair<localIdx, localIdx> range
+)
+{
+    const auto internalV = domainVector.internalVector().view();
+
+    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV] = views(
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue(),
+        mesh.boundaryMesh().faceCells()
+    );
+
+    NeoN::parallelFor(
+        domainVector.exec(),
+        range,
+        NEON_LAMBDA(const localIdx i) {
+            const localIdx owner = faceCellsV[i];
+            const auto v = internalV[owner];
+            refValueV[i] = v;
+            valueV[i] = v;
+            valueFractionV[i] = 0.0;
+            refGradV[i] = NeoN::zero<NeoN::SymmTensor>();
+        },
+        "setSymmetryValue(SymmTensor)"
+    );
+}
+
 } // namespace detail
 
 

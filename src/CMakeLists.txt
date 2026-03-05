@@ -14,6 +14,8 @@ endif()
 target_sources(
   NeoN
   PRIVATE "core/primitives/vec3.cpp"
+          "core/primitives/tensor.cpp"
+          "core/primitives/symmTensor.cpp"
           "core/time.cpp"
           "core/vector/vector.cpp"
           "core/vector/vectorFreeFunctions.cpp"
@@ -49,6 +51,8 @@ target_sources(
           "finiteVolume/cellCentred/operators/ddtOperator.cpp"
           "finiteVolume/cellCentred/fields/volumeField.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenGradVec3.cpp"
+          "finiteVolume/cellCentred/operators/tensorOps.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"

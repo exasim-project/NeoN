@@ -10,6 +10,7 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "bindings.hpp"
@@ -54,6 +55,20 @@ struct VectorTraits<NeoN::label>
 {
     using ComponentType = NeoN::label;
     static constexpr size_t components = 1;
+};
+
+template<>
+struct VectorTraits<NeoN::Tensor>
+{
+    using ComponentType = NeoN::scalar;
+    static constexpr size_t components = 9;
+};
+
+template<>
+struct VectorTraits<NeoN::SymmTensor>
+{
+    using ComponentType = NeoN::scalar;
+    static constexpr size_t components = 6;
 };
 
 
@@ -155,6 +170,16 @@ void registerVectors(nb::module_& m)
     // Vector<label> - for integer indices
     declare_vector<NeoN::label>(
         m, "LabelVector", "A vector of label (integer) values with executor support"
+    );
+
+    // Vector<Tensor> - for tensor fields
+    declare_vector<NeoN::Tensor>(
+        m, "TensorVector", "A vector of Tensor values with executor support"
+    );
+
+    // Vector<SymmTensor> - for symmetric tensor fields
+    declare_vector<NeoN::SymmTensor>(
+        m, "SymmTensorVector", "A vector of SymmTensor values with executor support"
     );
 }
 

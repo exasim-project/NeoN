@@ -15,6 +15,22 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+/** @brief Maps gradient output type to input type.
+ *  - Vec3 output ← scalar input (existing)
+ *  - Tensor output ← Vec3 input
+ */
+template<typename OutputType>
+struct GradInputTraits
+{
+    using type = scalar;
+};
+
+template<>
+struct GradInputTraits<Tensor>
+{
+    using type = Vec3;
+};
+
 /* @class Factory class to create gradient operators by a given name using
  * using NeoNs runTimeFactory mechanism
  */
@@ -26,6 +42,8 @@ class GradOperatorFactory :
 {
 
 public:
+
+    using InputType = typename GradInputTraits<ValueType>::type;
 
     static std::unique_ptr<GradOperatorFactory<ValueType>>
     create(const Executor& exec, const UnstructuredMesh& uMesh, const Input& inputs)
@@ -51,7 +69,7 @@ public:
      * @param [in,out] ls the linear system to assemble into
      */
     virtual void grad(
-        const VolumeField<scalar>& phi,
+        const VolumeField<InputType>& phi,
         const dsl::Coeff operatorScaling,
         la::LinearSystem<ValueType>& ls
     ) const = 0;
@@ -63,7 +81,9 @@ public:
      * @param gradPhi [in,out] - resulting gradient field
      */
     virtual void grad(
-        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+        const VolumeField<InputType>& phi,
+        const dsl::Coeff operatorScaling,
+        Vector<ValueType>& gradPhi
     ) const = 0;
 
     /* @brief compute explicit gradient operator and return result
@@ -73,7 +93,7 @@ public:
      * @return gradPhi - resulting gradient field
      */
     virtual VolumeField<ValueType>
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const = 0;
+    grad(const VolumeField<InputType>& phi, const dsl::Coeff operatorScaling) const = 0;
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<GradOperatorFactory<ValueType>> clone() const = 0;
@@ -86,51 +106,49 @@ protected:
 };
 
 template<typename ValueType>
-class GradOperator : public dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>
+class GradOperator :
+    public dsl::OperatorMixin<
+        VolumeField<ValueType>,
+        VolumeField<typename GradInputTraits<ValueType>::type>>
 {
 
 public:
 
+    using InputType = typename GradInputTraits<ValueType>::type;
     using VectorValueType = ValueType;
+    using MixinBase = dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<InputType>>;
 
     // copy constructor
     GradOperator(const GradOperator& gradOp)
-        : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            gradOp.exec_, gradOp.coeffs_, gradOp.field_, gradOp.type_
-        ),
+        : MixinBase(gradOp.exec_, gradOp.coeffs_, gradOp.field_, gradOp.type_),
           gradOperatorStrategy_(
               gradOp.gradOperatorStrategy_ ? gradOp.gradOperatorStrategy_->clone() : nullptr
           ) {};
 
-    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi, const Input& input)
-        : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
+    GradOperator(
+        dsl::Operator::Type termType, const VolumeField<InputType>& phi, const Input& input
+    )
+        : MixinBase(phi.exec(), dsl::Coeff(1.0), phi, termType),
           gradOperatorStrategy_(
               GradOperatorFactory<ValueType>::create(phi.exec(), phi.mesh(), input)
           ) {};
 
     GradOperator(
         dsl::Operator::Type termType,
-        const VolumeField<scalar>& phi,
+        const VolumeField<InputType>& phi,
         std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy
     )
-        : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
+        : MixinBase(phi.exec(), dsl::Coeff(1.0), phi, termType),
           gradOperatorStrategy_(std::move(gradOperatorStrategy)) {};
 
-    GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi)
-        : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
-          gradOperatorStrategy_(nullptr) {};
+    GradOperator(dsl::Operator::Type termType, const VolumeField<InputType>& phi)
+        : MixinBase(phi.exec(), dsl::Coeff(1.0), phi, termType), gradOperatorStrategy_(nullptr) {};
 
 
-    void explicitOperation(Vector<Vec3>& source) const
+    void explicitOperation(Vector<ValueType>& source) const
     {
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
-        auto tmpsource = Vector<Vec3>(source.exec(), source.size(), zero<Vec3>());
+        auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
         gradOperatorStrategy_->grad(this->getVector(), operatorScaling, tmpsource);
         source += tmpsource;
