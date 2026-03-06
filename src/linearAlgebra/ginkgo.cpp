@@ -365,10 +365,12 @@ GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Ve
     }
     else
     {
+        Kokkos::Profiling::pushRegion("Solve each component separately");
         auto stats = SolverStats {};
         solveComponent<0>(sys, x, gkoExec_, factory_, stats);
         solveComponent<1>(sys, x, gkoExec_, factory_, stats);
         solveComponent<2>(sys, x, gkoExec_, factory_, stats);
+        Kokkos::Profiling::popRegion(); // Solve each component separately
         return stats;
     }
 }
