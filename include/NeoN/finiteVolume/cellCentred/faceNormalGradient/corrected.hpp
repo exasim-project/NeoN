@@ -89,11 +89,11 @@ public:
         computeCorrectedFaceNormalGrad(volField, geometryScheme_, grad_, surfInterpVec3_, surfaceField);
     }
 
-    virtual bool corrected() const { return true; }
+    virtual bool corrected() const override { return true; }
 
     virtual void correction(
         const VolumeField<ValueType>& volField, SurfaceField<ValueType>& correctionField
-    ) const
+    ) const override
     {
         computeCorrection(volField, geometryScheme_, grad_, surfInterpVec3_, correctionField);
     }
