@@ -175,11 +175,75 @@ void computeLaplacianImpl(
     );
 }
 
+template<typename ValueType>
+void addLaplacianNonOrthCorrection(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
+    const auto nInternalFaces = mesh.nInternalFaces();
+
+    // Compute the explicit correction surface field
+    SurfaceField<ValueType> corrField(
+        exec, "snGradCorr", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+    );
+    fill(corrField.internalVector(), zero<ValueType>());
+    faceNormalGradient.correction(phi, corrField);
+
+    const auto [owner, neighbour, surfFaceCells] =
+        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+
+    const auto [sGamma, corr, magFaceArea] =
+        views(gamma.internalVector(), corrField.internalVector(), mesh.magFaceAreas());
+
+    auto rhs = ls.rhs().view();
+
+    // Subtract gamma * |Sf| * correction from RHS (same divergence pattern)
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            ValueType flux =
+                operatorScaling[owner[facei]] * sGamma[facei] * magFaceArea[facei] * corr[facei];
+            Kokkos::atomic_sub(&rhs[owner[facei]], flux);
+            ValueType fluxNei =
+                operatorScaling[neighbour[facei]] * sGamma[facei] * magFaceArea[facei] * corr[facei];
+            Kokkos::atomic_add(&rhs[neighbour[facei]], fluxNei);
+        },
+        "addLaplacianNonOrthCorrectionInternal"
+    );
+
+    parallelFor(
+        exec,
+        {nInternalFaces, corr.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - nInternalFaces;
+            auto own = surfFaceCells[bcfacei];
+            ValueType flux =
+                operatorScaling[own] * sGamma[facei] * magFaceArea[facei] * corr[facei];
+            Kokkos::atomic_sub(&rhs[own], flux);
+        },
+        "addLaplacianNonOrthCorrectionBoundary"
+    );
+}
+
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
         TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
+
+#define NN_DECLARE_ADD_NONORTH_CORR(TYPENAME)                                                      \
+    template void addLaplacianNonOrthCorrection<                                                   \
+        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
+
+NN_DECLARE_ADD_NONORTH_CORR(scalar);
+NN_DECLARE_ADD_NONORTH_CORR(Vec3);
 
 };

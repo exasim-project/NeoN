@@ -54,6 +54,12 @@ public:
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const = 0;
 
+    virtual bool corrected() const { return false; }
+
+    virtual void correction(
+        const VolumeField<ValueType>& /* volField */, SurfaceField<ValueType>& /* surfField */
+    ) const {}
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<FaceNormalGradientFactory<ValueType>> clone() const = 0;
 
@@ -98,6 +104,14 @@ public:
 
     const SurfaceField<scalar>& deltaCoeffs() const { return faceNormalGradKernel_->deltaCoeffs(); }
 
+    bool corrected() const { return faceNormalGradKernel_->corrected(); }
+
+    void correction(
+        const VolumeField<ValueType>& volField, SurfaceField<ValueType>& surfField
+    ) const
+    {
+        faceNormalGradKernel_->correction(volField, surfField);
+    }
 
     SurfaceField<ValueType> faceNormalGrad(const VolumeField<ValueType>& volVector) const
     {
