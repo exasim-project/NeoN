@@ -7,7 +7,6 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
@@ -120,6 +119,40 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     );
 }
 
+template<unsigned int I>
+Vector<scalar> getComponent(const Vector<Vec3>& in)
+{
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    auto out = Vector<scalar> {exec, in.size()};
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, in.size()}, NEON_LAMBDA(const localIdx i) { outV[i] = inV[i][I]; }, "getVecValues"
+    );
+    return out;
+};
+
+template Vector<scalar> getComponent<0>(const Vector<Vec3>&);
+template Vector<scalar> getComponent<1>(const Vector<Vec3>&);
+template Vector<scalar> getComponent<2>(const Vector<Vec3>&);
+
+template<unsigned int I>
+void setComponent(const Vector<scalar>& in, Vector<Vec3>& out)
+{
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, in.size()}, NEON_LAMBDA(const localIdx i) { outV[i][I] = inV[i]; }, "setVecValues"
+    );
+};
+
+template void setComponent<0>(const Vector<scalar>&, Vector<Vec3>&);
+template void setComponent<1>(const Vector<scalar>&, Vector<Vec3>&);
+template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
@@ -137,7 +170,9 @@ void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
-    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
+    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 
 NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 NN_VECTOR_OPERATOR_INSTANTIATION(float);

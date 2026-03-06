@@ -38,15 +38,14 @@ public:
      * @param ls [in,out] - assemble gradient operator into the given linear system
      */
     virtual void
-    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3, localIdx>&)
-        const override
+    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3>&) const override
     {
         NF_ERROR_EXIT("Not implemented");
     };
 
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
-    ) const;
+    ) const override;
 
     /* @brief compute grad
      *
@@ -72,13 +71,14 @@ public:
      * @param operatorScaling [in] - scales operator by a coefficient
      * @return gradPhi - resulting gradient field
      */
-    VolumeField<Vec3>
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+    VolumeField<Vec3> grad(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const override;
 
     TensorVecField
     grad(const VolumeField<Vec3>& U, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
 
-    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const
+    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
     };

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
 
@@ -48,4 +49,17 @@ template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
     requires requires(ValueType a, ValueType b) { a* b; };
 
+/**
+ * @brief Given a Vector of Vec3 this function extracts a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I>
+[[nodiscard]] Vector<scalar> getComponent(const Vector<Vec3>& in);
+
+/**
+ * @brief Given a Vector of Vec3 this function sets a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I>
+void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
 } // namespace NeoN

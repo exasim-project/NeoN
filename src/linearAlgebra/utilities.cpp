@@ -160,31 +160,33 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     );
 }
 
+template<typename MatrixType>
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
-    const Vector<scalar>& bV,
-    const Vector<scalar>& xV,
-    Vector<scalar>& resV
+    const MatrixType& mtx, const Vector<scalar>& bV, const Vector<scalar>& xV, Vector<scalar>& resV
 )
 {
     auto [res, b, x] = views(resV, bV, xV);
-    const auto [coeffs, colIdxs, rowOffs] = mtx.view();
+    const auto [coeffs, sparsity] = mtx.view();
 
     NeoN::parallelFor(
         resV.exec(),
         {0, resV.size()},
         NEON_LAMBDA(const localIdx rowi) {
-            auto rowStart = rowOffs[rowi];
-            auto rowEnd = rowOffs[rowi + 1];
+            auto rowStart = sparsity.rowOffs[rowi];
+            auto rowEnd = sparsity.rowOffs[rowi + 1];
             scalar sum = 0.0;
             for (localIdx coli = rowStart; coli < rowEnd; coli++)
             {
-                sum += coeffs[coli] * x[colIdxs[coli]];
+                sum += coeffs[coli] * x[sparsity.colIdxs[coli]];
             }
             res[rowi] = sum - b[rowi];
         },
         "computeResidual"
     );
 }
+
+template void computeResidual<CSRMatrix<
+    scalar,
+    localIdx>>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
 
 }

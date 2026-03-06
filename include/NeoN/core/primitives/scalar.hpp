@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
+
 #include "NeoN/core/primitives/traits.hpp"
 
 // TODO this needs to be implemented in the corresponding cmake file
@@ -32,6 +33,12 @@ template<>
 KOKKOS_INLINE_FUNCTION scalar zero<scalar>()
 {
     return 0.0;
+};
+
+template<>
+KOKKOS_INLINE_FUNCTION scalar inv<scalar>(scalar in)
+{
+    return 1.0 / in;
 };
 
 } // namespace NeoN

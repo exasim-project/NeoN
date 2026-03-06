@@ -35,7 +35,8 @@ class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
-        : Base(exec), gkoExec_(getGkoExecutor(exec)), config_(parse(solverConfig)),
+        : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
+          config_(parse(solverConfig)),
           factory_(gko::config::parse(
                        config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
           )
@@ -48,10 +49,12 @@ public:
 
     static std::string schema() { return "none"; }
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final;
+    virtual SolverStats solve(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
 
-    virtual SolverStats solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const final;
+    virtual SolverStats
+    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const final;
 
     // TODO why use a smart pointer here?
     virtual std::unique_ptr<SolverFactory> clone() const final
@@ -63,6 +66,7 @@ public:
 private:
 
     std::shared_ptr<const gko::Executor> gkoExec_;
+    bool coupled_; // whether to solve LinearSystem<Vec3> as one or three systems
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
 };

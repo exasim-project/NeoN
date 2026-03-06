@@ -16,8 +16,7 @@ DdtOperator<ValueType>::~DdtOperator()
 
 template<typename ValueType>
 DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field)
-    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
+    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType) {};
 
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
@@ -38,15 +37,14 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
 }
 
 template<typename ValueType>
-void DdtOperator<ValueType>::bdf1Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
-) const
+void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
-    const auto [diagOffs, oldVector] =
-        views(getSparsityPattern().diagOffset(), oldTime(this->field_).internalVector());
-    auto [matrix, rhs] = ls.view();
+    const auto diagOffs = ls.faceToMatrixAddress()->diagOffset().view();
+    const auto oldVector = oldTime(this->field_).internalVector().view();
+    auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 
     const scalar a0a1 = 1.0 / dt;
 
@@ -54,9 +52,9 @@ void DdtOperator<ValueType>::bdf1Kernel(
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            matrix.values[idx] += commonCoef * a0a1 * one<ValueType>();
+            values[idx] += commonCoef * a0a1 * one<ValueType>();
             rhs[celli] += commonCoef * a0a1 * oldVector[celli];
         },
         "ddtOperator::implicitOperation<BDF1>"
@@ -64,17 +62,17 @@ void DdtOperator<ValueType>::bdf1Kernel(
 }
 
 template<typename ValueType>
-void DdtOperator<ValueType>::bdf2Kernel(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt
-) const
+void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const
 {
+    const auto matIt = ls.faceToMatrixAddress();
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     auto& old = oldTime(this->field_);
     auto& oldOld = oldTime(old);
     const auto [diagOffs, oldVector, oldOldVector] =
-        views(getSparsityPattern().diagOffset(), old.internalVector(), oldOld.internalVector());
-    auto [matrix, rhs] = ls.view();
+        views(matIt->diagOffset(), old.internalVector(), oldOld.internalVector());
+    auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 
     const scalar a0 = 1.5 / dt;
     const scalar a1 = 2.0 / dt;
@@ -84,9 +82,9 @@ void DdtOperator<ValueType>::bdf2Kernel(
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            matrix.values[idx] += commonCoef * a0 * one<ValueType>();
+            values[idx] += commonCoef * a0 * one<ValueType>();
             rhs[celli] +=
                 commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
         },
@@ -95,9 +93,8 @@ void DdtOperator<ValueType>::bdf2Kernel(
 }
 
 template<typename ValueType>
-void DdtOperator<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt
-) const
+void DdtOperator<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt)
+    const
 {
     const int level = oldTimeLevel(this->field_);
 

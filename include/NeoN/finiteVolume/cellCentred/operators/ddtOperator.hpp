@@ -36,24 +36,21 @@ public:
 
     void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const;
+    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const;
 
-    void bdf1Kernel(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const;
+    void bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
 
-    void bdf2Kernel(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const;
+    void bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
 
     DdtScheme scheme() const noexcept { return scheme_; }
 
     void read(const Input&);
-
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
 
     std::string getName() const { return "DdtOperator"; }
 
 private:
 
     // NOTE ddtOperator does not have a FactoryClass
-    const la::SparsityPattern& sparsityPattern_;
 
     DdtScheme scheme_ {DdtScheme::BDF1};
 };

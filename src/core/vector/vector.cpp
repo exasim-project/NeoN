@@ -7,6 +7,7 @@
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 namespace NeoN
 {
@@ -18,7 +19,7 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size)
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
         exec_
     );
     data_ = static_cast<ValueType*>(ptr);
@@ -33,7 +34,7 @@ Vector<ValueType>::Vector(
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
         exec_
     );
     data_ = static_cast<ValueType*>(ptr);
@@ -47,7 +48,7 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& execu)
-        { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+        { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
         exec_
     );
     data_ = static_cast<ValueType*>(ptr);
@@ -191,7 +192,7 @@ void Vector<ValueType>::resize(const localIdx size)
     {
         std::visit(
             [this, &ptr, size](const auto& exec)
-            { ptr = exec.realloc(this->data_, static_cast<size_t>(size) * sizeof(ValueType)); },
+            { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
             exec_
         );
     }
@@ -199,7 +200,7 @@ void Vector<ValueType>::resize(const localIdx size)
     {
         std::visit(
             [&ptr, size](const auto& exec)
-            { ptr = exec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
             exec_
         );
     }

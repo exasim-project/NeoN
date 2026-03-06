@@ -22,6 +22,8 @@ target_sources(
           "core/database/document.cpp"
           "core/database/fieldCollection.cpp"
           "core/database/oldTimeCollection.cpp"
+          "core/memory/umpire.cpp"
+          "core/memory/kokkos.cpp"
           "core/dictionary.cpp"
           "core/demangle.cpp"
           "core/tokenList.cpp"
@@ -36,9 +38,10 @@ target_sources(
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo.cpp"
+          "linearAlgebra/faceToMatrixAddress.cpp"
+          "linearAlgebra/sparsityPattern.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
-          "linearAlgebra/sparsityPattern.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/basicGeometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/cellToFaceStencil.cpp"
@@ -63,6 +66,10 @@ target_sources(
 if(NeoN_ENABLE_MPI_SUPPORT)
   target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
                               "mesh/unstructured/communicator.cpp")
+endif()
+
+if(NeoN_BUILD_PYTHON_BINDINGS)
+  add_subdirectory(bindings)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)

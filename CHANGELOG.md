@@ -1,4 +1,7 @@
 # Version 0.3.0 (unreleased)
+## Features
+- Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
+- Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
 
 ### Misc
 - Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
@@ -23,7 +26,7 @@
 - Add Ginkgo SYCL support [#384](https://github.com/exasim-project/NeoN/pull/384)
 ### Misc
 - Use current Ginkgo develop version [#362](https://github.com/exasim-project/NeoN/pull/362)
-- removed subscript operators from Field for improved safety. [#225](https://github.com/exasim-project/NeoN/pull/285)
+- Removed subscript operators from Field for improved safety. [#225](https://github.com/exasim-project/NeoN/pull/285)
 - Templated Expression and Operator on ValueType [#268](https://github.com/exasim-project/NeoN/pull/268)
 - Ability to solve poisson equation similar required in the PISO algorithm [#267](https://github.com/exasim-project/NeoN/pull/267)
 - Add basic vectorField implementation  [#260](https://github.com/exasim-project/NeoN/pull/260)
@@ -33,23 +36,23 @@
 - Add license automation [#343](https://github.com/exasim-project/NeoN/pull/343)
 ## Fixes
 # Version 0.1.0
-- improve build with MSVC and Clang on Windows [#163](https://github.com/exasim-project/NeoN/pull/163)
+- Improve build with MSVC and Clang on Windows [#163](https://github.com/exasim-project/NeoN/pull/163)
 - Add document based database [#155](https://github.com/exasim-project/NeoN/pull/155)
 - Implement a DSL interface [#121](https://github.com/exasim-project/NeoN/pull/121)
 - Implement a basic DSL interface [#102](https://github.com/exasim-project/NeoN/pull/102)
-- faster project configuration [#179](https://github.com/exasim-project/NeoN/pull/179)
-- improved error handling and addition of tokenList and Input [#134](https://github.com/exasim-project/NeoN/pull/134)
-- disable span from temporary objects and simplification related to fields [#139](https://github.com/exasim-project/NeoN/pull/139)
-- added launch json to debug unit test in vscode [#135](https://github.com/exasim-project/NeoN/pull/135)
+- Faster project configuration [#179](https://github.com/exasim-project/NeoN/pull/179)
+- Improved error handling and addition of tokenList and Input [#134](https://github.com/exasim-project/NeoN/pull/134)
+- Disable span from temporary objects and simplification related to fields [#139](https://github.com/exasim-project/NeoN/pull/139)
+- Added launch json to debug unit test in vscode [#135](https://github.com/exasim-project/NeoN/pull/135)
 - Add a basic implementation of operators [#100](https://github.com/exasim-project/NeoN/pull/100)
 - Changes executor meanings, the CPUExecutor was renamed to SerialExecutor and  the OMPExecutor was renamed to CPUExecutor. [PR #120](https://github.com/exasim-project/NeoN/pull/120)
 - Minor cleanup of MPI operator names, added vector version of allReduce, and updates mpi and thread support operations. [PR #105](https://github.com/exasim-project/NeoN/pull/105)
 - Implementation of surface BCs and improvements to volume BCs  [PR #104](https://github.com/exasim-project/NeoN/pull/104)
-- improvements to vector and dictionary; fix of the hanging issue with cuda  [PR #108](https://github.com/exasim-project/NeoN/pull/108)
+- Improvements to vector and dictionary; fix of the hanging issue with cuda  [PR #108](https://github.com/exasim-project/NeoN/pull/108)
 - Field update: A number of operators and functions added, some bug fixes, and improved testing. [PR #34](https://github.com/exasim-project/NeoN/pull/34)
 - Provide wrapper for Catch2 that handles tests running with MPI [#82](https://github.com/exasim-project/NeoN/pull/82)
-- added parallelFor and parallelReduce [#62](https://github.com/exasim-project/NeoN/pull/62)
-- runtimeselectionFactory to simplify the usage of the runtime selection mechanism  [#95](https://github.com/exasim-project/NeoN/pull/95)
+- Added parallelFor and parallelReduce [#62](https://github.com/exasim-project/NeoN/pull/62)
+- Add runtimeselectionFactory to simplify the usage of the runtime selection mechanism  [#95](https://github.com/exasim-project/NeoN/pull/95)
 - Implementation of boundary conditions and finite volume fields [#74](https://github.com/exasim-project/NeoN/pull/74)
 - Initial MPI support and infrastructure added, specifically focusing on not blocking communication [#79](https://github.com/exasim-project/NeoN/pull/79).
 - Inject the boundaryconditionsstrategy with compile discovery into the boundary condition  [#83](https://github.com/exasim-project/NeoN/pull/83)

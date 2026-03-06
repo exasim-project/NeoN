@@ -26,26 +26,23 @@ public:
 
     SourceTerm(
         dsl::Operator::Type termType,
-        VolumeField<scalar>& coefficients,
-        VolumeField<ValueType>& field
+        const VolumeField<scalar>& coefficients,
+        const VolumeField<ValueType>& field
     );
 
     ~SourceTerm();
 
     void explicitOperation(Vector<ValueType>& source) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const;
 
     void read(const Input&) {}
 
     std::string getName() const { return "sourceTerm"; }
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
-
 private:
 
     const VolumeField<scalar>& coefficients_;
-    const la::SparsityPattern& sparsityPattern_;
 };
 
 

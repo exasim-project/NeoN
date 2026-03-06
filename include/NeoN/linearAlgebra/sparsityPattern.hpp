@@ -4,12 +4,52 @@
 
 #pragma once
 
-#include "NeoN/core/array.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::la
 {
+
+/**
+ * @struct MatrixView
+ * @brief A view struct to allow easy read/write on all executors.
+ *
+ * @tparam IndexType The index type of the rows and columns.
+ * @todo ideally this should be immutable
+ */
+template<typename IndexType>
+struct SparsityView
+{
+    SparsityView(View<const IndexType> colIdxsView, View<const IndexType> rowOffsView)
+        : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
+
+
+    /**
+     * @brief Retrieve a reference to the matrix element at position (i,j).
+     * @param i The row index.
+     * @param j The column index.
+     * @return Reference to the matrix element if it exists.
+     */
+    KOKKOS_INLINE_FUNCTION
+    IndexType entry(const IndexType i, const IndexType j) const
+    {
+        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
+        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
+        {
+            const IndexType localCol = rowOffs[i] + ic;
+            if (colIdxs[localCol] == j)
+            {
+                return localCol;
+            }
+            if (colIdxs[localCol] > j) break;
+        }
+        Kokkos::abort("Memory not allocated for CSR matrix component.");
+        return 0; // compiler warning suppression.
+    }
+
+    View<const IndexType> colIdxs;
+    View<const IndexType> rowOffs;
+};
 
 /* @class SparsityPattern
  * @brief row and column index representation of a mesh
@@ -18,82 +58,77 @@ namespace NeoN::la
  * of sparsity patterns from a given unstructured mesh
  *
  */
+template<typename IndexType>
 class SparsityPattern
 {
+
+    void validate() const;
+
 public:
 
-    /* @brief create an SparsityPattern from existing mesh */
-    SparsityPattern(const UnstructuredMesh& mesh);
+    using SparsityIndexType = IndexType;
 
     /* @brief create an "empty" SparsityPattern with a given size  */
-    SparsityPattern(Executor exec, localIdx nRows, localIdx nnzs);
+    SparsityPattern(const SparsityPattern& sp);
 
-    SparsityPattern(
-        Array<uint8_t>&& rowOffs,
-        Array<uint8_t>&& colIdxs,
-        Array<uint8_t>&& ownerOffset,
-        Vector<localIdx>&& neighbourOffset,
-        Vector<localIdx>&& diagOffset
-    );
+    SparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs);
+
+    [[nodiscard]] SparsityPattern copyToHost() const
+    {
+        return SparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(SerialExecutor()), rowOffs_.copyToExecutor(SerialExecutor())
+        );
+    }
+
+    [[nodiscard]] SparsityPattern copyToExecutor(Executor dstExec) const
+    {
+        return SparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(dstExec), rowOffs_.copyToExecutor(dstExec)
+        );
+    }
+
 
     ~SparsityPattern() = default;
 
-    /*@brief getter for ownerOffset */
-    const Array<uint8_t>& ownerOffset() const;
-
-    /*@brief getter for neighbourOffset */
-    const Array<uint8_t>& neighbourOffset() const;
-
     /*@brief getter for diagOffset */
-    const Array<uint8_t>& diagOffset() const;
-
-    /*@brief getter for ownerOffset */
-    Array<uint8_t>& ownerOffset();
-
-    /*@brief getter for neighbourOffset */
-    Array<uint8_t>& neighbourOffset();
-
-    /*@brief getter for diagOffset */
-    Array<uint8_t>& diagOffset();
-
-    /*@brief getter for diagOffset */
-    const Executor& exec() const { return exec_; };
+    const Executor& exec() const { return rowOffs_.exec(); }
 
     /*@brief getter for colIdxs */
-    [[nodiscard]] const Vector<localIdx>& colIdxs() const { return colIdxs_; };
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; };
 
-    [[nodiscard]] Vector<localIdx>& colIdxs() { return colIdxs_; };
-
-    /*@brief getter for rowOffs */
-    [[nodiscard]] const Vector<localIdx>& rowOffs() const { return rowOffs_; };
+    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
 
     /*@brief getter for rowOffs */
-    [[nodiscard]] Vector<localIdx>& rowOffs() { return rowOffs_; };
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; };
 
-    [[nodiscard]] localIdx rows() const { return diagOffset_.size(); };
+    /*@brief getter for rowOffs */
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
+
+    [[nodiscard]] localIdx rows() const { return rowOffs_.size() - 1; };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
-    // TODO add selection mechanism via dictionary later
-    static const SparsityPattern& readOrCreate(const UnstructuredMesh& mesh);
+    /**
+     * @brief Get a view representation of the matrix's data.
+     * @return MatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] SparsityView<IndexType> view() const
+    {
+        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
+    }
+
+    KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
 
 private:
 
-    Executor exec_;
+    Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
 
-    Vector<localIdx> rowOffs_; //! rowOffs map from row to start index in values
+    Vector<IndexType> colIdxs_; //!
 
-    Vector<localIdx> colIdxs_; //!
+    View<IndexType> rowOffsV_;
 
-    Array<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
-
-    Array<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row
-
-    Array<uint8_t> diagOffset_; //! mapping from faceId to column index in a row
+    View<IndexType> colIdxsV_;
 };
 
-SparsityPattern createSparsity(const UnstructuredMesh& mesh);
-
-SparsityPattern updateSparsity(const UnstructuredMesh& mesh, SparsityPattern& in);
 
 } // namespace NeoN::la

@@ -26,11 +26,10 @@ void computeLaplacianExp(
 
 template<typename ValueType>
 void computeLaplacianImpl(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
-    const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 );
 
@@ -97,15 +96,13 @@ public:
     };
 
     virtual void laplacian(
-        la::LinearSystem<ValueType, localIdx>& ls,
+        la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling
     ) override
     {
-        computeLaplacianImpl(
-            ls, gamma, phi, operatorScaling, this->getSparsityPattern(), faceNormalGradient_
-        );
+        computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
     };
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override

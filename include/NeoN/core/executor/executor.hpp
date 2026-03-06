@@ -12,6 +12,7 @@
 #include "NeoN/core/executor/CPUExecutor.hpp"
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/logging.hpp"
+#include "NeoN/core/memory/kokkos.hpp"
 
 namespace NeoN
 {
@@ -25,6 +26,43 @@ inline void fence(const Executor& exec)
     {
         Kokkos::fence();
     }
+}
+
+
+/* @brief creates highest available executor */
+inline Executor createDefaultExecutor(
+    std::unique_ptr<AllocatorStrategy> strategy = std::make_unique<DefaultAllocator>()
+)
+{
+#if defined(KOKKOS_ENABLE_CUDA)
+    return GPUExecutor {std::move(strategy)};
+#elif defined(KOKKOS_ENABLE_HIP)
+    return GPUExecutor {std::move(strategy)};
+#elif defined(KOKKOS_ENABLE_SYCL)
+    return GPUExecutor {std::move(strategy)};
+#endif
+
+#if defined(KOKKOS_ENABLE_OPENMP)
+    return CPUExecutor {std::move(strategy)};
+#elif defined(KOKKOS_ENABLE_THREADS)
+    return CPUExecutor {std::move(strategy)};
+#endif
+    return SerialExecutor {std::move(strategy)};
+}
+
+inline std::string executorName(const Executor& exec)
+{
+    return std::visit(
+        []<typename Exec>(const Exec& exec) { return exec.name(); }
+
+        ,
+        exec
+    );
+}
+
+inline MemorySpace memorySpace(const Executor& exec)
+{
+    return std::visit([]<typename Exec>(const Exec& exec) { return exec.memorySpace(); }, exec);
 }
 
 /*@brief convenience function to get access to associated logger */

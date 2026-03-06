@@ -58,7 +58,6 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 
     NeoN::Database db;
     auto mesh = createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
 
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "testVectorCollection");
@@ -94,7 +93,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         ddtSchemes.insert("ddt(phi)", std::string("BDF1"));
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
@@ -120,13 +119,12 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
         fvSchemes.insert("ddtSchemes", ddtSchemes);
 
-
         auto ddtOp = dsl::imp::ddt(phi);
         ddtOp.read(fvSchemes);
 
         const scalar dt = 0.5;
         {
-            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
             // ---------- Step 1: startup (Euler) ----------
             ddtOp.implicitOperation(ls, 1.0, dt);
@@ -143,7 +141,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             }
         }
         {
-            auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+            auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
             // ---------- Step 2: true BDF2 ----------
             fill(oldTime(oldTime(phi)).internalVector(), -2.0 * one<TestType>());

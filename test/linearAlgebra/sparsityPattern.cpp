@@ -11,8 +11,6 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-using SparsityPattern = NeoN::la::SparsityPattern;
-
 namespace NeoN
 {
 
@@ -22,38 +20,14 @@ TEST_CASE("SparsityPattern")
 
     auto nCells = 10;
     auto nFaces = 9;
+
     auto mesh = create1DUniformMesh(exec, nCells);
-
-    auto sp = NeoN::la::createSparsity(mesh);
-
-    SECTION("Can construct sparsity pattern " + execName)
-    {
-        // some basic sanity checks
-        REQUIRE(sp.ownerOffset().size() == nFaces);
-        REQUIRE(sp.neighbourOffset().size() == nFaces);
-        REQUIRE(sp.diagOffset().size() == nCells);
-    }
-
-    SECTION("has correct diagOffs" + execName)
-    {
-        auto diagOffs = sp.diagOffset().copyToHost();
-        auto diagOffsS = diagOffs.view();
-
-        REQUIRE(diagOffsS[0] == 0);
-        REQUIRE(diagOffsS[1] == 1);
-        REQUIRE(diagOffsS[2] == 1);
-        REQUIRE(diagOffsS[3] == 1);
-        REQUIRE(diagOffsS[4] == 1);
-        REQUIRE(diagOffsS[5] == 1);
-        REQUIRE(diagOffsS[6] == 1);
-        REQUIRE(diagOffsS[7] == 1);
-        REQUIRE(diagOffsS[8] == 1);
-        REQUIRE(diagOffsS[9] == 1);
-    }
+    auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    auto sp = mi->sparsityPattern();
 
     SECTION("Can produce rowOffs " + execName)
     {
-        auto rowPtr = sp.rowOffs().copyToHost();
+        auto rowPtr = sp->rowOffs().copyToHost();
         auto rowPtrH = rowPtr.view();
 
         REQUIRE(rowPtrH[0] == 0);
@@ -71,7 +45,7 @@ TEST_CASE("SparsityPattern")
 
     SECTION("Can produce column indices " + execName)
     {
-        auto colIdx = sp.colIdxs();
+        auto colIdx = sp->colIdxs();
         auto colIdxH = colIdx.copyToHost();
         auto colIdxHS = colIdxH.view();
 
@@ -90,6 +64,39 @@ TEST_CASE("SparsityPattern")
         REQUIRE(colIdxHS[8] == 2);
         REQUIRE(colIdxHS[9] == 3);
         REQUIRE(colIdxHS[10] == 4);
+    }
+
+    SECTION("Can generate views " + execName)
+    {
+        auto spH = sp->copyToHost();
+        auto [colIdxs, rowOffs] = spH.view();
+
+        REQUIRE(colIdxs[0] == 0);
+        REQUIRE(colIdxs[1] == 1);
+
+        REQUIRE(colIdxs[2] == 0);
+        REQUIRE(colIdxs[3] == 1);
+        REQUIRE(colIdxs[4] == 2);
+
+        REQUIRE(colIdxs[5] == 1);
+        REQUIRE(colIdxs[6] == 2);
+        REQUIRE(colIdxs[7] == 3);
+
+        REQUIRE(colIdxs[8] == 2);
+        REQUIRE(colIdxs[9] == 3);
+        REQUIRE(colIdxs[10] == 4);
+
+        REQUIRE(rowOffs[0] == 0);
+        REQUIRE(rowOffs[1] == 2);
+        REQUIRE(rowOffs[2] == 5);
+        REQUIRE(rowOffs[3] == 8);
+        REQUIRE(rowOffs[4] == 11);
+        REQUIRE(rowOffs[5] == 14);
+        REQUIRE(rowOffs[6] == 17);
+        REQUIRE(rowOffs[7] == 20);
+        REQUIRE(rowOffs[8] == 23);
+        REQUIRE(rowOffs[9] == 26);
+        REQUIRE(rowOffs[10] == 28);
     }
 }
 

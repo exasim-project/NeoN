@@ -171,7 +171,8 @@ public:
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
+    void implicitOperation(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls
+    ) const
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -232,8 +233,11 @@ public:
         );
     }
 
-    void
-    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, NeoN::scalar, NeoN::scalar)
+    void implicitOperation(
+        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
+        NeoN::scalar,
+        NeoN::scalar
+    )
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -255,18 +259,6 @@ public:
         );
     }
 
-    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
-    {
-        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Vector<NeoN::localIdx> rowOffs(this->exec(), {0, 1});
-        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowOffs);
-
-        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
-        return linearSystem;
-    }
-
     std::string getName() const { return "TemporalDummy"; }
 };
 
@@ -278,14 +270,14 @@ ValueType getVector(const NeoN::Vector<ValueType>& source)
 }
 
 template<typename ValueType>
-ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getDiag(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.matrix().values().view()[0];
 }
 
 template<typename ValueType>
-ValueType getRhs(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getRhs(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];

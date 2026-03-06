@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -15,6 +16,11 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
     {
         dict.remove("solver");
+    }
+
+    if (dict.contains("coupled"))
+    {
+        dict.remove("coupled");
     }
 
     // check if an external file name is given
@@ -151,9 +157,15 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
 namespace NeoN::la::ginkgo
 {
 
-label computeNRows(const LinearSystem<Vec3, localIdx>& sys) { return 3 * sys.rhs().size(); }
+label computeNRows(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys)
+{
+    return 3 * sys.rhs().size();
+}
 
-label computeNRows(const LinearSystem<scalar, localIdx>& sys) { return sys.rhs().size(); }
+label computeNRows(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys)
+{
+    return sys.rhs().size();
+}
 
 /*@brief create a array non const view into data given by ptr*/
 template<typename T>
@@ -194,21 +206,22 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localId
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
-createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<scalar, IndexType>& sys)
+createGkoMtx(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx)
 {
-    const auto mtx = sys.view().matrix;
+    const auto [coeffsV, sparsityV] = mtx.view();
+
     // NOTE we get a const view of the system but need a non const view to vals and indices
     auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values.size()), mtx.values.data()
+        exec, static_cast<gko::size_type>(coeffsV.size()), coeffsV.data()
     );
     auto col = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.colIdxs.size()), mtx.colIdxs.data()
+        exec, static_cast<gko::size_type>(sparsityV.colIdxs.size()), sparsityV.colIdxs.data()
     );
     auto row = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(mtx.rowOffs.size()), mtx.rowOffs.data()
+        exec, static_cast<gko::size_type>(sparsityV.rowOffs.size()), sparsityV.rowOffs.data()
     );
 
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    auto nrows = static_cast<gko::size_type>(mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
         exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
     ));
@@ -224,7 +237,7 @@ scalar retrieve(const InType& in)
     return host->copy_from(in)->at(0);
 };
 
-SolverStats solve_impl(
+SolverStatsEntry solve_impl(
     std::shared_ptr<const gko::Executor> exec,
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
@@ -275,23 +288,28 @@ SolverStats solve_impl(
 }
 
 
-SolverStats GinkgoSolver::solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
 {
-    auto gkoMtx = createGkoMtx(gkoExec_, sys);
+    auto gkoMtx = createGkoMtx(gkoExec_, sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver));
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
 template<typename IndexType>
-std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>>
-createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3, IndexType>& sys)
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtx(
+    std::shared_ptr<const gko::Executor> exec,
+    const LinearSystem<Vec3, CSRMatrix<Vec3, IndexType>>& sys
+)
 {
     // NOTE we get a const view of the system but need a non const view to vals and indices
     const auto mtx = sys.matrix();
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec,
@@ -302,18 +320,46 @@ createGkoMtx(std::shared_ptr<const gko::Executor> exec, const LinearSystem<Vec3,
     ));
 }
 
-SolverStats GinkgoSolver::solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const
+// wrapper to solve a single component of a <vec3> equation
+template<unsigned int I>
+void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
 {
-    const auto gkoMtx = createGkoMtx(gkoExec_, sys);
-    auto solver = factory_->generate(gkoMtx);
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    auto values = getComponent<I>(sys.matrix().values());
+    auto sparsity = sys.matrix().sparsity();
+    auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+    auto gkoMtx = createGkoMtx(exec, mtx);
+    auto solver = factory->generate(gkoMtx);
 
-    auto rhsCopy = unpackVecValues(sys.rhs());
-    auto xCopy = unpackVecValues(x);
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver)));
+    setComponent<I>(xcopy, x);
+}
 
-    auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+SolverStats
+GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const
+{
+    if (coupled_)
+    {
+        const auto gkoMtx = createGkoMtx(gkoExec_, sys);
+        auto solver = factory_->generate(gkoMtx);
 
-    packVecValues(xCopy, x);
-    return stats;
+        auto rhsCopy = unpackVecValues(sys.rhs());
+        auto xCopy = unpackVecValues(x);
+
+        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+
+        packVecValues(xCopy, x);
+        return {stats};
+    }
+    else
+    {
+        auto stats = SolverStats {};
+        solveComponent<0>(sys, x, gkoExec_, factory_, stats);
+        solveComponent<1>(sys, x, gkoExec_, factory_, stats);
+        solveComponent<2>(sys, x, gkoExec_, factory_, stats);
+        return stats;
+    }
 }
 
 

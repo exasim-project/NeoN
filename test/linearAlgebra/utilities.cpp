@@ -226,7 +226,9 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
+            csrMatrix, rhs, csrMatrix, rhs, {}
+        );
 
         NeoN::la::computeResidual(csrMatrix, rhs, x, res);
 

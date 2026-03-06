@@ -9,6 +9,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
@@ -19,15 +21,15 @@
 namespace NeoN::dsl
 {
 
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
-    virtual void operator()(const la::SparsityPattern&, la::LinearSystem<VectorType, localIdx>&) {};
+    virtual void operator()(la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) {};
 };
 
 
-template<typename ValueType>
+template<typename ValueType, typename IndexType = localIdx>
 class Expression
 {
 public:
@@ -89,7 +91,7 @@ public:
     }
 
     /*@brief compute matrix coefficients based on all spatial operators */
-    void assembleSpatialOperator(la::LinearSystem<ValueType, localIdx>& ls) const
+    void assembleSpatialOperator(la::LinearSystem<ValueType>& ls) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -103,8 +105,7 @@ public:
     /*@brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    void
-    assembleTemporalOperator(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
+    void assembleTemporalOperator(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -120,17 +121,17 @@ public:
      * @param ps a vector of functor performing transformation on the created linear system
      * @return a tuple of the sparsity pattern and the assembled linear system
      */
-    std::tuple<la::SparsityPattern, la::LinearSystem<ValueType, localIdx>> assemble(
+    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<ValueType>>
+    assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
-        std::span<const PostAssemblyBase<ValueType>> ps = {}
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        auto sp = la::SparsityPattern(mesh);
-        auto ls = la::createEmptyLinearSystem<ValueType, localIdx>(mesh, sp);
-        assemble(t, dt, sp, ls, ps);
-        return {sp, ls};
+        auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
+        assemble(t, dt, ls, ps);
+        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 
     /* @brief assemble into a given linear system
@@ -140,9 +141,8 @@ public:
     void assemble(
         scalar t,
         scalar dt,
-        const la::SparsityPattern& sp,
-        la::LinearSystem<ValueType, localIdx>& ls,
-        std::span<const PostAssemblyBase<ValueType>> ps = {}
+        la::LinearSystem<ValueType>& ls,
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
@@ -151,7 +151,7 @@ public:
         // perform post assembly transformations
         for (auto p : ps)
         {
-            p(sp, ls);
+            p(ls);
         }
     };
 

@@ -78,6 +78,33 @@ if(${NeoN_WITH_SPDLOG})
     SYSTEM)
 endif()
 
+if(${NeoN_WITH_UMPIRE})
+  # BLT require CMAKE_CUDA_HOST_COMPILER to be set explicitly
+  if(${Kokkos_ENABLE_CUDA} AND "${CMAKE_CUDA_HOST_COMPILER}" STREQUAL "")
+    message(WARNING "Setting CMAKE_CUDA_HOST_COMPILER to ${CMAKE_CXX_COMPILER}"
+                    " use -DCMAKE_CUDA_HOST_COMPILER to override")
+    set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+  endif()
+
+  # https://umpire.readthedocs.io/en/develop/sphinx/advanced_configuration.html
+  cpmaddpackage(
+    NAME
+    umpire
+    GITHUB_REPOSITORY
+    greole/umpire
+    GIT_TAG
+    ${NeoN_UMPIRE_TAG}
+    OPTIONS
+    "ENABLE_CUDA ${Kokkos_ENABLE_CUDA}"
+    "ENABLE_HIP ${Kokkos_ENABLE_HIP}"
+    "UMPIRE_ENABLE_SYCL ${Kokkos_ENABLE_SYCL}"
+    "ENABLE_BENCHMARKS OFF"
+    "ENABLE_EXAMPLES OFF"
+    "ENABLE_TESTS OFF"
+    SYSTEM
+    YES)
+endif()
+
 if(${NeoN_WITH_ADIOS2})
 
   set(ADIOS2_KOKKOS_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/adios2_kokkos.patch)
@@ -220,9 +247,35 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
       "GINKGO_ENABLE_HALF OFF"
       "GINKGO_BUILD_MPI OFF"
+      "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
   endif()
+endif()
+
+if(${NeoN_BUILD_PYTHON_BINDINGS})
+  if(CMAKE_VERSION VERSION_LESS 3.18)
+    set(DEV_MODULE Development)
+  else()
+    set(DEV_MODULE Development.Module)
+  endif()
+
+  if(DEFINED ENV{VIRTUAL_ENV})
+    set(Python_ROOT_DIR "$ENV{VIRTUAL_ENV}")
+  endif()
+  find_package(
+    Python
+    COMPONENTS Interpreter ${DEV_MODULE}
+    REQUIRED)
+  cpmaddpackage(
+    NAME
+    nanobind
+    GITHUB_REPOSITORY
+    wjakob/nanobind
+    VERSION
+    ${NeoN_NANOBIND_VERSION}
+    SYSTEM
+    YES)
 endif()
 
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)

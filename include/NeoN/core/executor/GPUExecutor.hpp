@@ -5,11 +5,13 @@
 #pragma once
 
 #include "NeoN/core/logging.hpp"
+#include "NeoN/core/memory/allocator.hpp"
 
 #include <Kokkos_Core.hpp>
 
 namespace NeoN
 {
+
 
 /**
  * @class GPUExecutor
@@ -19,24 +21,50 @@ namespace NeoN
  */
 class GPUExecutor : public Logging::SupportsLoggingMixin
 {
+
+    std::shared_ptr<AllocatorContext> allocContext_ = nullptr;
+
 public:
 
     using exec = Kokkos::DefaultExecutionSpace;
 
     GPUExecutor();
+
+    GPUExecutor(std::unique_ptr<AllocatorStrategy> strategy);
+
     ~GPUExecutor();
 
+    /*@brief allocation of size elements of sizeof(T) bytes */
     template<typename T>
-    T* alloc(size_t size) const
+    T* alloc(size_t elements) const
     {
-        return static_cast<T*>(Kokkos::kokkos_malloc<exec>("Vector", size * sizeof(T)));
+        if (!allocContext_)
+        {
+            NF_ERROR_EXIT("No allocator set");
+        }
+        return allocContext_->alloc<T>(elements);
     }
 
     template<typename T>
-    T* realloc(void* ptr, size_t newSize) const
+    T* realloc(void* ptr, size_t elements) const
     {
-        return static_cast<T*>(Kokkos::kokkos_realloc<exec>(ptr, newSize * sizeof(T)));
+        if (!allocContext_)
+        {
+            NF_ERROR_EXIT("No allocator set");
+        }
+        return allocContext_->realloc<T>(ptr, elements);
     }
+
+    void free(void* ptr) const noexcept
+    {
+        if (!allocContext_)
+        {
+            NF_ERROR_EXIT("No allocator set");
+        }
+        allocContext_->free(ptr);
+    }
+
+    MemorySpace memorySpace() const noexcept { return MemorySpace::GPU; }
 
     /** @brief create a Kokkos view for a given ptr
      *
@@ -52,15 +80,6 @@ public:
             ptr, size
         );
     }
-
-    void* alloc(size_t size) const { return Kokkos::kokkos_malloc<exec>("Vector", size); }
-
-    void* realloc(void* ptr, size_t newSize) const
-    {
-        return Kokkos::kokkos_realloc<exec>(ptr, newSize);
-    }
-
-    void free(void* ptr) const noexcept { Kokkos::kokkos_free<exec>(ptr); }
 
     std::string name() const { return "GPUExecutor"; };
 

@@ -44,7 +44,7 @@ public:
         : location(locationIn), level(levelIn), message(messageIn)
     {
         creationTS = std::chrono::steady_clock::now();
-    };
+    }
 
     std::source_location location; // where log message was created
 

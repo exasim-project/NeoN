@@ -9,8 +9,9 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
@@ -33,7 +34,7 @@ template<typename T>
 concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
-            std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
+            std::declval<la::LinearSystem<typename T::VectorValueType>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
@@ -75,7 +76,7 @@ public:
         model_->explicitOperation(source, t, dt);
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
+    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
     {
         model_->implicitOperation(ls, t, dt);
     }
@@ -109,8 +110,7 @@ private:
 
         virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) = 0;
 
-        virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) = 0;
+        virtual void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) = 0;
 
         /* @brief Given an input this function reads required properties */
         virtual void read(const Input& input) = 0;
@@ -161,7 +161,7 @@ private:
         }
 
         virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) override
+        implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) override
         {
             if constexpr (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)
             {

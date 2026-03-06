@@ -8,6 +8,9 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
+#include "NeoN/dsl/ddt.hpp"
+
+// TODO: decouple from fvcc
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp"
@@ -15,8 +18,9 @@
 // TODO we should get rid of this include since it includes details
 // from a general implementation
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
@@ -34,21 +38,34 @@ TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
     return fvcc::DdtOperator(dsl::Operator::Type::Explicit, phi);
 }
 
-SpatialOperator<scalar>
-div(const fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<scalar>& phi);
+template<typename ValueType>
+SpatialOperator<ValueType>
+source(const fvcc::VolumeField<scalar>& coeff, const fvcc::VolumeField<ValueType>& phi)
+{
+    return SpatialOperator<ValueType>(fvcc::SourceTerm(dsl::Operator::Type::Explicit, coeff, phi));
+}
+
+template<typename ValueType>
+SpatialOperator<ValueType>
+div(const fvcc::SurfaceField<scalar>& faceFlux, const fvcc::VolumeField<ValueType>& phi)
+{
+    return SpatialOperator<ValueType>(
+        fvcc::DivOperator(dsl::Operator::Type::Explicit, faceFlux, phi)
+    );
+}
 
 SpatialOperator<scalar> div(const fvcc::SurfaceField<scalar>& flux);
 
-SpatialOperator<scalar>
-laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<scalar>& phi);
+template<typename ValueType>
+SpatialOperator<ValueType>
+laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<ValueType>& phi)
+{
+    return SpatialOperator<ValueType>(
+        fvcc::LaplacianOperator<ValueType>(dsl::Operator::Type::Explicit, gamma, phi)
+    );
+}
 
-
-SpatialOperator<Vec3>
-laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<Vec3>& phi);
-
-SpatialOperator<Vec3> grad(fvcc::VolumeField<scalar>& phi);
-
-SpatialOperator<scalar> source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi);
+SpatialOperator<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
 SpatialOperator<scalar> sourceU(fvcc::VolumeField<scalar>& coeff);
 

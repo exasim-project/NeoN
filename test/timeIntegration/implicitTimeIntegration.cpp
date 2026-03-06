@@ -19,7 +19,8 @@ TEST_CASE("TimeIntegration: backwardEuler")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     NeoN::Database db;
-    auto mesh = NeoN::createSingleCellMesh(exec);
+    NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, 10);
+    // auto mesh = NeoN::createSingleCellMesh(exec);
     fvcc::VectorCollection& fieldCollection =
         fvcc::VectorCollection::instance(db, "fieldCollection");
 

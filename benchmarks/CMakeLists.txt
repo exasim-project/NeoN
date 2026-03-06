@@ -29,5 +29,6 @@ function(NeoN_benchmark BENCH)
 endfunction()
 
 add_subdirectory(fields)
+add_subdirectory(memory)
 add_subdirectory(finiteVolume/cellCentred/operator)
 add_subdirectory(finiteVolume/cellCentred/interpolation)

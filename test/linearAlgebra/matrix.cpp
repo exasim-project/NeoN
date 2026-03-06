@@ -9,13 +9,14 @@
 
 #include "NeoN/NeoN.hpp"
 
-#include <Kokkos_Core.hpp>
-
-TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
+TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
+    // [ 1 .  . ]
+    // [ . 5  6 ]
+    // [ . 8 .  ]
     NeoN::Vector<TestType> valuesSparse(exec, {1.0, 5.0, 6.0, 8.0});
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
@@ -42,7 +43,8 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     SECTION("View Order " + execName)
     {
         auto denseMatrixHost = denseMatrix.copyToHost();
-        auto [values, colIdxs, rowOffs] = denseMatrixHost.view();
+        auto [values, sparsity] = denseMatrixHost.view();
+        auto [colIdxs, rowOffs] = sparsity;
         auto valuesDenseHost = valuesDense.copyToHost();
         auto valuesDenseHostView = valuesDenseHost.view();
         auto colIdxDenseHost = colIdxDense.copyToHost();
@@ -103,6 +105,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
                 checkDenseView[8] = denseView.entry(2, 2);
             }
         );
+
         checkHost = checkDense.copyToHost();
         REQUIRE(checkHost.view()[0] == 1.0);
         REQUIRE(checkHost.view()[1] == 2.0);
@@ -143,6 +146,29 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
         REQUIRE(upperH.view()[1] == 3.0);
         REQUIRE(upperH.view()[2] == 6.0);
     }
+
+    // SECTION("Can computed scaledInverseDiagonal " + execName)
+    // {
+    //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+    //     auto diag = denseMatrix.scaledInverseDiag(denseMatria);
+    //     auto diagH = diag.copyToHost();
+
+    //     REQUIRE(diagH.view()[0] == 1.0);
+    //     REQUIRE(diagH.view()[1] == 2.0 / 5.0);
+    //     REQUIRE(diagH.view()[2] == 3.0 / 9.0);
+    // }
+
+    // SECTION("Can compute scaledOffDiagonal " + execName)
+    // {
+    //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
+    //     auto out = NeoN::Vector<TestType>(exec, {0.0, 0.0, 0.0});
+    //     denseMatrix.negLUx(a, out);
+    //     auto outH = out.copyToHost();
+
+    //     REQUIRE(outH.view()[0] == -13.0);
+    //     REQUIRE(outH.view()[1] == -22.0);
+    //     REQUIRE(outH.view()[2] == -23.0);
+    // }
 
     SECTION("Update existing entry on " + execName)
     {
@@ -307,7 +333,8 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     SECTION("View " + execName)
     {
         auto hostMatrix = sparseMatrix.copyToHost();
-        auto [value, column, row] = hostMatrix.view();
+        auto [value, sparsity] = hostMatrix.view();
+        auto [column, row] = sparsity;
         auto hostvaluesSparse = valuesSparse.copyToHost();
         auto hostcolIdxSparse = colIdxSparse.copyToHost();
         auto hostrowOffsSparse = rowOffsSparse.copyToHost();
@@ -328,7 +355,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::scalar)
     }
 }
 
-TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
+TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -338,6 +365,7 @@ TEMPLATE_TEST_CASE("CSRMatrix", "[template]", NeoN::Vec3)
     );
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
+
     NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
         valuesSparse, colIdxSparse, rowOffsSparse
     );

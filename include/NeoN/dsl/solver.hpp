@@ -27,21 +27,22 @@ namespace NeoN::dsl
 
 namespace detail
 {
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    const la::SparsityPattern& sp,
-    la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
+    la::LinearSystem<
+        typename VectorType::ElementType,
+        la::CSRMatrix<typename VectorType::ElementType, IndexType>>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
     exp.read(fvSchemes);
-    exp.assemble(t, dt, sp, ls, ps);
+    exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
@@ -56,17 +57,20 @@ la::SolverStats iterativeSolveImpl(
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
+
+    // Do some sanity checks before trying to solve
+    NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
     return solver.solve(ls, solution.internalVector());
 }
 
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
     auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
@@ -98,15 +102,15 @@ la::SolverStats iterativeSolveImpl(
  * @param fvSolution - Dictionary containing linear solver properties
  * @param p - A chainable functor that performs manipulations on the assembled system
  */
-template<typename VectorType>
+template<typename VectorType, typename IndexType>
 la::SolverStats solve(
-    Expression<typename VectorType::ElementType>& exp,
+    Expression<typename VectorType::ElementType, IndexType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {}
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
@@ -122,7 +126,7 @@ la::SolverStats solve(
     {
         // integrate equations in time
         integrator.solve(exp, solution, t, dt);
-        return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
+        return {{.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0}};
     }
     else
     {

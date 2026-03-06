@@ -6,8 +6,9 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <string>
 
@@ -19,29 +20,28 @@ namespace NeoN::la
  * @brief A view linear into a linear system's data.
  *
  * @tparam ValueType The value type of the linear system.
- * @tparam IndexType The index type of the linear system.
+ * @tparam MatrixViewType The type representing the matrix view
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename MatrixViewType>
 struct LinearSystemView
 {
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
-    LinearSystemView(CSRMatrixView<ValueType, IndexType> matrixView, View<ValueType> rhsView)
-        : matrix(matrixView), rhs(rhsView) {};
+    LinearSystemView(
+        MatrixViewType matrixView,
+        View<ValueType> rhsView,
+        MatrixViewType boundaryMatrixView,
+        View<ValueType> boundaryRhsView
+    )
+        : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
+          boundaryRhs(boundaryRhsView) {};
 
-    CSRMatrixView<ValueType, IndexType> matrix;
+    MatrixViewType matrix;
     View<ValueType> rhs;
-};
 
-// TODO move to fvcc
-template<typename ValueType, typename IndexType>
-struct BoundaryCoefficients
-{
-    Vector<ValueType> matrixValues;
-    Vector<IndexType> matrixIdxs;
-    Vector<ValueType> rhsValues;
-    Vector<IndexType> rhsIdxs;
+    MatrixViewType boundaryMatrix;
+    View<ValueType> boundaryRhs;
 };
 
 /**
@@ -52,140 +52,183 @@ struct BoundaryCoefficients
  * equations. It supports the storage of the coefficient matrix and the right-hand side vector, as
  * well as the solution vector.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
 class LinearSystem
 {
+
+    void validate()
+    {
+        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        NF_ASSERT(
+            boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
+        );
+    }
+
 public:
 
+    using LinearSystemIndexType = typename MatrixType::MatrixSparsityType::SparsityIndexType;
+
     LinearSystem(
-        const CSRMatrix<ValueType, IndexType>& matrix,
-        const Vector<ValueType>& rhs,
-        const Dictionary& aux = {}
+        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress
     )
-        : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
+        : matrix_(
+            Vector<ValueType>(
+                faceToMatrixAddress->exec(), faceToMatrixAddress->localNonZeros(), zero<ValueType>()
+            ),
+            faceToMatrixAddress->sparsityPattern()
+        ),
+          rhs_(faceToMatrixAddress->exec(), faceToMatrixAddress->localRows(), zero<ValueType>()),
+          boundaryMatrix_(
+              Vector<ValueType>(
+                  faceToMatrixAddress->exec(),
+                  faceToMatrixAddress->boundaryNonZeros(),
+                  zero<ValueType>()
+              ),
+              faceToMatrixAddress->boundarySparsityPattern()
+          ),
+          boundaryRhs_(
+              faceToMatrixAddress->exec(),
+              faceToMatrixAddress->boundaryNonZeros(),
+              zero<ValueType>()
+          ),
+          faceToMatrixAddress_(faceToMatrixAddress)
     {
-        NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
-        NF_ASSERT(matrix.nRows() == rhs.size(), "Matrix and RHS size mismatch");
-    };
+        validate();
+    }
+
+    LinearSystem(
+        const MatrixType& matrix,
+        const Vector<ValueType>& rhs,
+        const MatrixType& boundaryMatrix,
+        const Vector<ValueType>& boundaryRhs,
+        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
+    )
+        : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs),
+          faceToMatrixAddress_(mi)
+    {
+        validate();
+    }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_) {};
-
-    LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
+          boundaryRhs_(ls.boundaryRhs_), faceToMatrixAddress_(ls.faceToMatrixAddress_)
+    {}
 
     ~LinearSystem() = default;
 
-    [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
+    [[nodiscard]] MatrixType& matrix() { return matrix_; }
+
+    [[nodiscard]] const MatrixType& matrix() const { return matrix_; }
+
+    [[nodiscard]] MatrixType& boundaryMatrix() { return boundaryMatrix_; }
+
+    [[nodiscard]] const MatrixType& boundaryMatrix() const { return boundaryMatrix_; }
 
     [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
-    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
-
     [[nodiscard]] const Vector<ValueType>& rhs() const { return rhs_; }
 
-    [[nodiscard]] LinearSystem copyToHost() const
+    [[nodiscard]] Vector<ValueType>& boundaryRhs() { return boundaryRhs_; }
+
+    [[nodiscard]] const Vector<ValueType>& boundaryRhs() const { return boundaryRhs_; }
+
+    [[nodiscard]] LinearSystem<ValueType, MatrixType> copyToHost() const
     {
-        return LinearSystem(matrix_.copyToHost(), rhs_.copyToHost());
+        if (faceToMatrixAddress_ == nullptr)
+        {
+            return {
+                matrix_.copyToHost(),
+                rhs_.copyToHost(),
+                boundaryMatrix_.copyToHost(),
+                boundaryRhs_.copyToHost(),
+                {}
+            };
+        }
+        auto mi = std::make_shared<FaceToMatrixAddress<LinearSystemIndexType>>(
+            faceToMatrixAddress_->ownerOffset().copyToHost(),
+            faceToMatrixAddress_->neighbourOffset().copyToHost(),
+            faceToMatrixAddress_->diagOffset().copyToHost(),
+            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+                faceToMatrixAddress_->sparsityPattern()->copyToHost()
+            ),
+            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+                faceToMatrixAddress_->boundarySparsityPattern()->copyToHost()
+            )
+        );
+        return {
+            matrix_.copyToHost(),
+            rhs_.copyToHost(),
+            boundaryMatrix_.copyToHost(),
+            boundaryRhs_.copyToHost(),
+            mi
+        };
     }
 
     void reset()
     {
         fill(matrix_.values(), zero<ValueType>());
         fill(rhs_, zero<ValueType>());
+        fill(boundaryMatrix_.values(), zero<ValueType>());
+        fill(boundaryRhs_, zero<ValueType>());
     }
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() && = delete;
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+    view() && = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() const&& = delete;
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+    view() const&& = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() &
+    [[nodiscard]] LinearSystemView<
+        ValueType,
+        MatrixView<ValueType, SparsityView<LinearSystemIndexType>>>
+    view() &
     {
-        return LinearSystemView<ValueType, IndexType>(matrix_.view(), rhs_.view());
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    [[nodiscard]] LinearSystemView<const ValueType, const IndexType> view() const&
+    std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress() const
     {
-        return LinearSystemView<const ValueType, const IndexType>(matrix_.view(), rhs_.view());
+        return faceToMatrixAddress_;
+    }
+
+    [[nodiscard]] LinearSystemView<
+        const ValueType,
+        const MatrixView<ValueType, SparsityView<const LinearSystemIndexType>>>
+    view() const&
+    {
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
     const Executor& exec() const { return matrix_.exec(); }
 
-    // TODO move to fvcc
-    [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
-
-    [[nodiscard]] Dictionary& auxiliaryCoefficients() { return auxiliaryCoefficients_; }
-
 private:
 
-    CSRMatrix<ValueType, IndexType> matrix_;
+    // internal values
+    MatrixType matrix_;
+
     Vector<ValueType> rhs_;
+
+    // boundary values
+    MatrixType boundaryMatrix_;
+
+    Vector<ValueType> boundaryRhs_;
+
     Dictionary auxiliaryCoefficients_;
+
+    std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
 };
 
-
-template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
-LinearSystem<ValueTypeOut, IndexTypeOut>
-convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
-{
-    auto exec = ls.exec();
-    Vector<ValueTypeOut> convertedRhs(exec, ls.rhs().data(), ls.rhs().size());
-    return {
-        convert<ValueTypeIn, IndexTypeIn, ValueTypeOut, IndexTypeOut>(exec, ls.view.matrix),
-        convertedRhs,
-        ls.sparsityPattern()
-    };
-}
-
-/*@brief helper function that creates a zero initialised linear system based on given sparsity
- * pattern
+/*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-template<typename ValueType, typename IndexType>
-LinearSystem<ValueType, IndexType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
+template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
-    const auto& exec = mesh.exec();
-    localIdx rows {sparsity.rows()};
-    localIdx nnzs {sparsity.nnz()};
-
-    localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
-
-    const auto [diagOffset, rowOffs, faceCells] =
-        views(sparsity.diagOffset(), sparsity.rowOffs(), mesh.boundaryMesh().faceCells());
-
-    BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces),
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces)
-    };
-
-    auto [mValue, mColIdx, rhsValue, rhsIdx] =
-        views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
-
-    parallelFor(
-        exec,
-        {0, nBoundaryFaces},
-        NEON_LAMBDA(const localIdx bfacei) {
-            localIdx celli = faceCells[bfacei];
-
-            mValue[bfacei] = zero<ValueType>();
-            mColIdx[bfacei] = celli + diagOffset[celli];
-            rhsValue[bfacei] = zero<ValueType>();
-            rhsIdx[bfacei] = celli;
-        },
-        "createEmptyLinearSystem"
-    );
-
-    Dictionary aux;
-    aux.insert("boundaryCoefficients", bcCoeffs);
-
-    return {
-        CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
-        },
-        Vector<ValueType> {exec, rows, zero<ValueType>()},
-        aux
-    };
+    return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
 }
 
 

@@ -17,7 +17,6 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
-    auto sp = NeoN::la::SparsityPattern {mesh};
 
     SECTION("Operator creation on " + execName)
     {
@@ -85,7 +84,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType, NeoN::localIdx>(mesh, sp);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
     SECTION("Supports Coefficients Implicit " + execName)
     {
@@ -117,7 +116,6 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         auto hostLsC = ls.copyToHost();
         REQUIRE(hostLsC.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
 
-
         // // d= 2 * 2
         ls.reset();
         d.implicitOperation(ls, t, dt);
@@ -125,7 +123,6 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(hostRhsD.view()[0] == 4.0 * NeoN::one<TestType>());
         auto hostLsD = ls.copyToHost();
         REQUIRE(hostLsD.matrix().values().view()[0] == 4.0 * NeoN::one<TestType>());
-
 
         // e = - -3 * 2 * 2 = -12
         ls.reset();

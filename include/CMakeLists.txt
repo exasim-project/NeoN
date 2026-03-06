@@ -33,6 +33,13 @@ else()
   target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_KOKKOS=0)
 endif()
 
+if(NeoN_WITH_UMPIRE)
+  target_link_libraries(NeoN_public_api INTERFACE umpire)
+  target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_UMPIRE=1)
+else()
+  target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_UMPIRE=0)
+endif()
+
 if(NeoN_WITH_GINKGO)
   target_link_libraries(NeoN_public_api INTERFACE nlohmann_json::nlohmann_json Ginkgo::ginkgo)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_GINKGO=1)

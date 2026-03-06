@@ -36,7 +36,7 @@ void setNeonDefaultPattern()
 #endif
 }
 
-void logImpl(std::string sv, Level level, std::string logName)
+void logImpl(std::string sv, Level level, [[maybe_unused]] std::string logName)
 {
 #if NF_WITH_SPDLOG
     spdlog::get(logName)->log(spdlog::level::level_enum(level), sv);

@@ -30,8 +30,7 @@ concept HasExplicitOperator = requires(T const t) {
 template<typename T>
 concept HasImplicitOperator = requires(T const t) {
     {
-        t.implicitOperation(std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>()
-        )
+        t.implicitOperation(std::declval<la::LinearSystem<typename T::VectorValueType>&>())
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
@@ -73,10 +72,7 @@ public:
 
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
-    {
-        model_->implicitOperation(ls);
-    }
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const { model_->implicitOperation(ls); }
 
     /* returns the fundamental type of an operator, ie explicit, implicit */
     Operator::Type getType() const { return model_->getType(); }
@@ -105,7 +101,7 @@ private:
 
         virtual void explicitOperation(Vector<ValueType>& source) const = 0;
 
-        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const = 0;
+        virtual void implicitOperation(la::LinearSystem<ValueType>& ls) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -147,7 +143,7 @@ private:
             }
         }
 
-        virtual void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const override
+        virtual void implicitOperation(la::LinearSystem<ValueType>& ls) const override
         {
             if constexpr (HasImplicitOperator<ConcreteOperatorType>)
             {

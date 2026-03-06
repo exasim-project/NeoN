@@ -41,11 +41,13 @@ option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
+option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
 # Third party dependencies
 option(NeoN_WITH_KOKKOS "Enable using Kokkos as platform portability layer." ON)
+option(NeoN_WITH_UMPIRE "Enable using Umpire as memory manager [Experimental]." ON)
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
-option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support [currently required]" ON)
+option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support." OFF)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
@@ -92,6 +94,23 @@ endif()
 if(NOT DEFINED CMAKE_EXPORT_COMPILE_COMMANDS)
   message(STATUS "Enabling generation of compilation database.")
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
+# Detect if building with scikit-build-core
+if(DEFINED SKBUILD)
+  message(STATUS "Building with scikit-build-core")
+  set(NeoN_BUILD_PYTHON_BINDINGS
+      ON
+      CACHE BOOL "" FORCE)
+  set(BUILD_SHARED_LIBS
+      ON
+      CACHE BOOL "" FORCE)
+  # Configure RPATH for Python extension modules
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  # Set RPATH so _neon.so can find libNeoN.so at ../lib/
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 endif()
 
 include(cmake/CxxThirdParty.cmake)
@@ -229,6 +248,8 @@ if(nlohmann_json_POPULATED)
   install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
 endif()
 
+# umpire installs its own targets when fetched via CPM
+
 # install internal cpptrace version
 if(cpptrace_POPULATED)
   install(
@@ -256,8 +277,8 @@ endif()
 # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
 # SundialsTargets NAMESPACE SUNDIALS::) endif()
 
-if(NOT kokkos_POPULATED)
+if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
   export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
 else()
-  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos")
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
 endif()

@@ -27,9 +27,10 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
     SECTION("construct " + execName)
     {
-
         Vector<scalar> rhs(exec, 3, 0.0);
-        LinearSystem<scalar, localIdx> linearSystem(csrMatrix, rhs);
+        LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
+            csrMatrix, rhs, csrMatrix, rhs, {}
+        );
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
         REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
@@ -45,9 +46,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         auto nnz = nCells + 2 * nFaces;
         auto mesh = create1DUniformMesh(exec, nCells);
 
-        // TODO improve structure here
-        auto sp = NeoN::la::SparsityPattern {mesh};
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, localIdx>(mesh, sp);
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -59,7 +58,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     SECTION("view read/write " + execName)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
-        LinearSystem<scalar, localIdx> ls(csrMatrix, rhs);
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(csrMatrix, rhs, csrMatrix, rhs, {});
 
         auto lsView = ls.view();
         auto hostLS = ls.copyToHost();
@@ -67,19 +66,19 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         // some simple sanity checks
         REQUIRE(hostLSView.matrix.values.size() == 9);
-        REQUIRE(hostLSView.matrix.colIdxs.size() == 9);
-        REQUIRE(hostLSView.matrix.rowOffs.size() == 4);
+        REQUIRE(hostLSView.matrix.sparsity.colIdxs.size() == 9);
+        REQUIRE(hostLSView.matrix.sparsity.rowOffs.size() == 4);
         REQUIRE(hostLSView.rhs.size() == 3);
 
         // check system values
         for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
         {
             REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
-            REQUIRE(hostLSView.matrix.colIdxs[i] == (i % 3));
+            REQUIRE(hostLSView.matrix.sparsity.colIdxs[i] == (i % 3));
         }
-        for (NeoN::localIdx i = 0; i < hostLSView.matrix.rowOffs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < hostLSView.matrix.sparsity.rowOffs.size(); ++i)
         {
-            REQUIRE(hostLSView.matrix.rowOffs[i] == i * 3);
+            REQUIRE(hostLSView.matrix.sparsity.rowOffs[i] == i * 3);
         }
         for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
         {

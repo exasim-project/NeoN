@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/logging.hpp"
+#include "NeoN/core/memory/allocator.hpp"
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
 
@@ -20,31 +21,41 @@ namespace NeoN
  */
 class CPUExecutor : public Logging::SupportsLoggingMixin
 {
+    std::shared_ptr<AllocatorContext> allocContext_ = nullptr;
+
 public:
 
     using exec = Kokkos::DefaultHostExecutionSpace;
 
     CPUExecutor();
+
+    CPUExecutor(std::unique_ptr<AllocatorStrategy> strategy);
+
     ~CPUExecutor();
 
     template<typename T>
-    T* alloc(size_t size) const
+    T* alloc(size_t elements) const
     {
-        return static_cast<T*>(Kokkos::kokkos_malloc<exec>("Vector", size * sizeof(T)));
+        if (!allocContext_)
+        {
+            NF_ERROR_EXIT("No allocator set");
+        }
+        return allocContext_->alloc<T>(elements);
     }
 
     template<typename T>
-    T* realloc(void* ptr, size_t newSize) const
+    T* realloc(void* ptr, size_t elements) const
     {
-        return static_cast<T*>(Kokkos::kokkos_realloc<exec>(ptr, newSize * sizeof(T)));
+        if (!allocContext_)
+        {
+            NF_ERROR_EXIT("No allocator set");
+        }
+        return allocContext_->realloc<T>(ptr, elements);
     }
 
-    void* alloc(size_t size) const { return Kokkos::kokkos_malloc<exec>("Vector", size); }
+    void free(void* ptr) const noexcept { allocContext_->free(ptr); }
 
-    void* realloc(void* ptr, size_t newSize) const
-    {
-        return Kokkos::kokkos_realloc<exec>(ptr, newSize);
-    }
+    MemorySpace memorySpace() const noexcept { return MemorySpace::CPU; }
 
     /** @brief create a Kokkos view for a given ptr
      *
@@ -58,8 +69,6 @@ public:
     {
         return Kokkos::View<ValueType*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(ptr, size);
     }
-
-    void free(void* ptr) const noexcept { Kokkos::kokkos_free<exec>(ptr); };
 
     std::string name() const { return "CPUExecutor"; };
 

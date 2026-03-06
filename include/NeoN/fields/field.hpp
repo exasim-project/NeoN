@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
-
 #include <iostream>
 
 #include "NeoN/core/executor/executor.hpp"

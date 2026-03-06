@@ -124,6 +124,24 @@ public:
     }
 
     /**
+     * @brief Retrieves the value associated with the given key, casting it to
+     * the specified type.
+     * @tparam T The type to cast the value to.
+     * @param key The key to retrieve the value for.
+     * @return A const reference to the value associated with the key, casted to
+     * type T.
+     */
+    template<typename T>
+    [[nodiscard]] const T get(const std::string& key, T defaultValue) const
+    {
+        if (contains(key))
+        {
+            return T(get<T>(key));
+        }
+        return defaultValue;
+    }
+
+    /**
      * @brief Checks if the value associated with the given key is of given Type T.
      * @param key The key to check.
      * @return True if the value is a dictionary, false otherwise.

@@ -26,27 +26,28 @@ public:
     static std::string schema() { return "none"; }
 
     // -------- scalar --------
-    SolverStats solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const override
+    SolverStats solve(const la::LinearSystem<scalar>& sys, Vector<scalar>& x) const override
     {
         auto start = std::chrono::steady_clock::now();
 
         const auto rhs = sys.rhs();
         const auto mtx = sys.matrix();
         const auto mtxV = mtx.view();
-
+        auto [colIdx, rowOffs] = sys.matrix().sparsity()->view();
         auto [xV, bV] = views(x, rhs);
 
+        NF_ASSERT(bV.size() + 1 == rowOffs.size(), "Inconsistent rowOffs.size()");
         parallelFor(
             x.exec(),
             {0, bV.size()},
             NEON_LAMBDA(const localIdx i) {
-                const auto rowBegin = mtxV.rowOffs[i];
-                const auto rowEnd = mtxV.rowOffs[i + 1];
+                const auto rowBegin = rowOffs[i];
+                const auto rowEnd = rowOffs[i + 1];
 
                 localIdx diagIdx = -1;
                 for (localIdx k = rowBegin; k < rowEnd; ++k)
                 {
-                    if (mtxV.colIdxs[k] == i)
+                    if (colIdx[k] == i)
                     {
                         diagIdx = k;
                         break;
@@ -75,11 +76,12 @@ public:
     }
 
     // -------- Vec3 --------
-    SolverStats solve(const LinearSystem<Vec3, localIdx>& sys, Vector<Vec3>& x) const override
+    SolverStats solve(const la::LinearSystem<Vec3>& sys, Vector<Vec3>& x) const override
     {
         const auto rhs = sys.rhs();
         const auto mtx = sys.matrix();
         const auto mtxV = mtx.view();
+        auto [colIdx, rowOffs] = sys.matrix().sparsity()->view();
 
         auto [xV, bV] = views(x, rhs);
 
@@ -87,13 +89,13 @@ public:
             x.exec(),
             {0, bV.size()},
             NEON_LAMBDA(const localIdx i) {
-                const auto rowBegin = mtxV.rowOffs[i];
-                const auto rowEnd = mtxV.rowOffs[i + 1];
+                const auto rowBegin = rowOffs[i];
+                const auto rowEnd = rowOffs[i + 1];
 
                 localIdx diagIdx = -1;
                 for (localIdx k = rowBegin; k < rowEnd; ++k)
                 {
-                    if (mtxV.colIdxs[k] == i)
+                    if (colIdx[k] == i)
                     {
                         diagIdx = k;
                         break;
@@ -119,7 +121,7 @@ public:
         );
 
         fence(x.exec());
-        return {1, 0.0, 0.0, 0.0};
+        return {{1, 0.0, 0.0, 0.0}};
     }
 
     std::unique_ptr<SolverFactory> clone() const override
