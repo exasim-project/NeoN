@@ -330,6 +330,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtx(
 template<unsigned int I>
 void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
 {
+    Kokkos::Profiling::pushRegion("Prepare for solve by component");
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
     auto values = getComponent<I>(sys.matrix().values());
@@ -337,8 +338,11 @@ void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(exec, mtx);
     auto solver = factory->generate(gkoMtx);
+    Kokkos::Profiling::popRegion(); // Prepare for solve by component
 
+    Kokkos::Profiling::pushRegion("Call and collect stats for solve by component ");
     stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver)));
+    Kokkos::Profiling::popRegion(); // Call and collect stats for solve by component
     setComponent<I>(xcopy, x);
 }
 
