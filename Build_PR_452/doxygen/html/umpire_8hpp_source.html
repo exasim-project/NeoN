@@ -90,7 +90,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="allocator_8hpp.html">NeoN/core/memory/allocator.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#ifdef NF_WITH_UMPIRE</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#if NF_WITH_UMPIRE</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;umpire/strategy/QuickPool.hpp&quot;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;umpire/ResourceManager.hpp&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#endif</span></div>
@@ -98,74 +98,81 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#ifdef NF_WITH_UMPIRE</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>UmpireMempoolHandler</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasPool(MemorySpace memSpace);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> setupUmpirePool(MemorySpace memSpace, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">static</span> <span class="keyword">auto</span> getUmpirePool(MemorySpace memSpace)</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">auto</span>&amp; rm = umpire::ResourceManager::getInstance();</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (memSpace == MemorySpace::GPU)</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">return</span> rm.getAllocator(<span class="stringliteral">&quot;DEVICE_POOL&quot;</span>);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> rm.getAllocator(<span class="stringliteral">&quot;HOST_POOL&quot;</span>);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1UmpireAllocator.html">UmpireAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">   46</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">alloc</a>(<span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#if NF_WITH_UMPIRE</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>UmpireMempoolHandler</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasPool(MemorySpace memSpace);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> setupUmpirePool(MemorySpace memSpace, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">static</span> <span class="keyword">auto</span> getUmpirePool(MemorySpace memSpace)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">auto</span>&amp; rm = umpire::ResourceManager::getInstance();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (memSpace == MemorySpace::GPU)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">return</span> rm.getAllocator(<span class="stringliteral">&quot;DEVICE_POOL&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> rm.getAllocator(<span class="stringliteral">&quot;HOST_POOL&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> destroyUmpirePool(MemorySpace memSpace)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">auto</span> pool = getUmpirePool(memSpace);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        pool.release();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">   48</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">realloc</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">ptr</a>, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">   50</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">free</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">ptr</a>) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">   52</a></span>    <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">~UmpireAllocator</a>()<span class="keyword"> override </span>{}</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
-</div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html">   48</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1UmpireAllocator.html">UmpireAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>{</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">   53</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">alloc</a>(<span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1UmpirePoolAllocator.html">UmpirePoolAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">   55</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">realloc</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">ptr</a>, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">   57</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">free</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">ptr</a>) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">   61</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">alloc</a>(<span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#aa4b57ea2d673af3080020c1938194c5b">   63</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#aa4b57ea2d673af3080020c1938194c5b">realloc</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">ptr</a>, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#a9a2063c06aaeedf7a2f66f1d3d560e3c">   65</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#a9a2063c06aaeedf7a2f66f1d3d560e3c">free</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">ptr</a>) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">   67</a></span>    <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">~UmpirePoolAllocator</a>()<span class="keyword"> override </span>{}</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">   59</a></span>    <a class="code hl_function" href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">~UmpireAllocator</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
 </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="};">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html">   63</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1UmpirePoolAllocator.html">UmpirePoolAllocator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classNeoN_1_1AllocatorStrategy.html">AllocatorStrategy</a></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">   68</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">alloc</a>(<span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#aa4b57ea2d673af3080020c1938194c5b">   70</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#aa4b57ea2d673af3080020c1938194c5b">realloc</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">ptr</a>, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#a9a2063c06aaeedf7a2f66f1d3d560e3c">   72</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#a9a2063c06aaeedf7a2f66f1d3d560e3c">free</a>(<span class="keywordtype">void</span>* <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">ptr</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">   74</a></span>    <a class="code hl_function" href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">~UmpirePoolAllocator</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
 <div class="ttc" id="aallocator_8hpp_html"><div class="ttname"><a href="allocator_8hpp.html">allocator.hpp</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html">NeoN::AllocatorStrategy</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00021">allocator.hpp:22</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html">NeoN::UmpireAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00041">umpire.hpp:42</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1AllocatorStrategy_html"><div class="ttname"><a href="classNeoN_1_1AllocatorStrategy.html">NeoN::AllocatorStrategy</a></div><div class="ttdef"><b>Definition</b> <a href="allocator_8hpp_source.html#l00023">allocator.hpp:24</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html">NeoN::UmpireAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00048">umpire.hpp:49</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a06db2d22c51dd1573d37eb44ea0285ba"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a06db2d22c51dd1573d37eb44ea0285ba">NeoN::UmpireAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div></div>
-<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a091bb0b8aa44549078c53f853604bb39"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">NeoN::UmpireAllocator::~UmpireAllocator</a></div><div class="ttdeci">~UmpireAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00052">umpire.hpp:52</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a091bb0b8aa44549078c53f853604bb39"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39">NeoN::UmpireAllocator::~UmpireAllocator</a></div><div class="ttdeci">~UmpireAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00059">umpire.hpp:59</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_a6d23931dc799c3a05a272878101c3039"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#a6d23931dc799c3a05a272878101c3039">NeoN::UmpireAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpireAllocator_html_aeb70f22157d079457e43419895e1a728"><div class="ttname"><a href="classNeoN_1_1UmpireAllocator.html#aeb70f22157d079457e43419895e1a728">NeoN::UmpireAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div></div>
-<div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html">NeoN::UmpirePoolAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00056">umpire.hpp:57</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html_a3cc68bdd08c69055c4604e606fa13783"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">NeoN::UmpirePoolAllocator::~UmpirePoolAllocator</a></div><div class="ttdeci">~UmpirePoolAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00067">umpire.hpp:67</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html">NeoN::UmpirePoolAllocator</a></div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00063">umpire.hpp:64</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html_a3cc68bdd08c69055c4604e606fa13783"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783">NeoN::UmpirePoolAllocator::~UmpirePoolAllocator</a></div><div class="ttdeci">~UmpirePoolAllocator() override</div><div class="ttdef"><b>Definition</b> <a href="umpire_8hpp_source.html#l00074">umpire.hpp:74</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html_a9a2063c06aaeedf7a2f66f1d3d560e3c"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html#a9a2063c06aaeedf7a2f66f1d3d560e3c">NeoN::UmpirePoolAllocator::free</a></div><div class="ttdeci">void free(void *ptr) override</div><div class="ttdoc">free a block of size bytes</div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html_aa4b57ea2d673af3080020c1938194c5b"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html#aa4b57ea2d673af3080020c1938194c5b">NeoN::UmpirePoolAllocator::realloc</a></div><div class="ttdeci">void * realloc(void *ptr, size_t size) override</div><div class="ttdoc">reallocate a block of size bytes</div></div>
 <div class="ttc" id="aclassNeoN_1_1UmpirePoolAllocator_html_abf8f730115fe03ebccc11fe32268f822"><div class="ttname"><a href="classNeoN_1_1UmpirePoolAllocator.html#abf8f730115fe03ebccc11fe32268f822">NeoN::UmpirePoolAllocator::alloc</a></div><div class="ttdeci">void * alloc(size_t size) override</div><div class="ttdoc">allocate a block of size bytes</div></div>
