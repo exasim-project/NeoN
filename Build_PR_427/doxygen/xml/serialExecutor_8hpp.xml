@@ -3,9 +3,26 @@
   <compounddef id="serialExecutor_8hpp" kind="file" language="C++">
     <compoundname>serialExecutor.hpp</compoundname>
     <includes refid="logging_8hpp" local="yes">NeoN/core/logging.hpp</includes>
+    <includes refid="allocator_8hpp" local="yes">NeoN/core/memory/allocator.hpp</includes>
     <includes local="no">Kokkos_Core.hpp</includes>
     <includedby refid="executor_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/executor.hpp</includedby>
     <incdepgraph>
+      <node id="10">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/serialExecutor.hpp</label>
         <link refid="serialExecutor_8hpp"/>
@@ -13,6 +30,12 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
       </node>
       <node id="2">
         <label>NeoN/core/logging.hpp</label>
@@ -31,19 +54,39 @@
         </childnode>
       </node>
       <node id="9">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
         <label>Kokkos_Core.hpp</label>
       </node>
       <node id="3">
         <label>chrono</label>
       </node>
+      <node id="11">
+        <label>cstdlib</label>
+      </node>
+      <node id="12">
+        <label>exception</label>
+      </node>
       <node id="5">
         <label>format</label>
+      </node>
+      <node id="13">
+        <label>iostream</label>
       </node>
       <node id="6">
         <label>memory</label>
       </node>
       <node id="4">
         <label>source_location</label>
+      </node>
+      <node id="14">
+        <label>sstream</label>
       </node>
       <node id="7">
         <label>string</label>
@@ -226,6 +269,8 @@
       <node id="15">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddt.hpp</label>
         <link refid="ddt_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
       </node>
@@ -489,8 +534,6 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</label>
         <link refid="surfaceField_8hpp"/>
         <childnode refid="52" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
@@ -860,54 +903,70 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="logging_8hpp" kindref="compound">NeoN/core/logging.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
-<codeline lineno="12"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20" refid="classNeoN_1_1SerialExecutor" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin" kindref="compound">Logging::SupportsLoggingMixin</ref></highlight></codeline>
-<codeline lineno="21"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24" refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/>=<sp/>Kokkos::Serial;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="classNeoN_1_1SerialExecutor_1ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2" kindref="member">SerialExecutor</ref>();</highlight></codeline>
-<codeline lineno="27" refid="classNeoN_1_1SerialExecutor_1abc0bcfedaaeac17db3a9bfce2d5ae062" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1abc0bcfedaaeac17db3a9bfce2d5ae062" kindref="member">~SerialExecutor</ref>();</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="allocator_8hpp" kindref="compound">NeoN/core/memory/allocator.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="classNeoN_1_1SerialExecutor" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin" kindref="compound">Logging::SupportsLoggingMixin</ref></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;AllocatorContext&gt;<sp/>allocContext_<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/>=<sp/>Kokkos::Serial;</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="30" refid="classNeoN_1_1SerialExecutor_1a9b5d9f6c6a4dfe9e4dbeca0e242a30d3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/><ref refid="classNeoN_1_1SerialExecutor_1a9b5d9f6c6a4dfe9e4dbeca0e242a30d3" kindref="member">alloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="31"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(Kokkos::kokkos_malloc&lt;exec&gt;(</highlight><highlight class="stringliteral">&quot;Vector&quot;</highlight><highlight class="normal">,<sp/>size<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T)));</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="29" refid="classNeoN_1_1SerialExecutor_1ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2" kindref="member">SerialExecutor</ref>();</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classNeoN_1_1SerialExecutor_1a4e93a175bec9775aa0b585d07b9a42e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1a4e93a175bec9775aa0b585d07b9a42e1" kindref="member">SerialExecutor</ref>(std::unique_ptr&lt;AllocatorStrategy&gt;<sp/>strategy);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="classNeoN_1_1SerialExecutor_1abc0bcfedaaeac17db3a9bfce2d5ae062" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1abc0bcfedaaeac17db3a9bfce2d5ae062" kindref="member">~SerialExecutor</ref>();</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="36" refid="classNeoN_1_1SerialExecutor_1ac489cd8e771a6fa880dc476586a03139" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ac489cd8e771a6fa880dc476586a03139" kindref="member">realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>ptr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>newSize)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="36" refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">T</ref>*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">alloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">elements</ref>)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="37"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(Kokkos::kokkos_realloc&lt;exec&gt;(ptr,<sp/>newSize<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T)));</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="49" refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">)<sp/><ref refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" kindref="member">createKokkosView</ref>(ValueType*<sp/>ptr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::View&lt;ValueType*,<sp/>Kokkos::HostSpace,<sp/>Kokkos::MemoryUnmanaged&gt;(ptr,<sp/>size);</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight></codeline>
-<codeline lineno="54" refid="classNeoN_1_1SerialExecutor_1abf25ae5c3a9dd7d4488b4b027ac805d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1SerialExecutor_1abf25ae5c3a9dd7d4488b4b027ac805d8" kindref="member">alloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::kokkos_malloc&lt;exec&gt;(</highlight><highlight class="stringliteral">&quot;Vector&quot;</highlight><highlight class="normal">,<sp/>size);<sp/>}</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight></codeline>
-<codeline lineno="56" refid="classNeoN_1_1SerialExecutor_1a1b87e2e488d9a0ed7a8d70cf11ff0b87" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1SerialExecutor_1a1b87e2e488d9a0ed7a8d70cf11ff0b87" kindref="member">realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>ptr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>newSize)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="57"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::kokkos_realloc&lt;exec&gt;(ptr,<sp/>newSize);</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61" refid="classNeoN_1_1SerialExecutor_1a6de2b283aa4c6c325548a0654063d08e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1a6de2b283aa4c6c325548a0654063d08e" kindref="member">free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>ptr)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{<sp/>Kokkos::kokkos_free&lt;exec&gt;(ptr);<sp/>};</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63" refid="classNeoN_1_1SerialExecutor_1adc4d113ee22639ce051255008f20cb97" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1SerialExecutor_1adc4d113ee22639ce051255008f20cb97" kindref="member">name</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;SerialExecutor&quot;</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="65" refid="classNeoN_1_1SerialExecutor_1ae48dc86dfa9dea8457fe1d2a8b02e9ba" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/><ref refid="classNeoN_1_1SerialExecutor_1ae48dc86dfa9dea8457fe1d2a8b02e9ba" kindref="member">underlyingExec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/>{};<sp/>}</highlight></codeline>
-<codeline lineno="66"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!allocContext_)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>allocator<sp/>set&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allocContext_-&gt;alloc&lt;<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">T</ref>&gt;(<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">elements</ref>);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="46" refid="classNeoN_1_1SerialExecutor_1ab1dd19773b1a92c66f56aa45e5909291" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">T</ref>*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab1dd19773b1a92c66f56aa45e5909291" kindref="member">realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">elements</ref>)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="47"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!allocContext_)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>allocator<sp/>set&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allocContext_-&gt;realloc&lt;<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">T</ref>&gt;(<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>,<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">elements</ref>);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="classNeoN_1_1SerialExecutor_1a6de2b283aa4c6c325548a0654063d08e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1a6de2b283aa4c6c325548a0654063d08e" kindref="member">free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!allocContext_)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>allocator<sp/>set&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>allocContext_-&gt;free(<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="classNeoN_1_1SerialExecutor_1a539b9c5a363c51e8252347df76db7f11" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref><sp/><ref refid="classNeoN_1_1SerialExecutor_1a539b9c5a363c51e8252347df76db7f11" kindref="member">memorySpace</ref>()<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">const</ref><sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">noexcept</ref><sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d" kindref="member">MemorySpace::CPU</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="74" refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">)<sp/><ref refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" kindref="member">createKokkosView</ref>(ValueType*<sp/><ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kokkos::View&lt;ValueType*,<sp/>Kokkos::HostSpace,<sp/>Kokkos::MemoryUnmanaged&gt;(<ref refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kindref="member">ptr</ref>,<sp/>size);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="classNeoN_1_1SerialExecutor_1adc4d113ee22639ce051255008f20cb97" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1SerialExecutor_1adc4d113ee22639ce051255008f20cb97" kindref="member">name</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;SerialExecutor&quot;</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="classNeoN_1_1SerialExecutor_1ae48dc86dfa9dea8457fe1d2a8b02e9ba" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/><ref refid="classNeoN_1_1SerialExecutor_1ae48dc86dfa9dea8457fe1d2a8b02e9ba" kindref="member">underlyingExec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kindref="member">exec</ref><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/serialExecutor.hpp"/>
   </compounddef>
