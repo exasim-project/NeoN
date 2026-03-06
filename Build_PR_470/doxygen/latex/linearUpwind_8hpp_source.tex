@@ -1,0 +1,124 @@
+\doxysection{linear\+Upwind.\+hpp}
+\hypertarget{linearUpwind_8hpp_source}{}\label{linearUpwind_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp}}
+\mbox{\hyperlink{linearUpwind_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vectorTypeDefs_8hpp}{NeoN/core/vector/vectorTypeDefs.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{upwind_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gaussGreenGrad_8hpp}{NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensorVecField_8hpp}{NeoN/finiteVolume/cellCentred/fields/tensorVecField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometryScheme_8hpp}{NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00024}00024\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3de82c0a7a49f537666a1a557760216e}{00025}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3de82c0a7a49f537666a1a557760216e}{computeLinearUpwindInterpolation}}(}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ gradPhi,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\&\ faceCentres,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\&\ cellCentres,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00033}00033\ );}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00035}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac575539b0c895e2364568104ba505e42}{00035}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3de82c0a7a49f537666a1a557760216e}{computeLinearUpwindInterpolation}}(}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{TensorVecField}}\&\ gradU,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\&\ faceCentres,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\&\ cellCentres,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00043}00043\ );}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00045}00045\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind}{00046}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind}{LinearUpwind}}\ :}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}{SurfaceInterpolationFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<LinearUpwind<ValueType>>}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00048}00048\ \{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}{SurfaceInterpolationFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<LinearUpwind<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00053}00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a1af8f904c64197799ea78363f6399362}{00055}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a1af8f904c64197799ea78363f6399362}{LinearUpwind}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ [[maybe\_unused]]\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\ input)}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ :\ Base(exec,\ mesh),\ faceCentres\_(mesh.faceCentres()),\ cellCentres\_(mesh.cellCentres()),}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ gaussGreenGrad\_(exec,\ mesh),}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ geometryScheme\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{GeometryScheme}}::readOrCreate(mesh))\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_acb63829d085514f6d10b89eb8dc7e91c}{00060}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_acb63829d085514f6d10b89eb8dc7e91c}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}linearUpwind"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_ac4a34527fd2134dd23c78015c77d158f}{00062}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_ac4a34527fd2134dd23c78015c77d158f}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}linearUpwind\ interpolation"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a295a9e1a591f6244c440b33dd3358ff0}{00064}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a295a9e1a591f6244c440b33dd3358ff0}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a94e4fe16a26e1e209b3c6406fabd9ce5}{00066}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a94e4fe16a26e1e209b3c6406fabd9ce5}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00069}00069\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00070}00070\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}linearUpwind\ scheme\ requires\ a\ faceFlux"{}});}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00072}00072\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a7b529ec6ff1f1561afba9bec5ace4674}{00074}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a7b529ec6ff1f1561afba9bec5ace4674}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00078}00078\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_ab6036a456252c6e2d42c8a07d2d35ffa}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_ab6036a456252c6e2d42c8a07d2d35ffa}{weight}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}linearUpwind\ interpolation\ scheme\ requires\ a\ faceFlux"{}});}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00083}00083\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a9d4b4eea89ebf09f84578f63d540a7e4}{00085}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_a9d4b4eea89ebf09f84578f63d540a7e4}{weight}}(}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ weights}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00089}00089\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00090}00090\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a097f320c9bd5c29ce0f05c1de7ea047f}{computeUpwindInterpolationWeights}}(faceFlux,\ src,\ weights);}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00092}00092\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_af1cf12158379a3ed77d9307277b80eec}{00094}}\ \ \ \ \ std::unique\_ptr<SurfaceInterpolationFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_af1cf12158379a3ed77d9307277b80eec}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00095}00095\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<LinearUpwind>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00097}00097\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00099}00099\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00101}00101\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\ faceCentres\_;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00102}00102\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{vectorVector}}\ cellCentres\_;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00103}00103\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad}{GaussGreenGrad}}\ gaussGreenGrad\_;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00105}00105\ \};}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00107}00107\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00110}00110\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00111}00111\ \{}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00112}00112\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00113}00113\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ finiteVolume::cellCentred;}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00115}00115\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind}{fvcc::LinearUpwind<scalar>}};}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00116}00116\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind}{fvcc::LinearUpwind<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{linearUpwind_8hpp_source_l00118}00118\ \}}
+
+\end{DoxyCode}
