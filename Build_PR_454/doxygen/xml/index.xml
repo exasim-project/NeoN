@@ -1,5 +1,20 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="classNeoN_1_1AllocatorContext" kind="class"><name>NeoN::AllocatorContext</name>
+    <member refid="classNeoN_1_1AllocatorContext_1af5224a9bdc5ea94016a1f47530e1fcb3" kind="variable"><name>strategy</name></member>
+    <member refid="classNeoN_1_1AllocatorContext_1ade2fc5ee44d0e33a7098fe6390b8ffab" kind="function"><name>setStrategy</name></member>
+    <member refid="classNeoN_1_1AllocatorContext_1ab88bd12b088cc31e78684f5e9d03ce5a" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1AllocatorContext_1aba3cb41fadcfe95fb7b8fc45cc05681a" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1AllocatorContext_1ab112185aaae434981e609a47419921f6" kind="function"><name>free</name></member>
+  </compound>
+  <compound refid="classNeoN_1_1AllocatorStrategy" kind="class"><name>NeoN::AllocatorStrategy</name>
+    <member refid="classNeoN_1_1AllocatorStrategy_1a3905c8c5f49fca35e0dcce51ba78e634" kind="variable"><name>memSpace_</name></member>
+    <member refid="classNeoN_1_1AllocatorStrategy_1a352505b0c16b94ff5e70e6bae2c0d588" kind="function"><name>setMemSpace</name></member>
+    <member refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1AllocatorStrategy_1a7fd6091797b5f980d130c26dce8a7c3c" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1AllocatorStrategy_1ad5d883bae20050e38db1e462f1b64db2" kind="function"><name>~AllocatorStrategy</name></member>
+  </compound>
   <compound refid="classNeoN_1_1ArgList" kind="class"><name>NeoN::ArgList</name>
     <member refid="classNeoN_1_1ArgList_1a52295e5d9babe998dc855c211541fe4a" kind="function"><name>ArgList</name></member>
     <member refid="classNeoN_1_1ArgList_1a833dcab29ba41e79cabdf0932b8f27b1" kind="function"><name>checkRootCase</name></member>
@@ -267,14 +282,15 @@
   </compound>
   <compound refid="classNeoN_1_1CPUExecutor" kind="class"><name>NeoN::CPUExecutor</name>
     <member refid="classNeoN_1_1CPUExecutor_1ad27d6bca464690d7239bbac64c8eda85" kind="typedef"><name>exec</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1aa0cdaeb1286dda906888f62cc577260a" kind="variable"><name>allocContext_</name></member>
     <member refid="classNeoN_1_1CPUExecutor_1a6877549842d855dc98f628b93e98b7d1" kind="function"><name>CPUExecutor</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1a0d16ce1c1919e9beae4cc63960cb5518" kind="function"><name>CPUExecutor</name></member>
     <member refid="classNeoN_1_1CPUExecutor_1aa6533b93eed68e0d81d28c72755a0d69" kind="function"><name>~CPUExecutor</name></member>
-    <member refid="classNeoN_1_1CPUExecutor_1ad046e5b1e58b2160850fb579afddea5b" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1CPUExecutor_1aab79adc0091fd0aa245bb45971b0ee48" kind="function"><name>realloc</name></member>
-    <member refid="classNeoN_1_1CPUExecutor_1af9449358bae9318681beb6fb9ee91391" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1CPUExecutor_1afc4a24d464bf4d48f27d40a688d8411d" kind="function"><name>realloc</name></member>
-    <member refid="classNeoN_1_1CPUExecutor_1a5232ea309a5b0c1bc39b12fb1a791093" kind="function"><name>createKokkosView</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1a4081246491262b9adbe63d4b63c5e7ae" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1a0a184c08e94aabf6c32b435eeb71f08b" kind="function"><name>realloc</name></member>
     <member refid="classNeoN_1_1CPUExecutor_1af6160d830ceda8c68786c82637bcf131" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1adfabb48ec4fe6768ae952dfed3b8fc33" kind="function"><name>memorySpace</name></member>
+    <member refid="classNeoN_1_1CPUExecutor_1a5232ea309a5b0c1bc39b12fb1a791093" kind="function"><name>createKokkosView</name></member>
     <member refid="classNeoN_1_1CPUExecutor_1ad9d9cf933b83b89bbab498b34215442d" kind="function"><name>name</name></member>
     <member refid="classNeoN_1_1CPUExecutor_1a45988fe8dd99e92612b1c4c97dd2384b" kind="function"><name>underlyingExec</name></member>
   </compound>
@@ -666,14 +682,15 @@
   </compound>
   <compound refid="classNeoN_1_1GPUExecutor" kind="class"><name>NeoN::GPUExecutor</name>
     <member refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kind="typedef"><name>exec</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1a35737b19833f31a58bbd30f5cc14e2ea" kind="variable"><name>allocContext_</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1ac8465d7ed9023aea8a808383f38550a5" kind="function"><name>GPUExecutor</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1a2739e2f202924194528dda623c7f156c" kind="function"><name>GPUExecutor</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1adebe4dfbc231a708dbd66abea6e32abf" kind="function"><name>~GPUExecutor</name></member>
-    <member refid="classNeoN_1_1GPUExecutor_1a4e8b672e789aa3c8cae8d56ceefaf5ec" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1GPUExecutor_1ab4dddd8bac64877c63dbe21b84422b47" kind="function"><name>realloc</name></member>
-    <member refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" kind="function"><name>createKokkosView</name></member>
-    <member refid="classNeoN_1_1GPUExecutor_1a34d6f31697a447e425603b0dbfa66b88" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1GPUExecutor_1ad577307c108b1f5ce56cf613a6e7dcd4" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1a15c64b67cf4f8cfb215a8ffbdfa15baa" kind="function"><name>realloc</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1a96fc9e687c8ce3a43536cfeedd0feaec" kind="function"><name>memorySpace</name></member>
+    <member refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" kind="function"><name>createKokkosView</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" kind="function"><name>name</name></member>
     <member refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" kind="function"><name>underlyingExec</name></member>
   </compound>
@@ -701,6 +718,16 @@
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a3067c0516545619d0c7068bdd107da86" kind="function"><name>grad</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ab48a77d3ce3b1d49a299bded320bbbcc" kind="function"><name>grad</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a1c1cb19fc919dbc0429ee91cf8f492cf" kind="function"><name>clone</name></member>
+  </compound>
+  <compound refid="classKokkosAllocactor" kind="class"><name>KokkosAllocactor</name>
+  </compound>
+  <compound refid="classNeoN_1_1KokkosAllocator" kind="class"><name>NeoN::KokkosAllocator</name>
+    <member refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" kind="typedef"><name>GPUMemSpace</name></member>
+    <member refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" kind="typedef"><name>CPUMemSpace</name></member>
+    <member refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" kind="function"><name>~KokkosAllocator</name></member>
   </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator" kind="class"><name>NeoN::finiteVolume::cellCentred::LaplacianOperator</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator_1a959d8462a0417e925749e137269e42eb" kind="typedef"><name>VectorValueType</name></member>
@@ -977,14 +1004,15 @@
   </compound>
   <compound refid="classNeoN_1_1SerialExecutor" kind="class"><name>NeoN::SerialExecutor</name>
     <member refid="classNeoN_1_1SerialExecutor_1a618322de4c6d6abddd669e5eee72269f" kind="typedef"><name>exec</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1a77e23a0b01d350530276e8451f95d90a" kind="variable"><name>allocContext_</name></member>
     <member refid="classNeoN_1_1SerialExecutor_1ac6cc0b3c60b5eeb96bba3ff6ee2ea2a2" kind="function"><name>SerialExecutor</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1a4e93a175bec9775aa0b585d07b9a42e1" kind="function"><name>SerialExecutor</name></member>
     <member refid="classNeoN_1_1SerialExecutor_1abc0bcfedaaeac17db3a9bfce2d5ae062" kind="function"><name>~SerialExecutor</name></member>
-    <member refid="classNeoN_1_1SerialExecutor_1a9b5d9f6c6a4dfe9e4dbeca0e242a30d3" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1SerialExecutor_1ac489cd8e771a6fa880dc476586a03139" kind="function"><name>realloc</name></member>
-    <member refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" kind="function"><name>createKokkosView</name></member>
-    <member refid="classNeoN_1_1SerialExecutor_1abf25ae5c3a9dd7d4488b4b027ac805d8" kind="function"><name>alloc</name></member>
-    <member refid="classNeoN_1_1SerialExecutor_1a1b87e2e488d9a0ed7a8d70cf11ff0b87" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1ab84847cc5fa82cabb2c2a4fb104d278a" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1ab1dd19773b1a92c66f56aa45e5909291" kind="function"><name>realloc</name></member>
     <member refid="classNeoN_1_1SerialExecutor_1a6de2b283aa4c6c325548a0654063d08e" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1a539b9c5a363c51e8252347df76db7f11" kind="function"><name>memorySpace</name></member>
+    <member refid="classNeoN_1_1SerialExecutor_1aa80fc6ac2a2a9afe4e016a193f6491c4" kind="function"><name>createKokkosView</name></member>
     <member refid="classNeoN_1_1SerialExecutor_1adc4d113ee22639ce051255008f20cb97" kind="function"><name>name</name></member>
     <member refid="classNeoN_1_1SerialExecutor_1ae48dc86dfa9dea8457fe1d2a8b02e9ba" kind="function"><name>underlyingExec</name></member>
   </compound>
@@ -1022,7 +1050,7 @@
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm" kind="class"><name>NeoN::finiteVolume::cellCentred::SourceTerm</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1a3349d9909175bdb6026813d166562def" kind="typedef"><name>VectorValueType</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1a3348e7dc078d651c4245136c6243e898" kind="variable"><name>coefficients_</name></member>
-    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1aec6d944ccbfda211e2cbf002f08f814a" kind="function"><name>SourceTerm</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1a8a109c7dd0e87a3776058faeff486888" kind="function"><name>SourceTerm</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1ad71d1b4885f9e3600f61cab08513839b" kind="function"><name>~SourceTerm</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1a1462e189dc71f7242a55e0512563a2c9" kind="function"><name>explicitOperation</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm_1a27ea6d67a6d6e56f5e427227af7a4c44" kind="function"><name>implicitOperation</name></member>
@@ -1263,6 +1291,18 @@
     <member refid="classNeoN_1_1TokenList_1a69172da9b405bbb67b0bf6ca0f41cc75" kind="function"><name>operator[]</name></member>
     <member refid="classNeoN_1_1TokenList_1a425275584ae4a65106260e1f1d7057b1" kind="function"><name>tokens</name></member>
   </compound>
+  <compound refid="classNeoN_1_1UmpireAllocator" kind="class"><name>NeoN::UmpireAllocator</name>
+    <member refid="classNeoN_1_1UmpireAllocator_1a06db2d22c51dd1573d37eb44ea0285ba" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1UmpireAllocator_1aeb70f22157d079457e43419895e1a728" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1UmpireAllocator_1a6d23931dc799c3a05a272878101c3039" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1UmpireAllocator_1a091bb0b8aa44549078c53f853604bb39" kind="function"><name>~UmpireAllocator</name></member>
+  </compound>
+  <compound refid="classNeoN_1_1UmpirePoolAllocator" kind="class"><name>NeoN::UmpirePoolAllocator</name>
+    <member refid="classNeoN_1_1UmpirePoolAllocator_1abf8f730115fe03ebccc11fe32268f822" kind="function"><name>alloc</name></member>
+    <member refid="classNeoN_1_1UmpirePoolAllocator_1aa4b57ea2d673af3080020c1938194c5b" kind="function"><name>realloc</name></member>
+    <member refid="classNeoN_1_1UmpirePoolAllocator_1a9a2063c06aaeedf7a2f66f1d3d560e3c" kind="function"><name>free</name></member>
+    <member refid="classNeoN_1_1UmpirePoolAllocator_1a3cc68bdd08c69055c4604e606fa13783" kind="function"><name>~UmpirePoolAllocator</name></member>
+  </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected" kind="class"><name>NeoN::finiteVolume::cellCentred::Uncorrected</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_1a70c0982f3f390b514c3e64f7430917e1" kind="typedef"><name>Base</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_1a51a45b076b35acbedca4371bab5b8f66" kind="variable"><name>geometryScheme_</name></member>
@@ -1500,9 +1540,13 @@
   <compound refid="namespaceLaplacianOperatorFactory" kind="namespace"><name>LaplacianOperatorFactory</name>
   </compound>
   <compound refid="namespaceNeoN" kind="namespace"><name>NeoN</name>
+    <member refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kind="enum"><name>MemorySpace</name></member>
+    <member refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d" kind="enumvalue"><name>CPU</name></member>
+    <member refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32" kind="enumvalue"><name>GPU</name></member>
     <member refid="namespaceNeoN_1a957a55577aca9a487c3965676ad7dd12" kind="typedef"><name>DocumentValidator</name></member>
     <member refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kind="typedef"><name>Executor</name></member>
     <member refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kind="typedef"><name>Input</name></member>
+    <member refid="namespaceNeoN_1ad21f9c627e11e11f4e33dd1717971ce6" kind="typedef"><name>DefaultAllocator</name></member>
     <member refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kind="typedef"><name>label</name></member>
     <member refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kind="typedef"><name>localIdx</name></member>
     <member refid="namespaceNeoN_1a3d469b59cc4421a3428d23982c361682" kind="typedef"><name>globalIdx</name></member>
@@ -1531,6 +1575,9 @@
     <member refid="namespaceNeoN_1ae6c3ff7eb69df45b568b04b852294339" kind="function"><name>logOutRange</name></member>
     <member refid="namespaceNeoN_1a217f8ac0be9056e594e2eb1bfd7caae7" kind="function"><name>operator&lt;&lt;</name></member>
     <member refid="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" kind="function"><name>fence</name></member>
+    <member refid="namespaceNeoN_1a979e8785178e66d261937543c92278fb" kind="function"><name>createDefaultExecutor</name></member>
+    <member refid="namespaceNeoN_1a50baac41379fe63de57061ff0e371bc2" kind="function"><name>executorName</name></member>
+    <member refid="namespaceNeoN_1a0603524240432a339081d64d485ad587" kind="function"><name>memorySpace</name></member>
     <member refid="namespaceNeoN_1a37eb98c9ab0cc07fa01e5d1f4d271df4" kind="function"><name>getLogger</name></member>
     <member refid="namespaceNeoN_1a2e077c76f6a45a0a9a1556e8bad5bb54" kind="function"><name>setLogger</name></member>
     <member refid="namespaceNeoN_1ac649c09e3045b009af8c9a60459e823b" kind="function"><name>operator==</name></member>
@@ -1614,12 +1661,11 @@
   </compound>
   <compound refid="namespaceNeoN_1_1dsl_1_1exp" kind="namespace"><name>NeoN::dsl::exp</name>
     <member refid="namespaceNeoN_1_1dsl_1_1exp_1ae101ce9bcc7eae9e5f3acdf504196eed" kind="function"><name>ddt</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1exp_1a0e85cf6eef71a843487e860a1e6f3130" kind="function"><name>div</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1exp_1a1af72d0f302573a202dd802e69062214" kind="function"><name>source</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1exp_1aac9fb1c1dea9244963b5896902b20b47" kind="function"><name>div</name></member>
     <member refid="namespaceNeoN_1_1dsl_1_1exp_1ab0a56fc4db43ca8d92ea4e2f664f2d60" kind="function"><name>div</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1exp_1ae30d0bc47e8b49cc18735a53a2c10c65" kind="function"><name>laplacian</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1exp_1a3c7c086e17a807511740e0f7d04841c5" kind="function"><name>laplacian</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1exp_1a588497997ea8b11b35b19d6152026699" kind="function"><name>grad</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1exp_1af4f75aa67931b23e7662e6ff3af4b984" kind="function"><name>source</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1exp_1ab8f398b6d81a455317e0316820bbe2ca" kind="function"><name>laplacian</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1exp_1a6d2b8fb9b0cc13fd258e4343e58b058f" kind="function"><name>grad</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1dsl_1_1imp" kind="namespace"><name>NeoN::dsl::imp</name>
     <member refid="namespaceNeoN_1_1dsl_1_1imp_1a26b14c3e44a5169479f46673d14a09fb" kind="function"><name>ddt</name></member>
@@ -1790,6 +1836,12 @@
     <member refid="macros_8hpp_1abf8bf7e701b2199508316e38795f5b3b" kind="define"><name>NN_FOR_ALL_INTEGER_TYPES</name></member>
     <member refid="macros_8hpp_1ad7265fdbbd0832f95fb81378aae100a3" kind="define"><name>NN_FOR_ALL_SCALAR_TYPES</name></member>
     <member refid="macros_8hpp_1af2b6b4d2bf83137ac1574a81f1f05470" kind="define"><name>NN_FOR_ALL_VALUE_TYPES</name></member>
+  </compound>
+  <compound refid="allocator_8hpp" kind="file"><name>allocator.hpp</name>
+  </compound>
+  <compound refid="kokkos_8hpp" kind="file"><name>kokkos.hpp</name>
+  </compound>
+  <compound refid="umpire_8hpp" kind="file"><name>umpire.hpp</name>
   </compound>
   <compound refid="environment_8hpp" kind="file"><name>environment.hpp</name>
   </compound>
@@ -1995,6 +2047,8 @@
   <compound refid="dir_efd4dce27e522b2707a8deb5d6ec18e2" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation</name>
   </compound>
   <compound refid="dir_324b1cfb9264912ebf65ed308bc20817" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra</name>
+  </compound>
+  <compound refid="dir_1c66c972f27931216c158d9d7979d0af" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/core/memory</name>
   </compound>
   <compound refid="dir_39c5918644b009c43611850d8fc1e949" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/mesh</name>
   </compound>
