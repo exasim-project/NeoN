@@ -86,8 +86,8 @@ Functions</h2></td></tr>
 <tr class="memitem:ac9fe2d7185e9fe7c36c8ea5f91886286"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">deepCopyVisitor</a> (<a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> ssize, const ValueType *srcPtr, ValueType *dstPtr)</td></tr>
 <tr class="memdesc:ac9fe2d7185e9fe7c36c8ea5f91886286"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper function to simplify the common pattern of copying between and to executor.  <br /></td></tr>
 <tr class="separator:ac9fe2d7185e9fe7c36c8ea5f91886286"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0f7ee3320d8302617dc6bf5f86c779a" id="r_ad0f7ee3320d8302617dc6bf5f86c779a"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">typename</a> ValueType , <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">typename</a> <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">BinaryOp</a> &gt; </td></tr>
-<tr class="memitem:ad0f7ee3320d8302617dc6bf5f86c779a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1detail.html#ad0f7ee3320d8302617dc6bf5f86c779a">fieldBinaryOp</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;<a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">vect1</a>, <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">const</a> <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;<a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">vect2</a>, <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">BinaryOp</a> <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">op</a>)</td></tr>
+<tr class="memitem:ad0f7ee3320d8302617dc6bf5f86c779a" id="r_ad0f7ee3320d8302617dc6bf5f86c779a"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename BinaryOp &gt; </td></tr>
+<tr class="memitem:ad0f7ee3320d8302617dc6bf5f86c779a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1detail.html#ad0f7ee3320d8302617dc6bf5f86c779a">fieldBinaryOp</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;vect1, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;vect2, BinaryOp op)</td></tr>
 <tr class="separator:ad0f7ee3320d8302617dc6bf5f86c779a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -152,10 +152,10 @@ template&lt;typename ValueType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">typename</a> ValueType , <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">typename</a> <a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">BinaryOp</a> &gt; </div>
+template&lt;typename ValueType , typename BinaryOp &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">void</a> NeoN::detail::fieldBinaryOp </td>
+          <td class="memname">void NeoN::detail::fieldBinaryOp </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td>
           <td class="paramname"><em>vect1</em>, </td>
@@ -163,13 +163,13 @@ template&lt;<a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">const</a> <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>vect2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceNeoN_1_1detail.html#ac9fe2d7185e9fe7c36c8ea5f91886286">BinaryOp</a>&#160;</td>
+          <td class="paramtype">BinaryOp&#160;</td>
           <td class="paramname"><em>op</em>&#160;</td>
         </tr>
         <tr>
