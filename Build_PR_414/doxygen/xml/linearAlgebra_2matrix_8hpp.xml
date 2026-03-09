@@ -1,0 +1,784 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="linearAlgebra_2matrix_8hpp" kind="file" language="C++">
+    <compoundname>matrix.hpp</compoundname>
+    <includes refid="vector_8hpp" local="yes">NeoN/core/vector/vector.hpp</includes>
+    <includes refid="sparsityPattern_8hpp" local="yes">sparsityPattern.hpp</includes>
+    <includes refid="faceToMatrixAddress_8hpp" local="yes">faceToMatrixAddress.hpp</includes>
+    <includes local="no">type_traits</includes>
+    <includedby refid="linearSystem_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</includedby>
+    <includedby refid="utilities_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp</includedby>
+    <incdepgraph>
+      <node id="48">
+        <label>NeoN/core/array.hpp</label>
+        <link refid="array_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>NeoN/core/containerFreeFunctions.hpp</label>
+        <link refid="containerFreeFunctions_8hpp"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>NeoN/core/demangle.hpp</label>
+        <link refid="demangle_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>NeoN/core/dictionary.hpp</label>
+        <link refid="dictionary_8hpp"/>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>NeoN/core/executor/CPUExecutor.hpp</label>
+        <link refid="CPUExecutor_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>NeoN/core/executor/GPUExecutor.hpp</label>
+        <link refid="GPUExecutor_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>NeoN/core/executor/executor.hpp</label>
+        <link refid="executor_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>NeoN/core/executor/serialExecutor.hpp</label>
+        <link refid="serialExecutor_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
+      </node>
+      <node id="13">
+        <label>NeoN/core/logging.hpp</label>
+        <link refid="logging_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>NeoN/core/memory/kokkos.hpp</label>
+        <link refid="kokkos_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>NeoN/core/mpi/environment.hpp</label>
+        <link refid="environment_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>NeoN/core/parallelAlgorithms.hpp</label>
+        <link refid="parallelAlgorithms_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>NeoN/core/primitives/label.hpp</label>
+        <link refid="label_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>NeoN/core/primitives/scalar.hpp</label>
+        <link refid="scalar_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>NeoN/core/primitives/traits.hpp</label>
+        <link refid="traits_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>NeoN/core/primitives/vec3.hpp</label>
+        <link refid="vec3_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN/core/vector/vector.hpp</label>
+        <link refid="vector_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>NeoN/core/vector/vectorTypeDefs.hpp</label>
+        <link refid="vectorTypeDefs_8hpp"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>NeoN/core/view.hpp</label>
+        <link refid="view_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>faceToMatrixAddress.hpp</label>
+        <link refid="faceToMatrixAddress_8hpp"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp</label>
+        <link refid="linearAlgebra_2matrix_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>sparsityPattern.hpp</label>
+        <link refid="sparsityPattern_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>NeoN/mesh/unstructured/boundaryMesh.hpp</label>
+        <link refid="boundaryMesh_8hpp"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>NeoN/mesh/unstructured/unstructuredMesh.hpp</label>
+        <link refid="unstructuredMesh_8hpp"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="37">
+        <label>Kokkos_Sort.hpp</label>
+      </node>
+      <node id="40">
+        <label>any</label>
+      </node>
+      <node id="14">
+        <label>chrono</label>
+      </node>
+      <node id="41">
+        <label>cpptrace/cpptrace.hpp</label>
+      </node>
+      <node id="27">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdlib</label>
+      </node>
+      <node id="5">
+        <label>exception</label>
+      </node>
+      <node id="20">
+        <label>fmt/chrono.h</label>
+      </node>
+      <node id="19">
+        <label>fmt/core.h</label>
+      </node>
+      <node id="6">
+        <label>iostream</label>
+      </node>
+      <node id="31">
+        <label>limits</label>
+      </node>
+      <node id="16">
+        <label>memory</label>
+      </node>
+      <node id="15">
+        <label>source_location</label>
+      </node>
+      <node id="32">
+        <label>span</label>
+      </node>
+      <node id="8">
+        <label>sstream</label>
+      </node>
+      <node id="7">
+        <label>string</label>
+      </node>
+      <node id="17">
+        <label>string_view</label>
+      </node>
+      <node id="50">
+        <label>tuple</label>
+      </node>
+      <node id="33">
+        <label>type_traits</label>
+      </node>
+      <node id="39">
+        <label>unordered_map</label>
+      </node>
+      <node id="11">
+        <label>variant</label>
+      </node>
+      <node id="34">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="9">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddt.hpp</label>
+        <link refid="ddt_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</label>
+        <link refid="explicit_8hpp"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp</label>
+        <link refid="expression_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/implicit.hpp</label>
+        <link refid="implicit_8hpp"/>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp</label>
+        <link refid="dsl_2solver_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/spatialOperator.hpp</label>
+        <link refid="spatialOperator_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/temporalOperator.hpp</label>
+        <link refid="temporalOperator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp</label>
+        <link refid="ddtOperator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
+        <link refid="divOperator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp</label>
+        <link refid="gaussGreenDiv_8hpp"/>
+      </node>
+      <node id="15">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
+        <link refid="gaussGreenGrad_8hpp"/>
+      </node>
+      <node id="19">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
+        <link refid="gaussGreenLaplacian_8hpp"/>
+      </node>
+      <node id="14">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</label>
+        <link refid="gradOperator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</label>
+        <link refid="laplacianOperator_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp</label>
+        <link refid="sourceTerm_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
+        <link refid="diagonalSolver_8hpp"/>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
+        <link refid="linearSystem_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp</label>
+        <link refid="linearAlgebra_2matrix_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
+        <link refid="linearAlgebra_2solver_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/utilities.hpp</label>
+        <link refid="utilities_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</label>
+        <link refid="backwardEuler_8hpp"/>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/forwardEuler.hpp</label>
+        <link refid="forwardEuler_8hpp"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/timeIntegration.hpp</label>
+        <link refid="timeIntegration_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structNeoN_1_1la_1_1MatrixView" prot="public">NeoN::la::MatrixView</innerclass>
+    <innerclass refid="classNeoN_1_1la_1_1Matrix" prot="public">NeoN::la::Matrix</innerclass>
+    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1la">NeoN::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vector_8hpp" kindref="compound">NeoN/core/vector/vector.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="sparsityPattern_8hpp" kindref="compound">sparsityPattern.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="faceToMatrixAddress_8hpp" kindref="compound">faceToMatrixAddress.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1la" kindref="compound">NeoN::la</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SparsityViewType&gt;</highlight></codeline>
+<codeline lineno="24" refid="structNeoN_1_1la_1_1MatrixView" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="32" refid="structNeoN_1_1la_1_1MatrixView_1a5d598fc43270d8609efcdde2019ef0cb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a5d598fc43270d8609efcdde2019ef0cb" kindref="member">MatrixView</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;ValueType&gt;</ref><sp/>valueView,<sp/>SparsityViewType<sp/>sparsityView)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" kindref="member">values</ref>(valueView),<sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" kindref="member">sparsity</ref>(sparsityView)<sp/>{};</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structNeoN_1_1la_1_1MatrixView_1a69c25474692c27f30ccef2b89c6cbbbb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a69c25474692c27f30ccef2b89c6cbbbb" kindref="member">~MatrixView</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>KOKKOS_INLINE_FUNCTION</highlight></codeline>
+<codeline lineno="47" refid="structNeoN_1_1la_1_1MatrixView_1a3420061108084be413f6292d6d06d3ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType&amp;<sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a3420061108084be413f6292d6d06d3ec" kindref="member">entry</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>j)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="48"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" kindref="member">values</ref>[<ref refid="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" kindref="member">sparsity</ref>.entry(i,<sp/>j)];</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>KOKKOS_INLINE_FUNCTION</highlight></codeline>
+<codeline lineno="58" refid="structNeoN_1_1la_1_1MatrixView_1a53263a5d50c2ecb832f9fe3b9cb871dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType&amp;<sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a53263a5d50c2ecb832f9fe3b9cb871dc" kindref="member">entry</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>offset)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" kindref="member">values</ref>[offset];<sp/>}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;ValueType&gt;</ref><sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1a233fe4d9be8c549e05266e85b836a2cc" kindref="member">values</ref>;<sp/></highlight></codeline>
+<codeline lineno="61" refid="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>SparsityViewType<sp/><ref refid="structNeoN_1_1la_1_1MatrixView_1ab2d07a7f12d5a63c838b283c6a6d28ac" kindref="member">sparsity</ref>;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SparsityType&gt;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validate()</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(values_.exec()<sp/>==<sp/>sparsityPattern_-&gt;exec(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(values_.size()<sp/>==<sp/>sparsityPattern_-&gt;nnz(),<sp/></highlight><highlight class="stringliteral">&quot;Matrix<sp/>values<sp/>and<sp/>columns<sp/>mismatch&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="classNeoN_1_1la_1_1Matrix_1a85f735a8ddc6e334cccc9be1ec3c89cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1Matrix_1a85f735a8ddc6e334cccc9be1ec3c89cc" kindref="member">MatrixValueType</ref><sp/>=<sp/>ValueType;</highlight></codeline>
+<codeline lineno="83" refid="classNeoN_1_1la_1_1Matrix_1a1778d29413da0fbf49daf2180cf1d00a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1Matrix_1a1778d29413da0fbf49daf2180cf1d00a" kindref="member">MatrixSparsityType</ref><sp/>=<sp/>SparsityType;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="classNeoN_1_1la_1_1Matrix_1a2bc8736322461c215924812c3898c7b7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a2bc8736322461c215924812c3898c7b7" kindref="member">Matrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" kindref="member">values</ref>,<sp/>std::shared_ptr&lt;const<sp/>SparsityType&gt;<sp/>sp)</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>values_(<ref refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" kindref="member">values</ref>),<sp/>sparsityPattern_(sp)</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>validate();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="classNeoN_1_1la_1_1Matrix_1a6ce894a7c613cda26530d32e21efa258" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a6ce894a7c613cda26530d32e21efa258" kindref="member">Matrix</ref>(</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" kindref="member">values</ref>,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename SparsityType::SparsityIndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a9f561ca1424d60166d1d18ae2de82d33" kindref="member">colIdxs</ref>,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename SparsityType::SparsityIndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1aad3e71667165ee26a36e15ca10452d01" kindref="member">rowOffs</ref></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>values_(<ref refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" kindref="member">values</ref>),</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sparsityPattern_(std::make_shared&lt;const<sp/>SparsityType&gt;(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classNeoN_1_1la_1_1Matrix_1a9f561ca1424d60166d1d18ae2de82d33" kindref="member">colIdxs</ref>),<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classNeoN_1_1la_1_1Matrix_1aad3e71667165ee26a36e15ca10452d01" kindref="member">rowOffs</ref>)))</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>validate();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="classNeoN_1_1la_1_1Matrix_1a54e552b0b808521b4907e50174e3aab6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a54e552b0b808521b4907e50174e3aab6" kindref="member">~Matrix</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classNeoN_1_1la_1_1Matrix_1a070e3b82b0c319996b56d1ba0b757e43" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a070e3b82b0c319996b56d1ba0b757e43" kindref="member">exec</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>values_.exec();<sp/>}</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="classNeoN_1_1la_1_1Matrix_1aa6b62b79fd2c6a479dda0ac760310f7b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1aa6b62b79fd2c6a479dda0ac760310f7b" kindref="member">nRows</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_-&gt;rows();<sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classNeoN_1_1la_1_1Matrix_1ad91c261fdf934dcc0a825be29a2a93d5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1ad91c261fdf934dcc0a825be29a2a93d5" kindref="member">nNonZeros</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_-&gt;nnz();<sp/>}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140" refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1ae9621d6afc68055d5304e72067efba8f" kindref="member">values</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>values_;<sp/>}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="classNeoN_1_1la_1_1Matrix_1a9f561ca1424d60166d1d18ae2de82d33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename SparsityType::SparsityIndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a9f561ca1424d60166d1d18ae2de82d33" kindref="member">colIdxs</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="147"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_-&gt;colIdxs();</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155" refid="classNeoN_1_1la_1_1Matrix_1aad3e71667165ee26a36e15ca10452d01" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename SparsityType::SparsityIndexType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1aad3e71667165ee26a36e15ca10452d01" kindref="member">rowOffs</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="156"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_-&gt;rowOffs();</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164" refid="classNeoN_1_1la_1_1Matrix_1a5e80b4b7cde554a0e49f87b55af97f3d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a5e80b4b7cde554a0e49f87b55af97f3d" kindref="member">values</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>values_;<sp/>}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171" refid="classNeoN_1_1la_1_1Matrix_1a6c195a09e01f0b2754a2941a905cd84e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix&lt;ValueType, SparsityType&gt;</ref><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a6c195a09e01f0b2754a2941a905cd84e" kindref="member">copyToExecutor</ref>(<ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>dstExec)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="172"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(dstExec<sp/>==<sp/>values_.exec())</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values_.copyToExecutor(dstExec),</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;const<sp/>SparsityType&gt;(this-&gt;sparsityPattern_-&gt;copyToExecutor(dstExec))</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187" refid="classNeoN_1_1la_1_1Matrix_1a9dbae3c31e3d1756ebffd1eaa97a931f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/>std::shared_ptr&lt;const<sp/>SparsityType&gt;<sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a9dbae3c31e3d1756ebffd1eaa97a931f" kindref="member">sparsity</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sparsityPattern_;<sp/>}</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193" refid="classNeoN_1_1la_1_1Matrix_1a3580677b1794e4234bc6c3378e5e45f6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix&lt;ValueType, SparsityType&gt;</ref><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a3580677b1794e4234bc6c3378e5e45f6" kindref="member">copyToHost</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="194"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1ad9c816576ba1911f624c4ab48de9a12e" kindref="member">copyToExecutor</ref>(<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref>());</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView&lt;ValueType, SparsityView&lt;typename SparsityType::SparsityIndexType&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="203" refid="classNeoN_1_1la_1_1Matrix_1a2ced40729980078af9501e6966af84b2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a2ced40729980078af9501e6966af84b2" kindref="member">view</ref>()</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView&lt;ValueType, SparsityView&lt;typename SparsityType::SparsityIndexType&gt;</ref>&gt;(</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values_.view(),<sp/>sparsityPattern_-&gt;view()</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView</ref>&lt;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ValueType,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView&lt;typename SparsityType::SparsityIndexType&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="217" refid="classNeoN_1_1la_1_1Matrix_1a44ab0960ec86b40af8657d04f9b70380" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1a44ab0960ec86b40af8657d04f9b70380" kindref="member">view</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="218"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView&lt;const ValueType, SparsityView&lt;typename SparsityType::SparsityIndexType&gt;</ref>&gt;(</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const ValueType&gt;</ref>(values_.view()),<sp/>sparsityPattern_-&gt;view()</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227" refid="classNeoN_1_1la_1_1Matrix_1aa073f110610769ba4f9263fa38c2f747" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/><ref refid="classNeoN_1_1la_1_1Matrix_1aa073f110610769ba4f9263fa38c2f747" kindref="member">diag</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>values_;<sp/></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>SparsityType&gt;<sp/>sparsityPattern_;</highlight></codeline>
+<codeline lineno="235"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
+<codeline lineno="239" refid="namespaceNeoN_1_1la_1ac6606b36cee6114533e0f5577be2be5b" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix</ref><sp/>=<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix&lt;ValueType, la::SparsityPattern&lt;IndexType&gt;</ref>&gt;;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
+<codeline lineno="245"><highlight class="normal">[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a544897145e4a54a5386ba7ecd24304e4" kindref="member">upper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;ValueType, IndexType&gt;</ref>&amp;);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal">[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref></highlight></codeline>
+<codeline lineno="253" refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;);</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255" refid="namespaceNeoN_1_1la_1adb9cd225a8925a20dc28f935ce424d96" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>mtx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>a,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>out</highlight></codeline>
+<codeline lineno="257"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal">[[nodiscard]]<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref></highlight></codeline>
+<codeline lineno="264" refid="namespaceNeoN_1_1la_1aff7498eb1e453e6ecb371c5c9a2c0264" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;localIdx&gt;</ref>&amp;<sp/>mi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;);</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266" refid="namespaceNeoN_1_1la_1a33308f3eac7d3dfc36a4f60ffe6dd8ae" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kindref="member">scaledInverseDiag</ref>(</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;localIdx&gt;</ref>&amp;<sp/>mi,</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>out</highlight></codeline>
+<codeline lineno="271"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>given<sp/>Matrix&lt;Vec3&gt;<sp/>this<sp/>function<sp/>returns<sp/>a<sp/>component<sp/>Matrix&lt;scalar&gt;*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="274"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>I&gt;</highlight></codeline>
+<codeline lineno="275" refid="namespaceNeoN_1_1la_1a52a50e55f8c3581196746319dd5275f6" refkind="member"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a52a50e55f8c3581196746319dd5275f6" kindref="member">getComponent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>in)</highlight></codeline>
+<codeline lineno="276"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>sparsity<sp/>=<sp/>in.sparsity();</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;scalar, localIdx&gt;</ref>(getComponent&lt;I&gt;(in.<ref refid="classNeoN_1_1la_1_1CSRMatrix_1a85db9eda92d62581a034a716afd6bd78" kindref="member">values</ref>()),<sp/>sparsity);</highlight></codeline>
+<codeline lineno="279"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="285" refid="namespaceNeoN_1_1la_1a81ea5bf6450cb2402acf9f981d5583ab" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a81ea5bf6450cb2402acf9f981d5583ab" kindref="member">negLUx</ref>(</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>rAU,</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>vol,</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>out</highlight></codeline>
+<codeline lineno="292"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298" refid="namespaceNeoN_1_1la_1a6369807c83d198788433759422ed1fd4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1la_1a6369807c83d198788433759422ed1fd4" kindref="member">scaledInvDiagNegLUx</ref>(</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">CSRMatrix&lt;Vec3, localIdx&gt;</ref>&amp;<sp/>mtx,</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>vol,</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;scalar&gt;</ref>&amp;<sp/>rAU,</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>out</highlight></codeline>
+<codeline lineno="305"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp"/>
+  </compounddef>
+</doxygen>

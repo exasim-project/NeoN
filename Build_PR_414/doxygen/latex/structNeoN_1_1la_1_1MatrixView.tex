@@ -1,0 +1,174 @@
+\doxysection{NeoN\+::la\+::Matrix\+View\texorpdfstring{$<$}{<} Value\+Type, Sparsity\+View\+Type \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structNeoN_1_1la_1_1MatrixView}{}\label{structNeoN_1_1la_1_1MatrixView}\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+
+
+A view struct to allow easy read/write on all executors.  
+
+
+
+
+{\ttfamily \#include $<$matrix.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_a5d598fc43270d8609efcdde2019ef0cb}{Matrix\+View}} (const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ value\+View, Sparsity\+View\+Type sparsity\+View)
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_a69c25474692c27f30ccef2b89c6cbbbb}{\texorpdfstring{$\sim$}{\string~}\+Matrix\+View}} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_a3420061108084be413f6292d6d06d3ec}{entry}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} j) const
+\begin{DoxyCompactList}\small\item\em Retrieve a reference to the matrix element at position (i,j). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_a53263a5d50c2ecb832f9fe3b9cb871dc}{entry}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} offset) const
+\begin{DoxyCompactList}\small\item\em Direct access to a value given the offset. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_a233fe4d9be8c549e05266e85b836a2cc}{values}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1View}{View} to the values of the CSR matrix. \end{DoxyCompactList}\item 
+Sparsity\+View\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView_ab2d07a7f12d5a63c838b283c6a6d28ac}{sparsity}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Sparsity\+View\+Type$>$\newline
+struct Neo\+N\+::la\+::\+Matrix\+View$<$ Value\+Type, Sparsity\+View\+Type $>$}
+A view struct to allow easy read/write on all executors. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The value type of the non-\/zero entries. \\
+\hline
+{\em Index\+Type} & The index type of the rows and columns.\\
+\hline
+{\em Index\+Type} & The index type of the rows and columns. \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000001}{Todo}}]ideally this should be immutable \end{DoxyRefDesc}
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_a5d598fc43270d8609efcdde2019ef0cb}\label{structNeoN_1_1la_1_1MatrixView_a5d598fc43270d8609efcdde2019ef0cb} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!MatrixView@{MatrixView}}
+\index{MatrixView@{MatrixView}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{MatrixView()}{MatrixView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::\+Matrix\+View (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$}]{value\+View,  }\item[{Sparsity\+View\+Type}]{sparsity\+View }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for \doxylink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value\+View} & \doxylink{classNeoN_1_1View}{View} of the non-\/zero values of the matrix. \\
+\hline
+{\em col\+Idxs\+View} & \doxylink{classNeoN_1_1View}{View} of the column indices for each non-\/zero value. \\
+\hline
+{\em row\+Offs\+View} & \doxylink{classNeoN_1_1View}{View} of the starting index in values/col\+Idxs for each row. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_a69c25474692c27f30ccef2b89c6cbbbb}\label{structNeoN_1_1la_1_1MatrixView_a69c25474692c27f30ccef2b89c6cbbbb} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!````~MatrixView@{\texorpdfstring{$\sim$}{\string~}MatrixView}}
+\index{````~MatrixView@{\texorpdfstring{$\sim$}{\string~}MatrixView}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}MatrixView()}{\string~MatrixView()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default destructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_a3420061108084be413f6292d6d06d3ec}\label{structNeoN_1_1la_1_1MatrixView_a3420061108084be413f6292d6d06d3ec} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!entry@{entry}}
+\index{entry@{entry}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{entry()}{entry()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::entry (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieve a reference to the matrix element at position (i,j). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The row index. \\
+\hline
+{\em j} & The column index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the matrix element if it exists. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_a53263a5d50c2ecb832f9fe3b9cb871dc}\label{structNeoN_1_1la_1_1MatrixView_a53263a5d50c2ecb832f9fe3b9cb871dc} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!entry@{entry}}
+\index{entry@{entry}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{entry()}{entry()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::entry (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{offset }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Direct access to a value given the offset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offset} & The offset, from 0, to the value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the matrix element if it exists. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_ab2d07a7f12d5a63c838b283c6a6d28ac}\label{structNeoN_1_1la_1_1MatrixView_ab2d07a7f12d5a63c838b283c6a6d28ac} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!sparsity@{sparsity}}
+\index{sparsity@{sparsity}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{sparsity}{sparsity}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+Sparsity\+View\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::sparsity}
+
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1MatrixView_a233fe4d9be8c549e05266e85b836a2cc}\label{structNeoN_1_1la_1_1MatrixView_a233fe4d9be8c549e05266e85b836a2cc} 
+\index{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}!values@{values}}
+\index{values@{values}!NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$@{NeoN::la::MatrixView$<$ ValueType, SparsityViewType $>$}}
+\doxysubsubsection{\texorpdfstring{values}{values}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+View\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$Value\+Type$>$ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View}}$<$ Value\+Type, Sparsity\+View\+Type $>$\+::values}
+
+
+
+\doxylink{classNeoN_1_1View}{View} to the values of the CSR matrix. 
+
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{linearAlgebra_2matrix_8hpp_source}{matrix.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{linearAlgebra_2matrix_8hpp}{matrix.\+hpp}}\end{DoxyCompactItemize}

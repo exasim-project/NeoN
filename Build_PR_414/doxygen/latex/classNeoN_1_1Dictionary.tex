@@ -38,6 +38,8 @@ const std\+::any \& \mbox{\hyperlink{classNeoN_1_1Dictionary_a631c9845b73b125312
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given key, casting it to the specified type. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\const T \& \mbox{\hyperlink{classNeoN_1_1Dictionary_a4142e336767babaaeae5ac77fab12251}{get}} (const std\+::string \&key) const
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given key, casting it to the specified type. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\const T \mbox{\hyperlink{classNeoN_1_1Dictionary_a3b3158fb302bbc2480ce5b730d477ea0}{get}} (const std\+::string \&key, T default\+Value) const
+\begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given key, casting it to the specified type. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\bool \mbox{\hyperlink{classNeoN_1_1Dictionary_a696e04f0272041b1089ec496c37c8561}{is\+Type}} (const std\+::string \&key) const
 \begin{DoxyCompactList}\small\item\em Checks if the value associated with the given key is of given Type T. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classNeoN_1_1Dictionary_a1e8515d173c62dfdcecd17139b723325}{is\+Dict}} (const std\+::string \&key) const
@@ -61,7 +63,7 @@ A class representing a dictionary that stores key-\/value pairs.
 
 The \doxylink{classNeoN_1_1Dictionary}{Dictionary} class provides a way to store and retrieve values using string. It supports inserting key-\/value pairs, accessing values using the subscript operator, and retrieving values of specific types using the {\ttfamily get} function. It also supports storing sub-\/dictionaries, which can be accessed using the {\ttfamily sub\+Dict} function. The values are stored using {\ttfamily std\+::any}, which allows storing values of any type. 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 
 
@@ -120,12 +122,12 @@ A bool indicating if the dictionary is empty
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00181}{181}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00203}{203}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_a2d6fe1f82f4da120f3cd76261873baed}\label{classNeoN_1_1Dictionary_a2d6fe1f82f4da120f3cd76261873baed} 
 \index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
 \index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
-\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 T \& Neo\+N\+::\+Dictionary\+::get (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
@@ -148,12 +150,12 @@ A reference to the value associated with the key, casted to type T.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00091}{91}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_a4142e336767babaaeae5ac77fab12251}\label{classNeoN_1_1Dictionary_a4142e336767babaaeae5ac77fab12251} 
 \index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
 \index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
-\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 const T \& Neo\+N\+::\+Dictionary\+::get (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
@@ -176,7 +178,35 @@ A const reference to the value associated with the key, casted to type T.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00113}{113}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dictionary_a3b3158fb302bbc2480ce5b730d477ea0}\label{classNeoN_1_1Dictionary_a3b3158fb302bbc2480ce5b730d477ea0} 
+\index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
+\index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+const T Neo\+N\+::\+Dictionary\+::get (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key,  }\item[{T}]{default\+Value }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves the value associated with the given key, casting it to the specified type. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type to cast the value to. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to retrieve the value for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A const reference to the value associated with the key, casted to type T. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00139}{139}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_aeebf89cb5b38007e4747945fcc7e6cca}\label{classNeoN_1_1Dictionary_aeebf89cb5b38007e4747945fcc7e6cca} 
 \index{NeoN::Dictionary@{NeoN::Dictionary}!getMap@{getMap}}
@@ -260,7 +290,7 @@ True if the value is a dictionary, false otherwise.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00154}{154}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_ab7a9dfa55b6449147a8115f107771e88}\label{classNeoN_1_1Dictionary_ab7a9dfa55b6449147a8115f107771e88} 
 \index{NeoN::Dictionary@{NeoN::Dictionary}!keys@{keys}}

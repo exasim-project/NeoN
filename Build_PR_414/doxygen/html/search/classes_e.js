@@ -1,6 +1,30 @@
 var searchData=
 [
-  ['uncorrected_0',['Uncorrected',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['unstructuredmesh_1',['UnstructuredMesh',['../classNeoN_1_1UnstructuredMesh.html',1,'NeoN']]],
-  ['upwind_2',['Upwind',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['segmentedvector_0',['SegmentedVector',['../classNeoN_1_1SegmentedVector.html',1,'NeoN']]],
+  ['segmentedvectorview_1',['SegmentedVectorView',['../classNeoN_1_1SegmentedVectorView.html',1,'NeoN']]],
+  ['serialexecutor_2',['SerialExecutor',['../classNeoN_1_1SerialExecutor.html',1,'NeoN']]],
+  ['solver_3',['Solver',['../classNeoN_1_1la_1_1Solver.html',1,'NeoN::la']]],
+  ['solverfactory_4',['SolverFactory',['../classNeoN_1_1la_1_1SolverFactory.html',1,'NeoN::la']]],
+  ['solverstats_5',['SolverStats',['../structNeoN_1_1la_1_1SolverStats.html',1,'NeoN::la']]],
+  ['solverstatsentry_6',['SolverStatsEntry',['../structNeoN_1_1la_1_1SolverStatsEntry.html',1,'NeoN::la']]],
+  ['sourceterm_7',['SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['sparsitypattern_8',['SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html',1,'NeoN::la']]],
+  ['sparsityview_9',['SparsityView',['../structNeoN_1_1la_1_1SparsityView.html',1,'NeoN::la']]],
+  ['spatialoperator_10',['SpatialOperator',['../classNeoN_1_1dsl_1_1SpatialOperator.html',1,'NeoN::dsl']]],
+  ['supportscopyto_11',['SupportsCopyTo',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
+  ['supportscopyto_3c_20csrmatrix_3c_20valuetype_2c_20indextype_20_3e_20_3e_12',['SupportsCopyTo&lt; CSRMatrix&lt; ValueType, IndexType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
+  ['supportscopyto_3c_20csrmatrix_3c_20valuetype_2c_20localidx_20_3e_20_3e_13',['SupportsCopyTo&lt; CSRMatrix&lt; ValueType, localIdx &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
+  ['supportscopyto_3c_20matrix_3c_20valuetype_2c_20indextype_20_3e_20_3e_14',['SupportsCopyTo&lt; Matrix&lt; ValueType, IndexType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
+  ['supportsloggingmixin_15',['SupportsLoggingMixin',['../classNeoN_1_1Logging_1_1SupportsLoggingMixin.html',1,'NeoN::Logging']]],
+  ['surfaceboundary_16',['SurfaceBoundary',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceboundaryfactory_17',['SurfaceBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfacefield_18',['SurfaceField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfacefield_3c_20neon_3a_3ascalar_20_3e_19',['SurfaceField&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfacefield_3c_20neon_3a_3avec3_20_3e_20',['SurfaceField&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfacefield_3c_20scalar_20_3e_21',['SurfaceField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceintegrate_22',['SurfaceIntegrate',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolation_23',['SurfaceInterpolation',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolation_3c_20scalar_20_3e_24',['SurfaceInterpolation&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolationfactory_25',['SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['symmetry_26',['symmetry',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::Symmetry&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::Symmetry&lt; ValueType &gt;']]]
 ];

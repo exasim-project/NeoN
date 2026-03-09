@@ -7,11 +7,14 @@
       <param>
         <type>typename VectorType</type>
       </param>
+      <param>
+        <type>typename IndexType</type>
+      </param>
     </templateparamlist>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1a0775654af984618f01d144f2effb6e19" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6ee1fd861a37f190bf64b4525f1ffbaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
-        <definition>virtual NeoN::dsl::PostAssemblyBase&lt; VectorType &gt;::~PostAssemblyBase</definition>
+        <definition>virtual NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;::~PostAssemblyBase</definition>
         <argsstring>()=default</argsstring>
         <name>~PostAssemblyBase</name>
         <qualifiedname>NeoN::dsl::PostAssemblyBase::~PostAssemblyBase</qualifiedname>
@@ -21,19 +24,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="25" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="27" column="13"/>
       </memberdef>
-      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6467262783230c5fdfbd9f7ae54608a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1aa86a5b3dd193da68fd6a6e8e80dc581b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void NeoN::dsl::PostAssemblyBase&lt; VectorType &gt;::operator()</definition>
-        <argsstring>(const la::SparsityPattern &amp;, la::LinearSystem&lt; VectorType, localIdx &gt; &amp;)</argsstring>
+        <definition>virtual void NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;::operator()</definition>
+        <argsstring>(la::LinearSystem&lt; VectorType, la::CSRMatrix&lt; VectorType, IndexType &gt; &gt; &amp;)</argsstring>
         <name>operator()</name>
         <qualifiedname>NeoN::dsl::PostAssemblyBase::operator()</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">la::SparsityPattern</ref> &amp;</type>
-        </param>
-        <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; VectorType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; VectorType, <ref refid="classNeoN_1_1la_1_1CSRMatrix" kindref="compound">la::CSRMatrix</ref>&lt; VectorType, IndexType &gt; &gt; &amp;</type>
         </param>
         <briefdescription>
         </briefdescription>
@@ -41,17 +41,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="26" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="26" bodyend="26"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="28" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="28" bodyend="28"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="24" bodyend="27"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="25" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="26" bodyend="29"/>
     <listofallmembers>
-      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6467262783230c5fdfbd9f7ae54608a0" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>operator()</name></member>
-      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a0775654af984618f01d144f2effb6e19" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>~PostAssemblyBase</name></member>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1aa86a5b3dd193da68fd6a6e8e80dc581b" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>operator()</name></member>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6ee1fd861a37f190bf64b4525f1ffbaa" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>~PostAssemblyBase</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
