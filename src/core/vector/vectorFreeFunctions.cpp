@@ -12,6 +12,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/error.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
@@ -84,6 +85,23 @@ void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 {
     detail::fieldBinaryOp(
         vect1, vect2, NEON_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
+    );
+}
+
+template<typename ValueType>
+void add(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
+{
+    // NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
+    // NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
+    // NF_ASSERT(idx.size() == out.size(), "Size mismatch");
+
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    const auto idxV = idx.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[i]; }, "copyMap"
     );
 }
 
@@ -165,10 +183,13 @@ Vector<ValueType> take(const Vector<ValueType>& in, std::pair<localIdx, localIdx
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
+    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
+    template void set<Type>(Type, const Vector<localIdx>&, Vector<Type>&);                         \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template Vector<Type> take<Type>(const Vector<Type>&, std::pair<localIdx, localIdx>);          \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void add(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);                \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
