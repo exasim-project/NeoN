@@ -1,21 +1,21 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
 #include "NeoN/core/copyTo.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
 
 namespace NeoN::la
 {
 
 /**
- * @class Matrix
+ * @class DistributedMatrix
  * @brief Distributed matrix class
  */
 template<typename ValueType, typename IndexType>
-class Matrix : public SupportsCopyTo<Matrix<ValueType, IndexType>>
+class DistributedMatrix : public SupportsCopyTo<DistributedMatrix<ValueType, IndexType>>
 {
     using innerMtxType = CSRMatrix<ValueType, IndexType>;
 
@@ -35,7 +35,7 @@ public:
      * @param nonLocColIdxs The column indices for each non-zero value.
      * @param nonLocRowOffs The starting index in values/colIdxs for each row.
      */
-    Matrix(
+    DistributedMatrix(
         const Vector<ValueType>&& locValues,
         const Vector<IndexType>&& locColIdxs,
         const Vector<IndexType>&& locRowOffs,
@@ -61,7 +61,7 @@ public:
      * @param localMatrix
      * @param nonLocalMatrix
      */
-    Matrix(
+    DistributedMatrix(
         std::shared_ptr<innerMtxType> localMatrix,
         std::shared_ptr<innerMtxType> nonLocalMatrix,
         const mpi::Environment env
@@ -73,6 +73,8 @@ public:
 
     // getter
 
+    [[nodiscard]] const Executor& exec() { return local_->exec(); }
+
     std::shared_ptr<innerMtxType> local() { return local_; }
 
     std::shared_ptr<const innerMtxType> local() const { return local_; }
@@ -83,10 +85,10 @@ public:
 
     mpi::Environment environment() const { return env_; }
 
-    [[nodiscard]] virtual Matrix copyToExecutor(Executor exec) const override
+    [[nodiscard]] virtual DistributedMatrix copyToExecutor(Executor exec) const override
     {
         // FIXME implement
-        return Matrix {
+        return DistributedMatrix {
             std::make_shared<innerMtxType>(local_->copyToExecutor(exec)),
             std::make_shared<innerMtxType>(nonLocal_->copyToExecutor(exec)),
             env_

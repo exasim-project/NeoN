@@ -174,24 +174,25 @@ public:
     void implicitOperation(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls
     ) const
     {
-        auto values = ls.matrix().local()->values().view();
-        auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
+        // FIXME
+        // auto values = ls.matrix().local()->values().view();
+        // auto rhs = ls.rhs().view();
+        // auto fieldView = this->field_.internalVector().view();
+        // auto coeff = this->getCoefficient();
 
-        // update diag
-        NeoN::parallelFor(
-            this->exec(),
-            {0, values.size()},
-            NEON_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
-        );
+        // // update diag
+        // NeoN::parallelFor(
+        //     this->exec(),
+        //     {0, values.size()},
+        //     NEON_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
+        // );
 
-        // update rhs
-        NeoN::parallelFor(
-            this->exec(),
-            ls.rhs().range(),
-            NEON_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
-        );
+        // // update rhs
+        // NeoN::parallelFor(
+        //     this->exec(),
+        //     ls.rhs().range(),
+        //     NEON_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
+        // );
     }
 
     std::string getName() const { return "Dummy"; }
@@ -239,24 +240,25 @@ public:
         NeoN::scalar
     )
     {
-        auto values = ls.matrix().local()->values().view();
-        auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
+        // FIXME
+        // auto values = ls.matrix().local()->values().view();
+        // auto rhs = ls.rhs().view();
+        // auto fieldView = this->field_.internalVector().view();
+        // auto coeff = this->getCoefficient();
 
-        // update diag
-        NeoN::parallelFor(
-            this->exec(),
-            {0, values.size()},
-            NEON_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
-        );
+        // // update diag
+        // NeoN::parallelFor(
+        //     this->exec(),
+        //     {0, values.size()},
+        //     NEON_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
+        // );
 
-        // update rhs
-        NeoN::parallelFor(
-            this->exec(),
-            ls.rhs().range(),
-            NEON_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
-        );
+        // // update rhs
+        // NeoN::parallelFor(
+        //     this->exec(),
+        //     ls.rhs().range(),
+        //     NEON_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
+        // );
     }
 
     std::string getName() const { return "TemporalDummy"; }
@@ -273,7 +275,9 @@ template<typename ValueType>
 ValueType getDiag(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
 {
     auto hostLs = ls.copyToHost();
-    return hostLs.matrix().local()->values().view()[0];
+    // FIXME
+    // return hostLs.matrix().local()->values().view()[0];
+    return ValueType();
 }
 
 template<typename ValueType>
