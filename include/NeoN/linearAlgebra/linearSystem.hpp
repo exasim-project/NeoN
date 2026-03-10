@@ -6,8 +6,11 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/distributed/matrix.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
@@ -59,8 +62,8 @@ class LinearSystem
 
     void validate()
     {
-        // NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
-        // NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
         NF_ASSERT(
             boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
         );
@@ -166,12 +169,58 @@ public:
         };
     }
 
+    /** @brief boundaryMatrixMap - bfaceIdx -> matrixAddr */
+    void communicate(CommunicationPattern& commPattern, Vector<localIdx>& boundaryMatrixMap)
+    {
+
+        auto mpiEnv = commPattern.env;
+        // 1. copy bValues which need to be communicated into sendBuffer
+        auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
+        auto commBuffer = Vector<ValueType>(exec(), commSize);
+        auto recvBuffer = Vector<ValueType>(exec(), commSize);
+
+        // TODO with the right displacements boundary values could be taken
+        // directly without copy to a sendbuffer first. however the recv is still needed
+        //
+        // copy map needs to be on the device for filling the consecutive
+        // sendBuffer but for sending with mpi data is on the host
+        auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
+        copy(boundaryMatrix_.values(), copyMap, commBuffer);
+
+        // zero out processor boundary values
+        // set(0.0, copyMap, boundaryMatrix_.values());
+
+        // TODO compute using scan
+        auto sdispls = std::vector<int>(commSize, 0);
+        for (int i = 1; i < sdispls.size(); i++)
+        {
+            auto prev = sdispls[i - 1];
+            sdispls[i] = commPattern.sendCounts[i - 1] + prev;
+        }
+
+        MPI_Alltoallv(
+            commBuffer.data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            recvBuffer.data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            mpiEnv.comm()
+        );
+
+        // 3. apply received values to corresponding matrix
+        // add diagonal contributions
+        add(recvBuffer, boundaryMatrixMap, matrix_.values());
+    }
+
+    // FIXME needed?
     void reset()
     {
-        // FIXME
-        // fill(matrix_.local()->values(), zero<ValueType>());
+        matrix_.reset();
+        boundaryMatrix_.reset();
         fill(rhs_, zero<ValueType>());
-        fill(boundaryMatrix_.values(), zero<ValueType>());
         fill(boundaryRhs_, zero<ValueType>());
     }
 
@@ -225,6 +274,7 @@ private:
     std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
 };
 
+// FIXME TODO is env needed here
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
 template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>

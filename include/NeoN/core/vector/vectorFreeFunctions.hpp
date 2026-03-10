@@ -36,6 +36,13 @@ template<typename ValueType>
 void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2);
 
 template<typename ValueType>
+void add(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value);
+
+/** @brief add with idx map */
+template<typename ValueType>
+void add(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out);
+
+template<typename ValueType>
 void sub(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value);
 
 template<typename ValueType>
@@ -62,4 +69,17 @@ template<unsigned int I>
  */
 template<unsigned int I>
 void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
+
+/**
+ * @brief Given a Vector and a set of indizes values are copied to out
+ */
+template<typename ValueType>
+void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out);
+
+/**
+ * @brief Given a Vector and a set of indizes values are copied to out
+ */
+template<typename ValueType>
+void set(ValueType in, const Vector<localIdx>& idx, Vector<ValueType>& out);
+
 } // namespace NeoN
