@@ -77,6 +77,13 @@ public:
 
     std::shared_ptr<innerMtxType> local() { return local_; }
 
+
+    /**
+     * @brief Get the number of local rows in the matrix.
+     * @return Number of rows.
+     */
+    [[nodiscard]] localIdx nRows() const { return local_->rows(); }
+
     std::shared_ptr<const innerMtxType> local() const { return local_; }
 
     std::shared_ptr<innerMtxType> nonLocal() { return nonLocal_; }
