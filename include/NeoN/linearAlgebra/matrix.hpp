@@ -170,7 +170,7 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& colIdxs() const
+    [[nodiscard]] const Vector<typename MatrixSparsityType::SparsityIndexType>& colIdxs() const
     {
         return sparsityPattern_->colIdxs();
     }
@@ -179,7 +179,7 @@ public:
      * @brief Get a reference to row offset vector.
      * @return Vector containing the row pointers.
      */
-    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& rowOffs() const
+    [[nodiscard]] const Vector<typename MatrixSparsityType::SparsityIndexType>& rowOffs() const
     {
         return sparsityPattern_->rowOffs();
     }
@@ -215,10 +215,12 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>
+    [[nodiscard]] MatrixView<
+        ValueType,
+        SparsityView<typename MatrixSparsityType::SparsityIndexType>>
     view()
     {
-        return MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+        return MatrixView<ValueType, SparsityView<typename MatrixSparsityType::SparsityIndexType>>(
             values_.view(), sparsityPattern_->view()
         );
     }
@@ -229,10 +231,12 @@ public:
      */
     [[nodiscard]] MatrixView<
         const ValueType,
-        SparsityView<typename SparsityType::SparsityIndexType>>
+        SparsityView<typename MatrixSparsityType::SparsityIndexType>>
     view() const
     {
-        return MatrixView<const ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+        return MatrixView<
+            const ValueType,
+            SparsityView<typename MatrixSparsityType::SparsityIndexType>>(
             View<const ValueType>(values_.view()), sparsityPattern_->view()
         );
     }

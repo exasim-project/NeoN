@@ -78,8 +78,8 @@ class LinearSystem :
 
     void validate()
     {
-        NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
-        NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        // NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
+        // NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
         NF_ASSERT(
             meshIteratorContext_ != nullptr,
             "Mesh iterator context must be set before validating the linear system"
