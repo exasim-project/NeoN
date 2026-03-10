@@ -10,217 +10,222 @@
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00006}00006\ }
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{dictionary_8hpp}{NeoN/core/dictionary.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{matrix_8hpp}{NeoN/linearAlgebra/matrix.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sparsityPattern_8hpp}{NeoN/linearAlgebra/sparsityPattern.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceToMatrixAddress_8hpp}{NeoN/linearAlgebra/faceToMatrixAddress.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <string>}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00014}00014\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00009}00009\ <<<<<<<\ HEAD}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2matrix_8hpp}{NeoN/linearAlgebra/matrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00011}00011\ =======}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{distributed_2matrix_8hpp}{NeoN/distributed/matrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{CSRMatrix_8hpp}{NeoN/linearAlgebra/CSRMatrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00014}00014\ >>>>>>>\ 18243de3f\ (print\ which\ mpirun)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}NeoN/linearAlgebra/sparsityPattern.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceToMatrixAddress_8hpp}{NeoN/linearAlgebra/faceToMatrixAddress.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00025}00025\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixViewType>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00026}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{00026}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00027}00027\ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00028}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a0fcd3bbef04e410b4fc159ae821af416}{00028}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a0fcd3bbef04e410b4fc159ae821af416}{LinearSystemView}}()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00029}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a73298fa7560914dc18bc1b98806fc67a}{00029}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a73298fa7560914dc18bc1b98806fc67a}{\string~LinearSystemView}}()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00030}00030\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00031}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ae40e1bf3be19553a0e30cc0f9f67fa2d}{00031}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ae40e1bf3be19553a0e30cc0f9f67fa2d}{LinearSystemView}}(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ MatrixViewType\ matrixView,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ rhsView,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ MatrixViewType\ boundaryMatrixView,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ boundaryRhsView}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00036}00036\ \ \ \ \ )}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{matrix}}(matrixView),\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{rhs}}(rhsView),\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{boundaryMatrix}}(boundaryMatrixView),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{boundaryRhs}}(boundaryRhsView)\ \{\};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00039}00039\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00040}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{00040}}\ \ \ \ \ MatrixViewType\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{matrix}};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00041}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{00041}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{rhs}};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00042}00042\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00043}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{00043}}\ \ \ \ \ MatrixViewType\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{boundaryMatrix}};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00044}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{00044}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{boundaryRhs}};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00045}00045\ \};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00046}00046\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00055}00055\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixType\ =\ CSRMatrix<ValueType,\ localIdx>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{00056}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00057}00057\ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordtype}{void}\ validate()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00060}00060\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(matrix\_.exec()\ ==\ rhs\_.exec(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(matrix\_.nRows()\ ==\ rhs\_.size(),\ \textcolor{stringliteral}{"{}Matrix\ and\ RHS\ size\ mismatch"{}});}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.nRows()\ ==\ boundaryRhs\_.size(),\ \textcolor{stringliteral}{"{}BMatrix.nRows()\ !=\ boundaryRHS.size()"{}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00066}00066\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00068}00068\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{00070}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{LinearSystemIndexType}}\ =\ \textcolor{keyword}{typename}\ MatrixType::MatrixSparsityType::SparsityIndexType;}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aeb6fcdf8f463762239e1d2bace05beb3}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aeb6fcdf8f463762239e1d2bace05beb3}{LinearSystem}}(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ std::shared\_ptr<\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<LinearSystemIndexType>}}>\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00074}00074\ \ \ \ \ )}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ :\ matrix\_(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}<ValueType>(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>localNonZeros(),\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>sparsityPattern()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ rhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>localRows(),\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}<ValueType>(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundaryNonZeros(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundarySparsityPattern()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundaryNonZeros(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixViewType>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00031}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{00031}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00033}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a0fcd3bbef04e410b4fc159ae821af416}{00033}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a0fcd3bbef04e410b4fc159ae821af416}{LinearSystemView}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00034}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a73298fa7560914dc18bc1b98806fc67a}{00034}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a73298fa7560914dc18bc1b98806fc67a}{\string~LinearSystemView}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00036}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ae40e1bf3be19553a0e30cc0f9f67fa2d}{00036}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ae40e1bf3be19553a0e30cc0f9f67fa2d}{LinearSystemView}}(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ MatrixViewType\ matrixView,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ rhsView,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ MatrixViewType\ boundaryMatrixView,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ boundaryRhsView}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00041}00041\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{matrix}}(matrixView),\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{rhs}}(rhsView),\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{boundaryMatrix}}(boundaryMatrixView),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{boundaryRhs}}(boundaryRhsView)\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00045}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{00045}}\ \ \ \ \ MatrixViewType\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a914114af5c7d3e70a2b60aeaf01ebcdd}{matrix}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00046}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{00046}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a91465af280c229b7fa06eb8018b83a39}{rhs}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00048}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{00048}}\ \ \ \ \ MatrixViewType\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_ad3d767cbed3c9eb8fbbfccde52f055ad}{boundaryMatrix}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00049}\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{00049}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView_a878e591e4afb9747bb1be486ea6b3c3c}{boundaryRhs}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00050}00050\ \};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00060}00060\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixType\ =\ CSRMatrix<ValueType,\ localIdx>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{00061}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00062}00062\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keywordtype}{void}\ validate()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00065}00065\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(matrix\_.local()-\/>exec()\ ==\ rhs\_.exec(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(matrix\_.local()-\/>nRows()\ ==\ rhs\_.size(),\ \textcolor{stringliteral}{"{}Matrix\ and\ RHS\ size\ mismatch"{}});}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.nRows()\ ==\ boundaryRhs\_.size(),\ \textcolor{stringliteral}{"{}BMatrix.nRows()\ !=\ boundaryRHS.size()"{}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00073}00073\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{00075}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{LinearSystemIndexType}}\ =\ \textcolor{keyword}{typename}\ MatrixType::MatrixSparsityType::SparsityIndexType;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aeb6fcdf8f463762239e1d2bace05beb3}{00077}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aeb6fcdf8f463762239e1d2bace05beb3}{LinearSystem}}(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ std::shared\_ptr<\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<LinearSystemIndexType>}}>\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00079}00079\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ :\ matrix\_(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}<ValueType>(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>localNonZeros(),\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>sparsityPattern()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ rhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>localRows(),\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}<ValueType>(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundaryNonZeros(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundarySparsityPattern()}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}})}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00096}00096\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ validate();}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00098}00098\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00099}00099\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00100}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_acba42d84b999940c55ee2ce4396b90fa}{00100}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_acba42d84b999940c55ee2ce4396b90fa}{LinearSystem}}(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}},}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}},}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}},}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}},}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ std::shared\_ptr<\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<LinearSystemIndexType>}}>\ mi}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00106}00106\ \ \ \ \ )}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ :\ matrix\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}}),\ rhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}}),\ boundaryMatrix\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}}),\ boundaryRhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}}),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_(mi)}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00109}00109\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ validate();}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00111}00111\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00112}00112\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00113}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2fbd9777e59cac0a05d8844243bde33d}{00113}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2fbd9777e59cac0a05d8844243bde33d}{LinearSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}\&\ ls)}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ :\ matrix\_(ls.matrix\_),\ rhs\_(ls.rhs\_),\ boundaryMatrix\_(ls.boundaryMatrix\_),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_(ls.boundaryRhs\_),\ faceToMatrixAddress\_(ls.faceToMatrixAddress\_)}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00116}00116\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}-\/>boundaryNonZeros(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}})}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00101}00101\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ validate();}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00103}00103\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00105}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_acba42d84b999940c55ee2ce4396b90fa}{00105}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_acba42d84b999940c55ee2ce4396b90fa}{LinearSystem}}(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}},}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}},}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}},}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}},}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ std::shared\_ptr<\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<LinearSystemIndexType>}}>\ mi}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00111}00111\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ :\ matrix\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}}),\ rhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}}),\ boundaryMatrix\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}}),\ boundaryRhs\_(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}}),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_(mi)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00114}00114\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ validate();}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00116}00116\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00117}00117\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a74dcd483ffd12e712cf8b97cb8295979}{00118}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a74dcd483ffd12e712cf8b97cb8295979}{\string~LinearSystem}}()\ =\ \textcolor{keywordflow}{default};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{00120}}\ \ \ \ \ [[nodiscard]]\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}}()\ \{\ \textcolor{keywordflow}{return}\ matrix\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00121}00121\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00122}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5b2e6d616771f00903517f098ecc6dba}{00122}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5b2e6d616771f00903517f098ecc6dba}{matrix}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00123}00123\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00124}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{00124}}\ \ \ \ \ [[nodiscard]]\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}}()\ \{\ \textcolor{keywordflow}{return}\ boundaryMatrix\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00125}00125\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00126}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2934959e763fc3dd3987d0b174353373}{00126}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2934959e763fc3dd3987d0b174353373}{boundaryMatrix}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryMatrix\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00127}00127\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00128}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{00128}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}}()\ \{\ \textcolor{keywordflow}{return}\ rhs\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00130}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a39b504c82aff18932d18960f00564272}{00130}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a39b504c82aff18932d18960f00564272}{rhs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rhs\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00131}00131\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00132}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{00132}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}}()\ \{\ \textcolor{keywordflow}{return}\ boundaryRhs\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00133}00133\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00134}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a27b4ae43b97769ef71b07cee91440fcb}{00134}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a27b4ae43b97769ef71b07cee91440fcb}{boundaryRhs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryRhs\_;\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00135}00135\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00136}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9ed8e715ef76dfb331e1157b5bbf8e6d}{00136}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ MatrixType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9ed8e715ef76dfb331e1157b5bbf8e6d}{copyToHost}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00137}00137\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (faceToMatrixAddress\_\ ==\ \textcolor{keyword}{nullptr})}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rhs\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mi\ =\ std::make\_shared<FaceToMatrixAddress<LinearSystemIndexType>>(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>ownerOffset().copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>neighbourOffset().copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>diagOffset().copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SparsityPattern<LinearSystemIndexType>>(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>sparsityPattern()-\/>copyToHost()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern<LinearSystemIndexType>}}>(}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>boundarySparsityPattern()-\/>copyToHost()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ )}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ matrix\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ rhs\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_.copyToHost(),}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ mi}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00166}00166\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00167}00167\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00168}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a507a4199c6687ea60428b76f1ea24712}{00168}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a507a4199c6687ea60428b76f1ea24712}{reset}}()}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00169}00169\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(matrix\_.values(),\ zero<ValueType>());}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(rhs\_,\ zero<ValueType>());}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(boundaryMatrix\_.values(),\ zero<ValueType>());}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(boundaryRhs\_,\ zero<ValueType>());}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00174}00174\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00175}00175\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00176}00176\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ ValueType,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView<ValueType,\ SparsityView<typename\ MatrixType::MatrixSparsityType>}}>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00179}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{00179}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{view}}()\ \&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2fbd9777e59cac0a05d8844243bde33d}{00118}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2fbd9777e59cac0a05d8844243bde33d}{LinearSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}\&\ ls)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ :\ matrix\_(ls.matrix\_),\ rhs\_(ls.rhs\_),\ boundaryMatrix\_(ls.boundaryMatrix\_),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_(ls.boundaryRhs\_),\ faceToMatrixAddress\_(ls.faceToMatrixAddress\_)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00121}00121\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00123}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a74dcd483ffd12e712cf8b97cb8295979}{00123}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a74dcd483ffd12e712cf8b97cb8295979}{\string~LinearSystem}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00125}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{00125}}\ \ \ \ \ [[nodiscard]]\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2319e4cc9bc4ea33423c7f9a2048adc7}{matrix}}()\ \{\ \textcolor{keywordflow}{return}\ matrix\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5b2e6d616771f00903517f098ecc6dba}{00127}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5b2e6d616771f00903517f098ecc6dba}{matrix}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00129}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{00129}}\ \ \ \ \ [[nodiscard]]\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2624dea8911eccbb31b39338821433ae}{boundaryMatrix}}()\ \{\ \textcolor{keywordflow}{return}\ boundaryMatrix\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00131}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2934959e763fc3dd3987d0b174353373}{00131}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ MatrixType\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a2934959e763fc3dd3987d0b174353373}{boundaryMatrix}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryMatrix\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00133}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{00133}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9c04e6dbddd20359bd60609de7bf3b35}{rhs}}()\ \{\ \textcolor{keywordflow}{return}\ rhs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00135}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a39b504c82aff18932d18960f00564272}{00135}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a39b504c82aff18932d18960f00564272}{rhs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rhs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00137}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{00137}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5cf0a45ff96a014cb4ba9fd5977fd9b8}{boundaryRhs}}()\ \{\ \textcolor{keywordflow}{return}\ boundaryRhs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00139}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a27b4ae43b97769ef71b07cee91440fcb}{00139}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a27b4ae43b97769ef71b07cee91440fcb}{boundaryRhs}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boundaryRhs\_;\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00141}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9ed8e715ef76dfb331e1157b5bbf8e6d}{00141}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ MatrixType>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a9ed8e715ef76dfb331e1157b5bbf8e6d}{copyToHost}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00142}00142\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (faceToMatrixAddress\_\ ==\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rhs\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mi\ =\ std::make\_shared<FaceToMatrixAddress<LinearSystemIndexType>>(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>ownerOffset().copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>neighbourOffset().copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>diagOffset().copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<SparsityPattern<LinearSystemIndexType>>(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>sparsityPattern()-\/>copyToHost()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{SparsityPattern<LinearSystemIndexType>}}>(}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ faceToMatrixAddress\_-\/>boundarySparsityPattern()-\/>copyToHost()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ matrix\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ rhs\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryMatrix\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryRhs\_.copyToHost(),}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ mi}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00171}00171\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00173}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a507a4199c6687ea60428b76f1ea24712}{00173}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a507a4199c6687ea60428b76f1ea24712}{reset}}()}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00174}00174\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(matrix\_.local()-\/>values(),\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(rhs\_,\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(boundaryMatrix\_.values(),\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}}(boundaryRhs\_,\ zero<ValueType>());}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00179}00179\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00180}00180\ }
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00181}00181\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ ValueType,}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView<ValueType,\ SparsityView<typename\ MatrixType::MatrixSparsityType>}}>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00184}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_afc38b100f204f9c5215adc0e585c7e75}{00184}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_afc38b100f204f9c5215adc0e585c7e75}{view}}()\ const\&\&\ =\ delete;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00184}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{00184}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{view}}()\ \&\&\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00185}00185\ }
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00186}00186\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ ValueType,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView}}<ValueType,\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{SparsityView}}<\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{LinearSystemIndexType}}>>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00189}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a66834a1701cb115f950e7e478b906ece}{00189}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{view}}()\ \&}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00190}00190\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{matrix\_.view(),\ rhs\_.view(),\ boundaryMatrix\_.view(),\ boundaryRhs\_.view()\};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00192}00192\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00193}00193\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00194}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{00194}}\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<LinearSystemIndexType>>\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00195}00195\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ faceToMatrixAddress\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView<ValueType,\ SparsityView<typename\ MatrixType::MatrixSparsityType>}}>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00189}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_afc38b100f204f9c5215adc0e585c7e75}{00189}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_afc38b100f204f9c5215adc0e585c7e75}{view}}()\ const\&\&\ =\ delete;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00191}00191\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00192}00192\ \ \ \ \ \ \ \ \ ValueType,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView}}<ValueType,\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{SparsityView}}<\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abfbc2a7ff0529f2c42bf9fce51b9b4a9}{LinearSystemIndexType}}>>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00194}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a66834a1701cb115f950e7e478b906ece}{00194}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8b2bce4fa0729992924b0a8daac523e}{view}}()\ \&}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00195}00195\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{matrix\_.view(),\ rhs\_.view(),\ boundaryMatrix\_.view(),\ boundaryRhs\_.view()\};}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00197}00197\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00198}00198\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00199}00199\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ValueType,}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView<ValueType,\ SparsityView<const\ LinearSystemIndexType>}}>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00202}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5711b64549ffeb767bede5339a57f30e}{00202}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5711b64549ffeb767bede5339a57f30e}{view}}()\ const\&}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00203}00203\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{matrix\_.view(),\ rhs\_.view(),\ boundaryMatrix\_.view(),\ boundaryRhs\_.view()\};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00205}00205\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00206}00206\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00207}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{00207}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix\_.exec();\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00208}00208\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00209}00209\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00210}00210\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00211}00211\ \ \ \ \ \textcolor{comment}{//\ internal\ values}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00212}00212\ \ \ \ \ MatrixType\ matrix\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00199}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{00199}}\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<LinearSystemIndexType>>\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab187457a3c92f2198346c8f84c49579c}{faceToMatrixAddress}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00200}00200\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ faceToMatrixAddress\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00202}00202\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00204}00204\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{LinearSystemView}}<}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ValueType,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{MatrixView<ValueType,\ SparsityView<const\ LinearSystemIndexType>}}>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00207}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5711b64549ffeb767bede5339a57f30e}{00207}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5711b64549ffeb767bede5339a57f30e}{view}}()\ const\&}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00208}00208\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{matrix\_.view(),\ rhs\_.view(),\ boundaryMatrix\_.view(),\ boundaryRhs\_.view()\};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00210}00210\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00211}00211\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00212}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{00212}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix\_.local()-\/>exec();\ \}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00213}00213\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00214}00214\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ rhs\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00214}00214\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00215}00215\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{comment}{//\ boundary\ values}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00217}00217\ \ \ \ \ MatrixType\ boundaryMatrix\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{comment}{//\ internal\ values}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00217}00217\ \ \ \ \ MatrixType\ matrix\_;}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00218}00218\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00219}00219\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ boundaryRhs\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00219}00219\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ rhs\_;}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00220}00220\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00221}00221\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ auxiliaryCoefficients\_;}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00222}00222\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00223}00223\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<LinearSystemIndexType>>\ faceToMatrixAddress\_;}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00224}00224\ \};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00221}00221\ \ \ \ \ \textcolor{comment}{//\ boundary\ values}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00222}00222\ \ \ \ \ MatrixType\ boundaryMatrix\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00223}00223\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00224}00224\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ boundaryRhs\_;}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00225}00225\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00226}00226\ \textcolor{comment}{/*@brief\ helper\ function\ that\ creates\ a\ zero\ initialised\ linear\ system\ based\ on\ a\ given\ mesh}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00227}00227\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00228}00228\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixType\ =\ CSRMatrix<ValueType,\ localIdx>>}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00229}\mbox{\hyperlink{namespaceNeoN_1_1la_a2a83829a38dad931ef72287214b5d444}{00229}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ MatrixType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a2a83829a38dad931ef72287214b5d444}{createEmptyLinearSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00230}00230\ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00231}00231\ \ \ \ \ \textcolor{keywordflow}{return}\ \{createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)\};}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00232}00232\ \}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00233}00233\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00234}00234\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00235}00235\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00226}00226\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ auxiliaryCoefficients\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00228}00228\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<LinearSystemIndexType>>\ faceToMatrixAddress\_;}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00229}00229\ \};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00231}00231\ \textcolor{comment}{/*@brief\ helper\ function\ that\ creates\ a\ zero\ initialised\ linear\ system\ based\ on\ a\ given\ mesh}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00232}00232\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00233}00233\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ MatrixType\ =\ CSRMatrix<ValueType,\ localIdx>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00234}\mbox{\hyperlink{namespaceNeoN_1_1la_a66897bf075a29ed6eb019589e9409900}{00234}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem<ValueType,\ MatrixType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a66897bf075a29ed6eb019589e9409900}{createEmptyLinearSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ mpi::Environment\ env)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00235}00235\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00236}00236\ \ \ \ \ \textcolor{keywordflow}{return}\ \{createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)\};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00237}00237\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00238}00238\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00239}00239\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00240}00240\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
 
 \end{DoxyCode}
