@@ -15,7 +15,7 @@ var searchData=
   ['linearsystemindextype_12',['LinearSystemIndexType',['../classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9',1,'NeoN::la::LinearSystem']]],
   ['linearsystemview_13',['linearsystemview',['../structNeoN_1_1la_1_1LinearSystemView.html#a0fcd3bbef04e410b4fc159ae821af416',1,'NeoN::la::LinearSystemView::LinearSystemView()=default'],['../structNeoN_1_1la_1_1LinearSystemView.html#ae40e1bf3be19553a0e30cc0f9f67fa2d',1,'NeoN::la::LinearSystemView::LinearSystemView(MatrixViewType matrixView, View&lt; ValueType &gt; rhsView, MatrixViewType boundaryMatrixView, View&lt; ValueType &gt; boundaryRhsView)'],['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la::LinearSystemView&lt; ValueType, MatrixViewType &gt;']]],
   ['list_14',['Todo List',['../todo.html',1,'']]],
-  ['local_15',['local',['../classNeoN_1_1la_1_1Matrix.html#a7e22fe00947b070398dad8ee031d96f9',1,'NeoN::la::Matrix::local()'],['../classNeoN_1_1la_1_1Matrix.html#a5f84780ba7d99ea8ceecc06879cb7a43',1,'NeoN::la::Matrix::local() const']]],
+  ['local_15',['local',['../classNeoN_1_1la_1_1DistributedMatrix.html#a43a3daeb4827d1ef3220178afe62dc7d',1,'NeoN::la::DistributedMatrix::local()'],['../classNeoN_1_1la_1_1DistributedMatrix.html#afa8fa980ba7e7aeec4b13fa870c05398',1,'NeoN::la::DistributedMatrix::local() const']]],
   ['localidx_16',['localIdx',['../namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc',1,'NeoN']]],
   ['localidxvector_17',['localIdxVector',['../namespaceNeoN.html#a345d64e8263d03609fc24b88fed965be',1,'NeoN']]],
   ['localnonzeros_18',['localNonZeros',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a7a7ca81bdb277fc7d129cc13981966dc',1,'NeoN::la::FaceToMatrixAddress']]],
