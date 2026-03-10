@@ -59,8 +59,8 @@ class LinearSystem
 
     void validate()
     {
-        // NF_ASSERT(matrix_.local()->exec() == rhs_.exec(), "Executors are not the same");
-        // NF_ASSERT(matrix_.local()->nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
         NF_ASSERT(
             boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
         );
@@ -166,12 +166,14 @@ public:
         };
     }
 
+    void communicate() { NF_ERROR_EXIT("Not implemented"); }
+
+    // FIXME needed?
     void reset()
     {
-        // FIXME
-        // fill(matrix_.local()->values(), zero<ValueType>());
+        matrix_.reset();
+        boundaryMatrix_.reset();
         fill(rhs_, zero<ValueType>());
-        fill(boundaryMatrix_.values(), zero<ValueType>());
         fill(boundaryRhs_, zero<ValueType>());
     }
 
@@ -225,6 +227,7 @@ private:
     std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
 };
 
+// FIXME TODO is env needed here
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
 template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
