@@ -144,6 +144,30 @@ public:
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 
+    // TODO move that to assemble
+    /* @brief construct a linear system and force assembly
+     *
+     * @param ps a vector of functor performing transformation on the created linear system
+     * @return a tuple of the sparsity pattern and the assembled linear system
+     */
+    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<ValueType>>
+    assembleDistributed(
+        const UnstructuredMesh& mesh,
+        scalar t,
+        scalar dt,
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    ) const
+    {
+        // FIXME when to create env
+        mpi::Environment env;
+        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, env);
+        // assemble local part
+        assemble(t, dt, ls, ps);
+        // communicate processor boundaries
+        ls.communicate();
+        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
+    };
+
     /* @brief assemble into a given linear system
      *
      * @param ps a vector of functor performing transformation on the created linear system
