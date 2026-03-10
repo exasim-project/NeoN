@@ -205,7 +205,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1Logging.html#ae28b3319e1d8e1ac105229bfded869ec">  106</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#ae28b3319e1d8e1ac105229bfded869ec">debug</a>(std::string formatString, Args... args)</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>{</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0">logImpl</a>(std::vformat(formatString, std::make_format_args(args...)), <a class="code hl_enumvalue" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543">Level::Debug</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0">logImpl</a>(fmt::format(fmt::runtime(formatString), args...), <a class="code hl_enumvalue" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543">Level::Debug</a>);</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
 </div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
@@ -214,7 +214,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1Logging.html#a24a416dbe359564546e023e3616eacca">  113</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#a24a416dbe359564546e023e3616eacca">error</a>(std::string formatString, Args... args)</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>{</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0">logImpl</a>(std::vformat(formatString, std::make_format_args(args...)), <a class="code hl_enumvalue" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214a66902657569bc8a0384704af92dfb7f3">Level::Error</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0">logImpl</a>(fmt::format(fmt::runtime(formatString), args...), <a class="code hl_enumvalue" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214a66902657569bc8a0384704af92dfb7f3">Level::Error</a>);</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_function" href="namespaceNeoN_1_1Logging.html#a99fdb43e89116eee5836bdb16d1fa283">terminate</a>();</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
 </div>
