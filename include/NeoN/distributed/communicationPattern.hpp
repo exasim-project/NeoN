@@ -21,8 +21,6 @@ struct CommunicationPattern
     // number of elements to send neighbouring ranks
     std::vector<int> sendCounts;
 
-    // std::vector<int> commRanks;
-
     mpi::Environment env;
 };
 

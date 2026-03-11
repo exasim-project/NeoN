@@ -87,6 +87,23 @@ void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 }
 
 template<typename ValueType>
+void add(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
+{
+    // NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
+    // NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
+    // NF_ASSERT(idx.size() == out.size(), "Size mismatch");
+
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    const auto idxV = idx.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[i]; }, "copyMap"
+    );
+}
+
+template<typename ValueType>
 void sub(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
 {
     detail::fieldBinaryOp(
@@ -155,7 +172,7 @@ template void setComponent<1>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 
 template<typename ValueType>
-void copy(const Vector<ValueType>& in, Vector<localIdx>& idx, Vector<ValueType>& out)
+void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
 {
     NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
     NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
@@ -171,13 +188,28 @@ void copy(const Vector<ValueType>& in, Vector<localIdx>& idx, Vector<ValueType>&
     );
 };
 
+template<typename ValueType>
+void set(ValueType in, const Vector<localIdx>& idx, Vector<ValueType>& out)
+{
+
+    const auto exec = out.exec();
+    const auto idxV = idx.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = in; }, "copyMap"
+    );
+}
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
-    template void copy<Type>(const Vector<Type>&, Vector<localIdx>&, Vector<Type>&);               \
+    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
+    template void set<Type>(Type, const Vector<localIdx>&, Vector<Type>&);                         \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void add(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);                \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
