@@ -169,17 +169,18 @@ public:
         };
     }
 
-    void communicate(CommunicationPattern& commPattern, mpi::Environment mpiEnv)
+    void communicate(CommunicationPattern& commPattern)
     {
 
+        auto mpiEnv = commPattern.env;
         // 1. copy bValues which need to be communicated into sendBuffer
         auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
         auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
-        // FIXME
-        auto copyMap = Vector<localIdx>(exec(), commSize);
-
+        // copy map needs to be on the device for filling the consecutive
+        // sendBuffer but for sending with mpi data is on the host
+        auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
         copy(boundaryMatrix_.values(), copyMap, commBuffer);
 
         // FIXME compute using scan

@@ -157,7 +157,18 @@ template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 template<typename ValueType>
 void copy(const Vector<ValueType>& in, Vector<localIdx>& idx, Vector<ValueType>& out)
 {
-    NF_ERROR_EXIT("Not implemented");
+    NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
+    NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
+    NF_ASSERT(idx.size() == out.size(), "Size mismatch");
+
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    const auto idxV = idx.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[i] = inV[idxV[i]]; }, "copyMap"
+    );
 };
 
 // operator instantiation
