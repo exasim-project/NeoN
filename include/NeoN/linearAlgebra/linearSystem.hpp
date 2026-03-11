@@ -169,7 +169,8 @@ public:
         };
     }
 
-    void communicate(CommunicationPattern& commPattern)
+    /** @brief boundaryMatrixMap - bfaceIdx -> matrixAddr */
+    void communicate(CommunicationPattern& commPattern, Vector<localIdx>& boundaryMatrixMap)
     {
 
         auto mpiEnv = commPattern.env;
@@ -178,13 +179,25 @@ public:
         auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
+        // TODO with the right displacements boundary values could be taken
+        // directly without copy to a sendbuffer first. however the recv is still needed
+        //
         // copy map needs to be on the device for filling the consecutive
         // sendBuffer but for sending with mpi data is on the host
         auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
         copy(boundaryMatrix_.values(), copyMap, commBuffer);
 
-        // FIXME compute using scan
-        std::vector<int> sdispls = commPattern.sendCounts;
+        // zero out processor boundary values
+        // set(0.0, copyMap, boundaryMatrix_.values());
+
+        // TODO compute using scan
+        auto sdispls = std::vector<int>(commSize, 0);
+        for (int i = 1; i < sdispls.size(); i++)
+        {
+            auto prev = sdispls[i - 1];
+            sdispls[i] = commPattern.sendCounts[i - 1] + prev;
+        }
+
         MPI_Alltoallv(
             commBuffer.data(),
             commPattern.sendCounts.data(),
@@ -196,19 +209,10 @@ public:
             mpi::getType<ValueType>(),
             mpiEnv.comm()
         );
-        // TODO move to a wrapper
-        // int MPI_Alltoallv(const void *sendbuf, const int *sendcounts,
-        //                 const int *sdispls, MPI_Datatype sendtype, void *recvbuf,
-        //                 const int *recvcounts, const int *rdispls, MPI_Datatype recvtype,
-        //                 MPI_Comm comm)
-
-
-        // 2. call mpiAllToAllV
 
         // 3. apply received values to corresponding matrix
-        // 3.1 subtract values from bMatrix
-
-        NF_ERROR_EXIT("Not implemented");
+        // add diagonal contributions
+        add(recvBuffer, boundaryMatrixMap, matrix_.values());
     }
 
     // FIXME needed?

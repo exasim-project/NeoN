@@ -156,6 +156,7 @@ public:
         scalar t,
         scalar dt,
         CommunicationPattern commPattern,
+        Vector<localIdx>& boundaryMatrixMap,
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
@@ -164,7 +165,7 @@ public:
         // assemble local part
         assemble(t, dt, ls, ps);
         // communicate processor boundaries
-        ls.communicate(commPattern);
+        ls.communicate(commPattern, boundaryMatrixMap);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 
