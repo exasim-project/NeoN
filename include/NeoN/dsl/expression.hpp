@@ -155,17 +155,16 @@ public:
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
+        CommunicationPattern commPattern,
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
         // FIXME when to create env
-        mpi::Environment env;
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, env);
+        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, commPattern.env);
         // assemble local part
         assemble(t, dt, ls, ps);
         // communicate processor boundaries
-        CommunicationPattern commPattern;
-        ls.communicate(commPattern, env);
+        ls.communicate(commPattern);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 
