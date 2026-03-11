@@ -67,7 +67,8 @@ TEST_CASE("Distributed")
     // auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh,
     // surfaceBCs);
 
-    fill(phi.internalVector(), 1.0);
+    // fill(phi.internalVector(), 1.0);
+    randomizeVector(phi.internalVector());
     // fill(gamma.internalVector(), 2.0);
 
     // partition fields and data
@@ -78,7 +79,6 @@ TEST_CASE("Distributed")
     auto uPart = partitionField(U, volBCsPart, mpiEnviron.rank());
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCs, mpiEnviron.rank());
     auto phiPart = partitionField(phi, surfaceBCsPart, mpiEnviron.rank());
-
 
     // assembly
     auto expr = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phi, U)
@@ -97,33 +97,58 @@ TEST_CASE("Distributed")
         std::vector<localIdx> commIdx {};
         std::vector<int> sendCounts {};
         std::vector<int> commRanks {};
+        std::vector<localIdx> boundaryMapVector {};
+
+        size_t boundaryMapSize = 1;
 
         if (env.rank() == 0)
         {
             // communicate the interior value which is
             commIdx = std::vector<localIdx> {1};
-            sendCounts = std::vector<int> {1, 0, 0, 1};
+            sendCounts = std::vector<int> {0, 1, 0, 1};
+            boundaryMapVector = std::vector<localIdx> {13};
         }
         if (env.rank() == 1)
         {
             // communicate the interior value which is
+            boundaryMapSize = 1;
             commIdx = std::vector<localIdx> {0, 1};
-            sendCounts = std::vector<int> {1, 1, 0, 2};
+            sendCounts = std::vector<int> {1, 0, 1, 2};
+            boundaryMapVector = std::vector<localIdx> {0, 13};
         }
         if (env.rank() == 2)
         {
             // communicate the interior value which is
             commIdx = std::vector<localIdx> {0};
             sendCounts = std::vector<int> {0, 1, 0, 1};
+            boundaryMapVector = std::vector<localIdx> {0};
         }
 
+        // map from proc boundary to matrix values address
+        Vector<localIdx> boundaryMatrixMap {exec, boundaryMapVector};
 
         auto commPattern = CommunicationPattern(commIdx, sendCounts, env);
+        auto [spDst, lsDst] =
+            expr.assembleDistributed(mesh, 1.0, 1.0, commPattern, boundaryMatrixMap);
 
-        auto [sp, ls] = expr.assembleDistributed(mesh, 1.0, 1.0, commPattern);
+        auto lsDstH = lsDst.matrix().values().copyToHost();
 
-        // auto rhs = ls.rhs();
-        // SECTION("Has correct RHS") { compare(rhs, rhsOpt, ApproxScalar(epsilon)); }
+        // FIXME clean
+        // std::cout << " diagonal: ";
+
+        // for(auto i=0;i<lsDstH.size(); i++) {
+        //   std::cout << lsDstH.view()[i] << ", ";
+
+        // }
+        // std::cout << " \n ";
+
+
+        // // matrix values
+        if (env.rank() == 0)
+        {
+            compare(ls.matrix().diag(), lsDst.matrix().diag(), ApproxScalar(1e-15));
+            compare(ls.matrix().values(), lsDst.matrix().values(), ApproxScalar(1e-15));
+        }
 
         // auto matDiag = ls.matrix().diag();
         // auto matOptDiag = lsOpt.matrix().diag();
