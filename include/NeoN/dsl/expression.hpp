@@ -164,7 +164,8 @@ public:
         // assemble local part
         assemble(t, dt, ls, ps);
         // communicate processor boundaries
-        ls.communicate();
+        CommunicationPattern commPattern;
+        ls.communicate(commPattern, env);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 

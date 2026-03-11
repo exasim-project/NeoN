@@ -6,8 +6,11 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/distributed/matrix.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
@@ -166,7 +169,46 @@ public:
         };
     }
 
-    void communicate() { NF_ERROR_EXIT("Not implemented"); }
+    void communicate(CommunicationPattern& commPattern, mpi::Environment mpiEnv)
+    {
+
+        // 1. copy bValues which need to be communicated into sendBuffer
+        auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
+        auto commBuffer = Vector<ValueType>(exec(), commSize);
+        auto recvBuffer = Vector<ValueType>(exec(), commSize);
+
+        // FIXME
+        auto copyMap = Vector<localIdx>(exec(), commSize);
+
+        copy(boundaryMatrix_.values(), copyMap, commBuffer);
+
+        // FIXME compute using scan
+        std::vector<int> sdispls = commPattern.sendCounts;
+        MPI_Alltoallv(
+            commBuffer.data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            recvBuffer.data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            mpiEnv.comm()
+        );
+        // TODO move to a wrapper
+        // int MPI_Alltoallv(const void *sendbuf, const int *sendcounts,
+        //                 const int *sdispls, MPI_Datatype sendtype, void *recvbuf,
+        //                 const int *recvcounts, const int *rdispls, MPI_Datatype recvtype,
+        //                 MPI_Comm comm)
+
+
+        // 2. call mpiAllToAllV
+
+        // 3. apply received values to corresponding matrix
+        // 3.1 subtract values from bMatrix
+
+        NF_ERROR_EXIT("Not implemented");
+    }
 
     // FIXME needed?
     void reset()

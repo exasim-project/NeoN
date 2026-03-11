@@ -62,4 +62,11 @@ template<unsigned int I>
  */
 template<unsigned int I>
 void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
+
+/**
+ * @brief Given a Vector and a set of indizes values are copied to out
+ */
+template<typename ValueType>
+void copy(const Vector<ValueType>& in, Vector<localIdx>& idx, Vector<ValueType>& out);
+
 } // namespace NeoN
