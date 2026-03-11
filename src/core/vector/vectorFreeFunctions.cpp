@@ -10,6 +10,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/error.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
@@ -153,9 +154,16 @@ template void setComponent<0>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<1>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 
+template<typename ValueType>
+void copy(const Vector<ValueType>& in, Vector<localIdx>& idx, Vector<ValueType>& out)
+{
+    NF_ERROR_EXIT("Not implemented");
+};
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
+    template void copy<Type>(const Vector<Type>&, Vector<localIdx>&, Vector<Type>&);               \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
