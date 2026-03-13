@@ -17,7 +17,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="24" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="24" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="29" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1GPUExecutor_1a35737b19833f31a58bbd30f5cc14e2ea" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1AllocatorContext" kindref="compound">AllocatorContext</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;AllocatorContext&gt; NeoN::GPUExecutor::allocContext_</definition>
+        <argsstring></argsstring>
+        <name>allocContext_</name>
+        <qualifiedname>NeoN::GPUExecutor::allocContext_</qualifiedname>
+        <initializer>= <ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="25" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="25" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -33,7 +50,25 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="26" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="31" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a2739e2f202924194528dda623c7f156c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::GPUExecutor::GPUExecutor</definition>
+        <argsstring>(std::unique_ptr&lt; AllocatorStrategy &gt; strategy)</argsstring>
+        <name>GPUExecutor</name>
+        <qualifiedname>NeoN::GPUExecutor::GPUExecutor</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1AllocatorStrategy" kindref="compound">AllocatorStrategy</ref> &gt;</type>
+          <declname>strategy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="33" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1adebe4dfbc231a708dbd66abea6e32abf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -47,22 +82,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="27" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="35" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a4e8b672e789aa3c8cae8d56ceefaf5ec" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">typename</ref> <ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
         <type>T *</type>
         <definition>T * NeoN::GPUExecutor::alloc</definition>
-        <argsstring>(size_t size) const</argsstring>
+        <argsstring>(size_t elements) const</argsstring>
         <name>alloc</name>
         <qualifiedname>NeoN::GPUExecutor::alloc</qualifiedname>
         <param>
           <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
-          <declname>size</declname>
+          <declname>elements</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -70,26 +105,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="30" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="30" bodyend="33"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="39" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="39" bodyend="46"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ab4dddd8bac64877c63dbe21b84422b47" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a15c64b67cf4f8cfb215a8ffbdfa15baa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">typename</ref> <ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
-        <type>T *</type>
+        <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">T</ref> *</type>
         <definition>T * NeoN::GPUExecutor::realloc</definition>
-        <argsstring>(void *ptr, size_t newSize) const</argsstring>
+        <argsstring>(void *ptr, size_t elements) const</argsstring>
         <name>realloc</name>
         <qualifiedname>NeoN::GPUExecutor::realloc</qualifiedname>
         <param>
-          <type>void *</type>
+          <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">void</ref> *</type>
           <declname>ptr</declname>
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
-          <declname>newSize</declname>
+          <declname>elements</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -97,15 +132,47 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="36" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="36" bodyend="39"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="49" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="49" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">void</ref></type>
+        <definition>void NeoN::GPUExecutor::free</definition>
+        <argsstring>(void *ptr) const noexcept</argsstring>
+        <name>free</name>
+        <qualifiedname>NeoN::GPUExecutor::free</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">void</ref> *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="58" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="58" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a96fc9e687c8ce3a43536cfeedd0feaec" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref></type>
+        <definition>MemorySpace NeoN::GPUExecutor::memorySpace</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>memorySpace</name>
+        <qualifiedname>NeoN::GPUExecutor::memorySpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="67" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="67" bodyend="67"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename ValueType</type>
+            <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">typename</ref> ValueType</type>
           </param>
         </templateparamlist>
-        <type>decltype(auto)</type>
+        <type><ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">decltype</ref>(<ref refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" kindref="member">auto</ref>)</type>
         <definition>decltype(auto) NeoN::GPUExecutor::createKokkosView</definition>
         <argsstring>(ValueType *ptr, size_t size) const</argsstring>
         <name>createKokkosView</name>
@@ -152,65 +219,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="49" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="49" bodyend="54"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1a34d6f31697a447e425603b0dbfa66b88" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>void *</type>
-        <definition>void * NeoN::GPUExecutor::alloc</definition>
-        <argsstring>(size_t size) const</argsstring>
-        <name>alloc</name>
-        <qualifiedname>NeoN::GPUExecutor::alloc</qualifiedname>
-        <param>
-          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
-          <declname>size</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="56" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="56" bodyend="56"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ad577307c108b1f5ce56cf613a6e7dcd4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>void *</type>
-        <definition>void * NeoN::GPUExecutor::realloc</definition>
-        <argsstring>(void *ptr, size_t newSize) const</argsstring>
-        <name>realloc</name>
-        <qualifiedname>NeoN::GPUExecutor::realloc</qualifiedname>
-        <param>
-          <type>void *</type>
-          <declname>ptr</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
-          <declname>newSize</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="58" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="58" bodyend="61"/>
-      </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
-        <type>void</type>
-        <definition>void NeoN::GPUExecutor::free</definition>
-        <argsstring>(void *ptr) const noexcept</argsstring>
-        <name>free</name>
-        <qualifiedname>NeoN::GPUExecutor::free</qualifiedname>
-        <param>
-          <type>void *</type>
-          <declname>ptr</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="63" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="63" bodyend="63"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="77" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="77" bodyend="82"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -224,7 +233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="65" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="65" bodyend="65"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="84" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="84" bodyend="84"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" kindref="member">exec</ref></type>
@@ -238,7 +247,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="67" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="67" bodyend="67"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="86" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="86" bodyend="86"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -270,18 +279,19 @@
         <link refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="21" bodyend="68"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" line="22" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/GPUExecutor.hpp" bodystart="23" bodyend="87"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1GPUExecutor_1a4e8b672e789aa3c8cae8d56ceefaf5ec" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>alloc</name></member>
-      <member refid="classNeoN_1_1GPUExecutor_1a34d6f31697a447e425603b0dbfa66b88" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>alloc</name></member>
+      <member refid="classNeoN_1_1GPUExecutor_1a0c92c2f5c58030cc69234fad663a778b" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>alloc</name></member>
+      <member refid="classNeoN_1_1GPUExecutor_1a35737b19833f31a58bbd30f5cc14e2ea" prot="private" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>allocContext_</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1ab8e118a7aaf1d73ab37111449bd99a4e" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>createKokkosView</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1a853de3f61ad2d2d32694afc816129057" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>exec</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1ad617d5ee9588b380d6be833fed3f8588" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>free</name></member>
       <member refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin_1a5ca3bdb7a9ec27a52c318eccf5c508ed" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>getLogger</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1ac8465d7ed9023aea8a808383f38550a5" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>GPUExecutor</name></member>
+      <member refid="classNeoN_1_1GPUExecutor_1a2739e2f202924194528dda623c7f156c" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>GPUExecutor</name></member>
+      <member refid="classNeoN_1_1GPUExecutor_1a96fc9e687c8ce3a43536cfeedd0feaec" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>memorySpace</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1af02d05e4d94fe2a813d63bf9abd5580b" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>name</name></member>
-      <member refid="classNeoN_1_1GPUExecutor_1ab4dddd8bac64877c63dbe21b84422b47" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>realloc</name></member>
-      <member refid="classNeoN_1_1GPUExecutor_1ad577307c108b1f5ce56cf613a6e7dcd4" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>realloc</name></member>
+      <member refid="classNeoN_1_1GPUExecutor_1a15c64b67cf4f8cfb215a8ffbdfa15baa" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>realloc</name></member>
       <member refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin_1a5c05a02dde4c15bb400c32a2361e84ce" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>setLogger</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1ac3ebe1e680bf1e69f70930c7f21c5261" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>underlyingExec</name></member>
       <member refid="classNeoN_1_1GPUExecutor_1adebe4dfbc231a708dbd66abea6e32abf" prot="public" virt="non-virtual"><scope>NeoN::GPUExecutor</scope><name>~GPUExecutor</name></member>

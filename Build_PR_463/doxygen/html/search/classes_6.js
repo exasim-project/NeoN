@@ -7,5 +7,6 @@ var searchData=
   ['geometryschemefactory_4',['GeometrySchemeFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['gpuexecutor_5',['GPUExecutor',['../classNeoN_1_1GPUExecutor.html',1,'NeoN']]],
   ['gradoperator_6',['GradOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperator.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['gradoperatorfactory_7',['GradOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['gradoperatorfactory_7',['GradOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['gridparams_8',['GridParams',['../structNeoN_1_1detail_1_1GridParams.html',1,'NeoN::detail']]]
 ];
