@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "uniformGridHelpers.hpp"
+#include "NeoN/mesh/unstructured/uniformGridHelpers.hpp"
 
 #include "NeoN/mesh/unstructured/io/meshConverter.hpp"
 
