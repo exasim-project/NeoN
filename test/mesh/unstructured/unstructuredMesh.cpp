@@ -25,6 +25,9 @@ TEST_CASE("Unstructured Mesh")
 
     SECTION("Can create a 1D uniform mesh" + execName)
     {
+        // bc  [   internal  ]  bc
+        // 0.0 [ 0.25 | 0.50 ] 1.0
+
         NeoN::localIdx nCells = 4;
 
         NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, nCells);
