@@ -180,11 +180,29 @@ Vector<ValueType> take(const Vector<ValueType>& in, std::pair<localIdx, localIdx
     return {in.exec(), rangeView.data(), rangeView.size()};
 }
 
+template<typename ValueType>
+Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx last)
+{
+    NF_ASSERT(last >= first, "Invalid index range");
+    const auto exec = in.exec();
+
+    auto out = Vector<ValueType>(exec, (last - first));
+    auto outV = out.view();
+    const auto inV = in.view();
+
+    NeoN::parallelFor(
+        exec, {first, last}, NEON_LAMBDA(const localIdx i) { outV[i - first] = inV[i]; }, "copyMap"
+    );
+
+    return out;
+}
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
     template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
     template void set<Type>(Type, const Vector<localIdx>&, Vector<Type>&);                         \
+    template Vector<Type> take<Type>(const Vector<Type>&, localIdx, localIdx);                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template Vector<Type> take<Type>(const Vector<Type>&, std::pair<localIdx, localIdx>);          \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \

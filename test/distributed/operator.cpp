@@ -36,7 +36,24 @@ TEST_CASE("Distributed Operator")
 {
     float epsilon = 1e-32;
 
+    auto inputPart = NeoN::Dictionary {
+        {
+            "laplacianSchemes",
+            NeoN::Dictionary {
+                {"laplacian(gamma,UPart)",
+                 NeoN::TokenList(
+                     {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
+                 )}
+            },
+        },
+        {"divSchemes",
+         NeoN::Dictionary {
+             {"div(phiPart,UPart)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
+         }}
+    };
+
     auto [execName, exec] = GENERATE(allAvailableExecutor());
+    NF_PING();
 
     auto input = GENERATE_INPUT("upwind", "");
     auto inputPart = GENERATE_INPUT("upwind", "Part");
@@ -44,6 +61,7 @@ TEST_CASE("Distributed Operator")
     auto nCells = 12;
     auto meshGlobal = create1DUniformMesh(exec, nCells);
     auto mesh = create1DUniformMesh(exec, nCells);
+    NF_PING();
 
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     auto u = finiteVolume::cellCentred::VolumeField<scalar>(
