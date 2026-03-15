@@ -82,4 +82,11 @@ void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<Value
 template<typename ValueType>
 void set(ValueType in, const Vector<localIdx>& idx, Vector<ValueType>& out);
 
+// FIXME add test for this
+/**
+ * @brief Given a Vector and an index range [begin, end) a subvector is created
+ */
+template<typename ValueType>
+Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx last);
+
 } // namespace NeoN
