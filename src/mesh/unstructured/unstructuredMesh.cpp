@@ -9,6 +9,7 @@
 
 namespace NeoN
 {
+
 UnstructuredMesh::UnstructuredMesh(
     Executor exec,
     vectorVector points,
@@ -112,6 +113,7 @@ localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
+BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
 
@@ -162,10 +164,12 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
     );
 }
 
-UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
+UnstructuredMesh create1DUniformMesh(
+    const Executor exec, const localIdx nCells, Vec3 leftBoundary, Vec3 rightBoundary
+)
 {
-    const Vec3 leftBoundary = {0.0, 0.0, 0.0};
-    const Vec3 rightBoundary = {1.0, 0.0, 0.0};
+    // const Vec3 leftBoundary = {0.0, 0.0, 0.0};
+    // const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
     vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});

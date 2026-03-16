@@ -60,6 +60,8 @@ View<const Vec3> BoundaryMesh::cn(const localIdx i) const
 
 const vectorVector& BoundaryMesh::sf() const { return Sf_; }
 
+vectorVector& BoundaryMesh::sf() { return Sf_; }
+
 View<const Vec3> BoundaryMesh::sf(const localIdx i) const
 {
     return extractSubView(Sf_, offset_, i);
@@ -73,6 +75,8 @@ View<const scalar> BoundaryMesh::magSf(const localIdx i) const
 }
 
 const vectorVector& BoundaryMesh::nf() const { return nf_; }
+
+vectorVector& BoundaryMesh::nf() { return nf_; }
 
 View<const Vec3> BoundaryMesh::nf(const localIdx i) const
 {
