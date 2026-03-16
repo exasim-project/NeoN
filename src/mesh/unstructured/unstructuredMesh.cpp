@@ -10,6 +10,7 @@
 
 namespace NeoN
 {
+
 UnstructuredMesh::UnstructuredMesh(
     Executor exec,
     vectorVector points,
@@ -113,6 +114,7 @@ localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
+BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
 

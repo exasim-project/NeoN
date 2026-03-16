@@ -209,6 +209,7 @@ public:
      * @return The boundary mesh.
      */
     const BoundaryMesh& boundaryMesh() const;
+    BoundaryMesh& boundaryMesh();
 
     /**
      * @brief Get the stencil data base.
