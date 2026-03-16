@@ -30,7 +30,7 @@ var searchData=
   ['lookuptable_27',['lookuptable',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable'],['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable']]],
   ['loop_28',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
   ['loweridx_29',['lowerIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a254a0db0297a0dc4fd764d33309411db',1,'NeoN::la::FaceToMatrixAddress']]],
-  ['lx_30',['Lx',['../structNeoN_1_1detail_1_1GridParams.html#a95994a42ff98bf90265af7699456b2cd',1,'NeoN::detail::GridParams']]],
-  ['ly_31',['Ly',['../structNeoN_1_1detail_1_1GridParams.html#a3539794b7eac49612ce3ed81aca857f0',1,'NeoN::detail::GridParams']]],
-  ['lz_32',['Lz',['../structNeoN_1_1detail_1_1GridParams.html#adf43574e3ccfaf55f4b301b0d8958e0a',1,'NeoN::detail::GridParams']]]
+  ['lx_30',['Lx',['../structNeoN_1_1detail_1_1MeshParams.html#acca6fb1b0a1ad9093ce541eb3238d5e7',1,'NeoN::detail::MeshParams']]],
+  ['ly_31',['Ly',['../structNeoN_1_1detail_1_1MeshParams.html#a3a54c2a75a2808618da9fda37a32b3fe',1,'NeoN::detail::MeshParams']]],
+  ['lz_32',['Lz',['../structNeoN_1_1detail_1_1MeshParams.html#a905d93fcf475c523e19cf645f060ac19',1,'NeoN::detail::MeshParams']]]
 ];

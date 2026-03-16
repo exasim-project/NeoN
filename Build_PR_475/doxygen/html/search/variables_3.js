@@ -4,7 +4,7 @@ var searchData=
   ['derivedclass_1',['derivedClass',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a5ab28273ae4c40a351d732aa503125f2',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register']]],
   ['doc_2',['doc',['../classNeoN_1_1BaseClassData.html#a45b09850ac5530d671e5f635ebfdf61c',1,'NeoN::BaseClassData::doc'],['../classNeoN_1_1DerivedClassDocumentation.html#a4a67fe40c265c9725d1f48404008fc7f',1,'NeoN::DerivedClassDocumentation::doc']]],
   ['docs_5f_3',['docs_',['../classNeoN_1_1CollectionMixin.html#a999afc07d7b24436f26ee1865dbcd6a0',1,'NeoN::CollectionMixin']]],
-  ['dx_4',['dx',['../structNeoN_1_1detail_1_1GridParams.html#a3d46c6daa97150bd8dbbffb04a5667c2',1,'NeoN::detail::GridParams']]],
-  ['dy_5',['dy',['../structNeoN_1_1detail_1_1GridParams.html#a754e00fd94afd3ae4836a6f1d673d255',1,'NeoN::detail::GridParams']]],
-  ['dz_6',['dz',['../structNeoN_1_1detail_1_1GridParams.html#a24476097a7c84c32532cb6ed405d6735',1,'NeoN::detail::GridParams']]]
+  ['dx_4',['dx',['../structNeoN_1_1detail_1_1MeshParams.html#a0beb25648d33501214f5e162acaf1e09',1,'NeoN::detail::MeshParams']]],
+  ['dy_5',['dy',['../structNeoN_1_1detail_1_1MeshParams.html#aa6e40baa0a09700eafcb229ba41c7007',1,'NeoN::detail::MeshParams']]],
+  ['dz_6',['dz',['../structNeoN_1_1detail_1_1MeshParams.html#a9eb40e2b77e3f7ec82af2bbe5b7e5872',1,'NeoN::detail::MeshParams']]]
 ];

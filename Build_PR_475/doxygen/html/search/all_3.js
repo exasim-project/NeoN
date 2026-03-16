@@ -49,7 +49,7 @@ var searchData=
   ['domainmixin_3c_20neon_3a_3avec3_20_3e_46',['DomainMixin&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['domainmixin_3c_20scalar_20_3e_47',['DomainMixin&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['dropoperator_48',['dropOperator',['../classNeoN_1_1dsl_1_1Expression.html#a3a3ab329f3ad1ecd16e066b82b1cf3f9',1,'NeoN::dsl::Expression']]],
-  ['dx_49',['dx',['../structNeoN_1_1detail_1_1GridParams.html#a3d46c6daa97150bd8dbbffb04a5667c2',1,'NeoN::detail::GridParams']]],
-  ['dy_50',['dy',['../structNeoN_1_1detail_1_1GridParams.html#a754e00fd94afd3ae4836a6f1d673d255',1,'NeoN::detail::GridParams']]],
-  ['dz_51',['dz',['../structNeoN_1_1detail_1_1GridParams.html#a24476097a7c84c32532cb6ed405d6735',1,'NeoN::detail::GridParams']]]
+  ['dx_49',['dx',['../structNeoN_1_1detail_1_1MeshParams.html#a0beb25648d33501214f5e162acaf1e09',1,'NeoN::detail::MeshParams']]],
+  ['dy_50',['dy',['../structNeoN_1_1detail_1_1MeshParams.html#aa6e40baa0a09700eafcb229ba41c7007',1,'NeoN::detail::MeshParams']]],
+  ['dz_51',['dz',['../structNeoN_1_1detail_1_1MeshParams.html#a9eb40e2b77e3f7ec82af2bbe5b7e5872',1,'NeoN::detail::MeshParams']]]
 ];

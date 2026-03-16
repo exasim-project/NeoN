@@ -7,7 +7,7 @@ var searchData=
   ['ninternal_4',['nInternal',['../structNeoN_1_1detail_1_1FaceData.html#a9f4234d39e8c013ebbbd8bfc6b87be7e',1,'NeoN::detail::FaceData']]],
   ['nl_5',['NL',['../time_8hpp.html#a6c2bdfd6f25ccadb92fcff4173b7fec2',1,'time.hpp']]],
   ['numiter_6',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
-  ['nx_7',['nx',['../structNeoN_1_1detail_1_1GridParams.html#aaa785dd76e3d2ffcf423f5d2a2247917',1,'NeoN::detail::GridParams']]],
-  ['ny_8',['ny',['../structNeoN_1_1detail_1_1GridParams.html#af7f0243e5c613459030d43e5632d3e4f',1,'NeoN::detail::GridParams']]],
-  ['nz_9',['nz',['../structNeoN_1_1detail_1_1GridParams.html#aa3c116130784198de32453a85dfcda19',1,'NeoN::detail::GridParams']]]
+  ['nx_7',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
+  ['ny_8',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],
+  ['nz_9',['nz',['../structNeoN_1_1detail_1_1MeshParams.html#a70327af024934248c1727eabbdbc719c',1,'NeoN::detail::MeshParams']]]
 ];
