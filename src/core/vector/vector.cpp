@@ -16,6 +16,7 @@ template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, localIdx size)
     : size_(size), data_(nullptr), exec_(exec)
 {
+    NF_ASSERT(exec.valueless_by_exception() == false, "Executor is valueless");
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
@@ -31,6 +32,7 @@ Vector<ValueType>::Vector(
 )
     : size_(size), data_(nullptr), exec_(exec)
 {
+    NF_ASSERT(exec.valueless_by_exception() == false, "Executor is valueless");
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
@@ -45,6 +47,7 @@ template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
     : size_(size), data_(nullptr), exec_(exec)
 {
+    NF_ASSERT(exec.valueless_by_exception() == false, "Executor is valueless");
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& execu)
@@ -88,6 +91,7 @@ Vector<ValueType>::~Vector()
 template<typename ValueType>
 [[nodiscard]] Vector<ValueType> Vector<ValueType>::copyToExecutor(Executor dstExec) const
 {
+    NF_ASSERT(dstExec.valueless_by_exception() == false, "Executor is valueless");
     if (dstExec == exec_) return *this;
 
     Vector<ValueType> result(dstExec, size_);
@@ -188,6 +192,7 @@ template<typename ValueType>
 void Vector<ValueType>::resize(const localIdx size)
 {
     void* ptr = nullptr;
+
     if (!empty())
     {
         std::visit(
