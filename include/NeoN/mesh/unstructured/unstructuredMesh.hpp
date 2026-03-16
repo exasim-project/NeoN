@@ -332,7 +332,12 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  * A 1D mesh in 3D space in which each cell has a left and a right face.
  * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
  */
-UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells);
+UnstructuredMesh create1DUniformMesh(
+    const Executor exec,
+    const localIdx nCells,
+    Vec3 left = {0.0, 0.0, 0.0},
+    Vec3 right = {1.0, 0.0, 0.0}
+);
 
 
 } // namespace NeoN
