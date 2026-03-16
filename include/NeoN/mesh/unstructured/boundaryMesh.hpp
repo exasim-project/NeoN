@@ -125,6 +125,13 @@ public:
     const vectorVector& faceNormals() const;
 
     /**
+     * @brief Get the field of face areas normals.
+     *
+     * @return A constant reference to the field of face areas normals.
+     */
+    vectorVector& sf();
+
+    /**
      * @brief Get a view of face areas normals for a specific boundary face.
      *
      * @param i The index of the boundary face.
@@ -153,6 +160,8 @@ public:
      * @return A constant reference to the field of face unit normal vectors.
      */
     const vectorVector& faceUnitNormals() const;
+
+    vectorVector& nf();
 
     /**
      * @brief Get a view of face unit normal vectors for a specific boundary face.

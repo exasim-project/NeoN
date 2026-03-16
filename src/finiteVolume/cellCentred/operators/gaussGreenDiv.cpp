@@ -334,6 +334,8 @@ void computeDivIntCellBasedImp(
 
     auto values = ls.matrix().values().view();
 
+    // FIXME currently only CDS is supported here
+    // FIXME currently we dont distinguish between internal and boundary interfaces
     parallelFor(
         exec,
         {0, iterator->size()},

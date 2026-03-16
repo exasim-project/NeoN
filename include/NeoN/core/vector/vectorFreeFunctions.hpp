@@ -48,6 +48,10 @@ void sub(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value);
 template<typename ValueType>
 void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2);
 
+/** @brief add with idx map */
+template<typename ValueType>
+void sub(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out);
+
 template<typename ValueType>
 void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
     requires requires(ValueType a, ValueType b) { a* b; };

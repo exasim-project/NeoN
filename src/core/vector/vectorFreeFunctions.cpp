@@ -101,7 +101,7 @@ void add(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueT
     auto outV = out.view();
 
     NeoN::parallelFor(
-        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[i]; }, "copyMap"
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] += inV[i]; }, "copyMap"
     );
 }
 
@@ -120,6 +120,24 @@ void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
         vect1, vect2, NEON_LAMBDA(ValueType va, ValueType vb) { return va - vb; }
     );
 }
+
+template<typename ValueType>
+void sub(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
+{
+    // NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
+    // NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
+    // NF_ASSERT(idx.size() == out.size(), "Size mismatch");
+
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    const auto idxV = idx.view();
+    auto outV = out.view();
+
+    NeoN::parallelFor(
+        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] -= inV[i]; }, "copyMap"
+    );
+}
+
 
 template<typename ValueType>
 void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
@@ -210,6 +228,7 @@ Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx las
     template void add(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);                \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void sub(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);                \
     template void mul<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void mul<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
 

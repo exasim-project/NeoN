@@ -129,6 +129,7 @@ localIdx UnstructuredMesh::nTotalFaces() const
 localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
+BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
