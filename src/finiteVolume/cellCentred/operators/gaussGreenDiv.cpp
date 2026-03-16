@@ -250,7 +250,10 @@ void computeDivImp(
             auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
             Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-            bValues[bcfacei] = valueMat;
+
+            //  store the corresponding neighbour value in boundary matrix
+            bValues[bcfacei] += (bweights[bcfacei]) * faceFluxV[facei] * operatorScalingOwn
+                              * valFrac1 * one<ValueType>();
 
             auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
