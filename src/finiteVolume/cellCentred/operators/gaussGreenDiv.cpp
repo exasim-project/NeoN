@@ -221,18 +221,21 @@ void computeDivImp(
         "computeLocalGaussGreenDivCoefficients"
     );
 
-    auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs] = views(
+    auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs, nfV] = views(
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),
         phi.boundaryData().refValue(),
-        mesh.boundaryMesh().deltaCoeffs()
+        mesh.boundaryMesh().deltaCoeffs(),
+        mesh.boundaryMesh().nf()
     );
 
     auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
 
+    // FIXME currently only CDS is supported here
+    // FIXME currently we dont distinguish between internal and boundary interfaces
     parallelFor(
         exec,
         {nInternalFaces, faceFluxV.size()},
@@ -251,9 +254,10 @@ void computeDivImp(
 
             Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
 
+            // FIXME
             //  store the corresponding neighbour value in boundary matrix
-            bValues[bcfacei] += (bweights[bcfacei]) * faceFluxV[facei] * operatorScalingOwn
-                              * valFrac1 * one<ValueType>();
+            //  FIXME hardcoded
+            bValues[bcfacei] += -0.5 * faceFluxV[facei] * operatorScalingOwn * one<ValueType>();
 
             auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
