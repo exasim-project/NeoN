@@ -20,7 +20,15 @@ auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
 {
     auto exec = mesh.exec();
     localIdx localCells = mesh.nCells() / mpiEnviron.sizeRank(); // 4
-    return create1DUniformMesh(exec, localCells);
+    auto ret = create1DUniformMesh(exec, localCells);
+
+    if (mpiEnviron.rank() != 0)
+    {
+        ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
+        ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    }
+
+    return ret;
 }
 
 /** @brief helper function to set the processor boundaries of a distributed field */
@@ -77,13 +85,13 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
 
 
     // [ 0 | 1 | 2 | 3 ][ 4 | 5 | 6 | 7 ][ 8 | 9 | 10 | 11 ]
-    // 11   0   1   2   3    4   5   6   7    8   9   10   12
+    // 11  0   1   2   3    4   5   6   7    8   9   10   12
 
     if (mpiEnviron.rank() == 0)
     {
         lastFace = localFaces + 1;             // 4
         leftBoundaryFace = 3 * localFaces + 2; // 11
-        rightBoundaryFace = localFaces;        // leftBoundaryFace + 1;
+        rightBoundaryFace = localFaces;        // 3
     }
     if (mpiEnviron.rank() == 1)
     {
@@ -99,15 +107,12 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
         lastFace = firstFace + localFaces + 1;
 
         leftBoundaryFace = 2 * localFaces + 1;                 // 7
-        rightBoundaryFace = leftBoundaryFace + localCells + 1; // 11
+        rightBoundaryFace = leftBoundaryFace + localCells + 1; // 12
     }
 
     FieldType ret = {field.exec(), field.name + "Part", mesh, bcs};
 
-    // NOTE last two values are boundaries
-    // 0 - 3 + 2 + 1
-    std::cout << __FILE__ << ":" << __LINE__ << " first " << firstFace << " last " << lastFace
-              << "\n";
+    // NOTE last two values are boundaries and are overwritten next
     auto internalVector = take(field.internalVector(), firstFace, lastFace + 1);
     // value lastFace  and lastFace+1 are incorrect
     // value lastFace is the left boundary
@@ -268,15 +273,16 @@ TEST_CASE("Distributed")
     {
         lastElement = 10;
     }
-    // if (mpiEnviron.rank() == 1)
-    // {
-    //     firstCell = localCells;
-    //     lastCell = localCells + localCells;
-    // }
-    // if (mpiEnviron.rank() == 2)
-    // {
-    //     firstCell = localCells + localCells;
-    // }
+    if (mpiEnviron.rank() == 1)
+    {
+        firstElement = 12;
+        lastElement = 22;
+    }
+    if (mpiEnviron.rank() == 2)
+    {
+        firstElement = 24;
+        lastElement = 34;
+    }
 
     if (env.rank() == 0)
     {
@@ -302,15 +308,6 @@ TEST_CASE("Distributed")
             ApproxScalar(1e-15)
         );
     }
-
-    // auto matDiag = ls.matrix().diag();
-    // auto matOptDiag = lsOpt.matrix().diag();
-    // SECTION("Has correct diagonal") { compare(matDiag, matOptDiag, ApproxScalar(epsilon)); }
-
-    // auto matUpper = upper(ls.matrix());
-    // auto matOptUpper = upper(lsOpt.matrix());
-    // SECTION("Has correct upper") { compare(matUpper, matOptUpper, ApproxScalar(epsilon)); }
-    // }
 }
 
 }
