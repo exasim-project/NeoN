@@ -114,3 +114,7 @@ else()
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
 endif()
+
+if(NeoN_WITH_AMREX)
+  add_subdirectory(blockAMR)
+endif()

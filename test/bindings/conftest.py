@@ -11,16 +11,34 @@ and configures pytest fixtures for executor parameterization.
 
 import pytest
 
-# Set up path before importing neon
-import neon
+_neon_available = False
+try:
+    import neon
+    neon.initialize  # check that bindings loaded
+    _neon_available = True
+except (ImportError, AttributeError):
+    pass
+
+_blockamr_available = False
+try:
+    import blockamr
+    _blockamr_available = True
+except ImportError:
+    pass
 
 
 @pytest.fixture(scope="session", autouse=True)
 def neon_global_session():
-    """Initialize NeoN once for all test files in this session."""
-    neon.initialize()
+    """Initialize NeoN and/or blockAMR once for all test files in this session."""
+    if _neon_available:
+        neon.initialize()
+    if _blockamr_available:
+        blockamr.initialize()
     yield  # This is where all tests run
-    neon.finalize()
+    if _blockamr_available:
+        blockamr.finalize()
+    if _neon_available:
+        neon.finalize()
 
 
 def pytest_configure(config):
@@ -57,7 +75,7 @@ def pytest_generate_tests(metafunc):
 
 def pytest_collection_modifyitems(config, items):
     """Automatically skip GPU tests if GPU is not available."""
-    if hasattr(neon, '__has_gpu__') and not neon.__has_gpu__:
+    if not _neon_available or not neon.gpu_available():
         skip_gpu = pytest.mark.skip(reason="GPU not available")
         for item in items:
             if "gpu" in item.keywords:
