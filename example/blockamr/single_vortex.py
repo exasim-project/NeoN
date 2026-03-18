@@ -1,0 +1,239 @@
+# SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
+#
+# SPDX-License-Identifier: MIT
+
+"""Single-level advection of a Gaussian profile in a time-reversing vortex.
+
+Solves the advection equation on a periodic [0,1]^3 domain:
+
+    ddt(phi) + div(U, phi) = 0
+
+using the explicit DSL with configurable divergence scheme and forward-Euler
+time stepping.  The prescribed velocity field is a 2-D divergence-free
+vortex that reverses direction at t = T/2, so the Gaussian returns to its
+initial position after one full period T.
+
+Based on the AMReX AmrAdvection SingleVortex tutorial:
+https://amrex-codes.github.io/amrex/docs_html/AmrCore.html#the-advection-equation
+
+Usage:
+    python example/blockamr/single_vortex.py                    # default 64^3, Upwind
+    python example/blockamr/single_vortex.py --ncell 128        # finer grid
+    python example/blockamr/single_vortex.py --scheme Linear    # central scheme
+"""
+
+import argparse
+import math
+import os
+import shutil
+
+import blockamr
+from blockamr.field import Field
+from blockamr.dsl import exp, solve
+from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
+
+import numpy as np
+
+DIV_SCHEMES = {
+    "Upwind": Upwind,
+    "Linear": Linear,
+    "VanLeer": VanLeer,
+    "QUICK": QUICK,
+}
+
+
+# ---------------------------------------------------------------------------
+# Velocity field
+# ---------------------------------------------------------------------------
+def vortex_velocity(x, y, z, t, period=2.0):
+    """Divergence-free 2-D vortex (uniform in z) that reverses at t = T/2.
+
+    u =  2 sin^2(pi x) sin(2 pi y) cos(pi t / T)
+    v = -2 sin(2 pi x) sin^2(pi y) cos(pi t / T)
+    w =  0
+    """
+    cos_t = math.cos(math.pi * t / period)
+    u = 2.0 * np.sin(np.pi * x) ** 2 * np.sin(2.0 * np.pi * y) * cos_t
+    v = -2.0 * np.sin(2.0 * np.pi * x) * np.sin(np.pi * y) ** 2 * cos_t
+    w = np.zeros_like(x)
+    return u, v, w
+
+
+# ---------------------------------------------------------------------------
+# Initial condition
+# ---------------------------------------------------------------------------
+def init_gaussian(field, center=(0.5, 0.75), sigma=0.1):
+    """Fill *field* with a 2-D Gaussian (uniform in z)."""
+    dx = field.dx
+    cx, cy = center
+    for mfi in blockamr.MFIterator(field.mf):
+        arr = field.mf.array(mfi)
+        bx = mfi.valid_box()
+        lo = bx.small_end()
+        nx, ny, _nz = arr.shape[:3]
+        for i in range(nx):
+            for j in range(ny):
+                x = (lo[0] + i + 0.5) * dx[0]
+                y = (lo[1] + j + 0.5) * dx[1]
+                arr[i, j, :, 0] = math.exp(
+                    -((x - cx) ** 2 + (y - cy) ** 2) / (2.0 * sigma**2)
+                )
+
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+def compute_mass(mf, dx):
+    """Integrate phi over the domain."""
+    total = 0.0
+    dv = dx[0] * dx[1] * dx[2]
+    for mfi in blockamr.MFIterator(mf):
+        arr = mf.array(mfi)
+        total += float(np.sum(arr[:, :, :, 0])) * dv
+    return total
+
+
+def compute_l2_error(mf, phi0, dx):
+    """Relative L2 error between current field and stored reference."""
+    err_sq = 0.0
+    ref_sq = 0.0
+    dv = dx[0] * dx[1] * dx[2]
+    for mfi in blockamr.MFIterator(mf):
+        arr = mf.array(mfi)
+        bx = mfi.valid_box()
+        lo = tuple(bx.small_end())
+        diff = arr[:, :, :, 0] - phi0[lo]
+        err_sq += float(np.sum(diff**2)) * dv
+        ref_sq += float(np.sum(phi0[lo] ** 2)) * dv
+    return math.sqrt(err_sq / ref_sq)
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+def _write_plotfile(mf, geom, t, plot_count):
+    """Write a plotfile and return the incremented counter."""
+    pltdir = f"plt_vortex_{plot_count:04d}"
+    if os.path.exists(pltdir):
+        shutil.rmtree(pltdir)
+    blockamr.write_single_level_plotfile(pltdir, mf, ["phi"], geom, t, 0)
+    print(f"  Wrote {pltdir}  (t = {t:.4f})")
+    return plot_count + 1
+
+
+def run(
+    n_cell=64,
+    max_size=32,
+    cfl=0.3,
+    period=2.0,
+    sigma=0.1,
+    plotfile=True,
+    write_interval=0.1,
+    scheme="Upwind",
+):
+    """Run the SingleVortex advection problem and return the relative L2 error."""
+
+    # ---- domain setup ----
+    div_scheme = DIV_SCHEMES[scheme]()
+    ngrow = div_scheme.stencil_width
+
+    box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
+    geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
+
+    ba = blockamr.BoxArray(box)
+    ba.max_size(max_size)
+    dm = blockamr.DistributionMapping(ba)
+    mf = blockamr.MultiFab(ba, dm, 1, ngrow)
+
+    field = Field(mf, geom, name="phi")
+    dx = field.dx
+
+    # ---- initial condition ----
+    init_gaussian(field, sigma=sigma)
+
+    # save reference for error computation
+    phi0 = {}
+    for mfi in blockamr.MFIterator(mf):
+        arr = mf.array(mfi)
+        bx = mfi.valid_box()
+        phi0[tuple(bx.small_end())] = np.array(arr[:, :, :, 0], copy=True)
+
+    mass0 = compute_mass(mf, dx)
+
+    # write initial plotfile
+    plot_count = 0
+    if plotfile:
+        plot_count = _write_plotfile(mf, geom, 0.0, plot_count)
+
+    # ---- build DSL expression ----
+    def vel(x, y, z, t):
+        return vortex_velocity(x, y, z, t, period=period)
+
+    expr = exp.ddt(field) + exp.div(vel, field, scheme=div_scheme)
+
+    # ---- time loop ----
+    u_max = 2.0  # max velocity magnitude
+    dt = cfl * min(dx) / u_max
+    t = 0.0
+    nsteps = 0
+    next_write = write_interval
+
+    print(f"Grid: {n_cell}^3, dx = {dx[0]:.4e}, dt = {dt:.4e}")
+    print(f"Scheme: {scheme}, Period T = {period}, CFL = {cfl}, write every {write_interval}s")
+    print()
+
+    while t < period - 1e-12:
+        if t + dt > period:
+            dt = period - t
+        solve(expr, t, dt)
+        t += dt
+        nsteps += 1
+
+        # write plotfile at regular intervals
+        if plotfile and t >= next_write - 1e-12:
+            plot_count = _write_plotfile(mf, geom, t, plot_count)
+            next_write += write_interval
+
+    # ---- diagnostics ----
+    mass_final = compute_mass(mf, dx)
+    mass_err = abs(mass_final - mass0) / abs(mass0)
+    l2_error = compute_l2_error(mf, phi0, dx)
+
+    print()
+    print(f"Completed {nsteps} steps, final t = {t:.6f}")
+    print(f"Mass conservation error: {mass_err:.2e}")
+    print(f"Relative L2 error vs IC: {l2_error:.6f}")
+    if plotfile:
+        print(f"Wrote {plot_count} plotfiles")
+
+    return l2_error
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SingleVortex advection example")
+    parser.add_argument("--ncell", type=int, default=64, help="cells per dimension")
+    parser.add_argument("--max-size", type=int, default=32, help="max grid size")
+    parser.add_argument("--cfl", type=float, default=0.3, help="CFL number")
+    parser.add_argument("--period", type=float, default=2.0, help="vortex period")
+    parser.add_argument("--write-interval", type=float, default=0.1, help="plotfile write interval in seconds")
+    parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
+    parser.add_argument(
+        "--scheme",
+        choices=list(DIV_SCHEMES),
+        default="Upwind",
+        help="divergence scheme (default: Upwind)",
+    )
+    args = parser.parse_args()
+
+    blockamr.initialize()
+    run(
+        n_cell=args.ncell,
+        max_size=args.max_size,
+        cfl=args.cfl,
+        period=args.period,
+        plotfile=not args.no_plot,
+        write_interval=args.write_interval,
+        scheme=args.scheme,
+    )
+    blockamr.finalize()
