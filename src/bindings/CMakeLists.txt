@@ -55,7 +55,17 @@ target_link_libraries(_neon PRIVATE NeoN::NeoN)
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/src/neon/__init__.py
+    DESTINATION neon
+    COMPONENT python)
+  # Install libNeoN.so so _neon.so can find it via RPATH ($ORIGIN/../lib/)
+  install(TARGETS NeoN LIBRARY DESTINATION lib COMPONENT python)
 else()
   # Standalone installation
   install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+endif()
+
+if(NeoN_WITH_AMREX)
+  add_subdirectory(blockAMR)
 endif()
