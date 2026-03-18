@@ -55,6 +55,13 @@ else()
   target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=0)
 endif()
 
+if(NeoN_WITH_AMREX)
+  target_link_libraries(NeoN_public_api INTERFACE AMReX::amrex)
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_AMREX=1)
+else()
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_AMREX=0)
+endif()
+
 if(NeoN_WITH_SPDLOG)
   target_link_libraries(NeoN_public_api INTERFACE spdlog::spdlog_header_only)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_SPDLOG=1)
