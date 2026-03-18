@@ -267,6 +267,34 @@ if(${NeoN_WITH_GINKGO})
   endif()
 endif()
 
+if(${NeoN_WITH_AMREX})
+  find_package(AMReX ${NeoN_AMREX_VERSION} CONFIG QUIET)
+  if(AMReX_FOUND)
+    message(STATUS "Using system-installed AMReX (version: ${AMReX_VERSION})")
+  else()
+    message(STATUS "System AMReX not found — fetching from GitHub via CPM.cmake...")
+    cpmaddpackage(
+      NAME
+      AMReX
+      VERSION
+      ${NeoN_AMREX_VERSION}
+      GITHUB_REPOSITORY
+      AMReX-Codes/amrex
+      GIT_TAG
+      ${NeoN_AMREX_TAG}
+      SYSTEM
+      YES
+      OPTIONS
+      "AMReX_PIC ON"
+      "AMReX_ENABLE_TESTS OFF"
+      "AMReX_FORTRAN OFF"
+      "AMReX_FORTRAN_INTERFACES OFF"
+      "AMReX_BUILD_TUTORIALS OFF"
+      "AMReX_PARTICLES ON"
+      "AMReX_EB ON")
+  endif()
+endif()
+
 if(${NeoN_BUILD_PYTHON_BINDINGS})
   if(CMAKE_VERSION VERSION_LESS 3.18)
     set(DEV_MODULE Development)

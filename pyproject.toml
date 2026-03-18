@@ -26,6 +26,8 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.19.0",
+    "jax",
+    "pydantic>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -61,6 +63,9 @@ editable.rebuild = false
 
 [tool.scikit-build.cmake.define]
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
+NeoN_WITH_AMREX = "ON"
+NeoN_WITH_UMPIRE = "OFF"
+AMReX_INSTALL = "OFF"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
