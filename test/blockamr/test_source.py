@@ -5,6 +5,7 @@
 import math
 
 import blockamr
+import jax.numpy as jnp
 from blockamr.field import Field
 from blockamr.operators.source import Source
 
@@ -53,24 +54,27 @@ def test_source_exact():
 
     source_op = Source(coeff_func, field)
 
-    for patch in field.patches():
-        result = source_op.compute(patch, t=0.0)
-        lo = patch.box.small_end()
-        dx = patch.geom.cell_size()
-        prob_lo = patch.geom.prob_lo()
-        nx, ny, nz = patch.valid_arr.shape[:3]
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = source_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
+        lo = mfi.valid_box().small_end()
+        dx = field.geom.cell_size()
+        prob_lo = field.geom.prob_lo()
+        valid_arr = field.mf.array(mfi)
+        nx, ny, nz = valid_arr.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]
             for j in range(ny):
                 y = prob_lo[1] + (lo[1] + j + 0.5) * dx[1]
                 for k in range(nz):
                     z = prob_lo[2] + (lo[2] + k + 0.5) * dx[2]
-                    phi = (
+                    phi_val = (
                         math.sin(2 * math.pi * x)
                         * math.sin(2 * math.pi * y)
                         * math.sin(2 * math.pi * z)
                     )
-                    exact = (x**2 + y) * phi
+                    exact = (x**2 + y) * phi_val
                     assert abs(float(result[i, j, k]) - exact) < 1e-14, (
                         f"At ({x:.3f},{y:.3f},{z:.3f}): "
                         f"got {float(result[i, j, k])}, expected {exact}"

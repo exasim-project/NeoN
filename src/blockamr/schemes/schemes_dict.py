@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-
 class SchemesDict:
     """Runtime scheme selection dictionary."""
 

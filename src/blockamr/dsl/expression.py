@@ -7,7 +7,7 @@ def _is_temporal_op(obj):
 
 
 def _is_spatial_op(obj):
-    return hasattr(obj, "compute")
+    return hasattr(obj, "build_kernel")
 
 
 class Expression:
@@ -33,6 +33,6 @@ class Expression:
 
     def __sub__(self, other):
         if _is_temporal_op(other) or _is_spatial_op(other):
-            other.coeff = -other.coeff
-            return self.__add__(other)
+            negated = -1.0 * other  # uses __rmul__, creates a copy
+            return self.__add__(negated)
         return NotImplemented

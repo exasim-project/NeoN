@@ -21,10 +21,13 @@ class PatchData:
 class Field:
     """Wraps MultiFab + Geometry for DSL operators."""
 
-    def __init__(self, mf, geom, name=""):
+    def __init__(self, mf, geom, name="", box=None, dm=None, max_size=32):
         self.mf = mf
         self.geom = geom
         self.name = name
+        self.box = box
+        self.dm = dm
+        self.max_size = max_size
 
     @property
     def dx(self):
@@ -52,7 +55,7 @@ class CellField(Field):
         ba = blockamr.BoxArray(box)
         ba.max_size(max_size)
         mf = blockamr.MultiFab(ba, dm, ncomp, ngrow)
-        super().__init__(mf, geom, name=name)
+        super().__init__(mf, geom, name=name, box=box, dm=dm, max_size=max_size)
 
 
 class NodalField(Field):
@@ -63,7 +66,7 @@ class NodalField(Field):
         ba.max_size(max_size)
         ba.surrounding_nodes()
         mf = blockamr.MultiFab(ba, dm, ncomp, ngrow)
-        super().__init__(mf, geom, name=name)
+        super().__init__(mf, geom, name=name, box=box, dm=dm)
 
 
 class FaceField:

@@ -23,10 +23,7 @@ struct MFIterator
 
     explicit MFIterator(amrex::MultiFab& mf_) : mf(&mf_), mfi(nullptr), needsAdvance(false) {}
 
-    amrex::MFIter& get()
-    {
-        return *mfi;
-    }
+    amrex::MFIter& get() { return *mfi; }
 };
 
 void registerMultiFab(nb::module_& m)
@@ -36,40 +33,55 @@ void registerMultiFab(nb::module_& m)
     nb::class_<BoxArray>(m, "BoxArray")
         .def(
             "__init__",
-            [](BoxArray* self, const Box& bx, std::optional<IndexType> index_type) {
+            [](BoxArray* self, const Box& bx, std::optional<IndexType> index_type)
+            {
                 new (self) BoxArray(bx);
                 if (index_type) self->convert(*index_type);
             },
-            nb::arg("bx"), nb::arg("index_type") = nb::none())
+            nb::arg("bx"),
+            nb::arg("index_type") = nb::none()
+        )
         .def(
             "max_size",
             [](BoxArray& ba, int sz) -> BoxArray& { return ba.maxSize(sz); },
-            nb::arg("max_size"), nb::rv_policy::reference)
+            nb::arg("max_size"),
+            nb::rv_policy::reference
+        )
         .def("ix_type", &BoxArray::ixType)
         .def(
             "convert",
             [](BoxArray& ba, IndexType t) -> BoxArray& { return ba.convert(t); },
-            nb::arg("typ"), nb::rv_policy::reference)
+            nb::arg("typ"),
+            nb::rv_policy::reference
+        )
         .def(
             "convert",
             [](BoxArray& ba, const IntVect& t) -> BoxArray& { return ba.convert(t); },
-            nb::arg("typ"), nb::rv_policy::reference)
+            nb::arg("typ"),
+            nb::rv_policy::reference
+        )
         .def(
             "surrounding_nodes",
             [](BoxArray& ba) -> BoxArray& { return ba.surroundingNodes(); },
-            nb::rv_policy::reference)
+            nb::rv_policy::reference
+        )
         .def(
             "surrounding_nodes",
             [](BoxArray& ba, int dir) -> BoxArray& { return ba.surroundingNodes(dir); },
-            nb::arg("dir"), nb::rv_policy::reference)
+            nb::arg("dir"),
+            nb::rv_policy::reference
+        )
         .def(
             "enclosed_cells",
             [](BoxArray& ba) -> BoxArray& { return ba.enclosedCells(); },
-            nb::rv_policy::reference)
+            nb::rv_policy::reference
+        )
         .def(
             "enclosed_cells",
             [](BoxArray& ba, int dir) -> BoxArray& { return ba.enclosedCells(dir); },
-            nb::arg("dir"), nb::rv_policy::reference);
+            nb::arg("dir"),
+            nb::rv_policy::reference
+        );
 
     nb::class_<DistributionMapping>(m, "DistributionMapping")
         .def(nb::init<const BoxArray&>(), nb::arg("ba"));
@@ -82,43 +94,57 @@ void registerMultiFab(nb::module_& m)
         .def("finalize", &MFIter::Finalize);
 
     nb::class_<MFIterator>(m, "MFIterator")
-        .def("__init__",
-             [](MFIterator* self, MultiFab& mf) { new (self) MFIterator(mf); }, nb::arg("mf"),
-             nb::keep_alive<1, 2>())
+        .def(
+            "__init__",
+            [](MFIterator* self, MultiFab& mf) { new (self) MFIterator(mf); },
+            nb::arg("mf"),
+            nb::keep_alive<1, 2>()
+        )
         .def(
             "__iter__",
-            [](MFIterator& self) -> MFIterator& {
+            [](MFIterator& self) -> MFIterator&
+            {
                 self.mfi = std::make_unique<MFIter>(*self.mf);
                 self.needsAdvance = false;
                 return self;
             },
-            nb::rv_policy::reference)
-        .def("__next__",
-             [](nb::object pySelf) -> nb::object {
-                 MFIterator& self = nb::cast<MFIterator&>(pySelf);
-                 // Advance from previous iteration
-                 if (self.needsAdvance)
-                 {
-                     ++(*self.mfi);
-                 }
-                 if (!self.mfi || !self.mfi->isValid())
-                 {
-                     self.mfi.reset();
-                     throw nb::stop_iteration();
-                 }
-                 self.needsAdvance = true;
-                 return pySelf;
-             })
+            nb::rv_policy::reference
+        )
+        .def(
+            "__next__",
+            [](nb::object pySelf) -> nb::object
+            {
+                MFIterator& self = nb::cast<MFIterator&>(pySelf);
+                // Advance from previous iteration
+                if (self.needsAdvance)
+                {
+                    ++(*self.mfi);
+                }
+                if (!self.mfi || !self.mfi->isValid())
+                {
+                    self.mfi.reset();
+                    throw nb::stop_iteration();
+                }
+                self.needsAdvance = true;
+                return pySelf;
+            }
+        )
         .def("valid_box", [](MFIterator& self) { return self.mfi->validbox(); });
 
     nb::class_<MultiFab>(m, "MultiFab")
-        .def(nb::init<const BoxArray&, const DistributionMapping&, int, int>(),
-             nb::arg("ba"), nb::arg("dm"), nb::arg("ncomp"), nb::arg("ngrow"))
+        .def(
+            nb::init<const BoxArray&, const DistributionMapping&, int, int>(),
+            nb::arg("ba"),
+            nb::arg("dm"),
+            nb::arg("ncomp"),
+            nb::arg("ngrow")
+        )
         .def("num_comp", &MultiFab::nComp)
         .def("n_grow", [](const MultiFab& mf) { return mf.nGrow(); })
         .def(
             "array",
-            [](nb::object self, MFIterator& mfi) {
+            [](nb::object self, MFIterator& mfi)
+            {
                 MultiFab& mf = nb::cast<MultiFab&>(self);
                 auto& fab = mf[mfi.get()];
                 const Box& bx = mfi.get().validbox();
@@ -144,18 +170,17 @@ void registerMultiFab(nb::module_& m)
                 size_t shape[4] = {(size_t)nx, (size_t)ny, (size_t)nz, (size_t)nc};
                 // Fortran-order strides in elements: x fastest, component outermost
                 int64_t strides[4] = {
-                    1,
-                    (int64_t)fnx,
-                    (int64_t)(fnx * fny),
-                    (int64_t)(fnx * fny * fnz)};
+                    1, (int64_t)fnx, (int64_t)(fnx * fny), (int64_t)(fnx * fny * fnz)
+                };
 
-                return nb::ndarray<nb::numpy, Real, nb::ndim<4>>(
-                    validPtr, 4, shape, self, strides);
+                return nb::ndarray<nb::numpy, Real, nb::ndim<4>>(validPtr, 4, shape, self, strides);
             },
-            nb::arg("mfi"))
+            nb::arg("mfi")
+        )
         .def(
             "grown_array",
-            [](nb::object self, MFIterator& mfi) {
+            [](nb::object self, MFIterator& mfi)
+            {
                 MultiFab& mf = nb::cast<MultiFab&>(self);
                 auto& fab = mf[mfi.get()];
                 const Box& bx = fab.box(); // grown box
@@ -167,19 +192,15 @@ void registerMultiFab(nb::module_& m)
 
                 size_t shape[4] = {(size_t)nx, (size_t)ny, (size_t)nz, (size_t)nc};
                 // Fortran-order strides in elements: x fastest, component outermost
-                int64_t strides[4] = {
-                    1,
-                    (int64_t)nx,
-                    (int64_t)(nx * ny),
-                    (int64_t)(nx * ny * nz)};
+                int64_t strides[4] = {1, (int64_t)nx, (int64_t)(nx * ny), (int64_t)(nx * ny * nz)};
 
                 return nb::ndarray<nb::numpy, Real, nb::ndim<4>>(ptr, 4, shape, self, strides);
             },
-            nb::arg("mfi"))
+            nb::arg("mfi")
+        )
         .def(
             "fill_boundary",
-            [](MultiFab& mf, const Geometry& geom) {
-                mf.FillBoundary(geom.periodicity());
-            },
-            nb::arg("geom"));
+            [](MultiFab& mf, const Geometry& geom) { mf.FillBoundary(geom.periodicity()); },
+            nb::arg("geom")
+        );
 }
