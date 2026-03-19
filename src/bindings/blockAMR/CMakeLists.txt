@@ -22,17 +22,18 @@ nanobind_add_module(
 target_link_libraries(_blockamr PRIVATE amrex)
 
 # Set RPATH so _blockamr.so can find libamrex at ../lib/
-set_target_properties(_blockamr PROPERTIES
-  INSTALL_RPATH "$ORIGIN/../lib"
-  BUILD_WITH_INSTALL_RPATH FALSE
-)
+set_target_properties(_blockamr PROPERTIES INSTALL_RPATH "$ORIGIN/../lib" BUILD_WITH_INSTALL_RPATH
+                                                                          FALSE)
 
 # Installation
 if(DEFINED SKBUILD)
   install(TARGETS _blockamr LIBRARY DESTINATION blockamr COMPONENT python)
-  install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/blockamr/
-          DESTINATION blockamr COMPONENT python
-          FILES_MATCHING PATTERN "*.py")
+  install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/src/blockamr/
+    DESTINATION blockamr
+    COMPONENT python
+    FILES_MATCHING
+    PATTERN "*.py")
   # Install AMReX shared lib alongside the wheel
   install(TARGETS amrex_3d LIBRARY DESTINATION lib COMPONENT python)
 else()

@@ -5,6 +5,7 @@
 import math
 
 import blockamr
+import jax.numpy as jnp
 from blockamr.field import Field
 from blockamr.operators.grad import Grad
 
@@ -52,12 +53,15 @@ def _compute_grad_error(n_cell):
     pi = math.pi
 
     max_err = 0.0
-    for patch in field.patches():
-        result = grad_op.compute(patch, t=0.0)
-        lo = patch.box.small_end()
-        dx = patch.geom.cell_size()
-        prob_lo = patch.geom.prob_lo()
-        nx, ny, nz = patch.valid_arr.shape[:3]
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = grad_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
+        lo = mfi.valid_box().small_end()
+        dx = field.geom.cell_size()
+        prob_lo = field.geom.prob_lo()
+        valid_arr = field.mf.array(mfi)
+        nx, ny, nz = valid_arr.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]
             for j in range(ny):

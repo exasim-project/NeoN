@@ -5,6 +5,7 @@
 import math
 
 import blockamr
+import jax.numpy as jnp
 import numpy as np
 from blockamr.field import Field
 from blockamr.operators.laplacian import Laplacian
@@ -52,12 +53,15 @@ def _compute_laplacian_error(n_cell, gamma_func, analytical_func):
     lap_op = Laplacian(gamma_func, field)
 
     max_err = 0.0
-    for patch in field.patches():
-        result = lap_op.compute(patch, t=0.0)
-        lo = patch.box.small_end()
-        dx = patch.geom.cell_size()
-        prob_lo = patch.geom.prob_lo()
-        nx, ny, nz = patch.valid_arr.shape[:3]
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = lap_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
+        lo = mfi.valid_box().small_end()
+        dx = field.geom.cell_size()
+        prob_lo = field.geom.prob_lo()
+        valid_arr = field.mf.array(mfi)
+        nx, ny, nz = valid_arr.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]
             for j in range(ny):

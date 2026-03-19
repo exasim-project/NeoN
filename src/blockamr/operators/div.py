@@ -5,104 +5,101 @@
 import jax.numpy as jnp
 import numpy as np
 
+import blockamr
+from blockamr.field import FaceField
 from blockamr.schemes.div_schemes import Upwind
 
 
 class Div:
     """Divergence operator: div(U * phi).
 
-    vel_func(x, y, z, t) -> (u, v, w) evaluated at face centers.
-    Stencil computation uses JAX.
+    Accepts a pre-built FaceField containing face fluxes.
+    Stencil computation delegated to scheme.compute().
     """
 
-    def __init__(self, vel_func, field, coeff=1.0, scheme=None):
-        self.vel_func = vel_func
+    def __init__(self, face_fluxes, field, coeff=1.0, scheme=None):
         self.field = field
         self.coeff = coeff
         self.scheme = scheme or Upwind()
         self._name = "Div"
 
-    def __rmul__(self, scalar):
-        return Div(self.vel_func, self.field, coeff=self.coeff * scalar, scheme=self.scheme)
-
-    def _face_value(self, phi, ng, dims, dim, n, offset, vel_face):
-        """Compute face values using the scheme stencil.
-
-        offset: 0 for right face (i+1/2), -1 for left face (i-1/2)
-        """
-        nx, ny, nz = dims
-
-        # Cells immediately left and right of the face
-        slc_l = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-        slc_r = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-        slc_l[dim] = slice(ng + offset, ng + offset + n)
-        slc_r[dim] = slice(ng + offset + 1, ng + offset + 1 + n)
-
-        phi_l = phi[tuple(slc_l)]
-        phi_r = phi[tuple(slc_r)]
-
-        if self.scheme.stencil_width == 1:
-            return self.scheme.face_value(phi_l, phi_r, vel_face)
-
-        # Wide stencil: far-left and far-right cells
-        slc_fl = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-        slc_fr = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-        slc_fl[dim] = slice(ng + offset - 1, ng + offset - 1 + n)
-        slc_fr[dim] = slice(ng + offset + 2, ng + offset + 2 + n)
-
-        phi_fl = phi[tuple(slc_fl)]
-        phi_fr = phi[tuple(slc_fr)]
-
-        return self.scheme.face_value(phi_fl, phi_l, phi_r, phi_fr, vel_face)
-
-    def compute(self, patch, t):
-        """Compute divergence on a single patch.
-
-        Returns a JAX array on the valid region.
-        """
-        ng = patch.ngrow
-        dx = patch.geom.cell_size()
-        lo = patch.box.small_end()
-        prob_lo = patch.geom.prob_lo()
-
-        # Extract phi from grown array (includes ghost cells) as JAX array
-        phi = jnp.asarray(patch.grown_arr[:, :, :, 0])
-
-        # Valid region dimensions
-        nx, ny, nz = patch.valid_arr.shape[:3]
-        dims = (nx, ny, nz)
-
-        # Build cell-center coordinates for the valid region
-        xcc = jnp.array([prob_lo[0] + (lo[0] + i + 0.5) * dx[0] for i in range(nx)])
-        ycc = jnp.array([prob_lo[1] + (lo[1] + j + 0.5) * dx[1] for j in range(ny)])
-        zcc = jnp.array([prob_lo[2] + (lo[2] + k + 0.5) * dx[2] for k in range(nz)])
-
-        result = jnp.zeros((nx, ny, nz))
-
-        for dim, d in enumerate(dx):
-            n = dims[dim]
-
-            # Right face coordinates (i+1/2)
-            face_coords = list(jnp.meshgrid(xcc, ycc, zcc, indexing="ij"))
-            face_coords[dim] = face_coords[dim] + 0.5 * d
-
-            u, v, w = self.vel_func(face_coords[0], face_coords[1], face_coords[2], t)
-            vel_right = [u, v, w][dim]
-
-            phi_face_right = self._face_value(phi, ng, dims, dim, n, 0, vel_right)
-
-            # Left face coordinates (i-1/2)
-            face_coords_l = list(jnp.meshgrid(xcc, ycc, zcc, indexing="ij"))
-            face_coords_l[dim] = face_coords_l[dim] - 0.5 * d
-
-            u_l, v_l, w_l = self.vel_func(
-                face_coords_l[0], face_coords_l[1], face_coords_l[2], t
+        if isinstance(face_fluxes, FaceField):
+            self.face_fluxes = face_fluxes
+        else:
+            # Backward compat: accept vel_func, build fluxes at t=0
+            ngrow = self.scheme.stencil_width
+            self.face_fluxes = build_face_fluxes(
+                face_fluxes, self.field.box, self.field.dm,
+                self.field.geom, ngrow=ngrow, t=0.0,
+                max_size=self.field.max_size,
             )
-            vel_left = [u_l, v_l, w_l][dim]
 
-            phi_face_left = self._face_value(phi, ng, dims, dim, n, -1, vel_left)
+    def __rmul__(self, scalar):
+        obj = Div.__new__(Div)
+        obj.face_fluxes = self.face_fluxes
+        obj.field = self.field
+        obj.coeff = self.coeff * scalar
+        obj.scheme = self.scheme
+        obj._name = "Div"
+        return obj
 
-            # Flux divergence: (F_right - F_left) / dx
-            result = result + (vel_right * phi_face_right - vel_left * phi_face_left) / d
+    def build_kernel(self, mfi, t):
+        """Return a scheme functor bound to this mfi's fluxes."""
+        w = self.scheme.stencil_width
+        dh = jnp.array(self.field.geom.cell_size())
+        fluxes = []
+        for dim in range(3):
+            flux = jnp.array(
+                self.face_fluxes[dim].mf.grown_array(mfi)[:, :, :, 0]
+            )
+            sl = [slice(None)] * 3
+            sl[dim] = slice(w, -w) if w > 0 else slice(None)
+            fluxes.append(flux[tuple(sl)])
+        return self.scheme.build_kernel(fluxes, dh, coeff=self.coeff)
 
-        return result
+
+def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32):
+    """Build a FaceField containing normal velocity at face centers."""
+    ff = FaceField(box, dm, geom, ncomp=1, ngrow=ngrow, max_size=max_size)
+    update_face_fluxes(ff, vel_func, geom, t)
+    return ff
+
+
+def _fill_face_component(comp, d, vel_func, dx, prob_lo, t):
+    """Fill one face-field component (direction *d*) with the normal velocity."""
+    for mfi in blockamr.MFIterator(comp.mf):
+        arr = comp.mf.array(mfi)
+        bx = mfi.valid_box()
+        lo = bx.small_end()
+        nx, ny, nz = arr.shape[:3]
+
+        coords = []
+        for e in range(3):
+            n = [nx, ny, nz][e]
+            if e == d:
+                # Face positions (integer grid points, no +0.5)
+                coords.append(
+                    np.array([prob_lo[e] + (lo[e] + i) * dx[e] for i in range(n)])
+                )
+            else:
+                # Cell centers (+0.5)
+                coords.append(
+                    np.array(
+                        [prob_lo[e] + (lo[e] + i + 0.5) * dx[e] for i in range(n)]
+                    )
+                )
+
+        X, Y, Z = np.meshgrid(*coords, indexing="ij")
+        vel = vel_func(X, Y, Z, t)
+        arr[:, :, :, 0] = vel[d]
+
+    comp.fill_boundary()
+
+
+def update_face_fluxes(face_fluxes, vel_func, geom, t):
+    """Evaluate vel_func at face centers and store normal components."""
+    dx = geom.cell_size()
+    prob_lo = geom.prob_lo()
+
+    for d in range(3):
+        _fill_face_component(face_fluxes[d], d, vel_func, dx, prob_lo, t)

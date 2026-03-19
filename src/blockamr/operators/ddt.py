@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-
 class Ddt:
     """Time derivative operator for explicit DSL."""
 

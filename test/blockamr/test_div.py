@@ -5,9 +5,10 @@
 import math
 
 import blockamr
+import jax.numpy as jnp
 import numpy as np
 from blockamr.field import Field
-from blockamr.operators.div import Div
+from blockamr.operators.div import Div, build_face_fluxes
 
 
 def _make_field(n_cell=64, max_size=32, ngrow=1):
@@ -19,7 +20,7 @@ def _make_field(n_cell=64, max_size=32, ngrow=1):
     ba.max_size(max_size)
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, ngrow)
-    return Field(mf, geom)
+    return Field(mf, geom), box, dm, geom
 
 
 def _init_sin3d(field):
@@ -46,7 +47,7 @@ def _init_sin3d(field):
 
 def test_div_uniform_field_is_zero():
     """Divergence of a uniform field should be zero."""
-    field = _make_field(n_cell=64, max_size=32, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
         arr = field.mf.array(mfi)
@@ -59,16 +60,19 @@ def test_div_uniform_field_is_zero():
         w = np.ones_like(x)
         return u, v, w
 
-    div_op = Div(uniform_vel, field)
+    face_fluxes = build_face_fluxes(uniform_vel, box, dm, geom, ngrow=1, t=0.0)
+    div_op = Div(face_fluxes, field)
 
-    for patch in field.patches():
-        result = div_op.compute(patch, t=0.0)
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = div_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
         assert np.allclose(result, 0.0, atol=1e-12), f"max div = {np.abs(result).max()}"
 
 
 def test_div_sin_field():
     """Divergence of sin(2*pi*x) with u=1 approximates 2*pi*cos(2*pi*x)."""
-    field = _make_field(n_cell=64, max_size=32, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
@@ -84,11 +88,14 @@ def test_div_sin_field():
     def x_vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    div_op = Div(x_vel, field)
+    face_fluxes = build_face_fluxes(x_vel, box, dm, geom, ngrow=1, t=0.0)
+    div_op = Div(face_fluxes, field)
 
-    for patch in field.patches():
-        result = div_op.compute(patch, t=0.0)
-        lo = patch.box.small_end()
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = div_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
+        lo = mfi.valid_box().small_end()
         nx = result.shape[0]
         for i in range(nx):
             x = (lo[0] + i + 0.5) * dx[0]
@@ -100,22 +107,26 @@ def test_div_sin_field():
 
 def _compute_div_error(n_cell):
     """Compute max error of div(U*phi) with U=(1,0,0) vs analytical on sin3d."""
-    field = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=1)
     _init_sin3d(field)
 
     def x_vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    div_op = Div(x_vel, field)
+    face_fluxes = build_face_fluxes(x_vel, box, dm, geom, ngrow=1, t=0.0, max_size=n_cell)
+    div_op = Div(face_fluxes, field)
     pi = math.pi
 
     max_err = 0.0
-    for patch in field.patches():
-        result = div_op.compute(patch, t=0.0)
-        lo = patch.box.small_end()
-        dx = patch.geom.cell_size()
-        prob_lo = patch.geom.prob_lo()
-        nx, ny, nz = patch.valid_arr.shape[:3]
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = div_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
+        lo = mfi.valid_box().small_end()
+        dx = field.geom.cell_size()
+        prob_lo = field.geom.prob_lo()
+        valid_arr = field.mf.array(mfi)
+        nx, ny, nz = valid_arr.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]
             for j in range(ny):

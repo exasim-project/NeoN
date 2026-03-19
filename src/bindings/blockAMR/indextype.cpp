@@ -21,12 +21,18 @@ void registerIndexType(nb::module_& m)
     index_type.def(nb::init<>())
         .def(
             "__init__",
-            [](IndexType* self, IndexType::CellIndex i, IndexType::CellIndex j,
+            [](IndexType* self,
+               IndexType::CellIndex i,
+               IndexType::CellIndex j,
                IndexType::CellIndex k) { new (self) IndexType(i, j, k); },
-            nb::arg("i"), nb::arg("j"), nb::arg("k"))
+            nb::arg("i"),
+            nb::arg("j"),
+            nb::arg("k")
+        )
         .def(
             "__repr__",
-            [](const IndexType& t) {
+            [](const IndexType& t)
+            {
                 std::string s = "<blockamr.IndexType (";
                 for (int d = 0; d < AMREX_SPACEDIM; ++d)
                 {
@@ -34,23 +40,22 @@ void registerIndexType(nb::module_& m)
                     if (d < AMREX_SPACEDIM - 1) s += ",";
                 }
                 return s + ")>";
-            })
+            }
+        )
         .def("__getitem__", [](const IndexType& t, int i) { return t[i]; })
-        .def(
-            "__eq__",
-            [](const IndexType& a, const IndexType& b) { return a == b; })
-        .def(
-            "cell_centered", [](const IndexType& t) { return t.cellCentered(); })
+        .def("__eq__", [](const IndexType& a, const IndexType& b) { return a == b; })
+        .def("cell_centered", [](const IndexType& t) { return t.cellCentered(); })
         .def(
             "cell_centered",
             [](const IndexType& t, int dir) { return t.cellCentered(dir); },
-            nb::arg("dir"))
-        .def(
-            "node_centered", [](const IndexType& t) { return t.nodeCentered(); })
+            nb::arg("dir")
+        )
+        .def("node_centered", [](const IndexType& t) { return t.nodeCentered(); })
         .def(
             "node_centered",
             [](const IndexType& t, int dir) { return t.nodeCentered(dir); },
-            nb::arg("dir"))
+            nb::arg("dir")
+        )
         .def("set", &IndexType::set, nb::arg("dir"))
         .def("unset", &IndexType::unset, nb::arg("dir"))
         .def("test", &IndexType::test, nb::arg("dir"))

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# SPDX-License-Identifier: MIT
+
 import jax
 
 jax.config.update("jax_enable_x64", True)

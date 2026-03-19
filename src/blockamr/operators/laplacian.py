@@ -25,18 +25,15 @@ class Laplacian:
             self.gamma_func, self.field, coeff=self.coeff * scalar, scheme=self.scheme
         )
 
-    def compute(self, patch, t):
-        """Compute div(gamma * grad(phi)) on the valid region."""
-        ng = patch.ngrow
-        dx = patch.geom.cell_size()
-        lo = patch.box.small_end()
-        prob_lo = patch.geom.prob_lo()
+    def build_kernel(self, mfi, t):
+        """Return a scheme functor bound to this mfi's gamma."""
+        ng = self.field.mf.n_grow()
+        dx = self.field.geom.cell_size()
+        lo = mfi.valid_box().small_end()
+        prob_lo = self.field.geom.prob_lo()
+        valid_arr = self.field.mf.array(mfi)
+        nx, ny, nz = valid_arr.shape[:3]
 
-        phi = jnp.asarray(patch.grown_arr[:, :, :, 0])
-
-        nx, ny, nz = patch.valid_arr.shape[:3]
-
-        # Cell-center coordinates for the grown (ghost-inclusive) region
         dims = [nx, ny, nz]
         cc = []
         for dim in range(3):
@@ -50,38 +47,7 @@ class Laplacian:
                 )
             )
 
-        # Evaluate gamma on the grown region
         X, Y, Z = jnp.meshgrid(cc[0], cc[1], cc[2], indexing="ij")
         gamma = self.gamma_func(X, Y, Z, t)
-
-        result = jnp.zeros((nx, ny, nz))
-
-        for dim in range(3):
-            d = dx[dim]
-            n = dims[dim]
-
-            # Slices for center, right, and left cells in the grown array
-            slc_c = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-            slc_r = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-            slc_l = [slice(ng, ng + nx), slice(ng, ng + ny), slice(ng, ng + nz)]
-            slc_r[dim] = slice(ng + 1, ng + 1 + n)
-            slc_l[dim] = slice(ng - 1, ng - 1 + n)
-
-            phi_c = phi[tuple(slc_c)]
-            phi_r = phi[tuple(slc_r)]
-            phi_l = phi[tuple(slc_l)]
-
-            gamma_c = gamma[tuple(slc_c)]
-            gamma_r = gamma[tuple(slc_r)]
-            gamma_l = gamma[tuple(slc_l)]
-
-            # Face-averaged gamma via scheme stencil
-            gamma_right = self.scheme.face_value(gamma_c, gamma_r)
-            gamma_left = self.scheme.face_value(gamma_l, gamma_c)
-
-            # Central difference: (gamma_R*(phi_R - phi_C) - gamma_L*(phi_C - phi_L)) / dx^2
-            result = result + (
-                gamma_right * (phi_r - phi_c) - gamma_left * (phi_c - phi_l)
-            ) / (d * d)
-
-        return result
+        dh = jnp.array(dx)
+        return self.scheme.build_kernel(gamma, dh, coeff=self.coeff)

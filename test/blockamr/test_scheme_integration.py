@@ -5,10 +5,11 @@
 import math
 
 import blockamr
+import jax.numpy as jnp
 import numpy as np
 from blockamr.field import Field
 from blockamr.dsl import exp, solve
-from blockamr.operators.div import Div
+from blockamr.operators.div import Div, build_face_fluxes
 from blockamr.operators.grad import Grad
 from blockamr.operators.laplacian import Laplacian
 from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
@@ -25,33 +26,41 @@ def _make_field(n_cell=64, max_size=32, ngrow=1):
     ba.max_size(max_size)
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, ngrow)
-    return Field(mf, geom)
+    return Field(mf, geom, box=box, dm=dm, max_size=max_size), box, dm, geom
+
+
+def _uniform_vel(x, y, z, t):
+    return np.ones_like(x), np.ones_like(x), np.ones_like(x)
+
+
+def _x_vel(x, y, z, t):
+    return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
 
 def test_div_default_unchanged():
     """Div without explicit scheme matches old (Upwind) behaviour."""
-    field = _make_field(n_cell=64, max_size=32, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
         arr = field.mf.array(mfi)
         arr[:, :, :, 0] = 1.0
     field.fill_boundary()
 
-    def uniform_vel(x, y, z, t):
-        return np.ones_like(x), np.ones_like(x), np.ones_like(x)
-
-    div_op = Div(uniform_vel, field)
+    face_fluxes = build_face_fluxes(_uniform_vel, box, dm, geom, ngrow=1, t=0.0)
+    div_op = Div(face_fluxes, field)
     assert isinstance(div_op.scheme, Upwind)
 
-    for patch in field.patches():
-        result = div_op.compute(patch, t=0.0)
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = div_op.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
         assert np.allclose(result, 0.0, atol=1e-12)
 
 
 def test_div_with_linear_scheme():
     """Div with Linear scheme gives different (2nd-order) results vs Upwind."""
     n_cell = 32
-    field = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=1)
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
@@ -64,22 +73,22 @@ def test_div_with_linear_scheme():
             arr[i, :, :, 0] = math.sin(2 * math.pi * x)
     field.fill_boundary()
 
-    def x_vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
+    face_fluxes_up = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
+    face_fluxes_lin = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
+    div_upwind = Div(face_fluxes_up, field)
+    div_linear = Div(face_fluxes_lin, field, scheme=Linear())
 
-    div_upwind = Div(x_vel, field)
-    div_linear = Div(x_vel, field, scheme=Linear())
-
-    for patch in field.patches():
-        result_upwind = div_upwind.compute(patch, t=0.0)
-        result_linear = div_linear.compute(patch, t=0.0)
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        result_upwind = div_upwind.build_kernel(mfi, t=0.0)(phi)
+        result_linear = div_linear.build_kernel(mfi, t=0.0)(phi)
         # They should differ (Linear is 2nd-order, Upwind is 1st-order)
         assert not np.allclose(result_upwind, result_linear, atol=1e-6)
 
 
 def test_laplacian_default_scheme():
     """Laplacian defaults to CentralDiffLaplacian."""
-    field = _make_field(n_cell=32, max_size=32, ngrow=1)
+    field, *_ = _make_field(n_cell=32, max_size=32, ngrow=1)
 
     def gamma_one(x, y, z, t):
         return np.ones_like(x)
@@ -90,14 +99,14 @@ def test_laplacian_default_scheme():
 
 def test_grad_default_scheme():
     """Grad defaults to CentralDiffGrad."""
-    field = _make_field(n_cell=32, max_size=32, ngrow=1)
+    field, *_ = _make_field(n_cell=32, max_size=32, ngrow=1)
     grad_op = Grad(field)
     assert isinstance(grad_op.scheme, CentralDiffGrad)
 
 
 def test_solve_with_schemes_dict():
     """solve() with schemes dict overrides operator's default scheme."""
-    field = _make_field(n_cell=32, max_size=32, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=32, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
         arr = field.mf.array(mfi)
@@ -115,10 +124,8 @@ def test_solve_with_schemes_dict():
         lo = bx.small_end()
         phi_before[tuple(lo)] = field.mf.array(mfi)[:, :, :, 0].copy()
 
-    def x_vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
-
-    expr = exp.ddt(field) + exp.div(x_vel, field)
+    face_fluxes = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
+    expr = exp.ddt(field) + exp.div(face_fluxes, field)
     solve(expr, t=0.0, dt=1e-4, schemes={"Div": Linear()})
 
     # The field should have changed (not zero div for non-uniform field)
@@ -133,7 +140,7 @@ def test_div_with_vanleer_scheme():
     """Div with VanLeer scheme runs without error (requires wider stencil, ngrow>=2)."""
     n_cell = 32
     # VanLeer needs 2 ghost cells
-    field = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=2)
+    field, box, dm, geom = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=2)
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
@@ -146,31 +153,28 @@ def test_div_with_vanleer_scheme():
             arr[i, :, :, 0] = math.sin(2 * math.pi * x)
     field.fill_boundary()
 
-    def x_vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
+    face_fluxes = build_face_fluxes(_x_vel, box, dm, geom, ngrow=2, t=0.0)
+    div_vanleer = Div(face_fluxes, field, scheme=VanLeer())
 
-    div_vanleer = Div(x_vel, field, scheme=VanLeer())
-
-    for patch in field.patches():
-        result = div_vanleer.compute(patch, t=0.0)
+    for mfi in blockamr.MFIterator(field.mf):
+        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        kernel = div_vanleer.build_kernel(mfi, t=0.0)
+        result = kernel(phi)
         # Should produce finite results
         assert np.all(np.isfinite(result))
 
 
 def test_factory_div_with_scheme():
     """exp.div() accepts optional scheme parameter."""
-    field = _make_field(n_cell=32, max_size=32, ngrow=1)
-
-    def vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
-
-    div_op = exp.div(vel, field, scheme=Linear())
+    field, box, dm, geom = _make_field(n_cell=32, max_size=32, ngrow=1)
+    face_fluxes = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
+    div_op = exp.div(face_fluxes, field, scheme=Linear())
     assert isinstance(div_op.scheme, Linear)
 
 
 def test_solve_backward_compat():
     """solve() without schemes kwarg works as before."""
-    field = _make_field(n_cell=64, max_size=32, ngrow=1)
+    field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
         arr = field.mf.array(mfi)
@@ -179,7 +183,8 @@ def test_solve_backward_compat():
     def zero_vel(x, y, z, t):
         return np.zeros_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    expr = exp.ddt(field) + exp.div(zero_vel, field)
+    face_fluxes = build_face_fluxes(zero_vel, box, dm, geom, ngrow=1, t=0.0)
+    expr = exp.ddt(field) + exp.div(face_fluxes, field)
     solve(expr, t=0.0, dt=0.01)
 
     for mfi in blockamr.MFIterator(field.mf):

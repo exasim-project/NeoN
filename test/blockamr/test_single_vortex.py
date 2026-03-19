@@ -7,6 +7,9 @@
 Solves ddt(phi) + div(U, phi) = 0 with a time-reversing vortex velocity
 on a periodic domain. After one full period T, the solution should return
 close to its initial condition.
+
+Uses OpenFOAM-style loop: face fluxes are updated each step so the
+time-dependent velocity is captured correctly.
 """
 
 import math
@@ -14,6 +17,7 @@ import math
 import blockamr
 from blockamr.field import Field
 from blockamr.dsl import exp, solve
+from blockamr.operators.div import build_face_fluxes, update_face_fluxes
 
 import numpy as np
 
@@ -50,7 +54,7 @@ def test_single_vortex_advection():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, ngrow)
 
-    field = Field(mf, geom, name="phi")
+    field = Field(mf, geom, name="phi", box=box, dm=dm, max_size=max_size)
     dx = field.dx
 
     for mfi in blockamr.MFIterator(mf):
@@ -75,7 +79,9 @@ def test_single_vortex_advection():
     def vel(x, y, z, t):
         return _vortex_velocity(x, y, z, t, period=period)
 
-    expr = exp.ddt(field) + exp.div(vel, field)
+    # OpenFOAM-style: build face fluxes, update each step
+    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
+                                    max_size=max_size)
 
     u_max = 2.0
     dt = cfl * min(dx) / u_max
@@ -85,6 +91,8 @@ def test_single_vortex_advection():
     while t < period - 1e-12:
         if t + dt > period:
             dt = period - t
+        update_face_fluxes(face_fluxes, vel, geom, t)
+        expr = exp.ddt(field) + exp.div(face_fluxes, field)
         solve(expr, t, dt)
         t += dt
         nsteps += 1
@@ -119,7 +127,7 @@ def test_conservation():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, ngrow)
 
-    field = Field(mf, geom, name="phi")
+    field = Field(mf, geom, name="phi", box=box, dm=dm, max_size=max_size)
     dx = field.dx
 
     for mfi in blockamr.MFIterator(mf):
@@ -145,11 +153,14 @@ def test_conservation():
     def vel(x, y, z, t):
         return _vortex_velocity(x, y, z, t, period=2.0)
 
-    expr = exp.ddt(field) + exp.div(vel, field)
+    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
+                                    max_size=max_size)
 
     dt = cfl * min(dx) / 2.0
     t = 0.0
     for _ in range(20):
+        update_face_fluxes(face_fluxes, vel, geom, t)
+        expr = exp.ddt(field) + exp.div(face_fluxes, field)
         solve(expr, t, dt)
         t += dt
 

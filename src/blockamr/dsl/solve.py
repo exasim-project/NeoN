@@ -2,9 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
+import blockamr
 from blockamr.schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from blockamr.schemes.schemes_dict import SchemesDict
 
@@ -35,15 +37,26 @@ def solve(expr, t, dt, schemes=None):
         raise ValueError(f"Unknown ddt scheme: {ddt_scheme}")
 
 
+@jax.jit
+def _fused_step(phi, kernels):
+    """Apply all operator kernels and sum the results."""
+    total = 0.0
+    for k in kernels:
+        total = total + k(phi)
+    return total
+
+
 def _forward_euler(expr, field, t, dt, ddt_coeff):
     field.fill_boundary()
 
-    for patch in field.patches():
-        source = jnp.zeros(patch.valid_arr.shape[:3])
+    for mfi in blockamr.MFIterator(field.mf):
+        grown_arr = field.mf.grown_array(mfi)
+        valid_arr = field.mf.array(mfi)
+        phi = jnp.asarray(grown_arr[:, :, :, 0])
 
-        for sp_op in expr.spatial_ops:
-            source = source + sp_op.coeff * sp_op.compute(patch, t)
+        kernels = [op.build_kernel(mfi, t) for op in expr.spatial_ops]
+        source = _fused_step(phi, kernels)
 
-        phi_old = jnp.asarray(patch.valid_arr[:, :, :, 0])
+        phi_old = jnp.asarray(valid_arr[:, :, :, 0])
         phi_new = phi_old - (dt / ddt_coeff) * source
-        patch.valid_arr[:, :, :, 0] = np.asarray(phi_new)
+        valid_arr[:, :, :, 0] = np.asarray(phi_new)

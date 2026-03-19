@@ -13,8 +13,8 @@ def ddt(field):
     return Ddt(field)
 
 
-def div(vel_func, field, scheme=None):
-    return Div(vel_func, field, scheme=scheme)
+def div(face_fluxes, field, scheme=None):
+    return Div(face_fluxes, field, scheme=scheme)
 
 
 def grad(field, scheme=None):

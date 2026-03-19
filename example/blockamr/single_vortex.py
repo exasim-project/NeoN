@@ -13,6 +13,9 @@ time stepping.  The prescribed velocity field is a 2-D divergence-free
 vortex that reverses direction at t = T/2, so the Gaussian returns to its
 initial position after one full period T.
 
+Uses an OpenFOAM-style loop: the expression is assembled inside the time loop
+with current velocity, so time-dependent fields are captured correctly.
+
 Based on the AMReX AmrAdvection SingleVortex tutorial:
 https://amrex-codes.github.io/amrex/docs_html/AmrCore.html#the-advection-equation
 
@@ -30,6 +33,7 @@ import shutil
 import blockamr
 from blockamr.field import Field
 from blockamr.dsl import exp, solve
+from blockamr.operators.div import build_face_fluxes, update_face_fluxes
 from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 
 import numpy as np
@@ -122,7 +126,7 @@ def _write_plotfile(mf, geom, t, plot_count):
 
 
 def run(
-    n_cell=64,
+    n_cell=128,
     max_size=32,
     cfl=0.3,
     period=2.0,
@@ -138,6 +142,7 @@ def run(
     ngrow = div_scheme.stencil_width
 
     box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
+    # box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
     geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
 
@@ -146,7 +151,7 @@ def run(
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, ngrow)
 
-    field = Field(mf, geom, name="phi")
+    field = Field(mf, geom, name="phi", box=box, dm=dm, max_size=max_size)
     dx = field.dx
 
     # ---- initial condition ----
@@ -166,13 +171,14 @@ def run(
     if plotfile:
         plot_count = _write_plotfile(mf, geom, 0.0, plot_count)
 
-    # ---- build DSL expression ----
+    # ---- build face fluxes ----
     def vel(x, y, z, t):
         return vortex_velocity(x, y, z, t, period=period)
 
-    expr = exp.ddt(field) + exp.div(vel, field, scheme=div_scheme)
+    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
+                                    max_size=max_size)
 
-    # ---- time loop ----
+    # ---- time loop (OpenFOAM-style) ----
     u_max = 2.0  # max velocity magnitude
     dt = cfl * min(dx) / u_max
     t = 0.0
@@ -183,9 +189,11 @@ def run(
     print(f"Scheme: {scheme}, Period T = {period}, CFL = {cfl}, write every {write_interval}s")
     print()
 
-    while t < period - 1e-12:
+    while t < (period - 1e-12):
         if t + dt > period:
             dt = period - t
+        update_face_fluxes(face_fluxes, vel, geom, t)
+        expr = exp.ddt(field) + exp.div(face_fluxes, field, scheme=div_scheme)
         solve(expr, t, dt)
         t += dt
         nsteps += 1
