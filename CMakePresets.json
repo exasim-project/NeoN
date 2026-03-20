@@ -13,7 +13,8 @@
       "cacheVariables": {
         "Kokkos_ENABLE_SERIAL": "ON",
         "GINKGO_BUILD_PAPI_SDE": "OFF",
-        "NeoN_BUILD_PYTHON_BINDINGS": "OFF"
+        "NeoN_BUILD_PYTHON_BINDINGS": "OFF",
+        "CMAKE_CUDA_ARCHITECTURES": "89"
       },
       "generator": "Ninja"
     },
@@ -58,6 +59,18 @@
       }
     },
     {
+      "name": "develop-cuda",
+      "inherits": [
+        "develop"
+      ],
+      "displayName": "Development (CUDA)",
+      "description": "Configuration for development with CUDA GPU support",
+      "cacheVariables": {
+        "NeoN_AMREX_GPU_BACKEND": "CUDA",
+        "Kokkos_ENABLE_CUDA": "ON"
+      }
+    },
+    {
       "name": "profiling",
       "inherits": [
         "base"
@@ -94,6 +107,13 @@
       "configuration": "Debug"
     },
     {
+      "name": "develop-cuda",
+      "displayName": "Development (CUDA)",
+      "description": "Build for development with CUDA GPU support",
+      "configurePreset": "develop-cuda",
+      "configuration": "Debug"
+    },
+    {
       "name": "profiling",
       "displayName": "Profiling",
       "description": "Build for profiling use",
@@ -114,6 +134,13 @@
       "displayName": "Development",
       "description": "Run tests with development configuration",
       "configurePreset": "develop",
+      "configuration": "Debug"
+    },
+    {
+      "name": "develop-cuda",
+      "displayName": "Development (CUDA)",
+      "description": "Run tests with CUDA development configuration",
+      "configurePreset": "develop-cuda",
       "configuration": "Debug"
     },
     {

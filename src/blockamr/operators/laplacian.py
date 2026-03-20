@@ -31,8 +31,12 @@ class Laplacian:
         dx = self.field.geom.cell_size()
         lo = mfi.valid_box().small_end()
         prob_lo = self.field.geom.prob_lo()
-        valid_arr = self.field.mf.array(mfi)
-        nx, ny, nz = valid_arr.shape[:3]
+        bx = mfi.valid_box()
+        lo_v = bx.small_end()
+        hi_v = bx.big_end()
+        nx = hi_v[0] - lo_v[0] + 1
+        ny = hi_v[1] - lo_v[1] + 1
+        nz = hi_v[2] - lo_v[2] + 1
 
         dims = [nx, ny, nz]
         cc = []

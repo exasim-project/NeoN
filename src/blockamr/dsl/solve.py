@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: MIT
 
 import jax
-import jax.numpy as jnp
-import numpy as np
 
 import blockamr
 from blockamr.schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
@@ -49,14 +47,16 @@ def _fused_step(phi, kernels):
 def _forward_euler(expr, field, t, dt, ddt_coeff):
     field.fill_boundary()
 
+    ng = field.mf.n_grow()
     for mfi in blockamr.MFIterator(field.mf):
-        grown_arr = field.mf.grown_array(mfi)
-        valid_arr = field.mf.array(mfi)
-        phi = jnp.asarray(grown_arr[:, :, :, 0])
+        phi_4d = field.mf.array(mfi)
 
         kernels = [op.build_kernel(mfi, t) for op in expr.spatial_ops]
-        source = _fused_step(phi, kernels)
+        source = _fused_step(phi_4d, kernels)
 
-        phi_old = jnp.asarray(valid_arr[:, :, :, 0])
+        phi = phi_4d[:, :, :, 0]
+        s = slice(ng, -ng if ng else None)
+        phi_old = phi[s, s, s]
         phi_new = phi_old - (dt / ddt_coeff) * source
-        valid_arr[:, :, :, 0] = np.asarray(phi_new)
+
+        field.mf.copy_from(mfi, phi_new)

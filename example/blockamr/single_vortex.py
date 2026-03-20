@@ -23,6 +23,7 @@ Usage:
     python example/blockamr/single_vortex.py                    # default 64^3, Upwind
     python example/blockamr/single_vortex.py --ncell 128        # finer grid
     python example/blockamr/single_vortex.py --scheme Linear    # central scheme
+    python example/blockamr/single_vortex.py --device cpu       # CPU baseline
 """
 
 import argparse
@@ -30,13 +31,24 @@ import math
 import os
 import shutil
 
+# Parse --device early so env vars are set before JAX/AMReX import
+_pre = argparse.ArgumentParser(add_help=False)
+_pre.add_argument("--device", choices=["cpu", "gpu"], default=None)
+_early, _ = _pre.parse_known_args()
+if _early.device == "cpu":
+    os.environ["JAX_PLATFORMS"] = "cpu"
+else:
+    os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.25")
+os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
+
+import jax.numpy as jnp
+import numpy as np
+
 import blockamr
 from blockamr.field import Field
 from blockamr.dsl import exp, solve
 from blockamr.operators.div import build_face_fluxes, update_face_fluxes
 from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
-
-import numpy as np
 
 DIV_SCHEMES = {
     "Upwind": Upwind,
@@ -47,7 +59,7 @@ DIV_SCHEMES = {
 
 
 # ---------------------------------------------------------------------------
-# Velocity field
+# Velocity field (JAX-native — works on both CPU and GPU)
 # ---------------------------------------------------------------------------
 def vortex_velocity(x, y, z, t, period=2.0):
     """Divergence-free 2-D vortex (uniform in z) that reverses at t = T/2.
@@ -56,32 +68,29 @@ def vortex_velocity(x, y, z, t, period=2.0):
     v = -2 sin(2 pi x) sin^2(pi y) cos(pi t / T)
     w =  0
     """
-    cos_t = math.cos(math.pi * t / period)
-    u = 2.0 * np.sin(np.pi * x) ** 2 * np.sin(2.0 * np.pi * y) * cos_t
-    v = -2.0 * np.sin(2.0 * np.pi * x) * np.sin(np.pi * y) ** 2 * cos_t
-    w = np.zeros_like(x)
+    cos_t = jnp.cos(jnp.pi * t / period)
+    u = 2.0 * jnp.sin(jnp.pi * x) ** 2 * jnp.sin(2.0 * jnp.pi * y) * cos_t
+    v = -2.0 * jnp.sin(2.0 * jnp.pi * x) * jnp.sin(jnp.pi * y) ** 2 * cos_t
+    w = jnp.zeros_like(x)
     return u, v, w
 
 
 # ---------------------------------------------------------------------------
-# Initial condition
+# Initial condition (JAX-native — works on both CPU and GPU)
 # ---------------------------------------------------------------------------
 def init_gaussian(field, center=(0.5, 0.75), sigma=0.1):
     """Fill *field* with a 2-D Gaussian (uniform in z)."""
     dx = field.dx
     cx, cy = center
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
-        nx, ny, _nz = arr.shape[:3]
-        for i in range(nx):
-            for j in range(ny):
-                x = (lo[0] + i + 0.5) * dx[0]
-                y = (lo[1] + j + 0.5) * dx[1]
-                arr[i, j, :, 0] = math.exp(
-                    -((x - cx) ** 2 + (y - cy) ** 2) / (2.0 * sigma**2)
-                )
+        hi = bx.big_end()
+        nx, ny, nz = hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1
+        xs = jnp.array([(lo[0] + i + 0.5) * dx[0] for i in range(nx)])
+        ys = jnp.array([(lo[1] + j + 0.5) * dx[1] for j in range(ny)])
+        vals = jnp.exp(-((xs[:, None] - cx) ** 2 + (ys[None, :] - cy) ** 2) / (2.0 * sigma**2))
+        field.mf.copy_from(mfi, vals[:, :, None] * jnp.ones((nx, ny, nz)))
 
 
 # ---------------------------------------------------------------------------
@@ -92,8 +101,8 @@ def compute_mass(mf, dx):
     total = 0.0
     dv = dx[0] * dx[1] * dx[2]
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
-        total += float(np.sum(arr[:, :, :, 0])) * dv
+        host = mf.copy_to_host(mfi)
+        total += float(jnp.sum(host[:, :, :, 0])) * dv
     return total
 
 
@@ -103,12 +112,16 @@ def compute_l2_error(mf, phi0, dx):
     ref_sq = 0.0
     dv = dx[0] * dx[1] * dx[2]
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
         bx = mfi.valid_box()
-        lo = tuple(bx.small_end())
-        diff = arr[:, :, :, 0] - phi0[lo]
+        lo = bx.small_end()
+        hi = bx.big_end()
+        lo_key = tuple(lo)
+        nx, ny, nz = hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1
+        host = mf.copy_to_host(mfi)
+        current = host[:, :, :, 0]
+        diff = current - phi0[lo_key]
         err_sq += float(np.sum(diff**2)) * dv
-        ref_sq += float(np.sum(phi0[lo] ** 2)) * dv
+        ref_sq += float(np.sum(phi0[lo_key] ** 2)) * dv
     return math.sqrt(err_sq / ref_sq)
 
 
@@ -134,6 +147,7 @@ def run(
     plotfile=True,
     write_interval=0.1,
     scheme="Upwind",
+    memory="default",
 ):
     """Run the SingleVortex advection problem and return the relative L2 error."""
 
@@ -142,14 +156,13 @@ def run(
     ngrow = div_scheme.stencil_width
 
     box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
-    # box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
     geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
 
     ba = blockamr.BoxArray(box)
     ba.max_size(max_size)
     dm = blockamr.DistributionMapping(ba)
-    mf = blockamr.MultiFab(ba, dm, 1, ngrow)
+    mf = blockamr.MultiFab(ba, dm, 1, ngrow, memory=memory)
 
     field = Field(mf, geom, name="phi", box=box, dm=dm, max_size=max_size)
     dx = field.dx
@@ -160,9 +173,9 @@ def run(
     # save reference for error computation
     phi0 = {}
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
         bx = mfi.valid_box()
-        phi0[tuple(bx.small_end())] = np.array(arr[:, :, :, 0], copy=True)
+        host = mf.copy_to_host(mfi)
+        phi0[tuple(bx.small_end())] = np.array(host[:, :, :, 0], copy=True)
 
     mass0 = compute_mass(mf, dx)
 
@@ -176,7 +189,7 @@ def run(
         return vortex_velocity(x, y, z, t, period=period)
 
     face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
-                                    max_size=max_size)
+                                    max_size=max_size, memory=memory)
 
     # ---- time loop (OpenFOAM-style) ----
     u_max = 2.0  # max velocity magnitude
@@ -224,8 +237,11 @@ if __name__ == "__main__":
     parser.add_argument("--max-size", type=int, default=32, help="max grid size")
     parser.add_argument("--cfl", type=float, default=0.3, help="CFL number")
     parser.add_argument("--period", type=float, default=2.0, help="vortex period")
-    parser.add_argument("--write-interval", type=float, default=0.1, help="plotfile write interval in seconds")
+    parser.add_argument("--write-interval", type=float, default=0.1,
+                        help="plotfile write interval in seconds")
     parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
+    parser.add_argument("--device", choices=["cpu", "gpu"], default=None,
+                        help="force cpu or gpu")
     parser.add_argument(
         "--scheme",
         choices=list(DIV_SCHEMES),
@@ -235,6 +251,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     blockamr.initialize()
+    memory = "pinned" if args.device == "cpu" else "default"
     run(
         n_cell=args.ncell,
         max_size=args.max_size,
@@ -243,5 +260,6 @@ if __name__ == "__main__":
         plotfile=not args.no_plot,
         write_interval=args.write_interval,
         scheme=args.scheme,
+        memory=memory,
     )
     blockamr.finalize()

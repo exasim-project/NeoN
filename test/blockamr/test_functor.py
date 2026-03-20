@@ -35,7 +35,7 @@ def _make_field(n_cell=32, max_size=32, ngrow=1, name="phi"):
 def _init_sin3d(field):
     dx = field.dx
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]

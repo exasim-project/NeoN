@@ -17,6 +17,14 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
+# Ninja requires this to avoid RPATH relinking errors during install. Must be a CACHE variable so it
+# survives cmake re-configuration when CMAKE_CUDA_COMPILER changes mid-configure.
+if(DEFINED SKBUILD)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH
+      ON
+      CACHE BOOL "" FORCE)
+endif()
+
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -68,7 +76,7 @@ option(NeoN_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
 option(NeoN_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
 option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
 option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
-option(NeoN_ENABLE_MPI "Enable MPI" ON)
+option(NeoN_ENABLE_MPI_SUPPORT "Enable MPI" ON)
 option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
 option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
 mark_as_advanced(NeoN_ENABLE_WARNINGS)

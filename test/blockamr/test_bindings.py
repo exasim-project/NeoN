@@ -44,7 +44,7 @@ def test_sin_wave_to_plotfile():
         bx = mfi.valid_box()
         lo = bx.small_end()
         hi = bx.big_end()
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
 
         nx = hi[0] - lo[0] + 1
         ny = hi[1] - lo[1] + 1

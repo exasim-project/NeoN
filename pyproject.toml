@@ -44,6 +44,10 @@ test = [
 all = [
     "neon_pde[dev,test]",
 ]
+cuda = [
+    "jax[cuda12-local]",
+    "nvidia-cudnn-cu12",
+]
 
 [build-system]
 requires = [
@@ -65,7 +69,8 @@ editable.rebuild = false
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
 NeoN_WITH_AMREX = "ON"
 NeoN_WITH_UMPIRE = "OFF"
-AMReX_INSTALL = "OFF"
+AMReX_INSTALL = "ON"
+CMAKE_BUILD_WITH_INSTALL_RPATH = "ON"
 
 [tool.uv]
 no-build-isolation-package = ["neon_pde"]

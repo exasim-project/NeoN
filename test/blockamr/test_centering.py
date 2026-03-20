@@ -149,7 +149,7 @@ def test_face_centred_multifab_shape():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, 0)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         shape = arr.shape
         # x-face patches: 33 in x (nodal), 32 in y,z (cell)
         assert shape[0] == 33
@@ -170,9 +170,9 @@ def test_face_centred_multifab_roundtrip():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, 0)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         arr[:, :, :, 0] = 42.0
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         assert np.allclose(arr[:, :, :, 0], 42.0)
         break
