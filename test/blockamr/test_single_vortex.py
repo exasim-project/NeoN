@@ -58,7 +58,7 @@ def test_single_vortex_advection():
     dx = field.dx
 
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]
@@ -71,7 +71,7 @@ def test_single_vortex_advection():
 
     phi0 = {}
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = tuple(bx.small_end())
         phi0[lo] = np.array(arr[:, :, :, 0], copy=True)
@@ -100,7 +100,7 @@ def test_single_vortex_advection():
     l2_err_sq = 0.0
     l2_norm_sq = 0.0
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = tuple(bx.small_end())
         diff = arr[:, :, :, 0] - phi0[lo]
@@ -131,7 +131,7 @@ def test_conservation():
     dx = field.dx
 
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.array(mfi)
+        arr = mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]
@@ -144,7 +144,7 @@ def test_conservation():
     def compute_mass():
         total = 0.0
         for mfi in blockamr.MFIterator(mf):
-            arr = mf.array(mfi)
+            arr = mf.host_array(mfi)
             total += np.sum(arr[:, :, :, 0]) * dx[0] * dx[1] * dx[2]
         return total
 

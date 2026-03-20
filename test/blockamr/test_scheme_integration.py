@@ -42,7 +42,7 @@ def test_div_default_unchanged():
     field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         arr[:, :, :, 0] = 1.0
     field.fill_boundary()
 
@@ -64,7 +64,7 @@ def test_div_with_linear_scheme():
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx = arr.shape[0]
@@ -109,7 +109,7 @@ def test_solve_with_schemes_dict():
     field, box, dm, geom = _make_field(n_cell=32, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         dx = field.dx
@@ -122,7 +122,7 @@ def test_solve_with_schemes_dict():
     for mfi in blockamr.MFIterator(field.mf):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        phi_before[tuple(lo)] = field.mf.array(mfi)[:, :, :, 0].copy()
+        phi_before[tuple(lo)] = field.mf.host_array(mfi)[:, :, :, 0].copy()
 
     face_fluxes = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
     expr = exp.ddt(field) + exp.div(face_fluxes, field)
@@ -132,7 +132,7 @@ def test_solve_with_schemes_dict():
     for mfi in blockamr.MFIterator(field.mf):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        arr_new = field.mf.array(mfi)[:, :, :, 0]
+        arr_new = field.mf.host_array(mfi)[:, :, :, 0]
         assert not np.allclose(arr_new, phi_before[tuple(lo)])
 
 
@@ -144,7 +144,7 @@ def test_div_with_vanleer_scheme():
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx = arr.shape[0]
@@ -177,7 +177,7 @@ def test_solve_backward_compat():
     field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         arr[:, :, :, 0] = 5.0
 
     def zero_vel(x, y, z, t):
@@ -188,5 +188,5 @@ def test_solve_backward_compat():
     solve(expr, t=0.0, dt=0.01)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         assert np.allclose(arr[:, :, :, 0], 5.0)

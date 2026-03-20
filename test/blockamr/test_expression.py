@@ -28,7 +28,7 @@ def _init_sin3d(field):
     """Set field to sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)."""
     dx = field.dx
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]
@@ -91,7 +91,7 @@ def test_solve_constant_field_unchanged():
     field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         arr[:, :, :, 0] = 5.0
 
     def zero_vel(x, y, z, t):
@@ -102,7 +102,7 @@ def test_solve_constant_field_unchanged():
     solve(expr, t=0.0, dt=0.01)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         assert np.allclose(arr[:, :, :, 0], 5.0)
 
 
@@ -119,7 +119,7 @@ def test_diffusion_single_step():
     for mfi in blockamr.MFIterator(field.mf):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        phi_old[tuple(lo)] = field.mf.array(mfi)[:, :, :, 0].copy()
+        phi_old[tuple(lo)] = field.mf.host_array(mfi)[:, :, :, 0].copy()
 
     def gamma_one(x, y, z, t):
         return np.ones_like(x)
@@ -134,7 +134,7 @@ def test_diffusion_single_step():
     for mfi in blockamr.MFIterator(field.mf):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        arr_new = field.mf.array(mfi)[:, :, :, 0]
+        arr_new = field.mf.host_array(mfi)[:, :, :, 0]
         arr_old = phi_old[tuple(lo)]
         expected = arr_old * decay
         assert np.allclose(arr_new, expected, atol=1e-4), (

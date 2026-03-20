@@ -5,7 +5,7 @@
 """Divergence schemes — each `compute()` is a fused JIT kernel returning the source term."""
 from __future__ import annotations
 
-from typing import Annotated, Literal, NamedTuple, Union
+from typing import TYPE_CHECKING, Annotated, Literal, NamedTuple, Union
 
 import jax
 import jax.numpy as jnp
@@ -14,13 +14,35 @@ from pydantic import BaseModel, ConfigDict, Discriminator
 
 from blockamr.schemes.stencil import S, S_wide, face, interior
 
+if TYPE_CHECKING:
+    from blockamr.operators.div import BoxFluxData
+
+
+def _extract_fluxes(flux_x: Array, flux_y: Array, flux_z: Array, w: int) -> list[Array]:
+    """Extract component 0 and apply stencil trim to raw 4D flux arrays.
+
+    Called inside @jax.jit — all slicing is free at trace time.
+    """
+    raw = [flux_x[:, :, :, 0], flux_y[:, :, :, 0], flux_z[:, :, :, 0]]
+    trimmed = []
+    for ax in range(3):
+        f = raw[ax]
+        sl = [slice(None)] * 3
+        sl[ax] = slice(w, -w) if w > 0 else slice(None)
+        trimmed.append(f[tuple(sl)])
+    return trimmed
+
 
 # ---------------------------------------------------------------------------
 # Upwind (1st-order)
 # ---------------------------------------------------------------------------
-@jax.jit
-def _upwind_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
+@jax.jit(static_argnums=(5,))
+def _upwind_compute(
+    u_4d: Array, flux_x: Array, flux_y: Array, flux_z: Array, dh: Array, w: int
+) -> Array:
     """Fused upwind flux balance.  Traced once → single XLA kernel."""
+    u = u_4d[:, :, :, 0]
+    fluxes = _extract_fluxes(flux_x, flux_y, flux_z, w)
     total: Array | float = 0.0
     for ax in range(u.ndim):
         f: Array = fluxes[ax]
@@ -33,12 +55,18 @@ def _upwind_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
 
 
 class UpwindDivKernel(NamedTuple):
-    fluxes: list
-    dh: Array
+    flux_data: object  # BoxFluxData
     coeff: float
 
-    def __call__(self, phi: Array) -> Array:
-        return self.coeff * _upwind_compute(phi, self.fluxes, self.dh)
+    def __call__(self, phi_4d: Array) -> Array:
+        return self.coeff * _upwind_compute(
+            phi_4d,
+            self.flux_data.flux_x,
+            self.flux_data.flux_y,
+            self.flux_data.flux_z,
+            self.flux_data.dh,
+            self.flux_data.stencil_width,
+        )
 
 
 class Upwind(BaseModel):
@@ -49,15 +77,19 @@ class Upwind(BaseModel):
     def compute(self, u: Array, fluxes: list[Array], dh: Array) -> Array:
         return _upwind_compute(u, fluxes, dh)
 
-    def build_kernel(self, fluxes: list[Array], dh: Array, coeff: float = 1.0) -> UpwindDivKernel:
-        return UpwindDivKernel(fluxes=fluxes, dh=dh, coeff=coeff)
+    def build_kernel(self, flux_data: BoxFluxData, coeff: float = 1.0) -> UpwindDivKernel:
+        return UpwindDivKernel(flux_data=flux_data, coeff=coeff)
 
 
 # ---------------------------------------------------------------------------
 # Linear / central (2nd-order, unbounded)
 # ---------------------------------------------------------------------------
-@jax.jit
-def _linear_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
+@jax.jit(static_argnums=(5,))
+def _linear_compute(
+    u_4d: Array, flux_x: Array, flux_y: Array, flux_z: Array, dh: Array, w: int
+) -> Array:
+    u = u_4d[:, :, :, 0]
+    fluxes = _extract_fluxes(flux_x, flux_y, flux_z, w)
     total: Array | float = 0.0
     for ax in range(u.ndim):
         f: Array = fluxes[ax]
@@ -70,12 +102,18 @@ def _linear_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
 
 
 class LinearDivKernel(NamedTuple):
-    fluxes: list
-    dh: Array
+    flux_data: object  # BoxFluxData
     coeff: float
 
-    def __call__(self, phi: Array) -> Array:
-        return self.coeff * _linear_compute(phi, self.fluxes, self.dh)
+    def __call__(self, phi_4d: Array) -> Array:
+        return self.coeff * _linear_compute(
+            phi_4d,
+            self.flux_data.flux_x,
+            self.flux_data.flux_y,
+            self.flux_data.flux_z,
+            self.flux_data.dh,
+            self.flux_data.stencil_width,
+        )
 
 
 class Linear(BaseModel):
@@ -86,8 +124,8 @@ class Linear(BaseModel):
     def compute(self, u: Array, fluxes: list[Array], dh: Array) -> Array:
         return _linear_compute(u, fluxes, dh)
 
-    def build_kernel(self, fluxes: list[Array], dh: Array, coeff: float = 1.0) -> LinearDivKernel:
-        return LinearDivKernel(fluxes=fluxes, dh=dh, coeff=coeff)
+    def build_kernel(self, flux_data: BoxFluxData, coeff: float = 1.0) -> LinearDivKernel:
+        return LinearDivKernel(flux_data=flux_data, coeff=coeff)
 
 
 # ---------------------------------------------------------------------------
@@ -97,9 +135,13 @@ def _vanleer_limiter(r: Array) -> Array:
     return (r + jnp.abs(r)) / (1.0 + jnp.abs(r))
 
 
-@jax.jit
-def _vanleer_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
+@jax.jit(static_argnums=(5,))
+def _vanleer_compute(
+    u_4d: Array, flux_x: Array, flux_y: Array, flux_z: Array, dh: Array, w: int
+) -> Array:
     """Fused TVD flux balance with vanLeer limiter."""
+    u = u_4d[:, :, :, 0]
+    fluxes = _extract_fluxes(flux_x, flux_y, flux_z, w)
     W: int = 2
     total: Array | float = 0.0
     for ax in range(u.ndim):
@@ -147,12 +189,18 @@ def _vanleer_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
 
 
 class VanLeerDivKernel(NamedTuple):
-    fluxes: list
-    dh: Array
+    flux_data: object  # BoxFluxData
     coeff: float
 
-    def __call__(self, phi: Array) -> Array:
-        return self.coeff * _vanleer_compute(phi, self.fluxes, self.dh)
+    def __call__(self, phi_4d: Array) -> Array:
+        return self.coeff * _vanleer_compute(
+            phi_4d,
+            self.flux_data.flux_x,
+            self.flux_data.flux_y,
+            self.flux_data.flux_z,
+            self.flux_data.dh,
+            self.flux_data.stencil_width,
+        )
 
 
 class VanLeer(BaseModel):
@@ -163,16 +211,20 @@ class VanLeer(BaseModel):
     def compute(self, u: Array, fluxes: list[Array], dh: Array) -> Array:
         return _vanleer_compute(u, fluxes, dh)
 
-    def build_kernel(self, fluxes: list[Array], dh: Array, coeff: float = 1.0) -> VanLeerDivKernel:
-        return VanLeerDivKernel(fluxes=fluxes, dh=dh, coeff=coeff)
+    def build_kernel(self, flux_data: BoxFluxData, coeff: float = 1.0) -> VanLeerDivKernel:
+        return VanLeerDivKernel(flux_data=flux_data, coeff=coeff)
 
 
 # ---------------------------------------------------------------------------
 # QUICK (3rd-order)
 # ---------------------------------------------------------------------------
-@jax.jit
-def _quick_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
+@jax.jit(static_argnums=(5,))
+def _quick_compute(
+    u_4d: Array, flux_x: Array, flux_y: Array, flux_z: Array, dh: Array, w: int
+) -> Array:
     """Fused QUICK flux balance (quadratic upstream interpolation)."""
+    u = u_4d[:, :, :, 0]
+    fluxes = _extract_fluxes(flux_x, flux_y, flux_z, w)
     W: int = 2
     total: Array | float = 0.0
     for ax in range(u.ndim):
@@ -211,12 +263,18 @@ def _quick_compute(u: Array, fluxes: list[Array], dh: Array) -> Array:
 
 
 class QUICKDivKernel(NamedTuple):
-    fluxes: list
-    dh: Array
+    flux_data: object  # BoxFluxData
     coeff: float
 
-    def __call__(self, phi: Array) -> Array:
-        return self.coeff * _quick_compute(phi, self.fluxes, self.dh)
+    def __call__(self, phi_4d: Array) -> Array:
+        return self.coeff * _quick_compute(
+            phi_4d,
+            self.flux_data.flux_x,
+            self.flux_data.flux_y,
+            self.flux_data.flux_z,
+            self.flux_data.dh,
+            self.flux_data.stencil_width,
+        )
 
 
 class QUICK(BaseModel):
@@ -227,8 +285,8 @@ class QUICK(BaseModel):
     def compute(self, u: Array, fluxes: list[Array], dh: Array) -> Array:
         return _quick_compute(u, fluxes, dh)
 
-    def build_kernel(self, fluxes: list[Array], dh: Array, coeff: float = 1.0) -> QUICKDivKernel:
-        return QUICKDivKernel(fluxes=fluxes, dh=dh, coeff=coeff)
+    def build_kernel(self, flux_data: BoxFluxData, coeff: float = 1.0) -> QUICKDivKernel:
+        return QUICKDivKernel(flux_data=flux_data, coeff=coeff)
 
 
 # ---------------------------------------------------------------------------

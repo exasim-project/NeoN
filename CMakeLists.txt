@@ -17,6 +17,14 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
+# Ninja requires this to avoid RPATH relinking errors during install. Must be a CACHE variable so it
+# survives cmake re-configuration when CMAKE_CUDA_COMPILER changes mid-configure.
+if(DEFINED SKBUILD)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH
+      ON
+      CACHE BOOL "" FORCE)
+endif()
+
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

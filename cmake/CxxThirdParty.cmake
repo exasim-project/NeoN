@@ -267,12 +267,44 @@ if(${NeoN_WITH_GINKGO})
   endif()
 endif()
 
+# Derive AMReX GPU backend from Kokkos detection
+if(Kokkos_ENABLE_CUDA)
+  set(NeoN_AMREX_GPU_BACKEND
+      "CUDA"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+elseif(Kokkos_ENABLE_HIP)
+  set(NeoN_AMREX_GPU_BACKEND
+      "HIP"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+else()
+  set(NeoN_AMREX_GPU_BACKEND
+      "NONE"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+endif()
+
 if(${NeoN_WITH_AMREX})
-  find_package(AMReX ${NeoN_AMREX_VERSION} CONFIG QUIET)
+  # Enable CUDA language before AMReX — use clang as CUDA compiler to match host compiler
+  if(Kokkos_ENABLE_CUDA AND NOT CMAKE_CUDA_COMPILER_ID)
+    set(CMAKE_CUDA_COMPILER
+        "${CMAKE_CXX_COMPILER}"
+        CACHE FILEPATH "" FORCE)
+    enable_language(CUDA)
+  endif()
+
+  # When building a wheel (SKBUILD), always fetch AMReX from source via CPM so it is bundled with
+  # the package instead of linking against a system install.
+  if(DEFINED SKBUILD)
+    set(_AMREX_FORCE_CPM FORCE TRUE)
+  else()
+    set(_AMREX_FORCE_CPM "")
+    find_package(AMReX ${NeoN_AMREX_VERSION} CONFIG QUIET)
+  endif()
   if(AMReX_FOUND)
     message(STATUS "Using system-installed AMReX (version: ${AMReX_VERSION})")
   else()
     message(STATUS "System AMReX not found — fetching from GitHub via CPM.cmake...")
+    set(AMREX_TEST_INSTALL_PATCH git apply
+                                 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/amrex_test_install.patch)
     cpmaddpackage(
       NAME
       AMReX
@@ -282,8 +314,11 @@ if(${NeoN_WITH_AMREX})
       AMReX-Codes/amrex
       GIT_TAG
       ${NeoN_AMREX_TAG}
+      PATCH_COMMAND
+      ${AMREX_TEST_INSTALL_PATCH}
       SYSTEM
       YES
+      ${_AMREX_FORCE_CPM}
       OPTIONS
       "AMReX_PIC ON"
       "AMReX_ENABLE_TESTS OFF"
@@ -291,7 +326,12 @@ if(${NeoN_WITH_AMREX})
       "AMReX_FORTRAN_INTERFACES OFF"
       "AMReX_BUILD_TUTORIALS OFF"
       "AMReX_PARTICLES ON"
-      "AMReX_EB ON")
+      "AMReX_EB ON"
+      "AMReX_DIFFERENT_COMPILER ON"
+      "AMReX_GPU_BACKEND ${NeoN_AMREX_GPU_BACKEND}")
+    # Make AMReX CMake helpers (setup_target_for_cuda_compilation) available
+    list(APPEND CMAKE_MODULE_PATH "${AMReX_SOURCE_DIR}/Tools/CMake")
+    include(AMReXTargetHelpers)
   endif()
 endif()
 

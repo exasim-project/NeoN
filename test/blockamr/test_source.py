@@ -26,7 +26,7 @@ def _init_sin3d(field):
     """Set field to sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)."""
     dx = field.dx
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
+        arr = field.mf.host_array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]
@@ -61,7 +61,7 @@ def test_source_exact():
         lo = mfi.valid_box().small_end()
         dx = field.geom.cell_size()
         prob_lo = field.geom.prob_lo()
-        valid_arr = field.mf.array(mfi)
+        valid_arr = field.mf.host_array(mfi)
         nx, ny, nz = valid_arr.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]

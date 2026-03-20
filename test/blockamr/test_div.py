@@ -5,10 +5,11 @@
 import math
 
 import blockamr
+import jax
 import jax.numpy as jnp
 import numpy as np
 from blockamr.field import Field
-from blockamr.operators.div import Div, build_face_fluxes
+from blockamr.operators.div import Div, build_face_fluxes, _fill_face_component
 
 
 def _make_field(n_cell=64, max_size=32, ngrow=1):
@@ -27,21 +28,16 @@ def _init_sin3d(field):
     """Set field to sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)."""
     dx = field.dx
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
-        nx, ny, nz = arr.shape[:3]
-        for i in range(nx):
-            x = (lo[0] + i + 0.5) * dx[0]
-            for j in range(ny):
-                y = (lo[1] + j + 0.5) * dx[1]
-                for k in range(nz):
-                    z = (lo[2] + k + 0.5) * dx[2]
-                    arr[i, j, k, 0] = (
-                        math.sin(2 * math.pi * x)
-                        * math.sin(2 * math.pi * y)
-                        * math.sin(2 * math.pi * z)
-                    )
+        hi = bx.big_end()
+        nx, ny, nz = hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1
+        xs = jnp.array([(lo[0] + i + 0.5) * dx[0] for i in range(nx)])
+        ys = jnp.array([(lo[1] + j + 0.5) * dx[1] for j in range(ny)])
+        zs = jnp.array([(lo[2] + k + 0.5) * dx[2] for k in range(nz)])
+        X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
+        vals = jnp.sin(2 * jnp.pi * X) * jnp.sin(2 * jnp.pi * Y) * jnp.sin(2 * jnp.pi * Z)
+        field.mf.copy_from(mfi, vals)
     field.fill_boundary()
 
 
@@ -50,24 +46,24 @@ def test_div_uniform_field_is_zero():
     field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
-        arr[:, :, :, 0] = 1.0
+        bx = mfi.valid_box()
+        lo = bx.small_end()
+        hi = bx.big_end()
+        nx, ny, nz = hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1
+        field.mf.copy_from(mfi, jnp.ones((nx, ny, nz)))
     field.fill_boundary()
 
     def uniform_vel(x, y, z, t):
-        u = np.ones_like(x)
-        v = np.ones_like(x)
-        w = np.ones_like(x)
-        return u, v, w
+        return jnp.ones_like(x), jnp.ones_like(x), jnp.ones_like(x)
 
     face_fluxes = build_face_fluxes(uniform_vel, box, dm, geom, ngrow=1, t=0.0)
     div_op = Div(face_fluxes, field)
 
     for mfi in blockamr.MFIterator(field.mf):
-        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        phi = field.mf.grown_array(mfi)
         kernel = div_op.build_kernel(mfi, t=0.0)
         result = kernel(phi)
-        assert np.allclose(result, 0.0, atol=1e-12), f"max div = {np.abs(result).max()}"
+        assert jnp.allclose(result, 0.0, atol=1e-12), f"max div = {jnp.abs(result).max()}"
 
 
 def test_div_sin_field():
@@ -76,23 +72,23 @@ def test_div_sin_field():
     dx = field.dx
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.array(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
-        nx = arr.shape[0]
-        for i in range(nx):
-            x = (lo[0] + i + 0.5) * dx[0]
-            arr[i, :, :, 0] = math.sin(2 * math.pi * x)
+        hi = bx.big_end()
+        nx, ny, nz = hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1
+        xs = jnp.array([(lo[0] + i + 0.5) * dx[0] for i in range(nx)])
+        vals = jnp.sin(2 * jnp.pi * xs)
+        field.mf.copy_from(mfi, (vals[:, None, None] * jnp.ones((nx, ny, nz))))
     field.fill_boundary()
 
     def x_vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
 
     face_fluxes = build_face_fluxes(x_vel, box, dm, geom, ngrow=1, t=0.0)
     div_op = Div(face_fluxes, field)
 
     for mfi in blockamr.MFIterator(field.mf):
-        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        phi = field.mf.grown_array(mfi)
         kernel = div_op.build_kernel(mfi, t=0.0)
         result = kernel(phi)
         lo = mfi.valid_box().small_end()
@@ -100,8 +96,8 @@ def test_div_sin_field():
         for i in range(nx):
             x = (lo[0] + i + 0.5) * dx[0]
             analytic = 2 * math.pi * math.cos(2 * math.pi * x)
-            assert abs(result[i, 0, 0] - analytic) < 0.6, (
-                f"At x={x:.3f}: got {result[i, 0, 0]:.4f}, expected {analytic:.4f}"
+            assert abs(float(result[i, 0, 0]) - analytic) < 0.6, (
+                f"At x={x:.3f}: got {float(result[i, 0, 0]):.4f}, expected {analytic:.4f}"
             )
 
 
@@ -111,7 +107,7 @@ def _compute_div_error(n_cell):
     _init_sin3d(field)
 
     def x_vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
 
     face_fluxes = build_face_fluxes(x_vel, box, dm, geom, ngrow=1, t=0.0, max_size=n_cell)
     div_op = Div(face_fluxes, field)
@@ -119,14 +115,13 @@ def _compute_div_error(n_cell):
 
     max_err = 0.0
     for mfi in blockamr.MFIterator(field.mf):
-        phi = jnp.asarray(field.mf.grown_array(mfi)[:, :, :, 0])
+        phi = field.mf.grown_array(mfi)
         kernel = div_op.build_kernel(mfi, t=0.0)
         result = kernel(phi)
         lo = mfi.valid_box().small_end()
         dx = field.geom.cell_size()
         prob_lo = field.geom.prob_lo()
-        valid_arr = field.mf.array(mfi)
-        nx, ny, nz = valid_arr.shape[:3]
+        nx, ny, nz = result.shape[:3]
         for i in range(nx):
             x = prob_lo[0] + (lo[0] + i + 0.5) * dx[0]
             for j in range(ny):
@@ -160,3 +155,34 @@ def test_div_sin_convergence():
     ratio_2 = errors[1] / errors[2]
     assert ratio_1 > 1.8, f"Ratio 16->32: {ratio_1:.2f}, expected ~2"
     assert ratio_2 > 1.8, f"Ratio 32->64: {ratio_2:.2f}, expected ~2"
+
+
+def test_fill_face_component_passes_jax_arrays():
+    """_fill_face_component should pass JAX arrays to vel_func (GPU-ready path)."""
+    from blockamr.field import FaceField
+
+    n_cell = 32
+    box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
+    geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
+    ba = blockamr.BoxArray(box)
+    ba.max_size(32)
+    dm = blockamr.DistributionMapping(ba)
+
+    ff = FaceField(box, dm, geom, ncomp=1, ngrow=1, max_size=32)
+
+    received_types = []
+
+    def spy_vel(x, y, z, t):
+        received_types.append(type(x))
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
+
+    dx = geom.cell_size()
+    prob_lo = geom.prob_lo()
+    _fill_face_component(ff[0], 0, spy_vel, dx, prob_lo, 0.0)
+
+    assert len(received_types) > 0, "vel_func was never called"
+    for tp in received_types:
+        assert issubclass(tp, jax.Array), (
+            f"vel_func received {tp.__name__}, expected jax.Array"
+        )
