@@ -152,19 +152,162 @@ NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 
 template<typename ValueType>
+void computeDivProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+)
+{
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+    const auto nInternalFaces = mesh.nInternalFaces();
+
+    auto faceFluxV = faceFlux.internalVector().view();
+
+    const auto matIt = ls.faceToMatrixAddress();
+    const auto [rowOffs, diagOffs] =
+        views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
+
+    const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
+        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().deltaCoeffs(),
+        mesh.boundaryMesh().isLocal()
+    );
+
+    const auto [bweights, refGradient, value, valueFraction, refValue] = views(
+        weights.boundaryData().value(),
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().value(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
+    );
+
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+    auto values = ls.matrix().values().view();
+
+    parallelFor(
+        exec,
+        {nInternalFaces, faceFluxV.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            if (isLocal[facei - nInternalFaces] != 0)
+            {
+                auto bcfacei = facei - nInternalFaces;
+                auto flux = bweights[bcfacei] * faceFluxV[facei];
+
+                auto own = surfFaceCells[bcfacei];
+                auto rowOwnStart = rowOffs[own];
+                auto operatorScalingOwn = operatorScaling[own];
+
+                auto valFrac1 = isLocal[facei - nInternalFaces];
+                auto valFrac2 = -1.0 * valFrac1;
+
+                auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+
+                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+
+                bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();
+
+                auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                              + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+
+                Kokkos::atomic_sub(&rhs[own], valueRhs);
+                bRhs[bcfacei] = valueRhs;
+            }
+        },
+        "computeInterfaceGaussGreenDivCoefficients"
+    );
+}
+
+
+template<typename ValueType>
+void computeDivBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+)
+{
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    auto faceFluxV = faceFlux.internalVector().view();
+
+    const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
+        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().deltaCoeffs(),
+        mesh.boundaryMesh().isLocal()
+    );
+
+    const auto matIt = ls.faceToMatrixAddress();
+    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
+    auto const diagOffs = matIt->diagOffset().view();
+
+    auto values = ls.matrix().values().view();
+
+    auto [bweights, refGradient, value, valueFraction, refValue] = views(
+        weights.boundaryData().value(),
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().value(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
+    );
+
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    parallelFor(
+        exec,
+        {nInternalFaces, faceFluxV.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            if (isLocal[facei - nInternalFaces] == 0)
+            {
+                auto bcfacei = facei - nInternalFaces;
+                auto flux = bweights[bcfacei] * faceFluxV[facei];
+
+                auto own = surfFaceCells[bcfacei];
+                auto rowOwnStart = rowOffs[own];
+                auto operatorScalingOwn = operatorScaling[own];
+
+                auto valFrac1 = valueFraction[bcfacei];
+                auto valFrac2 = 1.0 - valFrac1;
+
+                auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+
+                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+                bValues[bcfacei] = valueMat;
+
+                auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                              + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+
+                Kokkos::atomic_sub(&rhs[own], valueRhs);
+                bRhs[bcfacei] = valueRhs;
+            }
+        },
+        "computeInterfaceGaussGreenDivCoefficients"
+    );
+}
+
+
+template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
-    const SurfaceInterpolation<ValueType>& surfInterp,
+    const SurfaceField<scalar>& weights,
     const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const auto matIt = ls.faceToMatrixAddress();
+    const auto& matIt = ls.faceToMatrixAddress();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    const auto weights = surfInterp.weight(faceFlux, phi);
 
     const auto
         [faceFluxV,
@@ -207,7 +350,8 @@ void computeDivImp(
             // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
             values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
+                &values[rowOwnStart + static_cast<int>(diagOffs[own])],
+                valueUpper * operatorScalingOwn
             );
 
             // add owner contribution lower
@@ -220,53 +364,6 @@ void computeDivImp(
         },
         "computeLocalGaussGreenDivCoefficients"
     );
-
-    auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs, nfV] = views(
-        weights.boundaryData().value(),
-        phi.boundaryData().refGrad(),
-        phi.boundaryData().value(),
-        phi.boundaryData().valueFraction(),
-        phi.boundaryData().refValue(),
-        mesh.boundaryMesh().deltaCoeffs(),
-        mesh.boundaryMesh().nf()
-    );
-
-    auto bRhs = ls.boundaryRhs().view();
-    auto bValues = ls.boundaryMatrix().values().view();
-
-    // FIXME currently only CDS is supported here
-    // FIXME currently we dont distinguish between internal and boundary interfaces
-    parallelFor(
-        exec,
-        {nInternalFaces, faceFluxV.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            auto bcfacei = facei - nInternalFaces;
-            auto flux = bweights[bcfacei] * faceFluxV[facei];
-
-            auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
-            auto operatorScalingOwn = operatorScaling[own];
-
-            auto valFrac1 = valueFraction[bcfacei];
-            auto valFrac2 = 1.0 - valFrac1;
-
-            auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-
-            Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-
-            // FIXME
-            //  store the corresponding neighbour value in boundary matrix
-            //  FIXME hardcoded
-            bValues[bcfacei] += -0.5 * faceFluxV[facei] * operatorScalingOwn * one<ValueType>();
-
-            auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                          + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
-
-            Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] += valueRhs;
-        },
-        "computeInterfaceGaussGreenDivCoefficients"
-    );
 };
 
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
@@ -274,7 +371,21 @@ void computeDivImp(
         la::LinearSystem<TYPENAME>&,                                                               \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
+        const SurfaceField<scalar>&,                                                               \
+        const dsl::Coeff                                                                           \
+    );                                                                                             \
+    template void computeDivBoundImpl<TYPENAME>(                                                   \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const dsl::Coeff                                                                           \
+    );                                                                                             \
+    template void computeDivProcBoundImpl<TYPENAME>(                                               \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
         const dsl::Coeff                                                                           \
     )
 

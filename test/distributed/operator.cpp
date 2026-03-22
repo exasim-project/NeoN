@@ -20,12 +20,51 @@ auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
 {
     auto exec = mesh.exec();
     localIdx localCells = mesh.nCells() / mpiEnviron.sizeRank(); // 4
-    auto ret = create1DUniformMesh(exec, localCells);
+    Vec3 leftBoundary {0.0, 0.0, 0.0};
+    Vec3 rightBoundary {1.0, 0.0, 0.0};
+
+    if (mpiEnviron.rank() == 0)
+    {
+        rightBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
+    }
+    if (mpiEnviron.rank() == 1)
+    {
+        leftBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
+        rightBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
+    }
+    if (mpiEnviron.rank() == 2)
+    {
+        leftBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
+    }
+
+    auto ret = create1DUniformMesh(exec, localCells, leftBoundary, rightBoundary);
+    auto& boundaryMesh = ret.boundaryMesh();
 
     if (mpiEnviron.rank() != 0)
     {
         ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
         ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    }
+
+    if (mpiEnviron.rank() == 0)
+    {
+        auto& isLocal = boundaryMesh.isLocal();
+        isLocal.view()[0] = 0;
+        isLocal.view()[1] = -1;
+    }
+
+    if (mpiEnviron.rank() == 1)
+    {
+        auto& isLocal = boundaryMesh.isLocal();
+        isLocal.view()[0] = 1;
+        isLocal.view()[1] = -1;
+    }
+
+    if (mpiEnviron.rank() == 2)
+    {
+        auto& isLocal = boundaryMesh.isLocal();
+        isLocal.view()[0] = 1;
+        isLocal.view()[1] = 0;
     }
 
     return ret;
@@ -71,8 +110,9 @@ partitionVolField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment 
 /** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
  owned by this rank */
 template<typename FieldType>
-FieldType
-partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)
+FieldType partitionSurfaceField(
+    FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip = false
+)
 {
     auto exec = mesh.exec();
     localIdx localCells = mesh.nCells();  // 4
@@ -83,6 +123,8 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
     localIdx leftBoundaryFace = 0;
     localIdx rightBoundaryFace = 0;
 
+    scalar signLeft = 1.0;
+    scalar signRight = 1.0;
 
     // [ 0 | 1 | 2 | 3 ][ 4 | 5 | 6 | 7 ][ 8 | 9 | 10 | 11 ]
     // 11  0   1   2   3    4   5   6   7    8   9   10   12
@@ -100,6 +142,13 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
 
         leftBoundaryFace = localFaces;                     // should be 3
         rightBoundaryFace = leftBoundaryFace + localCells; // should 3 + 4
+
+        // new face has different direction compared to unpartitioned case
+        // signRight = -1.0;
+        if (flip)
+        {
+            signLeft = -1.0;
+        }
     }
     if (mpiEnviron.rank() == 2)
     {
@@ -108,6 +157,12 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
 
         leftBoundaryFace = 2 * localFaces + 1;                 // 7
         rightBoundaryFace = leftBoundaryFace + localCells + 1; // 12
+
+        // new face has different direction compared to unpartitioned case
+        if (flip)
+        {
+            signLeft = -1.0;
+        }
     }
 
     FieldType ret = {field.exec(), field.name + "Part", mesh, bcs};
@@ -121,19 +176,22 @@ partitionSurfaceField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environm
     auto outV = internalVector.view();
     auto inV = field.internalVector().view();
 
+
     // set left boundary face
     NeoN::parallelFor(
         // lastface
         exec,
         {0, 1},
-        NEON_LAMBDA(const localIdx i) { outV[localFaces] = inV[leftBoundaryFace]; },
+        NEON_LAMBDA(const localIdx i) { outV[localFaces] = signLeft * inV[leftBoundaryFace]; },
         "copyMap"
     );
 
     NeoN::parallelFor(
         exec,
         {0, 1},
-        NEON_LAMBDA(const localIdx i) { outV[localFaces + 1] = inV[rightBoundaryFace]; },
+        NEON_LAMBDA(const localIdx i) {
+            outV[localFaces + 1] = signRight * inV[rightBoundaryFace];
+        },
         "copyMap"
     );
 
@@ -157,10 +215,9 @@ TEST_CASE("Distributed")
                  )}
             },
         },
-        // FIXME use upwind again
         {"divSchemes",
          NeoN::Dictionary {
-             {"div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("linear")})}
+             {"div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
          }}
     };
 
@@ -168,16 +225,15 @@ TEST_CASE("Distributed")
         {
             "laplacianSchemes",
             NeoN::Dictionary {
-                {"laplacian(gamma,UPart)",
+                {"laplacian(gammaPart,UPart)",
                  NeoN::TokenList(
                      {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
                  )}
             },
         },
-        // FIXME use upwind again
         {"divSchemes",
          NeoN::Dictionary {
-             {"div(phiPart,UPart)", NeoN::TokenList({std::string("Gauss"), std::string("linear")})}
+             {"div(phiPart,UPart)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
          }}
     };
 
@@ -202,11 +258,10 @@ TEST_CASE("Distributed")
     randomizeVector(phi.internalVector());
     fill(gamma.internalVector(), 2.0);
 
-    // partition fields and data
-
     // assembly
-    auto expr = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phi, U)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
+    auto expr = NeoN::dsl::Expression<NeoN::scalar>(
+        NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U)
+    );
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
@@ -214,16 +269,19 @@ TEST_CASE("Distributed")
     // {
     NeoN::mpi::Environment mpiEnviron;
 
+    // partition fields and data
     auto meshPart = partitionMeshHelper(meshGlobal, mpiEnviron);
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
     auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
     auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
-    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron);
+    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, true);
+    auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
-    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phiPart, uPart)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
+    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(
+        NeoN::dsl::imp::div(phiPart, uPart) - NeoN::dsl::imp::laplacian(gammaPart, uPart)
+    );
 
     exprDist.read(inputPart);
 
@@ -284,30 +342,55 @@ TEST_CASE("Distributed")
         lastElement = 34;
     }
 
-    if (env.rank() == 0)
+    SECTION("Correct rank 0")
     {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
+        if (env.rank() == 0)
+        {
+            compare(
+                take(ls.matrix().values(), firstElement, lastElement),
+                lsDst.matrix().values(),
+                ApproxScalar(1e-15)
+            );
+        }
     }
-    if (env.rank() == 1)
+
+    SECTION("Correct rank 1")
     {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
+        if (env.rank() == 1)
+        {
+            compare(
+                take(ls.matrix().values(), firstElement, lastElement),
+                lsDst.matrix().values(),
+                ApproxScalar(1e-15)
+            );
+        }
     }
-    if (env.rank() == 2)
+
+    SECTION("Correct rank 2")
     {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
+        if (env.rank() == 2)
+        {
+            compare(
+                take(ls.matrix().values(), firstElement, lastElement),
+                lsDst.matrix().values(),
+                ApproxScalar(1e-15)
+            );
+        }
     }
+
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+    };
+
+    // Create solver
+    // auto solver = NeoN::la::Solver(exec, solverDict);
+    // auto x = Vector<scalar>(exec, 4);
+    // fill(x, 0.0);
+
+    // auto solverStats = solver.solve(lsDst, x);
+    // auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 }
 
 }

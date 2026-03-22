@@ -133,13 +133,13 @@ void registerUnstructuredMesh(nb::module_& m)
             &NeoN::UnstructuredMesh::nFaces,
             "Get the total number of faces (internal + boundary)"
         )
-
-        .def(
-            "boundary_mesh",
-            &NeoN::UnstructuredMesh::boundaryMesh,
-            nb::rv_policy::reference_internal,
-            "Get the boundary mesh"
-        )
+    // FIXME
+        // .def(
+        //     "boundary_mesh",
+        //     &NeoN::UnstructuredMesh::boundaryMesh,
+        //     nb::rv_policy::reference_internal,
+        //     "Get the boundary mesh"
+        // )
         .def(
             "exec",
             &NeoN::UnstructuredMesh::exec,

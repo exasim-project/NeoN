@@ -212,7 +212,7 @@ public:
 
         // 3. apply received values to corresponding matrix
         // add diagonal contributions
-        add(recvBuffer, boundaryMatrixMap, matrix_.values());
+        sub(recvBuffer, boundaryMatrixMap, matrix_.values());
     }
 
     // FIXME needed?
