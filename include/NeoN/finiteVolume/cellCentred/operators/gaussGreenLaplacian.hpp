@@ -34,6 +34,25 @@ void computeLaplacianImpl(
 );
 
 template<typename ValueType>
+void computeLaplacianBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+);
+
+template<typename ValueType>
+void computeLaplacianProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+);
+
+
+template<typename ValueType>
 class GaussGreenLaplacian :
     public LaplacianOperatorFactory<ValueType>::template Register<GaussGreenLaplacian<ValueType>>
 {

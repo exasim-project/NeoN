@@ -113,6 +113,7 @@ localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
+
 BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
@@ -143,8 +144,9 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
+        {exec, {1, 1}},               //  isLocal
         {0, 1, 2, 3, 4},              // offset
-        {-1, -1, -1, -1, -1}          // offset
+        {-1, -1, -1, -1, -1}          // neighbourRank
     );
     return UnstructuredMesh(
         {exec, {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}}}, // points,
@@ -172,7 +174,7 @@ UnstructuredMesh create1DUniformMesh(
     // const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
-    vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
+    vectorVector meshPointsHost(hostExec, nCells + 1, leftBoundary);
     auto meshPointsHostView = meshPointsHost.view();
     meshPointsHostView[nCells - 1] = leftBoundary;
     meshPointsHostView[nCells] = rightBoundary;
@@ -192,7 +194,7 @@ UnstructuredMesh create1DUniformMesh(
 
     scalarVector cellVolumes(exec, nCells, meshSpacing);
 
-    vectorVector cellCenters(exec, nCells, {0.0, 0.0, 0.0});
+    vectorVector cellCenters(exec, nCells, leftBoundary);
     auto cellCentersView = cellCenters.view();
     parallelFor(
         exec,
@@ -246,6 +248,8 @@ UnstructuredMesh create1DUniformMesh(
     deltaCoeffsHostView[1] = 1 / mag(deltaHostView[1]);
     auto deltaCoeffs = deltaCoeffsHost.copyToExecutor(exec);
 
+    // auto isLocal = std::vector<localIdx> {1,1,1};
+
     BoundaryMesh boundaryMesh(
         exec,
         {exec, {0, nCells - 1}},
@@ -256,9 +260,11 @@ UnstructuredMesh create1DUniformMesh(
         {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
         delta,
         {exec, {1.0, 1.0}},
-        deltaCoeffs,
-        {0, 1, 2},
-        {-1, -1, -1}
+        deltaCoeffs, // deltaCoeffs --> mag(1 / delta)
+        // FIXME
+        {exec, {1, 1}}, // isLocal
+        {0, 1, 2},      // offset
+        {-1, -1, -1}    // neighbourRank
     );
 
     return UnstructuredMesh(

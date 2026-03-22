@@ -23,12 +23,33 @@ void computeDivExp(
     const dsl::Coeff operatorScaling
 );
 
+/** @brief assemble internal dofs*/
 template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
-    const SurfaceInterpolation<ValueType>& surfInterp,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+);
+
+/** @brief assemble boundaries*/
+template<typename ValueType>
+void computeDivBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+);
+
+/** @brief assemble processor boundaries*/
+template<typename ValueType>
+void computeDivProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
     const dsl::Coeff operatorScaling
 );
 
@@ -70,7 +91,7 @@ public:
             faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
         );
         return divPhi;
-    };
+    }
 
     virtual void
     div(VolumeField<ValueType>& divPhi,
@@ -90,7 +111,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         computeDivExp<ValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
-    };
+    }
 
     virtual void
     div(la::LinearSystem<ValueType>& ls,
@@ -98,8 +119,11 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
-    };
+        const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
+        computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    }
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
     {

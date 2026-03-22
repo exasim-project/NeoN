@@ -65,11 +65,12 @@ void computeUpwindInterpolationWeights(
 )
 {
     const auto exec = src.exec();
-    const auto [weightS, weightB, ownerS, neighS, fluxS] = views(
+    const auto [weightS, weightB, ownerS, neighS, isLocal, fluxS] = views(
         weights.internalVector(),
         weights.boundaryData().value(),
         src.mesh().faceOwner(),
         src.mesh().faceNeighbour(),
+        src.mesh().boundaryMesh().isLocal(),
         flux.internalVector()
     );
     auto nInternalFaces = src.mesh().nInternalFaces();
@@ -85,8 +86,18 @@ void computeUpwindInterpolationWeights(
             else
             {
                 auto bcfacei = facei - nInternalFaces;
-                weightB[bcfacei] = 1.0;
-                weightS[facei] = 1.0;
+                // NOTE proc boundary
+                if (isLocal[bcfacei] != 0)
+                {
+                    auto weight = fluxS[facei] >= 0 ? 1 : 0;
+                    weightS[facei] = weight;
+                    weightB[bcfacei] = weight;
+                }
+                else
+                {
+                    weightB[bcfacei] = 1.0;
+                    weightS[facei] = 1.0;
+                }
             }
         },
         "computeUpwindInterpolation"

@@ -133,13 +133,13 @@ void registerUnstructuredMesh(nb::module_& m)
             &NeoN::UnstructuredMesh::nFaces,
             "Get the total number of faces (internal + boundary)"
         )
-
-        .def(
-            "boundary_mesh",
-            &NeoN::UnstructuredMesh::boundaryMesh,
-            nb::rv_policy::reference_internal,
-            "Get the boundary mesh"
-        )
+    // FIXME
+        // .def(
+        //     "boundary_mesh",
+        //     &NeoN::UnstructuredMesh::boundaryMesh,
+        //     nb::rv_policy::reference_internal,
+        //     "Get the boundary mesh"
+        // )
         .def(
             "exec",
             &NeoN::UnstructuredMesh::exec,
@@ -183,18 +183,19 @@ void registerUnstructuredMesh(nb::module_& m)
         "Useful for testing and simple demonstrations."
     );
 
-    m.def(
-        "create_1d_uniform_mesh",
-        &NeoN::create1DUniformMesh,
-        "exec"_a,
-        "n_cells"_a,
-        "Create a uniform 1D mesh aligned with the x-axis.\n\n"
-        "Args:\n"
-        "    exec: Executor for parallel operations\n"
-        "    n_cells: Number of cells in the mesh\n\n"
-        "Each cell has a left and right face. Useful for 1D simulations\n"
-        "and testing finite volume schemes."
-    );
+    // FIXME
+    // m.def(
+    //     "create_1d_uniform_mesh",
+    //     &NeoN::create1DUniformMesh,
+    //     "exec"_a,
+    //     "n_cells"_a,
+    //     "Create a uniform 1D mesh aligned with the x-axis.\n\n"
+    //     "Args:\n"
+    //     "    exec: Executor for parallel operations\n"
+    //     "    n_cells: Number of cells in the mesh\n\n"
+    //     "Each cell has a left and right face. Useful for 1D simulations\n"
+    //     "and testing finite volume schemes."
+    // );
 }
 
 } // namespace NeoN::bindings
