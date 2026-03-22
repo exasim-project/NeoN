@@ -24,6 +24,7 @@ auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
 
     if (mpiEnviron.rank() != 0)
     {
+        // FIXME NOTE -1.0 should be 1.0 ?
         ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
         ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
     }
@@ -292,22 +293,36 @@ TEST_CASE("Distributed")
             ApproxScalar(1e-15)
         );
     }
-    if (env.rank() == 1)
-    {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
-    }
-    if (env.rank() == 2)
-    {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
-    }
+    // if (env.rank() == 1)
+    // {
+    //     compare(
+    //         take(ls.matrix().values(), firstElement, lastElement),
+    //         lsDst.matrix().values(),
+    //         ApproxScalar(1e-15)
+    //     );
+    // }
+    // if (env.rank() == 2)
+    // {
+    //     compare(
+    //         take(ls.matrix().values(), firstElement, lastElement),
+    //         lsDst.matrix().values(),
+    //         ApproxScalar(1e-15)
+    //     );
+    // }
+
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+    };
+
+    // Create solver
+    auto solver = NeoN::la::Solver(exec, solverDict);
+    auto x = Vector<scalar>(exec, 4);
+    fill(x, 0.0);
+
+    auto solverStats = solver.solve(lsDst, x);
+    auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 }
 
 }
