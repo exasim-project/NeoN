@@ -203,6 +203,7 @@ public:
      * @return The boundary mesh.
      */
     const BoundaryMesh& boundaryMesh() const;
+
     BoundaryMesh& boundaryMesh();
 
     BoundaryMesh& boundaryMesh();

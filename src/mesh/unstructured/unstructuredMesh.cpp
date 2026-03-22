@@ -129,6 +129,7 @@ localIdx UnstructuredMesh::nTotalFaces() const
 localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
+
 BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
@@ -161,6 +162,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
+        {exec, {1, 1}},               //  isLocal
         {0, 1, 2, 3, 4},              // offset
         0,                            // number of proc boundary patches
         {}                            // neighbourRank

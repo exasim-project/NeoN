@@ -183,58 +183,72 @@ std::shared_ptr<const gko::LinOp>
 createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx)
 {
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
-    // const auto [coeffsV, sparsityV] = mtx.view();
-    // FIXME currently ls keeps a local mtx
+    const auto [coeffsV, sparsityV] = mtx.view();
 
-    // const auto mtx = sys.view().matrix;
     // NOTE we get a const view of the system but need a non const view to vals and indices
+    // FIXME currently ls keeps a local mtx
     // FIXME currently only mtx.local() is used
-    // auto vals = gko::array<scalar>::const_view(
-    //     exec, static_cast<gko::size_type>(coeffsV.size()), coeffsV.data()
-    //     ls.matrix().local()->values().data()
-    // );
-    // auto col = gko::array<IndexType>::const_view(
-    //     exec,
-    //     static_cast<gko::size_type>(ls.matrix().local()->colIdxs().size()),
-    //     ls.matrix().local()->colIdxs().data()
-    // );
-    // auto row = gko::array<IndexType>::const_view(
-    //     exec,
-    //     static_cast<gko::size_type>(ls.matrix().local()->rowOffs().size()),
-    //     ls.matrix().local()->rowOffs().data()
-    // );
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), mtx.values().data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        mtx.sparsity()->colIdxs().data()
+    );
+    auto row = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        mtx.sparsity()->rowOffs().data()
+    );
 
-    // auto nrows = static_cast<gko::size_type>(computeNRows(ls));
+    auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
 
-    // // FIXME currently no communication with other rank
-    // auto partition =
-    //     gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
-    //         exec, comm, nrows
-    //     ));
+    // FIXME dont recreate
+    auto partition =
+        gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
+            exec, comm, nrows
+        ));
 
-    // // FIXME currently no communication with other rank
-    // // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
-    // auto recv_connections = gko::array<label>(exec, 0);
+    // FIXME currently no communication with other rank
+    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
+    auto recv_connections = gko::array<label>(exec, 0);
 
-    // auto imap = gko::experimental::distributed::index_map<label, label>(
-    //     exec, partition, comm.rank(), recv_connections
-    // );
+    auto imap = gko::experimental::distributed::index_map<label, label>(
+        exec, partition, comm.rank(), recv_connections
+    );
 
-    // std::shared_ptr<gko::LinOp> localMtx =
-    //     gko::share(
-    //         gko::matrix::Csr<scalar, IndexType>::create_const(
-    //             exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
-    //         )
-    //     )
-    //         ->clone();
-    // // writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
+    // FIXME why cloned?
+    std::shared_ptr<gko::LinOp> localMtx =
+        gko::share(
+            gko::matrix::Csr<scalar, IndexType>::create_const(
+                exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+            )
+        )
+            ->clone();
 
-    // std::shared_ptr<gko::LinOp> nonLocalMtx =
-    //     gko::share(gko::matrix::Csr<scalar, IndexType>::create(exec, gko::dim<2> {nrows, 0}));
-    // // writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
 
-    // return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
-    return nullptr;
+    auto non_loc_vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), bmtx.values().data()
+    );
+    auto non_loc_col = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        bmtx.sparsity()->colIdxs().data()
+    );
+    auto non_loc_row = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        bmtx.sparsity()->rowOffs().data()
+    );
+
+
+    writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
+    std::shared_ptr<gko::LinOp> nonLocalMtx =
+        gko::share(gko::matrix::Csr<scalar, IndexType>::create(exec, gko::dim<2> {nrows, 0}));
+    writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
+
+    return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
 }
 
 template<typename IndexType>
@@ -351,6 +365,62 @@ SolverStatsEntry solve_impl(
     return {numIter, initResNorm, finalResNorm, duration};
 }
 
+// SolverStatsEntry solve_impl_dist(
+//     std::shared_ptr<const gko::Executor> exec,
+//     std::shared_ptr<const gko::LinOp> mtx,
+//     std::shared_ptr<gko::LinOp> x,
+//     std::shared_ptr<const gko::LinOp> b,
+//     std::unique_ptr<gko::LinOp> solver,
+//     size_t nrows
+// )
+// {
+//     exec->synchronize();
+
+//     // FIXME dont re-init
+//     bool forceHostBuffer = false;
+//     mpi::Environment env;
+//     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
+
+//     auto startEval = std::chrono::steady_clock::now();
+
+//     using vec = gko::matrix::Dense<scalar>;
+
+//     // create a copy of rhs so that we can inline compute
+//     // the residual
+//     // auto rhsCopy = Vector<scalar>(rhs);
+//     // auto res = gkoVecView(exec, comm, rhsCopy.data(), nrows);
+
+//     // compute Ax-b -> res
+//     // auto one = gko::initialize<vec>({1.0}, exec);
+//     // auto neg_one = gko::initialize<vec>({-1.0}, exec);
+//     // mtx->apply(one, x, neg_one, res);
+
+//     // FIXME dont re-init
+//     // auto init = gko::initialize<vec>({0.0}, exec);
+//     // using dist_vec = gko::experimental::distributed::Vector<scalar>;
+//     // gko::as<dist_vec>(res)->compute_norm2(init);
+//     // scalar initResNorm = retrieve(init);
+
+//     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+//         gko::log::Convergence<scalar>::create();
+//     solver->add_logger(logger);
+//     solver->apply(b, x);
+
+//     // since we work on a copy we need to copy back
+//     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+//     auto numIter = label(logger->get_num_iterations());
+//     exec->synchronize();
+//     auto endEval = std::chrono::steady_clock::now();
+//     auto duration =
+//         static_cast<scalar>(
+//             std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+//         )
+//         / 1000.0;
+
+//     return {numIter, initResNorm, finalResNorm, duration};
+// }
+
 
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
@@ -377,44 +447,45 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
     bool forceHostBuffer = false;
     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
 
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
-    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
+//     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+//     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
 
-    // FIXME currently no communication with other rank
-    auto partition =
-        gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
-            exec, comm, nrows
-        ));
+//     // FIXME currently no communication with other rank
+//     auto partition =
+//         gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
+//             exec, comm, nrows
+//         ));
 
-    // FIXME currently no communication with other rank
-    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
-    auto recv_connections = gko::array<label>(exec, 0);
+//     // FIXME currently no communication with other rank
+//     // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
+//     auto recv_connections = gko::array<label>(exec, 0);
 
-    auto imap = gko::experimental::distributed::index_map<label, label>(
-        exec, partition, comm.rank(), recv_connections
-    );
+//     auto imap = gko::experimental::distributed::index_map<label, label>(
+//         exec, partition, comm.rank(), recv_connections
+//     );
 
-    // NOTE we get a const view of the system but need a non const view to vals and indices
-    // FIXME
-    // const auto mtx = sys.matrix();
-    // const auto rowsCopy = unpackRowOffs(mtx.local()->rowOffs());
-    // const auto colsCopy = unpackColIdx(mtx.local()->colIdxs(), rowsCopy, mtx.local()->rowOffs());
-    // const auto valuesCopy =
-    //     unpackMtxValues(mtx.local()->values(), mtx.local()->rowOffs(), rowsCopy);
-    auto localMtx = gko::share(gko::matrix::Csr<scalar, IndexType>::create(
-        exec,
-        gko::dim<2> {nrows, nrows},
-        gkoCopyArray(exec, valuesCopy.view()),
-        gkoCopyArray(exec, colsCopy.view()),
-        gkoCopyArray(exec, rowsCopy.view())
-    ));
-    // FIXME currently only empty nonLocalMtx
-    auto nonLocalMtx =
-        gko::share(gko::matrix::Csr<scalar, IndexType>::create(exec, gko::dim<2> {nrows, 0}));
+//     // NOTE we get a const view of the system but need a non const view to vals and indices
+//     // FIXME
+//     // const auto mtx = sys.matrix();
+//     // const auto rowsCopy = unpackRowOffs(mtx.local()->rowOffs());
+//     // const auto colsCopy = unpackColIdx(mtx.local()->colIdxs(), rowsCopy,
+//     mtx.local()->rowOffs());
+//     // const auto valuesCopy =
+//     //     unpackMtxValues(mtx.local()->values(), mtx.local()->rowOffs(), rowsCopy);
+//     auto localMtx = gko::share(gko::matrix::Csr<scalar, IndexType>::create(
+//         exec,
+//         gko::dim<2> {nrows, nrows},
+//         gkoCopyArray(exec, valuesCopy.view()),
+//         gkoCopyArray(exec, colsCopy.view()),
+//         gkoCopyArray(exec, rowsCopy.view())
+//     ));
+//     // FIXME currently only empty nonLocalMtx
+//     auto nonLocalMtx =
+//         gko::share(gko::matrix::Csr<scalar, IndexType>::create(exec, gko::dim<2> {nrows, 0}));
 
-    // return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
-    return nullptr;
-}
+//     // return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
+//     return nullptr;
+// }
 
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>
@@ -430,11 +501,16 @@ void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
     // auto environment = sys.environment();
     bool forceHostBuffer = false;
 
+    bool forceHostBuffer = false;
     // FIXME dont re-init
     mpi::Environment env;
     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
+    // FIXME this copies ?
+    auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+    auto bmtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+    const auto gkoMtx = createGkoMtx(exec, comm, mtx, bmtx);
+    // auto environment = sys.environment();
 
-    // FIXME implement
     // const auto gkoMtx = createGkoMtx(exec, comm, sys);
     // auto solver = factory->generate(gkoMtx);
 
@@ -450,13 +526,13 @@ GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Ve
         const auto gkoMtx = createGkoMtx(sys.matrix());
         auto solver = factory_->generate(gkoMtx);
 
-        auto rhsCopy = unpackVecValues(sys.rhs());
-        auto xCopy = unpackVecValues(x);
+        // auto rhsCopy = unpackVecValues(sys.rhs());
+        // auto xCopy = unpackVecValues(x);
 
-        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+        // auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
 
-        packVecValues(xCopy, x);
-        return {stats};
+        // packVecValues(xCopy, x);
+        // return {stats};
     }
     else
     {

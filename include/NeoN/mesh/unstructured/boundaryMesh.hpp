@@ -64,6 +64,7 @@ public:
         vectorVector delta,
         scalarVector weights,
         scalarVector deltaCoeffs,
+        labelVector isLocal,
         std::vector<localIdx> offset,
         localIdx procBoundaryPatches,
         std::vector<localIdx> neighbourRank
@@ -349,7 +350,7 @@ private:
     /**
      * @brief The mpi rank of the corresponding neighbour patch
      */
-    std::vector<localIdx> neighbourRank_;
+    std::vector<localIdx> neighbourRank_; // -1 boundary > 0 is distributed
 };
 
 } // namespace NeoN

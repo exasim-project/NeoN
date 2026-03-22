@@ -22,6 +22,7 @@ BoundaryMesh::BoundaryMesh(
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
+    labelVector isLocal,
     std::vector<localIdx> offset,
     localIdx procBoundaryPatches,
     std::vector<localIdx> neighbourRank
@@ -136,6 +137,5 @@ localIdx BoundaryMesh::nProcBoundaryFaces() const
 }
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
-
 
 } // namespace NeoN

@@ -53,6 +53,7 @@ void registerBoundaryMesh(nb::module_& m)
             "delta"_a,
             "weights"_a,
             "delta_coeffs"_a,
+            "isLocal_coeffs"_a,
             "offset"_a,
             "procBoundaryPatches"_a,
             "neighbourRank"_a,
