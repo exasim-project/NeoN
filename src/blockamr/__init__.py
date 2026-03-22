@@ -7,9 +7,12 @@ import jax
 jax.config.update("jax_enable_x64", True)
 
 from ._blockamr import *
-from .field import CellField, FaceField, Field, NodalField, PatchData
+from .field import AmrField, CellField, FaceField, Field, NodalField, PatchData
+from .fillpatch import FillPatchCellConservative, FillPatchSingleLevel
+from .mesh import AmrMesh
 from . import dsl
 from . import schemes
+from .runtime import runtime
 
 _default_executor = "cpu"
 

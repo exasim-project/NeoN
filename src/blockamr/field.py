@@ -69,6 +69,45 @@ class NodalField(Field):
         super().__init__(mf, geom, name=name, box=box, dm=dm)
 
 
+class AmrField:
+    """Multi-level field that registers with AmrMesh for lifecycle callbacks."""
+
+    def __init__(self, mesh, name="", ncomp=1, ngrow=0, fill_patch=None):
+        self.mesh = mesh
+        self.name = name
+        self.ncomp = ncomp
+        self.ngrow = ngrow
+        self._fill_patch = fill_patch
+        self.mf = [None] * (mesh.max_level + 1)
+        mesh.register_field(self)
+
+    def __getitem__(self, lev):
+        return Field(self.mf[lev], self.mesh.geom(lev), name=self.name)
+
+    def fill_patch(self, lev, time):
+        if self._fill_patch:
+            self._fill_patch(self.mesh, self, lev, time)
+        else:
+            self.mf[lev].fill_boundary(self.mesh.geom(lev))
+
+    def _on_new_level(self, lev, ba, dm):
+        self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow)
+
+    def _on_new_level_from_coarse(self, lev, time, ba, dm):
+        self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow)
+        if self._fill_patch:
+            self._fill_patch(self.mesh, self, lev, time)
+
+    def _on_remake_level(self, lev, time, ba, dm):
+        new_mf = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow)
+        if self._fill_patch:
+            self._fill_patch(self.mesh, self, lev, time, target_mf=new_mf)
+        self.mf[lev] = new_mf
+
+    def _on_clear_level(self, lev):
+        self.mf[lev] = None
+
+
 class FaceField:
     """Face-centred field. Holds 3 Fields, one per spatial direction."""
 
