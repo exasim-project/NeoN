@@ -58,6 +58,7 @@ public:
         vectorVector delta,
         scalarVector weights,
         scalarVector deltaCoeffs,
+        labelVector isLocal,
         std::vector<localIdx> offset,
         std::vector<localIdx> neighbourRank
     );
@@ -227,6 +228,11 @@ public:
     // TODO consistent use of Vector on CPU
     const std::vector<localIdx>& offset() const;
 
+    const labelVector& isLocal() const;
+
+    labelVector& isLocal();
+
+    const std::vector<localIdx>& neighbourRank() const;
 
 private:
 
@@ -298,9 +304,16 @@ private:
     std::vector<localIdx> offset_;
 
     /**
+     * @brief Vector of delta coefficients.
+     *
+     * Vector of cell to face distances.
+     */
+    labelVector isLocal_; // 1 - procBoundary, 0 localBoundary
+
+    /**
      * @brief The rank of the corresponding neighbour
      */
-    std::vector<localIdx> neighbourRank_;
+    std::vector<localIdx> neighbourRank_; // -1 boundary > 0 is distributed
 };
 
 } // namespace NeoN
