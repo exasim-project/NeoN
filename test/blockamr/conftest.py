@@ -10,6 +10,5 @@ import blockamr
 @pytest.fixture(scope="session", autouse=True)
 def blockamr_session():
     """Initialize and finalize blockAMR once for all tests in this directory."""
-    blockamr.initialize()
-    yield
-    blockamr.finalize()
+    with blockamr.runtime():
+        yield

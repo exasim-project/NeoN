@@ -13,6 +13,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Arena.H>
 #include <AMReX_GpuLaunch.H>
+#include <AMReX_TagBox.H>
 #include <nanobind/stl/string.h>
 
 #include <cstring>
@@ -152,7 +153,12 @@ void registerMultiFab(nb::module_& m)
                 return pySelf;
             }
         )
-        .def("valid_box", [](MFIterator& self) { return self.mfi->validbox(); });
+        .def("valid_box", [](MFIterator& self) { return self.mfi->validbox(); })
+        .def(
+            "get",
+            [](MFIterator& self) -> MFIter& { return self.get(); },
+            nb::rv_policy::reference_internal
+        );
 
     nb::class_<MultiFab>(m, "MultiFab")
         .def(
