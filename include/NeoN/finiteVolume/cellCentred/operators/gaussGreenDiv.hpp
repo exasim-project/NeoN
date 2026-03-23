@@ -117,9 +117,9 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-        // computeDivProcBoundImpl(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
         computeDivImp(ls, faceFlux, phi, weights, operatorScaling);
-        // computeDivBoundImpl(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     }
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
