@@ -27,7 +27,7 @@ from neon.blockamr.mesh import AmrMesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import update_face_fluxes
+from neon.blockamr.operators.div import update_face_fluxes, AmrFaceFluxUpdater
 from neon.blockamr.schemes.div_schemes import Upwind, VanLeer
 
 
@@ -100,7 +100,7 @@ def compute_level0_mass(phi, mesh):
 
 
 def run(
-    n_cell=32, max_level=1, cfl=0.3, period=2.0, scheme="Upwind", plotfile=True, write_interval=0.1
+    n_cell=32, max_level=1, cfl=0.3, period=2.0, scheme="Upwind", plotfile=True, write_interval=0.1, max_grid_size=32
 ):
     box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
@@ -109,8 +109,8 @@ def run(
     info = blockamr.AmrInfo()
     info.max_level = max_level
     info.set_ref_ratio(0, 2)
-    info.set_max_grid_size(0, 32)
-    info.set_blocking_factor(0, 8)
+    info.set_max_grid_size(0, max_grid_size)
+    info.set_blocking_factor(0, 16)
 
     mesh = AmrMesh(geom, info)
     ngrow = 2
@@ -153,14 +153,14 @@ def run(
     print()
 
     # --- time loop (DSL identical to single-level) ---
+    flux_updater = AmrFaceFluxUpdater(face_vel, vel, mesh)
+
     while t < (period - 1e-12):
         if t + dt > period:
             dt = period - t
 
         mesh.regrid(t, tag=tag_gradient(phi, threshold=1.0))
-
-        for lev in range(mesh.n_levels()):
-            update_face_fluxes(face_vel[lev], vel, mesh.geom(lev), t)
+        flux_updater.update(t)
 
         expr = exp.ddt(phi) + exp.div(face_vel, phi, scheme=div_scheme)
         solve(expr, t, dt)
@@ -169,7 +169,7 @@ def run(
         nsteps += 1
 
         if plotfile and t >= next_write - 1e-12:
-            mesh.write_plotfile(f"plt_vortex_amr_{plot_count:04d}", phi, t)
+            # mesh.write_plotfile(f"plt_vortex_amr_{plot_count:04d}", phi, t)
             print(f"  Wrote plt_vortex_amr_{plot_count:04d}  (t = {t:.4f})")
             plot_count += 1
             next_write += write_interval
@@ -190,6 +190,7 @@ if __name__ == "__main__":
     parser.add_argument("--max-level", type=int, default=2)
     parser.add_argument("--cfl", type=float, default=0.3)
     parser.add_argument("--period", type=float, default=2.0)
+    parser.add_argument("--max-size", type=int, default=32, help="max_grid_size for AMR regridding")
     parser.add_argument(
         "--write-interval", type=float, default=0.1, help="plotfile write interval in seconds"
     )
@@ -204,4 +205,5 @@ if __name__ == "__main__":
             period=args.period,
             plotfile=not args.no_plot,
             write_interval=args.write_interval,
+            max_grid_size=args.max_size,
         )
