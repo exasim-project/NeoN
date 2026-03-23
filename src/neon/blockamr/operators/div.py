@@ -94,6 +94,7 @@ def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32, memory="de
 
 def _fill_face_component(comp, d, vel_func, dx, prob_lo, t):
     """Fill one face-field component (direction *d*) with the normal velocity."""
+    res = []
     for mfi in blockamr.MFIterator(comp.mf):
         bx = mfi.valid_box()
         lo = bx.small_end()
@@ -107,13 +108,14 @@ def _fill_face_component(comp, d, vel_func, dx, prob_lo, t):
             n = [nx, ny, nz][e]
             offset = 0.0 if e == d else 0.5
             coords.append(
-                jnp.array([prob_lo[e] + (lo[e] + i + offset) * dx[e] for i in range(n)])
+                jnp.arange(n) * dx[e] + (prob_lo[e] + (lo[e] + offset) * dx[e])
             )
 
         X, Y, Z = jnp.meshgrid(*coords, indexing="ij")
         vel = vel_func(X, Y, Z, t)
-        comp.mf.copy_from(mfi, vel[d])
+        res.append(vel[d])
 
+    comp.mf.copy_arrays(res)
     comp.fill_boundary()
 
 
@@ -129,10 +131,14 @@ def update_face_fluxes(face_fluxes, vel_func, geom, t):
 class FaceFluxUpdater:
     """Precomputes face-centre coordinates and batches velocity evaluation via JAX.
 
-    Replaces the per-box Python loop in update_face_fluxes with:
+    Groups boxes by shape so that boxes with the same dimensions are stacked
+    and evaluated in a single jax.vmap + jax.jit call. This handles AMR grids
+    with variable box sizes at refinement boundaries.
+
+    Workflow:
       1. Coordinates computed once at construction (static geometry).
-      2. Velocity evaluated in a single jax.vmap + jax.jit call per dimension.
-      3. Only copy_from (C++ writeback) loops over boxes.
+      2. Velocity evaluated per shape-group via vmap+jit (one kernel per shape).
+      3. Results written back via copy_arrays (single sync).
     """
 
     def __init__(self, face_fluxes, vel_func, geom):
@@ -142,12 +148,14 @@ class FaceFluxUpdater:
         dx = geom.cell_size()
         prob_lo = geom.prob_lo()
 
-        # Precompute and stack coordinate meshgrids per dimension.
-        # _batched_coords[d] = (all_X, all_Y, all_Z) each (n_boxes, nx, ny, nz)
-        self._batched_coords = {}
+        # _groups[d] = [(box_indices, all_X, all_Y, all_Z), ...]
+        # Each entry groups boxes with the same shape for stacking.
+        self._groups = {}
+        self._n_boxes = {}
 
         for d in range(3):
-            Xs, Ys, Zs = [], [], []
+            shape_to_boxes = {}
+            idx = 0
             for mfi in blockamr.MFIterator(face_fluxes[d].mf):
                 bx = mfi.valid_box()
                 lo = bx.small_end()
@@ -155,24 +163,31 @@ class FaceFluxUpdater:
                 nx = hi[0] - lo[0] + 1
                 ny = hi[1] - lo[1] + 1
                 nz = hi[2] - lo[2] + 1
+                shape_key = (nx, ny, nz)
 
                 coords = []
                 for e in range(3):
                     n = [nx, ny, nz][e]
                     offset = 0.0 if e == d else 0.5
                     coords.append(
-                        jnp.array(
-                            [prob_lo[e] + (lo[e] + i + offset) * dx[e] for i in range(n)]
-                        )
+                        jnp.arange(n) * dx[e]
+                        + (prob_lo[e] + (lo[e] + offset) * dx[e])
                     )
                 X, Y, Z = jnp.meshgrid(*coords, indexing="ij")
-                Xs.append(X)
-                Ys.append(Y)
-                Zs.append(Z)
+                shape_to_boxes.setdefault(shape_key, []).append((idx, X, Y, Z))
+                idx += 1
 
-            self._batched_coords[d] = (jnp.stack(Xs), jnp.stack(Ys), jnp.stack(Zs))
+            groups = []
+            for entries in shape_to_boxes.values():
+                indices = [e[0] for e in entries]
+                all_X = jnp.stack([e[1] for e in entries])
+                all_Y = jnp.stack([e[2] for e in entries])
+                all_Z = jnp.stack([e[3] for e in entries])
+                groups.append((indices, all_X, all_Y, all_Z))
 
-        # JIT + vmap: single XLA kernel evaluates velocity on all boxes at once.
+            self._groups[d] = groups
+            self._n_boxes[d] = idx
+
         @jax.jit
         def _batched_vel(all_X, all_Y, all_Z, t):
             return jax.vmap(lambda x, y, z: vel_func(x, y, z, t))(all_X, all_Y, all_Z)
@@ -182,13 +197,39 @@ class FaceFluxUpdater:
     def update(self, t):
         """Evaluate velocity at time *t* and write into face fluxes."""
         for d in range(3):
-            all_X, all_Y, all_Z = self._batched_coords[d]
-            all_u, all_v, all_w = self._batched_vel(all_X, all_Y, all_Z, t)
-            all_vel = (all_u, all_v, all_w)
+            results = [None] * self._n_boxes[d]
 
-            i = 0
-            for mfi in blockamr.MFIterator(self.face_fluxes[d].mf):
-                self.face_fluxes[d].mf.copy_from(mfi, all_vel[d][i])
-                i += 1
+            for indices, all_X, all_Y, all_Z in self._groups[d]:
+                all_u, all_v, all_w = self._batched_vel(all_X, all_Y, all_Z, t)
+                vel_d = (all_u, all_v, all_w)[d]
+                for i, box_idx in enumerate(indices):
+                    results[box_idx] = vel_d[i]
 
+            self.face_fluxes[d].mf.copy_arrays(results)
             self.face_fluxes[d].fill_boundary()
+
+
+class AmrFaceFluxUpdater:
+    """Manages FaceFluxUpdater instances per AMR level, recreates after regrid."""
+
+    def __init__(self, face_vel, vel_func, mesh):
+        self._face_vel = face_vel
+        self._vel_func = vel_func
+        self._mesh = mesh
+        self._updaters = {}
+        self._rebuild()
+
+    def _rebuild(self):
+        self._updaters = {}
+        for lev in range(self._mesh.n_levels()):
+            if self._face_vel[lev] is not None:
+                self._updaters[lev] = FaceFluxUpdater(
+                    self._face_vel[lev], self._vel_func, self._mesh.geom(lev)
+                )
+
+    def update(self, t):
+        """Evaluate velocity at time *t* across all AMR levels."""
+        if len(self._updaters) != self._mesh.n_levels():
+            self._rebuild()
+        for lev in self._updaters:
+            self._updaters[lev].update(t)

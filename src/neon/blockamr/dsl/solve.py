@@ -48,27 +48,27 @@ def solve(expr, t, dt, schemes=None):
         raise ValueError(f"Unknown ddt scheme: {ddt_scheme}")
 
 
-@jax.jit
-def _fused_step(phi, kernels):
-    """Apply all operator kernels and sum the results."""
+@jax.jit(static_argnames=["ng"])
+def _fused_euler_step(phi_4d, kernels, dt_over_coeff, ng):
+    """Fuse operator evaluation + slicing + Euler update into one kernel."""
     total = 0.0
     for k in kernels:
-        total = total + k(phi)
-    return total
+        total = total + k(phi_4d)
+    phi = phi_4d[:, :, :, 0]
+    s = slice(ng, -ng if ng else None)
+    phi_old = phi[s, s, s]
+    return phi_old - dt_over_coeff * total
 
 
 def _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff):
     mf = cell_field.mf[lev]
     ng = mf.n_grow()
+    dt_over_coeff = dt / ddt_coeff
+    res = []
     for mfi in blockamr.MFIterator(mf):
         phi_4d = mf.array(mfi)
-
         kernels = [op.build_kernel(mfi, t, lev=lev) for op in expr.spatial_ops]
-        source = _fused_step(phi_4d, kernels)
+        phi_new = _fused_euler_step(phi_4d, kernels, dt_over_coeff, ng)
+        res.append(phi_new)
 
-        phi = phi_4d[:, :, :, 0]
-        s = slice(ng, -ng if ng else None)
-        phi_old = phi[s, s, s]
-        phi_new = phi_old - (dt / ddt_coeff) * source
-
-        mf.copy_from(mfi, phi_new)
+    mf.copy_arrays(res)
