@@ -153,7 +153,7 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        Kokkos::Profiling::pushRegion("Assembling spatial & temporal operators");
+        Kokkos::Profiling::pushRegion("Assemble spatial & temporal operators");
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
         Kokkos::Profiling::popRegion();
