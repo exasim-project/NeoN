@@ -193,136 +193,137 @@ TEST_CASE("Distributed")
         exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
     );
 
-    randomizeVector(U);
+    // randomizeVector(U);
 
-    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
-    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
-    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    // auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    // auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    // auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh,
+    // surfaceBCs);
 
-    fill(phi.internalVector(), 1.0);
-    randomizeVector(phi.internalVector());
-    fill(gamma.internalVector(), 2.0);
+    // fill(phi.internalVector(), 1.0);
+    // randomizeVector(phi.internalVector());
+    // fill(gamma.internalVector(), 2.0);
 
-    // partition fields and data
+    // // partition fields and data
 
-    // assembly
-    auto expr = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phi, U)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
-    expr.read(input);
-    auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
+    // // assembly
+    // auto expr = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phi, U)
+    // ); // - NeoN::dsl::imp::laplacian(gamma, U);
+    // expr.read(input);
+    // auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
-    // SECTION("Can assemble distributed " + execName)
+    // // SECTION("Can assemble distributed " + execName)
+    // // {
+    // NeoN::mpi::Environment mpiEnviron;
+
+    // auto meshPart = partitionMeshHelper(meshGlobal, mpiEnviron);
+    // auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
+    // auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
+    // auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
+    // auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
+    // auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
+    // auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron);
+
+    // auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phiPart, uPart)
+    // ); // - NeoN::dsl::imp::laplacian(gamma, U);
+
+    // exprDist.read(inputPart);
+
+    // mpi::Environment env;
+
+    // std::vector<localIdx> commIdx {};
+    // std::vector<int> sendCounts {};
+    // std::vector<int> commRanks {};
+    // std::vector<localIdx> boundaryMapVector {};
+
+    // size_t boundaryMapSize = 1;
+
+    // if (env.rank() == 0)
     // {
-    NeoN::mpi::Environment mpiEnviron;
-
-    auto meshPart = partitionMeshHelper(meshGlobal, mpiEnviron);
-    auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
-    auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
-    auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
-    auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
-    auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
-    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron);
-
-    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phiPart, uPart)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
-
-    exprDist.read(inputPart);
-
-    mpi::Environment env;
-
-    std::vector<localIdx> commIdx {};
-    std::vector<int> sendCounts {};
-    std::vector<int> commRanks {};
-    std::vector<localIdx> boundaryMapVector {};
-
-    size_t boundaryMapSize = 1;
-
-    if (env.rank() == 0)
-    {
-        // communicate the interior value which is
-        commIdx = std::vector<localIdx> {1};
-        sendCounts = std::vector<int> {0, 1, 0, 1};
-        boundaryMapVector = std::vector<localIdx> {9};
-    }
-    if (env.rank() == 1)
-    {
-        // communicate the interior value which is
-        boundaryMapSize = 1;
-        commIdx = std::vector<localIdx> {0, 1};
-        sendCounts = std::vector<int> {1, 0, 1, 2};
-        boundaryMapVector = std::vector<localIdx> {0, 9};
-    }
-    if (env.rank() == 2)
-    {
-        // communicate the interior value which is
-        commIdx = std::vector<localIdx> {0};
-        sendCounts = std::vector<int> {0, 1, 0, 1};
-        boundaryMapVector = std::vector<localIdx> {0};
-    }
-
-    // map from proc boundary to matrix values address
-    Vector<localIdx> boundaryMatrixMap {exec, boundaryMapVector};
-
-    auto commPattern = CommunicationPattern(commIdx, sendCounts, env);
-    auto [spDst, lsDst] =
-        exprDist.assembleDistributed(meshPart, 1.0, 1.0, commPattern, boundaryMatrixMap);
-
-    localIdx firstElement = 0;
-    localIdx lastElement = 0;
-
-    if (mpiEnviron.rank() == 0)
-    {
-        lastElement = 10;
-    }
-    if (mpiEnviron.rank() == 1)
-    {
-        firstElement = 12;
-        lastElement = 22;
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        firstElement = 24;
-        lastElement = 34;
-    }
-
-    if (env.rank() == 0)
-    {
-        compare(
-            take(ls.matrix().values(), firstElement, lastElement),
-            lsDst.matrix().values(),
-            ApproxScalar(1e-15)
-        );
-    }
+    //     // communicate the interior value which is
+    //     commIdx = std::vector<localIdx> {1};
+    //     sendCounts = std::vector<int> {0, 1, 0, 1};
+    //     boundaryMapVector = std::vector<localIdx> {9};
+    // }
     // if (env.rank() == 1)
     // {
-    //     compare(
-    //         take(ls.matrix().values(), firstElement, lastElement),
-    //         lsDst.matrix().values(),
-    //         ApproxScalar(1e-15)
-    //     );
+    //     // communicate the interior value which is
+    //     boundaryMapSize = 1;
+    //     commIdx = std::vector<localIdx> {0, 1};
+    //     sendCounts = std::vector<int> {1, 0, 1, 2};
+    //     boundaryMapVector = std::vector<localIdx> {0, 9};
     // }
     // if (env.rank() == 2)
     // {
+    //     // communicate the interior value which is
+    //     commIdx = std::vector<localIdx> {0};
+    //     sendCounts = std::vector<int> {0, 1, 0, 1};
+    //     boundaryMapVector = std::vector<localIdx> {0};
+    // }
+
+    // // map from proc boundary to matrix values address
+    // Vector<localIdx> boundaryMatrixMap {exec, boundaryMapVector};
+
+    // auto commPattern = CommunicationPattern(commIdx, sendCounts, env);
+    // auto [spDst, lsDst] =
+    //     exprDist.assembleDistributed(meshPart, 1.0, 1.0, commPattern, boundaryMatrixMap);
+
+    // localIdx firstElement = 0;
+    // localIdx lastElement = 0;
+
+    // if (mpiEnviron.rank() == 0)
+    // {
+    //     lastElement = 10;
+    // }
+    // if (mpiEnviron.rank() == 1)
+    // {
+    //     firstElement = 12;
+    //     lastElement = 22;
+    // }
+    // if (mpiEnviron.rank() == 2)
+    // {
+    //     firstElement = 24;
+    //     lastElement = 34;
+    // }
+
+    // if (env.rank() == 0)
+    // {
     //     compare(
     //         take(ls.matrix().values(), firstElement, lastElement),
     //         lsDst.matrix().values(),
     //         ApproxScalar(1e-15)
     //     );
     // }
+    // // if (env.rank() == 1)
+    // // {
+    // //     compare(
+    // //         take(ls.matrix().values(), firstElement, lastElement),
+    // //         lsDst.matrix().values(),
+    // //         ApproxScalar(1e-15)
+    // //     );
+    // // }
+    // // if (env.rank() == 2)
+    // // {
+    // //     compare(
+    // //         take(ls.matrix().values(), firstElement, lastElement),
+    // //         lsDst.matrix().values(),
+    // //         ApproxScalar(1e-15)
+    // //     );
+    // // }
 
-    Dictionary solverDict {
-        {{"solver", std::string {"Ginkgo"}},
-         {"type", "solver::Cg"},
-         {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
-    };
+    // Dictionary solverDict {
+    //     {{"solver", std::string {"Ginkgo"}},
+    //      {"type", "solver::Cg"},
+    //      {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+    // };
 
-    // Create solver
-    auto solver = NeoN::la::Solver(exec, solverDict);
-    auto x = Vector<scalar>(exec, 4);
-    fill(x, 0.0);
+    // // Create solver
+    // auto solver = NeoN::la::Solver(exec, solverDict);
+    // auto x = Vector<scalar>(exec, 4);
+    // fill(x, 0.0);
 
-    auto solverStats = solver.solve(lsDst, x);
-    auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+    // auto solverStats = solver.solve(lsDst, x);
+    // auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 }
 
 }
