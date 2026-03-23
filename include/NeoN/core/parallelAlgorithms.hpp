@@ -93,6 +93,8 @@ void parallelFor(
     std::string name = "parallelFor"
 )
 {
+    auto [start, end] = range;
+    NF_ASSERT(end >= start, "Invalid range");
     std::visit([&](const auto& e) { parallelFor(e, range, kernel, name); }, exec);
 }
 

@@ -17,6 +17,7 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size)
     : size_(size), data_(nullptr), exec_(exec)
 {
     NF_ASSERT(exec.valueless_by_exception() == false, "Executor is valueless");
+    NF_ASSERT(size >= 0, "Invalid size");
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
