@@ -126,6 +126,15 @@ if(DEFINED SKBUILD)
   set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 endif()
 
+# Enable CUDA early so Kokkos doesn't replace CMAKE_CXX_COMPILER with
+# kokkos_launch_compiler, which triggers a CMake re-configure that loses
+# all -D flags and preset variables.
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+endif()
+
 include(cmake/CxxThirdParty.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StandardProjectSettings.cmake)

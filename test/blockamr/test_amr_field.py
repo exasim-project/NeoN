@@ -4,10 +4,10 @@
 
 import numpy as np
 
-import blockamr
-from blockamr.mesh import AmrMesh
-from blockamr.field import AmrField
-from blockamr.fillpatch import FillPatchCellConservative, FillPatchSingleLevel
+import neon.blockamr as blockamr
+from neon.blockamr.mesh import AmrMesh
+from neon.blockamr.field import CellField
+from neon.blockamr.fillpatch import FillPatchCellConservative, FillPatchSingleLevel
 
 
 def _make_geom_and_info(ncell=32, max_level=0):
@@ -39,7 +39,7 @@ def test_amr_field_clear_level():
     """AmrField clears MultiFab when level is cleared."""
     geom, info = _make_geom_and_info(ncell=32, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
 
     # Level 0 should be allocated
@@ -54,7 +54,7 @@ def test_amr_field_getitem_returns_field():
     """AmrField[lev] returns a single-level Field wrapper."""
     geom, info = _make_geom_and_info(ncell=32, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
 
     field = phi[0]
@@ -66,7 +66,7 @@ def test_amr_field_fill_patch_single_level():
     """AmrField.fill_patch on level 0 fills ghost cells."""
     geom, info = _make_geom_and_info(ncell=32, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=1)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=1)
     mesh.init_from_scratch(0.0)
 
     # Fill valid + ghost with constant via copy_from (works on device)
@@ -87,7 +87,7 @@ def test_amr_field_on_new_level():
     """_on_new_level allocates a MultiFab with correct ncomp and ngrow."""
     geom, info = _make_geom_and_info(ncell=16, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=2, ngrow=3)
+    phi = CellField(mesh, name="phi", ncomp=2, ngrow=3)
     mesh.init_from_scratch(0.0)
 
     assert phi.mf[0].num_comp() == 2
@@ -98,7 +98,7 @@ def test_amr_field_on_new_level_from_coarse():
     """Regrid that creates level 1 triggers _on_new_level_from_coarse."""
     geom, info = _make_geom_and_info(ncell=16, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
     assert phi.mf[1] is None
 
@@ -113,7 +113,7 @@ def test_amr_field_fill_patch_strategy_cell_conservative():
     geom, info = _make_geom_and_info(ncell=16, max_level=0)
     mesh = AmrMesh(geom, info)
     fp = FillPatchCellConservative()
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=1, fill_patch=fp)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=1, fill_patch=fp)
     mesh.init_from_scratch(0.0)
 
     # Fill valid + ghost with constant
@@ -134,7 +134,7 @@ def test_amr_field_fill_patch_strategy_single_level():
     geom, info = _make_geom_and_info(ncell=16, max_level=0)
     mesh = AmrMesh(geom, info)
     fp = FillPatchSingleLevel()
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=1, fill_patch=fp)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=1, fill_patch=fp)
     mesh.init_from_scratch(0.0)
 
     for mfi in blockamr.MFIterator(phi.mf[0]):
@@ -153,7 +153,7 @@ def test_amr_field_no_fill_patch_uses_fill_boundary():
     """Without a fill_patch strategy, AmrField falls back to fill_boundary."""
     geom, info = _make_geom_and_info(ncell=16, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=1)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=1)
     mesh.init_from_scratch(0.0)
 
     for mfi in blockamr.MFIterator(phi.mf[0]):

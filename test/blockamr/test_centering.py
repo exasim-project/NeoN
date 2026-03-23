@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-import blockamr
+import neon.blockamr as blockamr
 
 
 def test_index_type_default_is_cell_centered():
@@ -149,7 +149,7 @@ def test_face_centred_multifab_shape():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, 0)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         shape = arr.shape
         # x-face patches: 33 in x (nodal), 32 in y,z (cell)
         assert shape[0] == 33
@@ -170,9 +170,10 @@ def test_face_centred_multifab_roundtrip():
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, 0)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         arr[:, :, :, 0] = 42.0
+        mf.copy_from(mfi, arr)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         assert np.allclose(arr[:, :, :, 0], 42.0)
         break

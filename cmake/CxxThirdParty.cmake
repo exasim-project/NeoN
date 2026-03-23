@@ -282,14 +282,13 @@ else()
 endif()
 
 if(${NeoN_WITH_AMREX})
-  # Enable CUDA language before AMReX — use clang as CUDA compiler to match host compiler
+  # Enable CUDA language before AMReX
   if(Kokkos_ENABLE_CUDA AND NOT CMAKE_CUDA_COMPILER_ID)
     set(CMAKE_CUDA_COMPILER
         "${CMAKE_CXX_COMPILER}"
         CACHE FILEPATH "" FORCE)
     enable_language(CUDA)
   endif()
-
   # When building a wheel (SKBUILD), always fetch AMReX from source via CPM so it is bundled with
   # the package instead of linking against a system install.
   if(DEFINED SKBUILD)

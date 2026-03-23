@@ -28,6 +28,7 @@ endif()
 
 nanobind_add_module(
   _neon
+  NOMINSIZE
   neon.cpp
   executors.cpp
   scalar.cpp

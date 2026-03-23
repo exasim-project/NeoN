@@ -4,7 +4,7 @@
 
 import numpy as np
 
-import blockamr
+import neon.blockamr as blockamr
 
 
 class MinimalAmrCore(blockamr.AmrCore):

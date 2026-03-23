@@ -20,7 +20,8 @@ struct TagBoxIterator
     std::unique_ptr<amrex::MFIter> mfi;
     bool needsAdvance;
 
-    explicit TagBoxIterator(amrex::TagBoxArray& tba_) : tba(&tba_), mfi(nullptr), needsAdvance(false)
+    explicit TagBoxIterator(amrex::TagBoxArray& tba_)
+        : tba(&tba_), mfi(nullptr), needsAdvance(false)
     {}
 };
 
@@ -31,8 +32,7 @@ void registerTagBox(nb::module_& m)
     m.attr("TAG_CLEAR") = static_cast<int>(TagBox::CLEAR);
     m.attr("TAG_SET") = static_cast<int>(TagBox::SET);
 
-    nb::class_<TagBox>(m, "TagBox")
-        .def("box", [](const TagBox& tb) { return tb.box(); });
+    nb::class_<TagBox>(m, "TagBox").def("box", [](const TagBox& tb) { return tb.box(); });
 
     nb::class_<TagBoxIterator>(m, "TagBoxIterator")
         .def(
@@ -108,7 +108,10 @@ void registerTagBox(nb::module_& m)
                         int lj = j - lo.y;
                         int lk = k - lo.z;
                         Long idx = li + (Long)lj * nx + (Long)lk * nx * ny;
-                        if (src[idx] == TagBox::SET) { tag4(i, j, k) = TagBox::SET; }
+                        if (src[idx] == TagBox::SET)
+                        {
+                            tag4(i, j, k) = TagBox::SET;
+                        }
                     }
                 );
                 Gpu::streamSynchronize();

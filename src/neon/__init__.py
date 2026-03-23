@@ -10,14 +10,10 @@ Python bindings for the NeoN CFD framework.
 
 __version__ = "0.1.0"
 
-# Import the C++ extension module
+# Import the C++ extension module (optional — not needed for blockamr-only usage)
 try:
     from ._neon import *  # noqa: F401, F403
-except ImportError as e:
-    raise ImportError(
-        "Failed to import NeoN C++ extension module. "
-        "Make sure the package is properly installed. "
-        f"Error: {e}"
-    ) from e
+except ImportError:
+    pass
 
 __all__ = ["__version__"]
