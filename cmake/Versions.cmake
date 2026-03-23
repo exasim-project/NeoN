@@ -5,7 +5,7 @@
 # Centralized version management for all third-party dependencies in NeoN
 
 set(NeoN_KOKKOS_CHECKOUT_VERSION
-    "4.7.01"
+    "5.0.2"
     CACHE STRING "Use specific version of Kokkos")
 mark_as_advanced(NeoN_KOKKOS_CHECKOUT_VERSION)
 

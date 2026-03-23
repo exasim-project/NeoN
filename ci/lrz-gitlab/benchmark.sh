@@ -34,6 +34,9 @@ collect_system_info() {
             nvidia-smi
         elif [[ "$1" == "amd" ]]; then
             rocm-smi --showproductname --showvbios
+        elif [[ "$1" == "intel" ]]; then
+            SYCL_PI_TRACE=1
+            sycl-ls 2>/dev/null | grep '^\[level_zero:gpu\]'
         else
             echo "No GPU selected"
         fi
@@ -47,7 +50,7 @@ collect_system_info() {
         g++ --version || clang++ --version || echo "No C++ compiler found"
         echo ""
         echo "CUDA/ROCm compiler:"
-        nvcc --version 2>/dev/null || hipcc --version 2>/dev/null || echo "No GPU compiler available"
+        nvcc --version 2>/dev/null || hipcc --version 2>/dev/null || icpx --version 2>/dev/null  || echo "No GPU compiler available"
     } > "${RESULTS_DIR}/system-info.log"
 }
 
@@ -65,14 +68,27 @@ build_and_benchmark() {
         cmake --preset $PRESET -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "amd" ]]; then
         # Set up environment
-        export PATH=/opt/rocm/bin:$PATH
-        export HIPCC_CXX=/usr/bin/g++
-
+        export CXX_COMPILER_PATH="$(which g++)"
+        export CXX_SOURCE="${CXX_COMPILER_PATH%/*/*}"
+        export CXX_LIBDIR="${CXX_SOURCE}/lib64"
+        export LD_LIBRARY_PATH=${CXX_LIBDIR}:${LD_LIBRARY_PATH}
         cmake --preset $PRESET \
-            -DCMAKE_CXX_COMPILER=hipcc \
+            -DCMAKE_PREFIX_PATH=/opt/rocm \
+            -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
+            -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
+            -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CXX_SOURCE}" \
+            -DCMAKE_EXE_LINKER_FLAGS="-L${CXX_LIBDIR}" \
             -DCMAKE_HIP_ARCHITECTURES=gfx90a \
             -DKokkos_ARCH_AMD_GFX90A=ON \
             -DNeoN_WITH_THREADS=OFF
+    elif [[ "$GPU_VENDOR" == "intel" ]]; then
+        cmake --preset $PRESET \
+            -DCMAKE_CXX_COMPILER=icpx \
+            -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
+            -DKokkos_ENABLE_SYCL=ON \
+            -DKokkos_ARCH_INTEL_PVC=ON \
+            -DNeoN_WITH_THREADS=OFF \
+            -DCMAKE_BUILD_TYPE="release"
     else
         cmake --preset $PRESET -DNeoN_WITH_THREADS=OFF
     fi
@@ -117,8 +133,8 @@ collect_system_info "${GPU_VENDOR}"
 # Current branch
 build_and_benchmark "$(git rev-parse --abbrev-ref HEAD)" "${RESULTS_DIR}"
 
-# Main branch
-build_and_benchmark "main" "${RESULTS_DIR}/main"
+# Develop branch
+build_and_benchmark "develop" "${RESULTS_DIR}/develop"
 
 # Push results
 push_results

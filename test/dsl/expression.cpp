@@ -43,14 +43,14 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
             )
         );
 
-        auto call_failing = [&]()
+        auto callFailing = [&]()
         {
             return expr
                 .template getOperator<dsl::SpatialOperator<TestType>, Operator::Type::Explicit>(
                     "Dummy2"
                 );
         };
-        REQUIRE_THROWS_AS(call_failing(), std::runtime_error);
+        REQUIRE_THROWS_AS(callFailing(), std::runtime_error);
 
         REQUIRE_NOTHROW(expr.template dropOperator<Operator::Type::Explicit>("Dummy"));
         REQUIRE_FALSE(expr.template hasOperator<Operator::Type::Explicit>("Dummy"));
