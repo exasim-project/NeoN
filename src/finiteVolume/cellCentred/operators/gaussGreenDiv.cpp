@@ -188,13 +188,11 @@ void computeDivProcBoundImpl(
     auto bValues = ls.boundaryMatrix().values().view();
     auto values = ls.matrix().values().view();
 
-    // FIXME currently only CDS is supported here
-    // FIXME currently we dont distinguish between internal and boundary interfaces
     parallelFor(
         exec,
         {nInternalFaces, faceFluxV.size()},
         NEON_LAMBDA(const localIdx facei) {
-            if (isLocal[facei] == 0)
+            if (isLocal[facei - nInternalFaces] != 0)
             {
                 auto bcfacei = facei - nInternalFaces;
                 auto flux = bweights[bcfacei] * faceFluxV[facei];
@@ -203,17 +201,14 @@ void computeDivProcBoundImpl(
                 auto rowOwnStart = rowOffs[own];
                 auto operatorScalingOwn = operatorScaling[own];
 
-                auto valFrac1 = valueFraction[bcfacei];
-                auto valFrac2 = 1.0 - valFrac1;
+                auto valFrac1 = isLocal[facei - nInternalFaces];
+                auto valFrac2 = -1.0 * valFrac1;
 
                 auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
                 Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
 
-                // FIXME
-                //  store the corresponding neighbour value in boundary matrix
-                //  FIXME hardcoded
-                bValues[bcfacei] += -0.5 * faceFluxV[facei] * operatorScalingOwn * one<ValueType>();
+                bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();
 
                 auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                               + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
@@ -270,7 +265,7 @@ void computeDivBoundImpl(
         exec,
         {nInternalFaces, faceFluxV.size()},
         NEON_LAMBDA(const localIdx facei) {
-            if (isLocal[facei] == 1)
+            if (isLocal[facei - nInternalFaces] == 0)
             {
                 auto bcfacei = facei - nInternalFaces;
                 auto flux = bweights[bcfacei] * faceFluxV[facei];
@@ -282,7 +277,7 @@ void computeDivBoundImpl(
                 auto valFrac1 = valueFraction[bcfacei];
                 auto valFrac2 = 1.0 - valFrac1;
 
-                auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+                auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
                 Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
                 bValues[bcfacei] = valueMat;
@@ -309,7 +304,7 @@ void computeDivImp(
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const auto matIt = ls.faceToMatrixAddress();
+    const auto& matIt = ls.faceToMatrixAddress();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
@@ -354,7 +349,8 @@ void computeDivImp(
             // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
             values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
+                &values[rowOwnStart + static_cast<int>(diagOffs[own])],
+                valueUpper * operatorScalingOwn
             );
 
             // add owner contribution lower

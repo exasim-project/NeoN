@@ -111,6 +111,6 @@ const labelVector& BoundaryMesh::isLocal() const { return isLocal_; }
 
 labelVector& BoundaryMesh::isLocal() { return isLocal_; }
 
-const std::vector<localIdx>& BoundaryMesh::offset() const { return neighbourRank_; }
+const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 
 } // namespace NeoN
