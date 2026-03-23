@@ -16,9 +16,152 @@
 #include <AMReX_TagBox.H>
 #include <nanobind/stl/string.h>
 
+#include <nanobind/stl/vector.h>
+
 #include <cstring>
+#include <utility>
+#include <vector>
 
 namespace nb = nanobind;
+
+// Async copy from ndarray into a single FAB's valid region.
+// Returns (staging_ptr, owns_staging).  Caller must call
+// streamSynchronize() before freeing staging_ptr (when owns == true).
+static std::pair<amrex::Real*, bool>
+copyToFab_async(amrex::MultiFab& mf, amrex::MFIter& mfi, nb::ndarray<nb::ro> src)
+{
+    using namespace amrex;
+    auto& fab = mf[mfi];
+    const Box& bx = mfi.validbox();
+    int ncomp = (src.ndim() == 4) ? static_cast<int>(src.shape(3)) : 1;
+    int nx = bx.length(0);
+    int ny = bx.length(1);
+    int nz = bx.length(2);
+    size_t nbytes = (size_t)bx.numPts() * ncomp * sizeof(Real);
+
+    const Real* srcPtr = static_cast<const Real*>(src.data());
+    bool srcOnDevice = (src.device_type() != nb::device::cpu::value);
+    bool dstOnDevice = mf.arena()->isDeviceAccessible() && !mf.arena()->isHostAccessible();
+
+    bool srcIsFortran = false;
+    if (src.ndim() >= 2)
+    {
+        srcIsFortran = (src.stride(0) <= src.stride(src.ndim() - 1));
+    }
+
+    // Stage source onto the dest arena
+    Real* devSrc;
+    bool ownDevSrc = false;
+    if (srcOnDevice == dstOnDevice)
+    {
+        devSrc = const_cast<Real*>(srcPtr);
+    }
+    else if (dstOnDevice)
+    {
+        devSrc = static_cast<Real*>(mf.arena()->alloc(nbytes));
+        ownDevSrc = true;
+        Gpu::htod_memcpy(devSrc, srcPtr, nbytes);
+    }
+    else
+    {
+        devSrc = static_cast<Real*>(The_Pinned_Arena()->alloc(nbytes));
+        ownDevSrc = true;
+        Gpu::dtoh_memcpy(devSrc, srcPtr, nbytes);
+    }
+
+    if (srcIsFortran)
+    {
+        auto* dstPtr = fab.dataPtr();
+        const auto fabBox = fab.box();
+        if (fabBox == bx)
+        {
+            if (dstOnDevice)
+                Gpu::dtod_memcpy_async(dstPtr, devSrc, nbytes);
+            else
+                std::memcpy(dstPtr, devSrc, nbytes);
+        }
+        else
+        {
+            auto arr4 = fab.array();
+            const auto lo = bx.smallEnd();
+            const Real* fSrc = devSrc;
+            if (dstOnDevice)
+            {
+                ParallelFor(
+                    bx,
+                    ncomp,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+                    {
+                        int li = i - lo[0];
+                        int lj = j - lo[1];
+                        int lk = k - lo[2];
+                        size_t fIdx = (size_t)li + (size_t)lj * nx + (size_t)lk * nx * ny
+                                    + (size_t)n * nx * ny * nz;
+                        arr4(i, j, k, n) = fSrc[fIdx];
+                    }
+                );
+            }
+            else
+            {
+                const auto lo3 = lbound(bx);
+                const auto hi3 = ubound(bx);
+                for (int n = 0; n < ncomp; ++n)
+                    for (int k = lo3.z; k <= hi3.z; ++k)
+                        for (int j = lo3.y; j <= hi3.y; ++j)
+                            for (int i = lo3.x; i <= hi3.x; ++i)
+                            {
+                                int li = i - lo[0];
+                                int lj = j - lo[1];
+                                int lk = k - lo[2];
+                                size_t fIdx = (size_t)li + (size_t)lj * nx + (size_t)lk * nx * ny
+                                            + (size_t)n * nx * ny * nz;
+                                arr4(i, j, k, n) = fSrc[fIdx];
+                            }
+            }
+        }
+    }
+    else
+    {
+        auto arr4 = fab.array();
+        const auto lo = bx.smallEnd();
+        const Real* cSrc = devSrc;
+        if (dstOnDevice)
+        {
+            ParallelFor(
+                bx,
+                ncomp,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+                {
+                    int li = i - lo[0];
+                    int lj = j - lo[1];
+                    int lk = k - lo[2];
+                    size_t cIdx = ((size_t)n * nx * ny * nz) + ((size_t)li * ny * nz)
+                                + ((size_t)lj * nz) + lk;
+                    arr4(i, j, k, n) = cSrc[cIdx];
+                }
+            );
+        }
+        else
+        {
+            const auto lo3 = lbound(bx);
+            const auto hi3 = ubound(bx);
+            for (int n = 0; n < ncomp; ++n)
+                for (int k = lo3.z; k <= hi3.z; ++k)
+                    for (int j = lo3.y; j <= hi3.y; ++j)
+                        for (int i = lo3.x; i <= hi3.x; ++i)
+                        {
+                            int li = i - lo[0];
+                            int lj = j - lo[1];
+                            int lk = k - lo[2];
+                            size_t cIdx = ((size_t)n * nx * ny * nz)
+                                        + ((size_t)li * ny * nz) + ((size_t)lj * nz) + lk;
+                            arr4(i, j, k, n) = cSrc[cIdx];
+                        }
+        }
+    }
+
+    return {ownDevSrc ? devSrc : nullptr, ownDevSrc};
+}
 
 inline int deviceTypeFromArena(const amrex::MultiFab& mf)
 {
@@ -349,163 +492,49 @@ void registerMultiFab(nb::module_& m)
             "copy_from",
             [](MultiFab& mf, MFIterator& mfi, nb::ndarray<nb::ro> src)
             {
-                auto& fab = mf[mfi.get()];
-                const Box& bx = mfi.get().validbox();
-                int ncomp = (src.ndim() == 4) ? static_cast<int>(src.shape(3)) : 1;
-                int nx = bx.length(0);
-                int ny = bx.length(1);
-                int nz = bx.length(2);
-                size_t nbytes = (size_t)bx.numPts() * ncomp * sizeof(Real);
-
-                const Real* srcPtr = static_cast<const Real*>(src.data());
-                bool srcOnDevice = (src.device_type() != nb::device::cpu::value);
+                auto [ptr, owns] = copyToFab_async(mf, mfi.get(), src);
                 bool dstOnDevice =
                     mf.arena()->isDeviceAccessible() && !mf.arena()->isHostAccessible();
-
-                // Check if source is Fortran-order (column-major).
-                // Fortran-order means x varies fastest, matching AMReX internal layout.
-                bool srcIsFortran = false;
-                if (src.ndim() >= 2)
+                if (dstOnDevice)
+                    amrex::Gpu::streamSynchronize();
+                if (owns)
                 {
-                    srcIsFortran = (src.stride(0) <= src.stride(src.ndim() - 1));
-                }
-
-                // Stage source onto the dest arena
-                Real* devSrc;
-                bool ownDevSrc = false;
-                if (srcOnDevice == dstOnDevice)
-                {
-                    devSrc = const_cast<Real*>(srcPtr);
-                }
-                else if (dstOnDevice)
-                {
-                    devSrc = static_cast<Real*>(mf.arena()->alloc(nbytes));
-                    ownDevSrc = true;
-                    amrex::Gpu::htod_memcpy(devSrc, srcPtr, nbytes);
-                }
-                else
-                {
-                    devSrc = static_cast<Real*>(The_Pinned_Arena()->alloc(nbytes));
-                    ownDevSrc = true;
-                    amrex::Gpu::dtoh_memcpy(devSrc, srcPtr, nbytes);
-                }
-
-                if (srcIsFortran)
-                {
-                    // Source is Fortran-order — same layout as AMReX FAB, direct copy
-                    auto* dstPtr = fab.dataPtr();
-                    // Compute valid-region offset in the FAB
-                    const auto fabBox = fab.box();
-                    const auto fabLo = fabBox.smallEnd();
-                    const auto bxLo = bx.smallEnd();
-                    if (fabBox == bx)
-                    {
-                        // Valid box matches FAB box — direct memcpy
-                        if (dstOnDevice)
-                        {
-                            amrex::Gpu::dtod_memcpy_async(dstPtr, devSrc, nbytes);
-                            amrex::Gpu::streamSynchronize();
-                        }
-                        else
-                            std::memcpy(dstPtr, devSrc, nbytes);
-                    }
+                    if (dstOnDevice) mf.arena()->free(ptr);
                     else
-                    {
-                        // FAB has ghost cells — copy per-component slab via Array4
-                        auto arr4 = fab.array();
-                        const auto lo = bx.smallEnd();
-                        const Real* fSrc = devSrc;
-                        if (dstOnDevice)
-                        {
-                            amrex::ParallelFor(
-                                bx,
-                                ncomp,
-                                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
-                                {
-                                    int li = i - lo[0];
-                                    int lj = j - lo[1];
-                                    int lk = k - lo[2];
-                                    // F-order: leftmost index varies fastest
-                                    size_t fIdx = (size_t)li + (size_t)lj * nx
-                                                + (size_t)lk * nx * ny
-                                                + (size_t)n * nx * ny * nz;
-                                    arr4(i, j, k, n) = fSrc[fIdx];
-                                }
-                            );
-                            amrex::Gpu::streamSynchronize();
-                        }
-                        else
-                        {
-                            const auto lo3 = amrex::lbound(bx);
-                            const auto hi3 = amrex::ubound(bx);
-                            for (int n = 0; n < ncomp; ++n)
-                                for (int k = lo3.z; k <= hi3.z; ++k)
-                                    for (int j = lo3.y; j <= hi3.y; ++j)
-                                        for (int i = lo3.x; i <= hi3.x; ++i)
-                                        {
-                                            int li = i - lo[0];
-                                            int lj = j - lo[1];
-                                            int lk = k - lo[2];
-                                            size_t fIdx = (size_t)li + (size_t)lj * nx
-                                                        + (size_t)lk * nx * ny
-                                                        + (size_t)n * nx * ny * nz;
-                                            arr4(i, j, k, n) = fSrc[fIdx];
-                                        }
-                        }
-                    }
-                }
-                else
-                {
-                    // Source is C-order — transpose to Fortran-order (AMReX layout)
-                    auto arr4 = fab.array();
-                    const auto lo = bx.smallEnd();
-                    const Real* cSrc = devSrc;
-                    if (dstOnDevice)
-                    {
-                        amrex::ParallelFor(
-                            bx,
-                            ncomp,
-                            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
-                            {
-                                int li = i - lo[0];
-                                int lj = j - lo[1];
-                                int lk = k - lo[2];
-                                // C-order: rightmost index varies fastest
-                                size_t cIdx = ((size_t)n * nx * ny * nz) + ((size_t)li * ny * nz)
-                                            + ((size_t)lj * nz) + lk;
-                                arr4(i, j, k, n) = cSrc[cIdx];
-                            }
-                        );
-                        amrex::Gpu::streamSynchronize();
-                    }
-                    else
-                    {
-                        const auto lo3 = amrex::lbound(bx);
-                        const auto hi3 = amrex::ubound(bx);
-                        for (int n = 0; n < ncomp; ++n)
-                            for (int k = lo3.z; k <= hi3.z; ++k)
-                                for (int j = lo3.y; j <= hi3.y; ++j)
-                                    for (int i = lo3.x; i <= hi3.x; ++i)
-                                    {
-                                        int li = i - lo[0];
-                                        int lj = j - lo[1];
-                                        int lk = k - lo[2];
-                                        size_t cIdx = ((size_t)n * nx * ny * nz)
-                                                    + ((size_t)li * ny * nz) + ((size_t)lj * nz) + lk;
-                                        arr4(i, j, k, n) = cSrc[cIdx];
-                                    }
-                    }
-                }
-
-                if (ownDevSrc)
-                {
-                    if (dstOnDevice) mf.arena()->free(devSrc);
-                    else
-                        The_Pinned_Arena()->free(devSrc);
+                        The_Pinned_Arena()->free(ptr);
                 }
             },
             nb::arg("mfi"),
             nb::arg("src")
+        )
+        .def(
+            "copy_arrays",
+            [](MultiFab& mf, nb::list arrays)
+            {
+                using StagingEntry = std::pair<amrex::Real*, bool>;
+                std::vector<StagingEntry> staging;
+                bool dstOnDevice =
+                    mf.arena()->isDeviceAccessible() && !mf.arena()->isHostAccessible();
+
+                int idx = 0;
+                for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi, ++idx)
+                {
+                    auto src = nb::cast<nb::ndarray<nb::ro>>(arrays[idx]);
+                    auto [ptr, owns] = copyToFab_async(mf, mfi, src);
+                    if (owns) staging.emplace_back(ptr, dstOnDevice);
+                }
+
+                if (dstOnDevice)
+                    amrex::Gpu::streamSynchronize();
+
+                for (auto& [ptr, onDev] : staging)
+                {
+                    if (onDev) mf.arena()->free(ptr);
+                    else
+                        The_Pinned_Arena()->free(ptr);
+                }
+            },
+            nb::arg("arrays")
         )
         .def(
             "fill_boundary",
