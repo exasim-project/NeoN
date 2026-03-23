@@ -164,20 +164,23 @@ void computeDivProcBoundImpl(
     const auto& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     auto faceFluxV = faceFlux.internalVector().view();
-    auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
 
     const auto matIt = ls.faceToMatrixAddress();
     auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
     auto const diagOffs = matIt->diagOffset().view();
 
-    auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs, nfV] = views(
+    const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
+        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().deltaCoeffs(),
+        mesh.boundaryMesh().isLocal()
+    );
+
+    auto [bweights, refGradient, value, valueFraction, refValue] = views(
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
         phi.boundaryData().valueFraction(),
-        phi.boundaryData().refValue(),
-        mesh.boundaryMesh().deltaCoeffs(),
-        mesh.boundaryMesh().nf()
+        phi.boundaryData().refValue()
     );
 
     auto rhs = ls.rhs().view();
@@ -191,30 +194,33 @@ void computeDivProcBoundImpl(
         exec,
         {nInternalFaces, faceFluxV.size()},
         NEON_LAMBDA(const localIdx facei) {
-            auto bcfacei = facei - nInternalFaces;
-            auto flux = bweights[bcfacei] * faceFluxV[facei];
+            if (isLocal[facei] == 0)
+            {
+                auto bcfacei = facei - nInternalFaces;
+                auto flux = bweights[bcfacei] * faceFluxV[facei];
 
-            auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
-            auto operatorScalingOwn = operatorScaling[own];
+                auto own = surfFaceCells[bcfacei];
+                auto rowOwnStart = rowOffs[own];
+                auto operatorScalingOwn = operatorScaling[own];
 
-            auto valFrac1 = valueFraction[bcfacei];
-            auto valFrac2 = 1.0 - valFrac1;
+                auto valFrac1 = valueFraction[bcfacei];
+                auto valFrac2 = 1.0 - valFrac1;
 
-            auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+                auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
-            Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
 
-            // FIXME
-            //  store the corresponding neighbour value in boundary matrix
-            //  FIXME hardcoded
-            bValues[bcfacei] += -0.5 * faceFluxV[facei] * operatorScalingOwn * one<ValueType>();
+                // FIXME
+                //  store the corresponding neighbour value in boundary matrix
+                //  FIXME hardcoded
+                bValues[bcfacei] += -0.5 * faceFluxV[facei] * operatorScalingOwn * one<ValueType>();
 
-            auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                          + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+                auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                              + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
-            Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] = valueRhs;
+                Kokkos::atomic_sub(&rhs[own], valueRhs);
+                bRhs[bcfacei] = valueRhs;
+            }
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );
@@ -264,7 +270,7 @@ void computeDivBoundImpl(
         exec,
         {nInternalFaces, faceFluxV.size()},
         NEON_LAMBDA(const localIdx facei) {
-            if (isLocal[facei])
+            if (isLocal[facei] == 1)
             {
                 auto bcfacei = facei - nInternalFaces;
                 auto flux = bweights[bcfacei] * faceFluxV[facei];
