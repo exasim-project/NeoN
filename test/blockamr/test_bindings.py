@@ -6,7 +6,7 @@ import math
 import os
 import shutil
 
-import blockamr
+import neon.blockamr as blockamr
 import jax.numpy as jnp
 import numpy as np
 
@@ -44,7 +44,7 @@ def test_sin_wave_to_plotfile():
         bx = mfi.valid_box()
         lo = bx.small_end()
         hi = bx.big_end()
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
 
         nx = hi[0] - lo[0] + 1
         ny = hi[1] - lo[1] + 1
@@ -57,6 +57,7 @@ def test_sin_wave_to_plotfile():
         vals = jnp.sin(X) * jnp.sin(Y) * jnp.sin(Z)
 
         arr[:, :, :, 0] = np.asarray(vals)
+        mf.copy_from(mfi, arr)
 
     plotdir = "plt_sin"
     if os.path.exists(plotdir):

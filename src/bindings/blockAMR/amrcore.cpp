@@ -9,6 +9,7 @@
 
 #include <AMReX_AmrCore.H>
 #include <AMReX_AmrMesh.H>
+#include <AMReX_MultiFabUtil.H>
 #include <AMReX_TagBox.H>
 
 namespace nb = nanobind;
@@ -16,9 +17,13 @@ namespace nb = nanobind;
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 template<>
-struct is_copy_constructible<amrex::AmrCore> : std::false_type {};
+struct is_copy_constructible<amrex::AmrCore> : std::false_type
+{
+};
 template<>
-struct is_copy_constructible<amrex::TagBoxArray> : std::false_type {};
+struct is_copy_constructible<amrex::TagBoxArray> : std::false_type
+{
+};
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
@@ -30,14 +35,18 @@ struct PyAmrCore : amrex::AmrCore
         int lev, amrex::Real time, const amrex::BoxArray& ba, const amrex::DistributionMapping& dm
     ) override
     {
-        NB_OVERRIDE_PURE_NAME("make_new_level_from_scratch", MakeNewLevelFromScratch, lev, time, ba, dm);
+        NB_OVERRIDE_PURE_NAME(
+            "make_new_level_from_scratch", MakeNewLevelFromScratch, lev, time, ba, dm
+        );
     }
 
     void MakeNewLevelFromCoarse(
         int lev, amrex::Real time, const amrex::BoxArray& ba, const amrex::DistributionMapping& dm
     ) override
     {
-        NB_OVERRIDE_PURE_NAME("make_new_level_from_coarse", MakeNewLevelFromCoarse, lev, time, ba, dm);
+        NB_OVERRIDE_PURE_NAME(
+            "make_new_level_from_coarse", MakeNewLevelFromCoarse, lev, time, ba, dm
+        );
     }
 
     void RemakeLevel(
@@ -47,10 +56,7 @@ struct PyAmrCore : amrex::AmrCore
         NB_OVERRIDE_PURE_NAME("remake_level", RemakeLevel, lev, time, ba, dm);
     }
 
-    void ClearLevel(int lev) override
-    {
-        NB_OVERRIDE_PURE_NAME("clear_level", ClearLevel, lev);
-    }
+    void ClearLevel(int lev) override { NB_OVERRIDE_PURE_NAME("clear_level", ClearLevel, lev); }
 
     void ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
     {
@@ -118,11 +124,7 @@ void registerAmrCore(nb::module_& m)
 
     // AmrCore — trampoline allows Python to override the 5 pure virtuals
     nb::class_<AmrCore, PyAmrCore>(m, "AmrCore")
-        .def(
-            nb::init<const Geometry&, const AmrInfo&>(),
-            nb::arg("geom"),
-            nb::arg("amr_info")
-        )
+        .def(nb::init<const Geometry&, const AmrInfo&>(), nb::arg("geom"), nb::arg("amr_info"))
         .def(
             "init_from_scratch",
             [](AmrCore& ac, Real time) { ac.InitFromScratch(time); },
@@ -156,8 +158,25 @@ void registerAmrCore(nb::module_& m)
             nb::rv_policy::reference_internal
         )
         .def(
-            "ref_ratio",
-            [](const AmrCore& ac, int lev) { return ac.refRatio(lev); },
-            nb::arg("lev")
+            "ref_ratio", [](const AmrCore& ac, int lev) { return ac.refRatio(lev); }, nb::arg("lev")
         );
+
+    m.def(
+        "average_down",
+        [](const MultiFab& fine,
+           MultiFab& crse,
+           const Geometry& fgeom,
+           const Geometry& cgeom,
+           int scomp,
+           int ncomp,
+           const IntVect& ratio)
+        { amrex::average_down(fine, crse, fgeom, cgeom, scomp, ncomp, ratio); },
+        nb::arg("fine"),
+        nb::arg("crse"),
+        nb::arg("fine_geom"),
+        nb::arg("crse_geom"),
+        nb::arg("scomp"),
+        nb::arg("ncomp"),
+        nb::arg("ratio")
+    );
 }

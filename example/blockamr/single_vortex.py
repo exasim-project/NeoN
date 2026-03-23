@@ -44,11 +44,12 @@ os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 import jax.numpy as jnp
 import numpy as np
 
-import blockamr
-from blockamr.field import Field
-from blockamr.dsl import exp, solve
-from blockamr.operators.div import build_face_fluxes, update_face_fluxes
-from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
+import neon.blockamr as blockamr
+from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.mesh import Mesh
+from neon.blockamr.dsl import exp, solve
+from neon.blockamr.operators.div import build_face_fluxes, update_face_fluxes
+from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 
 DIV_SCHEMES = {
     "Upwind": Upwind,
@@ -78,11 +79,11 @@ def vortex_velocity(x, y, z, t, period=2.0):
 # ---------------------------------------------------------------------------
 # Initial condition (JAX-native — works on both CPU and GPU)
 # ---------------------------------------------------------------------------
-def init_gaussian(field, center=(0.5, 0.75), sigma=0.1):
-    """Fill *field* with a 2-D Gaussian (uniform in z)."""
-    dx = field.dx
+def init_gaussian(phi, geom, center=(0.5, 0.75), sigma=0.1):
+    """Fill *phi* with a 2-D Gaussian (uniform in z)."""
+    dx = geom.cell_size()
     cx, cy = center
-    for mfi in blockamr.MFIterator(field.mf):
+    for mfi in blockamr.MFIterator(phi.mf[0]):
         bx = mfi.valid_box()
         lo = bx.small_end()
         hi = bx.big_end()
@@ -90,7 +91,7 @@ def init_gaussian(field, center=(0.5, 0.75), sigma=0.1):
         xs = jnp.array([(lo[0] + i + 0.5) * dx[0] for i in range(nx)])
         ys = jnp.array([(lo[1] + j + 0.5) * dx[1] for j in range(ny)])
         vals = jnp.exp(-((xs[:, None] - cx) ** 2 + (ys[None, :] - cy) ** 2) / (2.0 * sigma**2))
-        field.mf.copy_from(mfi, vals[:, :, None] * jnp.ones((nx, ny, nz)))
+        phi.mf[0].copy_from(mfi, vals[:, :, None] * jnp.ones((nx, ny, nz)))
 
 
 # ---------------------------------------------------------------------------
@@ -162,34 +163,34 @@ def run(
     ba = blockamr.BoxArray(box)
     ba.max_size(max_size)
     dm = blockamr.DistributionMapping(ba)
-    mf = blockamr.MultiFab(ba, dm, 1, ngrow, memory=memory)
 
-    field = Field(mf, geom, name="phi", box=box, dm=dm, max_size=max_size)
-    dx = field.dx
+    mesh = Mesh(ba, dm, geom)
+    phi = CellField(mesh, ncomp=1, ngrow=ngrow, name="phi", memory=memory)
+    dx = geom.cell_size()
 
     # ---- initial condition ----
-    init_gaussian(field, sigma=sigma)
+    init_gaussian(phi, geom, sigma=sigma)
 
     # save reference for error computation
     phi0 = {}
-    for mfi in blockamr.MFIterator(mf):
+    for mfi in blockamr.MFIterator(phi.mf[0]):
         bx = mfi.valid_box()
-        host = mf.copy_to_host(mfi)
+        host = phi.mf[0].copy_to_host(mfi)
         phi0[tuple(bx.small_end())] = np.array(host[:, :, :, 0], copy=True)
 
-    mass0 = compute_mass(mf, dx)
+    mass0 = compute_mass(phi.mf[0], dx)
 
     # write initial plotfile
     plot_count = 0
     if plotfile:
-        plot_count = _write_plotfile(mf, geom, 0.0, plot_count)
+        plot_count = _write_plotfile(phi.mf[0], geom, 0.0, plot_count)
 
     # ---- build face fluxes ----
     def vel(x, y, z, t):
         return vortex_velocity(x, y, z, t, period=period)
 
-    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
-                                    max_size=max_size, memory=memory)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
+                           max_size=max_size, memory=memory)
 
     # ---- time loop (OpenFOAM-style) ----
     u_max = 2.0  # max velocity magnitude
@@ -205,21 +206,21 @@ def run(
     while t < (period - 1e-12):
         if t + dt > period:
             dt = period - t
-        update_face_fluxes(face_fluxes, vel, geom, t)
-        expr = exp.ddt(field) + exp.div(face_fluxes, field, scheme=div_scheme)
+        update_face_fluxes(ff[0], vel, geom, t)
+        expr = exp.ddt(phi) + exp.div(ff, phi, scheme=div_scheme)
         solve(expr, t, dt)
         t += dt
         nsteps += 1
 
         # write plotfile at regular intervals
         if plotfile and t >= next_write - 1e-12:
-            plot_count = _write_plotfile(mf, geom, t, plot_count)
+            plot_count = _write_plotfile(phi.mf[0], geom, t, plot_count)
             next_write += write_interval
 
     # ---- diagnostics ----
-    mass_final = compute_mass(mf, dx)
+    mass_final = compute_mass(phi.mf[0], dx)
     mass_err = abs(mass_final - mass0) / abs(mass0)
-    l2_error = compute_l2_error(mf, phi0, dx)
+    l2_error = compute_l2_error(phi.mf[0], phi0, dx)
 
     print()
     print(f"Completed {nsteps} steps, final t = {t:.6f}")
@@ -250,16 +251,15 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    blockamr.initialize()
-    memory = "pinned" if args.device == "cpu" else "default"
-    run(
-        n_cell=args.ncell,
-        max_size=args.max_size,
-        cfl=args.cfl,
-        period=args.period,
-        plotfile=not args.no_plot,
-        write_interval=args.write_interval,
-        scheme=args.scheme,
-        memory=memory,
-    )
-    blockamr.finalize()
+    with blockamr.runtime():
+        memory = "pinned" if args.device == "cpu" else "default"
+        run(
+            n_cell=args.ncell,
+            max_size=args.max_size,
+            cfl=args.cfl,
+            period=args.period,
+            plotfile=not args.no_plot,
+            write_interval=args.write_interval,
+            scheme=args.scheme,
+            memory=memory,
+        )

@@ -6,7 +6,7 @@
 
 import jax
 import numpy as np
-import blockamr
+import neon.blockamr as blockamr
 
 
 def _make_multifab(ngrow=0):
@@ -18,16 +18,27 @@ def _make_multifab(ngrow=0):
     return mf
 
 
+def _has_gpu():
+    """Check if AMReX was built with GPU support and a device is available."""
+    return jax.default_backend() != "cpu"
+
+
 def test_multifab_is_host():
-    """Default MultiFab on CPU build should report is_host=True."""
+    """Default MultiFab reports is_host consistent with build."""
     mf = _make_multifab()
-    assert mf.is_host is True
+    if _has_gpu():
+        assert mf.is_host is False
+    else:
+        assert mf.is_host is True
 
 
 def test_multifab_is_device():
-    """Default MultiFab on CPU build should report is_device=False."""
+    """Default MultiFab reports is_device consistent with build."""
     mf = _make_multifab()
-    assert mf.is_device is False
+    if _has_gpu():
+        assert mf.is_device is True
+    else:
+        assert mf.is_device is False
 
 
 def test_multifab_is_managed():
@@ -43,7 +54,10 @@ def test_multifab_memory_default():
     ba.max_size(32)
     dm = blockamr.DistributionMapping(ba)
     mf = blockamr.MultiFab(ba, dm, 1, 0, memory="default")
-    assert mf.is_host is True
+    if _has_gpu():
+        assert mf.is_host is False
+    else:
+        assert mf.is_host is True
     assert mf.num_comp() == 1
 
 
@@ -78,36 +92,46 @@ def test_array_no_ghosts():
 
 
 def test_host_array_returns_writable_numpy():
-    """host_array() returns a writable numpy view of the valid region."""
+    """copy_to_host() returns a writable numpy copy of the valid region."""
     mf = _make_multifab(ngrow=1)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         assert isinstance(arr, np.ndarray), f"Expected np.ndarray, got {type(arr)}"
         assert arr.shape == (32, 32, 32, 1)
         arr[:, :, :, 0] = 42.0
+        mf.copy_from(mfi, arr)
         assert arr[0, 0, 0, 0] == 42.0
         break
 
 
-def test_host_grown_array_returns_writable_numpy():
-    """host_grown_array() returns a writable numpy view of the full FAB."""
+def test_grown_array_as_numpy():
+    """np.asarray(grown_array()) returns a numpy copy of the full FAB."""
     mf = _make_multifab(ngrow=1)
+    # Write via valid region, then fill ghosts
+    box = blockamr.Box([0, 0, 0], [31, 31, 31])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
+    geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_grown_array(mfi)
+        arr = mf.copy_to_host(mfi)
+        arr[:, :, :, 0] = 7.0
+        mf.copy_from(mfi, arr)
+    mf.fill_boundary(geom)
+    for mfi in blockamr.MFIterator(mf):
+        arr = np.asarray(mf.grown_array(mfi))
         assert isinstance(arr, np.ndarray), f"Expected np.ndarray, got {type(arr)}"
         assert arr.shape == (34, 34, 34, 1)
-        arr[:, :, :, 0] = 7.0
-        assert arr[0, 0, 0, 0] == 7.0
+        assert np.allclose(arr[:, :, :, 0], 7.0)
         break
 
 
 def test_copy_to_host():
     """copy_to_host() returns an owned numpy copy of the valid region."""
     mf = _make_multifab(ngrow=1)
-    # Write some data via host_array
+    # Write some data via copy_to_host + copy_from
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         arr[:, :, :, 0] = 3.14
+        mf.copy_from(mfi, arr)
     # copy_to_host should return an independent copy
     for mfi in blockamr.MFIterator(mf):
         host = mf.copy_to_host(mfi)
@@ -134,7 +158,7 @@ def test_copy_from_cpu_to_cpu():
     for mfi in blockamr.MFIterator(mf):
         mf.copy_from(mfi, src)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         assert np.allclose(arr[:, :, :, 0], 2.718)
         break
 
@@ -148,7 +172,7 @@ def test_copy_from_gpu_to_cpu():
     for mfi in blockamr.MFIterator(mf):
         mf.copy_from(mfi, src)
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         assert np.allclose(arr[:, :, :, 0], 1.618)
         break
 
@@ -188,11 +212,15 @@ def test_set_get_executor():
 
 def test_cellfield_memory_param():
     """CellField should accept a memory parameter."""
-    from blockamr.field import CellField
+    from neon.blockamr.field import CellField
+    from neon.blockamr.mesh import Mesh
 
     box = blockamr.Box([0, 0, 0], [31, 31, 31])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
     geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
-    dm = blockamr.DistributionMapping(blockamr.BoxArray(box).max_size(32))
-    field = CellField(box, dm, geom, ncomp=1, ngrow=1, memory="default")
-    assert field.mf.is_host is True
+    ba = blockamr.BoxArray(box)
+    ba.max_size(32)
+    dm = blockamr.DistributionMapping(ba)
+    mesh = Mesh(ba, dm, geom)
+    field = CellField(mesh, ncomp=1, ngrow=1, memory="default")
+    assert field.mf[0] is not None

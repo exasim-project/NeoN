@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import blockamr
-from blockamr.field import Field
-from blockamr.operators.ddt import Ddt
+import neon.blockamr as blockamr
+from neon.blockamr.field import Field
+from neon.blockamr.operators.ddt import Ddt
 
 
 def _make_field(n_cell=64, max_size=32, ngrow=1, name="phi"):

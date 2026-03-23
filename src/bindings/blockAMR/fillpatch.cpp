@@ -32,12 +32,16 @@ void registerFillPatch(nb::module_& m)
             nb::arg("hi_z")
         );
 
-    m.def("periodic_bcrec", []() {
-        return BCRec(
-            AMREX_D_DECL(BCType::int_dir, BCType::int_dir, BCType::int_dir),
-            AMREX_D_DECL(BCType::int_dir, BCType::int_dir, BCType::int_dir)
-        );
-    });
+    m.def(
+        "periodic_bcrec",
+        []()
+        {
+            return BCRec(
+                AMREX_D_DECL(BCType::int_dir, BCType::int_dir, BCType::int_dir),
+                AMREX_D_DECL(BCType::int_dir, BCType::int_dir, BCType::int_dir)
+            );
+        }
+    );
 
     // Interpolater singletons
     nb::class_<Interpolater>(m, "Interpolater");
@@ -49,9 +53,7 @@ void registerFillPatch(nb::module_& m)
     );
 
     m.def(
-        "pc_interp",
-        []() -> Interpolater* { return &pc_interp; },
-        nb::rv_policy::reference
+        "pc_interp", []() -> Interpolater* { return &pc_interp; }, nb::rv_policy::reference
     );
 
     // FillPatchSingleLevel (periodic only, PhysBCFunctNoOp)
@@ -125,8 +127,25 @@ void registerFillPatch(nb::module_& m)
 
             PhysBCFunctNoOp cbc, fbc;
             FillPatchTwoLevels(
-                mf, time, cmf_vec, ct_vec, fmf_vec, ft_vec, scomp, dcomp, ncomp, cgeom, fgeom,
-                cbc, 0, fbc, 0, ratio, mapper, bcs_vec, 0
+                mf,
+                time,
+                cmf_vec,
+                ct_vec,
+                fmf_vec,
+                ft_vec,
+                scomp,
+                dcomp,
+                ncomp,
+                cgeom,
+                fgeom,
+                cbc,
+                0,
+                fbc,
+                0,
+                ratio,
+                mapper,
+                bcs_vec,
+                0
             );
         },
         nb::arg("mf"),

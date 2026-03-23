@@ -4,31 +4,32 @@
 
 import math
 
-import blockamr
+import neon.blockamr as blockamr
 import numpy as np
-from blockamr.field import Field
-from blockamr.dsl import exp, solve
-from blockamr.dsl.expression import Expression
-from blockamr.operators.div import build_face_fluxes
+from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.mesh import Mesh
+from neon.blockamr.dsl import exp, solve
+from neon.blockamr.dsl.expression import Expression
+from neon.blockamr.operators.div import build_face_fluxes, update_face_fluxes
 
 
-def _make_field(n_cell=64, max_size=32, ngrow=1, name="phi"):
-    """Create a periodic Field wrapping a MultiFab + Geometry."""
+def _make_mesh(n_cell=64, max_size=32):
+    """Create a periodic Mesh on [0,1]^3."""
     box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
     geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
     ba = blockamr.BoxArray(box)
     ba.max_size(max_size)
     dm = blockamr.DistributionMapping(ba)
-    mf = blockamr.MultiFab(ba, dm, 1, ngrow)
-    return Field(mf, geom, name=name, box=box, dm=dm, max_size=max_size), box, dm, geom
+    mesh = Mesh(ba, dm, geom)
+    return mesh, box, dm, geom
 
 
-def _init_sin3d(field):
+def _init_sin3d(phi, geom):
     """Set field to sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)."""
-    dx = field.dx
-    for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.host_array(mfi)
+    dx = geom.cell_size()
+    for mfi in blockamr.MFIterator(phi.mf[0]):
+        arr = phi.mf[0].copy_to_host(mfi)
         bx = mfi.valid_box()
         lo = bx.small_end()
         nx, ny, nz = arr.shape[:3]
@@ -43,18 +44,20 @@ def _init_sin3d(field):
                         * math.sin(2 * math.pi * y)
                         * math.sin(2 * math.pi * z)
                     )
-    field.fill_boundary()
+        phi.mf[0].copy_from(mfi, arr)
+    phi.fill_patch(0, 0.0)
 
 
 def test_ddt_plus_div_creates_expression():
     """ddt(phi) + div(face_fluxes, phi) creates an Expression with 1 temporal + 1 spatial op."""
-    field, box, dm, geom = _make_field()
+    mesh, box, dm, geom = _make_mesh()
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
 
     def vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
-    expr = exp.ddt(field) + exp.div(face_fluxes, field)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
+    expr = exp.ddt(phi) + exp.div(ff, phi)
     assert isinstance(expr, Expression)
     assert len(expr.temporal_ops) == 1
     assert len(expr.spatial_ops) == 1
@@ -62,25 +65,27 @@ def test_ddt_plus_div_creates_expression():
 
 def test_scalar_mul_operator():
     """Scalar * operator sets the coefficient."""
-    field, box, dm, geom = _make_field()
+    mesh, box, dm, geom = _make_mesh()
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
 
     def vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
-    div_op = 2.0 * exp.div(face_fluxes, field)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
+    div_op = 2.0 * exp.div(ff, phi)
     assert div_op.coeff == 2.0
 
 
 def test_expression_subtraction():
     """ddt(phi) - div(face_fluxes, phi) negates the spatial op coefficient."""
-    field, box, dm, geom = _make_field()
+    mesh, box, dm, geom = _make_mesh()
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
 
     def vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    face_fluxes = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
-    expr = exp.ddt(field) - exp.div(face_fluxes, field)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
+    expr = exp.ddt(phi) - exp.div(ff, phi)
     assert isinstance(expr, Expression)
     assert len(expr.spatial_ops) == 1
     assert expr.spatial_ops[0].coeff == -1.0
@@ -88,21 +93,23 @@ def test_expression_subtraction():
 
 def test_solve_constant_field_unchanged():
     """Solving ddt(phi) + div(U=0, phi) = 0 leaves a constant field unchanged."""
-    field, box, dm, geom = _make_field(n_cell=64, max_size=32, ngrow=1)
+    mesh, box, dm, geom = _make_mesh(n_cell=64, max_size=32)
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
 
-    for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.host_array(mfi)
+    for mfi in blockamr.MFIterator(phi.mf[0]):
+        arr = phi.mf[0].copy_to_host(mfi)
         arr[:, :, :, 0] = 5.0
+        phi.mf[0].copy_from(mfi, arr)
 
     def zero_vel(x, y, z, t):
         return np.zeros_like(x), np.zeros_like(x), np.zeros_like(x)
 
-    face_fluxes = build_face_fluxes(zero_vel, box, dm, geom, ngrow=1, t=0.0)
-    expr = exp.ddt(field) + exp.div(face_fluxes, field)
+    ff = build_face_fluxes(zero_vel, box, dm, geom, ngrow=1, t=0.0)
+    expr = exp.ddt(phi) + exp.div(ff, phi)
     solve(expr, t=0.0, dt=0.01)
 
-    for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.host_array(mfi)
+    for mfi in blockamr.MFIterator(phi.mf[0]):
+        arr = phi.mf[0].copy_to_host(mfi)
         assert np.allclose(arr[:, :, :, 0], 5.0)
 
 
@@ -112,29 +119,30 @@ def test_diffusion_single_step():
     Verify: phi_new = phi_old + dt * laplacian(phi_old).
     """
     n_cell = 32
-    field, *_ = _make_field(n_cell=n_cell, max_size=n_cell, ngrow=1)
-    _init_sin3d(field)
+    mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=n_cell)
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
+    _init_sin3d(phi, geom)
 
     phi_old = {}
-    for mfi in blockamr.MFIterator(field.mf):
+    for mfi in blockamr.MFIterator(phi.mf[0]):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        phi_old[tuple(lo)] = field.mf.host_array(mfi)[:, :, :, 0].copy()
+        phi_old[tuple(lo)] = phi.mf[0].copy_to_host(mfi)[:, :, :, 0].copy()
 
     def gamma_one(x, y, z, t):
         return np.ones_like(x)
 
     dt = 1e-5
-    expr = exp.ddt(field) - exp.laplacian(gamma_one, field)
+    expr = exp.ddt(phi) - exp.laplacian(gamma_one, phi)
     solve(expr, t=0.0, dt=dt)
 
     pi = math.pi
     decay = 1.0 + dt * (-12.0 * pi**2)
 
-    for mfi in blockamr.MFIterator(field.mf):
+    for mfi in blockamr.MFIterator(phi.mf[0]):
         bx = mfi.valid_box()
         lo = bx.small_end()
-        arr_new = field.mf.host_array(mfi)[:, :, :, 0]
+        arr_new = phi.mf[0].copy_to_host(mfi)[:, :, :, 0]
         arr_old = phi_old[tuple(lo)]
         expected = arr_old * decay
         assert np.allclose(arr_new, expected, atol=1e-4), (

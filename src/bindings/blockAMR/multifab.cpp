@@ -362,12 +362,19 @@ void registerMultiFab(nb::module_& m)
                 bool dstOnDevice =
                     mf.arena()->isDeviceAccessible() && !mf.arena()->isHostAccessible();
 
-                // Stage C-order source onto the dest arena
+                // Check if source is Fortran-order (column-major).
+                // Fortran-order means x varies fastest, matching AMReX internal layout.
+                bool srcIsFortran = false;
+                if (src.ndim() >= 2)
+                {
+                    srcIsFortran = (src.stride(0) <= src.stride(src.ndim() - 1));
+                }
+
+                // Stage source onto the dest arena
                 Real* devSrc;
                 bool ownDevSrc = false;
                 if (srcOnDevice == dstOnDevice)
                 {
-                    // Same memory space — use pointer directly
                     devSrc = const_cast<Real*>(srcPtr);
                 }
                 else if (dstOnDevice)
@@ -383,45 +390,111 @@ void registerMultiFab(nb::module_& m)
                     amrex::Gpu::dtoh_memcpy(devSrc, srcPtr, nbytes);
                 }
 
-                // Transpose C-order (row-major) → Fortran-order (column-major)
-                // directly into the FAB valid region using Array4
-                auto arr4 = fab.array();
-                const auto lo = bx.smallEnd();
-                const Real* cSrc = devSrc;
-                if (dstOnDevice)
+                if (srcIsFortran)
                 {
-                    amrex::ParallelFor(
-                        bx,
-                        ncomp,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+                    // Source is Fortran-order — same layout as AMReX FAB, direct copy
+                    auto* dstPtr = fab.dataPtr();
+                    // Compute valid-region offset in the FAB
+                    const auto fabBox = fab.box();
+                    const auto fabLo = fabBox.smallEnd();
+                    const auto bxLo = bx.smallEnd();
+                    if (fabBox == bx)
+                    {
+                        // Valid box matches FAB box — direct memcpy
+                        if (dstOnDevice)
                         {
-                            int li = i - lo[0];
-                            int lj = j - lo[1];
-                            int lk = k - lo[2];
-                            // C-order: rightmost index varies fastest
-                            size_t cIdx = ((size_t)n * nx * ny * nz) + ((size_t)li * ny * nz)
-                                        + ((size_t)lj * nz) + lk;
-                            arr4(i, j, k, n) = cSrc[cIdx];
+                            amrex::Gpu::dtod_memcpy_async(dstPtr, devSrc, nbytes);
+                            amrex::Gpu::streamSynchronize();
                         }
-                    );
-                    amrex::Gpu::streamSynchronize();
-                }
-                else
-                {
-                    const auto lo3 = amrex::lbound(bx);
-                    const auto hi3 = amrex::ubound(bx);
-                    for (int n = 0; n < ncomp; ++n)
-                        for (int k = lo3.z; k <= hi3.z; ++k)
-                            for (int j = lo3.y; j <= hi3.y; ++j)
-                                for (int i = lo3.x; i <= hi3.x; ++i)
+                        else
+                            std::memcpy(dstPtr, devSrc, nbytes);
+                    }
+                    else
+                    {
+                        // FAB has ghost cells — copy per-component slab via Array4
+                        auto arr4 = fab.array();
+                        const auto lo = bx.smallEnd();
+                        const Real* fSrc = devSrc;
+                        if (dstOnDevice)
+                        {
+                            amrex::ParallelFor(
+                                bx,
+                                ncomp,
+                                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
                                 {
                                     int li = i - lo[0];
                                     int lj = j - lo[1];
                                     int lk = k - lo[2];
-                                    size_t cIdx = ((size_t)n * nx * ny * nz)
-                                                + ((size_t)li * ny * nz) + ((size_t)lj * nz) + lk;
-                                    arr4(i, j, k, n) = cSrc[cIdx];
+                                    // F-order: leftmost index varies fastest
+                                    size_t fIdx = (size_t)li + (size_t)lj * nx
+                                                + (size_t)lk * nx * ny
+                                                + (size_t)n * nx * ny * nz;
+                                    arr4(i, j, k, n) = fSrc[fIdx];
                                 }
+                            );
+                            amrex::Gpu::streamSynchronize();
+                        }
+                        else
+                        {
+                            const auto lo3 = amrex::lbound(bx);
+                            const auto hi3 = amrex::ubound(bx);
+                            for (int n = 0; n < ncomp; ++n)
+                                for (int k = lo3.z; k <= hi3.z; ++k)
+                                    for (int j = lo3.y; j <= hi3.y; ++j)
+                                        for (int i = lo3.x; i <= hi3.x; ++i)
+                                        {
+                                            int li = i - lo[0];
+                                            int lj = j - lo[1];
+                                            int lk = k - lo[2];
+                                            size_t fIdx = (size_t)li + (size_t)lj * nx
+                                                        + (size_t)lk * nx * ny
+                                                        + (size_t)n * nx * ny * nz;
+                                            arr4(i, j, k, n) = fSrc[fIdx];
+                                        }
+                        }
+                    }
+                }
+                else
+                {
+                    // Source is C-order — transpose to Fortran-order (AMReX layout)
+                    auto arr4 = fab.array();
+                    const auto lo = bx.smallEnd();
+                    const Real* cSrc = devSrc;
+                    if (dstOnDevice)
+                    {
+                        amrex::ParallelFor(
+                            bx,
+                            ncomp,
+                            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+                            {
+                                int li = i - lo[0];
+                                int lj = j - lo[1];
+                                int lk = k - lo[2];
+                                // C-order: rightmost index varies fastest
+                                size_t cIdx = ((size_t)n * nx * ny * nz) + ((size_t)li * ny * nz)
+                                            + ((size_t)lj * nz) + lk;
+                                arr4(i, j, k, n) = cSrc[cIdx];
+                            }
+                        );
+                        amrex::Gpu::streamSynchronize();
+                    }
+                    else
+                    {
+                        const auto lo3 = amrex::lbound(bx);
+                        const auto hi3 = amrex::ubound(bx);
+                        for (int n = 0; n < ncomp; ++n)
+                            for (int k = lo3.z; k <= hi3.z; ++k)
+                                for (int j = lo3.y; j <= hi3.y; ++j)
+                                    for (int i = lo3.x; i <= hi3.x; ++i)
+                                    {
+                                        int li = i - lo[0];
+                                        int lj = j - lo[1];
+                                        int lk = k - lo[2];
+                                        size_t cIdx = ((size_t)n * nx * ny * nz)
+                                                    + ((size_t)li * ny * nz) + ((size_t)lj * nz) + lk;
+                                        arr4(i, j, k, n) = cSrc[cIdx];
+                                    }
+                    }
                 }
 
                 if (ownDevSrc)

@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import blockamr
+import neon.blockamr as blockamr
 import numpy as np
-from blockamr.field import Field
+from neon.blockamr.field import Field
 
 
 def _make_periodic_setup(n_cell=64, max_size=32, ngrow=1):
@@ -42,8 +42,9 @@ def test_field_fill_boundary():
     field = _make_field(n_cell=64, max_size=64, ngrow=1)
 
     for mfi in blockamr.MFIterator(field.mf):
-        arr = field.mf.host_array(mfi)
+        arr = field.mf.copy_to_host(mfi)
         arr[:, :, :, 0] = 42.0
+        field.mf.copy_from(mfi, arr)
 
     field.fill_boundary()
 
@@ -66,8 +67,8 @@ def test_grown_array_shape():
     mf, geom = _make_periodic_setup(n_cell, max_size, ngrow)
 
     for mfi in blockamr.MFIterator(mf):
-        grown = mf.host_grown_array(mfi)
-        valid = mf.host_array(mfi)
+        grown = np.asarray(mf.grown_array(mfi))
+        valid = mf.copy_to_host(mfi)
 
         assert valid.shape[0] == max_size
         assert valid.shape[1] == max_size
@@ -84,7 +85,7 @@ def test_array_fortran_order():
     mf, geom = _make_periodic_setup(n_cell=64, max_size=32, ngrow=0)
 
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         assert arr.strides[0] < arr.strides[1]
         assert arr.strides[1] < arr.strides[2]
         break
@@ -98,15 +99,16 @@ def test_fill_boundary_periodic():
     mf, geom = _make_periodic_setup(n_cell, max_size, ngrow)
 
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_array(mfi)
+        arr = mf.copy_to_host(mfi)
         nx = arr.shape[0]
         for i in range(nx):
             arr[i, :, :, 0] = float(i)
+        mf.copy_from(mfi, arr)
 
     mf.fill_boundary(geom)
 
     for mfi in blockamr.MFIterator(mf):
-        grown = mf.host_grown_array(mfi)
+        grown = np.asarray(mf.grown_array(mfi))
         ng = ngrow
 
         assert np.allclose(grown[0, ng, ng, 0], n_cell - 1), (

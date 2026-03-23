@@ -6,9 +6,9 @@ import os
 
 import numpy as np
 
-import blockamr
-from blockamr.mesh import AmrMesh
-from blockamr.field import AmrField
+import neon.blockamr as blockamr
+from neon.blockamr.mesh import AmrMesh
+from neon.blockamr.field import CellField
 
 
 def _make_geom_and_info(ncell=32, max_level=0):
@@ -49,7 +49,7 @@ def test_amr_mesh_field_allocation():
     """AmrField allocates MultiFab on init_from_scratch."""
     geom, info = _make_geom_and_info(ncell=32, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=1)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=1)
     mesh.init_from_scratch(0.0)
 
     assert phi.mf[0] is not None
@@ -82,7 +82,7 @@ def test_amr_mesh_regrid_calls_error_est():
     """Regrid invokes the tag function."""
     geom, info = _make_geom_and_info(ncell=32, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
 
     tag_called = [False]
@@ -98,7 +98,7 @@ def test_amr_mesh_regrid_creates_fine_level():
     """Tagging all cells during regrid creates level 1."""
     geom, info = _make_geom_and_info(ncell=16, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
     assert mesh.n_levels() == 1
 
@@ -111,7 +111,7 @@ def test_amr_mesh_regrid_allocates_field_on_fine_level():
     """After regrid creates level 1, AmrField.mf[1] is allocated."""
     geom, info = _make_geom_and_info(ncell=16, max_level=1)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
     assert phi.mf[1] is None
 
@@ -124,7 +124,7 @@ def test_amr_mesh_write_plotfile(tmp_path):
     """AmrMesh.write_plotfile produces valid directory structure."""
     geom, info = _make_geom_and_info(ncell=16, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
     mesh.init_from_scratch(0.0)
 
     plotdir = str(tmp_path / "plt_mesh")
@@ -139,8 +139,8 @@ def test_amr_mesh_multiple_fields():
     """Multiple AmrFields are all allocated on init."""
     geom, info = _make_geom_and_info(ncell=16, max_level=0)
     mesh = AmrMesh(geom, info)
-    phi = AmrField(mesh, name="phi", ncomp=1, ngrow=0)
-    rho = AmrField(mesh, name="rho", ncomp=1, ngrow=1)
+    phi = CellField(mesh, name="phi", ncomp=1, ngrow=0)
+    rho = CellField(mesh, name="rho", ncomp=1, ngrow=1)
     mesh.init_from_scratch(0.0)
 
     assert phi.mf[0] is not None

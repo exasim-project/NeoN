@@ -4,7 +4,7 @@
 
 import numpy as np
 
-import blockamr
+import neon.blockamr as blockamr
 
 
 def test_bcrec_periodic():
@@ -32,16 +32,18 @@ def test_fill_patch_single_level():
     ngrow = 1
     mf = blockamr.MultiFab(ba, dm, 1, ngrow, memory="pinned")
 
-    # Fill with constant value
+    # Fill valid region with constant value, then populate ghosts
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_grown_array(mfi)
+        arr = mf.copy_to_host(mfi)
         arr[:] = 42.0
+        mf.copy_from(mfi, arr)
+    mf.fill_boundary(geom)
 
     blockamr.fill_patch_single_level(mf, 0.0, [mf], [0.0], geom, 0, 1)
 
     # After fill, ghost cells at periodic boundaries should also be 42
     for mfi in blockamr.MFIterator(mf):
-        arr = mf.host_grown_array(mfi)
+        arr = np.asarray(mf.grown_array(mfi))
         assert np.allclose(arr, 42.0)
 
 
@@ -59,10 +61,11 @@ def test_fill_patch_two_levels():
     cdm = blockamr.DistributionMapping(cba)
     cmf = blockamr.MultiFab(cba, cdm, 1, 1, memory="pinned")
 
-    # Fill coarse with constant 7
+    # Fill coarse valid region with constant 7, then populate ghosts
     for mfi in blockamr.MFIterator(cmf):
-        arr = cmf.host_grown_array(mfi)
+        arr = cmf.copy_to_host(mfi)
         arr[:] = 7.0
+        cmf.copy_from(mfi, arr)
     cmf.fill_boundary(cgeom)
 
     # Fine level — same domain, fully refined
@@ -74,17 +77,21 @@ def test_fill_patch_two_levels():
     fba.max_size(16)
     fdm = blockamr.DistributionMapping(fba)
     ngrow = 1
-    # Source fine MF — fill valid with 7.0
+    # Source fine MF — fill valid with 7.0, then populate ghosts
     fmf_src = blockamr.MultiFab(fba, fdm, 1, ngrow, memory="pinned")
     for mfi in blockamr.MFIterator(fmf_src):
-        arr = fmf_src.host_grown_array(mfi)
+        arr = fmf_src.copy_to_host(mfi)
         arr[:] = 7.0
+        fmf_src.copy_from(mfi, arr)
+    fmf_src.fill_boundary(fgeom)
 
     # Target fine MF — starts at 0
     fmf = blockamr.MultiFab(fba, fdm, 1, ngrow, memory="pinned")
     for mfi in blockamr.MFIterator(fmf):
-        arr = fmf.host_grown_array(mfi)
+        arr = fmf.copy_to_host(mfi)
         arr[:] = 0.0
+        fmf.copy_from(mfi, arr)
+    fmf.fill_boundary(fgeom)
 
     bcs = [blockamr.periodic_bcrec()]
     rr = blockamr.IntVect(ratio, ratio, ratio)
@@ -101,5 +108,5 @@ def test_fill_patch_two_levels():
 
     # Both valid and ghost cells should be 7.0
     for mfi in blockamr.MFIterator(fmf):
-        arr = fmf.host_grown_array(mfi)
+        arr = np.asarray(fmf.grown_array(mfi))
         assert np.allclose(arr, 7.0), f"Expected 7.0, got {arr.mean()}"

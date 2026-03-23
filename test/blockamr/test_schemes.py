@@ -6,19 +6,20 @@ import jax.numpy as jnp
 
 from pydantic import TypeAdapter
 
-from blockamr.schemes.div_schemes import QUICK, DivScheme, Linear, Upwind, VanLeer
-from blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
-from blockamr.schemes.grad_schemes import CentralDiffGrad
-from blockamr.schemes.ddt_schemes import DdtScheme, ForwardEuler, RungeKutta2, RungeKutta4
-from blockamr.schemes.schemes_dict import SchemesDict
+from neon.blockamr.schemes.div_schemes import QUICK, DivScheme, Linear, Upwind, VanLeer
+from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
+from neon.blockamr.schemes.grad_schemes import CentralDiffGrad
+from neon.blockamr.schemes.ddt_schemes import DdtScheme, ForwardEuler, RungeKutta2, RungeKutta4
+from neon.blockamr.schemes.schemes_dict import SchemesDict
 
 
 def test_upwind_uniform_field_3d() -> None:
     """Upwind compute on uniform field is zero (all flux in = flux out)."""
+    # u: 4 cells (1 ghost each side, 2 interior). Fluxes need 2+1+2*w = 5 faces along own axis.
     u = jnp.ones((4, 4, 4))
-    fx = jnp.ones((3, 4, 4))
-    fy = jnp.ones((4, 3, 4))
-    fz = jnp.ones((4, 4, 3))
+    fx = jnp.ones((5, 4, 4))
+    fy = jnp.ones((4, 5, 4))
+    fz = jnp.ones((4, 4, 5))
     dh = jnp.array([1.0, 1.0, 1.0])
     result = Upwind().compute(u, [fx, fy, fz], dh)
     assert result.shape == (2, 2, 2)
@@ -27,17 +28,12 @@ def test_upwind_uniform_field_3d() -> None:
 
 def test_upwind_positive_flux() -> None:
     """Upwind with positive flux selects left (upwind) cell."""
-    # 1D-like: 3 cells along x, 1 interior cell, trivial y/z (size 3 → 1 interior)
-    # u = [1, 2, 3] along x (ghost, interior, ghost)
-    u = jnp.array([[[1.0, 2.0, 3.0]]]).transpose((0, 1, 2))  # shape (3,1,1) won't work
-    # Need shape (N+2g, N+2g, N+2g) with g=1 for upwind → need at least 4 along each axis
-    # Simpler: use (4,4,4) with known values
     # Along x: values 0,1,2,3 — interior cells are [1] and [2]
     # positive flux → upwind selects left neighbour
     u = jnp.arange(4.0).reshape(4, 1, 1) * jnp.ones((1, 4, 4))
-    fx = jnp.ones((3, 4, 4))   # positive flux along x
-    fy = jnp.zeros((4, 3, 4))  # zero flux along y
-    fz = jnp.zeros((4, 4, 3))  # zero flux along z
+    fx = jnp.ones((5, 4, 4))   # positive flux along x
+    fy = jnp.zeros((4, 5, 4))  # zero flux along y
+    fz = jnp.zeros((4, 4, 5))  # zero flux along z
     dh = jnp.array([1.0, 1.0, 1.0])
     result = Upwind().compute(u, [fx, fy, fz], dh)
     # interior shape: (2,2,2)
@@ -51,9 +47,9 @@ def test_upwind_positive_flux() -> None:
 def test_linear_averages() -> None:
     """Linear gives (left + right) / 2 face value → zero for uniform field."""
     u = jnp.ones((4, 4, 4))
-    fx = jnp.ones((3, 4, 4))
-    fy = jnp.ones((4, 3, 4))
-    fz = jnp.ones((4, 4, 3))
+    fx = jnp.ones((5, 4, 4))
+    fy = jnp.ones((4, 5, 4))
+    fz = jnp.ones((4, 4, 5))
     dh = jnp.array([1.0, 1.0, 1.0])
     result = Linear().compute(u, [fx, fy, fz], dh)
     assert result.shape == (2, 2, 2)
@@ -62,10 +58,11 @@ def test_linear_averages() -> None:
 
 def test_vanleer_uniform() -> None:
     """VanLeer on uniform field is zero."""
+    # VanLeer stencil_width=2: u needs 2+2*2=6, fluxes need 2+1+2*2=7 along own axis
     u = jnp.ones((6, 6, 6))
-    fx = jnp.ones((3, 6, 6))
-    fy = jnp.ones((6, 3, 6))
-    fz = jnp.ones((6, 6, 3))
+    fx = jnp.ones((7, 6, 6))
+    fy = jnp.ones((6, 7, 6))
+    fz = jnp.ones((6, 6, 7))
     dh = jnp.array([1.0, 1.0, 1.0])
     result = VanLeer().compute(u, [fx, fy, fz], dh)
     assert result.shape == (2, 2, 2)
@@ -74,15 +71,12 @@ def test_vanleer_uniform() -> None:
 
 def test_vanleer_linear_field() -> None:
     """VanLeer on linear field gives exact face value (limiter=1 for r=1)."""
-    # Linear profile along x: 0,1,2,3,4,5 — needs stencil_width=2 → 6 cells, 2 interior
     x = jnp.arange(6.0).reshape(6, 1, 1) * jnp.ones((1, 6, 6))
-    fx = jnp.ones((3, 6, 6))
-    fy = jnp.zeros((6, 3, 6))
-    fz = jnp.zeros((6, 6, 3))
+    fx = jnp.ones((7, 6, 6))
+    fy = jnp.zeros((6, 7, 6))
+    fz = jnp.zeros((6, 6, 7))
     dh = jnp.array([1.0, 1.0, 1.0])
     result = VanLeer().compute(x, [fx, fy, fz], dh)
-    # Linear field with uniform flux: div(u*phi) with phi linear and u=1
-    # face values are exact (2.5, 3.5) → F_r - F_l = 3.5 - 2.5 = 1 for both interior cells
     assert result.shape == (2, 2, 2)
     assert jnp.allclose(result, 1.0)
 
@@ -90,9 +84,9 @@ def test_vanleer_linear_field() -> None:
 def test_quick_linear_field() -> None:
     """QUICK on linear field gives exact face value."""
     x = jnp.arange(6.0).reshape(6, 1, 1) * jnp.ones((1, 6, 6))
-    fx = jnp.ones((3, 6, 6))
-    fy = jnp.zeros((6, 3, 6))
-    fz = jnp.zeros((6, 6, 3))
+    fx = jnp.ones((7, 6, 6))
+    fy = jnp.zeros((6, 7, 6))
+    fz = jnp.zeros((6, 6, 7))
     dh = jnp.array([1.0, 1.0, 1.0])
     result = QUICK().compute(x, [fx, fy, fz], dh)
     assert result.shape == (2, 2, 2)
@@ -118,18 +112,17 @@ def test_div_scheme_discriminator_roundtrip() -> None:
 # --- compute rename ---
 
 
-def test_operators_have_compute_method():
-    """All spatial operators expose compute (not compute_on_patch)."""
-    from blockamr.operators.div import Div
-    from blockamr.operators.grad import Grad
-    from blockamr.operators.laplacian import Laplacian
-    from blockamr.operators.source import Source
+def test_operators_have_build_kernel_method():
+    """All spatial operators expose build_kernel."""
+    from neon.blockamr.operators.div import Div
+    from neon.blockamr.operators.grad import Grad
+    from neon.blockamr.operators.laplacian import Laplacian
+    from neon.blockamr.operators.source import Source
 
-    assert hasattr(Div, "compute")
-    assert hasattr(Grad, "compute")
-    assert hasattr(Laplacian, "compute")
-    assert hasattr(Source, "compute")
-    assert not hasattr(Div, "compute_on_patch")
+    assert hasattr(Div, "build_kernel")
+    assert hasattr(Grad, "build_kernel")
+    assert hasattr(Laplacian, "build_kernel")
+    assert hasattr(Source, "build_kernel")
 
 
 # --- Laplacian schemes ---
