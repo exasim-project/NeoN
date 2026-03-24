@@ -23,6 +23,7 @@ void computeDivExp(
     const dsl::Coeff operatorScaling
 );
 
+/** @brief assemble internal dofs*/
 template<typename ValueType>
 void computeDivImp(
     la::LinearSystem<ValueType>& ls,
@@ -32,6 +33,7 @@ void computeDivImp(
     const dsl::Coeff operatorScaling
 );
 
+/** @brief assemble boundaries*/
 template<typename ValueType>
 void computeDivBoundImpl(
     la::LinearSystem<ValueType>& ls,
@@ -41,6 +43,7 @@ void computeDivBoundImpl(
     const dsl::Coeff operatorScaling
 );
 
+/** @brief assemble processor boundaries*/
 template<typename ValueType>
 void computeDivProcBoundImpl(
     la::LinearSystem<ValueType>& ls,
