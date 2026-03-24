@@ -131,13 +131,12 @@ void registerBoundaryMesh(nb::module_& m)
             nb::rv_policy::reference_internal,
             "Get the vector of delta coefficients (cell-to-face distances)"
         )
-      // FIXME
-        // .def(
-        //     "offset",
-        //     &NeoN::BoundaryMesh::offset,
-        //     nb::rv_policy::reference_internal,
-        //     "Get the offset vector for accessing boundary-specific data"
-        // )
+        .def(
+            "offset",
+            nb::overload_cast<>(&NeoN::BoundaryMesh::offset, nb::const_),
+            nb::rv_policy::reference_internal,
+            "Get the offset vector for accessing boundary-specific data"
+        )
         .def(
             "__repr__",
             [](const NeoN::BoundaryMesh& bm)
