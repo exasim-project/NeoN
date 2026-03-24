@@ -163,11 +163,12 @@ void computeDivProcBoundImpl(
     const auto exec = phi.exec();
     const auto& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
+
     auto faceFluxV = faceFlux.internalVector().view();
 
     const auto matIt = ls.faceToMatrixAddress();
-    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
-    auto const diagOffs = matIt->diagOffset().view();
+    const auto [rowOffs, diagOffs] =
+        views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
 
     const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
         mesh.boundaryMesh().faceCells(),
@@ -175,7 +176,7 @@ void computeDivProcBoundImpl(
         mesh.boundaryMesh().isLocal()
     );
 
-    auto [bweights, refGradient, value, valueFraction, refValue] = views(
+    const auto [bweights, refGradient, value, valueFraction, refValue] = views(
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),

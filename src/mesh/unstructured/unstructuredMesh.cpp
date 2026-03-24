@@ -174,7 +174,7 @@ UnstructuredMesh create1DUniformMesh(
     // const Vec3 rightBoundary = {1.0, 0.0, 0.0};
     scalar meshSpacing = (rightBoundary[0] - leftBoundary[0]) / static_cast<scalar>(nCells);
     auto hostExec = SerialExecutor {};
-    vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
+    vectorVector meshPointsHost(hostExec, nCells + 1, leftBoundary);
     auto meshPointsHostView = meshPointsHost.view();
     meshPointsHostView[nCells - 1] = leftBoundary;
     meshPointsHostView[nCells] = rightBoundary;
@@ -194,7 +194,7 @@ UnstructuredMesh create1DUniformMesh(
 
     scalarVector cellVolumes(exec, nCells, meshSpacing);
 
-    vectorVector cellCenters(exec, nCells, {0.0, 0.0, 0.0});
+    vectorVector cellCenters(exec, nCells, leftBoundary);
     auto cellCentersView = cellCenters.view();
     parallelFor(
         exec,
