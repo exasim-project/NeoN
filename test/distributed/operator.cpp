@@ -20,7 +20,24 @@ auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
 {
     auto exec = mesh.exec();
     localIdx localCells = mesh.nCells() / mpiEnviron.sizeRank(); // 4
-    auto ret = create1DUniformMesh(exec, localCells);
+    Vec3 leftBoundary {0.0, 0.0, 0.0};
+    Vec3 rightBoundary {1.0, 0.0, 0.0};
+
+    if (mpiEnviron.rank() == 0)
+    {
+        rightBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
+    }
+    if (mpiEnviron.rank() == 1)
+    {
+        leftBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
+        rightBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
+    }
+    if (mpiEnviron.rank() == 2)
+    {
+        leftBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
+    }
+
+    auto ret = create1DUniformMesh(exec, localCells, leftBoundary, rightBoundary);
     auto& boundaryMesh = ret.boundaryMesh();
 
     if (mpiEnviron.rank() != 0)
@@ -128,7 +145,10 @@ FieldType partitionSurfaceField(
 
         // new face has different direction compared to unpartitioned case
         // signRight = -1.0;
-        signLeft = -1.0;
+        if (flip)
+        {
+            signLeft = -1.0;
+        }
     }
     if (mpiEnviron.rank() == 2)
     {
@@ -139,7 +159,10 @@ FieldType partitionSurfaceField(
         rightBoundaryFace = leftBoundaryFace + localCells + 1; // 12
 
         // new face has different direction compared to unpartitioned case
-        signLeft = -1.0;
+        if (flip)
+        {
+            signLeft = -1.0;
+        }
     }
 
     FieldType ret = {field.exec(), field.name + "Part", mesh, bcs};
@@ -202,7 +225,7 @@ TEST_CASE("Distributed")
         {
             "laplacianSchemes",
             NeoN::Dictionary {
-                {"laplacian(gamma,U)",
+                {"laplacian(gammaPart,UPart)",
                  NeoN::TokenList(
                      {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
                  )}
@@ -235,11 +258,10 @@ TEST_CASE("Distributed")
     randomizeVector(phi.internalVector());
     fill(gamma.internalVector(), 2.0);
 
-    // partition fields and data
-
     // assembly
-    auto expr = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phi, U)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
+    auto expr = NeoN::dsl::Expression<NeoN::scalar>(
+        NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U)
+    );
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
@@ -247,6 +269,7 @@ TEST_CASE("Distributed")
     // {
     NeoN::mpi::Environment mpiEnviron;
 
+    // partition fields and data
     auto meshPart = partitionMeshHelper(meshGlobal, mpiEnviron);
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
     auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
@@ -254,9 +277,11 @@ TEST_CASE("Distributed")
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
     auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, true);
+    auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
-    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(NeoN::dsl::imp::div(phiPart, uPart)
-    ); // - NeoN::dsl::imp::laplacian(gamma, U);
+    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(
+        NeoN::dsl::imp::div(phiPart, uPart) - NeoN::dsl::imp::laplacian(gammaPart, uPart)
+    );
 
     exprDist.read(inputPart);
 
