@@ -65,10 +65,10 @@ inline const RelaxationCache& relaxationCache(const Dictionary& fvSolution)
         const auto& eqs = rf.subDict("equations");
         for (const auto& k : eqs.keys())
             if (eqs.isType<scalar>(k))
-	    {
+            {
                 cache.equations.emplace(k, eqs.get<scalar>(k));
-	        NeoN::Logging::info("URF eqn {} = {}", k, eqs.get<scalar>(k));
-	    }
+                NeoN::Logging::info("URF eqn {} = {}", k, eqs.get<scalar>(k));
+            }
     }
 
     if (rf.isDict("fields"))
@@ -76,10 +76,10 @@ inline const RelaxationCache& relaxationCache(const Dictionary& fvSolution)
         const auto& flds = rf.subDict("fields");
         for (const auto& k : flds.keys())
             if (flds.isType<scalar>(k))
-	    {
-		cache.fields.emplace(k, flds.get<scalar>(k));
-	        NeoN::Logging::info("URF field {} = {}", k, flds.get<scalar>(k));
-	    }
+            {
+                cache.fields.emplace(k, flds.get<scalar>(k));
+                NeoN::Logging::info("URF field {} = {}", k, flds.get<scalar>(k));
+            }
     }
 
     // OpenFOAM-compatible fallback: flat entries apply to both
@@ -89,16 +89,14 @@ inline const RelaxationCache& relaxationCache(const Dictionary& fvSolution)
             scalar v = rf.get<scalar>(k);
             cache.equations.emplace(k, v);
             cache.fields.emplace(k, v);
-	    NeoN::Logging::info("URF field {} = {}", k, v);
+            NeoN::Logging::info("URF field {} = {}", k, v);
         }
 
     return caches.emplace(&fvSolution, std::move(cache)).first->second;
 }
 
-inline std::optional<scalar> findRelaxationFactor(
-    const Dictionary& fvSolution,
-    const std::string& fieldName
-)
+inline std::optional<scalar>
+findRelaxationFactor(const Dictionary& fvSolution, const std::string& fieldName)
 {
     const auto& c = relaxationCache(fvSolution);
     if (!c.hasRelaxationFactors) return std::nullopt;
@@ -107,10 +105,8 @@ inline std::optional<scalar> findRelaxationFactor(
     return (it != c.equations.end()) ? std::optional<scalar>(it->second) : std::nullopt;
 }
 
-inline std::optional<scalar> findFieldRelaxationFactor(
-    const Dictionary& fvSolution,
-    const std::string& fieldName
-)
+inline std::optional<scalar>
+findFieldRelaxationFactor(const Dictionary& fvSolution, const std::string& fieldName)
 {
     const auto& c = relaxationCache(fvSolution);
     if (!c.hasRelaxationFactors) return std::nullopt;
@@ -189,9 +185,7 @@ template<>
 KOKKOS_INLINE_FUNCTION Vec3 cmptMax(const Vec3& lhs, const Vec3& rhs)
 {
     return Vec3(
-        Kokkos::max(lhs[0], rhs[0]),
-        Kokkos::max(lhs[1], rhs[1]),
-        Kokkos::max(lhs[2], rhs[2])
+        Kokkos::max(lhs[0], rhs[0]), Kokkos::max(lhs[1], rhs[1]), Kokkos::max(lhs[2], rhs[2])
     );
 }
 
@@ -225,14 +219,12 @@ void applyMatrixRelaxation(
     const auto [diagOffs, field, rowOffs, colIdxs] =
         views(sp.diagOffset(), solution.internalVector(), mtx.rowOffs(), mtx.colIdxs());
     auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<
-            la::BoundaryCoefficients<typename VectorType::ElementType, localIdx>>(
-            "boundaryCoefficients"
-        );
+        ls.auxiliaryCoefficients()
+            .template get<la::BoundaryCoefficients<typename VectorType::ElementType, localIdx>>(
+                "boundaryCoefficients"
+            );
     auto sumOff = Vector<typename VectorType::ElementType>(
-        ls.exec(),
-        field.size(),
-        zero<typename VectorType::ElementType>()
+        ls.exec(), field.size(), zero<typename VectorType::ElementType>()
     );
     auto boundaryDiagMag = Vector<scalar>(ls.exec(), field.size(), 0.0);
     auto boundaryDiagMin = Vector<scalar>(ls.exec(), field.size(), 0.0);
@@ -278,11 +270,11 @@ void applyMatrixRelaxation(
             const auto diag = matrix.values[diagIdx];
             const auto diagWithBoundary =
                 diag + boundaryDiagMagValues[celli] * one<typename VectorType::ElementType>();
-            const auto domMag =
-                cmptMax(cmptMagValue(diagWithBoundary), sumOffValues[celli]);
-	    const auto dominantDiag = componentCopySign(domMag, diagWithBoundary);
+            const auto domMag = cmptMax(cmptMagValue(diagWithBoundary), sumOffValues[celli]);
+            // const auto dominantDiag = componentCopySign(domMag, diagWithBoundary);
             const auto relaxedDiag =
-                dominantDiag * invAlpha - boundaryDiagMinValues[celli] * one<typename VectorType::ElementType>();
+                domMag * invAlpha
+                - boundaryDiagMinValues[celli] * one<typename VectorType::ElementType>();
             matrix.values[diagIdx] = relaxedDiag;
             rhs[celli] += componentMultiply(relaxedDiag - diag, field[celli]);
         },
@@ -292,9 +284,7 @@ void applyMatrixRelaxation(
 
 template<typename VectorType>
 void applyFieldRelaxation(
-    VectorType& solution,
-    const Vector<typename VectorType::ElementType>& previous,
-    scalar alpha
+    VectorType& solution, const Vector<typename VectorType::ElementType>& previous, scalar alpha
 )
 {
 
@@ -307,6 +297,33 @@ void applyFieldRelaxation(
             current[celli] = prev[celli] + alpha * (current[celli] - prev[celli]);
         },
         "applyFieldRelaxation"
+    );
+}
+
+template<typename ValueType>
+void addBoundaryContributions(
+    const la::SparsityPattern& sp, la::LinearSystem<ValueType, localIdx>& ls
+)
+{
+    auto& bcCoeffs =
+        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
+            "boundaryCoefficients"
+        );
+    auto [matrix, rhs] = ls.view();
+    auto& mtx = ls.matrix();
+    const auto [diagOffs, rowOffs] = views(sp.diagOffset(), mtx.rowOffs());
+    auto [bcMatVals, bcRhsVals, bcCellIdxs] =
+        views(bcCoeffs.matrixValues, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
+
+    parallelFor(
+        ls.exec(),
+        {0, bcMatVals.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto celli = bcCellIdxs[facei];
+            Kokkos::atomic_add(&matrix.values[rowOffs[celli] + diagOffs[celli]], bcMatVals[facei]);
+            Kokkos::atomic_sub(&rhs[celli], bcRhsVals[facei]);
+        },
+        "addBoundaryContributions"
     );
 }
 
@@ -343,6 +360,8 @@ la::SolverStats iterativeSolveImpl(
     {
         applyMatrixRelaxation(sp, ls, solution, *eqnUrf);
     }
+
+    addBoundaryContributions<typename VectorType::ElementType>(sp, ls);
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
@@ -384,6 +403,8 @@ la::SolverStats iterativeSolveImpl(
     {
         applyMatrixRelaxation(sparsity, ls, solution, *eqnUrf);
     }
+
+    addBoundaryContributions<typename VectorType::ElementType>(sparsity, ls);
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
