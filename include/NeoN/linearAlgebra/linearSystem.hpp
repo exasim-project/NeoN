@@ -170,28 +170,35 @@ public:
     }
 
     /** @brief boundaryMatrixMap - bfaceIdx -> matrixAddr */
-    void communicate(CommunicationPattern& commPattern, Vector<localIdx>& boundaryMatrixMap)
+    void communicate(CommunicationPattern& commPattern)
     {
-
         auto mpiEnv = commPattern.env;
+        int commRanks = mpiEnv.sizeRank();
+
+        auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
+
         // 1. copy bValues which need to be communicated into sendBuffer
         auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
         auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
+        NF_PING();
         // TODO with the right displacements boundary values could be taken
         // directly without copy to a sendbuffer first. however the recv is still needed
         //
         // copy map needs to be on the device for filling the consecutive
         // sendBuffer but for sending with mpi data is on the host
         auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
+        std::cout << __FILE__ << ":" << __LINE__ << " commSize " << commSize << " copyMap.size "
+                  << copyMap.size() << "\n";
         copy(boundaryMatrix_.values(), copyMap, commBuffer);
+        NF_PING();
 
         // zero out processor boundary values
         // set(0.0, copyMap, boundaryMatrix_.values());
 
         // TODO compute using scan
-        auto sdispls = std::vector<int>(commSize, 0);
+        auto sdispls = std::vector<int>(commRanks, 0);
         for (int i = 1; i < sdispls.size(); i++)
         {
             auto prev = sdispls[i - 1];

@@ -156,7 +156,6 @@ public:
         scalar t,
         scalar dt,
         CommunicationPattern commPattern,
-        Vector<localIdx>& boundaryMatrixMap,
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
@@ -165,9 +164,38 @@ public:
         // assemble local part
         assemble(t, dt, ls, ps);
         // communicate processor boundaries
-        ls.communicate(commPattern, boundaryMatrixMap);
+        ls.communicate(commPattern);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
+
+    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<Vec3>>
+    assembleDistributed(
+        la::LinearSystem<Vec3>& ls,
+        scalar t,
+        scalar dt,
+        CommunicationPattern commPattern,
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    ) const {
+        // FIXME
+    };
+
+    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<scalar>>
+    assembleDistributed(
+        la::LinearSystem<scalar>& ls,
+        scalar t,
+        scalar dt,
+        CommunicationPattern commPattern,
+        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    ) const
+    {
+        // assemble local part
+        assemble(t, dt, ls, ps);
+        // communicate processor boundaries
+        ls.communicate(commPattern);
+
+        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
+    };
+
 
     /* @brief assemble into a given linear system
      *

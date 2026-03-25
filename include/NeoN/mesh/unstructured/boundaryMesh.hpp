@@ -235,6 +235,11 @@ public:
 
     const std::vector<localIdx>& neighbourRank() const;
 
+    const std::vector<localIdx> computeCommIdx() const;
+
+    const std::vector<localIdx> computeBoundaryMatrixMapVector() const;
+
+
 private:
 
     /**
