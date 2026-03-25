@@ -87,10 +87,11 @@ void computeLaplacianBoundImpl(
 
     auto gammaV = gamma.internalVector().view();
 
+
     const auto [magFaceArea, surfFaceCells, deltaCoeffs, isLocal] = views(
         mesh.magFaceAreas(),
         mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().deltaCoeffs(),
+        faceNormalGradient.deltaCoeffs().internalVector(),
         mesh.boundaryMesh().isLocal()
     );
 
@@ -127,14 +128,19 @@ void computeLaplacianBoundImpl(
                 auto rowOwnStart = rowOffs[own];
                 auto operatorScalingOwn = operatorScaling[own];
 
-                ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
-                                   * deltaCoeffs[facei] * one<ValueType>();
+                auto valFrac1 = valueFraction[bcfacei];
+                auto valFrac2 = 1.0 - valFrac1;
+
+                // FIXME deltaCoeffs was previously indexed by facei?
+                auto valueMat =
+                    flux * operatorScalingOwn * valFrac2 * deltaCoeffs[facei] * one<ValueType>();
+
                 Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-                bValues[bcfacei] = valueMat;
+                bValues[bcfacei] += valueMat;
 
                 ValueType valueRhs =
                     flux * operatorScalingOwn
-                    * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
+                    * (valueFraction[bcfacei] * deltaCoeffs[bcfacei] * refValue[bcfacei]
                        + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
                 Kokkos::atomic_sub(&rhs[own], valueRhs);
                 bRhs[bcfacei] = valueRhs;
@@ -197,21 +203,23 @@ void computeLaplacianProcBoundImpl(
                 auto rowOwnStart = rowOffs[own];
                 auto operatorScalingOwn = operatorScaling[own];
 
-                auto valFrac1 = valueFraction[bcfacei];
-                auto valFrac2 = 1.0 - valFrac1;
+                auto valFrac1 = isLocal[facei - nInternalFaces];
+                auto valFrac2 = -1.0 * valFrac1;
 
                 // ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                 //                    * deltaCoeffs[facei] * one<ValueType>();
-                auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-                Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-                bValues[bcfacei] = valueMat;
+                auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+                std::cout << __FILE__ << ":" << __LINE__ << " valueMat " << valueMat << "\n";
+                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+                // bValues[bcfacei] += valueMat;
+                bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();
 
-                ValueType valueRhs =
-                    flux * operatorScalingOwn
-                    * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
-                       + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-                Kokkos::atomic_sub(&rhs[own], valueRhs);
-                bRhs[bcfacei] = valueRhs;
+                // ValueType valueRhs =
+                //     flux * operatorScalingOwn
+                //     * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
+                //        + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
+                // Kokkos::atomic_sub(&rhs[own], valueRhs);
+                // bRhs[bcfacei] = valueRhs;
             }
         },
         "computeInterfaceLaplacianCoefficients"
