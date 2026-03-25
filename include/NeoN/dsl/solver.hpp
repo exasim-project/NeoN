@@ -206,31 +206,31 @@ KOKKOS_INLINE_FUNCTION Vec3 componentCopySign(const Vec3& mag, const Vec3& s)
 
 template<typename VectorType>
 void applyMatrixRelaxation(
-    const la::SparsityPattern& sp,
-    la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
-    const VectorType& solution,
-    scalar alpha
+    la::LinearSystem<typename VectorType::ElementType>& ls, const VectorType& solution, scalar alpha
 )
 {
+    if (alpha <= 0.0 || alpha == 1.0) return;
     NeoN::Logging::info("URF applied");
     const scalar invAlpha = 1.0 / alpha;
-    auto [matrix, rhs] = ls.view();
+    const auto matIt = ls.faceToMatrixAddress();
+    auto lsView = ls.view();
+    auto& matrix = lsView.matrix;
+    auto& rhs = lsView.rhs;
+    auto& bMatrix = lsView.boundaryMatrix;
     auto& mtx = ls.matrix();
-    const auto [diagOffs, field, rowOffs, colIdxs] =
-        views(sp.diagOffset(), solution.internalVector(), mtx.rowOffs(), mtx.colIdxs());
-    auto& bcCoeffs =
-        ls.auxiliaryCoefficients()
-            .template get<la::BoundaryCoefficients<typename VectorType::ElementType, localIdx>>(
-                "boundaryCoefficients"
-            );
+    const auto [diagOffs, rowOffs, colIdxs] =
+        views(matIt->diagOffset(), mtx.rowOffs(), mtx.colIdxs());
+    const auto field = solution.internalVector().view();
+
     auto sumOff = Vector<typename VectorType::ElementType>(
         ls.exec(), field.size(), zero<typename VectorType::ElementType>()
     );
     auto boundaryDiagMag = Vector<scalar>(ls.exec(), field.size(), 0.0);
     auto boundaryDiagMin = Vector<scalar>(ls.exec(), field.size(), 0.0);
-    auto [sumOffValues, bcMatrixValues, bcCellIdxs, boundaryDiagMagValues, boundaryDiagMinValues] =
-        views(sumOff, bcCoeffs.matrixValues, bcCoeffs.rhsIdxs, boundaryDiagMag, boundaryDiagMin);
+    auto [sumOffValues, boundaryDiagMagValues, boundaryDiagMinValues] =
+        views(sumOff, boundaryDiagMag, boundaryDiagMin);
 
+    // Sum off-diagonal magnitudes
     parallelFor(
         ls.exec(),
         {0, field.size()},
@@ -250,28 +250,30 @@ void applyMatrixRelaxation(
         "applyMatrixRelaxationSumOffDiag"
     );
 
+    // Accumulate boundary diagonal contributions
+    // bMatrix.sparsity.rowOffs[bcfacei] = owner cell index (NON-STANDARD CSR)
     parallelFor(
         ls.exec(),
-        {0, bcMatrixValues.size()},
+        {0, bMatrix.values.size()},
         NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bcCellIdxs[facei];
-            const auto magValue = cmptMaxValue(cmptMagValue(bcMatrixValues[facei]));
+            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs!
+            const auto magValue = cmptMaxValue(cmptMagValue(bMatrix.values[facei]));
             Kokkos::atomic_add(&boundaryDiagMagValues[celli], magValue);
-            Kokkos::atomic_add(&boundaryDiagMinValues[celli], cmptMinValue(bcMatrixValues[facei]));
+            Kokkos::atomic_add(&boundaryDiagMinValues[celli], cmptMinValue(bMatrix.values[facei]));
         },
         "applyMatrixRelaxationBoundaryDiag"
     );
 
+    // Apply relaxation to diagonal
     parallelFor(
         ls.exec(),
         {0, field.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto diagIdx = matrix.rowOffs[celli] + diagOffs[celli];
+            const auto diagIdx = rowOffs[celli] + diagOffs[celli];
             const auto diag = matrix.values[diagIdx];
             const auto diagWithBoundary =
                 diag + boundaryDiagMagValues[celli] * one<typename VectorType::ElementType>();
             const auto domMag = cmptMax(cmptMagValue(diagWithBoundary), sumOffValues[celli]);
-            // const auto dominantDiag = componentCopySign(domMag, diagWithBoundary);
             const auto relaxedDiag =
                 domMag * invAlpha
                 - boundaryDiagMinValues[celli] * one<typename VectorType::ElementType>();
@@ -301,27 +303,26 @@ void applyFieldRelaxation(
 }
 
 template<typename ValueType>
-void addBoundaryContributions(
-    const la::SparsityPattern& sp, la::LinearSystem<ValueType, localIdx>& ls
-)
+void addBoundaryContributions(la::LinearSystem<ValueType>& ls)
 {
-    auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
-            "boundaryCoefficients"
-        );
-    auto [matrix, rhs] = ls.view();
+    const auto matIt = ls.faceToMatrixAddress();
+    auto lsView = ls.view();
+    auto& matrix = lsView.matrix;
+    auto& rhs = lsView.rhs;
+    auto& bMatrix = lsView.boundaryMatrix;
+    auto& bRhs = lsView.boundaryRhs;
     auto& mtx = ls.matrix();
-    const auto [diagOffs, rowOffs] = views(sp.diagOffset(), mtx.rowOffs());
-    auto [bcMatVals, bcRhsVals, bcCellIdxs] =
-        views(bcCoeffs.matrixValues, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
+    const auto [diagOffs, rowOffs] = views(matIt->diagOffset(), mtx.rowOffs());
 
     parallelFor(
         ls.exec(),
-        {0, bcMatVals.size()},
+        {0, bMatrix.values.size()},
         NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bcCellIdxs[facei];
-            Kokkos::atomic_add(&matrix.values[rowOffs[celli] + diagOffs[celli]], bcMatVals[facei]);
-            Kokkos::atomic_sub(&rhs[celli], bcRhsVals[facei]);
+            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            Kokkos::atomic_add(
+                &matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]
+            );
+            Kokkos::atomic_sub(&rhs[celli], bRhs[facei]);
         },
         "addBoundaryContributions"
     );
@@ -330,20 +331,20 @@ void addBoundaryContributions(
 template<typename VectorType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    const la::SparsityPattern& sp,
-    la::LinearSystem<typename VectorType::ElementType, localIdx>& ls,
+    la::LinearSystem<typename VectorType::ElementType>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps,
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, localIdx>> ps,
     std::optional<scalar> eqnUrf,
     std::optional<scalar> fieldUrf
 )
 {
     exp.read(fvSchemes);
-    exp.assemble(t, dt, sp, ls, ps);
+    ls.reset();
+    exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
@@ -358,10 +359,10 @@ la::SolverStats iterativeSolveImpl(
 
     if (eqnUrf && *eqnUrf > 0.0 && *eqnUrf != 1.0)
     {
-        applyMatrixRelaxation(sp, ls, solution, *eqnUrf);
+        applyMatrixRelaxation(ls, solution, *eqnUrf);
     }
 
-    addBoundaryContributions<typename VectorType::ElementType>(sp, ls);
+    addBoundaryContributions<typename VectorType::ElementType>(ls);
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
@@ -381,7 +382,7 @@ la::SolverStats iterativeSolveImpl(
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> ps,
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, localIdx>> ps,
     std::optional<scalar> eqnUrf,
     std::optional<scalar> fieldUrf
 )
@@ -401,10 +402,10 @@ la::SolverStats iterativeSolveImpl(
 
     if (eqnUrf && *eqnUrf > 0.0 && *eqnUrf != 1.0)
     {
-        applyMatrixRelaxation(sparsity, ls, solution, *eqnUrf);
+        applyMatrixRelaxation(ls, solution, *eqnUrf);
     }
 
-    addBoundaryContributions<typename VectorType::ElementType>(sparsity, ls);
+    addBoundaryContributions<typename VectorType::ElementType>(ls);
 
     auto prev = Vector<typename VectorType::ElementType>(solution.internalVector());
     auto solver = la::Solver(solution.exec(), fvSolution);
@@ -436,7 +437,7 @@ la::SolverStats solve(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType>> p = {},
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, localIdx>> p = {},
     std::optional<scalar> eqnUrf = std::nullopt,
     std::optional<scalar> fieldUrf = std::nullopt
 )
@@ -454,7 +455,7 @@ la::SolverStats solve(
     {
         // integrate equations in time
         integrator.solve(exp, solution, t, dt);
-        return {.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0};
+        return la::SolverStats(-1, 0, 0, 0);
     }
     else
     {

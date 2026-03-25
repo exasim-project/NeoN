@@ -21,7 +21,7 @@
 namespace NeoN::dsl
 {
 
-template<typename VectorType, typename IndexType>
+template<typename VectorType, typename IndexType = localIdx>
 struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;

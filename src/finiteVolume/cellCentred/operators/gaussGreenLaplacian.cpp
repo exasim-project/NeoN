@@ -76,24 +76,25 @@ NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
 
 template<typename ValueType>
 void computeLaplacianImpl(
-    la::LinearSystem<ValueType, localIdx>& ls,
+    la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
-    const la::SparsityPattern& sparsityPattern,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
+
+    const auto matIt = ls.faceToMatrixAddress();
     const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
-        sparsityPattern.diagOffset(),
-        sparsityPattern.ownerOffset(),
-        sparsityPattern.neighbourOffset()
+        matIt->diagOffset(),
+        matIt->ownerOffset(),
+        matIt->neighbourOffset()
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = views(
@@ -102,7 +103,7 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
-    auto [values, colIdxs, rowOffs] = ls.matrix().view();
+    auto matView = ls.matrix().view();
     auto rhs = ls.rhs().view();
 
     parallelFor(
@@ -115,23 +116,27 @@ void computeLaplacianImpl(
             auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            auto rowNeiStart = rowOffs[nei];
-            auto rowOwnStart = rowOffs[own];
+            auto rowNeiStart = matView.sparsity.rowOffs[nei];
+            auto rowOwnStart = matView.sparsity.rowOffs[own];
 
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
             // scalar valueNei = (1 - weight) * flux;
-            values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
+            matView.values[rowNeiStart + neiOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], flux * one<ValueType>() * operatorScalingOwn
+                &matView.values[rowOwnStart + diagOffs[own]],
+                flux * one<ValueType>() * operatorScalingOwn
             );
 
             // upper triangular part
             // add owner contribution lower
-            values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
+            matView.values[rowOwnStart + ownOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingOwn;
             Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
+                &matView.values[rowNeiStart + diagOffs[nei]],
+                flux * one<ValueType>() * operatorScalingNei
             );
         },
         "computeLocalLaplacianCoefficients"
@@ -144,12 +149,8 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto& bcCoeffs =
-        ls.auxiliaryCoefficients().template get<la::BoundaryCoefficients<ValueType, localIdx>>(
-            "boundaryCoefficients"
-        );
-
-    auto [boundValues, rhsBoundValues] = views(bcCoeffs.matrixValues, bcCoeffs.rhsValues);
+    auto bValues = ls.boundaryMatrix().values().view();
+    auto bRhs = ls.boundaryRhs().view();
 
     parallelFor(
         exec,
@@ -159,19 +160,18 @@ void computeLaplacianImpl(
             auto flux = sGamma[facei] * magFaceArea[facei];
 
             auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
             ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                                * deltaCoeffs[facei] * one<ValueType>();
-            //   Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-            boundValues[bcfacei] -= valueMat;
+            // Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+            bValues[bcfacei] -= valueMat; // MINUS: addBoundaryContributions ADDs, Laplacian SUBs
 
             ValueType valueRhs = flux * operatorScalingOwn
                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-            //   Kokkos::atomic_sub(&rhs[own], valueRhs);
-            rhsBoundValues[bcfacei] += valueRhs;
+            // Kokkos::atomic_sub(&rhs[own], valueRhs);
+            bRhs[bcfacei] += valueRhs;
         },
         "computeInterfaceLaplacianCoefficients"
     );
@@ -179,7 +179,7 @@ void computeLaplacianImpl(
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
     template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME, localIdx>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const la::SparsityPattern&, const FaceNormalGradient<TYPENAME>&)
+        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
