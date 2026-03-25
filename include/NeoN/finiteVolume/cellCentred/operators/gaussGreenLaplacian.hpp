@@ -121,6 +121,8 @@ public:
         const dsl::Coeff operatorScaling
     ) override
     {
+        computeLaplacianProcBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
+        computeLaplacianBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
         computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
     };
 
