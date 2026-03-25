@@ -75,6 +75,9 @@ void computeUpwindInterpolationWeights(
     );
     auto nInternalFaces = src.mesh().nInternalFaces();
 
+    NF_ASSERT(flux.internalVector().size() == weights.size(), "different size");
+    NF_PING();
+
     parallelFor(
         exec,
         {0, weights.size()},
@@ -102,6 +105,7 @@ void computeUpwindInterpolationWeights(
         },
         "computeUpwindInterpolation"
     );
+    NF_PING();
 }
 
 #define NF_DECLARE_COMPUTE_IMP_UPW_INT(TYPENAME)                                                   \
