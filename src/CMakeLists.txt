@@ -40,6 +40,7 @@ target_sources(
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo.cpp"
+          "linearAlgebra/ginkgoDistributed.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/sparsityPattern.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
