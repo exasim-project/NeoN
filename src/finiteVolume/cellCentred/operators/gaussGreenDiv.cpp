@@ -208,7 +208,6 @@ void computeDivProcBoundImpl(
                 auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
 
                 Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-
                 bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();
 
                 auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
@@ -279,9 +278,8 @@ void computeDivBoundImpl(
                 auto valFrac2 = 1.0 - valFrac1;
 
                 auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-
                 Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-                bValues[bcfacei] = valueMat;
+                bValues[bcfacei] += valueMat;
 
                 auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                               + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
