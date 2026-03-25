@@ -23,6 +23,15 @@
 namespace NeoN::la::ginkgo
 {
 
+std::shared_ptr<const gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s);
+
+std::shared_ptr<gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s);
+
+template<typename InType>
+scalar retrieve(const InType& in);
+
 std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
