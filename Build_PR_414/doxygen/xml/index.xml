@@ -491,6 +491,8 @@
     <member refid="classNeoN_1_1dsl_1_1Expression_1aed0971c592bb814a258f3867f53b4ebd" kind="function"><name>assembleTemporalOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ae257aae822cbececca35f52299951bed" kind="function"><name>assemble</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1a878680e536a003d1d9c3a5bd00fb510a" kind="function"><name>assembleDistributed</name></member>
+    <member refid="classNeoN_1_1dsl_1_1Expression_1a993e364305b31444f7975ed422403d50" kind="function"><name>assembleDistributed</name></member>
+    <member refid="classNeoN_1_1dsl_1_1Expression_1afa381c47df1535f115b1baf8b3eda3b7" kind="function"><name>assembleDistributed</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1af285a2284b3bb160ebc34034fb9e7728" kind="function"><name>assemble</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ad1afa5ea6175ae657a09042c54070d15" kind="function"><name>addOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1a5016d348636ab0980a9f5f893039003d" kind="function"><name>addOperator</name></member>
@@ -1726,6 +1728,7 @@
   <compound refid="namespaceNeoN_1_1dsl_1_1detail" kind="namespace"><name>NeoN::dsl::detail</name>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1ad8976365db4098976daec1b06513b470" kind="function"><name>toVector</name></member>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1a3a9d50fc03775aa25cd5856b68774e45" kind="function"><name>iterativeSolveImpl</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1detail_1a03fb2dabaf76a76618c536264ecf5309" kind="function"><name>iterativeSolveDistImpl</name></member>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1ab8c0a600efdf6dbdaaf08fc691295016" kind="function"><name>iterativeSolveImpl</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1dsl_1_1exp" kind="namespace"><name>NeoN::dsl::exp</name>
@@ -1961,10 +1964,6 @@
   </compound>
   <compound refid="communicationPattern_8hpp" kind="file"><name>communicationPattern.hpp</name>
   </compound>
-  <compound refid="distributed_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
-  </compound>
-  <compound refid="linearAlgebra_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
-  </compound>
   <compound refid="coeff_8hpp" kind="file"><name>coeff.hpp</name>
   </compound>
   <compound refid="ddt_8hpp" kind="file"><name>ddt.hpp</name>
@@ -1976,10 +1975,6 @@
   <compound refid="implicit_8hpp" kind="file"><name>implicit.hpp</name>
   </compound>
   <compound refid="operator_8hpp" kind="file"><name>operator.hpp</name>
-  </compound>
-  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
-  </compound>
-  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
   </compound>
   <compound refid="spatialOperator_8hpp" kind="file"><name>spatialOperator.hpp</name>
   </compound>
@@ -1995,15 +1990,21 @@
   </compound>
   <compound refid="boundaryPatchMixin_8hpp" kind="file"><name>boundaryPatchMixin.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  </compound>
+  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
+  </compound>
   <compound refid="surface_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
   <compound refid="volume_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
-  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
-  </compound>
   <compound refid="surface_2empty_8hpp" kind="file"><name>empty.hpp</name>
   </compound>
   <compound refid="volume_2empty_8hpp" kind="file"><name>empty.hpp</name>
+  </compound>
+  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
+  </compound>
+  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
   <compound refid="surface_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
   </compound>
@@ -2016,12 +2017,6 @@
   <compound refid="surface_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
   </compound>
   <compound refid="volume_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
-  </compound>
-  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
-  </compound>
-  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
-  </compound>
-  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
   <compound refid="volumeBoundaryFactory_8hpp" kind="file"><name>volumeBoundaryFactory.hpp</name>
   </compound>
@@ -2078,9 +2073,17 @@
   </compound>
   <compound refid="linearSystem_8hpp" kind="file"><name>linearSystem.hpp</name>
   </compound>
+  <compound refid="distributed_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
+  </compound>
+  <compound refid="linearAlgebra_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
+  </compound>
   <compound refid="petsc_8hpp" kind="file"><name>petsc.hpp</name>
   </compound>
   <compound refid="petscSolverContext_8hpp" kind="file"><name>petscSolverContext.hpp</name>
+  </compound>
+  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
+  </compound>
+  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
   </compound>
   <compound refid="sparsityPattern_8hpp" kind="file"><name>sparsityPattern.hpp</name>
   </compound>

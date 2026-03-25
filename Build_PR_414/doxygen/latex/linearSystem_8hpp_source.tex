@@ -160,8 +160,8 @@
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00171}00171\ }
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00173}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aef3c05f05137458f70bd8f7ec1e6e36f}{00173}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aef3c05f05137458f70bd8f7ec1e6e36f}{communicate}}(\mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\&\ commPattern,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ boundaryMatrixMap)}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00174}00174\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00175}00175\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mpiEnv\ =\ commPattern.\mbox{\hyperlink{structNeoN_1_1CommunicationPattern_acf05199003d0c5ec901110c58adefd46}{env}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mpiEnv\ =\ commPattern.\mbox{\hyperlink{structNeoN_1_1CommunicationPattern_acf05199003d0c5ec901110c58adefd46}{env}};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ commRanks\ =\ mpiEnv.sizeRank();}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1.\ copy\ bValues\ which\ need\ to\ be\ communicated\ into\ sendBuffer}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ commSize\ =\ commPattern.\mbox{\hyperlink{structNeoN_1_1CommunicationPattern_a5da383216da50923b22402c03aacf46d}{sendCounts}}[mpiEnv.sizeRank()];}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ commBuffer\ =\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aecee4146f3204e7aea1bf58d919d90bb}{exec}}(),\ commSize);}
@@ -179,7 +179,7 @@
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set(0.0,\ copyMap,\ boundaryMatrix\_.values());}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00192}00192\ }
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ compute\ using\ scan}}
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sdispls\ =\ std::vector<int>(commSize,\ 0);}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sdispls\ =\ std::vector<int>(commRanks,\ 0);}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 1;\ i\ <\ sdispls.size();\ i++)}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ prev\ =\ sdispls[i\ -\/\ 1];}
