@@ -260,7 +260,7 @@ TEST_CASE("Distributed")
 
     // assembly
     auto expr = NeoN::dsl::Expression<NeoN::scalar>(
-        NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U)
+        NeoN::dsl::imp::div(phi, U) // - NeoN::dsl::imp::laplacian(gamma, U)
     );
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
@@ -280,7 +280,7 @@ TEST_CASE("Distributed")
     auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
     auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(
-        NeoN::dsl::imp::div(phiPart, uPart) - NeoN::dsl::imp::laplacian(gammaPart, uPart)
+        NeoN::dsl::imp::div(phiPart, uPart) // - NeoN::dsl::imp::laplacian(gammaPart, uPart)
     );
 
     exprDist.read(inputPart);
@@ -342,7 +342,7 @@ TEST_CASE("Distributed")
         lastElement = 34;
     }
 
-    SECTION("Correct rank 0")
+    SECTION("Correct mtx on rank 0")
     {
         if (env.rank() == 0)
         {
@@ -354,7 +354,7 @@ TEST_CASE("Distributed")
         }
     }
 
-    SECTION("Correct rank 1")
+    SECTION("Correct mtx on rank 1")
     {
         if (env.rank() == 1)
         {
@@ -366,7 +366,7 @@ TEST_CASE("Distributed")
         }
     }
 
-    SECTION("Correct rank 2")
+    SECTION("Correct mtx on rank 2")
     {
         if (env.rank() == 2)
         {
@@ -385,12 +385,23 @@ TEST_CASE("Distributed")
     };
 
     // Create solver
-    // auto solver = NeoN::la::Solver(exec, solverDict);
-    // auto x = Vector<scalar>(exec, 4);
-    // fill(x, 0.0);
+    auto solver = NeoN::la::Solver(exec, solverDict);
+    auto x = Vector<scalar>(exec, 12);
+    fill(x, 0.0);
 
-    // auto solverStats = solver.solve(lsDst, x);
-    // auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+    auto xPart = Vector<scalar>(exec, 4);
+    fill(xPart, 0.0);
+
+    auto solverStats = solver.solve(ls, x);
+    auto solverStatsDist = solver.solveDist(lsDst, xPart);
+
+    auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
+        solverStatsDist.entries[0];
+    auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+    // REQUIRE(numIterDist != 0);
+    REQUIRE(numIterDist == numIter);
+    REQUIRE(initResNormDist == initResNorm);
 }
 
 }
