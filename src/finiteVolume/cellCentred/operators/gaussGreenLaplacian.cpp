@@ -264,7 +264,6 @@ void computeLaplacianProcBoundImpl(
                 // ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                 //                    * deltaCoeffs[facei] * one<ValueType>();
                 auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-                std::cout << __FILE__ << ":" << __LINE__ << " valueMat " << valueMat << "\n";
                 Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
                 // bValues[bcfacei] += valueMat;
                 bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();

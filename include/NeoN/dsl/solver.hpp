@@ -24,6 +24,7 @@ namespace NeoN::dsl
 
 namespace detail
 {
+
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
@@ -58,6 +59,44 @@ la::SolverStats iterativeSolveImpl(
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
     return solver.solve(ls, solution.internalVector());
+}
+
+
+template<typename VectorType, typename IndexType>
+la::SolverStats iterativeSolveDistImpl(
+    Expression<typename VectorType::ElementType>& exp,
+    la::LinearSystem<
+        typename VectorType::ElementType,
+        la::CSRMatrix<typename VectorType::ElementType, IndexType>>& ls,
+    VectorType& solution,
+    scalar t,
+    scalar dt,
+    const Dictionary& fvSchemes,
+    const Dictionary& fvSolution,
+    CommunicationPattern commPattern,
+    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
+)
+{
+    exp.read(fvSchemes);
+    exp.assembleDistributed(ls, t, dt, commPattern, ps);
+
+    // TODO move that to expression explicit operation or
+    // into functor ?
+    // subtract the explicit source term from the rhs
+    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
+    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
+    parallelFor(
+        solution.exec(),
+        {0, rhs.size()},
+        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+    );
+
+    auto solver = la::Solver(solution.exec(), fvSolution);
+    fence(solution.exec());
+
+    // Do some sanity checks before trying to solve
+    NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
+    return solver.solveDist(ls, solution.internalVector());
 }
 
 template<typename VectorType, typename IndexType>
