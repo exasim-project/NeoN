@@ -90,7 +90,7 @@ public:
         const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field
     ) const
     {
-        return solverInstance_->solve(ls, field);
+        return solverInstance_->solveDist(ls, field);
     }
 
     SolverStats
