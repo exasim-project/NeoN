@@ -428,8 +428,9 @@ SolverStats GinkgoSolver::solve(
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
+    return {solve_impl_dist(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
+
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
 template<typename IndexType>
@@ -486,6 +487,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
 //     // return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
 //     return nullptr;
 // }
+//
 
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>

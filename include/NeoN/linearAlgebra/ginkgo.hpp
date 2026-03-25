@@ -98,6 +98,10 @@ public:
 
     static std::string schema() { return "none"; }
 
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
+
     virtual SolverStats solve(
         const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
