@@ -144,7 +144,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
-        {exec, {1, 1}},               //  isLocal
+        {exec, {0, 0}},               //  isLocal
         {0, 1, 2, 3, 4},              // offset
         {-1, -1, -1, -1, -1}          // neighbourRank
     );
@@ -262,7 +262,7 @@ UnstructuredMesh create1DUniformMesh(
         {exec, {1.0, 1.0}},
         deltaCoeffs, // deltaCoeffs --> mag(1 / delta)
         // FIXME
-        {exec, {1, 1}}, // isLocal
+        {exec, {0, 0}}, // isProc
         {0, 1, 2},      // offset
         {-1, -1, -1}    // neighbourRank
     );
