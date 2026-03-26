@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 from . import exp
+from . import imp
 from .solve import solve
 from .expression import Expression
 
-__all__ = ["exp", "solve", "Expression"]
+__all__ = ["exp", "imp", "solve", "Expression"]

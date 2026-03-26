@@ -203,6 +203,43 @@ def test_copy_from_cpu_to_gpu():
         break
 
 
+def test_copy_arrays_ncomp3_roundtrip():
+    """copy_arrays with ncomp=3 must preserve spatially-varying per-component data.
+
+    Regression test: copy_arrays previously corrupted ncomp>1 data because
+    the C-ordered JAX array layout was not converted to AMReX's Fortran order
+    for the component dimension.
+    """
+    import jax.numpy as jnp
+
+    N = 8
+    box = blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1])
+    ba = blockamr.BoxArray(box)
+    ba.max_size(N)
+    dm = blockamr.DistributionMapping(ba)
+    mf = blockamr.MultiFab(ba, dm, 3, 0)
+
+    # Create spatially-varying data: comp0 = x-index, comp1 = y-index, comp2 = z-index
+    ix = jnp.arange(N, dtype=jnp.float64)
+    comp0 = jnp.broadcast_to(ix[:, None, None], (N, N, N))
+    comp1 = jnp.broadcast_to(ix[None, :, None], (N, N, N))
+    comp2 = jnp.broadcast_to(ix[None, None, :], (N, N, N))
+    vals = jnp.stack([comp0, comp1, comp2], axis=-1)  # (N, N, N, 3)
+
+    mf.copy_arrays([vals])
+
+    # Read back and verify each component independently
+    arr = mf.arrays()[0]  # (N, N, N, 3)
+    for i in range(N):
+        for j in range(N):
+            for k in range(N):
+                got = [float(arr[i, j, k, c]) for c in range(3)]
+                expected = [float(i), float(j), float(k)]
+                assert got == expected, (
+                    f"Cell ({i},{j},{k}): got {got}, expected {expected}"
+                )
+
+
 def test_set_get_executor():
     """Module-level executor config should be settable and queryable."""
     assert blockamr.get_executor() == "cpu"

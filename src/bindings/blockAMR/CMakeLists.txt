@@ -21,7 +21,8 @@ nanobind_add_module(
   plotfile.cpp
   amrcore.cpp
   tagbox.cpp
-  fillpatch.cpp)
+  fillpatch.cpp
+  linop.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
@@ -42,6 +43,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     amrcore.cpp
     tagbox.cpp
     fillpatch.cpp
+    linop.cpp
     PROPERTIES LANGUAGE CUDA)
 endif()
 

@@ -55,35 +55,27 @@ def init_gaussian(mf, geom, center=(0.5, 0.75), sigma=0.1):
 
 
 def tag_gradient(phi, threshold=1.5):
-    """Return a tagging function based on gradient of phi."""
+    """Return a tagging function based on gradient of phi (GPU-resident)."""
 
     def _tag(lev, tags, time, ngrow):
         if phi.mf[lev] is None:
             return
-        geom = phi.mesh.geom(lev)
-        dx = geom.cell_size()
-        patch_data = {}
+        dx = phi.mesh.geom(lev).cell_size()
+        ng = phi.mf[lev].n_grow()
         for mfi in blockamr.MFIterator(phi.mf[lev]):
-            lo = tuple(mfi.valid_box().small_end())
-            patch_data[lo] = phi.mf[lev].copy_to_host(mfi)
-        for tbi in blockamr.TagBoxIterator(tags):
-            bx = tbi.valid_box()
-            sml = bx.small_end()
-            big = bx.big_end()
-            arr = patch_data.get(tuple(sml))
-            if arr is None:
-                continue
-            data = arr[:, :, :, 0]
-            nx = big[0] - sml[0] + 1
-            ny = big[1] - sml[1] + 1
-            gx = np.zeros_like(data)
-            gy = np.zeros_like(data)
-            if nx > 2:
-                gx[1:-1, :, :] = np.abs(data[2:, :, :] - data[:-2, :, :]) / (2 * dx[0])
-            if ny > 2:
-                gy[:, 1:-1, :] = np.abs(data[:, 2:, :] - data[:, :-2, :]) / (2 * dx[1])
-            mask = ((gx + gy) > threshold).astype(np.int32)
-            tbi.set_tags(mask)
+            phi_4d = phi.mf[lev].array(mfi)
+            data = phi_4d[:, :, :, 0]
+            # Compute gradient on valid region (set_tags expects valid-sized mask)
+            bx = mfi.valid_box()
+            lo = bx.small_end()
+            hi = bx.big_end()
+            vn = [hi[d] - lo[d] + 1 for d in range(3)]
+            gx = jnp.abs(data[ng+1:ng+1+vn[0], ng:ng+vn[1], ng:ng+vn[2]]
+                         - data[ng-1:ng-1+vn[0], ng:ng+vn[1], ng:ng+vn[2]]) / (2 * dx[0])
+            gy = jnp.abs(data[ng:ng+vn[0], ng+1:ng+1+vn[1], ng:ng+vn[2]]
+                         - data[ng:ng+vn[0], ng-1:ng-1+vn[1], ng:ng+vn[2]]) / (2 * dx[1])
+            mask = ((gx + gy) > threshold).astype(jnp.int32)
+            tags.set_tags(mfi, mask)
 
     return _tag
 

@@ -53,5 +53,12 @@ void registerGeometry(nb::module_& m)
             [](const Geometry& g) {
                 return std::array<double, 3> {g.ProbHi(0), g.ProbHi(1), g.ProbHi(2)};
             }
+        )
+        .def("domain", [](const Geometry& g) { return g.Domain(); })
+        .def(
+            "is_periodic",
+            [](const Geometry& g) {
+                return std::array<int, 3> {g.isPeriodic(0), g.isPeriodic(1), g.isPeriodic(2)};
+            }
         );
 }
