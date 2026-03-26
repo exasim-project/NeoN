@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="structa" kind="struct"><name>a</name>
+  </compound>
   <compound refid="classNeoN_1_1AllocatorContext" kind="class"><name>NeoN::AllocatorContext</name>
     <member refid="classNeoN_1_1AllocatorContext_1af5224a9bdc5ea94016a1f47530e1fcb3" kind="variable"><name>strategy</name></member>
     <member refid="classNeoN_1_1AllocatorContext_1ade2fc5ee44d0e33a7098fe6390b8ffab" kind="function"><name>setStrategy</name></member>
@@ -174,6 +176,8 @@
     <member refid="classNeoN_1_1BoundaryMesh_1a14dce4012cf10f7648546cbeb9ac297b" kind="function"><name>isLocal</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a77ae1a4f9389d89feaab5e6fa13b88d5" kind="function"><name>isLocal</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1a69e62a927b8028e6d77d09a6dca8475c" kind="function"><name>neighbourRank</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1ae619241c209772b92364edbd2d553eee" kind="function"><name>computeCommIdx</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1a50762503e0d023b35c3970738660e923" kind="function"><name>computeBoundaryMatrixMapVector</name></member>
   </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kind="class"><name>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1adbf45e525a5c07ad1b0d9f6707806011" kind="variable"><name>patchID_</name></member>
@@ -291,6 +295,7 @@
   <compound refid="structNeoN_1_1CommunicationPattern" kind="struct"><name>NeoN::CommunicationPattern</name>
     <member refid="structNeoN_1_1CommunicationPattern_1a489efcd9ddfdf298070fbf3881f58498" kind="variable"><name>commIdx</name></member>
     <member refid="structNeoN_1_1CommunicationPattern_1a5da383216da50923b22402c03aacf46d" kind="variable"><name>sendCounts</name></member>
+    <member refid="structNeoN_1_1CommunicationPattern_1aba8dc4dfb133a8cb7820f3a002e0678b" kind="variable"><name>boundaryMapVector</name></member>
     <member refid="structNeoN_1_1CommunicationPattern_1acf05199003d0c5ec901110c58adefd46" kind="variable"><name>env</name></member>
   </compound>
   <compound refid="classNeoN_1_1CPUExecutor" kind="class"><name>NeoN::CPUExecutor</name>
@@ -490,9 +495,9 @@
     <member refid="classNeoN_1_1dsl_1_1Expression_1ad6124c692980bcb287f0deab83287a4e" kind="function"><name>assembleSpatialOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1aed0971c592bb814a258f3867f53b4ebd" kind="function"><name>assembleTemporalOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ae257aae822cbececca35f52299951bed" kind="function"><name>assemble</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1a878680e536a003d1d9c3a5bd00fb510a" kind="function"><name>assembleDistributed</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1a993e364305b31444f7975ed422403d50" kind="function"><name>assembleDistributed</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1afa381c47df1535f115b1baf8b3eda3b7" kind="function"><name>assembleDistributed</name></member>
+    <member refid="classNeoN_1_1dsl_1_1Expression_1a4eb11192f35d771ef68ff4e4b15430ad" kind="function"><name>assembleDistributed</name></member>
+    <member refid="classNeoN_1_1dsl_1_1Expression_1add1a8b28f06d4c0a5aced3c19d1bc98e" kind="function"><name>assembleDistributed</name></member>
+    <member refid="classNeoN_1_1dsl_1_1Expression_1a89d361dd1588e9790c4d60e9b2df2c49" kind="function"><name>assembleDistributed</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1af285a2284b3bb160ebc34034fb9e7728" kind="function"><name>assemble</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ad1afa5ea6175ae657a09042c54070d15" kind="function"><name>addOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1a5016d348636ab0980a9f5f893039003d" kind="function"><name>addOperator</name></member>
@@ -830,7 +835,7 @@
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a5cf0a45ff96a014cb4ba9fd5977fd9b8" kind="function"><name>boundaryRhs</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a27b4ae43b97769ef71b07cee91440fcb" kind="function"><name>boundaryRhs</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a9ed8e715ef76dfb331e1157b5bbf8e6d" kind="function"><name>copyToHost</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1aef3c05f05137458f70bd8f7ec1e6e36f" kind="function"><name>communicate</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1aa2dcc93b0bf0989cbc16c610e1031d3f" kind="function"><name>communicate</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a507a4199c6687ea60428b76f1ea24712" kind="function"><name>reset</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1ac8b2bce4fa0729992924b0a8daac523e" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1afc38b100f204f9c5215adc0e585c7e75" kind="function"><name>view</name></member>
@@ -1728,7 +1733,7 @@
   <compound refid="namespaceNeoN_1_1dsl_1_1detail" kind="namespace"><name>NeoN::dsl::detail</name>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1ad8976365db4098976daec1b06513b470" kind="function"><name>toVector</name></member>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1a3a9d50fc03775aa25cd5856b68774e45" kind="function"><name>iterativeSolveImpl</name></member>
-    <member refid="namespaceNeoN_1_1dsl_1_1detail_1a03fb2dabaf76a76618c536264ecf5309" kind="function"><name>iterativeSolveDistImpl</name></member>
+    <member refid="namespaceNeoN_1_1dsl_1_1detail_1ad0803a4a871454c4922c15d7bfe26bd3" kind="function"><name>iterativeSolveDistImpl</name></member>
     <member refid="namespaceNeoN_1_1dsl_1_1detail_1ab8c0a600efdf6dbdaaf08fc691295016" kind="function"><name>iterativeSolveImpl</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1dsl_1_1exp" kind="namespace"><name>NeoN::dsl::exp</name>
@@ -1964,6 +1969,10 @@
   </compound>
   <compound refid="communicationPattern_8hpp" kind="file"><name>communicationPattern.hpp</name>
   </compound>
+  <compound refid="distributed_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
+  </compound>
+  <compound refid="linearAlgebra_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
+  </compound>
   <compound refid="coeff_8hpp" kind="file"><name>coeff.hpp</name>
   </compound>
   <compound refid="ddt_8hpp" kind="file"><name>ddt.hpp</name>
@@ -1975,6 +1984,10 @@
   <compound refid="implicit_8hpp" kind="file"><name>implicit.hpp</name>
   </compound>
   <compound refid="operator_8hpp" kind="file"><name>operator.hpp</name>
+  </compound>
+  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
+  </compound>
+  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
   </compound>
   <compound refid="spatialOperator_8hpp" kind="file"><name>spatialOperator.hpp</name>
   </compound>
@@ -1990,21 +2003,15 @@
   </compound>
   <compound refid="boundaryPatchMixin_8hpp" kind="file"><name>boundaryPatchMixin.hpp</name>
   </compound>
-  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
-  </compound>
-  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
-  </compound>
   <compound refid="surface_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
   <compound refid="volume_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  </compound>
   <compound refid="surface_2empty_8hpp" kind="file"><name>empty.hpp</name>
   </compound>
   <compound refid="volume_2empty_8hpp" kind="file"><name>empty.hpp</name>
-  </compound>
-  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
-  </compound>
-  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
   <compound refid="surface_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
   </compound>
@@ -2017,6 +2024,12 @@
   <compound refid="surface_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
   </compound>
   <compound refid="volume_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
+  </compound>
+  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
+  </compound>
+  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
+  </compound>
+  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
   <compound refid="volumeBoundaryFactory_8hpp" kind="file"><name>volumeBoundaryFactory.hpp</name>
   </compound>
@@ -2073,17 +2086,9 @@
   </compound>
   <compound refid="linearSystem_8hpp" kind="file"><name>linearSystem.hpp</name>
   </compound>
-  <compound refid="distributed_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
-  </compound>
-  <compound refid="linearAlgebra_2matrix_8hpp" kind="file"><name>matrix.hpp</name>
-  </compound>
   <compound refid="petsc_8hpp" kind="file"><name>petsc.hpp</name>
   </compound>
   <compound refid="petscSolverContext_8hpp" kind="file"><name>petscSolverContext.hpp</name>
-  </compound>
-  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
-  </compound>
-  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
   </compound>
   <compound refid="sparsityPattern_8hpp" kind="file"><name>sparsityPattern.hpp</name>
   </compound>
