@@ -70,7 +70,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00090}00090\ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{auto}\ view\ =\ ::sundials::kokkos::GetVec<SKVectorType>(vector)-\/>View();}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keyword}{auto}\ fieldView\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00093}00093\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00093}00093\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ field.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ field.\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}(),}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ localIdx\ i)\ \{\ view(i)\ =\ fieldView[i];\ \},}
@@ -109,7 +109,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00144}00144\ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00145}00145\ \ \ \ \ \textcolor{keyword}{auto}\ view\ =\ ::sundials::kokkos::GetVec<SKVectorType>(vector)-\/>View();}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00146}00146\ \ \ \ \ ValueType*\ fieldData\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{data}}();}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00147}00147\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_acb7fdfbc6739e8f91ebda00a82184e47}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00147}00147\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ field.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ field.\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}(),}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ localIdx\ i)\ \{\ fieldData[i]\ =\ view(i);\ \},}
@@ -159,8 +159,8 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00214}00214\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00215}00215\ \ \ \ \ \textcolor{keyword}{auto}\ size\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(N\_VGetLength(y));}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{comment}{//\ Copy\ initial\ value\ from\ y\ to\ source.}}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_af4f75aa67931b23e7662e6ff3af4b984}{source}}\ =\ pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a53bad3c6fc8d10ee40249fd550b091bd}{explicitOperation}}(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad17c6007292ab849a306b88cbf64a5da}{exec}}());}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}\ =\ pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad7581ac19b360ac79225710d2a38005a}{exec}}());}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00219}00219\ \ \ \ \ NeoN::sundials::fieldToSunNVector(source,\ ydot);\ \textcolor{comment}{//\ assign\ rhs\ to\ ydot.}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00220}00220\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00221}00221\ \}}

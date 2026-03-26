@@ -5,6 +5,6 @@ var searchData=
   ['field_5f_2',['field_',['../classNeoN_1_1dsl_1_1OperatorMixin.html#a0de3b4d1a53e4d2f2da658917d6addbf',1,'NeoN::dsl::OperatorMixin::field_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#afef01a21b9579a76855ce85e318e2cab',1,'NeoN::finiteVolume::cellCentred::DomainMixin::field_']]],
   ['fieldcollectionname_3',['fieldCollectionName',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin.html#a08e0e8c5a92c42724988f72bb7e6cb42',1,'NeoN::finiteVolume::cellCentred::FieldDatabaseMixin']]],
   ['fields_4',['fields',['../structNeoN_1_1dsl_1_1detail_1_1RelaxationCache.html#a3fb663c6ba9abcd7f48063e2326bd79c',1,'NeoN::dsl::detail::RelaxationCache']]],
-  ['finalresnorm_5',['finalResNorm',['../structNeoN_1_1la_1_1SolverStats.html#a3127eecae195d0f3d755a5fcda45b3df',1,'NeoN::la::SolverStats']]],
+  ['finalresnorm_5',['finalResNorm',['../structNeoN_1_1la_1_1SolverStatsEntry.html#a026a040331e54ab553c8f44fc3357b55',1,'NeoN::la::SolverStatsEntry']]],
   ['fixesvalue_6',['fixesValue',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes.html#a6ca8948d47e0dfa00ff58b533d830b2c',1,'NeoN::finiteVolume::cellCentred::BoundaryAttributes']]]
 ];
