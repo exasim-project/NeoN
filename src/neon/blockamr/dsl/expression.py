@@ -17,6 +17,15 @@ class Expression:
         self.temporal_ops = []
         self.spatial_ops = []
 
+    @property
+    def required_ngrow(self):
+        """Minimum ghost-cell count required by the widest stencil."""
+        return max(
+            (getattr(getattr(op, 'scheme', None), 'stencil_width', 1)
+             for op in self.spatial_ops),
+            default=1,
+        )
+
     def __add__(self, other):
         if isinstance(other, Expression):
             result = Expression()

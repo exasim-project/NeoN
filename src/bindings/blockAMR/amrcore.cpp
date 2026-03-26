@@ -89,6 +89,17 @@ void registerAmrCore(nb::module_& m)
             nb::arg("ratio")
         )
         .def(
+            "set_ref_ratio",
+            [](AmrInfo& ai, int lev, const IntVect& r)
+            {
+                if (lev >= static_cast<int>(ai.ref_ratio.size()))
+                    ai.ref_ratio.resize(lev + 1, IntVect(2));
+                ai.ref_ratio[lev] = r;
+            },
+            nb::arg("lev"),
+            nb::arg("ratio")
+        )
+        .def(
             "set_max_grid_size",
             [](AmrInfo& ai, int lev, int s)
             {

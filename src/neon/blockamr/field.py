@@ -2,7 +2,34 @@
 #
 # SPDX-License-Identifier: MIT
 
+from typing import NamedTuple
+
 import neon.blockamr as blockamr
+
+
+class ContiguousFabData(NamedTuple):
+    """Contiguous MultiFab data with per-box metadata.
+
+    Wraps a single-chunk MultiFab as one flat JAX array plus metadata
+    describing where each FAB lives in the buffer.
+
+    - values: 1D JAX array covering all FABs (zero-copy view into MultiFab)
+    - offsets: JAX int array, start index of each FAB in values
+    - shapes: tuple of (nx, ny, nz, nc) per FAB (static, not traced by JAX)
+    """
+    values: object     # jnp.ndarray, 1D
+    offsets: object    # jnp.ndarray, (n_boxes,)
+    shapes: tuple      # ((nx, ny, nz, nc), ...) — JAX pytree aux data
+
+
+def contiguous_fab_data(mf):
+    """Build ContiguousFabData from a single-chunk MultiFab."""
+    import jax.numpy as jnp
+    values = mf.contiguous_array()
+    meta = mf.fab_metadata()
+    offsets = jnp.array([m[0] for m in meta], dtype=jnp.int64)
+    shapes = tuple((m[1], m[2], m[3], m[4]) for m in meta)
+    return ContiguousFabData(values, offsets, shapes)
 
 
 class PatchData:

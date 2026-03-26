@@ -21,4 +21,5 @@ NB_MODULE(_blockamr, m)
     registerTagBox(m);
     registerFillPatch(m);
     registerAmrCore(m);
+    registerLinOp(m);
 }

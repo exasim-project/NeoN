@@ -74,50 +74,70 @@ void registerTagBox(nb::module_& m)
         )
         .def(
             "set_tags",
-            [](TagBoxIterator& self, nb::ndarray<nb::numpy, const int, nb::ndim<3>> mask)
+            [](TagBoxIterator& self, nb::ndarray<nb::ro> mask)
             {
-                // mask is a numpy bool/int array (nx, ny, nz) — nonzero means TAG_SET
-                auto& tba = *self.tba;
-                auto& tb = tba[*self.mfi];
+                // mask is an int array (nx, ny, nz) — nonzero means TAG_SET
+                // Accepts both host (numpy) and device (JAX) arrays.
+                auto& tb = (*self.tba)[*self.mfi];
                 const Box& vbx = self.mfi->validbox();
                 auto tag4 = tb.array();
                 const auto lo = amrex::lbound(vbx);
                 const auto hi = amrex::ubound(vbx);
-                const int* mdata = static_cast<const int*>(mask.data());
                 int nx = hi.x - lo.x + 1;
                 int ny = hi.y - lo.y + 1;
-
-                // Copy mask to device, then use ParallelFor to tag
                 const Long npts = vbx.numPts();
-                char* tagBuf = static_cast<char*>(The_Arena()->alloc(npts * sizeof(char)));
 
-                // Convert int mask → char tag on host, then copy to device
-                char* hostBuf = new char[npts];
-                for (Long n = 0; n < npts; ++n)
-                    hostBuf[n] = (mdata[n] != 0) ? TagBox::SET : TagBox::CLEAR;
+                bool srcOnDevice = (mask.device_type() != nb::device::cpu::value);
 
-                Gpu::htod_memcpy_async(tagBuf, hostBuf, npts * sizeof(char));
-                Gpu::streamSynchronize();
-
-                const char* src = tagBuf;
-                amrex::ParallelFor(
-                    vbx,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k)
-                    {
-                        int li = i - lo.x;
-                        int lj = j - lo.y;
-                        int lk = k - lo.z;
-                        Long idx = li + (Long)lj * nx + (Long)lk * nx * ny;
-                        if (src[idx] == TagBox::SET)
+                if (srcOnDevice)
+                {
+                    // Source is on GPU — read directly, no host copy
+                    const int* mdata = static_cast<const int*>(mask.data());
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k)
                         {
-                            tag4(i, j, k) = TagBox::SET;
+                            int li = i - lo.x;
+                            int lj = j - lo.y;
+                            int lk = k - lo.z;
+                            Long idx = li + (Long)lj * nx + (Long)lk * nx * ny;
+                            if (mdata[idx] != 0)
+                                tag4(i, j, k) = TagBox::SET;
                         }
-                    }
-                );
-                Gpu::streamSynchronize();
+                    );
+                    Gpu::streamSynchronize();
+                }
+                else
+                {
+                    // Source is on host — convert int→char, copy to device
+                    const int* mdata = static_cast<const int*>(mask.data());
+                    char* tagBuf =
+                        static_cast<char*>(The_Arena()->alloc(npts * sizeof(char)));
+                    char* hostBuf = new char[npts];
+                    for (Long n = 0; n < npts; ++n)
+                        hostBuf[n] = (mdata[n] != 0) ? TagBox::SET : TagBox::CLEAR;
 
-                The_Arena()->free(tagBuf);
-                delete[] hostBuf;
+                    Gpu::htod_memcpy_async(tagBuf, hostBuf, npts * sizeof(char));
+                    Gpu::streamSynchronize();
+
+                    const char* src = tagBuf;
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k)
+                        {
+                            int li = i - lo.x;
+                            int lj = j - lo.y;
+                            int lk = k - lo.z;
+                            Long idx = li + (Long)lj * nx + (Long)lk * nx * ny;
+                            if (src[idx] == TagBox::SET)
+                                tag4(i, j, k) = TagBox::SET;
+                        }
+                    );
+                    Gpu::streamSynchronize();
+
+                    The_Arena()->free(tagBuf);
+                    delete[] hostBuf;
+                }
             },
             nb::arg("mask")
         );
@@ -128,5 +148,87 @@ void registerTagBox(nb::module_& m)
             [](TagBoxArray& tba, const MFIter& mfi) -> TagBox& { return tba[mfi]; },
             nb::arg("mfi"),
             nb::rv_policy::reference_internal
+        )
+        .def(
+            "set_tags",
+            [](TagBoxArray& tba, nb::object mfi_obj, nb::ndarray<nb::ro> mask)
+            {
+                // Extract amrex::MFIter from the Python MFIterator via .get()
+                auto& mfi_inner = nb::cast<MFIter&>(mfi_obj.attr("get")());
+                auto& tb = tba[mfi_inner];
+                const Box& vbx = mfi_inner.validbox();
+                auto tag4 = tb.array();
+                const auto lo = amrex::lbound(vbx);
+                const auto hi = amrex::ubound(vbx);
+                int nx = hi.x - lo.x + 1;
+                int ny = hi.y - lo.y + 1;
+                int nz = hi.z - lo.z + 1;
+                const Long npts = vbx.numPts();
+
+                // Detect memory layout: Fortran (col-major) vs C (row-major)
+                bool isFortran = false;
+                if (mask.ndim() >= 2)
+                    isFortran = (mask.stride(0) <= mask.stride(mask.ndim() - 1));
+
+                bool srcOnDevice = (mask.device_type() != nb::device::cpu::value);
+
+                if (srcOnDevice)
+                {
+                    const int* mdata = static_cast<const int*>(mask.data());
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k)
+                        {
+                            int li = i - lo.x;
+                            int lj = j - lo.y;
+                            int lk = k - lo.z;
+                            Long idx = isFortran
+                                ? li + (Long)lj * nx + (Long)lk * nx * ny
+                                : (Long)li * ny * nz + (Long)lj * nz + lk;
+                            if (mdata[idx] != 0)
+                                tag4(i, j, k) = TagBox::SET;
+                        }
+                    );
+                    Gpu::streamSynchronize();
+                }
+                else
+                {
+                    const int* mdata = static_cast<const int*>(mask.data());
+                    char* tagBuf =
+                        static_cast<char*>(The_Arena()->alloc(npts * sizeof(char)));
+                    char* hostBuf = new char[npts];
+                    for (int li = 0; li < nx; ++li)
+                        for (int lj = 0; lj < ny; ++lj)
+                            for (int lk = 0; lk < nz; ++lk)
+                            {
+                                Long src_idx = isFortran
+                                    ? li + (Long)lj * nx + (Long)lk * nx * ny
+                                    : (Long)li * ny * nz + (Long)lj * nz + lk;
+                                Long dst_idx = li + (Long)lj * nx + (Long)lk * nx * ny;
+                                hostBuf[dst_idx] = (mdata[src_idx] != 0)
+                                    ? TagBox::SET : TagBox::CLEAR;
+                            }
+                    Gpu::htod_memcpy_async(tagBuf, hostBuf, npts * sizeof(char));
+                    Gpu::streamSynchronize();
+                    const char* src = tagBuf;
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k)
+                        {
+                            int li = i - lo.x;
+                            int lj = j - lo.y;
+                            int lk = k - lo.z;
+                            Long idx = li + (Long)lj * nx + (Long)lk * nx * ny;
+                            if (src[idx] == TagBox::SET)
+                                tag4(i, j, k) = TagBox::SET;
+                        }
+                    );
+                    Gpu::streamSynchronize();
+                    The_Arena()->free(tagBuf);
+                    delete[] hostBuf;
+                }
+            },
+            nb::arg("mfi"),
+            nb::arg("mask")
         );
 }

@@ -40,3 +40,21 @@ class FillPatchSingleLevel:
     def __call__(self, mesh, field, lev, time, target_mf=None):
         mf = target_mf or field.mf[lev]
         mf.fill_boundary(mesh.geom(lev))
+
+
+class FillPatchWithBC:
+    """Fill patch with explicit boundary conditions (non-periodic).
+
+    Performs inter-box ghost exchange via fill_boundary, then fills
+    domain-boundary ghosts according to the supplied BoundaryCondition.
+    """
+
+    def __init__(self, bc):
+        from .bc import fill_ghost_cells
+        self._bc = bc
+        self._fill = fill_ghost_cells
+
+    def __call__(self, mesh, field, lev, time, target_mf=None):
+        mf = target_mf or field.mf[lev]
+        mf.fill_boundary(mesh.geom(lev))
+        self._fill(mf, mesh.geom(lev), self._bc)
