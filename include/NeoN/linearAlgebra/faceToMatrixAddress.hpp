@@ -51,8 +51,11 @@ class FaceToMatrixAddress
 
     View<uint8_t> diagOffsetV_;
 
-    // the common sparsity pattern
+    // the common local sparsity pattern
     std::shared_ptr<const SparsityPattern<IndexType>> sp_;
+
+    // the common non-local sparsity pattern
+    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSp_;
 
     // the common boundary sparsity pattern
     std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
@@ -72,6 +75,7 @@ public:
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
         std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+        std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSparsityPattern,
         std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
     );
 
@@ -81,6 +85,11 @@ public:
     FaceToMatrixAddress copyToHost() const;
 
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
+
+    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSparsityPattern() const
+    {
+        return nonLocalSp_;
+    }
 
     std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const
     {
@@ -94,6 +103,9 @@ public:
 
     /*@brief return the number of non-zeros in local matrix */
     localIdx localNonZeros() const { return sp_->nnz(); };
+
+    /*@brief return the number of non-zeros in local matrix */
+    localIdx nonLocalNonZeros() const { return nonLocalSp_->nnz(); };
 
     /*@brief return the number of rows in boundary matrix */
     localIdx boundaryRows() const { return bsp_->rows(); };

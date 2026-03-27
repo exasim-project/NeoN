@@ -21,13 +21,15 @@ BoundaryMesh::BoundaryMesh(
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
-    labelVector isLocal,
     std::vector<localIdx> offset,
+    localIdx procBoundaryPatches,
     std::vector<localIdx> neighbourRank
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
       delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
-      isLocal_(isLocal), neighbourRank_(neighbourRank) {};
+      procBoundaryPatches_(procBoundaryPatches),
+      // FIXME
+      procBoundaryFaces_(0), neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
@@ -110,53 +112,25 @@ View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
-const labelVector& BoundaryMesh::isLocal() const { return isLocal_; }
-
-labelVector& BoundaryMesh::isLocal() { return isLocal_; }
+localIdx BoundaryMesh::procBoundaryPatches() const { return procBoundaryPatches_; }
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 
 // FIXME
-const std::vector<localIdx> BoundaryMesh::computeCommIdx() const
+std::vector<localIdx> computeBoundaryMatrixMapVector()
 {
-
-    auto isLocalHost = isLocal_.copyToHost();
-    auto isLocalHostV = isLocalHost.view();
+    // auto isLocalHost = isLocal_.copyToHost();
+    // auto isLocalHostV = isLocalHost.view();
     auto ret = std::vector<localIdx>();
-    ret.reserve(isLocalHost.size());
+    // ret.reserve(isLocalHost.size());
 
-    std::cout << __FILE__ << ":" << __LINE__ << "isLocalHost.size()" << isLocalHost.size() << "\n";
-
-    for (int i = 0; i < isLocalHost.size(); i++)
-    {
-        if (isLocalHostV[i] != 0)
-        {
-            ret.push_back(i);
-        }
-    }
-
-    return ret;
-}
-
-// FIXME
-const std::vector<localIdx> BoundaryMesh::computeBoundaryMatrixMapVector(
-
-) const
-{
-
-
-    auto isLocalHost = isLocal_.copyToHost();
-    auto isLocalHostV = isLocalHost.view();
-    auto ret = std::vector<localIdx>();
-    ret.reserve(isLocalHost.size());
-
-    for (int i = 0; i < isLocalHost.size(); i++)
-    {
-        if (isLocalHostV[i] != 0)
-        {
-            ret.push_back(i);
-        }
-    }
+    // for (int i = 0; i < isLocalHost.size(); i++)
+    // {
+    //     if (isLocalHostV[i] != 0)
+    //     {
+    //         ret.push_back(i);
+    //     }
+    // }
 
     return ret;
 }

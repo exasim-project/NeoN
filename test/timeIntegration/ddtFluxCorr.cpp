@@ -77,11 +77,11 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // Helper: expected values (host-side)
         auto expectedFrom = [&](const SurfScalar& flux0Field)
         {
-            std::vector<Scalar> e(static_cast<size_t>(mesh.nFaces()), 0.0);
+            std::vector<Scalar> e(static_cast<size_t>(mesh.nTotalFaces()), 0.0);
             auto flux0FieldH = flux0Field.internalVector().copyToHost();
             auto flux0FieldV = flux0FieldH.view();
 
-            for (auto i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nTotalFaces(); ++i)
             {
                 const Scalar d = (sfV[i] & uf0V[i]);
                 const auto tfluxCorr = (flux0FieldV[i] - d);
@@ -102,7 +102,7 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
 
             NeoN::parallelFor(
                 exec,
-                {size_t(0), mesh.nFaces()},
+                {size_t(0), mesh.nTotalFaces()},
                 NEON_LAMBDA(const NeoN::localIdx i) { flux0V2[i] = (sfV2[i] & uf0V2[i]); }
             );
 
@@ -111,7 +111,7 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
             auto corrH = fluxCorr.internalVector().copyToHost();
 
-            for (auto i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nTotalFaces(); ++i)
                 REQUIRE(corrH.view()[i] == Approx(0.0).margin(1e-12));
         }
 
@@ -126,7 +126,7 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
             auto corrH = fluxCorr.internalVector().copyToHost();
 
-            for (auto i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nTotalFaces(); ++i)
                 REQUIRE(corrH.view()[i] == Approx(expected[static_cast<size_t>(i)]).margin(1e-12));
         }
     }
