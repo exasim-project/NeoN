@@ -2,34 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import NamedTuple
-
 import neon.blockamr as blockamr
-
-
-class ContiguousFabData(NamedTuple):
-    """Contiguous MultiFab data with per-box metadata.
-
-    Wraps a single-chunk MultiFab as one flat JAX array plus metadata
-    describing where each FAB lives in the buffer.
-
-    - values: 1D JAX array covering all FABs (zero-copy view into MultiFab)
-    - offsets: JAX int array, start index of each FAB in values
-    - shapes: tuple of (nx, ny, nz, nc) per FAB (static, not traced by JAX)
-    """
-    values: object     # jnp.ndarray, 1D
-    offsets: object    # jnp.ndarray, (n_boxes,)
-    shapes: tuple      # ((nx, ny, nz, nc), ...) — JAX pytree aux data
-
-
-def contiguous_fab_data(mf):
-    """Build ContiguousFabData from a single-chunk MultiFab."""
-    import jax.numpy as jnp
-    values = mf.contiguous_array()
-    meta = mf.fab_metadata()
-    offsets = jnp.array([m[0] for m in meta], dtype=jnp.int64)
-    shapes = tuple((m[1], m[2], m[3], m[4]) for m in meta)
-    return ContiguousFabData(values, offsets, shapes)
 
 
 class PatchData:
@@ -92,6 +65,8 @@ class CellField:
         return Field(self.mf[lev], self.mesh.geom(lev), name=self.name)
 
     def fill_patch(self, lev, time):
+        if self.mf[lev] is None:
+            return
         if self._fill_patch:
             self._fill_patch(self.mesh, self, lev, time)
         else:
@@ -99,9 +74,11 @@ class CellField:
 
     def _on_new_level(self, lev, ba, dm):
         self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
+        self.mf[lev].set_val(0.0)
 
     def _on_new_level_from_coarse(self, lev, time, ba, dm):
         self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
+        self.mf[lev].set_val(0.0)
         if self._fill_patch:
             self._fill_patch(self.mesh, self, lev, time)
 
@@ -123,6 +100,7 @@ class NodalField(Field):
         ba.max_size(max_size)
         ba.surrounding_nodes()
         mf = blockamr.MultiFab(ba, dm, ncomp, ngrow, memory=memory)
+        mf.set_val(0.0)
         super().__init__(mf, geom, name=name, box=box, dm=dm)
 
 
@@ -135,6 +113,7 @@ class _FaceFieldLevel:
         for d in range(3):
             ba.surrounding_nodes(d)
             mf = blockamr.MultiFab(ba, dm, ncomp, ngrow, memory=memory)
+            mf.set_val(0.0)
             ba.enclosed_cells(d)
             self._components.append(Field(mf, geom, name=f"{name}_{'xyz'[d]}"))
 

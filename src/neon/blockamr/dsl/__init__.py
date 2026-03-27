@@ -4,7 +4,7 @@
 
 from . import exp
 from . import imp
-from .solve import solve
+from .solve import solve, evaluate
 from .expression import Expression
 
-__all__ = ["exp", "imp", "solve", "Expression"]
+__all__ = ["exp", "imp", "solve", "evaluate", "Expression"]

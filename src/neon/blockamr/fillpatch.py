@@ -10,10 +10,14 @@ class FillPatchCellConservative:
 
     def __call__(self, mesh, field, lev, time, target_mf=None):
         mf = target_mf or field.mf[lev]
+        if mf is None:
+            return
         if lev == 0:
             blockamr.fill_patch_single_level(
                 mf, time, [field.mf[0]], [time], mesh.geom(0), 0, field.ncomp
             )
+        elif field.mf[lev - 1] is None:
+            mf.fill_boundary(mesh.geom(lev))
         else:
             bcs = [blockamr.periodic_bcrec()] * field.ncomp
             blockamr.fill_patch_two_levels(

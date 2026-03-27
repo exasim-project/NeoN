@@ -10,6 +10,9 @@ import numpy as np
 from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.operators.laplacian import Laplacian
+from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
+from neon.blockamr.bucket_dispatch import process_bucket
+from neon.blockamr.cell_accessor import CellAccessor
 
 
 def _make_mesh(n_cell=64, max_size=32):
@@ -42,30 +45,85 @@ def _init_sin3d(phi, geom):
 
 
 def _compute_laplacian_error(n_cell, gamma_func, analytical_func):
-    """Compute max error of laplacian(gamma, phi) vs analytical on sin3d."""
+    """Compute max error of laplacian(gamma, phi) vs analytical on sin3d.
+
+    Uses the bucket dispatch pipeline to evaluate the laplacian kernel,
+    then compares against the analytical solution.
+    """
     mesh, geom = _make_mesh(n_cell=n_cell, max_size=n_cell)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
     _init_sin3d(phi, geom)
 
     lap_op = Laplacian(gamma_func, phi)
 
+    # Flatten and dispatch through buckets
+    mf = phi.mf[0]
+    fb = flattened_boxes_from_mf(mf)
+    dh = tuple(float(d) for d in geom.cell_size())
+    buckets = build_buckets(fb, dh, lev=0)
+
     max_err = 0.0
-    for mfi in blockamr.MFIterator(phi.mf[0]):
-        phi_arr = jnp.asarray(phi.mf[0].grown_array(mfi)[:, :, :, 0])
-        kernel = lap_op.build_kernel(mfi, t=0.0)
-        result = kernel(phi_arr)
-        lo = mfi.valid_box().small_end()
-        dx = geom.cell_size()
-        prob_lo = geom.prob_lo()
-        valid_arr = phi.mf[0].copy_to_host(mfi)
-        nx, ny, nz = valid_arr.shape[:3]
-        xs = jnp.array([prob_lo[0] + (lo[0] + i + 0.5) * dx[0] for i in range(nx)])
-        ys = jnp.array([prob_lo[1] + (lo[1] + j + 0.5) * dx[1] for j in range(ny)])
-        zs = jnp.array([prob_lo[2] + (lo[2] + k + 0.5) * dx[2] for k in range(nz)])
-        X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
-        exact = analytical_func(X, Y, Z)
-        err = float(jnp.max(jnp.abs(result - exact)))
-        max_err = max(max_err, err)
+    dx = geom.cell_size()
+    prob_lo = geom.prob_lo()
+    meta = mf.fab_metadata()
+
+    for bucket in buckets:
+        if bucket.n_valid == 0:
+            continue
+        kernel = lap_op.build_kernel(bucket, t=0.0)
+
+        # Evaluate the laplacian via vmap (same as process_bucket but just the kernel)
+        import jax
+
+        def eval_one_box(box_idx):
+            bound_k = kernel.for_box(bucket, box_idx)
+            Nx = bucket.Nx_arr[box_idx]
+            Ny = bucket.Ny_arr[box_idx]
+            Nz = bucket.Nz_arr[box_idx]
+
+            def eval_one_cell(cell_idx):
+                phi_acc = CellAccessor(
+                    bucket.cell_buf, bucket.box_offsets[box_idx], cell_idx,
+                    Nx, Ny, Nz, bucket.ng,
+                )
+                return bound_k(phi_acc)
+
+            return jax.vmap(eval_one_cell)(jnp.arange(bucket.n_cells_padded))
+
+        result = jax.jit(jax.vmap(eval_one_box))(jnp.arange(bucket.max_boxes))
+
+        # Compare each valid box's result to analytical
+        ng = bucket.ng
+        for bi, mf_idx in enumerate(bucket.box_indices[:bucket.n_valid]):
+            Nx = int(bucket.Nx_arr[bi])
+            Ny = int(bucket.Ny_arr[bi])
+            Nz = int(bucket.Nz_arr[bi])
+            vNx = Nx - 2 * ng
+            vNy = Ny - 2 * ng
+            vNz = Nz - 2 * ng
+            actual_n_cells = vNx * vNy * vNz
+            cell_data = result[bi, :actual_n_cells]
+            lap_3d = cell_data.reshape(vNz, vNy, vNx).transpose(2, 1, 0)
+
+            # Get box coordinates
+            m = meta[mf_idx]
+            bx_lo_0 = None
+            box_idx_counter = 0
+            for mfi in blockamr.MFIterator(mf):
+                if box_idx_counter == mf_idx:
+                    bx = mfi.valid_box()
+                    bx_lo_0 = bx.small_end()
+                    break
+                box_idx_counter += 1
+
+            lo = bx_lo_0
+            xs = jnp.array([prob_lo[0] + (lo[0] + i + 0.5) * dx[0] for i in range(vNx)])
+            ys = jnp.array([prob_lo[1] + (lo[1] + j + 0.5) * dx[1] for j in range(vNy)])
+            zs = jnp.array([prob_lo[2] + (lo[2] + k + 0.5) * dx[2] for k in range(vNz)])
+            X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
+            exact = analytical_func(X, Y, Z)
+            err = float(jnp.max(jnp.abs(lap_3d - exact)))
+            max_err = max(max_err, err)
     return max_err
 
 

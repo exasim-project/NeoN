@@ -2,59 +2,27 @@
 #
 # SPDX-License-Identifier: MIT
 
-import jax
 import jax.numpy as jnp
-from dataclasses import dataclass
-from jax import Array
 
 import neon.blockamr as blockamr
 from ..field import FaceField, CellField
+from ..flattened_boxes import FlattenedFaceBoxes
 from ..mesh import Mesh
 from ..schemes.div_schemes import Upwind
-
-
-@dataclass(frozen=True)
-class BoxFluxData:
-    """Raw FAB pointers for one box — face fluxes, 4D Fortran-order."""
-
-    flux_x: Array  # (nx+1+2ng, ny+2ng, nz+2ng, 1) — x-face flux
-    flux_y: Array  # (nx+2ng, ny+1+2ng, nz+2ng, 1) — y-face flux
-    flux_z: Array  # (nx+2ng, ny+2ng, nz+1+2ng, 1) — z-face flux
-    dh: Array  # (3,) — cell sizes
-    stencil_width: int  # ghost cells needed by the stencil
-    ngrow: int  # MultiFab ghost cells — controls output trim to valid region
-
-
-def _box_flux_data_flatten(bfd):
-    """JAX pytree flatten: arrays are children, (stencil_width, ngrow) is aux."""
-    return (bfd.flux_x, bfd.flux_y, bfd.flux_z, bfd.dh), (bfd.stencil_width, bfd.ngrow)
-
-
-def _box_flux_data_unflatten(aux, children):
-    """JAX pytree unflatten."""
-    stencil_width, ngrow = aux
-    return BoxFluxData(*children, stencil_width=stencil_width, ngrow=ngrow)
-
-
-jax.tree_util.register_pytree_node(
-    BoxFluxData, _box_flux_data_flatten, _box_flux_data_unflatten
-)
 
 
 class Div:
     """Divergence operator: div(U * phi).
 
     Accepts a FaceField (multi-level) and a CellField (multi-level).
-    Stencil computation delegated to scheme.compute().
     """
 
     def __init__(self, face_field, cell_field, coeff=1.0, scheme=None):
-        self.face_field = face_field   # FaceField (unified)
-        self.cell_field = cell_field   # CellField (unified)
+        self.face_field = face_field
+        self.cell_field = cell_field
         self.coeff = coeff
         self.scheme = scheme or Upwind()
         self._name = "Div"
-        # Keep .field for DSL compatibility (Ddt extracts field from here)
         self.field = cell_field
 
     def __rmul__(self, scalar):
@@ -67,22 +35,40 @@ class Div:
         obj._name = "Div"
         return obj
 
-    def build_kernel(self, mfi, t, lev=0):
-        """Return a scheme functor bound to this mfi's raw FAB data."""
-        face_lev = self.face_field[lev]
-        ngrow = self.cell_field.mf[lev].n_grow()
-        flux_data = BoxFluxData(
-            flux_x=face_lev[0].mf.grown_array(mfi),
-            flux_y=face_lev[1].mf.grown_array(mfi),
-            flux_z=face_lev[2].mf.grown_array(mfi),
-            dh=jnp.array(self.cell_field.mesh.geom(lev).cell_size()),
-            stencil_width=self.scheme.stencil_width,
-            ngrow=ngrow,
+    def build_kernel(self, bucket, t):
+        """Build a cell-level kernel for a bucket of boxes.
+
+        Returns an eqx.Module kernel with __call__(phi) → scalar
+        and for_box(bucket, box_idx) for per-box rebinding.
+        """
+        lev = bucket.lev
+        face_fb = FlattenedFaceBoxes.from_face_field(self.face_field, lev)
+        # Collect per-direction face offsets for boxes in this bucket.
+        # Each face direction has a different grown box size (e.g. x-faces
+        # are (Nx+1,Ny,Nz) while z-faces are (Nx,Ny,Nz+1)), so their
+        # offsets into the contiguous buffer differ.
+        n_pad = bucket.max_boxes - len(bucket.box_indices)
+        face_offsets = tuple(
+            jnp.array(
+                [int(face_fb.offsets[d][mf_idx]) for mf_idx in bucket.box_indices]
+                + [0] * n_pad,
+                dtype=jnp.int32,
+            )
+            for d in range(3)
         )
-        return self.scheme.build_kernel(flux_data, coeff=self.coeff)
+
+        ng_face = self.face_field[lev][0].mf.n_grow()
+
+        return self.scheme.build_kernel(
+            face_bufs=face_fb.bufs, face_offsets=face_offsets,
+            Nx=bucket.Nx_arr, Ny=bucket.Ny_arr, Nz=bucket.Nz_arr,
+            ng=bucket.ng, dh=bucket.dh_arr, coeff=self.coeff,
+            ncomp=self.cell_field.ncomp, ng_face=ng_face,
+        )
 
 
-def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32, memory="default"):
+def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32,
+                      memory="default"):
     """Build a FaceField containing normal velocity at face centers."""
     ba = blockamr.BoxArray(box)
     ba.max_size(max_size)
@@ -129,27 +115,21 @@ def update_face_fluxes(face_fluxes, vel_func, geom, t):
 
 
 class FaceFluxUpdater:
-    """Precomputes face-centre coordinates and batches velocity evaluation via JAX.
+    """Precomputes face-centre coordinates and batches velocity evaluation.
 
     Groups boxes by shape so that boxes with the same dimensions are stacked
-    and evaluated in a single jax.vmap + jax.jit call. This handles AMR grids
-    with variable box sizes at refinement boundaries.
-
-    Workflow:
-      1. Coordinates computed once at construction (static geometry).
-      2. Velocity evaluated per shape-group via vmap+jit (one kernel per shape).
-      3. Results written back via copy_arrays (single sync).
+    and evaluated in a single jax.vmap + jax.jit call.
     """
 
     def __init__(self, face_fluxes, vel_func, geom):
+        import jax
+
         self.face_fluxes = face_fluxes
         self._vel_func = vel_func
 
         dx = geom.cell_size()
         prob_lo = geom.prob_lo()
 
-        # _groups[d] = [(box_indices, all_X, all_Y, all_Z), ...]
-        # Each entry groups boxes with the same shape for stacking.
         self._groups = {}
         self._n_boxes = {}
 
@@ -190,7 +170,9 @@ class FaceFluxUpdater:
 
         @jax.jit
         def _batched_vel(all_X, all_Y, all_Z, t):
-            return jax.vmap(lambda x, y, z: vel_func(x, y, z, t))(all_X, all_Y, all_Z)
+            return jax.vmap(lambda x, y, z: vel_func(x, y, z, t))(
+                all_X, all_Y, all_Z
+            )
 
         self._batched_vel = _batched_vel
 
@@ -210,7 +192,7 @@ class FaceFluxUpdater:
 
 
 class AmrFaceFluxUpdater:
-    """Manages FaceFluxUpdater instances per AMR level, recreates after regrid."""
+    """Manages FaceFluxUpdater instances per AMR level."""
 
     def __init__(self, face_vel, vel_func, mesh):
         self._face_vel = face_vel

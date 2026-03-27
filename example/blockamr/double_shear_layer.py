@@ -42,7 +42,7 @@ from neon.blockamr.mesh import Mesh, AmrMesh
 from neon.blockamr.field import CellField
 from neon.blockamr.dsl_solver import DSLIncompressibleSolver
 from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.schemes.div_schemes import VanLeer
+from neon.blockamr.schemes.div_schemes import VanLeer, QUICK, Linear, Upwind
 
 
 def init_double_shear_layer(mf, geom, rho=80.0, delta=0.05):
@@ -152,7 +152,8 @@ def run(
     tag_threshold=50.0,
 ):
     nu = 1.0 / Re
-    dt = cfl / N_cells
+    ref_ratio_product = 2 ** max_level
+    dt = cfl / (N_cells * ref_ratio_product)
     Nz = 4  # quasi-2D
 
     # --- mesh ---
@@ -176,7 +177,7 @@ def run(
 
     # --- solver ---
     schemes_p = {"rtol": 0, "atol": 1e-8, "max_iter": 200, "verbose": 0}
-    div_scheme = VanLeer()
+    div_scheme = VanLeer() # VanLeer()
     solver = DSLIncompressibleSolver(
         mesh, nu, dt, fill_patch=FillPatchCellConservative(), schemes_p=schemes_p,
         div_scheme=div_scheme, cfl=cfl,
@@ -220,7 +221,7 @@ def run(
 
     # --- time loop ---
     for step in range(1, n_steps + 1):
-        print(f"  Step {step:6d}, t = {solver.time:.4f}, dt = {solver.dt:.6f}, "
+        print(f"Step {step:6d}, t = {solver.time:.4f}, dt = {solver.dt:.6f}, "
               f"max|U| = {solver._max_velocity():.6f}")
 
         if step % 10 == 0:

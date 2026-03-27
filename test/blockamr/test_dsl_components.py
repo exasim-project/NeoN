@@ -257,7 +257,8 @@ def test_pressure_solve_known_divergence(blockamr_session):
     assert s['mlmg'].get_num_iters() > 0, "MLMG did zero iterations — RHS may be zero"
     assert s['mlmg'].get_init_residual() > 0, "Initial residual is zero"
     assert p.grad is not None, "p.grad was not set"
-    assert float(jnp.max(jnp.abs(p.grad))) > 0, "Gradient is zero"
+    max_grad = max(float(jnp.max(jnp.abs(g))) for lev_grads in p.grad for g in lev_grads)
+    assert max_grad > 0, "Gradient is zero"
 
 
 # ---------------------------------------------------------------------------

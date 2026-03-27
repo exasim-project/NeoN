@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import jax
-
 import neon.blockamr as blockamr
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from ..schemes.schemes_dict import SchemesDict
@@ -65,41 +63,125 @@ def solve(expr, t=None, dt=None, schemes=None):
         raise ValueError(f"Unknown ddt scheme: {ddt_scheme}")
 
 
-@jax.jit(static_argnames=["ng"])
-def _fused_euler_step(phi_4d, kernels, dt_over_coeff, ng):
-    """Fuse operator evaluation + slicing + Euler update into one kernel."""
-    total = 0.0
-    for k in kernels:
-        total = total + k(phi_4d)
-    phi = phi_4d[:, :, :, 0]
-    s = slice(ng, -ng if ng else None)
-    phi_old = phi[s, s, s]
-    return phi_old - dt_over_coeff * total
+def evaluate(expr, t=0.0):
+    """Evaluate spatial operators and return the source term.
+
+    Unlike solve(), does NOT update the field — just computes and returns
+    the sum of spatial operator contributions as per-box arrays.
+
+    Parameters
+    ----------
+    expr : Expression or single spatial operator
+        e.g. ``exp.div(phi, U, scheme=VanLeer())`` or
+        ``exp.div(phi, U) - exp.laplacian(nu, U)``.
+    t : float
+        Current time (for time-dependent coefficients).
+
+    Returns
+    -------
+    list[list[ndarray]]
+        Outer list: per level. Inner list: per box.
+        Each array has shape (vNx, vNy, vNz) for ncomp=1
+        or (vNx, vNy, vNz, ncomp) for ncomp>1.
+    """
+    from ..flattened_boxes import flattened_boxes_from_mf, build_buckets
+    from ..bucket_dispatch import evaluate_bucket
+    from .expression import Expression
+
+    # Wrap a bare operator in an expression if needed
+    if not isinstance(expr, Expression):
+        from . import exp as _exp
+        # Single operator — need to find its field for fill_patch
+        op = expr
+        cell_field = op.field
+        spatial_ops = [op]
+    else:
+        spatial_ops = expr.spatial_ops
+        # Get field from first spatial op
+        cell_field = spatial_ops[0].field
+
+    mesh = cell_field.mesh
+    all_levels = []
+
+    for lev in range(mesh.n_levels()):
+        cell_field.fill_patch(lev, t)
+        mf = cell_field.mf[lev]
+        fb = flattened_boxes_from_mf(mf)
+        dh = tuple(float(d) for d in mesh.geom(lev).cell_size())
+        buckets = build_buckets(fb, dh, lev=lev)
+
+        lev_results = [None] * fb.n_boxes
+        for bucket in buckets:
+            if bucket.n_valid == 0:
+                continue
+            kernels = tuple(op.build_kernel(bucket, t) for op in spatial_ops)
+            result = evaluate_bucket(bucket, kernels)
+            _scatter_results(lev_results, result, bucket)
+
+        all_levels.append(lev_results)
+
+    return all_levels
 
 
 def _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff):
+    """One forward Euler step for all boxes on one AMR level."""
+    from ..flattened_boxes import flattened_boxes_from_mf, build_buckets
+    from ..bucket_dispatch import process_bucket
+
     mf = cell_field.mf[lev]
-    ng = mf.n_grow()
-    ncomp = cell_field.ncomp
+    fb = flattened_boxes_from_mf(mf)
+    dh = tuple(float(d) for d in cell_field.mesh.geom(lev).cell_size())
+    buckets = build_buckets(fb, dh, lev=lev)
     dt_over_coeff = dt / ddt_coeff
-    res = []
-    for mfi in blockamr.MFIterator(mf):
-        phi_4d = mf.array(mfi)
-        kernels = [op.build_kernel(mfi, t, lev=lev) for op in expr.spatial_ops]
-        if ncomp == 1:
-            phi_new = _fused_euler_step(phi_4d, kernels, dt_over_coeff, ng)
-            res.append(phi_new)
+
+    all_results = [None] * fb.n_boxes
+
+    for bucket in buckets:
+        if bucket.n_valid == 0:
+            continue
+        kernels = tuple(op.build_kernel(bucket, t) for op in expr.spatial_ops)
+        result = process_bucket(bucket, dt_over_coeff, kernels)
+        _scatter_results(all_results, result, bucket)
+
+    mf.copy_arrays(all_results)
+
+
+def _scatter_results(all_results, result, bucket):
+    """Unpack process_bucket output into per-box 4D arrays for copy_arrays.
+
+    ncomp=1: result is (max_boxes, n_cells_padded) → (vNx, vNy, vNz, 1)
+    ncomp>1: result is (max_boxes, n_cells_padded, ncomp) → (vNx, vNy, vNz, ncomp)
+
+    Uses per-box Nx_arr/Ny_arr/Nz_arr for reshaping since boxes in the
+    same bucket can have different shapes.
+    """
+    import jax.numpy as jnp
+
+    ng = bucket.ng
+    for bi, mf_idx in enumerate(bucket.box_indices[:bucket.n_valid]):
+        Nx = int(bucket.Nx_arr[bi])
+        Ny = int(bucket.Ny_arr[bi])
+        Nz = int(bucket.Nz_arr[bi])
+        vNx = Nx - 2 * ng
+        vNy = Ny - 2 * ng
+        vNz = Nz - 2 * ng
+        actual_n_cells = vNx * vNy * vNz
+
+        cell_data = result[bi]
+        if cell_data.ndim == 1:
+            # ncomp=1: take only actual valid cells, then reshape
+            valid = cell_data[:actual_n_cells]
+            valid_3d = valid.reshape(vNz, vNy, vNx).transpose(2, 1, 0)
+            all_results[mf_idx] = valid_3d[:, :, :, None]
         else:
-            # Process each component: create a (nx,ny,nz,1) view per component
-            # so existing kernels (which read [:,:,:,0]) work unchanged.
+            # ncomp>1: (n_cells_padded, ncomp)
+            ncomp = cell_data.shape[1]
             comps = []
             for c in range(ncomp):
-                phi_1c = phi_4d[:, :, :, c:c+1]  # (nx, ny, nz, 1)
-                comp_new = _fused_euler_step(phi_1c, kernels, dt_over_coeff, ng)
-                comps.append(comp_new)
-            res.append(jax.numpy.stack(comps, axis=-1))
-
-    mf.copy_arrays(res)
+                comp_valid = cell_data[:actual_n_cells, c]
+                comp_3d = comp_valid.reshape(vNz, vNy, vNx).transpose(2, 1, 0)
+                comps.append(comp_3d)
+            all_results[mf_idx] = jnp.stack(comps, axis=-1)
 
 
 # ---------------------------------------------------------------------------

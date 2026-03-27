@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""Integration tests for scheme selection with the bucket dispatch pipeline."""
+
 import math
 
 import neon.blockamr as blockamr
@@ -16,6 +18,8 @@ from neon.blockamr.operators.laplacian import Laplacian
 from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 from neon.blockamr.schemes.grad_schemes import CentralDiffGrad
 from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
+from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
+from neon.blockamr.bucket_dispatch import process_bucket
 
 
 def _make_mesh(n_cell=64, max_size=32):
@@ -38,7 +42,7 @@ def _x_vel(x, y, z, t):
     return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
 
 
-def test_div_default_unchanged():
+def test_div_default_unchanged(blockamr_session):
     """Div without explicit scheme matches old (Upwind) behaviour."""
     mesh, box, dm, geom = _make_mesh(n_cell=64, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -53,14 +57,22 @@ def test_div_default_unchanged():
     div_op = Div(ff, phi)
     assert isinstance(div_op.scheme, Upwind)
 
-    for mfi in blockamr.MFIterator(phi.mf[0]):
-        phi_arr = phi.mf[0].grown_array(mfi)
-        kernel = div_op.build_kernel(mfi, t=0.0)
-        result = kernel(phi_arr)
-        assert np.allclose(result, 0.0, atol=1e-12)
+    # Use bucket dispatch to verify divergence of constant = 0
+    mf = phi.mf[0]
+    fb = flattened_boxes_from_mf(mf)
+    dh = tuple(float(d) for d in geom.cell_size())
+    buckets = build_buckets(fb, dh, lev=0)
+    for bucket in buckets:
+        if bucket.n_valid == 0:
+            continue
+        kernel = div_op.build_kernel(bucket, 0.0)
+        result = process_bucket(bucket, 1.0, (kernel,))
+        # result = phi - dt*div(phi); for constant phi=1, div=0, result=1
+        valid = result[:bucket.n_valid]
+        assert np.allclose(valid, 1.0, atol=1e-12)
 
 
-def test_div_with_linear_scheme():
+def test_div_with_linear_scheme(blockamr_session):
     """Div with Linear scheme gives different (2nd-order) results vs Upwind."""
     n_cell = 32
     mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=n_cell)
@@ -80,24 +92,27 @@ def test_div_with_linear_scheme():
 
     ff_up = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
     div_upwind = Div(ff_up, phi)
-    results_upwind = []
-    for mfi in blockamr.MFIterator(phi.mf[0]):
-        phi_arr = phi.mf[0].grown_array(mfi)
-        results_upwind.append(div_upwind.build_kernel(mfi, t=0.0)(phi_arr))
 
     ff_lin = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
     div_linear = Div(ff_lin, phi, scheme=Linear())
-    results_linear = []
-    for mfi in blockamr.MFIterator(phi.mf[0]):
-        phi_arr = phi.mf[0].grown_array(mfi)
-        results_linear.append(div_linear.build_kernel(mfi, t=0.0)(phi_arr))
 
-    for r_up, r_lin in zip(results_upwind, results_linear):
+    mf = phi.mf[0]
+    fb = flattened_boxes_from_mf(mf)
+    dh = tuple(float(d) for d in geom.cell_size())
+    buckets = build_buckets(fb, dh, lev=0)
+
+    for bucket in buckets:
+        if bucket.n_valid == 0:
+            continue
+        k_up = div_upwind.build_kernel(bucket, 0.0)
+        k_lin = div_linear.build_kernel(bucket, 0.0)
+        r_up = process_bucket(bucket, 1.0, (k_up,))
+        r_lin = process_bucket(bucket, 1.0, (k_lin,))
         # They should differ (Linear is 2nd-order, Upwind is 1st-order)
-        assert not np.allclose(r_up, r_lin, atol=1e-6)
+        assert not np.allclose(r_up[:bucket.n_valid], r_lin[:bucket.n_valid], atol=1e-6)
 
 
-def test_laplacian_default_scheme():
+def test_laplacian_default_scheme(blockamr_session):
     """Laplacian defaults to CentralDiffLaplacian."""
     mesh, *_ = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -109,7 +124,7 @@ def test_laplacian_default_scheme():
     assert isinstance(lap_op.scheme, CentralDiffLaplacian)
 
 
-def test_grad_default_scheme():
+def test_grad_default_scheme(blockamr_session):
     """Grad defaults to CentralDiffGrad."""
     mesh, *_ = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -117,7 +132,7 @@ def test_grad_default_scheme():
     assert isinstance(grad_op.scheme, CentralDiffGrad)
 
 
-def test_solve_with_schemes_dict():
+def test_solve_with_schemes_dict(blockamr_session):
     """solve() with schemes dict overrides operator's default scheme."""
     mesh, box, dm, geom = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -151,10 +166,9 @@ def test_solve_with_schemes_dict():
         assert not np.allclose(arr_new, phi_before[tuple(lo)])
 
 
-def test_div_with_vanleer_scheme():
+def test_div_with_vanleer_scheme(blockamr_session):
     """Div with VanLeer scheme runs without error (requires wider stencil, ngrow>=2)."""
     n_cell = 32
-    # VanLeer needs 2 ghost cells
     mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=n_cell)
     phi = CellField(mesh, ncomp=1, ngrow=2, name="phi")
     dx = geom.cell_size()
@@ -173,15 +187,20 @@ def test_div_with_vanleer_scheme():
     ff = build_face_fluxes(_x_vel, box, dm, geom, ngrow=2, t=0.0)
     div_vanleer = Div(ff, phi, scheme=VanLeer())
 
-    for mfi in blockamr.MFIterator(phi.mf[0]):
-        phi_arr = phi.mf[0].grown_array(mfi)
-        kernel = div_vanleer.build_kernel(mfi, t=0.0)
-        result = kernel(phi_arr)
-        # Should produce finite results
-        assert np.all(np.isfinite(result))
+    mf = phi.mf[0]
+    fb = flattened_boxes_from_mf(mf)
+    dh = tuple(float(d) for d in geom.cell_size())
+    buckets = build_buckets(fb, dh, lev=0)
+    for bucket in buckets:
+        if bucket.n_valid == 0:
+            continue
+        kernel = div_vanleer.build_kernel(bucket, 0.0)
+        result = process_bucket(bucket, 1.0, (kernel,))
+        valid = result[:bucket.n_valid]
+        assert np.all(np.isfinite(valid))
 
 
-def test_factory_div_with_scheme():
+def test_factory_div_with_scheme(blockamr_session):
     """exp.div() accepts optional scheme parameter."""
     mesh, box, dm, geom = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -190,7 +209,7 @@ def test_factory_div_with_scheme():
     assert isinstance(div_op.scheme, Linear)
 
 
-def test_solve_backward_compat():
+def test_solve_backward_compat(blockamr_session):
     """solve() without schemes kwarg works as before."""
     mesh, box, dm, geom = _make_mesh(n_cell=64, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
