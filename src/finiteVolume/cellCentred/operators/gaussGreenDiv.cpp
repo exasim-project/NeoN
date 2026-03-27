@@ -153,6 +153,9 @@ void computeDivProcBoundImpl(
     auto values = ls.matrix().values().view();
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    auto totalFaces = faceFluxV.size();
     parallelFor(
         exec,
         {0, nProcBoundaryFaces},

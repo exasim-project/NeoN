@@ -25,7 +25,6 @@ BoundaryMesh::BoundaryMesh(
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
-    labelVector isLocal,
     std::vector<localIdx> offset,
     localIdx procBoundaryPatches,
     std::vector<localIdx> neighbourRank
@@ -142,46 +141,20 @@ localIdx BoundaryMesh::nProcBoundaryFaces() const
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 
 // FIXME
-const std::vector<localIdx> BoundaryMesh::computeCommIdx() const
+std::vector<localIdx> computeBoundaryMatrixMapVector()
 {
-
-    auto isLocalHost = isLocal_.copyToHost();
-    auto isLocalHostV = isLocalHost.view();
+    // auto isLocalHost = isLocal_.copyToHost();
+    // auto isLocalHostV = isLocalHost.view();
     auto ret = std::vector<localIdx>();
-    ret.reserve(isLocalHost.size());
+    // ret.reserve(isLocalHost.size());
 
-    std::cout << __FILE__ << ":" << __LINE__ << "isLocalHost.size()" << isLocalHost.size() << "\n";
-
-    for (int i = 0; i < isLocalHost.size(); i++)
-    {
-        if (isLocalHostV[i] != 0)
-        {
-            ret.push_back(i);
-        }
-    }
-
-    return ret;
-}
-
-// FIXME
-const std::vector<localIdx> BoundaryMesh::computeBoundaryMatrixMapVector(
-
-) const
-{
-
-
-    auto isLocalHost = isLocal_.copyToHost();
-    auto isLocalHostV = isLocalHost.view();
-    auto ret = std::vector<localIdx>();
-    ret.reserve(isLocalHost.size());
-
-    for (int i = 0; i < isLocalHost.size(); i++)
-    {
-        if (isLocalHostV[i] != 0)
-        {
-            ret.push_back(i);
-        }
-    }
+    // for (int i = 0; i < isLocalHost.size(); i++)
+    // {
+    //     if (isLocalHostV[i] != 0)
+    //     {
+    //         ret.push_back(i);
+    //     }
+    // }
 
     return ret;
 }

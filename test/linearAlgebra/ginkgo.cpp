@@ -196,6 +196,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
+        // FIXME
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
             csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
         );
@@ -246,6 +247,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
         Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
+        // FIXME
         auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
             csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
         );

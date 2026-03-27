@@ -169,6 +169,8 @@ public:
      */
     localIdx nBoundaryFaces() const;
 
+    localIdx nProcBoundaryFaces() const;
+
     /**
      * @brief Get the total number of faces including boundary and processor faces in the mesh.
      *

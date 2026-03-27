@@ -88,8 +88,10 @@ void computeUpwindInterpolationWeights(
     auto nBoundaryFaces = src.mesh().nBoundaryFaces();
 
     NF_ASSERT(flux.internalVector().size() == weights.size(), "different size");
-    NF_PING();
 
+    auto nInternalFaces = src.mesh().nInternalFaces();
+    auto nBoundaryFaces = src.mesh().nBoundaryFaces();
+    auto totalFaces = flux.size();
     parallelFor(
         exec,
         {0, nInternalFaces},

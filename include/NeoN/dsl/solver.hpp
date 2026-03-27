@@ -73,7 +73,7 @@ la::SolverStats iterativeSolveDistImpl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    CommunicationPattern commPattern,
+    CommunicationPattern& commPattern,
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
@@ -96,7 +96,7 @@ la::SolverStats iterativeSolveDistImpl(
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
-    return solver.solveDist(ls, solution.internalVector());
+    return solver.solveDist(ls, solution.internalVector(), commPattern);
 }
 
 template<typename VectorType, typename IndexType>

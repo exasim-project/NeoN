@@ -190,17 +190,13 @@ public:
         auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
-        NF_PING();
         // TODO with the right displacements boundary values could be taken
         // directly without copy to a sendbuffer first. however the recv is still needed
         //
         // copy map needs to be on the device for filling the consecutive
         // sendBuffer but for sending with mpi data is on the host
         auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
-        std::cout << __FILE__ << ":" << __LINE__ << " commSize " << commSize << " copyMap.size "
-                  << copyMap.size() << "\n";
         copy(boundaryMatrix_.values(), copyMap, commBuffer);
-        NF_PING();
 
         // zero out processor boundary values
         // set(0.0, copyMap, boundaryMatrix_.values());
@@ -308,6 +304,7 @@ private:
     BoundaryMatrixType offDiagonalMatrix_;
 
     Vector<RHSValueType> boundaryRhs_;
+
 
     Dictionary auxiliaryCoefficients_;
 
