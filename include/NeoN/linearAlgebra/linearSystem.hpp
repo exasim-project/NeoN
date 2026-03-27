@@ -82,6 +82,14 @@ public:
             ),
             faceToMatrixAddress->sparsityPattern()
         ),
+          nonLocalMatrix_(
+              Vector<ValueType>(
+                  faceToMatrixAddress->exec(),
+                  faceToMatrixAddress->localNonZeros(),
+                  zero<ValueType>()
+              ),
+              faceToMatrixAddress->nonLocalSparsityPattern()
+          ),
           rhs_(faceToMatrixAddress->exec(), faceToMatrixAddress->localRows(), zero<ValueType>()),
           boundaryMatrix_(
               Vector<ValueType>(
@@ -103,20 +111,22 @@ public:
 
     LinearSystem(
         const MatrixType& matrix,
+        const MatrixType& nonLocalMatrix,
         const Vector<ValueType>& rhs,
         const MatrixType& boundaryMatrix,
         const Vector<ValueType>& boundaryRhs,
         std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
     )
-        : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs),
-          faceToMatrixAddress_(mi)
+        : matrix_(matrix), nonLocalMatrix_(nonLocalMatrix), rhs_(rhs),
+          boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs), faceToMatrixAddress_(mi)
     {
         validate();
     }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
-          boundaryRhs_(ls.boundaryRhs_), faceToMatrixAddress_(ls.faceToMatrixAddress_)
+        : matrix_(ls.matrix_), nonLocalMatrix_(ls.nonLocalMatrix_), rhs_(ls.rhs_),
+          boundaryMatrix_(ls.boundaryMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          faceToMatrixAddress_(ls.faceToMatrixAddress_)
     {}
 
     ~LinearSystem() = default;
@@ -126,6 +136,10 @@ public:
     [[nodiscard]] const MatrixType& matrix() const { return matrix_; }
 
     [[nodiscard]] MatrixType& boundaryMatrix() { return boundaryMatrix_; }
+
+    [[nodiscard]] const MatrixType& nonLocalMatrix() const { return nonLocalMatrix_; }
+
+    [[nodiscard]] MatrixType& nonLocalMatrix() { return nonLocalMatrix_; }
 
     [[nodiscard]] const MatrixType& boundaryMatrix() const { return boundaryMatrix_; }
 
@@ -143,6 +157,7 @@ public:
         {
             return {
                 matrix_.copyToHost(),
+                nonLocalMatrix_.copyToHost(),
                 rhs_.copyToHost(),
                 boundaryMatrix_.copyToHost(),
                 boundaryRhs_.copyToHost(),
@@ -157,11 +172,15 @@ public:
                 faceToMatrixAddress_->sparsityPattern()->copyToHost()
             ),
             std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+                faceToMatrixAddress_->nonLocalSparsityPattern()->copyToHost()
+            ),
+            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->boundarySparsityPattern()->copyToHost()
             )
         );
         return {
             matrix_.copyToHost(),
+            nonLocalMatrix_.copyToHost(),
             rhs_.copyToHost(),
             boundaryMatrix_.copyToHost(),
             boundaryRhs_.copyToHost(),
@@ -182,17 +201,13 @@ public:
         auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
-        NF_PING();
         // TODO with the right displacements boundary values could be taken
         // directly without copy to a sendbuffer first. however the recv is still needed
         //
         // copy map needs to be on the device for filling the consecutive
         // sendBuffer but for sending with mpi data is on the host
         auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
-        std::cout << __FILE__ << ":" << __LINE__ << " commSize " << commSize << " copyMap.size "
-                  << copyMap.size() << "\n";
         copy(boundaryMatrix_.values(), copyMap, commBuffer);
-        NF_PING();
 
         // zero out processor boundary values
         // set(0.0, copyMap, boundaryMatrix_.values());
@@ -269,12 +284,17 @@ private:
     // internal values
     MatrixType matrix_;
 
+    // store values on boundaries that are non local
+    // eg on processor boundaries
+    MatrixType nonLocalMatrix_;
+
     Vector<ValueType> rhs_;
 
-    // boundary values
+    // store values on boundaries that are non local
     MatrixType boundaryMatrix_;
 
     Vector<ValueType> boundaryRhs_;
+
 
     Dictionary auxiliaryCoefficients_;
 

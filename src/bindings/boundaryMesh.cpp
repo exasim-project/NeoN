@@ -40,8 +40,8 @@ void registerBoundaryMesh(nb::module_& m)
                 NeoN::vectorVector,
                 NeoN::scalarVector,
                 NeoN::scalarVector,
-                NeoN::labelVector,
                 std::vector<NeoN::localIdx>,
+                localIdx,
                 std::vector<NeoN::localIdx>>(),
             "exec"_a,
             "face_cells"_a,
@@ -53,8 +53,8 @@ void registerBoundaryMesh(nb::module_& m)
             "delta"_a,
             "weights"_a,
             "delta_coeffs"_a,
-            "isLocal_coeffs"_a,
             "offset"_a,
+            "procBoundaryPatches"_a,
             "neighbourRank"_a,
             "Create a BoundaryMesh with all geometric data"
         )

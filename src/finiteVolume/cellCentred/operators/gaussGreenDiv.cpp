@@ -162,7 +162,6 @@ void computeDivProcBoundImpl(
 {
     const auto exec = phi.exec();
     const auto& mesh = phi.mesh();
-    const auto nInternalFaces = mesh.nInternalFaces();
 
     auto faceFluxV = faceFlux.internalVector().view();
 
@@ -170,54 +169,35 @@ void computeDivProcBoundImpl(
     const auto [rowOffs, diagOffs] =
         views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
 
-    const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
-        mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().deltaCoeffs(),
-        mesh.boundaryMesh().isLocal()
-    );
+    const auto [surfFaceCells] = views(mesh.boundaryMesh().faceCells());
 
-    const auto [bweights, refGradient, value, valueFraction, refValue] = views(
-        weights.boundaryData().value(),
-        phi.boundaryData().refGrad(),
-        phi.boundaryData().value(),
-        phi.boundaryData().valueFraction(),
-        phi.boundaryData().refValue()
-    );
+    const auto [bweights] = views(weights.boundaryData().value());
 
-    auto rhs = ls.rhs().view();
-    auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
     auto values = ls.matrix().values().view();
 
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    auto totalFaces = faceFluxV.size();
     parallelFor(
         exec,
-        {nInternalFaces, faceFluxV.size()},
+        {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (isLocal[facei - nInternalFaces] != 0)
-            {
-                auto bcfacei = facei - nInternalFaces;
-                auto flux = bweights[bcfacei] * faceFluxV[facei];
+            auto bcfacei = facei - (nInternalFaces + nBoundaryFaces);
+            auto cell = surfFaceCells[bcfacei];
+            auto rowStart = rowOffs[cell];
+            auto c = operatorScaling[cell];
 
-                auto own = surfFaceCells[bcfacei];
-                auto rowOwnStart = rowOffs[own];
-                auto operatorScalingOwn = operatorScaling[own];
+            // NOTE here only bweights is taken
+            // thus the other side has to make sure that
+            // bweights_this = (1 - bweights_other)
+            auto flux = bweights[bcfacei] * faceFluxV[facei];
+            auto value = flux * c * one<ValueType>();
 
-                auto valFrac1 = isLocal[facei - nInternalFaces];
-                auto valFrac2 = -1.0 * valFrac1;
-
-                auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-
-                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-                bValues[bcfacei] += valFrac2 * flux * operatorScalingOwn * one<ValueType>();
-
-                auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                              + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
-
-                Kokkos::atomic_sub(&rhs[own], valueRhs);
-                bRhs[bcfacei] = valueRhs;
-            }
+            Kokkos::atomic_add(&values[rowStart + diagOffs[cell]], value);
+            bValues[bcfacei] += value;
         },
-        "computeInterfaceGaussGreenDivCoefficients"
+        "computeProcInterfaceGaussGreenDivCoefficients"
     );
 }
 
@@ -236,11 +216,8 @@ void computeDivBoundImpl(
 
     auto faceFluxV = faceFlux.internalVector().view();
 
-    const auto [surfFaceCells, deltaCoeffs, isLocal] = views(
-        mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().deltaCoeffs(),
-        mesh.boundaryMesh().isLocal()
-    );
+    const auto [surfFaceCells, deltaCoeffs] =
+        views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().deltaCoeffs());
 
     const auto matIt = ls.faceToMatrixAddress();
     auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
@@ -261,32 +238,31 @@ void computeDivBoundImpl(
     auto bValues = ls.boundaryMatrix().values().view();
 
     const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    auto totalFaces = nInternalFaces + nBoundaryFaces;
     parallelFor(
         exec,
-        {nInternalFaces, faceFluxV.size()},
+        {nInternalFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (isLocal[facei - nInternalFaces] == 0)
-            {
-                auto bcfacei = facei - nInternalFaces;
-                auto flux = bweights[bcfacei] * faceFluxV[facei];
+            auto bcfacei = facei - nInternalFaces;
+            auto flux = bweights[bcfacei] * faceFluxV[facei];
 
-                auto own = surfFaceCells[bcfacei];
-                auto rowOwnStart = rowOffs[own];
-                auto operatorScalingOwn = operatorScaling[own];
+            auto own = surfFaceCells[bcfacei];
+            auto rowOwnStart = rowOffs[own];
+            auto operatorScalingOwn = operatorScaling[own];
 
-                auto valFrac1 = valueFraction[bcfacei];
-                auto valFrac2 = 1.0 - valFrac1;
+            auto valFrac1 = valueFraction[bcfacei];
+            auto valFrac2 = 1.0 - valFrac1;
 
-                auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
-                Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-                bValues[bcfacei] += valueMat;
+            auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+            Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
+            bValues[bcfacei] += valueMat;
 
-                auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
-                              + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
+            auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
+                          + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
-                Kokkos::atomic_sub(&rhs[own], valueRhs);
-                bRhs[bcfacei] = valueRhs;
-            }
+            Kokkos::atomic_sub(&rhs[own], valueRhs);
+            bRhs[bcfacei] = valueRhs;
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );

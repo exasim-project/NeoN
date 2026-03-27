@@ -60,11 +60,6 @@ public:
         scalarVector magFaceAreas,
         labelVector faceOwner,
         labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -96,11 +91,6 @@ public:
         scalarVector magFaceAreas,
         labelVector faceOwner,
         labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -189,19 +179,21 @@ public:
      */
     localIdx nBoundaryFaces() const;
 
+    localIdx nProcBoundaryFaces() const;
+
     /**
-     * @brief Get the number of boundaries in the mesh.
+     * @brief Get the number of processor boundary faces in the mesh.
+     *
+     * @return The number of processor boundary faces in the mesh.
+     */
+    localIdx nTotalFaces() const;
+
+    /**
+     * @brief Get the number of boundaries patches in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
     localIdx nBoundaries() const;
-
-    /**
-     * @brief Get the number of faces in the mesh.
-     *
-     * @return The number of faces in the mesh.
-     */
-    localIdx nFaces() const;
 
     /**
      * @brief Get the boundary mesh.
@@ -287,21 +279,6 @@ private:
      * @brief Number of internal faces in the mesh.
      */
     localIdx nInternalFaces_;
-
-    /**
-     * @brief Number of boundary faces in the mesh.
-     */
-    localIdx nBoundaryFaces_;
-
-    /**
-     * @brief Number of boundaries in the mesh.
-     */
-    localIdx nBoundaries_;
-
-    /**
-     * @brief Number of faces in the mesh.
-     */
-    localIdx nFaces_;
 
     /**
      * @brief Boundary mesh.
