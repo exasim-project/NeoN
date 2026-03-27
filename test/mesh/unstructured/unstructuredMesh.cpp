@@ -33,7 +33,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nBoundaryFaces() == 2);
         REQUIRE(mesh.nInternalFaces() == 3);
         REQUIRE(mesh.nBoundaries() == 2);
-        REQUIRE(mesh.nFaces() == 5);
+        REQUIRE(mesh.nTotalFaces() == 5);
 
         // Verify mesh points
         // bc  [   internal  ]  bc

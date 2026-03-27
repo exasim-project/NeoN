@@ -51,12 +51,13 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
     Array<uint8_t> neighbourOffset,
     Array<uint8_t> diagOffset,
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
+    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSparsityPattern,
     std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
       ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
-      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern),
-      rowOffsV_(sp_->rowOffs().view())
+      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), nonLocalSp_(nonLocalSparsityPattern),
+      bsp_(boundarySparsityPattern), rowOffsV_(sp_->rowOffs().view())
 {
     validate();
 }
@@ -66,7 +67,7 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(const FaceToMatrix
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
       diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
       neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()), sp_(mi.sp_),
-      bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
+      nonLocalSp_(mi.nonLocalSp_), bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
 {
     validate();
 }
@@ -81,6 +82,9 @@ FaceToMatrixAddress<IndexType, MeshType>::copyToHost() const
         diagOffset_.copyToHost(),
         std::make_shared<SparsityPattern<IndexType>>(
             sp_->colIdxs().copyToHost(), sp_->rowOffs().copyToHost()
+        ),
+        std::make_shared<SparsityPattern<IndexType>>(
+            nonLocalSp_->colIdxs().copyToHost(), nonLocalSp_->rowOffs().copyToHost()
         ),
         std::make_shared<SparsityPattern<IndexType>>(
             bsp_->colIdxs().copyToHost(), bsp_->rowOffs().copyToHost()
@@ -255,10 +259,18 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
     auto sp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(colIdx), std::move(rowOffs));
     setBoundarySparsityPattern(mesh, diagOffs, bRowOffs, bColIdx);
+
+    // FIXME
+    NF_ERROR_EXIT("Not implemented");
+    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSp =
+        nullptr; //(std::move(bColIdx), std::move(bRowOffs));
+
     auto bsp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(bColIdx), std::move(bRowOffs));
+
+
     return std::make_shared<const FaceToMatrixAddress<IndexType>>(
-        ownOffs, neiOffs, diagOffs, sp, bsp
+        ownOffs, neiOffs, diagOffs, sp, nonLocalSp, bsp
     );
 }
 
