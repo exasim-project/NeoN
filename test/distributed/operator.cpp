@@ -46,27 +46,6 @@ auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
         ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
     }
 
-    if (mpiEnviron.rank() == 0)
-    {
-        auto& isLocal = boundaryMesh.isLocal();
-        isLocal.view()[0] = 0;
-        isLocal.view()[1] = -1;
-    }
-
-    if (mpiEnviron.rank() == 1)
-    {
-        auto& isLocal = boundaryMesh.isLocal();
-        isLocal.view()[0] = 1;
-        isLocal.view()[1] = -1;
-    }
-
-    if (mpiEnviron.rank() == 2)
-    {
-        auto& isLocal = boundaryMesh.isLocal();
-        isLocal.view()[0] = 1;
-        isLocal.view()[1] = 0;
-    }
-
     return ret;
 }
 
@@ -392,7 +371,7 @@ TEST_CASE("Distributed")
     fill(xPart, 0.0);
 
     auto solverStats = solver.solve(ls, x);
-    auto solverStatsDist = solver.solveDist(lsDst, xPart);
+    auto solverStatsDist = solver.solveDist(lsDst, xPart, commPattern);
 
     auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
         solverStatsDist.entries[0];

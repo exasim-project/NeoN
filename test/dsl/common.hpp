@@ -116,7 +116,7 @@ struct CreateSurfaceVector
 
         // Face storage
         NeoN::Field<ValueType> domainField(
-            mesh.exec(), mesh.nFaces(), mesh.boundaryMesh().offset()
+            mesh.exec(), mesh.nTotalFaces(), mesh.boundaryMesh().offset()
         );
         NeoN::fill(domainField.internalVector(), value);
         NeoN::fill(domainField.boundaryData().refValue(), value);

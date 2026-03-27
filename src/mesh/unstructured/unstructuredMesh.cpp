@@ -20,18 +20,12 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
-    localIdx nCells,
-    localIdx nInternalFaces,
-    localIdx nBoundaryFaces,
-    localIdx nBoundaries,
-    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : exec_(exec), points_(points), cellVolumes_(cellVolumes), cellCentres_(cellCentres),
       faceAreas_(faceAreas), faceCentres_(faceCentres), magFaceAreas_(magFaceAreas),
-      faceOwner_(faceOwner), faceNeighbour_(faceNeighbour), nCells_(nCells),
-      nInternalFaces_(nInternalFaces), nBoundaryFaces_(nBoundaryFaces), nBoundaries_(nBoundaries),
-      nFaces_(nFaces), boundaryMesh_(boundaryMesh), stencilDataBase_()
+      faceOwner_(faceOwner), faceNeighbour_(faceNeighbour), nCells_(cellVolumes.size()),
+      nInternalFaces_(faceNeighbour.size()), boundaryMesh_(boundaryMesh), stencilDataBase_()
 {}
 
 UnstructuredMesh::UnstructuredMesh(
@@ -43,11 +37,6 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
-    localIdx nCells,
-    localIdx nInternalFaces,
-    localIdx nBoundaryFaces,
-    localIdx nBoundaries,
-    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : UnstructuredMesh(
@@ -60,11 +49,6 @@ UnstructuredMesh::UnstructuredMesh(
         magFaceAreas,
         faceOwner,
         faceNeighbour,
-        nCells,
-        nInternalFaces,
-        nBoundaryFaces,
-        nBoundaries,
-        nFaces,
         boundaryMesh
     )
 {}
@@ -106,11 +90,16 @@ localIdx UnstructuredMesh::nCells() const { return nCells_; }
 
 localIdx UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
 
-localIdx UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
+localIdx UnstructuredMesh::nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
 
-localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
+localIdx UnstructuredMesh::nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
 
-localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
+localIdx UnstructuredMesh::nBoundaries() const { return boundaryMesh_.nBoundaries(); }
+
+localIdx UnstructuredMesh::nTotalFaces() const
+{
+    return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
+}
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 
@@ -144,9 +133,9 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
-        {exec, {0, 0}},               //  isLocal
         {0, 1, 2, 3, 4},              // offset
-        {-1, -1, -1, -1, -1}          // neighbourRank
+        0,                            // number of proc boundary patches
+        {}                            // neighbourRank
     );
     return UnstructuredMesh(
         {exec, {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}}}, // points,
@@ -157,11 +146,6 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         magFaceAreas,
         {exec, {0, 0, 0, 0}}, // faceOwner
         {exec, {}},           // faceNeighbour,
-        1,                    // nCells
-        0,                    // nInternalFaces,
-        4,                    // nBoundaryFaces,
-        4,                    // nBoundaries,
-        4,                    // nFaces,
         boundaryMesh
     );
 }
@@ -248,8 +232,6 @@ UnstructuredMesh create1DUniformMesh(
     deltaCoeffsHostView[1] = 1 / mag(deltaHostView[1]);
     auto deltaCoeffs = deltaCoeffsHost.copyToExecutor(exec);
 
-    // auto isLocal = std::vector<localIdx> {1,1,1};
-
     BoundaryMesh boundaryMesh(
         exec,
         {exec, {0, nCells - 1}},
@@ -261,10 +243,9 @@ UnstructuredMesh create1DUniformMesh(
         delta,
         {exec, {1.0, 1.0}},
         deltaCoeffs, // deltaCoeffs --> mag(1 / delta)
-        // FIXME
-        {exec, {0, 0}}, // isProc
-        {0, 1, 2},      // offset
-        {-1, -1, -1}    // neighbourRank
+        {0, 1, 2},   // offset
+        0,           // number of proc boundary patches
+        {}           // neighbourRank
     );
 
     return UnstructuredMesh(
@@ -276,11 +257,6 @@ UnstructuredMesh create1DUniformMesh(
         magFaceAreas,
         faceOwner,
         faceNeighbor,
-        nCells,
-        nCells - 1,
-        2,
-        2,
-        nCells + 1,
         boundaryMesh
     );
 }
