@@ -309,5 +309,16 @@ void registerLinOp(nb::module_& m)
                 mlmg.getFluxes(fluxes);
             },
             nb::arg("fluxes")
+        )
+        .def(
+            "get_fluxes",
+            [](MLMG& mlmg, MultiFab& fx, MultiFab& fy, MultiFab& fz)
+            {
+                Array<MultiFab*, AMREX_SPACEDIM> fluxes = {AMREX_D_DECL(&fx, &fy, &fz)};
+                mlmg.getFluxes({fluxes});
+            },
+            nb::arg("fx"),
+            nb::arg("fy"),
+            nb::arg("fz")
         );
 }

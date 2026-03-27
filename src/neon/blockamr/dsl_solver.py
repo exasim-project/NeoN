@@ -4,11 +4,14 @@
 
 """DSL-based incompressible Navier-Stokes solver.
 
-Uses the OpenFOAM-style DSL syntax:
+Uses the OpenFOAM-style DSL syntax with two-step projection
+(MAC + nodal) matching IAMReX/incflo:
 
-    ddt(U) + div(phi, U) - laplacian(nu, U) = 0
-    laplacian(dt, p) == div(U*)
-    U -= dt * grad(p)
+    1. interpolate(U, phi)
+    2. MAC project phi → div-free face fluxes
+    3. ddt(U) + div(phi, U) - laplacian(nu, U) = 0
+    4. laplacian(dt, p) == div(U*)
+    5. U -= dt * grad(p)
 """
 
 import jax.numpy as jnp
@@ -26,6 +29,7 @@ class DSLIncompressibleSolver:
     """Incompressible Navier-Stokes solver using the DSL.
 
     Works with both single-level Mesh and multi-level AmrMesh.
+    Uses two-step projection (MAC + nodal) as in IAMReX/incflo.
 
     Parameters
     ----------
@@ -79,13 +83,25 @@ class DSLIncompressibleSolver:
         self._schemes_p = schemes_p or {
             "rtol": 1e-10, "atol": 1e-12, "max_iter": 200, "verbose": 0,
         }
+        self._mac_solver = None
 
     @property
     def time(self):
         return self._t
 
     def step(self):
-        """Advance one time step using the DSL."""
+        """Advance one time step using the DSL.
+
+        Two-step projection matching IAMReX/incflo:
+
+        1. Fill BCs on U
+        2. Interpolate U → phi (not div-free)
+        3. MAC projection: make phi div-free (MLABecLaplacian + face-centred getFluxes)
+        4. Momentum predictor with div-free phi
+        5. Fill BCs on U*
+        6. Nodal pressure solve: laplacian(dt, p) = div(U*)
+        7. Correct U: U^{n+1} = U* - dt * grad(p)
+        """
         dt = self.dt
         U = self.U
         p = self.p
@@ -94,36 +110,36 @@ class DSLIncompressibleSolver:
         mesh = self.mesh
         n_levels = mesh.n_levels()
 
-        # Fill BCs before face interpolation (all levels)
+        # 1. Fill BCs on U
         for lev in range(n_levels):
             U.fill_patch(lev, t)
 
-        # Face flux from cell velocity (all levels)
+        # 2. Interpolate U to face fluxes (not div-free)
         interpolate(U, phi)
 
-        # Momentum predictor (explicit, handles all levels internally):
-        #   ddt(U) + div(phi, U) - laplacian(nu, U) = 0
+        # 3. MAC projection: make phi divergence-free
+        self._mac_project(phi)
+
+        # 4. Momentum predictor with div-free phi
         solve(
             exp.ddt(U) + exp.div(phi, U, scheme=self._div_scheme)
             - exp.laplacian(self._nu_func, U),
             t, dt,
         )
 
-        # Fill BCs on U* before pressure solve (all levels)
+        # 5. Fill BCs on U*
         for lev in range(n_levels):
             U.fill_patch(lev, t)
 
-        # Pressure correction (implicit nodal Poisson, handles all levels):
-        #   laplacian(dt, p) = div(U*)
+        # 6. Nodal pressure solve: laplacian(dt, p) = div(U*)
         solve(imp.laplacian(dt, p) == exp.div(U), schemes=self._schemes_p)
 
-        # Velocity correction: U -= dt * grad(p) (handles all levels)
+        # 7. Correct U: U^{n+1} = U* - dt * grad(p)
         correct(U, -dt * exp.grad(p))
 
         self._t += dt
 
-        # Adaptive time stepping: recompute dt from current max velocity
-        # Use the finest level's cell size for the CFL constraint
+        # Adaptive time stepping
         if self._cfl is not None:
             max_vel = self._max_velocity()
             if max_vel > 1e-12:
@@ -131,14 +147,183 @@ class DSLIncompressibleSolver:
                 dx_fine = mesh.geom(finest).cell_size()
                 self.dt = self._cfl * min(dx_fine) / max_vel
 
+    # ------------------------------------------------------------------
+    # MAC projection
+    # ------------------------------------------------------------------
+
+    def _mac_project(self, phi):
+        """Project face fluxes to be divergence-free using MLABecLaplacian.
+
+        Solves: div(beta * grad(p_mac)) = div(phi)
+        Corrects: phi_f -= beta * grad_f(p_mac)
+
+        Uses MLABecLaplacian with alpha=0, beta=1 (reduces to Laplacian
+        for constant density). getFluxes returns face-centred gradients,
+        which are the exact adjoint of the face divergence operator.
+        """
+        mesh = self.mesh
+        for lev in range(mesh.n_levels()):
+            self._mac_project_level(phi, lev)
+
+    def _mac_project_level(self, phi, lev):
+        """MAC projection for one level."""
+        mesh = self.mesh
+        geom = mesh.geom(lev)
+        ba = mesh.box_array(lev)
+        dm = mesh.dm(lev)
+        dx = geom.cell_size()
+
+        cache = self._ensure_mac_cache(lev)
+
+        # 1. Compute RHS = -div(phi) from face fluxes (JAX)
+        # MLABecLaplacian solves (alpha*a - beta*div(b*grad))phi = rhs
+        # with alpha=0, beta=1: -div(grad(p)) = rhs
+        # We want div(grad(p)) = div(phi), so rhs = -div(phi)
+        rhs_arrs = [-arr for arr in self._face_divergence(phi, lev)]
+        cache['rhs_mf'].copy_arrays(rhs_arrs)
+
+        # 2. Zero initial guess
+        cache['phi_mf'].set_val(0.0)
+
+        # 3. Solve: div(beta * grad(p_mac)) = div(phi)
+        cfg = self._schemes_p
+        cache['mlmg'].solve(
+            cache['phi_mf'], cache['rhs_mf'],
+            cfg.get("rtol", 1e-10), cfg.get("atol", 1e-12),
+        )
+
+        # 4. Get face-centred fluxes = -beta * grad(p_mac)
+        cache['mlmg'].get_fluxes(cache['flux_x'], cache['flux_y'], cache['flux_z'])
+
+        # 5. Correct phi: phi_f += flux_f (flux = -beta*grad, so phi -= beta*grad)
+        for d in range(3):
+            face_mf = phi[lev][d].mf
+            face_ng = face_mf.n_grow()
+            face_arrs = face_mf.arrays()
+            flux_arrs = cache[f'flux_{"xyz"[d]}'].arrays()
+
+            results = []
+            for bi in range(len(face_arrs)):
+                f = face_arrs[bi][:, :, :, 0]
+                fl = flux_arrs[bi][:, :, :, 0]
+                # flux has ngrow=0, face has ngrow=face_ng
+                if face_ng > 0:
+                    nf = [int(face_arrs[bi].shape[ax]) - 2 * face_ng for ax in range(3)]
+                    sl = tuple(slice(face_ng, face_ng + nf[ax]) for ax in range(3))
+                    results.append(f[sl] + fl)
+                else:
+                    results.append(f + fl)
+
+            face_mf.copy_arrays(results)
+            face_mf.fill_boundary(geom)
+
+    def _face_divergence(self, phi, lev):
+        """Compute cell-centred divergence from face fluxes (JAX).
+
+        Returns list of per-box arrays (nx, ny, nz).
+        """
+        dx = self.mesh.geom(lev).cell_size()
+        face_arrs = [phi[lev][d].mf.arrays() for d in range(3)]
+        face_ngs = [phi[lev][d].mf.n_grow() for d in range(3)]
+        n_boxes = len(face_arrs[0])
+
+        results = []
+        for bi in range(n_boxes):
+            div_val = None
+            for d in range(3):
+                f = face_arrs[d][bi][:, :, :, 0]
+                ng = face_ngs[d]
+                # Valid cell count: face valid count - 1 in normal dir, same in others
+                nf = [int(f.shape[ax]) - 2 * ng for ax in range(3)]
+                nc = list(nf)
+                nc[d] -= 1  # one fewer cell than faces in normal direction
+
+                sl_hi = [slice(ng, ng + nc[ax]) for ax in range(3)]
+                sl_lo = [slice(ng, ng + nc[ax]) for ax in range(3)]
+                sl_hi[d] = slice(ng + 1, ng + 1 + nc[d])
+                sl_lo[d] = slice(ng, ng + nc[d])
+                contrib = (f[tuple(sl_hi)] - f[tuple(sl_lo)]) / dx[d]
+                div_val = contrib if div_val is None else div_val + contrib
+            results.append(div_val)
+        return results
+
+    def _ensure_mac_cache(self, lev):
+        """Build or return cached MAC solver objects for one level."""
+        if self._mac_solver is not None and self._mac_solver.get('lev') == lev:
+            # Rebind face data but reuse operator/solver
+            return self._mac_solver
+
+        mesh = self.mesh
+        geom = mesh.geom(lev)
+        ba = mesh.box_array(lev)
+        dm = mesh.dm(lev)
+        is_per = geom.is_periodic()
+
+        # MLABecLaplacian: (alpha*a - beta*div(b*grad)) phi
+        # For MAC: alpha=0, beta=1, b=1 → -div(grad(phi)) = RHS
+        lp = blockamr.MLABecLaplacian(geom, ba, dm, blockamr.LPInfo())
+        lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
+                 else blockamr.LinOpBCType.Neumann for d in range(3)]
+        lp.set_domain_bc(lo_bc, lo_bc[:])
+        lp.set_level_bc(0, None)
+        lp.set_scalars(0.0, 1.0)  # alpha=0, beta=1
+
+        # b-coefficients = 1 on all faces
+        b_mfs = []
+        for d in range(3):
+            ba_copy = blockamr.BoxArray(ba)
+            ba_copy.surrounding_nodes(d)
+            b_mf = blockamr.MultiFab(ba_copy, dm, 1, 0)
+            b_mf.set_val(1.0)
+            ba_copy.enclosed_cells(d)
+            b_mfs.append(b_mf)
+        lp.set_b_coeffs(0, b_mfs[0], b_mfs[1], b_mfs[2])
+
+        mlmg = blockamr.MLMG(lp)
+        mlmg.set_verbose(0)
+        mlmg.set_max_iter(200)
+        mlmg.set_bottom_verbose(0)
+
+        # Scratch MultiFabs
+        phi_mf = blockamr.MultiFab(ba, dm, 1, 1)
+        rhs_mf = blockamr.MultiFab(ba, dm, 1, 0)
+
+        # Face-centred flux MultiFabs for getFluxes output
+        flux_mfs = {}
+        for d, name in enumerate("xyz"):
+            ba_face = blockamr.BoxArray(ba)
+            ba_face.surrounding_nodes(d)
+            flux_mf = blockamr.MultiFab(ba_face, dm, 1, 0)
+            ba_face.enclosed_cells(d)
+            flux_mfs[f'flux_{name}'] = flux_mf
+
+        self._mac_solver = {
+            'lp': lp,
+            'mlmg': mlmg,
+            'phi_mf': phi_mf,
+            'rhs_mf': rhs_mf,
+            'lev': lev,
+            'b_mfs': b_mfs,
+            **flux_mfs,
+        }
+        return self._mac_solver
+
+    # ------------------------------------------------------------------
+    # Regrid / plotfile / utilities
+    # ------------------------------------------------------------------
+
     def regrid(self, tag):
         """Regrid the AMR mesh. No-op for single-level meshes."""
         from .mesh import AmrMesh
         if isinstance(self.mesh, AmrMesh):
+            # Fill ghost cells so tagging stencils have valid data
+            for lev in range(self.mesh.n_levels()):
+                self.U.fill_patch(lev, self._t)
             self.mesh.regrid(self._t, tag=tag)
-            # Invalidate pressure solver cache — grids changed
+            # Invalidate solver caches — grids changed
             if hasattr(self.p, '_imp_solver'):
                 del self.p._imp_solver
+            self._mac_solver = None
             mesh = self.mesh
             parts = []
             for lev in range(mesh.n_levels()):
@@ -153,16 +338,7 @@ class DSLIncompressibleSolver:
             print(f"  Regrid: {', '.join(parts)}")
 
     def write_plotfile(self, name, fields=None):
-        """Write a plotfile. Works for both single-level and AMR.
-
-        Parameters
-        ----------
-        name : str
-            Plotfile directory name.
-        fields : list[CellField], optional
-            Fields to write. Defaults to [self.U].
-            Variable names are derived from each field's name attribute.
-        """
+        """Write a plotfile. Works for both single-level and AMR."""
         import os, shutil
         if os.path.exists(name):
             shutil.rmtree(name)
@@ -173,7 +349,6 @@ class DSLIncompressibleSolver:
         mesh = self.mesh
         n_levels = mesh.n_levels()
 
-        # Build variable names from fields
         varnames = []
         for f in fields:
             if f.ncomp == 1:
@@ -185,13 +360,11 @@ class DSLIncompressibleSolver:
         if len(fields) == 1:
             mfs = [fields[0].mf[lev] for lev in range(n_levels)]
         else:
-            # Combine multiple fields into one MultiFab per level
             total_ncomp = sum(f.ncomp for f in fields)
             mfs = []
             for lev in range(n_levels):
                 combined = blockamr.MultiFab(
                     mesh.box_array(lev), mesh.dm(lev), total_ncomp, 0)
-                # Stack valid-region arrays from each field
                 n_boxes = len(fields[0].mf[lev].arrays())
                 results = []
                 for bi in range(n_boxes):

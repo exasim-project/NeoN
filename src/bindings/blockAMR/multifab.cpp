@@ -7,6 +7,7 @@
 #include <nanobind/stl/optional.h>
 
 #include <AMReX_BoxArray.H>
+#include <AMReX_BoxList.H>
 #include <AMReX_IndexType.H>
 #include <AMReX_DistributionMapping.H>
 #include <AMReX_Geometry.H>
@@ -263,6 +264,16 @@ void registerMultiFab(nb::module_& m)
 {
     using namespace amrex;
 
+    // --- BoxList ---
+    nb::class_<BoxList>(m, "BoxList")
+        .def(nb::init<>())
+        .def(
+            "push_back",
+            [](BoxList& bl, const Box& bx) { bl.push_back(bx); },
+            nb::arg("bx")
+        )
+        .def("size", &BoxList::size);
+
     nb::class_<BoxArray>(m, "BoxArray")
         .def(
             "__init__",
@@ -273,6 +284,11 @@ void registerMultiFab(nb::module_& m)
             },
             nb::arg("bx"),
             nb::arg("index_type") = nb::none()
+        )
+        .def(
+            "__init__",
+            [](BoxArray* self, const BoxList& bl) { new (self) BoxArray(bl); },
+            nb::arg("box_list")
         )
         .def(
             "__init__",
