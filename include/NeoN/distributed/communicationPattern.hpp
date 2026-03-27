@@ -16,7 +16,6 @@ namespace NeoN
  */
 struct CommunicationPattern
 {
-
     // indices which values in bMatrix need to be communicated
     std::vector<localIdx> commIdx;
 

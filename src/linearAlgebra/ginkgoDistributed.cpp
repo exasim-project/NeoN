@@ -52,11 +52,12 @@ void writeToDisk(std::string fn, std::shared_ptr<gko::LinOp> A)
 
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
-std::shared_ptr<const gko::LinOp> createGkoMtx(
+std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const CSRMatrix<scalar, IndexType>& mtx, //, local mtx
-    const CSRMatrix<scalar, IndexType>& bmtx //, local mtx
+    const CSRMatrix<scalar, IndexType>& mtx,  //, local mtx
+    const CSRMatrix<scalar, IndexType>& bmtx, //, local mtx
+    CommunicationPattern& commPattern
     // const LinearSystem<scalar, IndexType>& ls
 )
 {
@@ -64,8 +65,6 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(
     const auto [coeffsV, sparsityV] = mtx.view();
 
     // NOTE we get a const view of the system but need a non const view to vals and indices
-    // FIXME currently ls keeps a local mtx
-    // FIXME currently only mtx.local() is used
     auto vals = gko::array<scalar>::const_view(
         exec, static_cast<gko::size_type>(coeffsV.size()), mtx.values().data()
     );
@@ -88,14 +87,6 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(
             exec, comm, nrows
         ));
 
-    // FIXME currently no communication with other rank
-    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
-    auto recv_connections = gko::array<label>(exec, 0);
-
-    auto imap = gko::experimental::distributed::index_map<label, label>(
-        exec, partition, comm.rank(), recv_connections
-    );
-
     // FIXME why cloned?
     std::shared_ptr<gko::LinOp> localMtx =
         gko::share(
@@ -105,25 +96,43 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(
         )
             ->clone();
 
+    // Non local part of matrix
+    auto numNonLocalElements = commPattern.commIdx.size();
+    std::cout << __FILE__ << " : " << __LINE__ << " numNonLocalElements " << numNonLocalElements
+              << "\n";
 
+    // FIXME currently no communication with other rank
+    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
+    auto recv_connections = gko::array<label>(exec, numNonLocalElements);
+
+    auto imap = gko::experimental::distributed::index_map<label, label>(
+        exec, partition, comm.rank(), recv_connections
+    );
+
+    // FIXME this the complete boundary matrix but we only need the processor values
     auto non_loc_vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(coeffsV.size()), bmtx.values().data()
+        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.values().data()
     );
     auto non_loc_col = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
-        bmtx.sparsity()->colIdxs().data()
+        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->colIdxs().data()
     );
     auto non_loc_row = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
-        bmtx.sparsity()->rowOffs().data()
+        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->rowOffs().data()
     );
 
-
-    writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
+    // FIXME why cloned?
     std::shared_ptr<gko::LinOp> nonLocalMtx =
-        gko::share(gko::matrix::Csr<scalar, IndexType>::create(exec, gko::dim<2> {nrows, 0}));
+        gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
+                       exec,
+                       gko::dim<2> {nrows, numNonLocalElements},
+                       std::move(non_loc_vals),
+                       std::move(non_loc_col),
+                       std::move(non_loc_row)
+                   ))
+            ->clone();
+
+    std::cout << __FILE__ << " : " << __LINE__ << " write to disk\n ";
+    writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
     writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
 
     return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
@@ -188,14 +197,33 @@ SolverStatsEntry solve_impl_dist(
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys,
+    Vector<scalar>& x,
+    CommunicationPattern& commPattern
 ) const
 {
     // TODO make that selectable via dictionary
     bool forceHostBuffer = false;
     mpi::Environment env;
     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
-    auto gkoMtx = createGkoMtx(gkoExec_, comm, sys.matrix(), sys.boundaryMatrix());
+
+    auto numNonLocalElements = commPattern.commIdx.size();
+
+    // FIXME
+    NeoN::Vector<scalar> valuesSparse(exec_, numNonLocalElements);
+    NeoN::Vector<NeoN::localIdx> colIdxSparse(exec_, numNonLocalElements);
+
+    auto copyMap = Vector<localIdx>(exec_, commPattern.commIdx);
+    copy(sys.boundaryMatrix().values(), copyMap, valuesSparse);
+
+    // compute corresponding rows
+    NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec_, numNonLocalElements);
+
+    NeoN::la::CSRMatrix<scalar, NeoN::localIdx> nonLocalMtx(
+        valuesSparse, colIdxSparse, rowOffsSparse
+    );
+
+    auto gkoMtx = createGkoMtxDist(gkoExec_, comm, sys.matrix(), nonLocalMtx, commPattern);
 
     auto solver = factory_->generate(gkoMtx);
     return {solve_impl_dist(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
