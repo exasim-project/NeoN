@@ -55,10 +55,10 @@ class FaceToMatrixAddress
     std::shared_ptr<const SparsityPattern<IndexType>> sp_;
 
     // the common non-local sparsity pattern
-    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSp_;
+    std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSp_;
 
     // the common boundary sparsity pattern
-    std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
+    std::shared_ptr<const CooSparsityPattern<IndexType>> bsp_;
 
     // start of a given row.
     View<const IndexType> rowOffsV_;
@@ -75,8 +75,8 @@ public:
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
         std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
-        std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSparsityPattern,
-        std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+        std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSparsityPattern,
+        std::shared_ptr<const CooSparsityPattern<IndexType>> boundarySparsityPattern
     );
 
     /* @brief copy constructor */
@@ -86,12 +86,12 @@ public:
 
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
 
-    std::shared_ptr<const SparsityPattern<IndexType>> nonLocalSparsityPattern() const
+    std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSparsityPattern() const
     {
         return nonLocalSp_;
     }
 
-    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const
+    std::shared_ptr<const CooSparsityPattern<IndexType>> boundarySparsityPattern() const
     {
         return bsp_;
     }
