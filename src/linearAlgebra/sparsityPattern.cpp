@@ -35,8 +35,36 @@ SparsityPattern<IndexType>::SparsityPattern(const SparsityPattern& sp)
       colIdxsV_(colIdxs_.view())
 {}
 
+template<typename IndexType>
+void CooSparsityPattern<IndexType>::validate() const
+{
+    NF_ASSERT(rowOffs_.exec() == colIdxs_.exec(), "Executors are not the same");
+    NF_ASSERT(rowOffs_.size() == colIdxs_.size(), "COO size mismatch");
 
-#define NN_DECLARE_SPARSITY(TYPENAME) template class SparsityPattern<TYPENAME>
+    // TODO add something like his test assert
+    // auto rowCopy = rowOffs_.copyToHost();
+    // NF_ASSERT(rowCopy.view()[rowOffs_.size()-1] == colIdxs_.size(), "broken rowOffs");
+}
+
+template<typename IndexType>
+CooSparsityPattern<IndexType>::CooSparsityPattern(
+    Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs
+)
+    : rowOffs_(std::move(rowOffs)), colIdxs_(std::move(colIdx)), rowOffsV_(rowOffs_.view()),
+      colIdxsV_(colIdxs_.view())
+{
+    validate();
+}
+
+template<typename IndexType>
+CooSparsityPattern<IndexType>::CooSparsityPattern(const CooSparsityPattern& sp)
+    : rowOffs_(sp.rowOffs_), colIdxs_(sp.colIdxs_), rowOffsV_(rowOffs_.view()),
+      colIdxsV_(colIdxs_.view())
+{}
+
+#define NN_DECLARE_SPARSITY(TYPENAME)                                                              \
+    template class SparsityPattern<TYPENAME>;                                                      \
+    template class CooSparsityPattern<TYPENAME>
 
 NN_FOR_ALL_INTEGER_TYPES(NN_DECLARE_SPARSITY);
 

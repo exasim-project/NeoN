@@ -56,7 +56,10 @@ struct LinearSystemView
  * equations. It supports the storage of the coefficient matrix and the right-hand side vector, as
  * well as the solution vector.
  */
-template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
+template<
+    typename ValueType,
+    typename MatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
 class LinearSystem
 {
 
@@ -85,7 +88,7 @@ public:
           nonLocalMatrix_(
               Vector<ValueType>(
                   faceToMatrixAddress->exec(),
-                  faceToMatrixAddress->localNonZeros(),
+                  faceToMatrixAddress->nonLocalNonZeros(),
                   zero<ValueType>()
               ),
               faceToMatrixAddress->nonLocalSparsityPattern()
@@ -111,9 +114,9 @@ public:
 
     LinearSystem(
         const MatrixType& matrix,
-        const MatrixType& nonLocalMatrix,
+        const BoundaryMatrixType& nonLocalMatrix,
         const Vector<ValueType>& rhs,
-        const MatrixType& boundaryMatrix,
+        const BoundaryMatrixType& boundaryMatrix,
         const Vector<ValueType>& boundaryRhs,
         std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
     )
@@ -135,13 +138,13 @@ public:
 
     [[nodiscard]] const MatrixType& matrix() const { return matrix_; }
 
-    [[nodiscard]] MatrixType& boundaryMatrix() { return boundaryMatrix_; }
+    [[nodiscard]] BoundaryMatrixType& boundaryMatrix() { return boundaryMatrix_; }
 
-    [[nodiscard]] const MatrixType& nonLocalMatrix() const { return nonLocalMatrix_; }
+    [[nodiscard]] const BoundaryMatrixType& nonLocalMatrix() const { return nonLocalMatrix_; }
 
-    [[nodiscard]] MatrixType& nonLocalMatrix() { return nonLocalMatrix_; }
+    [[nodiscard]] BoundaryMatrixType& nonLocalMatrix() { return nonLocalMatrix_; }
 
-    [[nodiscard]] const MatrixType& boundaryMatrix() const { return boundaryMatrix_; }
+    [[nodiscard]] const BoundaryMatrixType& boundaryMatrix() const { return boundaryMatrix_; }
 
     [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
@@ -171,10 +174,10 @@ public:
             std::make_shared<SparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->sparsityPattern()->copyToHost()
             ),
-            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+            std::make_shared<CooSparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->nonLocalSparsityPattern()->copyToHost()
             ),
-            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+            std::make_shared<CooSparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->boundarySparsityPattern()->copyToHost()
             )
         );
@@ -286,12 +289,12 @@ private:
 
     // store values on boundaries that are non local
     // eg on processor boundaries
-    MatrixType nonLocalMatrix_;
+    BoundaryMatrixType nonLocalMatrix_;
 
     Vector<ValueType> rhs_;
 
     // store values on boundaries that are non local
-    MatrixType boundaryMatrix_;
+    BoundaryMatrixType boundaryMatrix_;
 
     Vector<ValueType> boundaryRhs_;
 
@@ -304,8 +307,11 @@ private:
 // FIXME TODO is env needed here
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, MatrixType>
+template<
+    typename ValueType,
+    typename InnerMatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
 createEmptyLinearSystem(const UnstructuredMesh& mesh, mpi::Environment env)
 {
     return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
