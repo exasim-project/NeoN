@@ -98,7 +98,7 @@ TEST_CASE("Distributed Operator")
 
     auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
 
-    exprDist.read(inputPart);
+    // exprDist.read(inputPart);
 
     auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
 
@@ -183,8 +183,8 @@ TEST_CASE("Distributed Operator")
     auto x = Vector<scalar>(exec, 12);
     fill(x, 0.0);
 
-    auto xPart = Vector<scalar>(exec, 4);
-    fill(xPart, 0.0);
+    // auto xPart = Vector<scalar>(exec, 4);
+    // fill(xPart, 0.0);
 
     auto solverStats = solver.solve(ls, x);
     auto solverStatsDist = solver.solve(lsDst, xPart);

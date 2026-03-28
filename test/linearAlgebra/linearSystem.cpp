@@ -62,7 +62,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         // FIXME
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(
-            csrMatrix, csrMatrix, rhs, csrMatrix, rhs, {}
+            csrMatrix, cooMatrix, rhs, cooMatrix, rhs, {}
         );
 
     SECTION("construct zero initialized from sparsity with CSR matrix " + execName)

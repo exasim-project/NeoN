@@ -192,6 +192,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
+        // FIXME
         Vector<scalar> bValues(exec, {});
         COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
