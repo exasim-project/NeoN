@@ -17,7 +17,9 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::SparsityPattern;
+using NeoN::la::CooSparsityPattern;
 using NeoN::la::CSRMatrix;
+using NeoN::la::COOMatrix;
 using NeoN::la::Matrix;
 using NeoN::la::Solver;
 
@@ -103,7 +105,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     auto sparsity =
         std::make_shared<SparsityPattern<localIdx>>(std::move(colIdx), std::move(rowOffs));
     auto bSparsity =
-        std::make_shared<SparsityPattern<localIdx>>(std::move(bColIdx), std::move(bRowOffs));
+        std::make_shared<CooSparsityPattern<localIdx>>(std::move(bColIdx), std::move(bRowOffs));
 
     SECTION("Solve linear system scalar " + execName)
     {
@@ -111,8 +113,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
+        // FIXME
         Vector<scalar> bValues(exec, {});
-        CSRMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        COOMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
         // FIXME
@@ -160,7 +163,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         CSRMatrix<Vec3, localIdx> csrMatrix(values, sparsity);
         Vector<Vec3> bValues(exec, {});
-        CSRMatrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
+        COOMatrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
         Vector<Vec3> bRhs(exec, {});
 
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
