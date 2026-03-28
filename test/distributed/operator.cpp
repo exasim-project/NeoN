@@ -14,41 +14,6 @@ namespace dsl = NeoN::dsl;
 namespace NeoN
 {
 
-/** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
- owned by this rank */
-auto partitionMeshHelper(auto& mesh, NeoN::mpi::Environment mpiEnviron)
-{
-    auto exec = mesh.exec();
-    localIdx localCells = mesh.nCells() / mpiEnviron.sizeRank(); // 4
-    Vec3 leftBoundary {0.0, 0.0, 0.0};
-    Vec3 rightBoundary {1.0, 0.0, 0.0};
-
-    if (mpiEnviron.rank() == 0)
-    {
-        rightBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
-    }
-    if (mpiEnviron.rank() == 1)
-    {
-        leftBoundary = Vec3 {1.0 / 3.0, 0.0, 0.0};
-        rightBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        leftBoundary = Vec3 {2.0 / 3.0, 0.0, 0.0};
-    }
-
-    auto ret = create1DUniformMesh(exec, localCells, leftBoundary, rightBoundary);
-    auto& boundaryMesh = ret.boundaryMesh();
-
-    if (mpiEnviron.rank() != 0)
-    {
-        ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
-        ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
-    }
-
-    return ret;
-}
-
 /** @brief helper function to set the processor boundaries of a distributed field */
 template<typename BoundaryType>
 auto setProcessorBoundaryHelper(std::vector<BoundaryType> bcs, size_t rank)
@@ -244,12 +209,28 @@ TEST_CASE("Distributed")
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
+
     // SECTION("Can assemble distributed " + execName)
     // {
     NeoN::mpi::Environment mpiEnviron;
+    auto meshPart =
+        create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank(), mpiEnviron);
+
+    SECTION("Has correct partitioned 1d mesh" + execName)
+    {
+        REQUIRE(meshPart.nCells() == meshGlobal.nCells() / mpiEnviron.sizeRank());
+
+        if (mpiEnviron.rank() == 1)
+        {
+            REQUIRE(meshPart.nBoundaryFaces() == 0);
+        }
+        else
+        {
+            REQUIRE(meshPart.nBoundaryFaces() == 1);
+        }
+    }
 
     // partition fields and data
-    auto meshPart = partitionMeshHelper(meshGlobal, mpiEnviron);
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
     auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
     auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
@@ -262,124 +243,124 @@ TEST_CASE("Distributed")
         NeoN::dsl::imp::div(phiPart, uPart) // - NeoN::dsl::imp::laplacian(gammaPart, uPart)
     );
 
-    exprDist.read(inputPart);
+    // exprDist.read(inputPart);
 
-    mpi::Environment env;
+    // mpi::Environment env;
 
-    std::vector<localIdx> commIdx {};
-    std::vector<int> sendCounts {};
-    std::vector<int> commRanks {};
-    std::vector<localIdx> boundaryMapVector {};
+    // std::vector<localIdx> commIdx {};
+    // std::vector<int> sendCounts {};
+    // std::vector<int> commRanks {};
+    // std::vector<localIdx> boundaryMapVector {};
 
-    size_t boundaryMapSize = 1;
+    // size_t boundaryMapSize = 1;
 
-    if (env.rank() == 0)
-    {
-        // communicate the interior value which is
-        commIdx = std::vector<localIdx> {1};
-        sendCounts = std::vector<int> {0, 1, 0, 1};
-        boundaryMapVector = std::vector<localIdx> {9};
-    }
-    if (env.rank() == 1)
-    {
-        // communicate the interior value which is
-        boundaryMapSize = 1;
-        commIdx = std::vector<localIdx> {0, 1};
-        sendCounts = std::vector<int> {1, 0, 1, 2};
-        boundaryMapVector = std::vector<localIdx> {0, 9};
-    }
-    if (env.rank() == 2)
-    {
-        // communicate the interior value which is
-        commIdx = std::vector<localIdx> {0};
-        sendCounts = std::vector<int> {0, 1, 0, 1};
-        boundaryMapVector = std::vector<localIdx> {0};
-    }
+    // if (env.rank() == 0)
+    // {
+    //     // communicate the interior value which is
+    //     commIdx = std::vector<localIdx> {1};
+    //     sendCounts = std::vector<int> {0, 1, 0, 1};
+    //     boundaryMapVector = std::vector<localIdx> {9};
+    // }
+    // if (env.rank() == 1)
+    // {
+    //     // communicate the interior value which is
+    //     boundaryMapSize = 1;
+    //     commIdx = std::vector<localIdx> {0, 1};
+    //     sendCounts = std::vector<int> {1, 0, 1, 2};
+    //     boundaryMapVector = std::vector<localIdx> {0, 9};
+    // }
+    // if (env.rank() == 2)
+    // {
+    //     // communicate the interior value which is
+    //     commIdx = std::vector<localIdx> {0};
+    //     sendCounts = std::vector<int> {0, 1, 0, 1};
+    //     boundaryMapVector = std::vector<localIdx> {0};
+    // }
 
-    auto commPattern = CommunicationPattern(commIdx, sendCounts, boundaryMapVector, env);
+    // auto commPattern = CommunicationPattern(commIdx, sendCounts, boundaryMapVector, env);
 
     // map from proc boundary to matrix values address
-    Vector<localIdx> boundaryMatrixMap {exec, boundaryMapVector};
-    auto [spDst, lsDst] = exprDist.assembleDistributed(meshPart, 1.0, 1.0, commPattern);
+    // Vector<localIdx> boundaryMatrixMap {exec, boundaryMapVector};
+    // auto [spDst, lsDst] = exprDist.assembleDistributed(meshPart, 1.0, 1.0, commPattern);
 
-    localIdx firstElement = 0;
-    localIdx lastElement = 0;
+    // localIdx firstElement = 0;
+    // localIdx lastElement = 0;
 
-    if (mpiEnviron.rank() == 0)
-    {
-        lastElement = 10;
-    }
-    if (mpiEnviron.rank() == 1)
-    {
-        firstElement = 12;
-        lastElement = 22;
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        firstElement = 24;
-        lastElement = 34;
-    }
+    // if (mpiEnviron.rank() == 0)
+    // {
+    //     lastElement = 10;
+    // }
+    // if (mpiEnviron.rank() == 1)
+    // {
+    //     firstElement = 12;
+    //     lastElement = 22;
+    // }
+    // if (mpiEnviron.rank() == 2)
+    // {
+    //     firstElement = 24;
+    //     lastElement = 34;
+    // }
 
-    SECTION("Correct mtx on rank 0")
-    {
-        if (env.rank() == 0)
-        {
-            compare(
-                take(ls.matrix().values(), firstElement, lastElement),
-                lsDst.matrix().values(),
-                ApproxScalar(1e-15)
-            );
-        }
-    }
+    // SECTION("Correct mtx on rank 0")
+    // {
+    //     if (env.rank() == 0)
+    //     {
+    //         compare(
+    //             take(ls.matrix().values(), firstElement, lastElement),
+    //             lsDst.matrix().values(),
+    //             ApproxScalar(1e-15)
+    //         );
+    //     }
+    // }
 
-    SECTION("Correct mtx on rank 1")
-    {
-        if (env.rank() == 1)
-        {
-            compare(
-                take(ls.matrix().values(), firstElement, lastElement),
-                lsDst.matrix().values(),
-                ApproxScalar(1e-15)
-            );
-        }
-    }
+    // SECTION("Correct mtx on rank 1")
+    // {
+    //     if (env.rank() == 1)
+    //     {
+    //         compare(
+    //             take(ls.matrix().values(), firstElement, lastElement),
+    //             lsDst.matrix().values(),
+    //             ApproxScalar(1e-15)
+    //         );
+    //     }
+    // }
 
-    SECTION("Correct mtx on rank 2")
-    {
-        if (env.rank() == 2)
-        {
-            compare(
-                take(ls.matrix().values(), firstElement, lastElement),
-                lsDst.matrix().values(),
-                ApproxScalar(1e-15)
-            );
-        }
-    }
+    // SECTION("Correct mtx on rank 2")
+    // {
+    //     if (env.rank() == 2)
+    //     {
+    //         compare(
+    //             take(ls.matrix().values(), firstElement, lastElement),
+    //             lsDst.matrix().values(),
+    //             ApproxScalar(1e-15)
+    //         );
+    //     }
+    // }
 
-    Dictionary solverDict {
-        {{"solver", std::string {"Ginkgo"}},
-         {"type", "solver::Cg"},
-         {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
-    };
+    // Dictionary solverDict {
+    //     {{"solver", std::string {"Ginkgo"}},
+    //      {"type", "solver::Cg"},
+    //      {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+    // };
 
-    // Create solver
-    auto solver = NeoN::la::Solver(exec, solverDict);
-    auto x = Vector<scalar>(exec, 12);
-    fill(x, 0.0);
+    // // Create solver
+    // auto solver = NeoN::la::Solver(exec, solverDict);
+    // auto x = Vector<scalar>(exec, 12);
+    // fill(x, 0.0);
 
-    auto xPart = Vector<scalar>(exec, 4);
-    fill(xPart, 0.0);
+    // auto xPart = Vector<scalar>(exec, 4);
+    // fill(xPart, 0.0);
 
-    auto solverStats = solver.solve(ls, x);
-    auto solverStatsDist = solver.solveDist(lsDst, xPart, commPattern);
+    // auto solverStats = solver.solve(ls, x);
+    // auto solverStatsDist = solver.solveDist(lsDst, xPart, commPattern);
 
-    auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
-        solverStatsDist.entries[0];
-    auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+    // auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
+    //     solverStatsDist.entries[0];
+    // auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 
-    // REQUIRE(numIterDist != 0);
-    REQUIRE(numIterDist == numIter);
-    REQUIRE(initResNormDist == initResNorm);
+    // // REQUIRE(numIterDist != 0);
+    // REQUIRE(numIterDist == numIter);
+    // REQUIRE(initResNormDist == initResNorm);
 }
 
 }

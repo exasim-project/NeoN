@@ -260,4 +260,29 @@ UnstructuredMesh create1DUniformMesh(
         boundaryMesh
     );
 }
+
+/* @brief helper to create a part of a global 1D mesh
+ *
+ */
+UnstructuredMesh
+create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environment mpiEnviron)
+{
+    Vec3 leftBoundary {static_cast<scalar>(mpiEnviron.rank()) / mpiEnviron.sizeRank(), 0.0, 0.0};
+    Vec3 rightBoundary {
+        static_cast<scalar>(mpiEnviron.rank() + 1) / mpiEnviron.sizeRank(), 0.0, 0.0
+    };
+
+    auto ret = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
+    auto& boundaryMesh = ret.boundaryMesh();
+
+    // FIXME doesnt work on GPU
+    if (mpiEnviron.rank() != 0)
+    {
+        ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
+        ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    }
+
+    return ret;
+}
+
 } // namespace NeoN

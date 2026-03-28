@@ -318,5 +318,15 @@ UnstructuredMesh create1DUniformMesh(
     Vec3 right = {1.0, 0.0, 0.0}
 );
 
+/** @brief A factory function for a 1D mesh
+ *
+ * A 1D mesh in 3D space in which each cell has a left and a right face.
+ * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
+ *
+ * @param nCells number of local cells on this rank
+ */
+UnstructuredMesh create1DUniformMeshPart(
+    const Executor exec, const localIdx nCells, NeoN::mpi::Environment mpiEnviron
+);
 
 } // namespace NeoN
