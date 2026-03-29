@@ -12,7 +12,7 @@ namespace NeoN::la::ginkgo
 
 /*@brief create a dense const view into data given by ptr*/
 // std::shared_ptr<const gko::matrix::Dense<scalar>>
-std::shared_ptr<gko::LinOp> gkoVecView(
+std::shared_ptr<gko::LinOp> gkoVecViewDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
     const scalar* ptr,
@@ -56,7 +56,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
     const CSRMatrix<scalar, IndexType>& mtx,  //, local mtx
-    const CSRMatrix<scalar, IndexType>& bmtx, //, local mtx
+    const COOMatrix<scalar, IndexType>& bmtx, //, local mtx
     CommunicationPattern& commPattern
     // const LinearSystem<scalar, IndexType>& ls
 )
@@ -97,28 +97,35 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             ->clone();
 
     // Non local part of matrix
-    auto numNonLocalElements = commPattern.commIdx.size();
-    std::cout << __FILE__ << " : " << __LINE__ << " numNonLocalElements " << numNonLocalElements
-              << "\n";
+    auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
 
     // FIXME currently no communication with other rank
     // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
-    auto recv_connections = gko::array<label>(exec, numNonLocalElements);
+    // const auto recv_connections = gkoArrayView(exec, );
+    auto bmtxv = bmtx.sparsity()->colIdxs();
+    gko::array<int> recv_connections = gko::make_array_view(exec, bmtxv.size(), bmtxv.data());
+    // gko::array<label>(exec, numNonLocalElements);
 
     auto imap = gko::experimental::distributed::index_map<label, label>(
         exec, partition, comm.rank(), recv_connections
     );
 
-    // FIXME this the complete boundary matrix but we only need the processor values
     auto non_loc_vals = gko::array<scalar>::const_view(
         exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.values().data()
-    );
-    auto non_loc_col = gko::array<IndexType>::const_view(
-        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->colIdxs().data()
     );
     auto non_loc_row = gko::array<IndexType>::const_view(
         exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->rowOffs().data()
     );
+
+    auto non_loc_col = gko::array<IndexType>::const_view(
+                           exec,
+                           static_cast<gko::size_type>(numNonLocalElements),
+                           bmtx.sparsity()->colIdxs().data()
+    )
+                           .copy_to_array();
+
+    auto comp_non_loc_col =
+        imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
 
     // FIXME why cloned?
     std::shared_ptr<gko::LinOp> nonLocalMtx =
@@ -126,15 +133,14 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
                        exec,
                        gko::dim<2> {nrows, numNonLocalElements},
                        std::move(non_loc_vals),
-                       std::move(non_loc_col),
+                       // std::move(non_loc_col),
+                       comp_non_loc_col.as_const_view(),
                        std::move(non_loc_row)
                    ))
             ->clone();
 
-    std::cout << __FILE__ << " : " << __LINE__ << " write to disk\n ";
-    writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
-    writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
-
+    // writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
+    // writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
     return gko::share(dist_mtx::create(exec, comm, imap, localMtx, nonLocalMtx));
 }
 
@@ -157,24 +163,29 @@ SolverStatsEntry solve_impl_dist(
 
     using vec = gko::matrix::Dense<scalar>;
     label nrows = rhs.size();
-    const auto b = gkoVecView(exec, comm, rhs.data(), nrows);
-    auto x = gkoVecView(exec, comm, xIn.data(), nrows);
+
+    const auto b = gkoVecViewDist(exec, comm, rhs.data(), nrows);
+    auto x = gkoVecViewDist(exec, comm, xIn.data(), nrows);
 
     // create a copy of rhs so that we can inline compute
     // the residual
     auto rhsCopy = Vector<scalar>(rhs);
-    auto res = gkoVecView(exec, comm, rhsCopy.data(), nrows);
+    auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
 
     // compute Ax-b -> res
     auto one = gko::initialize<vec>({1.0}, exec);
+
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    mtx->apply(one, x, neg_one, res);
+    // FIXME
+    // mtx->apply(one, x, neg_one, res);
 
     // FIXME dont re-init
-    auto init = gko::initialize<vec>({0.0}, exec);
-    using dist_vec = gko::experimental::distributed::Vector<scalar>;
-    gko::as<dist_vec>(res)->compute_norm2(init);
-    scalar initResNorm = retrieve(init);
+    // NF_PING();
+    // auto init = gko::initialize<vec>({0.0}, exec);
+    // using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    // gko::as<dist_vec>(res)->compute_norm2(init);
+    // scalar initResNorm = retrieve(init);
+    scalar initResNorm = 0.0; // retrieve(init);
 
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
@@ -207,23 +218,19 @@ SolverStats GinkgoSolver::solveDist(
     mpi::Environment env;
     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
 
-    auto numNonLocalElements = commPattern.commIdx.size();
+    auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
 
     // FIXME
-    NeoN::Vector<scalar> valuesSparse(exec_, numNonLocalElements);
-    NeoN::Vector<NeoN::localIdx> colIdxSparse(exec_, numNonLocalElements);
+    // NeoN::Vector<scalar> valuesSparse(exec_, numNonLocalElements);
+    // NeoN::Vector<NeoN::localIdx> colIdxSparse(exec_, numNonLocalElements);
 
-    auto copyMap = Vector<localIdx>(exec_, commPattern.commIdx);
-    copy(sys.boundaryMatrix().values(), copyMap, valuesSparse);
+    // auto copyMap = Vector<localIdx>(exec_, commPattern.commIdx);
+    // copy(sys.nonLocalMatrix().values(), copyMap, valuesSparse);
 
     // compute corresponding rows
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec_, numNonLocalElements);
 
-    NeoN::la::CSRMatrix<scalar, NeoN::localIdx> nonLocalMtx(
-        valuesSparse, colIdxSparse, rowOffsSparse
-    );
-
-    auto gkoMtx = createGkoMtxDist(gkoExec_, comm, sys.matrix(), nonLocalMtx, commPattern);
+    auto gkoMtx = createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.nonLocalMatrix(), commPattern);
 
     auto solver = factory_->generate(gkoMtx);
     return {solve_impl_dist(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};

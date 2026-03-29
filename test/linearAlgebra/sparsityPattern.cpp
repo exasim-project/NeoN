@@ -14,6 +14,7 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN
 {
 
+// FIXME needs tests for COO and CSR sparsity pattern
 TEST_CASE("SparsityPattern")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -22,6 +23,7 @@ TEST_CASE("SparsityPattern")
 
     auto mesh = create1DUniformMesh(exec, nCells);
     auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    // internal sparsity
     auto sp = mi->sparsityPattern();
 
     // clang-format off
@@ -42,6 +44,27 @@ TEST_CASE("SparsityPattern")
 
         REQUIRE_THAT(rowPtrExp, IsEqualTo(sp->rowOffs(), EqualInt()));
         REQUIRE_THAT(colIdxExp, IsEqualTo(sp->colIdxs(), EqualInt()));
+    }
+
+    auto bsp = mi->boundarySparsityPattern();
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
+    {
+        auto rowPtrExp = Vector<localIdx>(exec, {0, 3});
+        // auto colIdxExp = Vector<localIdx>(exec, {0, 4});
+
+        compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+        // compare(bsp->colIdxs(), colIdxExp, EqualInt());
+    }
+
+    // since this is not an MPI test nonLocalMtx is empty
+    auto nonLocalSp = mi->nonLocalSparsityPattern();
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
+    {
+        auto rowPtrExp = Vector<localIdx>(exec, {});
+        auto colIdxExp = Vector<localIdx>(exec, {});
+
+        compare(nonLocalSp->rowOffs(), rowPtrExp, EqualInt());
+        compare(nonLocalSp->colIdxs(), colIdxExp, EqualInt());
     }
 }
 

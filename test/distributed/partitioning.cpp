@@ -19,129 +19,6 @@ auto setProcessorBoundaryHelper(std::vector<BoundaryType> bcs, size_t rank)
     return bcs;
 }
 
-/** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
- owned by this rank */
-template<typename FieldType>
-FieldType
-partitionVolField(FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)
-{
-    localIdx localCells = mesh.nCells();
-    localIdx firstCell = 0;
-    localIdx lastCell = localCells;
-
-    if (mpiEnviron.rank() == 0)
-    {
-        lastCell = localCells;
-    }
-    if (mpiEnviron.rank() == 1)
-    {
-        firstCell = localCells;
-        lastCell = localCells + localCells;
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        firstCell = localCells + localCells;
-        lastCell = localCells + localCells + localCells;
-    }
-
-    auto internalVector = take(field.internalVector(), firstCell, lastCell);
-
-    return {field.exec(), field.name + "Part", mesh, internalVector, bcs};
-}
-
-/** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
- owned by this rank */
-template<typename FieldType>
-FieldType partitionSurfaceField(
-    FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip = false
-)
-{
-    auto exec = mesh.exec();
-    localIdx localCells = mesh.nCells();  // 4
-    localIdx localFaces = localCells - 1; // 3
-    localIdx firstFace = 0;
-    localIdx lastFace = localFaces;
-
-    localIdx leftBoundaryFace = 0;
-    localIdx rightBoundaryFace = 0;
-
-    scalar signLeft = 1.0;
-    scalar signRight = 1.0;
-
-    // [ 0 | 1 | 2 | 3 ][ 4 | 5 | 6 | 7 ][ 8 | 9 | 10 | 11 ]
-    // 11  0   1   2   3    4   5   6   7    8   9   10   12
-
-    if (mpiEnviron.rank() == 0)
-    {
-        lastFace = localFaces + 1;             // 4
-        leftBoundaryFace = 3 * localFaces + 2; // 11
-        rightBoundaryFace = localFaces;        // 3
-    }
-    if (mpiEnviron.rank() == 1)
-    {
-        firstFace = localFaces + 1;            // 4  last face rank 0
-        lastFace = firstFace + localFaces + 1; // 8
-
-        leftBoundaryFace = localFaces;                     // should be 3
-        rightBoundaryFace = leftBoundaryFace + localCells; // should 3 + 4
-
-        // new face has different direction compared to unpartitioned case
-        // signRight = -1.0;
-        if (flip)
-        {
-            signLeft = -1.0;
-        }
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        firstFace = localCells + localCells; // 8 last face rank 1
-        lastFace = firstFace + localFaces + 1;
-
-        leftBoundaryFace = 2 * localFaces + 1;                 // 7
-        rightBoundaryFace = leftBoundaryFace + localCells + 1; // 12
-
-        // new face has different direction compared to unpartitioned case
-        if (flip)
-        {
-            signLeft = -1.0;
-        }
-    }
-
-    FieldType ret = {field.exec(), field.name + "Part", mesh, bcs};
-
-    // NOTE last two values are boundaries and are overwritten next
-    auto internalVector = take(field.internalVector(), firstFace, lastFace + 1);
-    // value lastFace  and lastFace+1 are incorrect
-    // value lastFace is the left boundary
-    // and lastFace + 1 is at the new boundary so it should be lastFace
-
-    auto outV = internalVector.view();
-    auto inV = field.internalVector().view();
-
-
-    // set left boundary face
-    NeoN::parallelFor(
-        // lastface
-        exec,
-        {0, 1},
-        NEON_LAMBDA(const localIdx i) { outV[localFaces] = signLeft * inV[leftBoundaryFace]; },
-        "copyMap"
-    );
-
-    NeoN::parallelFor(
-        exec,
-        {0, 1},
-        NEON_LAMBDA(const localIdx i) {
-            outV[localFaces + 1] = signRight * inV[rightBoundaryFace];
-        },
-        "copyMap"
-    );
-
-    NF_ASSERT(ret.internalVector().size() == internalVector.size(), "different size");
-    ret.internalVector() = internalVector;
-    return ret;
-}
-
 TEST_CASE("Distributed")
 {
     // start with non distributed setup
@@ -150,19 +27,160 @@ TEST_CASE("Distributed")
     // global number of cells
     auto nCells = 12;
     NeoN::mpi::Environment mpiEnviron;
-    auto meshPart = create1DUniformMeshPart(exec, nCells / mpiEnviron.sizeRank(), mpiEnviron);
+    auto [meshPart, commPattern] =
+        create1DUniformMeshPart(exec, nCells / mpiEnviron.sizeRank(), mpiEnviron);
 
     SECTION("Has correct partitioned 1d mesh" + execName)
     {
         REQUIRE(meshPart.nCells() == nCells / mpiEnviron.sizeRank());
+        REQUIRE(meshPart.nInternalFaces() == 3);
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank == 0 has correct proc boundary " + execName)
+        {
+            // FIXME
+            // auto phiExp = Vector<scalar>(exec, {1.0, 2.0, 3.0, 20.0, 4.0});
+            // {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 20.0, 30.0}
 
-        if (mpiEnviron.rank() == 1)
+            REQUIRE(meshPart.nBoundaryFaces() == 1);
+            REQUIRE(meshPart.nProcBoundaryFaces() == 1);
+            REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 1);
+        }
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
             REQUIRE(meshPart.nBoundaryFaces() == 0);
+            REQUIRE(meshPart.nProcBoundaryFaces() == 2);
+            REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 2);
         }
-        else
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank == 2 has correct proc boundary " + execName)
         {
             REQUIRE(meshPart.nBoundaryFaces() == 1);
+            REQUIRE(meshPart.nProcBoundaryFaces() == 1);
+            REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 1);
+        }
+    }
+    SECTION("Has correct communication pattern " + execName)
+    {
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
+        {
+            auto sendCountsExp = std::vector<int> {0, 1, 0, 1};
+            auto recvIdxExp = std::vector<int> {4};
+            REQUIRE(commPattern.sendCounts == sendCountsExp);
+            REQUIRE(commPattern.recvIdx == recvIdxExp);
+        }
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
+        {
+            auto sendCountsExp = std::vector<int> {1, 0, 1, 2};
+            auto recvIdxExp = std::vector<int> {3, 8};
+            REQUIRE(commPattern.sendCounts == sendCountsExp);
+            REQUIRE(commPattern.recvIdx == recvIdxExp);
+        }
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
+        {
+            auto sendCountsExp = std::vector<int> {0, 1, 0, 1};
+            auto recvIdxExp = std::vector<int> {7};
+            REQUIRE(commPattern.sendCounts == sendCountsExp);
+            REQUIRE(commPattern.recvIdx == recvIdxExp);
+        }
+    }
+
+    auto mesh = create1DUniformMesh(exec, nCells);
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto U = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+
+    auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
+    auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
+    auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
+
+    SECTION("Has correct partitioned VolumeField" + execName)
+    {
+        REQUIRE(uPart.internalVector().size() == nCells / mpiEnviron.sizeRank());
+        REQUIRE(uPart.boundaryData().nBoundaries() == 2);
+    }
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto phiInternal =
+        Vector<scalar>(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 20.0, 30.0});
+    phi.internalVector() = phiInternal;
+
+    auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
+    auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
+    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, true);
+    SECTION("Has correct partitioned SurfaceField" + execName)
+    {
+        REQUIRE(phiPart.boundaryData().nBoundaries() == 2);
+        // NOTE
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
+        {
+            auto phiExp = Vector<scalar>(exec, {1.0, 2.0, 3.0, 20.0, 4.0});
+            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+        }
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
+        {
+            auto phiExp = Vector<scalar>(exec, {5.0, 6.0, 7.0, -4.0, 8.0});
+            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+        }
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
+        {
+            auto phiExp = Vector<scalar>(exec, {9.0, 10.0, 11.0, 30.0, -8.0});
+            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+        }
+    }
+
+    SECTION("Can produce correct nonLocalSparsityPattern" + execName)
+    {
+        auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddressDist<NeoN::localIdx>(
+            meshPart, commPattern
+        );
+        auto sp = mi->sparsityPattern();
+
+        SECTION("Can produce internal rowOffs and colIdx " + execName)
+        {
+            auto rowPtrExp = Vector<localIdx>(exec, {0, 2, 5, 8, 10});
+            auto colIdxExp = Vector<localIdx>(exec, {0, 1, 0, 1, 2, 1, 2, 3, 2, 3});
+
+            compare(sp->rowOffs(), rowPtrExp, EqualInt());
+            compare(sp->colIdxs(), colIdxExp, EqualInt());
+        }
+
+        auto bsp = mi->boundarySparsityPattern();
+        auto nsp = mi->nonLocalSparsityPattern();
+        auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), mi);
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
+        {
+            auto rowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
+            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {3});
+            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {4});
+            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {9});
+            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
+            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
+            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
+        }
+        SECTION_IF(
+            mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary (no boundary) " + execName
+        )
+        {
+            auto rowPtrExp = Vector<localIdx>(exec, {});
+            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0, 3});
+            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {3, 8});
+            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {0, 9});
+            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
+            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
+            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
+        }
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
+        {
+            auto rowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {3});
+            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
+            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {7});
+            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
+            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
+            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
+            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
         }
     }
 }

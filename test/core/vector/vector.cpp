@@ -299,3 +299,18 @@ TEST_CASE("copyMap")
     REQUIRE(cH.view()[1] == 3.0);
     REQUIRE(cH.view()[2] == 5.0);
 }
+
+TEST_CASE("freeFunctions")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::Vector<NeoN::scalar> a(exec, {1, 2, 3, 4, 5, 6});
+
+    auto takeRes = take(a, 1, 4);
+    auto takeResH = takeRes.copyToHost();
+
+    REQUIRE(takeRes.size() == 3);
+    REQUIRE(takeRes.view()[0] == 2.0);
+    REQUIRE(takeRes.view()[1] == 3.0);
+    REQUIRE(takeRes.view()[2] == 4.0);
+}

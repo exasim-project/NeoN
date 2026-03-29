@@ -197,23 +197,13 @@ public:
         auto mpiEnv = commPattern.env;
         int commRanks = mpiEnv.sizeRank();
 
-        auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
+        // auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
+        auto nsp = faceToMatrixAddress_->nonLocalSparsityPattern();
+        auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), faceToMatrixAddress_);
 
         // 1. copy bValues which need to be communicated into sendBuffer
         auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
-        auto commBuffer = Vector<ValueType>(exec(), commSize);
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
-
-        // TODO with the right displacements boundary values could be taken
-        // directly without copy to a sendbuffer first. however the recv is still needed
-        //
-        // copy map needs to be on the device for filling the consecutive
-        // sendBuffer but for sending with mpi data is on the host
-        auto copyMap = Vector<localIdx>(exec(), commPattern.commIdx);
-        copy(boundaryMatrix_.values(), copyMap, commBuffer);
-
-        // zero out processor boundary values
-        // set(0.0, copyMap, boundaryMatrix_.values());
 
         // TODO compute using scan
         auto sdispls = std::vector<int>(commRanks, 0);
@@ -224,7 +214,7 @@ public:
         }
 
         MPI_Alltoallv(
-            commBuffer.data(),
+            nonLocalMatrix_.values().data(),
             commPattern.sendCounts.data(),
             sdispls.data(),
             mpi::getType<ValueType>(),
@@ -235,9 +225,14 @@ public:
             mpiEnv.comm()
         );
 
+        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
+                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
+
         // 3. apply received values to corresponding matrix
         // add diagonal contributions
-        sub(recvBuffer, boundaryMatrixMap, matrix_.values());
+        add(recvBuffer, rowToDiagonalMap, matrix_.values());
+        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
+                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
     }
 
     // FIXME needed?
@@ -298,7 +293,6 @@ private:
 
     Vector<ValueType> boundaryRhs_;
 
-
     Dictionary auxiliaryCoefficients_;
 
     std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
@@ -315,6 +309,19 @@ LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
 createEmptyLinearSystem(const UnstructuredMesh& mesh, mpi::Environment env)
 {
     return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
+}
+
+// FIXME TODO is env needed here
+/*@brief helper function that creates a zero initialised linear system based on a given mesh
+ */
+template<
+    typename ValueType,
+    typename InnerMatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
+createEmptyDistributedLinearSystem(const UnstructuredMesh& mesh, CommunicationPattern& commPattern)
+{
+    return {createSparsityPatternFaceToMatrixAddressDist<NeoN::localIdx>(mesh, commPattern)};
 }
 
 
