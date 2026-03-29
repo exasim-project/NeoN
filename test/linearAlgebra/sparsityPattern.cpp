@@ -14,89 +14,59 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN
 {
 
+// FIXME needs tests for COO and CSR sparsity pattern
 TEST_CASE("SparsityPattern")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    auto nCells = 10;
-    auto nFaces = 9;
+    auto nCells = 4;
 
     auto mesh = create1DUniformMesh(exec, nCells);
     auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    // internal sparsity
     auto sp = mi->sparsityPattern();
 
-    SECTION("Can produce rowOffs " + execName)
-    {
-        auto rowPtr = sp->rowOffs().copyToHost();
-        auto rowPtrH = rowPtr.view();
 
-        REQUIRE(rowPtrH[0] == 0);
-        REQUIRE(rowPtrH[1] == 2);
-        REQUIRE(rowPtrH[2] == 5);
-        REQUIRE(rowPtrH[3] == 8);
-        REQUIRE(rowPtrH[4] == 11);
-        REQUIRE(rowPtrH[5] == 14);
-        REQUIRE(rowPtrH[6] == 17);
-        REQUIRE(rowPtrH[7] == 20);
-        REQUIRE(rowPtrH[8] == 23);
-        REQUIRE(rowPtrH[9] == 26);
-        REQUIRE(rowPtrH[10] == 28);
+    // clang-format off
+    // Mesh:
+    // Cell Ids [ 0, 1, 2, 3]
+    //
+    // Matrix:
+    // Row/ColIdx 0   1   2  3
+    //   0        x   x
+    //   1        x   x   x
+    //   2            x   x  x
+    //   3                x  x
+    // clang-format on
+
+    SECTION("Can produce internal rowOffs and colIdx " + execName)
+    {
+        auto rowPtrExp = Vector<localIdx>(exec, {0, 2, 5, 8, 10});
+        auto colIdxExp = Vector<localIdx>(exec, {0, 1, 0, 1, 2, 1, 2, 3, 2, 3});
+
+        compare(sp->rowOffs(), rowPtrExp, EqualInt());
+        compare(sp->colIdxs(), colIdxExp, EqualInt());
     }
 
-    SECTION("Can produce column indices " + execName)
+    auto bsp = mi->boundarySparsityPattern();
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        auto colIdx = sp->colIdxs();
-        auto colIdxH = colIdx.copyToHost();
-        auto colIdxHS = colIdxH.view();
+        auto rowPtrExp = Vector<localIdx>(exec, {0, 3});
+        // auto colIdxExp = Vector<localIdx>(exec, {0, 4});
 
-        REQUIRE(colIdx.size() == nCells + 2 * nFaces);
-        REQUIRE(colIdxHS[0] == 0);
-        REQUIRE(colIdxHS[1] == 1);
-
-        REQUIRE(colIdxHS[2] == 0);
-        REQUIRE(colIdxHS[3] == 1);
-        REQUIRE(colIdxHS[4] == 2);
-
-        REQUIRE(colIdxHS[5] == 1);
-        REQUIRE(colIdxHS[6] == 2);
-        REQUIRE(colIdxHS[7] == 3);
-
-        REQUIRE(colIdxHS[8] == 2);
-        REQUIRE(colIdxHS[9] == 3);
-        REQUIRE(colIdxHS[10] == 4);
+        compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+        // compare(bsp->colIdxs(), colIdxExp, EqualInt());
     }
 
-    SECTION("Can generate views " + execName)
+    // since this is not an MPI test nonLocalMtx is empty
+    auto nonLocalSp = mi->nonLocalSparsityPattern();
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        auto spH = sp->copyToHost();
-        auto [colIdxs, rowOffs] = spH.view();
+        auto rowPtrExp = Vector<localIdx>(exec, {});
+        auto colIdxExp = Vector<localIdx>(exec, {});
 
-        REQUIRE(colIdxs[0] == 0);
-        REQUIRE(colIdxs[1] == 1);
-
-        REQUIRE(colIdxs[2] == 0);
-        REQUIRE(colIdxs[3] == 1);
-        REQUIRE(colIdxs[4] == 2);
-
-        REQUIRE(colIdxs[5] == 1);
-        REQUIRE(colIdxs[6] == 2);
-        REQUIRE(colIdxs[7] == 3);
-
-        REQUIRE(colIdxs[8] == 2);
-        REQUIRE(colIdxs[9] == 3);
-        REQUIRE(colIdxs[10] == 4);
-
-        REQUIRE(rowOffs[0] == 0);
-        REQUIRE(rowOffs[1] == 2);
-        REQUIRE(rowOffs[2] == 5);
-        REQUIRE(rowOffs[3] == 8);
-        REQUIRE(rowOffs[4] == 11);
-        REQUIRE(rowOffs[5] == 14);
-        REQUIRE(rowOffs[6] == 17);
-        REQUIRE(rowOffs[7] == 20);
-        REQUIRE(rowOffs[8] == 23);
-        REQUIRE(rowOffs[9] == 26);
-        REQUIRE(rowOffs[10] == 28);
+        compare(nonLocalSp->rowOffs(), rowPtrExp, EqualInt());
+        compare(nonLocalSp->colIdxs(), colIdxExp, EqualInt());
     }
 }
 

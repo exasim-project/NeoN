@@ -17,11 +17,14 @@ namespace NeoN
 struct CommunicationPattern
 {
     // indices which values in bMatrix need to be communicated
-    std::vector<localIdx> commIdx;
+    // std::vector<localIdx> commIdx;
 
     // number of elements to send neighbouring ranks
     // where sendCounts[comm.size] = total number of send elements
     std::vector<int> sendCounts;
+
+    // the global index of the neighbour cell
+    std::vector<int> recvIdx;
 
     std::vector<localIdx> boundaryMapVector;
 
