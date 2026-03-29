@@ -10,6 +10,8 @@
 namespace NeoN
 {
 
+void BoundaryMesh::validate() const {}
+
 BoundaryMesh::BoundaryMesh(
     const Executor& exec,
     labelVector faceCells,
@@ -111,7 +113,7 @@ View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
-localIdx BoundaryMesh::procBoundaryPatches() const { return procBoundaryPatches_; }
+localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 

@@ -7,6 +7,7 @@
 #include "NeoN/core/array.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN::la
 {
@@ -156,5 +157,38 @@ public:
 template<typename IndexType>
 std::shared_ptr<const FaceToMatrixAddress<IndexType>>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
+
+template<typename IndexType>
+std::shared_ptr<const FaceToMatrixAddress<IndexType>> createSparsityPatternFaceToMatrixAddressDist(
+    const UnstructuredMesh& mesh, CommunicationPattern& commPattern
+);
+
+/**@brief given a set of rows this function computes the corresponding value offsets */
+inline Vector<localIdx> computeRowToDiagonalMap(
+    const Vector<localIdx>& rows, std::shared_ptr<const FaceToMatrixAddress<>> matIt
+)
+{
+
+    const auto exec = rows.exec();
+    Vector<localIdx> ret(exec, rows.size());
+    auto retV = ret.view();
+    const auto rowsV = rows.view();
+    const auto [rowOffs, diagOffs] =
+        views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
+
+    parallelFor(
+        exec,
+        {0, ret.size()},
+        KOKKOS_LAMBDA(const localIdx i) {
+            localIdx cell = rowsV[i];
+            auto rowStart = rowOffs[cell];
+            retV[i] = rowStart + diagOffs[cell];
+        },
+        "computeRowToDiagonalMap"
+    );
+
+    return ret;
+}
+
 
 }
