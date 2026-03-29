@@ -272,17 +272,49 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
         static_cast<scalar>(mpiEnviron.rank() + 1) / mpiEnviron.sizeRank(), 0.0, 0.0
     };
 
-    auto ret = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
-    auto& boundaryMesh = ret.boundaryMesh();
-
-    // FIXME doesnt work on GPU
-    if (mpiEnviron.rank() != 0)
+    localIdx nProcBoundaryPatches = 2;
+    if (mpiEnviron.rank() == 0 || mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
     {
-        ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
-        ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+        nProcBoundaryPatches = 1;
     }
 
-    return ret;
+    auto tmp = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
+    BoundaryMesh boundaryMesh(
+        exec,
+        {exec, {0, nCells - 1}},
+        {exec, {leftBoundary, rightBoundary}},
+        tmp.boundaryMesh().cn(),
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
+        {exec, {1.0, 1.0}},
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
+        tmp.boundaryMesh().delta(), // deltaCoeffs --> mag(1 / delta)
+        {exec, {1.0, 1.0}},
+        tmp.boundaryMesh().deltaCoeffs(), // deltaCoeffs --> mag(1 / delta)
+        {0, 1, 2},                        // offset
+        nProcBoundaryPatches,             // number of proc boundary patches
+        {}                                // neighbourRank
+    );
+
+    return UnstructuredMesh(
+        tmp.points(),
+        tmp.cellVolumes(),
+        tmp.cellCentres(),
+        tmp.faceAreas(),
+        tmp.faceCentres(),
+        tmp.magFaceAreas(),
+        tmp.faceOwner(),
+        tmp.faceNeighbour(),
+        boundaryMesh
+    );
+
+    // FIXME doesnt work on GPU
+    // if (mpiEnviron.rank() != 0)
+    // {
+    //     ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
+    //     ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    // }
+
+    // return ret;
 }
 
 } // namespace NeoN
