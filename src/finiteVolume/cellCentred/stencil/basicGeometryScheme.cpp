@@ -135,11 +135,42 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 }
 
 
-void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
-    [[maybe_unused]] const Executor& exec, [[maybe_unused]] SurfaceField<Vec3>& nonOrthDeltaCoeffs
+void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
+    const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
 {
-    NF_ERROR_EXIT("Not implemented");
+    const auto [owner, neighbour, surfFaceCells] =
+        views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
+
+    const auto [cellCentre, faceAreaVec3, faceArea] =
+        views(mesh_.cellCentres(), mesh_.faceAreas(), mesh_.magFaceAreas());
+
+    const auto [corrVec, corrVecB] = views(
+        nonOrthCorrectionVec3s.internalVector(), nonOrthCorrectionVec3s.boundaryData().value()
+    );
+
+    const auto nInternalFaces = mesh_.nInternalFaces();
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            Vec3 delta = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
+            Vec3 n = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+            scalar orthoDist = n & delta;
+            scalar nonOrthDeltaCoeff = 1.0 / std::max(orthoDist, scalar(0.05) * mag(delta));
+            corrVec[facei] = n - delta * nonOrthDeltaCoeff;
+        },
+        "basicGeometricScheme::updateNonOrthCorrectionVec3sInternal"
+    );
+
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) { corrVecB[bfi] = zero<Vec3>(); },
+        "basicGeometricScheme::updateNonOrthCorrectionVec3sBoundary"
+    );
 }
 
 } // namespace NeoN

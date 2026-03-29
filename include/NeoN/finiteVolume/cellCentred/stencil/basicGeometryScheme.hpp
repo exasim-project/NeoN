@@ -27,8 +27,9 @@ public:
     void updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs)
         override;
 
-    void
-    updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<Vec3>& nonOrthDeltaCoeffs) override;
+    void updateNonOrthCorrectionVec3s(
+        const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
+    ) override;
 
 
 private:

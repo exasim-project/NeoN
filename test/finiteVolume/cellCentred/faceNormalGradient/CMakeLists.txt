@@ -3,3 +3,5 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_unit_test(uncorrected)
+neon_unit_test(corrected)
+neon_unit_test(limitedCorrected)

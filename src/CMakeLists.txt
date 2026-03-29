@@ -61,6 +61,8 @@ target_sources(
           "finiteVolume/cellCentred/interpolation/linear.cpp"
           "finiteVolume/cellCentred/interpolation/upwind.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
+          "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
+          "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
           "finiteVolume/cellCentred/auxiliary/coNum.cpp"
           "timeIntegration/timeIntegration.cpp"
           "timeIntegration/rungeKutta.cpp")
