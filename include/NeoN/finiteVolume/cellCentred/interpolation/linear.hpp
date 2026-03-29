@@ -78,6 +78,7 @@ public:
         const SurfaceField<scalar>&, const VolumeField<ValueType>&, SurfaceField<scalar>& weight
     ) const override
     {
+        NF_PING();
         const SurfaceField<scalar>& linearWeight = geometryScheme_->weights();
         weight.internalVector() = linearWeight.internalVector();
         weight.boundaryData() = linearWeight.boundaryData();

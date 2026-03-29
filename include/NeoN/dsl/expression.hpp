@@ -223,12 +223,12 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        // FIXME when to create env
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, commPattern.env);
+        auto ls = la::createEmptyDistributedLinearSystem<ValueType>(mesh, commPattern);
         // assemble local part
         assemble(t, dt, ls, ps);
+
         // communicate processor boundaries
-        ls.communicate(commPattern);
+        // ls.communicate(commPattern);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 

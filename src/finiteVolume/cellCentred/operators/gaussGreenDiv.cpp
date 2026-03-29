@@ -156,6 +156,7 @@ void computeDivProcBoundImpl(
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
     auto totalFaces = faceFluxV.size();
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {0, nProcBoundaryFaces},
@@ -280,6 +281,7 @@ void computeDivIntImp(
     );
     auto values = ls.matrix().values().view();
 
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {0, nInternalFaces},

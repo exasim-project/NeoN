@@ -118,7 +118,14 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     const auto faceNormals = mesh_.faceNormals().view();
 
     const auto [weightS, weightB] = views(weights.internalVector(), weights.boundaryData().value());
+
     const auto nInternalFaces = mesh_.nInternalFaces();
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto totalFaces = mesh_.nTotalFaces();
+
+    // NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
+    // NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
+    // NF_ASSERT(dstS.size() == weightS.size(), "Inconsistent size");
 
     parallelFor(
         exec,
@@ -192,6 +199,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
     auto deltaCoeffB = deltaCoeffs.boundaryData().value().view();
 
     const auto nInternalFaces = mesh_.nInternalFaces();
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto totalFaces = mesh_.nTotalFaces();
 
     parallelFor(
         exec,
@@ -233,7 +242,10 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     fill(nonOrthDeltaCoeffs.internalVector(), 0.0);
 
     const auto nInternalFaces = mesh_.nInternalFaces();
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto totalFaces = mesh_.nTotalFaces();
 
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {0, nInternalFaces},

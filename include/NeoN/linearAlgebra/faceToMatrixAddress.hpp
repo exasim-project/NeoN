@@ -9,6 +9,7 @@
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN::la
 {

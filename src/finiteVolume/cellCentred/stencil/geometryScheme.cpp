@@ -133,7 +133,11 @@ void GeometryScheme::reset() const
 
 const SurfaceField<scalar>& GeometryScheme::weights() const { return weights_; }
 
-const SurfaceField<scalar>& GeometryScheme::deltaCoeffs() const { return deltaCoeffs_; }
+const SurfaceField<scalar>& GeometryScheme::deltaCoeffs() const
+{
+    NF_PING();
+    return deltaCoeffs_;
+}
 
 const SurfaceField<scalar>& GeometryScheme::nonOrthDeltaCoeffs() const
 {

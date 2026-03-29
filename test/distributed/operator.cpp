@@ -98,7 +98,7 @@ TEST_CASE("Distributed Operator")
 
     auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
 
-    // exprDist.read(inputPart);
+    exprDist.read(inputPart);
 
     auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
 

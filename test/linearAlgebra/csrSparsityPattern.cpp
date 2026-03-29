@@ -14,6 +14,7 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN
 {
 
+// FIXME needs tests for COO and CSR sparsity pattern
 TEST_CASE("SparsityPattern")
 {
     using CsrSparsityType = NeoN::la::CsrSparsityPattern<NeoN::localIdx>;

@@ -19,6 +19,7 @@ void computeLinearInterpolation(
     SurfaceField<ValueType>& dst
 )
 {
+    NeoN::mpi::Environment mpiEnviron;
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
     auto dstB = dst.boundaryData().value().view();

@@ -10,6 +10,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN
 {

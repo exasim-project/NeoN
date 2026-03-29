@@ -23,6 +23,10 @@
 namespace NeoN::la::ginkgo
 {
 
+/*@brief create a array non const view into data given by ptr*/
+template<typename T>
+gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values);
+
 std::shared_ptr<const gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s);
 

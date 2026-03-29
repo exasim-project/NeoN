@@ -298,3 +298,18 @@ TEMPLATE_TEST_CASE("take", "[template]", NeoN::scalar, NeoN::Vec3)
 
     REQUIRE_THAT(takeRes, Equals(aExp, Approx {1e-12}));
 }
+
+TEST_CASE("freeFunctions")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::Vector<NeoN::scalar> a(exec, {1, 2, 3, 4, 5, 6});
+
+    auto takeRes = take(a, 1, 4);
+    auto takeResH = takeRes.copyToHost();
+
+    REQUIRE(takeRes.size() == 3);
+    REQUIRE(takeRes.view()[0] == 2.0);
+    REQUIRE(takeRes.view()[1] == 3.0);
+    REQUIRE(takeRes.view()[2] == 4.0);
+}

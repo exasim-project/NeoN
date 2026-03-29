@@ -80,9 +80,8 @@ void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
 template<typename ValueType>
 Vector<ValueType> take(const Vector<ValueType>& in, std::pair<localIdx, localIdx> range);
 
-// FIXME add test for this
 /**
- * @brief Given a Vector and an index range [begin, end) a subvector is created
+ * @brief Given a Vector and an index range [first, last] a subvector is created
  */
 template<typename ValueType>
 Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx last);
