@@ -912,7 +912,7 @@
 <codeline lineno="66"><highlight class="normal"></highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
-<codeline lineno="69" refid="namespaceNeoN_1_1dsl_1_1detail_1ad0803a4a871454c4922c15d7bfe26bd3" refkind="member"><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ad0803a4a871454c4922c15d7bfe26bd3" kindref="member">iterativeSolveDistImpl</ref>(</highlight></codeline>
+<codeline lineno="69" refid="namespaceNeoN_1_1dsl_1_1detail_1ae8a1007c2868b5d901df728cbd111dc4" refkind="member"><highlight class="normal"><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1detail_1ae8a1007c2868b5d901df728cbd111dc4" kindref="member">iterativeSolveDistImpl</ref>(</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">Expression&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>exp,</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt;</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType::ElementType,</highlight></codeline>
@@ -922,7 +922,7 @@
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>dt,</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSchemes,</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>fvSolution,</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref><sp/>commPattern,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref>&amp;<sp/>commPattern,</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;<ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" kindref="compound">PostAssemblyBase&lt;typename VectorType::ElementType, IndexType&gt;</ref>&gt;<sp/>ps</highlight></codeline>
 <codeline lineno="81"><highlight class="normal">)</highlight></codeline>
 <codeline lineno="82"><highlight class="normal">{</highlight></codeline>
@@ -945,7 +945,7 @@
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Do<sp/>some<sp/>sanity<sp/>checks<sp/>before<sp/>trying<sp/>to<sp/>solve</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(ls.exec()<sp/>==<sp/>solution.exec(),<sp/></highlight><highlight class="stringliteral">&quot;Executors<sp/>are<sp/>not<sp/>the<sp/>same&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solver.solveDist(ls,<sp/>solution.internalVector());</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solver.solveDist(ls,<sp/>solution.internalVector(),<sp/>commPattern);</highlight></codeline>
 <codeline lineno="103"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>

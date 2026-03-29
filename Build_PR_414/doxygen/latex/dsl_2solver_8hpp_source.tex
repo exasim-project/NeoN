@@ -70,7 +70,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00066}00066\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00067}00067\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00068}00068\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00069}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad0803a4a871454c4922c15d7bfe26bd3}{00069}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ad0803a4a871454c4922c15d7bfe26bd3}{iterativeSolveDistImpl}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00069}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae8a1007c2868b5d901df728cbd111dc4}{00069}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae8a1007c2868b5d901df728cbd111dc4}{iterativeSolveDistImpl}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00070}00070\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType>}}\&\ exp,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00071}00071\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem}}<}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ VectorType::ElementType,}
@@ -80,7 +80,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00076}00076\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00077}00077\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00079}00079\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\ commPattern,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00079}00079\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\&\ commPattern,}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00080}00080\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ ps}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00081}00081\ )}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00082}00082\ \{}
@@ -103,7 +103,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00099}00099\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ Do\ some\ sanity\ checks\ before\ trying\ to\ solve}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00101}00101\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(ls.exec()\ ==\ solution.exec(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solveDist(ls,\ solution.internalVector());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solveDist(ls,\ solution.internalVector(),\ commPattern);}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00103}00103\ \}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00104}00104\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00105}00105\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
