@@ -10,6 +10,8 @@
 namespace NeoN
 {
 
+void BoundaryMesh::validate() const {}
+
 BoundaryMesh::BoundaryMesh(
     const Executor& exec,
     labelVector faceCells,
@@ -27,9 +29,8 @@ BoundaryMesh::BoundaryMesh(
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
       delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
-      procBoundaryPatches_(procBoundaryPatches),
-      // FIXME
-      procBoundaryFaces_(0), neighbourRank_(neighbourRank) {};
+      procBoundaryPatches_(procBoundaryPatches), procBoundaryFaces_(procBoundaryPatches),
+      neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
@@ -112,7 +113,7 @@ View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
-localIdx BoundaryMesh::procBoundaryPatches() const { return procBoundaryPatches_; }
+localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 

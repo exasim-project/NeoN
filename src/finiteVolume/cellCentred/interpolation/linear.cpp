@@ -19,6 +19,7 @@ void computeLinearInterpolation(
     SurfaceField<ValueType>& dst
 )
 {
+    NeoN::mpi::Environment mpiEnviron;
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
     const auto [srcS, weightS, ownerS, neighS, boundS] = views(
@@ -28,7 +29,15 @@ void computeLinearInterpolation(
         dst.mesh().faceNeighbour(),
         src.boundaryData().value()
     );
-    auto nInternalFaces = dst.mesh().nInternalFaces();
+
+    auto nInternalFaces = src.mesh().nInternalFaces();
+    auto nBoundaryFaces = src.mesh().nBoundaryFaces();
+    auto totalFaces = src.mesh().nTotalFaces();
+
+    NF_ASSERT(dstS.size() == totalFaces, "Inconsistent size");
+    NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
+    NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
+    NF_ASSERT(dstS.size() == weightS.size(), "Inconsistent size");
 
     NeoN::parallelFor(
         exec,
@@ -40,9 +49,19 @@ void computeLinearInterpolation(
                 auto nei = neighS[facei];
                 dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
             }
-            else
+            // regular boundary
+            if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
             {
                 dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
+            }
+            // proc boundary
+            if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
+            {
+                auto own = ownerS[facei];
+                auto nei = neighS[facei];
+                // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                dstS[facei] = one<ValueType>();
+                std::cout << __FILE__ << ":" << __LINE__ << "\n";
             }
         },
         "computeLinearInterpolation"
