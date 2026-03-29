@@ -27,9 +27,8 @@ BoundaryMesh::BoundaryMesh(
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
       delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
-      procBoundaryPatches_(procBoundaryPatches),
-      // FIXME
-      procBoundaryFaces_(0), neighbourRank_(neighbourRank) {};
+      procBoundaryPatches_(procBoundaryPatches), procBoundaryFaces_(procBoundaryPatches),
+      neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
