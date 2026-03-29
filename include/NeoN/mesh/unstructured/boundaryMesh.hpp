@@ -33,6 +33,8 @@ class BoundaryMesh
 {
 public:
 
+    void validate() const;
+
     /**
      * @brief Constructor for the BoundaryMesh class.
      *
@@ -235,7 +237,7 @@ public:
     const std::vector<localIdx>& offset() const;
 
     /**@brief number of proc boundary patches */
-    localIdx procBoundaryPatches() const;
+    localIdx nProcBoundaryPatches() const;
 
     const std::vector<localIdx>& neighbourRank() const;
 

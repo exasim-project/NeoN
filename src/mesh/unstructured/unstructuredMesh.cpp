@@ -263,7 +263,7 @@ UnstructuredMesh create3DUniformMesh(
 /* @brief helper to create a part of a global 1D mesh
  *
  */
-UnstructuredMesh
+std::pair<UnstructuredMesh, CommunicationPattern>
 create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environment mpiEnviron)
 {
     Vec3 leftBoundary {static_cast<scalar>(mpiEnviron.rank()) / mpiEnviron.sizeRank(), 0.0, 0.0};
@@ -271,17 +271,126 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
         static_cast<scalar>(mpiEnviron.rank() + 1) / mpiEnviron.sizeRank(), 0.0, 0.0
     };
 
-    auto ret = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
-    auto& boundaryMesh = ret.boundaryMesh();
-
-    // FIXME doesnt work on GPU
-    if (mpiEnviron.rank() != 0)
+    localIdx nProcBoundaryFaces = 2;
+    if (mpiEnviron.rank() == 0 || mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
     {
-        ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
-        ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+        nProcBoundaryFaces = 1;
     }
 
-    return ret;
+    // regular boundary first, processor boundary follow
+    auto faceCellVec = std::vector<localIdx>();
+    auto boundaryWeights = std::vector<scalar>();
+    if (mpiEnviron.rank() != 0 && mpiEnviron.rank() != mpiEnviron.sizeRank() - 1)
+    {
+        faceCellVec.push_back(0);
+        faceCellVec.push_back(nCells - 1);
+        boundaryWeights.push_back(-1.0);
+        boundaryWeights.push_back(1.0);
+    }
+    // first rank
+    if (mpiEnviron.rank() == 0)
+    {
+        faceCellVec.push_back(0);
+        faceCellVec.push_back(nCells - 1);
+        boundaryWeights.push_back(-1.0);
+        boundaryWeights.push_back(1.0);
+    }
+    // last rank
+    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+    {
+        faceCellVec.push_back(nCells - 1);
+        faceCellVec.push_back(0);
+        boundaryWeights.push_back(1.0);
+        boundaryWeights.push_back(-1.0);
+    }
+
+    labelVector faceCells(exec, faceCellVec);
+
+    auto tmp = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
+    BoundaryMesh boundaryMesh(
+        exec,
+        faceCells,
+        {exec, {leftBoundary, rightBoundary}}, // cf
+        tmp.boundaryMesh().cn(),               // cn
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}
+        },                  // sf FIXME the order of the rest is potentially wrong
+        {exec, {1.0, 1.0}}, // magSf
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}}, // nf
+        tmp.boundaryMesh().delta(),                  // deltaCoeffs --> mag(1 / delta)
+        {exec, boundaryWeights},                     // weights
+        tmp.boundaryMesh().deltaCoeffs(),            // deltaCoeffs --> mag(1 / delta)
+        {0, 1, 2},                                   // offset
+        nProcBoundaryFaces,                          // number of proc boundary patches
+        {}                                           // neighbourRank
+    );
+
+    auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1);
+    auto recvIdx = std::vector<int>();
+    sendCounts[sendCounts.size() - 1] = 1;
+    // middle
+    // [0 1 2 3], [4 5 6 7] [8 9 10 11]
+    if (mpiEnviron.rank() != 0 && mpiEnviron.rank() != mpiEnviron.sizeRank() - 1)
+    {
+        sendCounts[sendCounts.size() - 1] = 2;
+        sendCounts[mpiEnviron.rank() - 1] = 1;
+        sendCounts[mpiEnviron.rank() + 1] = 1;
+        recvIdx.push_back(nCells - 1);
+        recvIdx.push_back((mpiEnviron.rank() + 1) * nCells);
+    }
+    // first rank
+    if (mpiEnviron.rank() == 0)
+    {
+        sendCounts[1] = 1;
+        recvIdx.push_back(nCells);
+    }
+    // last rank
+    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+    {
+        sendCounts[mpiEnviron.rank() - 1] = 1;
+        recvIdx.push_back(mpiEnviron.rank() * nCells - 1);
+    }
+
+    std::vector<localIdx> boundaryMapVector;
+
+    // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
+    // since proc boundaries come first
+    auto faceCentresH = tmp.faceCentres().copyToHost();
+    auto faceAreasH = tmp.faceAreas().copyToHost();
+    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+    {
+        auto localCells = tmp.nCells();
+        auto tmpValue = faceCentresH.view()[localCells];
+        faceCentresH.view()[localCells] = faceCentresH.view()[localCells - 1];
+        faceCentresH.view()[localCells - 1] = tmpValue;
+        faceAreasH.view()[localCells] = {-1.0, 0.0, 0.0};
+        faceAreasH.view()[localCells - 1] = {1.0, 0.0, 0.0};
+    }
+
+    // Note on rank the proc boundary needs to be turned
+
+    return {
+        UnstructuredMesh(
+            tmp.points(),
+            tmp.cellVolumes(),
+            tmp.cellCentres(),
+            faceAreasH.copyToExecutor(exec),
+            faceCentresH.copyToExecutor(exec),
+            tmp.magFaceAreas(),
+            tmp.faceOwner(),
+            tmp.faceNeighbour(),
+            boundaryMesh
+        ),
+        CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron)
+    };
+
+    // FIXME doesnt work on GPU
+    // if (mpiEnviron.rank() != 0)
+    // {
+    //     ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
+    //     ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    // }
+
+    // return ret;
 }
 
 } // namespace NeoN

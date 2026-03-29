@@ -169,21 +169,25 @@ void computeDivProcBoundImpl(
     const auto [rowOffs, diagOffs] =
         views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
 
-    const auto [surfFaceCells] = views(mesh.boundaryMesh().faceCells());
+    const auto [surfFaceCells, isOwner] =
+        views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().weights());
 
-    const auto [bweights] = views(weights.boundaryData().value());
+    const auto [bweights] = views(weights.internalVector());
 
-    auto bValues = ls.boundaryMatrix().values().view();
+    auto bValues = ls.nonLocalMatrix().values().view();
     auto values = ls.matrix().values().view();
 
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
     auto totalFaces = faceFluxV.size();
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            auto bcfacei = facei - (nInternalFaces + nBoundaryFaces);
+            auto bcfacei = facei - (nInternalFaces);
+            // FIXME this is weird needing two indices
+            auto bcfaceii = facei - (nInternalFaces + nBoundaryFaces);
             auto cell = surfFaceCells[bcfacei];
             auto rowStart = rowOffs[cell];
             auto c = operatorScaling[cell];
@@ -191,11 +195,12 @@ void computeDivProcBoundImpl(
             // NOTE here only bweights is taken
             // thus the other side has to make sure that
             // bweights_this = (1 - bweights_other)
-            auto flux = bweights[bcfacei] * faceFluxV[facei];
+            auto alpha = isOwner[bcfacei] > 0.0 ? -bweights[bcfacei] : 1.0 - bweights[bcfacei];
+            auto flux = alpha * faceFluxV[facei];
             auto value = flux * c * one<ValueType>();
 
-            Kokkos::atomic_add(&values[rowStart + diagOffs[cell]], value);
-            bValues[bcfacei] += value;
+            Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
+            bValues[bcfaceii] += value;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );
@@ -307,6 +312,7 @@ void computeDivImp(
     auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
 
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -335,6 +341,14 @@ void computeDivImp(
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
             );
+            // FIXME
+            // std::cout << __FILE__ << ":" << __LINE__
+            //           << " internal "
+            //           << " rank " << mpiEnviron.rank()
+            //           << " facei " << facei
+            //           << " faceFluxV " << faceFluxV[facei]
+            //           << " weightsV " << weightsV[facei]
+            //           << "\n";
         },
         "computeLocalGaussGreenDivCoefficients"
     );

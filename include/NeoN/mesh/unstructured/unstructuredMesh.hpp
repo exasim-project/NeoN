@@ -10,6 +10,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN
 {
@@ -345,7 +346,7 @@ UnstructuredMesh create3DUniformMesh(
  *
  * @param nCells number of local cells on this rank
  */
-UnstructuredMesh create1DUniformMeshPart(
+std::pair<UnstructuredMesh, CommunicationPattern> create1DUniformMeshPart(
     const Executor exec, const localIdx nCells, NeoN::mpi::Environment mpiEnviron
 );
 

@@ -148,7 +148,10 @@ private:
     {                                                                                              \
         if (!(condition)) [[unlikely]]                                                             \
         {                                                                                          \
-            NF_ERROR_EXIT("Assertion `" #condition "` failed.\n       " << message);               \
+            NF_ERROR_EXIT(                                                                         \
+                "Assertion `" #condition " in " << __FILE__ << ":" << __LINE__                     \
+                                                << "` failed.\n       " << message                 \
+            );                                                                                     \
         }                                                                                          \
     }                                                                                              \
     while (false)
