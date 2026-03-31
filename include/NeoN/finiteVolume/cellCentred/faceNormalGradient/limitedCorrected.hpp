@@ -29,6 +29,14 @@ void computeLimitedCorrectedFaceNormalGrad(
 );
 
 template<typename ValueType>
+void computeLimitedCorrectionTerm(
+    const VolumeField<ValueType>& volField,
+    const std::shared_ptr<GeometryScheme> geometryScheme,
+    scalar limitCoeff,
+    SurfaceField<ValueType>& corrField
+);
+
+template<typename ValueType>
 class LimitedCorrected :
     public FaceNormalGradientFactory<ValueType>::template Register<LimitedCorrected<ValueType>>
 {
@@ -66,6 +74,15 @@ public:
     virtual const SurfaceField<scalar>& deltaCoeffs() const override
     {
         return geometryScheme_->nonOrthDeltaCoeffs();
+    }
+
+    bool hasImplicitCorrection() const override { return true; }
+
+    virtual void implicitCorrection(
+        const VolumeField<ValueType>& phi, SurfaceField<ValueType>& corrField
+    ) const override
+    {
+        computeLimitedCorrectionTerm(phi, geometryScheme_, limitCoeff_, corrField);
     }
 
     std::unique_ptr<FaceNormalGradientFactory<ValueType>> clone() const override

@@ -216,6 +216,35 @@ void computeLaplacianIntImpl(
         },
         "computeLocalLaplacianCoefficients"
     );
+
+    // Non-orthogonal correction (deferred correction) for corrected / limitedCorrected snGrad:
+    //   rhs[own] += corr[f] * γ_f * |S_f| * coeff[own]
+    //   rhs[nei] -= corr[f] * γ_f * |S_f| * coeff[nei]
+    // The correction is zero for uncorrected via the default implicitCorrection() implementation,
+    // so the if-guard skips unnecessary work and allocation.
+    if (faceNormalGradient.hasImplicitCorrection())
+    {
+        SurfaceField<ValueType> corrField(
+            exec, "snGradCorr", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        faceNormalGradient.implicitCorrection(phi, corrField);
+
+        const auto corrV = corrField.internalVector().view();
+        auto rhs = ls.rhs().view();
+
+        parallelFor(
+            exec,
+            {0, nInternalFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                auto corrFlux = corrV[facei] * gammaV[facei] * magFaceArea[facei];
+                auto own = ownV[facei];
+                auto nei = neiV[facei];
+                Kokkos::atomic_add(&rhs[own], corrFlux * coeff[own]);
+                Kokkos::atomic_sub(&rhs[nei], corrFlux * coeff[nei]);
+            },
+            "computeLaplacianImplicitCorrection"
+        );
+    }
 }
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                                                                                      \
