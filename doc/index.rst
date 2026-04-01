@@ -30,6 +30,7 @@ Table of Contents
    timeIntegration/index
    finiteVolume/cellCentred/index
    datastructures/index
+   linearAlgebra/index
    mpi_architecture
    ci
 
