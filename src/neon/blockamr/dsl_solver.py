@@ -324,18 +324,24 @@ class DSLIncompressibleSolver:
             if hasattr(self.p, '_imp_solver'):
                 del self.p._imp_solver
             self._mac_solver = None
+            from .dsl.solve import BF
             mesh = self.mesh
-            parts = []
+            total_cells = 0
+            print(f"  Regrid: {mesh.n_levels()} levels")
             for lev in range(mesh.n_levels()):
-                dom = mesh.geom(lev).domain()
-                lo = dom.small_end()
-                hi = dom.big_end()
-                ncells = 1
-                for d in range(3):
-                    ncells *= (hi[d] - lo[d] + 1)
-                nboxes = len(self.U.mf[lev].arrays())
-                parts.append(f"lev{lev}: {ncells} cells, {nboxes} boxes")
-            print(f"  Regrid: {', '.join(parts)}")
+                mf = self.U.mf[lev]
+                if mf is None:
+                    continue
+                ng = mf.n_grow()
+                lev_cells = sum(
+                    (m[1]-2*ng)*(m[2]-2*ng)*(m[3]-2*ng)
+                    for m in mf.fab_metadata())
+                total_cells += lev_cells
+                nboxes = len(mf.fab_metadata())
+                layout = blockamr.build_tile_layout(mf, BF)
+                print(f"    lev {lev}: {lev_cells:,} cells, {nboxes} boxes, "
+                      f"tiles={layout.n_tiles} (padded={layout.n_tiles_padded}), bf={BF}")
+            print(f"    total: {total_cells:,} cells")
 
     def write_plotfile(self, name, fields=None):
         """Write a plotfile. Works for both single-level and AMR."""
@@ -392,15 +398,25 @@ class DSLIncompressibleSolver:
             )
 
     def _max_velocity(self):
-        """Return max |U| across all levels (valid cells only)."""
-        max_val = 0.0
+        """Return max |U| across all levels (conservative — includes ghost cells)."""
+        max_sq = jnp.float32(0.0)
         for lev in range(self.mesh.n_levels()):
             mf = self.U.mf[lev]
             if mf is None:
                 continue
-            ng = mf.n_grow()
-            for arr in mf.arrays():
-                u_int = arr[ng:-ng, ng:-ng, ng:-ng, :]
-                mag = jnp.sqrt(jnp.sum(u_int ** 2, axis=-1))
-                max_val = max(max_val, float(jnp.max(mag)))
-        return max_val
+            flat = mf.contiguous_array()
+            meta = mf.fab_metadata()
+            _, Nx, Ny, Nz, nc = meta[0]
+            M = Nx * Ny * Nz
+            n_boxes = len(meta)
+            if all(m[1] * m[2] * m[3] == M for m in meta):
+                all_data = flat[: n_boxes * nc * M].reshape(n_boxes, nc, M)
+                mag_sq = jnp.sum(all_data**2, axis=1)
+                max_sq = jnp.maximum(max_sq, jnp.max(mag_sq))
+            else:
+                for offset, bNx, bNy, bNz, bnc in meta:
+                    bM = bNx * bNy * bNz
+                    box_data = flat[offset : offset + bM * bnc].reshape(bnc, bM)
+                    mag_sq = jnp.sum(box_data**2, axis=0)
+                    max_sq = jnp.maximum(max_sq, jnp.max(mag_sq))
+        return float(jnp.sqrt(max_sq))

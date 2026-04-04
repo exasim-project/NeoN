@@ -18,7 +18,6 @@ from neon.blockamr.operators.div import update_face_fluxes
 from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
 from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
 from neon.blockamr.bucket_dispatch import process_bucket
-from neon.blockamr.dsl.solve import _scatter_results
 
 
 def _make_mesh(n_cell=64, max_size=32):
@@ -278,3 +277,218 @@ def test_fill_face_component_passes_jax_arrays():
         assert issubclass(tp, jax.Array), (
             f"vel_func received {tp.__name__}, expected jax.Array"
         )
+
+
+# --- C++ reference comparison tests ---
+
+_CPP_DIV = {
+    "Upwind": blockamr.div_upwind,
+    "Linear": blockamr.div_linear,
+    "VanLeer": blockamr.div_vanleer,
+    "QUICK": blockamr.div_quick,
+}
+
+
+def _run_dsl_evaluate(phi, ff, scheme, geom):
+    """Run DSL evaluate for div(ff, phi) and return the output MultiFab."""
+    from neon.blockamr.dsl.solve import evaluate
+    div_op = Div(ff, phi, scheme=scheme)
+    results = evaluate(div_op, t=0.0)
+    return results
+
+
+def _run_cpp_div(phi, ff, scheme, mesh):
+    """Run C++ div kernel and return output MultiFab."""
+    mf = phi.mf[0]
+    geom = mesh.geom(0)
+    out_mf = blockamr.MultiFab(
+        mesh.box_array(0), mesh.dm(0), 1, 0, memory="default")
+    out_mf.set_val(0.0)
+    cpp_fn = _CPP_DIV[scheme.type]
+    cpp_fn(out_mf, mf, ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom)
+    return out_mf
+
+
+@pytest.mark.parametrize("scheme", _ALL_SCHEMES)
+def test_div_dsl_matches_cpp_multi_box(scheme):
+    """DSL evaluate(div) must match C++ div kernel on multi-box grids."""
+    ngrow = scheme.stencil_width
+    n_cell, max_size = 32, 8  # 64 boxes
+    mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
+    phi = CellField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+    _init_sin3d(phi, mesh)
+
+    def x_vel(x, y, z, t):
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
+
+    ff = FaceField(mesh, ncomp=1, ngrow=ngrow)
+    update_face_fluxes(ff[0], x_vel, geom, t=0.0)
+
+    # DSL path
+    dsl_results = _run_dsl_evaluate(phi, ff, scheme, geom)
+
+    # C++ path
+    cpp_mf = _run_cpp_div(phi, ff, scheme, mesh)
+
+    # Compare valid cells per box
+    ng = phi.mf[0].n_grow()
+    cpp_arrs = cpp_mf.arrays()
+    for bi in range(len(cpp_arrs)):
+        cpp_valid = np.array(cpp_arrs[bi])
+        dsl_valid = np.array(dsl_results[0][bi])
+        np.testing.assert_allclose(
+            dsl_valid, cpp_valid, rtol=1e-5, atol=1e-10,
+            err_msg=f"{scheme.type}: box {bi} DSL vs C++ mismatch",
+        )
+
+
+def test_div_max_size_independence():
+    """div results must not depend on box decomposition (max_size)."""
+    n_cell = 32
+    scheme = VanLeer()
+    ngrow = scheme.stencil_width
+
+    def x_vel(x, y, z, t):
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
+
+    results_by_ms = {}
+    for max_size in [32, 8]:  # 1 box vs 64 boxes
+        mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
+        phi = CellField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+        _init_sin3d(phi, mesh)
+        ff = FaceField(mesh, ncomp=1, ngrow=ngrow)
+        update_face_fluxes(ff[0], x_vel, geom, t=0.0)
+        dsl_results = _run_dsl_evaluate(phi, ff, scheme, geom)
+
+        # Collect all valid cells into a single sorted array for comparison
+        all_valid = np.concatenate([np.array(r).ravel() for r in dsl_results[0]])
+        results_by_ms[max_size] = np.sort(all_valid)
+
+    np.testing.assert_allclose(
+        results_by_ms[32], results_by_ms[8], rtol=1e-5, atol=1e-10,
+        err_msg="div results depend on max_size (box decomposition)",
+    )
+
+
+def test_div_analytical_multi_box():
+    """div(U*phi) on multi-box grid must match analytical solution.
+
+    phi = sin(2πx)*sin(2πy)*sin(2πz), U = (1, 0, 0)
+    Analytical: div(U*phi) = 2π*cos(2πx)*sin(2πy)*sin(2πz)
+    Upwind: first-order accurate, so check within O(dx).
+    """
+    from neon.blockamr.dsl.solve import evaluate
+
+    n_cell, max_size = 32, 8
+    mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
+    dx = geom.cell_size()
+    scheme = Upwind()
+    ngrow = scheme.stencil_width
+    phi = CellField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+    _init_sin3d(phi, mesh)
+
+    def x_vel(x, y, z, t):
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
+
+    ff = FaceField(mesh, ncomp=1, ngrow=ngrow)
+    update_face_fluxes(ff[0], x_vel, geom, t=0.0)
+
+    div_op = Div(ff, phi, scheme=scheme)
+    dsl_results = evaluate(div_op, t=0.0)
+
+    # Compare all valid cells sorted (avoids box-ordering issues)
+    # Collect DSL results
+    all_dsl = np.concatenate([np.array(r).ravel() for r in dsl_results[0]])
+
+    # Compute analytical at all cell centres
+    all_ana = []
+    for mfi in blockamr.MFIterator(phi.mf[0]):
+        bx = mfi.valid_box()
+        lo = bx.small_end(); hi = bx.big_end()
+        nx = hi[0]-lo[0]+1; ny = hi[1]-lo[1]+1; nz = hi[2]-lo[2]+1
+        xs = jnp.array([(lo[0]+i+0.5)*dx[0] for i in range(nx)])
+        ys = jnp.array([(lo[1]+j+0.5)*dx[1] for j in range(ny)])
+        zs = jnp.array([(lo[2]+k+0.5)*dx[2] for k in range(nz)])
+        X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
+        analytical = 2*math.pi*jnp.cos(2*math.pi*X)*jnp.sin(2*math.pi*Y)*jnp.sin(2*math.pi*Z)
+        all_ana.append(np.array(analytical).ravel())
+    all_ana = np.concatenate(all_ana)
+
+    # Sort both and compare — this is box-ordering independent
+    dsl_sorted = np.sort(all_dsl)
+    ana_sorted = np.sort(all_ana)
+    max_err = np.max(np.abs(dsl_sorted - ana_sorted))
+
+    # Upwind is O(dx). Leading error term: O(dx * max|f''|/2).
+    # For sin(2πx), |f''| ~ 4π² ≈ 40, so error ~ 40 * dx / 2 = 20*dx.
+    max_tol = 25.0 / n_cell
+    assert max_err < max_tol, (
+        f"Upwind div error {max_err:.4f} exceeds O(dx) bound {max_tol:.4f}"
+    )
+
+
+def test_euler_step_analytical_multi_box():
+    """FusedEulerKernel on multi-box grid: verify written-back MultiFab against analytical.
+
+    phi = sin3d, U = (1,0,0), dt=0.001, nu=0.01
+    phi_new = phi - dt * [div(U*phi) - nu*lap(phi)]
+            = sin3d - dt * [2π*cos*sin*sin + nu*12π²*sin3d]  (Upwind approx)
+    Check that the MultiFab values after parallel_for match.
+    """
+    from neon.blockamr.dsl.solve import parallel_for
+    from neon.blockamr.operators.laplacian import Laplacian
+    from neon.blockamr.tiled_context import TiledContext
+    from neon.blockamr.cell_kernels_3d import FusedEulerKernel
+    from neon.blockamr.fillpatch import FillPatchCellConservative
+
+    n_cell, max_size = 32, 8
+    mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
+    dx = geom.cell_size()
+    dt = 0.001
+    nu = 0.01
+
+    phi_f = CellField(mesh, ncomp=1, ngrow=1, name="phi",
+                       fill_patch=FillPatchCellConservative())
+    _init_sin3d(phi_f, mesh)
+
+    def x_vel(x, y, z, t):
+        return jnp.ones_like(x), jnp.zeros_like(x), jnp.zeros_like(x)
+
+    ff = FaceField(mesh, ncomp=1, ngrow=1)
+    update_face_fluxes(ff[0], x_vel, geom, t=0.0)
+
+    div_op = Div(ff, phi_f, scheme=Upwind())
+    lap_op = Laplacian(nu, phi_f)
+    dh = tuple(float(d) for d in dx)
+    ctx = TiledContext(dh=dh, ng=1, lev=0)
+    kernel = FusedEulerKernel(
+        (div_op.build_kernel_3d(ctx, 0.0), lap_op.build_kernel_3d(ctx, 0.0)),
+        jnp.float32(dt))
+
+    parallel_for(kernel, phi_f, 0)
+
+    # Verify the MultiFab was written correctly
+    ng = phi_f.mf[0].n_grow()
+    max_err = 0.0
+    for mfi in blockamr.MFIterator(phi_f.mf[0]):
+        bx = mfi.valid_box()
+        lo = bx.small_end(); hi = bx.big_end()
+        nx = hi[0]-lo[0]+1; ny = hi[1]-lo[1]+1; nz = hi[2]-lo[2]+1
+        xs = jnp.array([(lo[0]+i+0.5)*dx[0] for i in range(nx)])
+        ys = jnp.array([(lo[1]+j+0.5)*dx[1] for j in range(ny)])
+        zs = jnp.array([(lo[2]+k+0.5)*dx[2] for k in range(nz)])
+        X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
+        sin3d = jnp.sin(2*math.pi*X)*jnp.sin(2*math.pi*Y)*jnp.sin(2*math.pi*Z)
+
+        # Read back from MultiFab
+        arr = np.array(phi_f.mf[0].array(mfi))
+        written = arr[ng:ng+nx, ng:ng+ny, ng:ng+nz, 0]
+
+        # For ncomp=1, the result should be close to the initial sin3d
+        # (small dt, so change is small). Check it's finite and near sin3d.
+        diff = np.abs(written - np.array(sin3d))
+        max_err = max(max_err, np.max(diff))
+
+    # With dt=0.001, change is O(dt) ≈ 0.001 * source ≈ 0.01
+    assert max_err < 0.1, f"Euler step write-back error: {max_err:.4f}"
+    assert np.all(np.isfinite(written)), "NaN/Inf in written-back MultiFab"

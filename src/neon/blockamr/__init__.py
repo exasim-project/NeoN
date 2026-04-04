@@ -15,6 +15,7 @@ from . import schemes
 from .runtime import runtime
 
 _default_executor = "cpu"
+_default_backend = "jax"
 
 
 def set_executor(executor):
@@ -25,3 +26,30 @@ def set_executor(executor):
 
 def get_executor():
     return _default_executor
+
+
+def set_tile_size(bf):
+    """Set the Pallas tile size (default 8). Must be a power of 2."""
+    from .dsl.solve import set_tile_size as _set
+    _set(bf)
+
+
+def set_backend(backend):
+    """Set the default dispatch backend.
+
+    Parameters
+    ----------
+    backend : str
+        "jax"    — jax.vmap over 3D arrays (default)
+        "pallas" — Pallas 3D tiled GPU dispatch
+        "triton" — Triton kernels with phi(ptr, i, j, k, sx, sy)
+    """
+    global _default_backend
+    if backend not in ("jax", "pallas", "triton"):
+        raise ValueError(f"Unknown backend: {backend!r}. "
+                         f"Choose from 'jax', 'pallas', 'triton'.")
+    _default_backend = backend
+
+
+def get_backend():
+    return _default_backend

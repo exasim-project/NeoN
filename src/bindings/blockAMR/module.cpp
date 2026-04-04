@@ -22,4 +22,6 @@ NB_MODULE(_blockamr, m)
     registerFillPatch(m);
     registerAmrCore(m);
     registerLinOp(m);
+    registerStencilKernels(m);
+    registerTileLayout(m);
 }

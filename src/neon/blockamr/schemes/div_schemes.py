@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Divergence schemes — cell-level kernels on flat contiguous buffers."""
+"""Divergence schemes — cell-level kernels."""
 from __future__ import annotations
 
 from typing import Annotated, Literal, Union
@@ -12,6 +12,9 @@ from pydantic import BaseModel, ConfigDict, Discriminator
 from ..cell_kernels import (
     CellUpwindDivKernel, CellLinearDivKernel,
     CellVanLeerDivKernel, CellQUICKDivKernel,
+)
+from ..cell_kernels_3d import (
+    UpwindDiv3D, LinearDiv3D, VanLeerDiv3D, QUICKDiv3D,
 )
 
 
@@ -26,6 +29,10 @@ class Upwind(BaseModel):
             face_bufs=face_bufs, face_offsets=face_offsets, _face_offset=(0, 0, 0),
             Nx=Nx, Ny=Ny, Nz=Nz, ng=ng, ng_face=ng_face, dh=dh, coeff=coeff, ncomp=ncomp,
         )
+
+    def build_spatial_kernel(self, face, dh, coeff=1.0):
+        return UpwindDiv3D(face=face, dh=dh, coeff=coeff)
+
 
 
 class Linear(BaseModel):
@@ -42,6 +49,10 @@ class Linear(BaseModel):
             Nx=Nx, Ny=Ny, Nz=Nz, ng=ng, ng_face=ng_face, dh=dh, coeff=coeff, ncomp=ncomp,
         )
 
+    def build_spatial_kernel(self, face, dh, coeff=1.0):
+        return LinearDiv3D(face=face, dh=dh, coeff=coeff)
+
+
 
 class VanLeer(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -54,6 +65,10 @@ class VanLeer(BaseModel):
             face_bufs=face_bufs, face_offsets=face_offsets, _face_offset=(0, 0, 0),
             Nx=Nx, Ny=Ny, Nz=Nz, ng=ng, ng_face=ng_face, dh=dh, coeff=coeff, ncomp=ncomp,
         )
+
+    def build_spatial_kernel(self, face, dh, coeff=1.0):
+        return VanLeerDiv3D(face=face, dh=dh, coeff=coeff)
+
 
 
 class QUICK(BaseModel):
@@ -69,6 +84,10 @@ class QUICK(BaseModel):
             face_bufs=face_bufs, face_offsets=face_offsets, _face_offset=(0, 0, 0),
             Nx=Nx, Ny=Ny, Nz=Nz, ng=ng, ng_face=ng_face, dh=dh, coeff=coeff, ncomp=ncomp,
         )
+
+    def build_spatial_kernel(self, face, dh, coeff=1.0):
+        return QUICKDiv3D(face=face, dh=dh, coeff=coeff)
+
 
 
 DivScheme = Annotated[

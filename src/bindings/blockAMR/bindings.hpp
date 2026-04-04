@@ -18,3 +18,5 @@ void registerAmrCore(nb::module_& m);
 void registerTagBox(nb::module_& m);
 void registerFillPatch(nb::module_& m);
 void registerLinOp(nb::module_& m);
+void registerStencilKernels(nb::module_& m);
+void registerTileLayout(nb::module_& m);

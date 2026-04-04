@@ -70,6 +70,54 @@ class CellAccessor(eqx.Module):
         return self.x[0]
 
 
+class StencilAxis3D(eqx.Module):
+    """Reads neighbor values along one axis from a 3D array.
+
+    Usage: axis[k] returns the value at offset k from center along this axis.
+    """
+
+    _arr: object
+    _i: object
+    _j: object
+    _k: object
+    _ax: int = eqx.field(static=True)
+
+    def __getitem__(self, k):
+        if self._ax == 0:
+            return self._arr[self._i + k, self._j, self._k]
+        if self._ax == 1:
+            return self._arr[self._i, self._j + k, self._k]
+        return self._arr[self._i, self._j, self._k + k]
+
+
+class CellAccessor3D(eqx.Module):
+    """Cell-centred stencil accessor backed by a 3D array.
+
+    Duck-type compatible with CellAccessor — provides the same
+    .S(k, ax), .center, .x[k], .y[k], .z[k] interface so that
+    existing cell kernels work unchanged.
+    """
+
+    x: StencilAxis3D
+    y: StencilAxis3D
+    z: StencilAxis3D
+    cell_idx: object
+
+    def __init__(self, arr_3d, i, j, k, cell_idx=0):
+        self.x = StencilAxis3D(arr_3d, i, j, k, _ax=0)
+        self.y = StencilAxis3D(arr_3d, i, j, k, _ax=1)
+        self.z = StencilAxis3D(arr_3d, i, j, k, _ax=2)
+        self.cell_idx = cell_idx
+
+    def S(self, k, ax):
+        """Neighbor at offset k along axis ax."""
+        return (self.x, self.y, self.z)[ax][k]
+
+    @property
+    def center(self):
+        return self.x[0]
+
+
 class FaceAccessor(eqx.Module):
     """Access face fluxes for a cell using .x[k], .y[k], .z[k].
 

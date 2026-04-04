@@ -87,6 +87,45 @@ void registerFillPatch(nb::module_& m)
         nb::arg("ncomp")
     );
 
+    // InterpFromCoarseLevel (coarse-only interpolation, no fine source needed)
+    m.def(
+        "interp_from_coarse_level",
+        [](MultiFab& mf,
+           Real time,
+           const MultiFab& cmf,
+           int scomp,
+           int dcomp,
+           int ncomp,
+           const Geometry& cgeom,
+           const Geometry& fgeom,
+           const IntVect& ratio,
+           Interpolater* mapper,
+           nb::list bcs_list)
+        {
+            Vector<BCRec> bcs_vec;
+            for (size_t i = 0; i < nb::len(bcs_list); ++i)
+                bcs_vec.push_back(nb::cast<BCRec>(bcs_list[i]));
+
+            PhysBCFunctNoOp cbc, fbc;
+            InterpFromCoarseLevel(
+                mf, time, cmf, scomp, dcomp, ncomp,
+                cgeom, fgeom, cbc, 0, fbc, 0,
+                ratio, mapper, bcs_vec, 0
+            );
+        },
+        nb::arg("mf"),
+        nb::arg("time"),
+        nb::arg("cmf"),
+        nb::arg("scomp"),
+        nb::arg("dcomp"),
+        nb::arg("ncomp"),
+        nb::arg("cgeom"),
+        nb::arg("fgeom"),
+        nb::arg("ratio"),
+        nb::arg("mapper"),
+        nb::arg("bcs")
+    );
+
     // FillPatchTwoLevels (periodic only, PhysBCFunctNoOp)
     m.def(
         "fill_patch_two_levels",

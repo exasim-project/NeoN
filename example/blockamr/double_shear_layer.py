@@ -32,10 +32,9 @@ import os
 import shutil
 
 os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
-os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = str(0.5)
+os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = str(0.25)
 
 import jax.numpy as jnp
-import numpy as np
 
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh, AmrMesh
@@ -140,11 +139,13 @@ def compute_vorticity(U, omega):
 
 def run(
     N_cells=128,
+    Nz=4,
     Re=10000,
     cfl=0.25,
     n_steps=2000,
     plot_interval=200,
     max_size=64,
+    blocking_factor=4,
     rho=80.0,
     delta=0.05,
     plotfile=True,
@@ -154,10 +155,10 @@ def run(
     nu = 1.0 / Re
     ref_ratio_product = 2 ** max_level
     dt = cfl / (N_cells * ref_ratio_product)
-    Nz = 4  # quasi-2D
 
     # --- mesh ---
     box = blockamr.Box([0, 0, 0], [N_cells - 1, N_cells - 1, Nz - 1])
+    # box = blockamr.Box([0, 0, 0], [N_cells - 1, N_cells - 1, N_cells - 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, Nz / N_cells])
     geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])  # periodic in all dirs
 
@@ -172,7 +173,7 @@ def run(
         for lev in range(max_level):
             info.set_ref_ratio(lev, 2)  # MLNodeLaplacian requires isotropic ratio (2 or 4)
         info.set_max_grid_size(0, max_size)
-        info.set_blocking_factor(0, 4)
+        info.set_blocking_factor(0, blocking_factor)
         mesh = AmrMesh(geom, info)
 
     # --- solver ---
@@ -201,9 +202,31 @@ def run(
             for lev in range(mesh.n_levels()):
                 init_double_shear_layer(solver.U.mf[lev], mesh.geom(lev), rho=rho, delta=delta)
 
+    total_cells = 0
+    for lev in range(mesh.n_levels()):
+        mf = solver.U.mf[lev]
+        if mf is not None:
+            lev_cells = sum(
+                (m[1] - 2 * mf.n_grow()) * (m[2] - 2 * mf.n_grow()) * (m[3] - 2 * mf.n_grow())
+                for m in mf.fab_metadata()
+            )
+            total_cells += lev_cells
+
+    from neon.blockamr.dsl.solve import BF
+
     print(f"Double shear layer: N={N_cells}, Re={Re}, CFL={cfl}, dt={dt:.6f}, nu={nu:.8f}")
-    print(f"  rho={rho}, delta={delta}, max_level={max_level}")
-    print(f"  Levels: {mesh.n_levels()}")
+    print(f"  rho={rho}, delta={delta}, max_level={max_level}, max_size={max_size}")
+    print(f"  Levels: {mesh.n_levels()}, total cells: {total_cells:,}")
+    for lev in range(mesh.n_levels()):
+        mf = solver.U.mf[lev]
+        if mf is not None:
+            n_boxes = len(mf.fab_metadata())
+            ng = mf.n_grow()
+            lev_cells = sum(
+                (m[1]-2*ng)*(m[2]-2*ng)*(m[3]-2*ng) for m in mf.fab_metadata())
+            layout = blockamr.build_tile_layout(mf, BF)
+            print(f"    lev {lev}: {lev_cells:,} cells, {n_boxes} boxes, "
+                  f"tiles={layout.n_tiles} (padded={layout.n_tiles_padded}), bf={BF}")
     print(f"  Viscous CFL: nu*dt/dx^2 = {nu * dt * N_cells**2:.4f}")
 
     # --- plotfile helper ---
@@ -236,26 +259,35 @@ def run(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Double shear layer")
     parser.add_argument("--ncell", type=int, default=128)
+    parser.add_argument("--nz", type=int, default=4, help="Number of cells in z-direction (default: 4)")
     parser.add_argument("--re", type=int, default=10000)
     parser.add_argument("--cfl", type=float, default=0.25, help="CFL number (default: 0.25)")
     parser.add_argument("--steps", type=int, default=2000)
-    parser.add_argument("--plot-interval", type=int, default=200)
+    parser.add_argument("--plot-interval", type=int, default=50)
     parser.add_argument("--rho", type=float, default=80.0, help="Shear layer thickness (default: 80)")
     parser.add_argument("--delta", type=float, default=0.05, help="Perturbation amplitude (default: 0.05)")
     parser.add_argument("--max-size", type=int, default=64, help="Max block size (default: 64)")
+    parser.add_argument("--blocking-factor", type=int, default=4, help="AMR blocking factor (default: 4)")
+    parser.add_argument("--tile-size", type=int, default=8, help="Pallas tile size (default: 8)")
     parser.add_argument("--max-level", type=int, default=0, help="AMR max refinement level (default: 0)")
-    parser.add_argument("--tag-threshold", type=float, default=10.0, help="Vorticity tagging threshold")
+    parser.add_argument("--tag-threshold", type=float, default=1.0, help="Vorticity tagging threshold")
     parser.add_argument("--no-plot", action="store_true", default=False, help="Skip plotfile output")
+    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
+                        default="jax", help="dispatch backend")
     args = parser.parse_args()
 
     with blockamr.runtime():
+        blockamr.set_backend(args.backend)
+        blockamr.set_tile_size(args.tile_size)
         run(
             N_cells=args.ncell,
+            Nz=args.nz,
             Re=args.re,
             cfl=args.cfl,
             n_steps=args.steps,
             plot_interval=args.plot_interval,
             max_size=args.max_size,
+            blocking_factor=args.blocking_factor,
             rho=args.rho,
             delta=args.delta,
             plotfile=not args.no_plot,

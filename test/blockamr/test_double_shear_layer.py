@@ -304,3 +304,71 @@ def test_face_flux_divergence_bounded(blockamr_session):
     assert max_div_history[-1] < 10.0, (
         f"Face flux divergence too large: max|div(phi)|={max_div_history[-1]:.6e} at step {n_steps}"
     )
+
+
+def test_momentum_solve_max_size_independence(blockamr_session):
+    """Momentum solve with interpolated face velocity must not depend on max_size."""
+    from neon.blockamr.dsl.solve import solve
+    from neon.blockamr.dsl import exp
+    from neon.blockamr.field import FaceField
+
+    N, Nz = 32, 4
+
+    def run_momentum(max_size):
+        box = blockamr.Box([0, 0, 0], [N - 1, N - 1, Nz - 1])
+        rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, Nz / N])
+        geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])
+        ba = blockamr.BoxArray(box)
+        ba.max_size(max_size)
+        dm = blockamr.DistributionMapping(ba)
+        mesh = Mesh(ba, dm, geom)
+
+        U = CellField(mesh, ncomp=3, ngrow=1, name="U",
+                       fill_patch=FillPatchCellConservative())
+        _shear_layer_ic(U.mf[0], geom)
+        U.fill_patch(0, 0.0)
+
+        phi = FaceField(mesh, ncomp=1, ngrow=1)
+        interpolate(U, phi)
+
+        dt = 0.25 / N
+        nu = 1e-3
+        solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U), 0.0, dt)
+
+        ng = U.mf[0].n_grow()
+        all_valid = []
+        for arr in U.mf[0].arrays():
+            all_valid.append(np.array(arr[ng:-ng, ng:-ng, ng:-ng, :]).ravel())
+        return np.sort(np.concatenate(all_valid))
+
+    single_box = run_momentum(max_size=N)
+    multi_box = run_momentum(max_size=8)
+
+    np.testing.assert_allclose(
+        single_box, multi_box, rtol=1e-5, atol=1e-10,
+        err_msg="Momentum solve results depend on max_size (box decomposition)",
+    )
+
+
+def test_full_step_max_size_independence(blockamr_session):
+    """Full solver.step() must produce identical valid cells regardless of max_size."""
+    N, Nz, Re = 32, 4, 1000
+
+    def run_step(max_size):
+        solver, geom = _make_single_level_solver(N=N, Re=Re, max_size=max_size)
+        _shear_layer_ic(solver.U.mf[0], geom)
+        solver.step()
+        mf = solver.U.mf[0]
+        ng = mf.n_grow()
+        all_valid = []
+        for arr in mf.arrays():
+            all_valid.append(np.array(arr[ng:-ng, ng:-ng, ng:-ng, :]).ravel())
+        return np.sort(np.concatenate(all_valid))
+
+    single = run_step(max_size=N)
+    multi = run_step(max_size=8)
+
+    np.testing.assert_allclose(
+        single, multi, rtol=1e-5, atol=1e-10,
+        err_msg="Full solver step depends on max_size (box decomposition)",
+    )
