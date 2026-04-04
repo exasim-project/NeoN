@@ -131,9 +131,12 @@ if __name__ == "__main__":
     parser.add_argument("--plot-interval", type=int, default=100)
     parser.add_argument("--max-size", type=int, default=64, help="Max block size for AMR (default: 64)")
     parser.add_argument("--no-plot", type=bool, default=False, help="Skip plotfile output")
+    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
+                        default="jax", help="dispatch backend")
     args = parser.parse_args()
 
     with blockamr.runtime():
+        blockamr.set_backend(args.backend)
         run(N_cells=args.ncell, Re=args.re, cfl=args.cfl, n_steps=args.steps,
             plot_interval=args.plot_interval, max_size=args.max_size,
             plotfile=not args.no_plot)

@@ -32,6 +32,39 @@ class Laplacian:
         obj._name = "Laplacian"
         return obj
 
+    def build_kernel_3d(self, ctx, t):
+        """Build a 3D spatial kernel from TiledContext.
+
+        Returns an eqx.Module with __call__(box_id, i, j, k, phi) → scalar.
+        Stateless — no phi stored on the kernel.
+
+        Parameters
+        ----------
+        ctx : TiledContext
+            Tiled dispatch context (dh, ng, lev).
+        t : float
+            Current time.
+        """
+        if isinstance(self.gamma, (int, float)):
+            return self.scheme.build_spatial_kernel(
+                dh=ctx.dh, coeff=self.coeff * self.gamma)
+
+        if not callable(self.gamma):
+            raise TypeError(
+                f"gamma must be callable or number, got {type(self.gamma)}")
+
+        # Check if gamma is effectively constant
+        g1 = float(self.gamma(
+            jnp.array([0.1]), jnp.array([0.2]), jnp.array([0.3]), t)[0])
+        g2 = float(self.gamma(
+            jnp.array([0.7]), jnp.array([0.4]), jnp.array([0.15]), t)[0])
+        if abs(g1 - g2) < 1e-14 * (abs(g1) + 1.0):
+            return self.scheme.build_spatial_kernel(
+                dh=ctx.dh, coeff=self.coeff * g1)
+
+        raise NotImplementedError(
+            "Variable gamma with tiled dispatch not yet implemented")
+
     def build_kernel(self, bucket, t):
         """Build a cell-level kernel for a bucket of boxes."""
         ncomp = self.field.ncomp
@@ -65,6 +98,7 @@ class Laplacian:
             gamma_buf=gamma_buf, gamma_offsets=gamma_offsets,
             Nx=bucket.Nx_arr, Ny=bucket.Ny_arr, Nz=bucket.Nz_arr, ng=ng,
         )
+
 
 
 def _build_gamma_buffer(gamma_func, mf, geom, bucket, t):

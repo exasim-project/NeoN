@@ -627,6 +627,34 @@ void registerMultiFab(nb::module_& m)
             }
         )
         .def(
+            "copy_from_flat",
+            [](MultiFab& mf, nb::ndarray<nb::ro> src)
+            {
+                auto* dst = mf.singleChunkPtr();
+                if (!dst)
+                    throw std::runtime_error(
+                        "MultiFab not allocated with single-chunk mode");
+                size_t nbytes = mf.singleChunkSize();
+                size_t src_nbytes = src.size() * src.itemsize();
+                if (src_nbytes != nbytes)
+                    throw std::runtime_error(
+                        "copy_from_flat: size mismatch — src has "
+                        + std::to_string(src_nbytes) + " bytes, MultiFab has "
+                        + std::to_string(nbytes));
+                const void* src_ptr = src.data();
+                bool srcOnDevice =
+                    (src.device_type() != nb::device::cpu::value);
+                if (srcOnDevice)
+                    Gpu::dtod_memcpy(dst, src_ptr, nbytes);
+                else
+                    Gpu::htod_memcpy(dst, src_ptr, nbytes);
+            },
+            nb::arg("flat_array"),
+            "Copy flat array directly into MultiFab contiguous storage. "
+            "Single memcpy — no per-box loop. Array must have same byte size "
+            "as singleChunkSize()."
+        )
+        .def(
             "fab_metadata",
             [](MultiFab& mf)
             {
@@ -645,6 +673,494 @@ void registerMultiFab(nb::module_& m)
                 }
                 return result;
             }
+        )
+        .def(
+            "tile_table",
+            [](MultiFab& mf, int bf, int requested_padded)
+            {
+                if (!mf.singleChunkPtr())
+                    throw std::runtime_error(
+                        "MultiFab not allocated with single-chunk mode");
+
+                int ng = mf.nGrow();
+                int nc = mf.nComp();
+
+                // First pass: count tiles
+                size_t n_tiles = 0;
+                size_t box_offset = 0;
+                for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+                {
+                    const auto& bx = mf[mfi].box();
+                    int Nx = bx.length(0);
+                    int Ny = bx.length(1);
+                    int Nz = bx.length(2);
+                    int vNx = Nx - 2 * ng;
+                    int vNy = Ny - 2 * ng;
+                    int vNz = Nz - 2 * ng;
+                    n_tiles += (size_t)(vNx / bf) * (vNy / bf) * (vNz / bf);
+                    box_offset += (size_t)Nx * Ny * Nz * nc;
+                }
+
+                // Pad: use requested size or next power of 2
+                size_t n_padded;
+                if (requested_padded > 0 && (size_t)requested_padded >= n_tiles)
+                    n_padded = (size_t)requested_padded;
+                else {
+                    n_padded = 1;
+                    while (n_padded < n_tiles)
+                        n_padded <<= 1;
+                }
+
+                // Allocate flat arrays
+                auto* offsets  = new int64_t[n_padded];
+                auto* stride_x = new int64_t[n_padded];
+                auto* stride_y = new int64_t[n_padded];
+                auto* stride_z = new int64_t[n_padded];
+                auto* stride_c = new int64_t[n_padded];
+                auto* box_ids  = new int64_t[n_padded];
+                auto* tile_is  = new int64_t[n_padded];
+                auto* tile_js  = new int64_t[n_padded];
+                auto* tile_ks  = new int64_t[n_padded];
+
+                // Second pass: fill tile descriptors
+                size_t t = 0;
+                box_offset = 0;
+                int box_id = 0;
+                for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+                {
+                    const auto& bx = mf[mfi].box();
+                    int Nx = bx.length(0);
+                    int Ny = bx.length(1);
+                    int Nz = bx.length(2);
+                    int vNx = Nx - 2 * ng;
+                    int vNy = Ny - 2 * ng;
+                    int vNz = Nz - 2 * ng;
+
+                    // Fortran-order strides for this box
+                    int64_t sx = 1;
+                    int64_t sy = Nx;
+                    int64_t sz = (int64_t)Nx * Ny;
+                    int64_t sc = (int64_t)Nx * Ny * Nz;
+
+                    for (int ti = 0; ti < vNx / bf; ++ti)
+                    {
+                        for (int tj = 0; tj < vNy / bf; ++tj)
+                        {
+                            for (int tk = 0; tk < vNz / bf; ++tk)
+                            {
+                                // Corner of this tile's ghost origin.
+                                // The kernel adds ng internally when iterating,
+                                // so the offset points to (ti*bf, tj*bf, tk*bf)
+                                // in the box, not (ng+ti*bf, ...).
+                                int ci = ti * bf;
+                                int cj = tj * bf;
+                                int ck = tk * bf;
+                                int64_t tile_off = (int64_t)box_offset
+                                                 + ci * sx + cj * sy + ck * sz;
+
+                                offsets[t]  = tile_off;
+                                stride_x[t] = sx;
+                                stride_y[t] = sy;
+                                stride_z[t] = sz;
+                                stride_c[t] = sc;
+                                box_ids[t]  = box_id;
+                                tile_is[t]  = ti;
+                                tile_js[t]  = tj;
+                                tile_ks[t]  = tk;
+                                ++t;
+                            }
+                        }
+                    }
+                    box_offset += (size_t)Nx * Ny * Nz * nc;
+                    ++box_id;
+                }
+
+                // Pad with copies of tile 0
+                for (size_t p = t; p < n_padded; ++p)
+                {
+                    offsets[p]  = offsets[0];
+                    stride_x[p] = stride_x[0];
+                    stride_y[p] = stride_y[0];
+                    stride_z[p] = stride_z[0];
+                    stride_c[p] = stride_c[0];
+                    box_ids[p]  = 0;
+                    tile_is[p]  = 0;
+                    tile_js[p]  = 0;
+                    tile_ks[p]  = 0;
+                }
+
+                // Copy to device and return as JAX arrays
+                auto make_array = [&](int64_t* host_ptr) {
+                    size_t nbytes = n_padded * sizeof(int64_t);
+                    auto* dev_ptr = static_cast<int64_t*>(
+                        The_Device_Arena()->alloc(nbytes));
+                    Gpu::htod_memcpy(dev_ptr, host_ptr, nbytes);
+                    delete[] host_ptr;
+                    auto owner = nb::capsule(dev_ptr, [](void* p) noexcept {
+                        The_Device_Arena()->free(p);
+                    });
+                    size_t shape[1] = {n_padded};
+                    return nb::ndarray<nb::jax, int64_t, nb::ndim<1>>(
+                        dev_ptr, 1, shape, owner, nullptr,
+                        nb::dtype<int64_t>(), nb::device::cuda::value, 0);
+                };
+
+                nb::dict result;
+                result["offset"]   = make_array(offsets);
+                result["stride_x"] = make_array(stride_x);
+                result["stride_y"] = make_array(stride_y);
+                result["stride_z"] = make_array(stride_z);
+                result["stride_c"] = make_array(stride_c);
+                result["box_id"]   = make_array(box_ids);
+                result["tile_i"]   = make_array(tile_is);
+                result["tile_j"]   = make_array(tile_js);
+                result["tile_k"]   = make_array(tile_ks);
+                result["n_tiles"]  = nb::int_(n_tiles);
+                result["n_padded"] = nb::int_(n_padded);
+                result["bf"]       = nb::int_(bf);
+                result["ng"]       = nb::int_(ng);
+                return result;
+            },
+            nb::arg("bf") = 4, nb::arg("n_padded") = 0
+        )
+        .def(
+            "packed_tiles",
+            [](MultiFab& mf, int bf, int requested_padded)
+            {
+                if (!mf.singleChunkPtr())
+                    throw std::runtime_error(
+                        "MultiFab not allocated with single-chunk mode");
+
+                int ng = mf.nGrow();
+                int nc = mf.nComp();
+                constexpr int FIELDS_PER_TILE = 5;
+
+                // Single pass: count tiles and collect per-box info
+                size_t n_tiles = 0;
+                size_t box_offset = 0;
+
+                struct BoxInfo {
+                    size_t offset;
+                    int Nx, Ny, Nz;
+                    int vNx, vNy, vNz;
+                    int box_id;
+                };
+                std::vector<BoxInfo> boxes;
+
+                int box_id = 0;
+                for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+                {
+                    const auto& bx = mf[mfi].box();
+                    int Nx = bx.length(0);
+                    int Ny = bx.length(1);
+                    int Nz = bx.length(2);
+                    int vNx = Nx - 2 * ng;
+                    int vNy = Ny - 2 * ng;
+                    int vNz = Nz - 2 * ng;
+
+                    if (box_offset > (size_t)INT32_MAX)
+                        throw std::runtime_error(
+                            "packed_tiles: buffer offset exceeds int32 range");
+
+                    boxes.push_back({box_offset, Nx, Ny, Nz, vNx, vNy, vNz, box_id});
+                    n_tiles += (size_t)(vNx / bf) * (vNy / bf) * (vNz / bf);
+                    box_offset += (size_t)Nx * Ny * Nz * nc;
+                    ++box_id;
+                }
+
+                // Pad to next power of 2
+                size_t n_padded;
+                if (requested_padded > 0 && (size_t)requested_padded >= n_tiles)
+                    n_padded = (size_t)requested_padded;
+                else {
+                    n_padded = 1;
+                    while (n_padded < n_tiles)
+                        n_padded <<= 1;
+                }
+
+                // Allocate single packed host array
+                auto* packed = new int32_t[n_padded * FIELDS_PER_TILE];
+
+                // Fill tile descriptors
+                size_t t = 0;
+                for (const auto& bi : boxes)
+                {
+                    int32_t sx = 1;
+                    int32_t sy = bi.Nx;
+                    int32_t sz = bi.Nx * bi.Ny;
+
+                    for (int ti = 0; ti < bi.vNx / bf; ++ti)
+                    {
+                        for (int tj = 0; tj < bi.vNy / bf; ++tj)
+                        {
+                            for (int tk = 0; tk < bi.vNz / bf; ++tk)
+                            {
+                                int ci = ng + ti * bf;
+                                int cj = ng + tj * bf;
+                                int ck = ng + tk * bf;
+                                int32_t offset = (int32_t)bi.offset
+                                               + ci * sx + cj * sy + ck * sz;
+
+                                size_t base = t * FIELDS_PER_TILE;
+                                packed[base + 0] = offset;
+                                packed[base + 1] = sx;
+                                packed[base + 2] = sy;
+                                packed[base + 3] = sz;
+                                packed[base + 4] = bi.box_id;
+                                ++t;
+                            }
+                        }
+                    }
+                }
+
+                // Pad with copies of tile 0
+                for (size_t p = t; p < n_padded; ++p)
+                {
+                    size_t dst = p * FIELDS_PER_TILE;
+                    for (int f = 0; f < FIELDS_PER_TILE; ++f)
+                        packed[dst + f] = packed[f];
+                }
+
+                // Single htod_memcpy to device
+                size_t nbytes = n_padded * FIELDS_PER_TILE * sizeof(int32_t);
+                auto* dev_ptr = static_cast<int32_t*>(
+                    The_Device_Arena()->alloc(nbytes));
+                Gpu::htod_memcpy(dev_ptr, packed, nbytes);
+                delete[] packed;
+
+                auto owner = nb::capsule(dev_ptr, [](void* p) noexcept {
+                    The_Device_Arena()->free(p);
+                });
+                size_t shape[1] = {n_padded * FIELDS_PER_TILE};
+                auto tiles_arr = nb::ndarray<nb::jax, int32_t, nb::ndim<1>>(
+                    dev_ptr, 1, shape, owner, nullptr,
+                    nb::dtype<int32_t>(), nb::device::cuda::value, 0);
+
+                nb::dict result;
+                result["tiles"]    = tiles_arr;
+                result["n_tiles"]  = nb::int_(n_tiles);
+                result["n_padded"] = nb::int_(n_padded);
+                result["bf"]       = nb::int_(bf);
+                result["ng"]       = nb::int_(ng);
+                return result;
+            },
+            nb::arg("bf") = 8, nb::arg("n_padded") = 0,
+            "Build packed tile metadata: [offset, sx, sy, sz, box_id] per tile."
+        )
+        .def(
+            "face_tile_table",
+            [](MultiFab& cell_mf,
+               const MultiFab& fx_mf,
+               const MultiFab& fy_mf,
+               const MultiFab& fz_mf,
+               int bf,
+               int requested_padded)
+            {
+                if (!cell_mf.singleChunkPtr())
+                    throw std::runtime_error(
+                        "Cell MultiFab not allocated with single-chunk mode");
+
+                int ng = cell_mf.nGrow();
+                int nc = cell_mf.nComp();
+
+                // Pass 1: count tiles
+                size_t n_tiles = 0;
+                for (amrex::MFIter mfi(cell_mf); mfi.isValid(); ++mfi)
+                {
+                    const auto& bx = cell_mf[mfi].box();
+                    int vNx = bx.length(0) - 2 * ng;
+                    int vNy = bx.length(1) - 2 * ng;
+                    int vNz = bx.length(2) - 2 * ng;
+                    n_tiles += (size_t)(vNx / bf) * (vNy / bf) * (vNz / bf);
+                }
+
+                size_t n_padded;
+                if (requested_padded > 0 && (size_t)requested_padded >= n_tiles)
+                    n_padded = (size_t)requested_padded;
+                else {
+                    n_padded = 1;
+                    while (n_padded < n_tiles)
+                        n_padded <<= 1;
+                }
+
+                // 24 arrays: 3 dirs × (off, sx, sy, sz, maxI, maxJ, maxK) + tile_ci/cj/ck
+                auto* fx_off  = new int32_t[n_padded];
+                auto* fx_sx   = new int32_t[n_padded];
+                auto* fx_sy   = new int32_t[n_padded];
+                auto* fx_sz   = new int32_t[n_padded];
+                auto* fx_maxI = new int32_t[n_padded];
+                auto* fx_maxJ = new int32_t[n_padded];
+                auto* fx_maxK = new int32_t[n_padded];
+
+                auto* fy_off  = new int32_t[n_padded];
+                auto* fy_sx   = new int32_t[n_padded];
+                auto* fy_sy   = new int32_t[n_padded];
+                auto* fy_sz   = new int32_t[n_padded];
+                auto* fy_maxI = new int32_t[n_padded];
+                auto* fy_maxJ = new int32_t[n_padded];
+                auto* fy_maxK = new int32_t[n_padded];
+
+                auto* fz_off  = new int32_t[n_padded];
+                auto* fz_sx   = new int32_t[n_padded];
+                auto* fz_sy   = new int32_t[n_padded];
+                auto* fz_sz   = new int32_t[n_padded];
+                auto* fz_maxI = new int32_t[n_padded];
+                auto* fz_maxJ = new int32_t[n_padded];
+                auto* fz_maxK = new int32_t[n_padded];
+
+                auto* tile_ci = new int32_t[n_padded];
+                auto* tile_cj = new int32_t[n_padded];
+                auto* tile_ck = new int32_t[n_padded];
+
+                // Pass 2: fill — iterate cell MFIter, use index for face access
+                size_t t = 0;
+                size_t fx_box_off = 0, fy_box_off = 0, fz_box_off = 0;
+                int box_idx = 0;
+
+                for (amrex::MFIter mfi(cell_mf); mfi.isValid(); ++mfi)
+                {
+                    const auto& cell_bx = cell_mf[mfi].box();
+                    int Nx = cell_bx.length(0);
+                    int Ny = cell_bx.length(1);
+                    int Nz = cell_bx.length(2);
+                    int vNx = Nx - 2 * ng;
+                    int vNy = Ny - 2 * ng;
+                    int vNz = Nz - 2 * ng;
+
+                    // Face FAB dimensions — access by index (same ordering)
+                    const auto& fx_bx = fx_mf.boxArray()[box_idx];
+                    int fxNx = fx_bx.length(0), fxNy = fx_bx.length(1), fxNz = fx_bx.length(2);
+                    // Add ngrow for face
+                    int fx_ng = fx_mf.nGrow();
+                    fxNx += 2 * fx_ng; fxNy += 2 * fx_ng; fxNz += 2 * fx_ng;
+
+                    const auto& fy_bx = fy_mf.boxArray()[box_idx];
+                    int fyNx = fy_bx.length(0), fyNy = fy_bx.length(1), fyNz = fy_bx.length(2);
+                    int fy_ng = fy_mf.nGrow();
+                    fyNx += 2 * fy_ng; fyNy += 2 * fy_ng; fyNz += 2 * fy_ng;
+
+                    const auto& fz_bx = fz_mf.boxArray()[box_idx];
+                    int fzNx = fz_bx.length(0), fzNy = fz_bx.length(1), fzNz = fz_bx.length(2);
+                    int fz_ng = fz_mf.nGrow();
+                    fzNx += 2 * fz_ng; fzNy += 2 * fz_ng; fzNz += 2 * fz_ng;
+
+                    for (int ti = 0; ti < vNx / bf; ++ti)
+                    {
+                        for (int tj = 0; tj < vNy / bf; ++tj)
+                        {
+                            for (int tk = 0; tk < vNz / bf; ++tk)
+                            {
+                                int ci = ti * bf;
+                                int cj = tj * bf;
+                                int ck = tk * bf;
+
+                                // x-face
+                                fx_off[t]  = (int32_t)fx_box_off;
+                                fx_sx[t]   = 1;
+                                fx_sy[t]   = fxNx;
+                                fx_sz[t]   = fxNx * fxNy;
+                                fx_maxI[t] = fxNx;
+                                fx_maxJ[t] = fxNy;
+                                fx_maxK[t] = fxNz;
+
+                                // y-face
+                                fy_off[t]  = (int32_t)fy_box_off;
+                                fy_sx[t]   = 1;
+                                fy_sy[t]   = fyNx;
+                                fy_sz[t]   = fyNx * fyNy;
+                                fy_maxI[t] = fyNx;
+                                fy_maxJ[t] = fyNy;
+                                fy_maxK[t] = fyNz;
+
+                                // z-face
+                                fz_off[t]  = (int32_t)fz_box_off;
+                                fz_sx[t]   = 1;
+                                fz_sy[t]   = fzNx;
+                                fz_sz[t]   = fzNx * fzNy;
+                                fz_maxI[t] = fzNx;
+                                fz_maxJ[t] = fzNy;
+                                fz_maxK[t] = fzNz;
+
+                                // Tile corner
+                                tile_ci[t] = ci;
+                                tile_cj[t] = cj;
+                                tile_ck[t] = ck;
+
+                                ++t;
+                            }
+                        }
+                    }
+
+                    fx_box_off += (size_t)fxNx * fxNy * fxNz * fx_mf.nComp();
+                    fy_box_off += (size_t)fyNx * fyNy * fyNz * fy_mf.nComp();
+                    fz_box_off += (size_t)fzNx * fzNy * fzNz * fz_mf.nComp();
+                    ++box_idx;
+                }
+
+                // Pad with copies of tile 0
+                for (size_t p = t; p < n_padded; ++p)
+                {
+                    fx_off[p] = fx_off[0]; fx_sx[p] = fx_sx[0];
+                    fx_sy[p] = fx_sy[0]; fx_sz[p] = fx_sz[0];
+                    fx_maxI[p] = fx_maxI[0]; fx_maxJ[p] = fx_maxJ[0]; fx_maxK[p] = fx_maxK[0];
+                    fy_off[p] = fy_off[0]; fy_sx[p] = fy_sx[0];
+                    fy_sy[p] = fy_sy[0]; fy_sz[p] = fy_sz[0];
+                    fy_maxI[p] = fy_maxI[0]; fy_maxJ[p] = fy_maxJ[0]; fy_maxK[p] = fy_maxK[0];
+                    fz_off[p] = fz_off[0]; fz_sx[p] = fz_sx[0];
+                    fz_sy[p] = fz_sy[0]; fz_sz[p] = fz_sz[0];
+                    fz_maxI[p] = fz_maxI[0]; fz_maxJ[p] = fz_maxJ[0]; fz_maxK[p] = fz_maxK[0];
+                    tile_ci[p] = 0; tile_cj[p] = 0; tile_ck[p] = 0;
+                }
+
+                auto make_array = [&](int32_t* host_ptr) {
+                    size_t nbytes = n_padded * sizeof(int32_t);
+                    auto* dev_ptr = static_cast<int32_t*>(
+                        The_Device_Arena()->alloc(nbytes));
+                    Gpu::htod_memcpy(dev_ptr, host_ptr, nbytes);
+                    delete[] host_ptr;
+                    auto owner = nb::capsule(dev_ptr, [](void* p) noexcept {
+                        The_Device_Arena()->free(p);
+                    });
+                    size_t shape[1] = {n_padded};
+                    return nb::ndarray<nb::jax, int32_t, nb::ndim<1>>(
+                        dev_ptr, 1, shape, owner, nullptr,
+                        nb::dtype<int32_t>(), nb::device::cuda::value, 0);
+                };
+
+                nb::dict result;
+                result["fx_off"]  = make_array(fx_off);
+                result["fx_sx"]   = make_array(fx_sx);
+                result["fx_sy"]   = make_array(fx_sy);
+                result["fx_sz"]   = make_array(fx_sz);
+                result["fx_maxI"] = make_array(fx_maxI);
+                result["fx_maxJ"] = make_array(fx_maxJ);
+                result["fx_maxK"] = make_array(fx_maxK);
+                result["fy_off"]  = make_array(fy_off);
+                result["fy_sx"]   = make_array(fy_sx);
+                result["fy_sy"]   = make_array(fy_sy);
+                result["fy_sz"]   = make_array(fy_sz);
+                result["fy_maxI"] = make_array(fy_maxI);
+                result["fy_maxJ"] = make_array(fy_maxJ);
+                result["fy_maxK"] = make_array(fy_maxK);
+                result["fz_off"]  = make_array(fz_off);
+                result["fz_sx"]   = make_array(fz_sx);
+                result["fz_sy"]   = make_array(fz_sy);
+                result["fz_sz"]   = make_array(fz_sz);
+                result["fz_maxI"] = make_array(fz_maxI);
+                result["fz_maxJ"] = make_array(fz_maxJ);
+                result["fz_maxK"] = make_array(fz_maxK);
+                result["tile_ci"] = make_array(tile_ci);
+                result["tile_cj"] = make_array(tile_cj);
+                result["tile_ck"] = make_array(tile_ck);
+                result["n_tiles"]  = nb::int_(n_tiles);
+                result["n_padded"] = nb::int_(n_padded);
+                result["bf"]       = nb::int_(bf);
+                result["ng"]       = nb::int_(ng);
+                return result;
+            },
+            nb::arg("fx"), nb::arg("fy"), nb::arg("fz"), nb::arg("bf") = 4,
+            nb::arg("n_padded") = 0,
+            "Build face tile table matching cell tile_table layout."
         )
         .def(
             "host_array",

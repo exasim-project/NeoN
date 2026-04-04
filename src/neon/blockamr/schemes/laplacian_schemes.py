@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Laplacian schemes — cell-level kernels on flat contiguous buffers."""
+"""Laplacian schemes — cell-level kernels."""
 from __future__ import annotations
 
 from typing import Annotated, Literal, Union
@@ -10,6 +10,7 @@ from typing import Annotated, Literal, Union
 from pydantic import BaseModel, ConfigDict, Discriminator
 
 from ..cell_kernels import CellLaplacianKernel
+from ..cell_kernels_3d import Laplacian3D, VariableGammaLaplacian3D
 
 
 class CentralDiffLaplacian(BaseModel):
@@ -20,11 +21,7 @@ class CentralDiffLaplacian(BaseModel):
     def build_kernel(self, dh, coeff=1.0, ncomp=1,
                      gamma_buf=None, gamma_offsets=None,
                      Nx=0, Ny=0, Nz=0, ng=0):
-        """Return a cell-level laplacian kernel.
-
-        dh: tuple of (dx, dy, dz) as Python floats.
-        gamma_buf/gamma_offsets: optional variable gamma data.
-        """
+        """Return a cell-level laplacian kernel (flat dispatch path)."""
         return CellLaplacianKernel(
             dh=dh, coeff=coeff, ncomp=ncomp,
             has_variable_gamma=gamma_buf is not None,
@@ -32,6 +29,24 @@ class CentralDiffLaplacian(BaseModel):
             _gamma_offset=0,
             Nx=Nx, Ny=Ny, Nz=Nz, ng=ng,
         )
+
+    def build_spatial_kernel(self, dh, coeff=1.0, gamma=None):
+        """Return a 3D functor kernel for parallel_for dispatch.
+
+        Parameters
+        ----------
+        dh : tuple
+            Cell spacing (dx, dy, dz).
+        coeff : float
+            Coefficient (includes gamma for constant case).
+        gamma : CellArray, optional
+            Per-cell variable gamma.
+        """
+        if gamma is not None:
+            return VariableGammaLaplacian3D(
+                gamma=gamma, dh=dh, coeff=coeff)
+        return Laplacian3D(dh=dh, coeff=coeff)
+
 
 
 LaplacianScheme = Annotated[

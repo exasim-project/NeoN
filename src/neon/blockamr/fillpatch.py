@@ -20,22 +20,39 @@ class FillPatchCellConservative:
             mf.fill_boundary(mesh.geom(lev))
         else:
             bcs = [blockamr.periodic_bcrec()] * field.ncomp
-            blockamr.fill_patch_two_levels(
-                mf,
-                time,
-                [field.mf[lev - 1]],
-                [time],
-                [field.mf[lev]],
-                [time],
-                0,
-                0,
-                field.ncomp,
-                mesh.geom(lev - 1),
-                mesh.geom(lev),
-                mesh.ref_ratio(lev - 1),
-                blockamr.cell_cons_interp(),
-                bcs,
-            )
+            fine_mf = field.mf[lev]
+            if fine_mf is None:
+                # New level — no old fine data, interpolate from coarse only
+                blockamr.interp_from_coarse_level(
+                    mf,
+                    time,
+                    field.mf[lev - 1],
+                    0,
+                    0,
+                    field.ncomp,
+                    mesh.geom(lev - 1),
+                    mesh.geom(lev),
+                    mesh.ref_ratio(lev - 1),
+                    blockamr.cell_cons_interp(),
+                    bcs,
+                )
+            else:
+                blockamr.fill_patch_two_levels(
+                    mf,
+                    time,
+                    [field.mf[lev - 1]],
+                    [time],
+                    [fine_mf],
+                    [time],
+                    0,
+                    0,
+                    field.ncomp,
+                    mesh.geom(lev - 1),
+                    mesh.geom(lev),
+                    mesh.ref_ratio(lev - 1),
+                    blockamr.cell_cons_interp(),
+                    bcs,
+                )
 
 
 class FillPatchSingleLevel:

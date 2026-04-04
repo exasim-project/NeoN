@@ -59,6 +59,7 @@ class CellField:
         self._fill_patch = fill_patch
         self._memory = memory
         self.mf = [None] * (mesh.max_level + 1)
+        self._layout = [None] * (mesh.max_level + 1)
         mesh.register_field(self)
 
     def __getitem__(self, lev):
@@ -72,24 +73,48 @@ class CellField:
         else:
             self.mf[lev].fill_boundary(self.mesh.geom(lev))
 
+    def build_layout(self, lev, bf=8):
+        """Build TileLayout for this level. Call after regrid or first use."""
+        self._layout[lev] = blockamr.build_tile_layout(self.mf[lev], bf)
+
+    def layout(self, lev):
+        """Return cached TileLayout. Builds on first call."""
+        if self._layout[lev] is None:
+            self.build_layout(lev)
+        return self._layout[lev]
+
+    def contiguous(self, lev):
+        """Zero-copy view of MultiFab contiguous buffer."""
+        return self.mf[lev].contiguous_array()
+
+    def write_back(self, lev, flat_array):
+        """Copy flat array into MultiFab via single memcpy."""
+        self.mf[lev].copy_from_flat(flat_array)
+
     def _on_new_level(self, lev, ba, dm):
         self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
         self.mf[lev].set_val(0.0)
+        self._layout[lev] = None
 
     def _on_new_level_from_coarse(self, lev, time, ba, dm):
-        self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
-        self.mf[lev].set_val(0.0)
-        if self._fill_patch:
-            self._fill_patch(self.mesh, self, lev, time)
-
-    def _on_remake_level(self, lev, time, ba, dm):
         new_mf = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
+        new_mf.set_val(0.0)
+        self._layout[lev] = None
         if self._fill_patch:
             self._fill_patch(self.mesh, self, lev, time, target_mf=new_mf)
         self.mf[lev] = new_mf
 
+    def _on_remake_level(self, lev, time, ba, dm):
+        new_mf = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
+        new_mf.set_val(0.0)
+        if self._fill_patch:
+            self._fill_patch(self.mesh, self, lev, time, target_mf=new_mf)
+        self.mf[lev] = new_mf
+        self._layout[lev] = None
+
     def _on_clear_level(self, lev):
         self.mf[lev] = None
+        self._layout[lev] = None
 
 
 class NodalField(Field):
@@ -147,6 +172,7 @@ class FaceField:
         self.ngrow = ngrow
         self._memory = memory
         self._levels = [None] * (mesh.max_level + 1)
+        self._layouts = [None] * (mesh.max_level + 1)  # per level: (fx_layout, fy_layout, fz_layout)
         mesh.register_field(self)
 
     def __getitem__(self, lev):
@@ -155,11 +181,28 @@ class FaceField:
     def fill_boundary(self, lev):
         self._levels[lev].fill_boundary()
 
+    def build_layout(self, lev, bf=8):
+        """Build TileLayout for each face direction at this level."""
+        self._layouts[lev] = tuple(
+            blockamr.build_tile_layout(self._levels[lev][d].mf, bf)
+            for d in range(3))
+
+    def layout(self, lev, d):
+        """Return cached TileLayout for direction d. Builds on first call."""
+        if self._layouts[lev] is None:
+            self.build_layout(lev)
+        return self._layouts[lev][d]
+
+    def contiguous(self, lev, d):
+        """Zero-copy view of face-d contiguous buffer."""
+        return self._levels[lev][d].mf.contiguous_array()
+
     def _on_new_level(self, lev, ba, dm):
         self._levels[lev] = _FaceFieldLevel(
             ba, dm, self.mesh.geom(lev),
             self.ncomp, self.ngrow, self.name, self._memory,
         )
+        self._layouts[lev] = None
 
     def _on_new_level_from_coarse(self, lev, time, ba, dm):
         self._on_new_level(lev, ba, dm)
@@ -169,3 +212,4 @@ class FaceField:
 
     def _on_clear_level(self, lev):
         self._levels[lev] = None
+        self._layouts[lev] = None

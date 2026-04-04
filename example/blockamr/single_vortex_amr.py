@@ -187,9 +187,12 @@ if __name__ == "__main__":
         "--write-interval", type=float, default=0.1, help="plotfile write interval in seconds"
     )
     parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
+    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
+                        default="jax", help="dispatch backend")
     args = parser.parse_args()
 
     with blockamr.runtime():
+        blockamr.set_backend(args.backend)
         run(
             n_cell=args.ncell,
             max_level=args.max_level,

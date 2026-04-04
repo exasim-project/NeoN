@@ -245,6 +245,8 @@ if __name__ == "__main__":
     parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
     parser.add_argument("--device", choices=["cpu", "gpu"], default=None,
                         help="force cpu or gpu")
+    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
+                        default="jax", help="dispatch backend (default: jax)")
     parser.add_argument(
         "--scheme",
         choices=list(DIV_SCHEMES),
@@ -254,6 +256,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with blockamr.runtime():
+        blockamr.set_backend(args.backend)
         memory = "pinned" if args.device == "cpu" else "default"
         run(
             n_cell=args.ncell,

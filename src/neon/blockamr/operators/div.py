@@ -5,6 +5,7 @@
 import jax.numpy as jnp
 
 import neon.blockamr as blockamr
+from ..array_types import FaceArray
 from ..field import FaceField, CellField
 from ..flattened_boxes import FlattenedFaceBoxes
 from ..mesh import Mesh
@@ -35,29 +36,93 @@ class Div:
         obj._name = "Div"
         return obj
 
+    def build_kernel_3d(self, ctx, t):
+        """Build a 3D spatial kernel from TiledContext.
+
+        Extracts face data from self.face_field, constructs FlatFaceBoxed
+        with per-box offsets (box_id is a dummy — replaced per-tile inside
+        the Pallas kernel by parallel_for).
+
+        Returns an eqx.Module with __call__(box_id, i, j, k, phi) → scalar.
+        """
+        import jax.numpy as jnp
+        from ..flat_refs import FlatFaceBoxed
+        from ..flattened_boxes import FlattenedFaceBoxes
+
+        lev = ctx.lev
+        face_lev = self.face_field[lev]
+        ng_face = face_lev[0].mf.n_grow()
+        face_fb = FlattenedFaceBoxes.from_face_field(self.face_field, lev)
+        face_metas = [face_lev[d].mf.fab_metadata() for d in range(3)]
+        n_boxes = len(face_metas[0])
+
+        # Per-box face offsets and strides
+        all_offs = []
+        all_strs = []
+        for d in range(3):
+            offs = []
+            strs = []
+            for b in range(n_boxes):
+                _, fNx, fNy, _, _ = face_metas[d][b]
+                offs.append(int(face_metas[d][b][0])
+                            + ng_face + fNx * ng_face + fNx * fNy * ng_face)
+                strs.append([1, fNx, fNx * fNy])
+            all_offs.append(offs)
+            all_strs.append(strs)
+
+        mb = 1
+        while mb < n_boxes:
+            mb <<= 1
+        for d in range(3):
+            while len(all_offs[d]) < mb:
+                all_offs[d].append(all_offs[d][0])
+                all_strs[d].append(all_strs[d][0])
+
+        box_id = jnp.int32(0)
+        face = FlatFaceBoxed(
+            face_fb.bufs[0], face_fb.bufs[1], face_fb.bufs[2],
+            jnp.array(all_offs[0], dtype=jnp.int32),
+            jnp.array(all_offs[1], dtype=jnp.int32),
+            jnp.array(all_offs[2], dtype=jnp.int32),
+            jnp.array(all_strs[0], dtype=jnp.int32),
+            jnp.array(all_strs[1], dtype=jnp.int32),
+            jnp.array(all_strs[2], dtype=jnp.int32),
+            box_id)
+        return self.scheme.build_spatial_kernel(
+            face=face, dh=ctx.dh, coeff=self.coeff)
+
     def build_kernel(self, bucket, t):
         """Build a cell-level kernel for a bucket of boxes.
 
         Returns an eqx.Module kernel with __call__(phi) → scalar
         and for_box(bucket, box_idx) for per-box rebinding.
+
+        Caches face_offsets across calls — only the face buffer data
+        (traced) changes each timestep; the offset layout is stable
+        until regrid.
         """
         lev = bucket.lev
         face_fb = FlattenedFaceBoxes.from_face_field(self.face_field, lev)
-        # Collect per-direction face offsets for boxes in this bucket.
-        # Each face direction has a different grown box size (e.g. x-faces
-        # are (Nx+1,Ny,Nz) while z-faces are (Nx,Ny,Nz+1)), so their
-        # offsets into the contiguous buffer differ.
-        n_pad = bucket.max_boxes - len(bucket.box_indices)
-        face_offsets = tuple(
-            jnp.array(
-                [int(face_fb.offsets[d][mf_idx]) for mf_idx in bucket.box_indices]
-                + [0] * n_pad,
-                dtype=jnp.int32,
-            )
-            for d in range(3)
-        )
 
-        ng_face = self.face_field[lev][0].mf.n_grow()
+        # Cache face offsets keyed on (box_indices, max_boxes, lev)
+        cache_key = (bucket.box_indices, bucket.max_boxes, lev)
+        if not hasattr(self, '_face_offset_cache'):
+            self._face_offset_cache = {}
+        if cache_key not in self._face_offset_cache:
+            n_pad = bucket.max_boxes - len(bucket.box_indices)
+            face_offsets = tuple(
+                jnp.array(
+                    [int(face_fb.offsets[d][mf_idx])
+                     for mf_idx in bucket.box_indices]
+                    + [0] * n_pad,
+                    dtype=jnp.int32,
+                )
+                for d in range(3)
+            )
+            ng_face = self.face_field[lev][0].mf.n_grow()
+            self._face_offset_cache[cache_key] = (face_offsets, ng_face)
+
+        face_offsets, ng_face = self._face_offset_cache[cache_key]
 
         return self.scheme.build_kernel(
             face_bufs=face_fb.bufs, face_offsets=face_offsets,
@@ -65,6 +130,7 @@ class Div:
             ng=bucket.ng, dh=bucket.dh_arr, coeff=self.coeff,
             ncomp=self.cell_field.ncomp, ng_face=ng_face,
         )
+
 
 
 def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32,

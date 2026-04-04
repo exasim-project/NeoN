@@ -223,6 +223,17 @@ def _vanleer_limiter(r):
     return (r + jnp.abs(r)) / (1.0 + jnp.abs(r))
 
 
+def _vanleer_correction(d_up, d_down):
+    """Harmonic-mean VanLeer: ψ(r)*Δ without computing r.
+
+    Equivalent to ``_vanleer_limiter(d_up/d_down) * d_down`` but uses
+    one fp64 division instead of two divisions + two abs calls.
+    Returns 0 when gradients have opposite signs (TVD property).
+    """
+    prod = d_up * d_down
+    return jnp.where(prod > 0.0, 2.0 * prod / (d_up + d_down), 0.0)
+
+
 class CellVanLeerDivKernel(eqx.Module):
     """TVD VanLeer divergence on the flat contiguous buffer."""
 
@@ -253,40 +264,36 @@ class CellVanLeerDivKernel(eqx.Module):
             self.Nx, self.Ny, self.Nz, self.ng, ng_face=self.ng_face,
         )
         total = 0.0
-        eps = 1e-30
         for ax in range(3):
             face_ax = (ff.x, ff.y, ff.z)[ax]
             fl = face_ax[0]
             fr = face_ax[1]
 
-            u_ll = phi.S(-2, ax)
-            u_l = phi.S(-1, ax)
-            u_r = phi.S(0, ax)
-            u_rr = phi.S(1, ax)
+            # Read each stencil point once: [-2, -1, 0, +1, +2]
+            s_m2 = phi.S(-2, ax)
+            s_m1 = phi.S(-1, ax)
+            s_0 = phi.S(0, ax)
+            s_p1 = phi.S(1, ax)
+            s_p2 = phi.S(2, ax)
 
-            delta = u_r - u_l
-
-            r_pos = (u_l - u_ll) / (delta + eps)
-            r_neg = (u_rr - u_r) / (delta + eps)
-            phi_l = jnp.where(
-                fl >= 0,
-                u_l + 0.5 * _vanleer_limiter(r_pos) * delta,
-                u_r - 0.5 * _vanleer_limiter(r_neg) * delta,
-            )
+            # Left face: gradients across the face and upstream
+            d_down_l = s_0 - s_m1
+            # fl >= 0: upwind from left, d_up = s_m1 - s_m2
+            # fl <  0: upwind from right, d_up = s_p1 - s_0
+            corr_l_pos = _vanleer_correction(s_m1 - s_m2, d_down_l)
+            corr_l_neg = _vanleer_correction(s_p1 - s_0, d_down_l)
+            phi_l = jnp.where(fl >= 0,
+                              s_m1 + 0.5 * corr_l_pos,
+                              s_0 - 0.5 * corr_l_neg)
             F_l = fl * phi_l
 
-            u_l_r = phi.S(0, ax)
-            u_r_r = phi.S(1, ax)
-            u_rr_r = phi.S(2, ax)
-
-            delta_r = u_r_r - u_l_r
-            r_pos_r = (u_l_r - u_l) / (delta_r + eps)
-            r_neg_r = (u_rr_r - u_r_r) / (delta_r + eps)
-            phi_r = jnp.where(
-                fr >= 0,
-                u_l_r + 0.5 * _vanleer_limiter(r_pos_r) * delta_r,
-                u_r_r - 0.5 * _vanleer_limiter(r_neg_r) * delta_r,
-            )
+            # Right face: shifted by +1
+            d_down_r = s_p1 - s_0
+            corr_r_pos = _vanleer_correction(s_0 - s_m1, d_down_r)
+            corr_r_neg = _vanleer_correction(s_p2 - s_p1, d_down_r)
+            phi_r = jnp.where(fr >= 0,
+                              s_0 + 0.5 * corr_r_pos,
+                              s_p1 - 0.5 * corr_r_neg)
             F_r = fr * phi_r
 
             total = total + (F_r - F_l) / self.dh[ax]
