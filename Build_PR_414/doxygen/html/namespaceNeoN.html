@@ -485,6 +485,14 @@ requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</t
 <tr class="memitem:af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a> (Types &amp;... args)</td></tr>
 <tr class="memdesc:af9198d29681d27f9a478aa99c01c00b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all views of the passed classes.  <br /></td></tr>
 <tr class="separator:af9198d29681d27f9a478aa99c01c00b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a492dde0aa0f1ad6924c6627bc9d26ded" id="r_a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memTemplParams" colspan="2">template&lt;typename FieldType &gt; </td></tr>
+<tr class="memitem:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a492dde0aa0f1ad6924c6627bc9d26ded">partitionVolField</a> (FieldType field, const auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)</td></tr>
+<tr class="memdesc:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
+<tr class="separator:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3f513f57a4492debc52c24b55a5d212" id="r_ae3f513f57a4492debc52c24b55a5d212"><td class="memTemplParams" colspan="2">template&lt;typename FieldType &gt; </td></tr>
+<tr class="memitem:ae3f513f57a4492debc52c24b55a5d212"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ae3f513f57a4492debc52c24b55a5d212">partitionSurfaceField</a> (FieldType field, auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</td></tr>
+<tr class="memdesc:ae3f513f57a4492debc52c24b55a5d212"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
+<tr class="separator:ae3f513f57a4492debc52c24b55a5d212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21e591c80791e44b4750aa9654717512" id="r_a21e591c80791e44b4750aa9654717512"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a21e591c80791e44b4750aa9654717512">computeBoundaryMatrixMapVector</a> ()</td></tr>
 <tr class="separator:a21e591c80791e44b4750aa9654717512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e4ff733c9dc00a516d09fbdacb127f4" id="r_a8e4ff733c9dc00a516d09fbdacb127f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a8e4ff733c9dc00a516d09fbdacb127f4">createSingleCellMesh</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> exec)</td></tr>
@@ -2819,6 +2827,104 @@ template&lt;typename Kernel , typename ReturnType &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="parallelAlgorithms_8hpp_source.html#l00256">256</a> of file <a class="el" href="parallelAlgorithms_8hpp_source.html">parallelAlgorithms.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae3f513f57a4492debc52c24b55a5d212" name="ae3f513f57a4492debc52c24b55a5d212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3f513f57a4492debc52c24b55a5d212">&#9670;&#160;</a></span>partitionSurfaceField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FieldType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">FieldType NeoN::partitionSurfaceField </td>
+          <td>(</td>
+          <td class="paramtype">FieldType&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">auto&#160;</td>
+          <td class="paramname"><em>bcs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">NeoN::mpi::Environment&#160;</td>
+          <td class="paramname"><em>mpiEnviron</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>flip</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank </p>
+
+<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00046">46</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a492dde0aa0f1ad6924c6627bc9d26ded" name="a492dde0aa0f1ad6924c6627bc9d26ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a492dde0aa0f1ad6924c6627bc9d26ded">&#9670;&#160;</a></span>partitionVolField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FieldType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">FieldType NeoN::partitionVolField </td>
+          <td>(</td>
+          <td class="paramtype">FieldType&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const auto &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">auto&#160;</td>
+          <td class="paramname"><em>bcs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">NeoN::mpi::Environment&#160;</td>
+          <td class="paramname"><em>mpiEnviron</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank </p>
+
+<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00016">16</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
 
 </div>
 </div>
