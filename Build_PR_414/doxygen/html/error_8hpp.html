@@ -167,7 +167,10 @@ Macros</h2></td></tr>
 <div class="line">    {                                                                                              \</div>
 <div class="line">        if (!(condition)) [[unlikely]]                                                             \</div>
 <div class="line">        {                                                                                          \</div>
-<div class="line">            NF_ERROR_EXIT(<span class="stringliteral">&quot;Assertion `&quot;</span> #condition <span class="stringliteral">&quot;` failed.\n       &quot;</span> &lt;&lt; message);               \</div>
+<div class="line">            NF_ERROR_EXIT(                                                                         \</div>
+<div class="line">                <span class="stringliteral">&quot;Assertion `&quot;</span> #condition <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; __FILE__ &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__                     \</div>
+<div class="line">                                                &lt;&lt; <span class="stringliteral">&quot;` failed.\n       &quot;</span> &lt;&lt; message                 \</div>
+<div class="line">            );                                                                                     \</div>
 <div class="line">        }                                                                                          \</div>
 <div class="line">    }                                                                                              \</div>
 <div class="line">    while (<span class="keyword">false</span>)</div>
@@ -222,7 +225,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00243">243</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00246">246</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -262,7 +265,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00270">270</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00273">273</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -310,7 +313,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00169">169</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00172">172</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -350,7 +353,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00215">215</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00218">218</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -390,7 +393,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00255">255</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00258">258</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -430,7 +433,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00282">282</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00285">285</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
@@ -470,7 +473,7 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00228">228</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="error_8hpp_source.html#l00231">231</a> of file <a class="el" href="error_8hpp_source.html">error.hpp</a>.</p>
 
 </div>
 </div>
