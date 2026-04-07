@@ -53,84 +53,92 @@
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ firstFace\ =\ 0;}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ lastFace\ =\ localFaces;}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00056}00056\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ leftBoundaryFace\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00057}00057\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ rightBoundaryFace\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00059}00059\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ signLeft\ =\ 1.0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00060}00060\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ signRight\ =\ 1.0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 0)}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00063}00063\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ leftBoundaryFace\ =\ 3\ *\ localFaces\ +\ 2;\ \textcolor{comment}{//\ 11}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ rightBoundaryFace\ =\ localFaces;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ 3}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00066}00066\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 1)}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00068}00068\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ firstFace\ =\ localFaces\ +\ 1;\ \textcolor{comment}{//\ 4\ \ last\ face\ rank\ 0}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ leftBoundaryFace\ =\ localFaces;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ should\ be\ 3}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ rightBoundaryFace\ =\ leftBoundaryFace\ +\ localCells;\ \textcolor{comment}{//\ should\ 3\ +\ 4}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00057}00057\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ firstBoundaryFace\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00058}00058\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ secondBoundaryFace\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00060}00060\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ signLeft\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00061}00061\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ signRight\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ FIXME}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 0)}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00065}00065\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ boundary\ face\ is\ the\ left\ boundary\ remaining\ local}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ firstBoundaryFace\ =\ 3\ *\ localFaces\ +\ 2;\ \textcolor{comment}{//\ 11}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ secondBoundaryFace\ =\ localFaces;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ 3}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00069}00069\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 1)}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00071}00071\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ firstFace\ =\ localFaces\ +\ 1;\ \textcolor{comment}{//\ 4\ \ last\ face\ rank\ 0}}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ face\ has\ different\ direction\ compared\ to\ unpartitioned\ case}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ signRight\ =\ -\/1.0;}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flip)}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ signLeft\ =\ -\/1.0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00080}00080\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 2)}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00082}00082\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ firstFace\ =\ localCells\ +\ localCells\ -\/\ 1;\ \textcolor{comment}{//\ 8\ last\ face\ rank\ 1}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ leftBoundaryFace\ =\ 2\ *\ localFaces\ +\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 7}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ rightBoundaryFace\ =\ leftBoundaryFace\ +\ localCells\ +\ 1;\ \textcolor{comment}{//\ 12}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ firstBoundaryFace\ =\ localFaces;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ should\ be\ 3}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ secondBoundaryFace\ =\ firstBoundaryFace\ +\ localCells;\ \textcolor{comment}{//\ should\ 3\ +\ 4}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ face\ has\ different\ direction\ compared\ to\ unpartitioned\ case}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ signRight\ =\ -\/1.0;}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flip)}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ signLeft\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00083}00083\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keywordflow}{if}\ (mpiEnviron.rank()\ ==\ 2)}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00085}00085\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ firstFace\ =\ localCells\ +\ localCells\ -\/\ 1;\ \textcolor{comment}{//\ 8\ last\ face\ rank\ 1}}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00087}00087\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ face\ has\ different\ direction\ compared\ to\ unpartitioned\ case}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flip)}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ signLeft\ =\ -\/1.0;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00093}00093\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00094}00094\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00095}00095\ \ \ \ \ lastFace\ =\ firstFace\ +\ localFaces\ +\ 2;\ \textcolor{comment}{//\ two\ extra\ faces\ for\ boundary\ +\ 1}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00096}00096\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{comment}{//\ surface\ field\ contains\ all\ faces}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00098}00098\ \ \ \ \ FieldType\ ret\ =\ \{field.exec(),\ field.name\ +\ \textcolor{stringliteral}{"{}Part"{}},\ mesh,\ bcs\};}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00099}00099\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00100}00100\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(lastFace\ -\/\ firstFace\ ==\ mesh.nTotalFaces(),\ \textcolor{stringliteral}{"{}different\ size"{}});}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ boundary\ face\ is\ the\ right\ boundary\ remaining\ local}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ firstBoundaryFace\ =\ 2\ *\ localFaces\ +\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ 7}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ firstBoundaryFace\ =\ 3\ *\ localFaces\ +\ 3;\ \ \textcolor{comment}{//\ 11}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ secondBoundaryFace\ =\ 2\ *\ localFaces\ +\ 1;\ \textcolor{comment}{//\ firstBoundaryFace\ +\ localCells\ +\ 1;\ //\ 12}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE\ FIXME\ signRight\ is\ flipped\ since}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ face\ has\ different\ direction\ compared\ to\ unpartitioned\ case}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flip)}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ signLeft\ =\ -\/1.0;}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ signRight\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00100}00100\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00101}00101\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ NOTE\ last\ two\ values\ are\ boundaries\ and\ are\ overwritten\ next}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keyword}{auto}\ internalVector\ =\ \mbox{\hyperlink{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}{take}}(field.internalVector(),\ firstFace,\ lastFace);}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ value\ lastFace\ \ and\ lastFace+1\ are\ incorrect}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ value\ lastFace\ is\ the\ left\ boundary}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ and\ lastFace\ +\ 1\ is\ at\ the\ new\ boundary\ so\ it\ should\ be\ lastFace}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keyword}{auto}\ outV\ =\ internalVector.view();}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{keyword}{auto}\ inV\ =\ field.internalVector().view();}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00110}00110\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ set\ left\ boundary\ face}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00112}00112\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lastface}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \{0,\ 1\},}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ outV[localFaces]\ =\ signLeft\ *\ inV[leftBoundaryFace];\ \},}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}copyMap"{}}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00118}00118\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00120}00120\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00102}00102\ \ \ \ \ lastFace\ =\ firstFace\ +\ localFaces\ +\ 2;\ \textcolor{comment}{//\ two\ extra\ faces\ for\ boundary\ +\ 1}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ surface\ field\ contains\ all\ faces}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00105}00105\ \ \ \ \ FieldType\ ret\ =\ \{field.exec(),\ field.name\ +\ \textcolor{stringliteral}{"{}Part"{}},\ mesh,\ bcs\};}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00107}00107\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(lastFace\ -\/\ firstFace\ ==\ mesh.nTotalFaces(),\ \textcolor{stringliteral}{"{}different\ size"{}});}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{comment}{//\ NOTE\ last\ two\ values\ are\ boundaries\ and\ are\ overwritten\ next}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{auto}\ internalVector\ =\ \mbox{\hyperlink{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}{take}}(field.internalVector(),\ firstFace,\ lastFace);}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ value\ lastFace\ \ and\ lastFace+1\ are\ incorrect}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{comment}{//\ value\ lastFace\ is\ the\ left\ boundary}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{comment}{//\ and\ lastFace\ +\ 1\ is\ at\ the\ new\ boundary\ so\ it\ should\ be\ lastFace}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00115}00115\ \ \ \ \ \textcolor{keyword}{auto}\ outV\ =\ internalVector.view();}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{keyword}{auto}\ inV\ =\ field.internalVector().view();}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ set\ first\ boundary\ face}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00119}00119\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lastface}}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ exec,}
 \DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \{0,\ 1\},}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ outV[localFaces\ +\ 1]\ =\ signRight\ *\ inV[rightBoundaryFace];}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}copyMap"{}}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00127}00127\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00128}00128\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00130}00130\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(ret.internalVector().size()\ ==\ internalVector.size(),\ \textcolor{stringliteral}{"{}different\ size"{}});}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00131}00131\ \ \ \ \ ret.internalVector()\ =\ internalVector;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00133}00133\ \}}
-\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00134}00134\ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ outV[localFaces]\ =\ signLeft\ *\ inV[firstBoundaryFace];\ \},}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}copyMap"{}}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00125}00125\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{comment}{//\ set\ second\ boundary\ face}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00128}00128\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ exec,}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \{0,\ 1\},}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ outV[localFaces\ +\ 1]\ =\ signRight\ *\ inV[secondBoundaryFace];}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}copyMap"{}}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00135}00135\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00138}00138\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(ret.internalVector().size()\ ==\ internalVector.size(),\ \textcolor{stringliteral}{"{}different\ size"{}});}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00139}00139\ \ \ \ \ ret.internalVector()\ =\ internalVector;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00140}00140\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00141}00141\ \}}
+\DoxyCodeLine{\Hypertarget{partitioning_8hpp_source_l00142}00142\ \}}
 
 \end{DoxyCode}
