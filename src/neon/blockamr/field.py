@@ -2,7 +2,22 @@
 #
 # SPDX-License-Identifier: MIT
 
+import math
+
 import neon.blockamr as blockamr
+
+
+def _padded_capacity(required, current):
+    """Compute padded buffer size with hysteresis.
+
+    Pads by 20% on first allocation or when resizing.
+    Keeps the current capacity if the required size is within
+    the band [60% of capacity, capacity].  Shrinks only when
+    the required size drops below 60% (40% waste).
+    """
+    if current > 0 and required <= current and required >= int(current * 0.6):
+        return current
+    return math.ceil(required * 1.2)
 
 
 class PatchData:
@@ -60,6 +75,7 @@ class CellField:
         self._memory = memory
         self.mf = [None] * (mesh.max_level + 1)
         self._layout = [None] * (mesh.max_level + 1)
+        self._padded_cap = [0] * (mesh.max_level + 1)
         mesh.register_field(self)
 
     def __getitem__(self, lev):
@@ -84,29 +100,38 @@ class CellField:
         return self._layout[lev]
 
     def contiguous(self, lev):
-        """Zero-copy view of MultiFab contiguous buffer."""
-        return self.mf[lev].contiguous_array()
+        """View of MultiFab contiguous buffer (padded if capacity set)."""
+        return self.mf[lev].contiguous_array(self._padded_cap[lev])
 
     def write_back(self, lev, flat_array):
-        """Copy flat array into MultiFab via single memcpy."""
+        """Copy flat array into MultiFab (copies only valid portion)."""
         self.mf[lev].copy_from_flat(flat_array)
 
+    def _make_padded_mf(self, lev, ba, dm):
+        """Create a MultiFab with hysteresis-padded contiguous buffer."""
+        required = blockamr.MultiFab.required_buffer_size(
+            ba, dm, self.ncomp, self.ngrow)
+        cap = _padded_capacity(required, self._padded_cap[lev])
+        self._padded_cap[lev] = cap
+        mf = blockamr.MultiFab(
+            ba, dm, self.ncomp, self.ngrow,
+            memory=self._memory, padded_n_elems=cap)
+        mf.set_val(0.0)
+        return mf
+
     def _on_new_level(self, lev, ba, dm):
-        self.mf[lev] = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
-        self.mf[lev].set_val(0.0)
+        self.mf[lev] = self._make_padded_mf(lev, ba, dm)
         self._layout[lev] = None
 
     def _on_new_level_from_coarse(self, lev, time, ba, dm):
-        new_mf = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
-        new_mf.set_val(0.0)
+        new_mf = self._make_padded_mf(lev, ba, dm)
         self._layout[lev] = None
         if self._fill_patch:
             self._fill_patch(self.mesh, self, lev, time, target_mf=new_mf)
         self.mf[lev] = new_mf
 
     def _on_remake_level(self, lev, time, ba, dm):
-        new_mf = blockamr.MultiFab(ba, dm, self.ncomp, self.ngrow, memory=self._memory)
-        new_mf.set_val(0.0)
+        new_mf = self._make_padded_mf(lev, ba, dm)
         if self._fill_patch:
             self._fill_patch(self.mesh, self, lev, time, target_mf=new_mf)
         self.mf[lev] = new_mf
@@ -115,6 +140,7 @@ class CellField:
     def _on_clear_level(self, lev):
         self.mf[lev] = None
         self._layout[lev] = None
+        self._padded_cap[lev] = 0
 
 
 class NodalField(Field):

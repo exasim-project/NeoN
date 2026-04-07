@@ -89,6 +89,99 @@ public:
     }
 };
 
+// Arena that overallocates a single chunk with padding.
+// Allocates padded_bytes from a base arena but serves valid_bytes to
+// SingleChunkArena on the first alloc().  The extra bytes are zeroed
+// and sit at the end of the buffer, invisible to AMReX.
+// This allows contiguous_array() to return a shape that stays stable
+// across AMR regrids (hysteresis), avoiding JAX recompilation.
+class PaddedArena final : public amrex::Arena
+{
+    void* m_buf;
+    std::size_t m_valid_size;   // what SingleChunkArena will request
+    std::size_t m_padded_size;  // full allocation
+    amrex::Arena* m_base;
+    bool m_chunk_served;
+    bool m_device_accessible;
+    bool m_host_accessible;
+
+public:
+    PaddedArena(
+        amrex::Arena* base,
+        std::size_t valid_bytes,
+        std::size_t padded_bytes,
+        bool device,
+        bool host
+    )
+        : m_buf(nullptr),
+          m_valid_size(valid_bytes),
+          m_padded_size(padded_bytes),
+          m_base(base),
+          m_chunk_served(false),
+          m_device_accessible(device),
+          m_host_accessible(host)
+    {
+        m_buf = base->alloc(padded_bytes);
+        // Zero the padding region
+        if (padded_bytes > valid_bytes)
+        {
+            char* pad_start = static_cast<char*>(m_buf) + valid_bytes;
+            std::size_t pad_n = padded_bytes - valid_bytes;
+            if (device && !host)
+            {
+                // Allocate a host-side zero buffer and copy to device
+                std::vector<char> zeros(pad_n, 0);
+                amrex::Gpu::htod_memcpy(pad_start, zeros.data(), pad_n);
+            }
+            else
+            {
+                std::memset(pad_start, 0, pad_n);
+            }
+        }
+    }
+
+    ~PaddedArena() override
+    {
+        if (m_buf) { m_base->free(m_buf); }
+    }
+
+    [[nodiscard]] void* alloc(std::size_t sz) override
+    {
+        if (!m_chunk_served && sz == m_valid_size)
+        {
+            m_chunk_served = true;
+            return m_buf;
+        }
+        return m_base->alloc(sz);
+    }
+
+    void free(void* pt) override
+    {
+        if (pt == m_buf) { return; } // freed in destructor
+        m_base->free(pt);
+    }
+
+    [[nodiscard]] std::size_t paddedSize() const { return m_padded_size; }
+
+    [[nodiscard]] bool isDeviceAccessible() const override { return m_device_accessible; }
+    [[nodiscard]] bool isHostAccessible() const override { return m_host_accessible; }
+
+    [[nodiscard]] bool isManaged() const override
+    {
+        return m_device_accessible && m_host_accessible;
+    }
+
+    [[nodiscard]] bool isDevice() const override
+    {
+        return m_device_accessible && !m_host_accessible;
+    }
+
+    [[nodiscard]] bool isPinned() const override
+    {
+        return m_host_accessible && m_device_accessible;
+    }
+};
+
 // Async copy from ndarray into a single FAB's valid region.
 // Returns (staging_ptr, owns_staging).  Caller must call
 // streamSynchronize() before freeing staging_ptr (when owns == true).
@@ -408,23 +501,66 @@ void registerMultiFab(nb::module_& m)
                const DistributionMapping& dm,
                int ncomp,
                int ngrow,
-               const std::string& memory)
+               const std::string& memory,
+               int64_t padded_n_elems)
             {
-                MFInfo info;
-                info.SetAllocSingleChunk(true);
-                if (memory == "device") info.SetArena(The_Device_Arena());
-                else if (memory == "managed")
-                    info.SetArena(The_Managed_Arena());
-                else if (memory == "pinned")
-                    info.SetArena(The_Pinned_Arena());
-                // "default" → no SetArena call, uses AMReX default
-                new (self) MultiFab(ba, dm, ncomp, ngrow, info);
+                // Compute required buffer size
+                IntVect ng(ngrow);
+                int64_t required = 0;
+                for (int i = 0; i < ba.size(); ++i)
+                {
+                    if (dm[i] == ParallelDescriptor::MyProc())
+                    {
+                        Box grown = amrex::grow(ba[i], ng);
+                        required += static_cast<int64_t>(grown.numPts()) * ncomp;
+                    }
+                }
+
+                int64_t padded = (padded_n_elems > 0 && padded_n_elems >= required)
+                                 ? padded_n_elems : required;
+
+                // Select base arena
+                Arena* base = nullptr;
+                if (memory == "device") base = The_Device_Arena();
+                else if (memory == "managed") base = The_Managed_Arena();
+                else if (memory == "pinned") base = The_Pinned_Arena();
+                else base = The_Arena();
+
+                bool devAccess = base->isDeviceAccessible();
+                bool hostAccess = base->isHostAccessible();
+
+                if (padded > required)
+                {
+                    // Overallocate via PaddedArena
+                    auto* parena = new PaddedArena(
+                        base,
+                        static_cast<std::size_t>(required) * sizeof(Real),
+                        static_cast<std::size_t>(padded) * sizeof(Real),
+                        devAccess, hostAccess);
+
+                    MFInfo info;
+                    info.SetAllocSingleChunk(true);
+                    info.SetArena(parena);
+                    new (self) MultiFab(ba, dm, ncomp, ngrow, info);
+                }
+                else
+                {
+                    MFInfo info;
+                    info.SetAllocSingleChunk(true);
+                    if (memory == "device") info.SetArena(The_Device_Arena());
+                    else if (memory == "managed")
+                        info.SetArena(The_Managed_Arena());
+                    else if (memory == "pinned")
+                        info.SetArena(The_Pinned_Arena());
+                    new (self) MultiFab(ba, dm, ncomp, ngrow, info);
+                }
             },
             nb::arg("ba"),
             nb::arg("dm"),
             nb::arg("ncomp"),
             nb::arg("ngrow"),
-            nb::arg("memory") = "default"
+            nb::arg("memory") = "default",
+            nb::arg("padded_n_elems") = 0
         )
         .def(
             "__init__",
@@ -610,20 +746,33 @@ void registerMultiFab(nb::module_& m)
         )
         .def(
             "contiguous_array",
-            [](nb::object self)
+            [](nb::object self, int64_t n_elems)
             {
                 MultiFab& mf = nb::cast<MultiFab&>(self);
                 auto* ptr = mf.singleChunkPtr();
                 if (!ptr)
                     throw std::runtime_error(
                         "MultiFab not allocated with single-chunk mode");
-                size_t total = mf.singleChunkSize() / sizeof(Real);
+                size_t valid = mf.singleChunkSize() / sizeof(Real);
+                size_t total = (n_elems > 0 && static_cast<size_t>(n_elems) >= valid)
+                               ? static_cast<size_t>(n_elems) : valid;
                 size_t shape[1] = {total};
                 int devType = deviceTypeFromArena(mf);
                 return nb::ndarray<nb::jax, Real, nb::ndim<1>>(
                     ptr, 1, shape, self, nullptr,
                     nb::dtype<Real>(), devType, 0, 'F'
                 );
+            },
+            nb::arg("n_elems") = 0
+        )
+        .def(
+            "n_valid_elems",
+            [](MultiFab& mf) -> int64_t
+            {
+                if (!mf.singleChunkPtr())
+                    throw std::runtime_error(
+                        "MultiFab not allocated with single-chunk mode");
+                return static_cast<int64_t>(mf.singleChunkSize() / sizeof(Real));
             }
         )
         .def(
@@ -634,25 +783,26 @@ void registerMultiFab(nb::module_& m)
                 if (!dst)
                     throw std::runtime_error(
                         "MultiFab not allocated with single-chunk mode");
-                size_t nbytes = mf.singleChunkSize();
+                size_t valid_bytes = mf.singleChunkSize();
                 size_t src_nbytes = src.size() * src.itemsize();
-                if (src_nbytes != nbytes)
+                if (src_nbytes < valid_bytes)
                     throw std::runtime_error(
-                        "copy_from_flat: size mismatch — src has "
-                        + std::to_string(src_nbytes) + " bytes, MultiFab has "
-                        + std::to_string(nbytes));
+                        "copy_from_flat: src too small — src has "
+                        + std::to_string(src_nbytes) + " bytes, MultiFab needs "
+                        + std::to_string(valid_bytes));
+                // Copy only the valid portion (ignore any padding in src)
                 const void* src_ptr = src.data();
                 bool srcOnDevice =
                     (src.device_type() != nb::device::cpu::value);
                 if (srcOnDevice)
-                    Gpu::dtod_memcpy(dst, src_ptr, nbytes);
+                    Gpu::dtod_memcpy(dst, src_ptr, valid_bytes);
                 else
-                    Gpu::htod_memcpy(dst, src_ptr, nbytes);
+                    Gpu::htod_memcpy(dst, src_ptr, valid_bytes);
             },
             nb::arg("flat_array"),
             "Copy flat array directly into MultiFab contiguous storage. "
-            "Single memcpy — no per-box loop. Array must have same byte size "
-            "as singleChunkSize()."
+            "Single memcpy — no per-box loop. Array must have at least "
+            "singleChunkSize() bytes; only the valid portion is copied."
         )
         .def(
             "fab_metadata",

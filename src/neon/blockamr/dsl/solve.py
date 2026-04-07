@@ -297,7 +297,8 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
     With uniform boxes (all same size), plane_size is total_phi / ncomp.
     """
     mf = cell_field.mf[lev]
-    phi_flat = mf.contiguous_array()
+    padded = getattr(cell_field, '_padded_cap', [0])[lev] if hasattr(cell_field, '_padded_cap') else 0
+    phi_flat = mf.contiguous_array(padded)
 
     # Reduce bf so it evenly divides all valid dimensions across all boxes
     ng = mf.n_grow()

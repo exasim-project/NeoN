@@ -33,14 +33,17 @@ class FlattenedBoxes(eqx.Module):
         return len(self.offsets)
 
 
-def flattened_boxes_from_mf(mf, bf=0):
+def flattened_boxes_from_mf(mf, bf=0, padded_n_elems=0):
     """Construct FlattenedBoxes from a MultiFab.
 
     Uses contiguous_array() (zero-copy) and fab_metadata() from the
     C++ bindings. When bf > 0, also builds packed tile metadata via
     the C++ packed_tiles() method.
+
+    When padded_n_elems > 0, the contiguous_array view includes
+    padding bytes so the shape stays stable across AMR regrids.
     """
-    values = mf.contiguous_array()
+    values = mf.contiguous_array(padded_n_elems)
     meta = mf.fab_metadata()
     offsets = jnp.array([m[0] for m in meta], dtype=jnp.int32)
     shapes = tuple((m[1], m[2], m[3], m[4]) for m in meta)

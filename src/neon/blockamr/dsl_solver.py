@@ -339,8 +339,11 @@ class DSLIncompressibleSolver:
                 total_cells += lev_cells
                 nboxes = len(mf.fab_metadata())
                 layout = blockamr.build_tile_layout(mf, BF)
+                buf_size = mf.contiguous_array().size
+                padded_cap = self.U._padded_cap[lev]
                 print(f"    lev {lev}: {lev_cells:,} cells, {nboxes} boxes, "
-                      f"tiles={layout.n_tiles} (padded={layout.n_tiles_padded}), bf={BF}")
+                      f"tiles={layout.n_tiles} (padded={layout.n_tiles_padded}), bf={BF}\n"
+                      f"           buf={buf_size:,} (cap={padded_cap:,})")
             print(f"    total: {total_cells:,} cells")
 
     def write_plotfile(self, name, fields=None):
@@ -404,7 +407,8 @@ class DSLIncompressibleSolver:
             mf = self.U.mf[lev]
             if mf is None:
                 continue
-            flat = mf.contiguous_array()
+            padded = self.U._padded_cap[lev] if hasattr(self.U, '_padded_cap') else 0
+            flat = mf.contiguous_array(padded)
             meta = mf.fab_metadata()
             _, Nx, Ny, Nz, nc = meta[0]
             M = Nx * Ny * Nz
