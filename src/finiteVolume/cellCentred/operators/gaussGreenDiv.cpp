@@ -326,29 +326,30 @@ void computeDivImp(
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
-            auto valueUpper = faceFluxV[facei] * -weightsV[facei] * one<ValueType>();
-            // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
-            values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
+            // Conservative Gauss-Green divergence assembly.
+            // S_f points from owner to neighbour by construction, so F_f > 0 means
+            // flux leaves the owner cell and enters the neighbour cell.
+            //
+            // Decompose face flux via linear interpolation:
+            //   ownFluxContrib = w * F_f       — part attributed to the owner cell value
+            //   neiFluxContrib = (1-w) * F_f   — part attributed to the neighbour cell value
+
+            auto ownFluxContrib = faceFluxV[facei] * weightsV[facei] * one<ValueType>();
+            // A[nei, own] — lower triangular: ownFluxContrib enters neighbour → positive sign
+            values[rowNeiStart + neiOffs[facei]] += ownFluxContrib * operatorScalingNei;
+            // values[matIt->lowerIdx(nei, facei)] += ownFluxContrib * operatorScalingNei;
+            // diag[own] — ownFluxContrib leaves owner → negative sign
             Kokkos::atomic_sub(
                 &values[rowOwnStart + static_cast<int>(diagOffs[own])],
-                valueUpper * operatorScalingOwn
+                ownFluxContrib * operatorScalingOwn
             );
 
-            // add owner contribution lower
-            auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
-            // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
-            values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
-            Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
-            );
-            // FIXME
-            // std::cout << __FILE__ << ":" << __LINE__
-            //           << " internal "
-            //           << " rank " << mpiEnviron.rank()
-            //           << " facei " << facei
-            //           << " faceFluxV " << faceFluxV[facei]
-            //           << " weightsV " << weightsV[facei]
-            //           << "\n";
+            auto neiFluxContrib = faceFluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
+            // A[own, nei] — upper triangular: neiFluxContrib leaves owner → negative sign
+            values[rowOwnStart + ownOffs[facei]] -= neiFluxContrib * operatorScalingOwn;
+            // values[matIt->upperIdx(own, facei)] -= neiFluxContrib * operatorScalingOwn;
+            // diag[nei] — neiFluxContrib enters neighbour → positive sign
+            values[rowNeiStart + diagOffs[nei]] += neiFluxContrib * operatorScalingNei;
         },
         "computeLocalGaussGreenDivCoefficients"
     );
