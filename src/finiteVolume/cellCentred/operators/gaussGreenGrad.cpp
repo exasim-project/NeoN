@@ -45,24 +45,30 @@ void computeGrad(
 
     auto nInternalFaces = mesh.nInternalFaces();
 
+    // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
+    //
+    // S_f points from owner to neighbour by construction (valid for all internal faces).
+    //   owner cell:     S_f is the outward area vector  →  +S_f * φ_f  (add)
+    //   neighbour cell: S_f points inward to neighbour  → −S_f * φ_f  (subtract)
     // TODO use NeoN::atomic_
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             Vec3 flux = faceAreaS[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[surfOwner[i]], flux);
-            Kokkos::atomic_sub(&surfGradPhi[surfNeighbour[i]], flux);
+            Kokkos::atomic_add(&surfGradPhi[surfOwner[i]], flux);     // +S_f * φ_f
+            Kokkos::atomic_sub(&surfGradPhi[surfNeighbour[i]], flux); // −S_f * φ_f
         },
         "computeGradInternal"
     );
 
+    // Boundary faces: only the owner cell is on this rank.
     parallelFor(
         exec,
         {nInternalFaces, surfPhif.size()},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
-            Vec3 valueOwn = faceAreaS[i] * surfPhif[i];
+            Vec3 valueOwn = faceAreaS[i] * surfPhif[i]; // +S_f * φ_f (S_f outward from owner)
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
