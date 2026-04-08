@@ -24,6 +24,10 @@ Face orientation
     to the **neighbour** cell.  By construction, ``owner[f] < neighbour[f]``
     for all internal faces.
 
+    Therefore :math:`F_f > 0` means flux **leaves** the owner cell and
+    **enters** the neighbour cell.  This sign convention is only valid because
+    :math:`\mathbf{S}_f` points from owner to neighbour.
+
 Interpolation weight
     ``weightsV[f]`` (alias ``w``) is the weight for the **owner** cell, so the
     face-centred value is
@@ -37,23 +41,24 @@ Interpolation weight
     the owner.
 
 Matrix entry naming
-    See :ref:`naming-inversion` in :doc:`matrixAddressing` for the known
-    inversion between the helper-function names ``upperIdx``/``lowerIdx`` and
-    standard LDU convention.  Inside the operator kernels the same inversion
-    is reflected in the variable names ``valueUpper``/``valueLower`` and the
-    offset arrays ``neiOffs``/``ownOffs``:
+    Following the LDU convention (see :doc:`matrixAddressing`):
 
-    - ``neiOffs[f]`` = ``neighbourOffset[f]`` → position of **A[nei,own]**
-      (lower-triangular entry) within the neighbour's row.
-    - ``ownOffs[f]`` = ``ownerOffset[f]`` → position of **A[own,nei]**
-      (upper-triangular entry) within the owner's row.
+    - ``upperIdx(own, f)`` = ``rowOffs[own] + ownerOffset[f]`` → position of
+      :math:`A[\text{own},\text{nei}]` (**upper**-triangular, own < nei).
+    - ``lowerIdx(nei, f)`` = ``rowOffs[nei] + neighbourOffset[f]`` → position of
+      :math:`A[\text{nei},\text{own}]` (**lower**-triangular, nei > own).
 
-    .. todo::
+    Operator kernels use the direct offset form for performance:
 
-       Rename ``valueUpper``/``valueLower`` in operator kernels and
-       ``upperIdx``/``lowerIdx`` in ``FaceToMatrixAddress`` to match standard
-       LDU convention: *upper* = A[own,nei] (row < col), *lower* = A[nei,own]
-       (row > col).  Cross-ref: ``include/NeoN/linearAlgebra/faceToMatrixAddress.hpp``.
+    .. code-block:: cpp
+
+        // A[own, nei] — upper triangular
+        values[rowOwnStart + ownOffs[facei]] ...
+        // values[matIt->upperIdx(own, facei)] ...   // equivalent via matrixIterator
+
+        // A[nei, own] — lower triangular
+        values[rowNeiStart + neiOffs[facei]] ...
+        // values[matIt->lowerIdx(nei, facei)] ...   // equivalent via matrixIterator
 
 Assembly calling order
     For implicit operators: internal faces → physical boundary faces.
@@ -117,83 +122,75 @@ After both loops: ``div[celli] *= operatorScaling[celli] / vol[celli]``.
 gaussGreenDiv — Implicit
 ------------------------
 
-``computeDivImp`` assembles the implicit divergence operator into a
-``LinearSystem``.  The face flux ``φ_f`` is decomposed via interpolation
-weights into owner and neighbour contributions.
+``computeDivImp`` assembles the **conservative** implicit divergence operator into a
+``LinearSystem``.
+
+Conservative convention
+^^^^^^^^^^^^^^^^^^^^^^^
+
+With :math:`F_f > 0` meaning flux from owner P to neighbour N
+(valid because :math:`\mathbf{S}_f` points from owner to neighbour):
+
+- **Owner row** P gets a total contribution of :math:`-F_f`
+  (flux *leaves* owner → negative).
+- **Neighbour row** N gets a total contribution of :math:`+F_f`
+  (flux *enters* neighbour → positive).
+
+Global verification: :math:`-F_f + F_f = 0` per face.
 
 Internal faces
 ^^^^^^^^^^^^^^
 
-Let ``φ = faceFlux[f]`` (signed scalar flux through face ``f``).  The
-face-interpolated transported quantity is:
+The face-interpolated transported quantity is:
 
 .. math::
 
    \varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}
 
-so the divergence contribution from face ``f`` to the owner row is
-``+φ · φ_f = +φ(w φ_own + (1-w) φ_nei)``, giving matrix entries:
+The face flux is decomposed into owner and neighbour contributions:
+
+.. math::
+
+   F_f \, \varphi_f
+     = \underbrace{w \, F_f}_{\text{ownFluxContrib}} \varphi_\text{own}
+     + \underbrace{(1-w) F_f}_{\text{neiFluxContrib}} \varphi_\text{nei}
 
 .. list-table:: Implicit divergence — internal face entries
    :header-rows: 1
-   :widths: 25 30 20 25
+   :widths: 22 30 22 26
 
    * - Matrix entry
      - Value
      - Code variable
-     - Code line
+     - Code
    * - A[nei, own]  (lower tri.)
-     - :math:`-w \cdot \varphi \cdot \text{scalingNei}`
-     - ``valueUpper`` at ``neiOffs[f]``
-     - ``values[rowNeiStart + neiOffs[facei]]``
+     - :math:`+w \cdot F_f \cdot \text{scalingNei}`
+     - ``ownFluxContrib``  at ``neiOffs[f]``
+     - ``values[rowNeiStart + neiOffs[f]] += ownFluxContrib * scalingNei``
    * - diag[own]
-     - :math:`+w \cdot \varphi \cdot \text{scalingOwn}`
-     - via ``atomic_sub(-valueUpper)``
-     - ``atomic_sub(&values[diagOffs[own]], valueUpper)``
+     - :math:`-w \cdot F_f \cdot \text{scalingOwn}`
+     - ``-ownFluxContrib``
+     - ``atomic_sub(&values[diagOwn], ownFluxContrib * scalingOwn)``
    * - A[own, nei]  (upper tri.)
-     - :math:`+(1-w) \cdot \varphi \cdot \text{scalingOwn}`
-     - ``valueLower`` at ``ownOffs[f]``
-     - ``values[rowOwnStart + ownOffs[facei]]``
+     - :math:`-(1-w) \cdot F_f \cdot \text{scalingOwn}`
+     - ``-neiFluxContrib`` at ``ownOffs[f]``
+     - ``values[rowOwnStart + ownOffs[f]] -= neiFluxContrib * scalingOwn``
    * - diag[nei]
-     - :math:`-(1-w) \cdot \varphi \cdot \text{scalingNei}`
-     - via ``atomic_sub(valueLower)``
-     - ``atomic_sub(&values[diagOffs[nei]], valueLower)``
+     - :math:`+(1-w) \cdot F_f \cdot \text{scalingNei}`
+     - ``neiFluxContrib``
+     - ``values[rowNeiStart + diagNei] += neiFluxContrib * scalingNei``
+
+Row-sum verification per face:
+
+- Owner row: :math:`-w F_f - (1-w) F_f = -F_f` ✓
+- Neighbour row: :math:`+w F_f + (1-w) F_f = +F_f` ✓
 
 .. note::
 
-   **Non-conservative vs. conservative form.**
-   NeoN assembles the *physical* (non-conservative) form.  OpenFOAM
-   applies ``negSumDiag()`` after setting the off-diagonals, which
-   forces every row to sum to zero (conservative form).  Concretely,
-   for a single face the NeoN diagonals are:
-
-   .. math::
-
-      \text{diag[own]} &= +w\varphi, \\
-      \text{diag[nei]} &= -(1-w)\varphi,
-
-   whereas OpenFOAM produces:
-
-   .. math::
-
-      \text{diag[own]} &= -(1-w)\varphi, \\
-      \text{diag[nei]} &= +w\varphi.
-
-   The difference per face is :math:`+\varphi` on ``own`` and
-   :math:`-\varphi` on ``nei``.  For incompressible flow the
-   cell-wise divergence is zero (:math:`\sum_f \varphi_f = 0`), so the
-   extra terms sum to zero in every row and both forms yield the same
-   linear-system solution.
-
-.. todo::
-
-   The variable ``valueUpper`` (line ~206 of ``gaussGreenDiv.cpp``) is
-   placed at ``neiOffs[facei]`` (= ``neighbourOffset``), which is
-   position **A[nei,own]** — the *lower*-triangular entry.  Similarly
-   ``valueLower`` is placed at ``ownOffs[facei]`` (= ``ownerOffset``),
-   which is **A[own,nei]** — the *upper*-triangular entry.  The names
-   are inverted relative to standard LDU convention and should be
-   swapped together with the helper-function rename described above.
+   The diagonal is **assembled explicitly** here — there is no separate ``negSumDiag``
+   pass.  This is valid because the conservative sign convention already places
+   :math:`-F_f` on the owner diagonal and :math:`+F_f` on the neighbour diagonal as
+   part of the face-flux decomposition.
 
 Physical boundary
 ^^^^^^^^^^^^^^^^^
@@ -273,33 +270,37 @@ Internal faces
 Face diffusion coefficient: ``flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei]``,
 i.e. :math:`\delta_f \cdot \gamma_f \cdot |S_f|`.
 
+The Laplacian is symmetric — the same ``flux`` value enters both the owner and neighbour rows
+with appropriate signs.  :math:`\mathbf{S}_f` points from owner to neighbour, so
+diffusion out of one cell equals diffusion into the other.
+
 .. list-table:: Implicit Laplacian — internal face entries
    :header-rows: 1
-   :widths: 25 30 20 25
+   :widths: 25 30 22 23
 
    * - Matrix entry
      - Value
-     - Note
+     - Sign note
      - Code
    * - A[nei, own]  (lower tri.)
      - :math:`+\text{flux} \cdot \text{scalingNei}`
-     - at ``neiOffs[f]``; comment says "upper" (inverted)
+     - enters neighbour → positive
      - ``values[rowNeiStart + neiOffs[facei]]``
    * - diag[own]
      - :math:`-\text{flux} \cdot \text{scalingOwn}`
-     - ``atomic_sub``
+     - leaves owner → negative
      - ``atomic_sub(&values[diagOffs[own]], flux)``
    * - A[own, nei]  (upper tri.)
      - :math:`+\text{flux} \cdot \text{scalingOwn}`
-     - at ``ownOffs[f]``; comment says "lower" (inverted)
+     - enters owner → positive
      - ``values[rowOwnStart + ownOffs[facei]]``
    * - diag[nei]
      - :math:`-\text{flux} \cdot \text{scalingNei}`
-     - ``atomic_sub``
+     - leaves neighbour → negative
      - ``atomic_sub(&values[diagOffs[nei]], flux)``
 
 The assembled matrix is symmetric and negative semi-definite for
-positive :math:`\gamma` and consistent operatorScaling, representing
+positive :math:`\gamma` and consistent ``operatorScaling``, representing
 :math:`-\nabla \cdot (\gamma \nabla \varphi)`.
 
 .. note::
@@ -308,15 +309,6 @@ positive :math:`\gamma` and consistent operatorScaling, representing
    ``upper() = deltaCoeffs * gammaMagSf`` (positive) and calls
    ``negSumDiag()`` (diagonal = −sum of off-diagonals), yielding the
    same structure.
-
-.. todo::
-
-   The comments "``// add neighbour contribution upper``" (line ~118) and
-   "``// add owner contribution lower``" (line ~132) in
-   ``gaussGreenLaplacian.cpp`` use the same inverted upper/lower
-   convention as the div kernel.  They should read "lower triangular
-   A[nei,own]" and "upper triangular A[own,nei]" respectively.  Fix
-   together with the ``upperIdx``/``lowerIdx`` rename.
 
 Physical boundary
 ^^^^^^^^^^^^^^^^^
