@@ -77,14 +77,14 @@ Algorithm
 1. Interpolate ``phi`` to faces: ``phif = surfInterp.interpolate(phi)``.
 2. Loop over internal faces ``i ∈ [0, nInternalFaces)``::
 
-       Vec3 flux = faceAreaS[i] * phif[i];    // S_f * φ_f (vector)
-       grad[owner[i]]    += flux;
-       grad[neighbour[i]] -= flux;
+       Vec3 flux = faceAreaS[i] * phif[i];    // S_f * φ_f (S_f points owner→nei by construction)
+       grad[owner[i]]    += flux;              // +S_f * φ_f (S_f is outward from owner)
+       grad[neighbour[i]] -= flux;             // −S_f * φ_f (S_f is inward to neighbour)
 
 3. Loop over boundary faces ``i ∈ [nInternalFaces, phif.size())``::
 
        Vec3 flux = faceAreaS[i] * phif[i];
-       grad[own] += flux;                      // owner only, no neighbour
+       grad[own] += flux;                      // +S_f * φ_f (S_f outward from owner; no neighbour)
 
 4. Normalise: ``grad[celli] *= operatorScaling[celli] / vol[celli]``.
 
@@ -94,20 +94,44 @@ The result is the standard Green–Gauss gradient:
 
    (\nabla \varphi)_C \approx \frac{1}{V_C} \sum_f \mathbf{S}_f \, \varphi_f.
 
+``S_f`` points from owner to neighbour, so it is the outward area vector for the owner and
+the inward area vector for the neighbour.  The subtract for the neighbour follows directly.
+
 gaussGreenDiv — Explicit
 ------------------------
 
 ``computeDivExp`` interpolates ``phi`` to faces and calls the shared
-``computeDiv`` helper.
+``computeDiv`` helper.  The result is the **positive** mathematical divergence
+:math:`+\nabla \cdot (F\varphi)`.
+
+.. note::
+
+   **Explicit (+) vs. implicit (−) sign convention.**
+   The explicit ``computeDiv`` returns :math:`+\nabla \cdot (F\varphi)`.
+   The implicit ``computeDivImp`` assembles :math:`-\nabla \cdot (F\varphi)` into
+   the linear system (conservative form for the transport equation
+   :math:`\partial\varphi/\partial t = -\nabla\cdot(F\varphi) + \ldots`).
+   This sign difference is intentional.
 
 Internal faces
 ^^^^^^^^^^^^^^
 
 ::
 
-    ValueType flux = faceFlux[i] * phif[i];
-    div[owner[i]]     += flux;
-    div[neighbour[i]] -= flux;
+    ValueType flux = faceFlux[i] * phif[i];    // F_f * φ_f
+    div[owner[i]]     += flux;                  // F_f is outward from owner (S_f points owner→nei)
+    div[neighbour[i]] -= flux;                  // F_f is inward to neighbour → subtract
+
+Sign rationale:
+
+- ``F_f > 0`` means flux leaves the owner cell (S_f points from owner to neighbour by construction).
+- The **divergence** at owner is the net outward flux: a positive outward :math:`F_f` gives a
+  *positive* divergence contribution at the owner cell. This is why ``div[own] += flux`` is correct
+  — it does not contradict the fact that the owner is losing :math:`\varphi`.  The conservation
+  equation uses :math:`\partial\varphi/\partial t = -\nabla\cdot(F\varphi)`, where the sign flip
+  is applied externally (or in the implicit operator).
+- For the neighbour, :math:`F_f` is inward (S_f points away from neighbour), so the outward flux
+  from the neighbour's perspective is :math:`-F_f`, hence ``div[nei] -= flux``.
 
 Boundary faces
 ^^^^^^^^^^^^^^
@@ -115,7 +139,7 @@ Boundary faces
 ::
 
     ValueType flux = faceFlux[i] * phif[i];
-    div[own] += flux;           // owner contribution only
+    div[own] += flux;           // F_f outward from owner (no neighbour on this rank)
 
 After both loops: ``div[celli] *= operatorScaling[celli] / vol[celli]``.
 
@@ -237,16 +261,28 @@ gaussGreenLaplacian — Explicit
 ------------------------------
 
 ``computeLaplacianExp`` delegates face-normal gradients to a
-``FaceNormalGradient`` helper and accumulates:
+``FaceNormalGradient`` helper and accumulates the **positive** Laplacian
+:math:`+\nabla \cdot (\gamma \nabla \varphi)`.
 
 Internal faces
 ^^^^^^^^^^^^^^
 
+``fnGrad[f]`` is computed by ``FaceNormalGradient`` as:
+
+.. code-block:: text
+
+    fnGrad[f] = nonOrthDeltaCoeffs[f] * (phi[nei] − phi[own])
+
+``fnGrad > 0`` when :math:`\varphi_N > \varphi_P` (gradient points outward from owner, i.e.
+S_f direction).  In this case, diffusion brings :math:`\varphi` *into* the owner cell and
+*out of* the neighbour cell, which is the correct physical interpretation (diffusion flows
+from high to low concentration).
+
 ::
 
-    ValueType flux = faceArea[i] * fnGrad[i];   // |S_f| * (∇_n φ)_f
-    laplacian[owner[i]]     += flux;
-    laplacian[neighbour[i]] -= flux;
+    ValueType flux = faceArea[i] * fnGrad[i];   // |S_f| * (∂φ/∂n)_f   (outward from owner)
+    laplacian[owner[i]]     += flux;             // fnGrad>0: φ_N>φ_P, owner gains φ → positive
+    laplacian[neighbour[i]] -= flux;             // neighbour loses φ → negative
 
 Boundary faces
 ^^^^^^^^^^^^^^
@@ -254,7 +290,7 @@ Boundary faces
 ::
 
     ValueType flux = faceArea[i] * fnGrad[i];
-    laplacian[own] += flux;
+    laplacian[own] += flux;                      // S_f outward from owner; no neighbour on this rank
 
 After both loops: ``laplacian[celli] *= operatorScaling[celli] / vol[celli]``.
 
