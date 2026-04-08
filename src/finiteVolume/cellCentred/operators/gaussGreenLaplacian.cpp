@@ -30,24 +30,40 @@ void computeLaplacianExp(
 
     auto nInternalFaces = mesh.nInternalFaces();
 
+    // Green-Gauss Laplacian: ∇·(γ∇φ)_C = (1/V_C) * sum_f γ_f * |S_f| * (∂φ/∂n)_f
+    //
+    // fnGrad[f] = nonOrthDeltaCoeffs[f] * (phi[nei] − phi[own])  (computed by FaceNormalGradient)
+    //   S_f points from owner to neighbour by construction, so fnGrad is the gradient
+    //   component in the outward direction from the owner cell.
+    //   fnGrad > 0  when phi_N > phi_P (gradient points outward from owner)
+    //             → diffusion brings φ into owner → positive Laplacian at owner (owner gains φ)
+    //             → diffusion takes φ from neighbour → negative Laplacian at neighbour
+    //
+    // This computes +∇·(γ∇φ) (positive Laplacian form).
     // TODO use NeoN::add and sub
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             ValueType flux = faceArea[i] * fnGrad[i];
-            Kokkos::atomic_add(&result[owner[i]], flux);
-            Kokkos::atomic_sub(&result[neighbour[i]], flux);
+            Kokkos::atomic_add(
+                &result[owner[i]], flux
+            ); // +|S_f| * fnGrad (outward gradient from owner)
+            Kokkos::atomic_sub(
+                &result[neighbour[i]], flux
+            ); // −|S_f| * fnGrad (inward gradient for neighbour)
         },
         "computeLaplacianExplicitInternal"
     );
 
+    // Boundary faces: only the owner cell is on this rank.
     parallelFor(
         exec,
         {nInternalFaces, fnGrad.size()},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
-            ValueType valueOwn = faceArea[i] * fnGrad[i];
+            ValueType valueOwn =
+                faceArea[i] * fnGrad[i]; // +|S_f| * fnGrad (S_f outward from owner)
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
