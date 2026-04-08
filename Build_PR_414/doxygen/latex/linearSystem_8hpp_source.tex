@@ -293,7 +293,20 @@
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00305}00305\ \ \ \ \ \textcolor{keywordflow}{return}\ \{createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)\};}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00306}00306\ \}}
 \DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00307}00307\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00308}00308\ }
-\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00309}00309\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00308}00308\ \textcolor{comment}{//\ FIXME\ TODO\ is\ env\ needed\ here}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00309}00309\ \textcolor{comment}{/*@brief\ helper\ function\ that\ creates\ a\ zero\ initialised\ linear\ system\ based\ on\ a\ given\ mesh}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00310}00310\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00311}00311\ \textcolor{keyword}{template}<}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00312}00312\ \ \ \ \ \textcolor{keyword}{typename}\ ValueType,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00313}00313\ \ \ \ \ \textcolor{keyword}{typename}\ InnerMatrixType\ =\ CSRMatrix<ValueType,\ localIdx>,}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00314}00314\ \ \ \ \ \textcolor{keyword}{typename}\ BoundaryMatrixType\ =\ COOMatrix<ValueType,\ localIdx>>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00315}00315\ LinearSystem<ValueType,\ InnerMatrixType,\ BoundaryMatrixType>}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00316}\mbox{\hyperlink{namespaceNeoN_1_1la_a355de310768523fa731bee5a8c58e2d7}{00316}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_a355de310768523fa731bee5a8c58e2d7}{createEmptyDistributedLinearSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\&\ commPattern)}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00317}00317\ \{}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00318}00318\ \ \ \ \ \textcolor{keywordflow}{return}\ \{createSparsityPatternFaceToMatrixAddressDist<NeoN::localIdx>(mesh,\ commPattern)\};}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00319}00319\ \}}
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00320}00320\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00321}00321\ }
+\DoxyCodeLine{\Hypertarget{linearSystem_8hpp_source_l00322}00322\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
 
 \end{DoxyCode}

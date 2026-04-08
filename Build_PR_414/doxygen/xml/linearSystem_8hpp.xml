@@ -24,7 +24,7 @@
     <includedby refid="diagonalSolver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</includedby>
     <includedby refid="linearAlgebra_2solver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</includedby>
     <incdepgraph>
-      <node id="52">
+      <node id="53">
         <label>NeoN/core/array.hpp</label>
         <link refid="array_8hpp"/>
         <childnode refid="3" relation="include">
@@ -35,19 +35,19 @@
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="54">
         <label>NeoN/core/containerFreeFunctions.hpp</label>
         <link refid="containerFreeFunctions_8hpp"/>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
@@ -58,7 +58,7 @@
         <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="56">
+      <node id="57">
         <label>NeoN/core/copyTo.hpp</label>
         <link refid="copyTo_8hpp"/>
         <childnode refid="10" relation="include">
@@ -314,7 +314,7 @@
         <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="57">
+      <node id="51">
         <label>NeoN/distributed/communicationPattern.hpp</label>
         <link refid="communicationPattern_8hpp"/>
         <childnode refid="34" relation="include">
@@ -322,22 +322,24 @@
         <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="55">
+      <node id="56">
         <label>NeoN/distributed/matrix.hpp</label>
         <link refid="distributed_2matrix_8hpp"/>
-        <childnode refid="56" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="52">
         <label>faceToMatrixAddress.hpp</label>
         <link refid="faceToMatrixAddress_8hpp"/>
-        <childnode refid="52" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
         <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -353,13 +355,13 @@
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="57" relation="include">
+        <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="51" relation="include">
+        <childnode refid="52" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -371,7 +373,7 @@
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="51" relation="include">
+        <childnode refid="52" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
@@ -406,6 +408,8 @@
         <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -465,7 +469,7 @@
       <node id="17">
         <label>string_view</label>
       </node>
-      <node id="54">
+      <node id="55">
         <label>tuple</label>
       </node>
       <node id="33">
@@ -953,8 +957,21 @@
 <codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{createSparsityPatternFaceToMatrixAddress&lt;NeoN::localIdx&gt;(mesh)};</highlight></codeline>
 <codeline lineno="306"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="307"><highlight class="normal"></highlight></codeline>
-<codeline lineno="308"><highlight class="normal"></highlight></codeline>
-<codeline lineno="309"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight><highlight class="comment">//<sp/>FIXME<sp/>TODO<sp/>is<sp/>env<sp/>needed<sp/>here</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight><highlight class="comment">/*@brief<sp/>helper<sp/>function<sp/>that<sp/>creates<sp/>a<sp/>zero<sp/>initialised<sp/>linear<sp/>system<sp/>based<sp/>on<sp/>a<sp/>given<sp/>mesh</highlight></codeline>
+<codeline lineno="310"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>InnerMatrixType<sp/>=<sp/>CSRMatrix&lt;ValueType,<sp/>localIdx&gt;,</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>BoundaryMatrixType<sp/>=<sp/>COOMatrix&lt;ValueType,<sp/>localIdx&gt;&gt;</highlight></codeline>
+<codeline lineno="315"><highlight class="normal">LinearSystem&lt;ValueType,<sp/>InnerMatrixType,<sp/>BoundaryMatrixType&gt;</highlight></codeline>
+<codeline lineno="316" refid="namespaceNeoN_1_1la_1a355de310768523fa731bee5a8c58e2d7" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1a355de310768523fa731bee5a8c58e2d7" kindref="member">createEmptyDistributedLinearSystem</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref>&amp;<sp/>commPattern)</highlight></codeline>
+<codeline lineno="317"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{createSparsityPatternFaceToMatrixAddressDist&lt;NeoN::localIdx&gt;(mesh,<sp/>commPattern)};</highlight></codeline>
+<codeline lineno="319"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"></highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp"/>
   </compounddef>
