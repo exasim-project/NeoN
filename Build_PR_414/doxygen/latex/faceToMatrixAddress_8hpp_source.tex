@@ -167,6 +167,33 @@
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\&\ commPattern}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00164}00164\ );}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00165}00165\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00166}00166\ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00167}\mbox{\hyperlink{namespaceNeoN_1_1la_aecb0a76e49610af8c37e2c020d9bb342}{00167}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_aecb0a76e49610af8c37e2c020d9bb342}{computeRowToDiagonalMap}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ rows,\ std::shared\_ptr<\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<>}}>\ matIt}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00169}00169\ )}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00170}00170\ \{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00172}00172\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ exec\ =\ rows.\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00173}00173\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ ret(exec,\ rows.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}());}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{keyword}{auto}\ retV\ =\ ret.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00175}00175\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rowsV\ =\ rows.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ [rowOffs,\ diagOffs]\ =}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(matIt-\/>sparsityPattern()-\/>rowOffs(),\ matIt-\/>diagOffset());}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00179}00179\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00180}00180\ \ \ \ \ \ \ \ \ exec,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \{0,\ ret.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}()\},}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ cell\ =\ rowsV[i];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rowStart\ =\ rowOffs[cell];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ retV[i]\ =\ rowStart\ +\ diagOffs[cell];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}computeRowToDiagonalMap"{}}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00188}00188\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00190}00190\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00191}00191\ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00194}00194\ \}}
 
 \end{DoxyCode}

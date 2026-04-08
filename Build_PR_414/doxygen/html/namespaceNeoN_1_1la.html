@@ -135,6 +135,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a2c10faf9e4daa928a3217237a37998cc" id="r_a2c10faf9e4daa928a3217237a37998cc"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
 <tr class="memitem:a2c10faf9e4daa928a3217237a37998cc"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a2c10faf9e4daa928a3217237a37998cc">createSparsityPatternFaceToMatrixAddressDist</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, <a class="el" href="structNeoN_1_1CommunicationPattern.html">CommunicationPattern</a> &amp;commPattern)</td></tr>
 <tr class="separator:a2c10faf9e4daa928a3217237a37998cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecb0a76e49610af8c37e2c020d9bb342" id="r_aecb0a76e49610af8c37e2c020d9bb342"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aecb0a76e49610af8c37e2c020d9bb342">computeRowToDiagonalMap</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;rows, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt;&gt; &gt; matIt)</td></tr>
+<tr class="memdesc:aecb0a76e49610af8c37e2c020d9bb342"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a set of rows this function computes the corresponding value offsets  <br /></td></tr>
+<tr class="separator:aecb0a76e49610af8c37e2c020d9bb342"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb112316596935cacba158abb300039b" id="r_abb112316596935cacba158abb300039b"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename InnerMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:abb112316596935cacba158abb300039b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, InnerMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#abb112316596935cacba158abb300039b">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, mpi::Environment env)</td></tr>
 <tr class="separator:abb112316596935cacba158abb300039b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -258,6 +261,46 @@ template&lt;typename MatrixType &gt; </div>
 
 </div>
 </div>
+<a id="aecb0a76e49610af8c37e2c020d9bb342" name="aecb0a76e49610af8c37e2c020d9bb342"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecb0a76e49610af8c37e2c020d9bb342">&#9670;&#160;</a></span>computeRowToDiagonalMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; NeoN::la::computeRowToDiagonalMap </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt;&gt; &gt;&#160;</td>
+          <td class="paramname"><em>matIt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>given a set of rows this function computes the corresponding value offsets </p>
+
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00167">167</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a355de310768523fa731bee5a8c58e2d7" name="a355de310768523fa731bee5a8c58e2d7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a355de310768523fa731bee5a8c58e2d7">&#9670;&#160;</a></span>createEmptyDistributedLinearSystem()</h2>
 
@@ -286,7 +329,7 @@ template&lt;typename ValueType , typename InnerMatrixType  = CSRMatrix&lt;ValueT
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00316">316</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00317">317</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -318,7 +361,7 @@ template&lt;typename ValueType , typename InnerMatrixType  = CSRMatrix&lt;ValueT
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00303">303</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00304">304</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
