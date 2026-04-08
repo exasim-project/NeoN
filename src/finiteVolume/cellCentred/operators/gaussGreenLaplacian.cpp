@@ -263,20 +263,27 @@ void computeLaplacianImpl(
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
-            // add neighbour contribution upper
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
+            // Laplacian face coefficient: δ_f · γ_f · |S_f|
+            // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
+            // with opposite signs (diffusion out of one cell = diffusion into the other).
+            // S_f points from owner to neighbour by construction.
             auto flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
-            // scalar valueNei = (1 - weight) * flux;
+
+            // A[nei, own] — lower triangular: flux enters neighbour from owner → positive sign
             values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
+            // values[matIt->lowerIdx(nei, facei)] += flux * one<ValueType>() * operatorScalingNei;
+            // diag[own] — flux leaves owner → negative sign
             Kokkos::atomic_sub(
                 &values[rowOwnStart + diagOffs[own]], flux * one<ValueType>() * operatorScalingOwn
             );
 
-            // upper triangular part
-            // add owner contribution lower
+            // A[own, nei] — upper triangular: flux enters owner from neighbour → positive sign
             values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
+            // values[matIt->upperIdx(own, facei)] += flux * one<ValueType>() * operatorScalingOwn;
+            // diag[nei] — flux leaves neighbour → negative sign
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
             );
