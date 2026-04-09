@@ -1,0 +1,89 @@
+\doxysection{matrix.\+hpp}
+\hypertarget{distributed_2matrix_8hpp_source}{}\label{distributed_2matrix_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/matrix.hpp}}
+\mbox{\hyperlink{distributed_2matrix_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{copyTo_8hpp}{NeoN/core/copyTo.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2matrix_8hpp}{NeoN/linearAlgebra/matrix.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00010}\mbox{\hyperlink{namespaceNeoN_1_1la}{00010}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00011}00011\ \{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00017}00017\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00018}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix}{DistributedMatrix}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo}{SupportsCopyTo}}<DistributedMatrix<ValueType,\ IndexType>>}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00020}00020\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{innerMtxType}}\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<ValueType,\ IndexType>}};}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00022}00022\ \ \ \ \ mpi::Environment\ env\_;}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00023}00023\ \ \ \ \ std::shared\_ptr<innerMtxType>\ local\_;}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00024}00024\ \ \ \ \ std::shared\_ptr<innerMtxType>\ nonLocal\_;}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00026}00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a06ff8e2b735e3d26036236c83a256a2e}{00038}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a06ff8e2b735e3d26036236c83a256a2e}{DistributedMatrix}}(}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\&\ locValues,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\&\ locColIdxs,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\&\ locRowOffs,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\&\ nonLocValues,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\&\ nonLocColIdxs,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<IndexType>}}\&\&\ nonLocRowOffs,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ mpi::Environment\ env}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00046}00046\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ :\ local\_(std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{innerMtxType}}>(}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ std::move(locValues),\ std::move(locColIdxs),\ std::move(locRowOffs)}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ )),}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ nonLocal\_(std::make\_shared<\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{innerMtxType}}>(}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(nonLocValues),\ std::move(nonLocColIdxs),\ std::move(nonLocRowOffs)}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ )),}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ env\_(env)}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00054}00054\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ \ assert\ that\ nonLoc\ is\ empty\ if\ env\ is\ not\ initialized}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a739c0d389d6bc0a2e11e1c7bd51bee8b}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a739c0d389d6bc0a2e11e1c7bd51bee8b}{DistributedMatrix}}(}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ std::shared\_ptr<innerMtxType>\ localMatrix,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ std::shared\_ptr<innerMtxType>\ nonLocalMatrix,}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ mpi::Environment\ env}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00068}00068\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ :\ local\_(localMatrix),\ nonLocal\_(nonLocalMatrix),\ env\_(env)}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00070}00070\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ \ assert\ that\ nonLoc\ is\ empty\ if\ env\ is\ not\ initialized}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00072}00072\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{comment}{//\ getter}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab8ec33a18a98e6ec16aac706567d9613}{00076}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab8ec33a18a98e6ec16aac706567d9613}{exec}}()\ \{\ \textcolor{keywordflow}{return}\ local\_-\/>exec();\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a43a3daeb4827d1ef3220178afe62dc7d}{00078}}\ \ \ \ \ std::shared\_ptr<innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a43a3daeb4827d1ef3220178afe62dc7d}{local}}()\ \{\ \textcolor{keywordflow}{return}\ local\_;\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_afd939365d76edee58150c07b80d0939b}{00085}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_afd939365d76edee58150c07b80d0939b}{nRows}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ local\_-\/>rows();\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00087}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_afa8fa980ba7e7aeec4b13fa870c05398}{00087}}\ \ \ \ \ std::shared\_ptr<const\ innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_afa8fa980ba7e7aeec4b13fa870c05398}{local}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ local\_;\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00089}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab5b680803e2d777c3e3430218b1db417}{00089}}\ \ \ \ \ std::shared\_ptr<innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab5b680803e2d777c3e3430218b1db417}{nonLocal}}()\ \{\ \textcolor{keywordflow}{return}\ nonLocal\_;\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00091}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a3c89d3d3e7803a8e61af83a59a24da9a}{00091}}\ \ \ \ \ std::shared\_ptr<const\ innerMtxType>\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a3c89d3d3e7803a8e61af83a59a24da9a}{nonLocal}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nonLocal\_;\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a0c4b9fa282f809b3e5d4df3d0d43a5b8}{00093}}\ \ \ \ \ mpi::Environment\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_a0c4b9fa282f809b3e5d4df3d0d43a5b8}{environment}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ env\_;\ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_aac69b1fc205c797e7eb83e18c08afea1}{00095}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix}{DistributedMatrix}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_aac69b1fc205c797e7eb83e18c08afea1}{copyToExecutor}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab8ec33a18a98e6ec16aac706567d9613}{exec}})\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00096}00096\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME\ implement}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix}{DistributedMatrix}}\ \{}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<innerMtxType>(local\_-\/>copyToExecutor(\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab8ec33a18a98e6ec16aac706567d9613}{exec}})),}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_shared<innerMtxType>(nonLocal\_-\/>copyToExecutor(\mbox{\hyperlink{classNeoN_1_1la_1_1DistributedMatrix_ab8ec33a18a98e6ec16aac706567d9613}{exec}})),}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ env\_}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00103}00103\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00104}00104\ \};}
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{distributed_2matrix_8hpp_source_l00107}00107\ \}}
+
+\end{DoxyCode}

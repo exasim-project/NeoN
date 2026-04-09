@@ -7,11 +7,12 @@ var searchData=
   ['diagonalsolver_4',['DiagonalSolver',['../classNeoN_1_1la_1_1DiagonalSolver.html',1,'NeoN::la']]],
   ['dictionary_5',['Dictionary',['../classNeoN_1_1Dictionary.html',1,'NeoN']]],
   ['dimensionmismatch_6',['DimensionMismatch',['../classNeoN_1_1DimensionMismatch.html',1,'NeoN']]],
-  ['divoperator_7',['DivOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['divoperatorfactory_8',['DivOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['document_9',['Document',['../classNeoN_1_1Document.html',1,'NeoN']]],
-  ['domainmixin_10',['DomainMixin',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['domainmixin_3c_20neon_3a_3ascalar_20_3e_11',['DomainMixin&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['domainmixin_3c_20neon_3a_3avec3_20_3e_12',['DomainMixin&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['domainmixin_3c_20scalar_20_3e_13',['DomainMixin&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['distributedmatrix_7',['DistributedMatrix',['../classNeoN_1_1la_1_1DistributedMatrix.html',1,'NeoN::la']]],
+  ['divoperator_8',['DivOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['divoperatorfactory_9',['DivOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['document_10',['Document',['../classNeoN_1_1Document.html',1,'NeoN']]],
+  ['domainmixin_11',['DomainMixin',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['domainmixin_3c_20neon_3a_3ascalar_20_3e_12',['DomainMixin&lt; NeoN::scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['domainmixin_3c_20neon_3a_3avec3_20_3e_13',['DomainMixin&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['domainmixin_3c_20scalar_20_3e_14',['DomainMixin&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html',1,'NeoN::finiteVolume::cellCentred']]]
 ];

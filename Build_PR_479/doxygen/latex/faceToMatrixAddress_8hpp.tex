@@ -3,6 +3,7 @@
 {\ttfamily \#include "{}Neo\+N/core/array.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/distributed/communication\+Pattern.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
@@ -19,4 +20,8 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
 \begin{DoxyCompactItemize}
 \item 
 {\footnotesize template$<$typename Index\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ab0b99cb5bc03a26ce7905a9a6be6e616}{Neo\+N\+::la\+::create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
-\end{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Index\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a2c10faf9e4daa928a3217237a37998cc}{Neo\+N\+::la\+::create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address\+Dist}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern)
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aecb0a76e49610af8c37e2c020d9bb342}{Neo\+N\+::la\+::compute\+Row\+To\+Diagonal\+Map}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&rows, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$$>$ $>$ mat\+It)
+\begin{DoxyCompactList}\small\item\em given a set of rows this function computes the corresponding value offsets \end{DoxyCompactList}\end{DoxyCompactItemize}

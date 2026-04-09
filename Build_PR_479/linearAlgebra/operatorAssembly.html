@@ -293,6 +293,9 @@ field vectors and linear systems.  It is a companion to
 <dt>Face orientation</dt><dd><p>The face-area vector <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from the <strong>owner</strong> cell
 to the <strong>neighbour</strong> cell.  By construction, <code class="docutils literal notranslate"><span class="pre">owner[f]</span> <span class="pre">&lt;</span> <span class="pre">neighbour[f]</span></code>
 for all internal faces.</p>
+<p>Therefore <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> means flux <strong>leaves</strong> the owner cell and
+<strong>enters</strong> the neighbour cell.  This sign convention is only valid because
+<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour.</p>
 </dd>
 <dt>Interpolation weight</dt><dd><p><code class="docutils literal notranslate"><span class="pre">weightsV[f]</span></code> (alias <code class="docutils literal notranslate"><span class="pre">w</span></code>) is the weight for the <strong>owner</strong> cell, so the
 face-centred value is</p>
@@ -304,17 +307,23 @@ face-centred value is</p>
 interpolation this is the geometric inverse-distance weight biased toward
 the owner.</p>
 </dd>
-<dt>Matrix entry naming</dt><dd><p>See <span class="xref std std-ref">naming-inversion</span> in <a class="reference internal" href="matrixAddressing.html"><span class="doc">Matrix Addressing</span></a> for the known
-inversion between the helper-function names <code class="docutils literal notranslate"><span class="pre">upperIdx</span></code>/<code class="docutils literal notranslate"><span class="pre">lowerIdx</span></code> and
-standard LDU convention.  Inside the operator kernels the same inversion
-is reflected in the variable names <code class="docutils literal notranslate"><span class="pre">valueUpper</span></code>/<code class="docutils literal notranslate"><span class="pre">valueLower</span></code> and the
-offset arrays <code class="docutils literal notranslate"><span class="pre">neiOffs</span></code>/<code class="docutils literal notranslate"><span class="pre">ownOffs</span></code>:</p>
+<dt>Matrix entry naming</dt><dd><p>Following the LDU convention (see <a class="reference internal" href="matrixAddressing.html"><span class="doc">Matrix Addressing</span></a>):</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">neiOffs[f]</span></code> = <code class="docutils literal notranslate"><span class="pre">neighbourOffset[f]</span></code> → position of <strong>A[nei,own]</strong>
-(lower-triangular entry) within the neighbour’s row.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ownOffs[f]</span></code> = <code class="docutils literal notranslate"><span class="pre">ownerOffset[f]</span></code> → position of <strong>A[own,nei]</strong>
-(upper-triangular entry) within the owner’s row.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">upperIdx(own,</span> <span class="pre">f)</span></code> = <code class="docutils literal notranslate"><span class="pre">rowOffs[own]</span> <span class="pre">+</span> <span class="pre">ownerOffset[f]</span></code> → position of
+<span class="math notranslate nohighlight">\(A[\text{own},\text{nei}]\)</span> (<strong>upper</strong>-triangular, own &lt; nei).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lowerIdx(nei,</span> <span class="pre">f)</span></code> = <code class="docutils literal notranslate"><span class="pre">rowOffs[nei]</span> <span class="pre">+</span> <span class="pre">neighbourOffset[f]</span></code> → position of
+<span class="math notranslate nohighlight">\(A[\text{nei},\text{own}]\)</span> (<strong>lower</strong>-triangular, nei &gt; own).</p></li>
 </ul>
+<p>Operator kernels use the direct offset form for performance:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// A[own, nei] — upper triangular</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowOwnStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownOffs</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="p">...</span>
+<span class="c1">// values[matIt-&gt;upperIdx(own, facei)] ...   // equivalent via matrixIterator</span>
+
+<span class="c1">// A[nei, own] — lower triangular</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowNeiStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neiOffs</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="p">...</span>
+<span class="c1">// values[matIt-&gt;lowerIdx(nei, facei)] ...   // equivalent via matrixIterator</span>
+</pre></div>
+</div>
 </dd>
 <dt>Assembly calling order</dt><dd><p>For implicit operators: internal faces → physical boundary faces.
 The physical boundary loop runs over <code class="docutils literal notranslate"><span class="pre">facei</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">sGamma.size())</span></code>.</p>
@@ -331,15 +340,15 @@ There is no implicit (matrix-assembling) overload; calling
 <ol class="arabic">
 <li><p>Interpolate <code class="docutils literal notranslate"><span class="pre">phi</span></code> to faces: <code class="docutils literal notranslate"><span class="pre">phif</span> <span class="pre">=</span> <span class="pre">surfInterp.interpolate(phi)</span></code>.</p></li>
 <li><p>Loop over internal faces <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">∈</span> <span class="pre">[0,</span> <span class="pre">nInternalFaces)</span></code>:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Vec3</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceAreaS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// S_f * φ_f (vector)</span>
-<span class="n">grad</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">    </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
-<span class="n">grad</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Vec3</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceAreaS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// S_f * φ_f (S_f points owner→nei by construction)</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">    </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">              </span><span class="c1">// +S_f * φ_f (S_f is outward from owner)</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// −S_f * φ_f (S_f is inward to neighbour)</span>
 </pre></div>
 </div>
 </li>
 <li><p>Loop over boundary faces <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">phif.size())</span></code>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Vec3</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceAreaS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<span class="n">grad</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                      </span><span class="c1">// owner only, no neighbour</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                      </span><span class="c1">// +S_f * φ_f (S_f outward from owner; no neighbour)</span>
 </pre></div>
 </div>
 </li>
@@ -350,24 +359,47 @@ There is no implicit (matrix-assembling) overload; calling
 <div class="math notranslate nohighlight">
 \[(\nabla \varphi)_C \approx \frac{1}{V_C} \sum_f \mathbf{S}_f \, \varphi_f.\]</div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">S_f</span></code> points from owner to neighbour, so it is the outward area vector for the owner and
+the inward area vector for the neighbour.  The subtract for the neighbour follows directly.</p>
 </section>
 </section>
 <section id="gaussgreendiv-explicit">
 <h2>gaussGreenDiv — Explicit<a class="headerlink" href="#gaussgreendiv-explicit" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">computeDivExp</span></code> interpolates <code class="docutils literal notranslate"><span class="pre">phi</span></code> to faces and calls the shared
-<code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> helper.</p>
+<code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> helper.  The result is the <strong>positive</strong> mathematical divergence
+<span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Explicit (+) vs. implicit (−) sign convention.</strong>
+The explicit <code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> returns <span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span>.
+The implicit <code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles <span class="math notranslate nohighlight">\(-\nabla \cdot (F\varphi)\)</span> into
+the linear system (conservative form for the transport equation
+<span class="math notranslate nohighlight">\(\partial\varphi/\partial t = -\nabla\cdot(F\varphi) + \ldots\)</span>).
+This sign difference is intentional.</p>
+</div>
 <section id="internal-faces">
 <h3>Internal faces<a class="headerlink" href="#internal-faces" title="Link to this heading">¶</a></h3>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceFlux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<span class="n">div</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
-<span class="n">div</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceFlux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// F_f * φ_f</span>
+<span class="n">div</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                  </span><span class="c1">// F_f is outward from owner (S_f points owner→nei)</span>
+<span class="n">div</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                  </span><span class="c1">// F_f is inward to neighbour → subtract</span>
 </pre></div>
 </div>
+<p>Sign rationale:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">F_f</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> means flux leaves the owner cell (S_f points from owner to neighbour by construction).</p></li>
+<li><p>The <strong>divergence</strong> at owner is the net outward flux: a positive outward <span class="math notranslate nohighlight">\(F_f\)</span> gives a
+<em>positive</em> divergence contribution at the owner cell. This is why <code class="docutils literal notranslate"><span class="pre">div[own]</span> <span class="pre">+=</span> <span class="pre">flux</span></code> is correct
+— it does not contradict the fact that the owner is losing <span class="math notranslate nohighlight">\(\varphi\)</span>.  The conservation
+equation uses <span class="math notranslate nohighlight">\(\partial\varphi/\partial t = -\nabla\cdot(F\varphi)\)</span>, where the sign flip
+is applied externally (or in the implicit operator).</p></li>
+<li><p>For the neighbour, <span class="math notranslate nohighlight">\(F_f\)</span> is inward (S_f points away from neighbour), so the outward flux
+from the neighbour’s perspective is <span class="math notranslate nohighlight">\(-F_f\)</span>, hence <code class="docutils literal notranslate"><span class="pre">div[nei]</span> <span class="pre">-=</span> <span class="pre">flux</span></code>.</p></li>
+</ul>
 </section>
 <section id="boundary-faces">
 <h3>Boundary faces<a class="headerlink" href="#boundary-faces" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceFlux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<span class="n">div</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">           </span><span class="c1">// owner contribution only</span>
+<span class="n">div</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">           </span><span class="c1">// F_f outward from owner (no neighbour on this rank)</span>
 </pre></div>
 </div>
 <p>After both loops: <code class="docutils literal notranslate"><span class="pre">div[celli]</span> <span class="pre">*=</span> <span class="pre">operatorScaling[celli]</span> <span class="pre">/</span> <span class="pre">vol[celli]</span></code>.</p>
@@ -375,82 +407,85 @@ There is no implicit (matrix-assembling) overload; calling
 </section>
 <section id="gaussgreendiv-implicit">
 <h2>gaussGreenDiv — Implicit<a class="headerlink" href="#gaussgreendiv-implicit" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles the implicit divergence operator into a
-<code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code>.  The face flux <code class="docutils literal notranslate"><span class="pre">φ_f</span></code> is decomposed via interpolation
-weights into owner and neighbour contributions.</p>
-<section id="id2">
-<h3>Internal faces<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<p>Let <code class="docutils literal notranslate"><span class="pre">φ</span> <span class="pre">=</span> <span class="pre">faceFlux[f]</span></code> (signed scalar flux through face <code class="docutils literal notranslate"><span class="pre">f</span></code>).  The
-face-interpolated transported quantity is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles the <strong>conservative</strong> implicit divergence operator into a
+<code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code>.</p>
+<section id="conservative-convention">
+<h3>Conservative convention<a class="headerlink" href="#conservative-convention" title="Link to this heading">¶</a></h3>
+<p>With <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> meaning flux from owner P to neighbour N
+(valid because <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour):</p>
+<ul class="simple">
+<li><p><strong>Owner row</strong> P gets a total contribution of <span class="math notranslate nohighlight">\(-F_f\)</span>
+(flux <em>leaves</em> owner → negative).</p></li>
+<li><p><strong>Neighbour row</strong> N gets a total contribution of <span class="math notranslate nohighlight">\(+F_f\)</span>
+(flux <em>enters</em> neighbour → positive).</p></li>
+</ul>
+<p>Global verification: <span class="math notranslate nohighlight">\(-F_f + F_f = 0\)</span> per face.</p>
+</section>
+<section id="id1">
+<h3>Internal faces<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The face-interpolated transported quantity is:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}\]</div>
 </div>
-<p>so the divergence contribution from face <code class="docutils literal notranslate"><span class="pre">f</span></code> to the owner row is
-<code class="docutils literal notranslate"><span class="pre">+φ</span> <span class="pre">·</span> <span class="pre">φ_f</span> <span class="pre">=</span> <span class="pre">+φ(w</span> <span class="pre">φ_own</span> <span class="pre">+</span> <span class="pre">(1-w)</span> <span class="pre">φ_nei)</span></code>, giving matrix entries:</p>
-<div class="table-wrapper colwidths-given docutils container" id="id9">
-<table class="docutils align-default" id="id9">
-<caption><span class="caption-text">Implicit divergence — internal face entries</span><a class="headerlink" href="#id9" title="Link to this table">¶</a></caption>
+<p>The face flux is decomposed into owner and neighbour contributions:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[F_f \, \varphi_f
+  = \underbrace{w \, F_f}_{\text{ownFluxContrib}} \varphi_\text{own}
+  + \underbrace{(1-w) F_f}_{\text{neiFluxContrib}} \varphi_\text{nei}\]</div>
+</div>
+<div class="table-wrapper colwidths-given docutils container" id="id6">
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Implicit divergence — internal face entries</span><a class="headerlink" href="#id6" title="Link to this table">¶</a></caption>
 <colgroup>
-<col style="width: 25.0%" />
+<col style="width: 22.0%" />
 <col style="width: 30.0%" />
-<col style="width: 20.0%" />
-<col style="width: 25.0%" />
+<col style="width: 22.0%" />
+<col style="width: 26.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Matrix entry</p></th>
 <th class="head"><p>Value</p></th>
 <th class="head"><p>Code variable</p></th>
-<th class="head"><p>Code line</p></th>
+<th class="head"><p>Code</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>A[nei, own]  (lower tri.)</p></td>
-<td><p><span class="math notranslate nohighlight">\(-w \cdot \varphi \cdot \text{scalingNei}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">valueUpper</span></code> at <code class="docutils literal notranslate"><span class="pre">neiOffs[f]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[facei]]</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(+w \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ownFluxContrib</span></code>  at <code class="docutils literal notranslate"><span class="pre">neiOffs[f]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[f]]</span> <span class="pre">+=</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[own]</p></td>
-<td><p><span class="math notranslate nohighlight">\(+w \cdot \varphi \cdot \text{scalingOwn}\)</span></p></td>
-<td><p>via <code class="docutils literal notranslate"><span class="pre">atomic_sub(-valueUpper)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[own]],</span> <span class="pre">valueUpper)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(-w \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-ownFluxContrib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOwn],</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>A[own, nei]  (upper tri.)</p></td>
-<td><p><span class="math notranslate nohighlight">\(+(1-w) \cdot \varphi \cdot \text{scalingOwn}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">valueLower</span></code> at <code class="docutils literal notranslate"><span class="pre">ownOffs[f]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[facei]]</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(-(1-w) \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-neiFluxContrib</span></code> at <code class="docutils literal notranslate"><span class="pre">ownOffs[f]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[f]]</span> <span class="pre">-=</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[nei]</p></td>
-<td><p><span class="math notranslate nohighlight">\(-(1-w) \cdot \varphi \cdot \text{scalingNei}\)</span></p></td>
-<td><p>via <code class="docutils literal notranslate"><span class="pre">atomic_sub(valueLower)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[nei]],</span> <span class="pre">valueLower)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(+(1-w) \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">neiFluxContrib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">diagNei]</span> <span class="pre">+=</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>Row-sum verification per face:</p>
+<ul class="simple">
+<li><p>Owner row: <span class="math notranslate nohighlight">\(-w F_f - (1-w) F_f = -F_f\)</span> ✓</p></li>
+<li><p>Neighbour row: <span class="math notranslate nohighlight">\(+w F_f + (1-w) F_f = +F_f\)</span> ✓</p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>Non-conservative vs. conservative form.</strong>
-NeoN assembles the <em>physical</em> (non-conservative) form.  OpenFOAM
-applies <code class="docutils literal notranslate"><span class="pre">negSumDiag()</span></code> after setting the off-diagonals, which
-forces every row to sum to zero (conservative form).  Concretely,
-for a single face the NeoN diagonals are:</p>
-<div class="math-wrapper docutils container">
-<div class="math notranslate nohighlight">
-\[\begin{split}\text{diag[own]} &amp;= +w\varphi, \\
-\text{diag[nei]} &amp;= -(1-w)\varphi,\end{split}\]</div>
-</div>
-<p>whereas OpenFOAM produces:</p>
-<div class="math-wrapper docutils container">
-<div class="math notranslate nohighlight">
-\[\begin{split}\text{diag[own]} &amp;= -(1-w)\varphi, \\
-\text{diag[nei]} &amp;= +w\varphi.\end{split}\]</div>
-</div>
-<p>The difference per face is <span class="math notranslate nohighlight">\(+\varphi\)</span> on <code class="docutils literal notranslate"><span class="pre">own</span></code> and
-<span class="math notranslate nohighlight">\(-\varphi\)</span> on <code class="docutils literal notranslate"><span class="pre">nei</span></code>.  For incompressible flow the
-cell-wise divergence is zero (<span class="math notranslate nohighlight">\(\sum_f \varphi_f = 0\)</span>), so the
-extra terms sum to zero in every row and both forms yield the same
-linear-system solution.</p>
+<p>The diagonal is <strong>assembled explicitly</strong> here — there is no separate <code class="docutils literal notranslate"><span class="pre">negSumDiag</span></code>
+pass.  This is valid because the conservative sign convention already places
+<span class="math notranslate nohighlight">\(-F_f\)</span> on the owner diagonal and <span class="math notranslate nohighlight">\(+F_f\)</span> on the neighbour diagonal as
+part of the face-flux decomposition.</p>
 </div>
 </section>
 <section id="physical-boundary">
@@ -467,9 +502,9 @@ implicit diagonal coupling.</p></li>
 (<span class="math notranslate nohighlight">\(\nabla_n \varphi = \text{refGradient}\)</span>), full diagonal
 coupling.</p></li>
 </ul>
-<div class="table-wrapper colwidths-given docutils container" id="id10">
-<table class="docutils align-default" id="id10">
-<caption><span class="caption-text">Implicit divergence — physical BC entries</span><a class="headerlink" href="#id10" title="Link to this table">¶</a></caption>
+<div class="table-wrapper colwidths-given docutils container" id="id7">
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">Implicit divergence — physical BC entries</span><a class="headerlink" href="#id7" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 40.0%" />
@@ -507,19 +542,28 @@ RHS receives the gradient source.</p>
 <section id="gaussgreenlaplacian-explicit">
 <h2>gaussGreenLaplacian — Explicit<a class="headerlink" href="#gaussgreenlaplacian-explicit" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">computeLaplacianExp</span></code> delegates face-normal gradients to a
-<code class="docutils literal notranslate"><span class="pre">FaceNormalGradient</span></code> helper and accumulates:</p>
-<section id="id4">
-<h3>Internal faces<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fnGrad</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">   </span><span class="c1">// |S_f| * (∇_n φ)_f</span>
-<span class="n">laplacian</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
-<span class="n">laplacian</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<code class="docutils literal notranslate"><span class="pre">FaceNormalGradient</span></code> helper and accumulates the <strong>positive</strong> Laplacian
+<span class="math notranslate nohighlight">\(+\nabla \cdot (\gamma \nabla \varphi)\)</span>.</p>
+<section id="id2">
+<h3>Internal faces<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fnGrad[f]</span></code> is computed by <code class="docutils literal notranslate"><span class="pre">FaceNormalGradient</span></code> as:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>fnGrad[f] = nonOrthDeltaCoeffs[f] * (phi[nei] − phi[own])
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fnGrad</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> when <span class="math notranslate nohighlight">\(\varphi_N &gt; \varphi_P\)</span> (gradient points outward from owner, i.e.
+S_f direction).  In this case, diffusion brings <span class="math notranslate nohighlight">\(\varphi\)</span> <em>into</em> the owner cell and
+<em>out of</em> the neighbour cell, which is the correct physical interpretation (diffusion flows
+from high to low concentration).</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fnGrad</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">   </span><span class="c1">// |S_f| * (∂φ/∂n)_f   (outward from owner)</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// fnGrad&gt;0: φ_N&gt;φ_P, owner gains φ → positive</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// neighbour loses φ → negative</span>
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h3>Boundary faces<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id3">
+<h3>Boundary faces<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fnGrad</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<span class="n">laplacian</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                      </span><span class="c1">// S_f outward from owner; no neighbour on this rank</span>
 </pre></div>
 </div>
 <p>After both loops: <code class="docutils literal notranslate"><span class="pre">laplacian[celli]</span> <span class="pre">*=</span> <span class="pre">operatorScaling[celli]</span> <span class="pre">/</span> <span class="pre">vol[celli]</span></code>.</p>
@@ -529,52 +573,55 @@ RHS receives the gradient source.</p>
 <h2>gaussGreenLaplacian — Implicit<a class="headerlink" href="#gaussgreenlaplacian-implicit" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">computeLaplacianImpl</span></code> assembles the diffusion operator
 <span class="math notranslate nohighlight">\(-\nabla \cdot (\gamma \nabla)\)</span> into the linear system.</p>
-<section id="id6">
-<h3>Internal faces<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<section id="id4">
+<h3>Internal faces<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <p>Face diffusion coefficient: <code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">deltaCoeffs[facei]</span> <span class="pre">*</span> <span class="pre">sGamma[facei]</span> <span class="pre">*</span> <span class="pre">magFaceArea[facei]</span></code>,
 i.e. <span class="math notranslate nohighlight">\(\delta_f \cdot \gamma_f \cdot |S_f|\)</span>.</p>
-<div class="table-wrapper colwidths-given docutils container" id="id11">
-<table class="docutils align-default" id="id11">
-<caption><span class="caption-text">Implicit Laplacian — internal face entries</span><a class="headerlink" href="#id11" title="Link to this table">¶</a></caption>
+<p>The Laplacian is symmetric — the same <code class="docutils literal notranslate"><span class="pre">flux</span></code> value enters both the owner and neighbour rows
+with appropriate signs.  <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour, so
+diffusion out of one cell equals diffusion into the other.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id8">
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Implicit Laplacian — internal face entries</span><a class="headerlink" href="#id8" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 30.0%" />
-<col style="width: 20.0%" />
-<col style="width: 25.0%" />
+<col style="width: 22.0%" />
+<col style="width: 23.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Matrix entry</p></th>
 <th class="head"><p>Value</p></th>
-<th class="head"><p>Note</p></th>
+<th class="head"><p>Sign note</p></th>
 <th class="head"><p>Code</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>A[nei, own]  (lower tri.)</p></td>
 <td><p><span class="math notranslate nohighlight">\(+\text{flux} \cdot \text{scalingNei}\)</span></p></td>
-<td><p>at <code class="docutils literal notranslate"><span class="pre">neiOffs[f]</span></code>; comment says “upper” (inverted)</p></td>
+<td><p>enters neighbour → positive</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[facei]]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[own]</p></td>
 <td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingOwn}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub</span></code></p></td>
+<td><p>leaves owner → negative</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[own]],</span> <span class="pre">flux)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>A[own, nei]  (upper tri.)</p></td>
 <td><p><span class="math notranslate nohighlight">\(+\text{flux} \cdot \text{scalingOwn}\)</span></p></td>
-<td><p>at <code class="docutils literal notranslate"><span class="pre">ownOffs[f]</span></code>; comment says “lower” (inverted)</p></td>
+<td><p>enters owner → positive</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[facei]]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[nei]</p></td>
 <td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingNei}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub</span></code></p></td>
+<td><p>leaves neighbour → negative</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[nei]],</span> <span class="pre">flux)</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>The assembled matrix is symmetric and negative semi-definite for
-positive <span class="math notranslate nohighlight">\(\gamma\)</span> and consistent operatorScaling, representing
+positive <span class="math notranslate nohighlight">\(\gamma\)</span> and consistent <code class="docutils literal notranslate"><span class="pre">operatorScaling</span></code>, representing
 <span class="math notranslate nohighlight">\(-\nabla \cdot (\gamma \nabla \varphi)\)</span>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -584,17 +631,17 @@ positive <span class="math notranslate nohighlight">\(\gamma\)</span> and consis
 same structure.</p>
 </div>
 </section>
-<section id="id8">
-<h3>Physical boundary<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<section id="id5">
+<h3>Physical boundary<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <p>The boundary loop covers <code class="docutils literal notranslate"><span class="pre">facei</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">sGamma.size())</span></code>.</p>
 <p>Face diffusion coefficient (no <code class="docutils literal notranslate"><span class="pre">deltaCoeffs</span></code> here, unlike internal faces):</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>flux = sGamma[facei] * magFaceArea[facei]     // γ · |S_f|
 </pre></div>
 </div>
 <p>Mixed-BC decomposition with <code class="docutils literal notranslate"><span class="pre">valueFraction</span></code> (<span class="math notranslate nohighlight">\(f_D\)</span>):</p>
-<div class="table-wrapper colwidths-given docutils container" id="id12">
-<table class="docutils align-default" id="id12">
-<caption><span class="caption-text">Implicit Laplacian — physical BC entries</span><a class="headerlink" href="#id12" title="Link to this table">¶</a></caption>
+<div class="table-wrapper colwidths-given docutils container" id="id9">
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-text">Implicit Laplacian — physical BC entries</span><a class="headerlink" href="#id9" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 45.0%" />
@@ -707,18 +754,19 @@ assembly where <code class="docutils literal notranslate"><span class="pre">flux
 </ul>
 </li>
 <li><a class="reference internal" href="#gaussgreendiv-implicit">gaussGreenDiv — Implicit</a><ul>
-<li><a class="reference internal" href="#id2">Internal faces</a></li>
+<li><a class="reference internal" href="#conservative-convention">Conservative convention</a></li>
+<li><a class="reference internal" href="#id1">Internal faces</a></li>
 <li><a class="reference internal" href="#physical-boundary">Physical boundary</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gaussgreenlaplacian-explicit">gaussGreenLaplacian — Explicit</a><ul>
-<li><a class="reference internal" href="#id4">Internal faces</a></li>
-<li><a class="reference internal" href="#id5">Boundary faces</a></li>
+<li><a class="reference internal" href="#id2">Internal faces</a></li>
+<li><a class="reference internal" href="#id3">Boundary faces</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gaussgreenlaplacian-implicit">gaussGreenLaplacian — Implicit</a><ul>
-<li><a class="reference internal" href="#id6">Internal faces</a></li>
-<li><a class="reference internal" href="#id8">Physical boundary</a></li>
+<li><a class="reference internal" href="#id4">Internal faces</a></li>
+<li><a class="reference internal" href="#id5">Physical boundary</a></li>
 </ul>
 </li>
 </ul>
