@@ -80,15 +80,14 @@ def test_scalar_mag_special_values():
     assert abs(neon.scalar_mag(large) - large) < 1e5
     assert abs(neon.scalar_mag(-large) - large) < 1e5
 
-
-if __name__ == "__main__":
-    # Run all tests
-    test_scalar_imports()
-    test_rootvsmall()
-    test_double_precision_flag()
-    test_scalar_one()
-    test_scalar_zero()
-    test_scalar_mag_positive()
-    test_scalar_mag_negative()
-    test_scalar_mag_zero()
-    test_scalar_mag_special_values()
+# if __name__ == "__main__":
+#     # Run all tests
+#     test_scalar_imports()
+#     test_rootvsmall()
+#     test_double_precision_flag()
+#     test_scalar_one()
+#     test_scalar_zero()
+#     test_scalar_mag_positive()
+#     test_scalar_mag_negative()
+#     test_scalar_mag_zero()
+#     test_scalar_mag_special_values()

@@ -135,7 +135,6 @@ const SurfaceField<scalar>& GeometryScheme::weights() const { return weights_; }
 
 const SurfaceField<scalar>& GeometryScheme::deltaCoeffs() const
 {
-    NF_PING();
     return deltaCoeffs_;
 }
 
