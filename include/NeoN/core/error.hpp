@@ -99,13 +99,13 @@ private:
  * @param message The error message to be printed.
  */
 
-#ifdef NF_WITH_MPI_SUPPORT
+#if defined(NF_WITH_MPI_SUPPORT) && defined(NF_DEBUG_MESSAGING)
 #define NF_ERROR_EXIT(message)                                                                     \
     do                                                                                             \
     {                                                                                              \
-        std::cout << message << "\n";                                                              \
+        std::cout << "Error in: " << __FILE__ << ":" << __LINE__ << " " << message << "\n";        \
         cpptrace::generate_trace().print();                                                        \
-        MPI_Abort(MPI_COMM_WORLD, 1);                                                              \
+        /*MPI_Abort(MPI_COMM_WORLD, 1); */                                                         \
     }                                                                                              \
     while (false)
 #else

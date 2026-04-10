@@ -36,10 +36,6 @@ TEST_CASE("Distributed")
         REQUIRE(meshPart.nInternalFaces() == 3);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank == 0 has correct proc boundary " + execName)
         {
-            // FIXME
-            // auto phiExp = Vector<scalar>(exec, {1.0, 2.0, 3.0, 20.0, 4.0});
-            // {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 20.0, 30.0}
-
             REQUIRE(meshPart.nBoundaryFaces() == 1);
             REQUIRE(meshPart.nProcBoundaryFaces() == 1);
             REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 1);
@@ -106,7 +102,7 @@ TEST_CASE("Distributed")
 
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
-    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, true);
+    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron);
     SECTION("Has correct partitioned SurfaceField" + execName)
     {
         REQUIRE(phiPart.boundaryData().nBoundaries() == 2);
@@ -118,12 +114,12 @@ TEST_CASE("Distributed")
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
-            auto phiExp = Vector<scalar>(exec, {5.0, 6.0, 7.0, -4.0, 8.0});
+            auto phiExp = Vector<scalar>(exec, {5.0, 6.0, 7.0, 4.0, 8.0});
             compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
         {
-            auto phiExp = Vector<scalar>(exec, {9.0, 10.0, 11.0, 30.0, -8.0});
+            auto phiExp = Vector<scalar>(exec, {9.0, 10.0, 11.0, 30.0, 8.0});
             compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
         }
     }
