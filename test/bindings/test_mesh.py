@@ -27,7 +27,7 @@ def test_single_cell_mesh(executor):
 def test_1d_uniform_mesh(executor):
     name, exec = executor
     n_cells = 10
-    mesh = neon.create_1d_uniform_mesh(exec, n_cells)
+    mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
 
     assert mesh.n_cells() == n_cells
     assert mesh.n_internal_faces() == n_cells - 1
