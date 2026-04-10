@@ -214,7 +214,7 @@ void computeDivProcBoundImpl(
             auto flux = alpha * faceFluxV[facei];
             auto value = flux * c * one<ValueType>();
 
-            Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
+            Kokkos::atomic_add(&values[rowStart + diagOffs[cell]], value);
             bValues[bcfaceii] += value;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
