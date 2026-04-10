@@ -30,24 +30,40 @@ void computeLaplacianExp(
 
     auto nInternalFaces = mesh.nInternalFaces();
 
+    // Green-Gauss Laplacian: ∇·(γ∇φ)_C = (1/V_C) * sum_f γ_f * |S_f| * (∂φ/∂n)_f
+    //
+    // fnGrad[f] = nonOrthDeltaCoeffs[f] * (phi[nei] − phi[own])  (computed by FaceNormalGradient)
+    //   S_f points from owner to neighbour by construction, so fnGrad is the gradient
+    //   component in the outward direction from the owner cell.
+    //   fnGrad > 0  when phi_N > phi_P (gradient points outward from owner)
+    //             → diffusion brings φ into owner → positive Laplacian at owner (owner gains φ)
+    //             → diffusion takes φ from neighbour → negative Laplacian at neighbour
+    //
+    // This computes +∇·(γ∇φ) (positive Laplacian form).
     // TODO use NeoN::add and sub
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             ValueType flux = faceArea[i] * fnGrad[i];
-            Kokkos::atomic_add(&result[owner[i]], flux);
-            Kokkos::atomic_sub(&result[neighbour[i]], flux);
+            Kokkos::atomic_add(
+                &result[owner[i]], flux
+            ); // +|S_f| * fnGrad (outward gradient from owner)
+            Kokkos::atomic_sub(
+                &result[neighbour[i]], flux
+            ); // −|S_f| * fnGrad (inward gradient for neighbour)
         },
         "computeLaplacianExplicitInternal"
     );
 
+    // Boundary faces: only the owner cell is on this rank.
     parallelFor(
         exec,
         {nInternalFaces, fnGrad.size()},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
-            ValueType valueOwn = faceArea[i] * fnGrad[i];
+            ValueType valueOwn =
+                faceArea[i] * fnGrad[i]; // +|S_f| * fnGrad (S_f outward from owner)
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
@@ -263,20 +279,27 @@ void computeLaplacianImpl(
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
-            // add neighbour contribution upper
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
+            // Laplacian face coefficient: δ_f · γ_f · |S_f|
+            // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
+            // with opposite signs (diffusion out of one cell = diffusion into the other).
+            // S_f points from owner to neighbour by construction.
             auto flux = deltaCoeffs[facei] * sGamma[facei] * magFaceArea[facei];
-            // scalar valueNei = (1 - weight) * flux;
+
+            // A[nei, own] — lower triangular: flux enters neighbour from owner → positive sign
             values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
+            // values[matIt->lowerIdx(nei, facei)] += flux * one<ValueType>() * operatorScalingNei;
+            // diag[own] — flux leaves owner → negative sign
             Kokkos::atomic_sub(
                 &values[rowOwnStart + diagOffs[own]], flux * one<ValueType>() * operatorScalingOwn
             );
 
-            // upper triangular part
-            // add owner contribution lower
+            // A[own, nei] — upper triangular: flux enters owner from neighbour → positive sign
             values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
+            // values[matIt->upperIdx(own, facei)] += flux * one<ValueType>() * operatorScalingOwn;
+            // diag[nei] — flux leaves neighbour → negative sign
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
             );

@@ -43,21 +43,36 @@ void computeDiv(
 )
 {
     auto nCells = v.size();
+
+    // Green-Gauss divergence theorem: ∇·(F φ)_C = (1/V_C) * sum_f F_f * φ_f
+    //
+    // F_f = faceFlux[f] is the signed scalar flux through face f.
+    // S_f points from owner to neighbour by construction, so F_f = U · S_f:
+    //   F_f > 0 → flux leaving the owner cell and entering the neighbour cell.
+    //
+    // The DIVERGENCE at a cell measures net outward flux, so:
+    //   owner cell:     F_f is outward (S_f points away from owner) → +F_f * φ_f  (add)
+    //   neighbour cell: F_f is inward  (S_f points into neighbour)  → −F_f * φ_f  (subtract)
+    //
+    // This computes +∇·(F φ) (positive divergence form).
+    // Note: the implicit operator (computeDivImp) assembles −∇·(F φ) (conservative form
+    // for transport equations where ∂φ/∂t = −∇·(F φ) + ...).
+
     // check if the executor is GPU
     if (std::holds_alternative<SerialExecutor>(exec))
     {
         for (localIdx i = 0; i < nInternalFaces; i++)
         {
             ValueType flux = faceFlux[i] * phiF[i];
-            res[owner[i]] += flux;
-            res[neighbour[i]] -= flux;
+            res[owner[i]] += flux; // F_f outward from owner → positive divergence contribution
+            res[neighbour[i]] -= flux; // F_f inward to neighbour → negative divergence contribution
         }
 
         for (localIdx i = nInternalFaces; i < nInternalFaces + nBoundaryFaces; i++)
         {
             auto own = faceCells[i - nInternalFaces];
             ValueType valueOwn = faceFlux[i] * phiF[i];
-            res[own] += valueOwn;
+            res[own] += valueOwn; // boundary face: F_f outward from owner
         }
 
         // TODO does it make sense to store invVol and multiply?
@@ -73,8 +88,8 @@ void computeDiv(
             {0, nInternalFaces},
             NEON_LAMBDA(const localIdx i) {
                 ValueType flux = faceFlux[i] * phiF[i];
-                Kokkos::atomic_add(&res[owner[i]], flux);
-                Kokkos::atomic_sub(&res[neighbour[i]], flux);
+                Kokkos::atomic_add(&res[owner[i]], flux);     // F_f outward from owner
+                Kokkos::atomic_sub(&res[neighbour[i]], flux); // F_f inward to neighbour
             },
             "sumFluxesInternal"
         );
@@ -85,7 +100,7 @@ void computeDiv(
             NEON_LAMBDA(const localIdx i) {
                 auto own = faceCells[i - nInternalFaces];
                 ValueType valueOwn = faceFlux[i] * phiF[i];
-                Kokkos::atomic_add(&res[own], valueOwn);
+                Kokkos::atomic_add(&res[own], valueOwn); // boundary face: F_f outward from owner
             },
             "sumFluxesBoundary"
         );
@@ -326,29 +341,30 @@ void computeDivImp(
             auto rowNeiStart = rowOffs[nei];
             auto rowOwnStart = rowOffs[own];
 
-            auto valueUpper = faceFluxV[facei] * -weightsV[facei] * one<ValueType>();
-            // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
-            values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
+            // Conservative Gauss-Green divergence assembly.
+            // S_f points from owner to neighbour by construction, so F_f > 0 means
+            // flux leaves the owner cell and enters the neighbour cell.
+            //
+            // Decompose face flux via linear interpolation:
+            //   ownFluxContrib = w * F_f       — part attributed to the owner cell value
+            //   neiFluxContrib = (1-w) * F_f   — part attributed to the neighbour cell value
+
+            auto ownFluxContrib = faceFluxV[facei] * weightsV[facei] * one<ValueType>();
+            // A[nei, own] — lower triangular: ownFluxContrib enters neighbour → positive sign
+            values[rowNeiStart + neiOffs[facei]] += ownFluxContrib * operatorScalingNei;
+            // values[matIt->lowerIdx(nei, facei)] += ownFluxContrib * operatorScalingNei;
+            // diag[own] — ownFluxContrib leaves owner → negative sign
             Kokkos::atomic_sub(
                 &values[rowOwnStart + static_cast<int>(diagOffs[own])],
-                valueUpper * operatorScalingOwn
+                ownFluxContrib * operatorScalingOwn
             );
 
-            // add owner contribution lower
-            auto valueLower = faceFluxV[facei] * (1 - weightsV[facei]) * one<ValueType>();
-            // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
-            values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
-            Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
-            );
-            // FIXME
-            // std::cout << __FILE__ << ":" << __LINE__
-            //           << " internal "
-            //           << " rank " << mpiEnviron.rank()
-            //           << " facei " << facei
-            //           << " faceFluxV " << faceFluxV[facei]
-            //           << " weightsV " << weightsV[facei]
-            //           << "\n";
+            auto neiFluxContrib = faceFluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
+            // A[own, nei] — upper triangular: neiFluxContrib leaves owner → negative sign
+            values[rowOwnStart + ownOffs[facei]] -= neiFluxContrib * operatorScalingOwn;
+            // values[matIt->upperIdx(own, facei)] -= neiFluxContrib * operatorScalingOwn;
+            // diag[nei] — neiFluxContrib enters neighbour → positive sign
+            values[rowNeiStart + diagOffs[nei]] += neiFluxContrib * operatorScalingNei;
         },
         "computeLocalGaussGreenDivCoefficients"
     );
