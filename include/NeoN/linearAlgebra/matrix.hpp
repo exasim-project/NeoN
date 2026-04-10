@@ -247,9 +247,8 @@ public:
     [[nodiscard]] Vector<ValueType> diag() const;
 
 
-    // FIXME needed?
     /** @brief reset matrix by explicitly setting values to zero */
-    void reset() { NF_ERROR_EXIT("Not implemented"); }
+    void reset() { fill(values_, zero<ValueType>()); }
 
 private:
 

@@ -90,7 +90,7 @@ Logger::~Logger()
 
 void terminate()
 {
-#ifdef NF_WITH_MPI_SUPPORT
+#if defined(NF_WITH_MPI_SUPPORT) && defined(NF_DEBUG_MESSAGING)
     cpptrace::generate_trace().print();
     MPI_Abort(MPI_COMM_WORLD, 1);
 #endif
