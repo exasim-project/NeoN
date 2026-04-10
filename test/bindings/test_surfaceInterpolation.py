@@ -7,8 +7,8 @@ import neon
 
 def test_surface_interpolation_scalar():
     exec = neon.SerialExecutor()
-
-    mesh = neon.create_1d_uniform_mesh(exec, 4)
+    n_cells = 4
+    mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
 
     volume = neon.ScalarVolumeField(exec, "phi", mesh)
     neon.fill(volume.internal_vector(), 1.0)
@@ -26,8 +26,8 @@ def test_surface_interpolation_scalar():
 
 def test_surface_interpolation_vector():
     exec = neon.SerialExecutor()
-
-    mesh = neon.create_1d_uniform_mesh(exec, 4)
+    n_cells = 4
+    mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
 
     volume = neon.VectorVolumeField(exec, "U", mesh)
     neon.fill(volume.internal_vector(), neon.Vec3(1.0, 2.0, 3.0))

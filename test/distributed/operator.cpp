@@ -72,11 +72,8 @@ TEST_CASE("Distributed")
     fill(gamma.internalVector(), 2.0);
 
     // assembly
-    auto expr = NeoN::dsl::Expression<NeoN::scalar>(
-        // NeoN::dsl::imp::div(phi, U)
-        // -
-        NeoN::dsl::imp::laplacian(gamma, U)
-    );
+    auto expr =
+        NeoN::dsl::Expression<NeoN::scalar>(dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U));
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
@@ -94,9 +91,7 @@ TEST_CASE("Distributed")
     auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
     auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(
-        // NeoN::dsl::imp::div(phiPart, uPart)
-        // -
-        NeoN::dsl::imp::laplacian(gammaPart, uPart)
+        dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart)
     );
 
     exprDist.read(inputPart);
@@ -148,6 +143,7 @@ TEST_CASE("Distributed")
         );
     }
 
+#if NF_WITH_GINKGO
     Dictionary solverDict {
         {{"solver", std::string {"Ginkgo"}},
          {"type", "solver::Cg"},
@@ -172,6 +168,7 @@ TEST_CASE("Distributed")
     // REQUIRE(numIterDist != 0);
     REQUIRE(numIterDist == numIter);
     REQUIRE(initResNormDist == initResNorm);
+#endif
 }
 
 }

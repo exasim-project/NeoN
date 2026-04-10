@@ -34,7 +34,7 @@ void computeLinearInterpolation(
 
     NF_ASSERT(dstS.size() == totalFaces, "Inconsistent size");
     NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
-    NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
+    // NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
     NF_ASSERT(dstS.size() == weightS.size(), "Inconsistent size");
 
     NeoN::parallelFor(
@@ -55,11 +55,14 @@ void computeLinearInterpolation(
             // proc boundary
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
-                auto own = ownerS[facei];
-                auto nei = neighS[facei];
+                // FIXME
+                NF_ERROR_EXIT("Not implemented");
+                // auto own = ownerS[facei];
+                // // auto nei = neighS[facei];
+                // // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                // dstS[facei] = one<ValueType>();
                 // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
-                dstS[facei] = one<ValueType>();
-                std::cout << __FILE__ << ":" << __LINE__ << "\n";
+                // std::cout << __FILE__ << ":" << __LINE__ << "\n";
             }
         },
         "computeLinearInterpolation"
