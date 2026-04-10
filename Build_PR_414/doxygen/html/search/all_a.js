@@ -30,5 +30,5 @@ var searchData=
   ['logoutrange_27',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
   ['lookuptable_28',['lookuptable',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable'],['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable']]],
   ['loop_29',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
-  ['loweridx_30',['lowerIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a254a0db0297a0dc4fd764d33309411db',1,'NeoN::la::FaceToMatrixAddress']]]
+  ['loweridx_30',['lowerIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#ae76a1e8b3d044a93782c3813f8ddcf87',1,'NeoN::la::FaceToMatrixAddress']]]
 ];
