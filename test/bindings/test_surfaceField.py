@@ -7,7 +7,8 @@ import neon
 
 def test_scalar_surface_field_and_bcs():
     exec = neon.SerialExecutor()
-    mesh = neon.create_1d_uniform_mesh(exec, 4)
+    n_cells = 4
+    mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
 
     bcs = neon.create_calculated_surface_bcs_scalar(mesh)
     assert len(bcs) == mesh.n_boundaries()
