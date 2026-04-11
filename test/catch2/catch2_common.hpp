@@ -177,3 +177,33 @@ auto IsEqualTo(const Range& range, Predicate pred = ApproxScalar(1e-32))
 {
     return EqualsRangeMatcher<Range, Predicate> {range, pred};
 }
+
+
+template<typename Range, typename Predicate>
+struct EqualsRangeMatcher : Catch::Matchers::MatcherGenericBase
+{
+    EqualsRangeMatcher(const Range range, Predicate pred) : range {range.copyToHost()}, pred(pred)
+    {}
+
+    template<typename ValueType>
+    bool match(const std::vector<ValueType> other) const
+    {
+        using std::begin;
+        using std::end;
+        return std::equal(begin(range.view()), end(range.view()), begin(other), end(other), pred);
+    }
+
+    std::string describe() const override { return "!= " + Catch::rangeToString(range.view()); }
+
+private:
+
+    const Range range;
+    const Predicate pred;
+};
+
+template<typename Range, typename Predicate = ApproxScalar>
+auto IsEqualTo(const Range& range, Predicate pred = ApproxScalar(1e-32))
+    -> EqualsRangeMatcher<Range, Predicate>
+{
+    return EqualsRangeMatcher<Range, Predicate> {range, pred};
+}
