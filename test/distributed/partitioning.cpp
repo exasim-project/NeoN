@@ -109,8 +109,10 @@ TEST_CASE("Distributed")
         // NOTE
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
-            auto phiExp = Vector<scalar>(exec, {1.0, 2.0, 3.0, 20.0, 4.0});
-            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+            auto phiExp = std::vector<scalar> {1.0, 2.0, 3.0, 20.0, 4.2};
+            // REQUIRE_THAT(phiPart.internalVector(), EqualsRange(phiExp));
+            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
+            // compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
