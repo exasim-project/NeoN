@@ -380,6 +380,7 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
             tmp.faceNeighbour(),
             boundaryMesh
         ),
+        // FIXME remove creation of comm pattern here. And make it a member of uniform mesh
         CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron)
     };
 
