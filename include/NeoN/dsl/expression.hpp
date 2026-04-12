@@ -163,6 +163,7 @@ public:
         // assemble local part
         assemble(t, dt, ls, ps);
 
+        // FIXME communication can happen first
         // communicate processor boundaries
         // ls.communicate(commPattern);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
