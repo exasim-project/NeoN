@@ -1,5 +1,6 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add experimental support for MPI distributed assembly + solve [#414](https://github.com/exasim-project/NeoN/pull/414)
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
 
