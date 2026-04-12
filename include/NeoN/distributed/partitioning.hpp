@@ -60,7 +60,7 @@ FieldType partitionSurfaceField(
     scalar signLeft = 1.0;
     scalar signRight = 1.0;
 
-    // FIXME
+    // FIXME this only works for 3 ranks
     if (mpiEnviron.rank() == 0)
     {
         // first boundary face is the left boundary remaining local
