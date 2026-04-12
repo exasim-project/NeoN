@@ -160,6 +160,8 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     );
 }
 
+// FIXME is a local + non-local version of this needed?
+/** @brief compute residual of a local matrix */
 template<typename MatrixType>
 void computeResidual(
     const MatrixType& mtx, const Vector<scalar>& bV, const Vector<scalar>& xV, Vector<scalar>& resV
