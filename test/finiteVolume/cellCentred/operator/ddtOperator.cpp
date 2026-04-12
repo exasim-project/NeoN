@@ -101,17 +101,15 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         ddtOp.implicitOperation(ls, 1.0, 0.5);
 
         const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
-        // FIXME
-        // const auto [mtxValsV, volV, rhsV] =
-        //     views(lsHost.matrix().local()->values(), vol, lsHost.rhs());
+        const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
 
-        // for (auto ii = 0; ii < mtxValsV.size(); ++ii)
-        // {
-        //     // => 1/dt*V => 1/.5*V = 2V
-        //     REQUIRE(mtxValsV[ii] == 2.0 * volV[0] * one<TestType>());
-        //     // => phi^{n}/dt*V => -1/.5*V = -2V
-        //     REQUIRE(rhsV[ii] == -2.0 * volV[0] * one<TestType>());
-        // }
+        for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+        {
+            // => 1/dt*V => 1/.5*V = 2V
+            REQUIRE(mtxValsV[ii] == 2.0 * volV[0] * one<TestType>());
+            // => phi^{n}/dt*V => -1/.5*V = -2V
+            REQUIRE(rhsV[ii] == -2.0 * volV[0] * one<TestType>());
+        }
     }
 
     SECTION("implicit DdtOperator backward (BDF2) " + execName)
