@@ -9,7 +9,6 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
-#include "NeoN/distributed/matrix.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
