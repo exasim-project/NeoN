@@ -154,7 +154,24 @@ TEST_CASE("Distributed")
 
     REQUIRE(numIterDist != 0);
     REQUIRE(numIterDist == numIter);
-    // REQUIRE(initResNormDist == initResNorm);
+    REQUIRE(initResNormDist != 0);
+    // // REQUIRE(initResNormDist == initResNorm);
+
+    // SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
+    // {
+    //     REQUIRE_THAT(
+    //         take(x, 0, 4),
+    //         IsEqualTo(xPart)
+    //     );
+    // }
+    // SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
+    // {
+    //   }
+    // SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 1")
+    // {
+    //   }
+
+    // REQUIRE(finalResNormDist == finalResNorm);
 #endif
 }
 
