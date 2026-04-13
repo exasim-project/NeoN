@@ -86,7 +86,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
             }
         }
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
         SECTION("implicit laplacian operator of constant field on " + execName)
         {
