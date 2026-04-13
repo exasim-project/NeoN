@@ -86,7 +86,7 @@ TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(getVector(eqnF.explicitOperation(size)) == 0 * NeoN::one<TestType>());
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
     SECTION("Create equation and perform implicit Operation on " + execName)
     {

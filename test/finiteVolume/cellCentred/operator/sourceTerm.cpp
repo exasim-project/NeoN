@@ -54,7 +54,7 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     SECTION("implicit SourceTerm" + execName)
     {
         fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi);
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
         sTerm.implicitOperation(ls);
         auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());

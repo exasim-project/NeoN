@@ -275,6 +275,8 @@ public:
 
     const Executor& exec() const { return matrix_.exec(); }
 
+    const CommunicationPattern& commPattern() const { return commPattern_; }
+
 private:
 
     static BoundaryMatrixType emptyMatrix(const Executor& exec)
@@ -309,7 +311,6 @@ private:
 #endif
 };
 
-// FIXME TODO is env needed here
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
 template<

@@ -5,6 +5,7 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
+#include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
 #ifdef NF_WITH_MPI_SUPPORT

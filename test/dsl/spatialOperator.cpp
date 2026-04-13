@@ -91,7 +91,7 @@ TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         [[maybe_unused]] auto coeffD = d.getCoefficient();
         [[maybe_unused]] auto coeffE = e.getCoefficient();
 
-        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
         Vector source(exec, 1, 2.0);
         c.implicitOperation(ls);
 

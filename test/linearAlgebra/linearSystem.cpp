@@ -48,7 +48,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         auto nnz = nCells + 2 * nFaces;
         auto mesh = create1DUniformMesh(exec, nCells);
 
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh, mpiEnviron);
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -62,7 +62,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         // FIXME
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(
-            csrMatrix, cooMatrix, rhs, cooMatrix, rhs, {}
+            csrMatrix, cooMatrix, {}, rhs, cooMatrix, rhs, {}
         );
 
     SECTION("construct zero initialized from sparsity with CSR matrix " + execName)
