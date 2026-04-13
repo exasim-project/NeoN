@@ -50,10 +50,10 @@ TEST_CASE("SparsityPattern")
     auto bsp = mi->boundarySparsityPattern();
     SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        auto rowPtrExp = Vector<localIdx>(exec, {0, 3});
         // auto colIdxExp = Vector<localIdx>(exec, {0, 4});
 
-        compare(bsp->rowOffs(), rowPtrExp, EqualInt());
+        REQUIRE_THAT(I({0, 3}), IsEqualTo(bsp->rowOffs(), EqualInt()));
+        // FIXME
         // compare(bsp->colIdxs(), colIdxExp, EqualInt());
     }
 
@@ -61,11 +61,11 @@ TEST_CASE("SparsityPattern")
     auto nonLocalSp = mi->nonLocalSparsityPattern();
     SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        auto rowPtrExp = Vector<localIdx>(exec, {});
-        auto colIdxExp = Vector<localIdx>(exec, {});
+        auto rowPtrExp = std::vector<localIdx> {};
+        auto colIdxExp = std::vector<localIdx> {};
 
-        compare(nonLocalSp->rowOffs(), rowPtrExp, EqualInt());
-        compare(nonLocalSp->colIdxs(), colIdxExp, EqualInt());
+        REQUIRE_THAT(rowPtrExp, IsEqualTo(nonLocalSp->rowOffs(), EqualInt()));
+        REQUIRE_THAT(colIdxExp, IsEqualTo(nonLocalSp->colIdxs(), EqualInt()));
     }
 }
 

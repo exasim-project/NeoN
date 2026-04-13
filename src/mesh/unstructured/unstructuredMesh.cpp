@@ -404,7 +404,7 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 
     // FIXME seems unused
     std::vector<localIdx> boundaryMapVector;
-    CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron);
+    return CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron);
 }
 
 } // namespace NeoN

@@ -99,12 +99,13 @@ jobs:
           uv venv
           uv sync --no-install-project --all-extras -v
           source .venv/bin/activate
+
           cmake --preset ${{matrix.preset}} \
             -DNeoN_BUILD_TESTS=ON \
             -DNeoN_BUILD_PYTHON_BINDINGS=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_WITH_GINKGO=OFF \
-            -DMPIEXEC_MAX_NUMPROCS=3 \ 
+            -DMPIEXEC_MAX_NUMPROCS=3 \
             -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}} \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
           cmake --build --preset ${{matrix.preset}}
@@ -119,4 +120,3 @@ jobs:
           sudo cmake --install build/${{matrix.preset}}
           sudo ls -la /usr/local/bin
           sudo ls -la /usr/local/lib
-          neon_test_vector
