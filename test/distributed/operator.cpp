@@ -105,6 +105,9 @@ TEST_CASE("Distributed Operator")
     fill(ls.rhs(), 2.0);
     fill(lsDst.rhs(), 2.0);
 
+    fill(ls.rhs(), 2.0);
+    fill(lsDst.rhs(), 2.0);
+
     localIdx firstElement = 0;
     localIdx lastElement = 0;
     SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
