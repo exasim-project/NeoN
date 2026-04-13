@@ -59,8 +59,12 @@ TEST_CASE("Distributed")
     auto U = finiteVolume::cellCentred::VolumeField<scalar>(
         exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
     );
+    auto p = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "p", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
 
     randomizeVector(U);
+    randomizeVector(p);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
@@ -71,8 +75,7 @@ TEST_CASE("Distributed")
     fill(gamma.internalVector(), 2.0);
 
     // assembly
-    auto expr =
-        NeoN::dsl::Expression<NeoN::scalar>(dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U));
+    auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
     expr.read(input);
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
@@ -83,18 +86,20 @@ TEST_CASE("Distributed")
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
     auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
     auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
+    auto pPart = partitionVolField(p, meshPart, volBCsPart, mpiEnviron);
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
     auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, false);
     auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
-    auto exprDist = NeoN::dsl::Expression<NeoN::scalar>(
-        dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart)
-    );
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
 
     exprDist.read(inputPart);
 
     auto [spDst, lsDst] = exprDist.assemble(meshPart, 1.0, 1.0);
+
+    fill(ls.rhs(), 2.0);
+    fill(lsDst.rhs(), 2.0);
 
     localIdx firstElement = 0;
     localIdx lastElement = 0;
@@ -147,10 +152,9 @@ TEST_CASE("Distributed")
         solverStatsDist.entries[0];
     auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 
-    std::cout << __FILE__ << ":" << __LINE__ << " numIterDist " << numIterDist << "\n";
-    // REQUIRE(numIterDist != 0);
+    REQUIRE(numIterDist != 0);
     REQUIRE(numIterDist == numIter);
-    REQUIRE(initResNormDist == initResNorm);
+    // REQUIRE(initResNormDist == initResNorm);
 #endif
 }
 
