@@ -54,9 +54,9 @@ TEST_CASE("Distributed")
             REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 1);
         }
     }
+
     SECTION("Can create correct communication pattern " + execName)
     {
-
         auto commPattern = computeCommunicationPattern(meshPart);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
@@ -112,20 +112,18 @@ TEST_CASE("Distributed")
         // NOTE
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
-            auto phiExp = std::vector<scalar> {1.0, 2.0, 3.0, 20.0, 4.2};
-            // REQUIRE_THAT(phiPart.internalVector(), EqualsRange(phiExp));
+            auto phiExp = std::vector<scalar> {1.0, 2.0, 3.0, 20.0, 4.0};
             REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
-            // compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
-            auto phiExp = Vector<scalar>(exec, {5.0, 6.0, 7.0, 4.0, 8.0});
-            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+            auto phiExp = std::vector<scalar> {5.0, 6.0, 7.0, 4.0, 8.0};
+            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
         {
-            auto phiExp = Vector<scalar>(exec, {9.0, 10.0, 11.0, 30.0, 8.0});
-            compare(phiPart.internalVector(), phiExp, ApproxScalar(1e-15));
+            auto phiExp = std::vector<scalar> {9.0, 10.0, 11.0, 30.0, 8.0};
+            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
         }
     }
 
@@ -137,11 +135,11 @@ TEST_CASE("Distributed")
 
         SECTION("Can produce internal rowOffs and colIdx " + execName)
         {
-            auto rowPtrExp = Vector<localIdx>(exec, {0, 2, 5, 8, 10});
-            auto colIdxExp = Vector<localIdx>(exec, {0, 1, 0, 1, 2, 1, 2, 3, 2, 3});
+            auto rowPtrExp = std::vector<localIdx> {0, 2, 5, 8, 10};
+            auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-            compare(sp->rowOffs(), rowPtrExp, EqualInt());
-            compare(sp->colIdxs(), colIdxExp, EqualInt());
+            REQUIRE_THAT(rowPtrExp, IsEqualTo(sp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(colIdxExp, IsEqualTo(sp->colIdxs(), EqualInt()));
         }
 
         auto bsp = mi->boundarySparsityPattern();
@@ -149,38 +147,24 @@ TEST_CASE("Distributed")
         auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), mi);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
-            auto rowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
-            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {3});
-            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {4});
-            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {9});
-            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
-            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
-            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
-            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
+            REQUIRE_THAT(I({0}), IsEqualTo(bsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({4}), IsEqualTo(nsp->colIdxs(), EqualInt()));
+            REQUIRE_THAT(I({9}), IsEqualTo(rowToDiagonalMap, EqualInt()));
         }
-        SECTION_IF(
-            mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary (no boundary) " + execName
-        )
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
-            auto rowPtrExp = Vector<localIdx>(exec, {});
-            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0, 3});
-            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {3, 8});
-            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {0, 9});
-            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
-            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
-            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
-            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
+            REQUIRE_THAT(std::vector<localIdx> {}, IsEqualTo(bsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({0, 3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({3, 8}), IsEqualTo(nsp->colIdxs(), EqualInt()));
+            REQUIRE_THAT(I({0, 9}), IsEqualTo(rowToDiagonalMap, EqualInt()));
         }
-        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 0 has correct proc boundary " + execName)
         {
-            auto rowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {3});
-            auto nlRowPtrExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
-            auto nlColIdxExp = Vector<localIdx>(exec, std::vector<localIdx> {7});
-            auto rowToDiagMapExp = Vector<localIdx>(exec, std::vector<localIdx> {0});
-            compare(bsp->rowOffs(), rowPtrExp, EqualInt());
-            compare(nsp->rowOffs(), nlRowPtrExp, EqualInt());
-            compare(nsp->colIdxs(), nlColIdxExp, EqualInt());
-            compare(rowToDiagonalMap, rowToDiagMapExp, EqualInt());
+            REQUIRE_THAT(I({3}), IsEqualTo(bsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({0}), IsEqualTo(nsp->rowOffs(), EqualInt()));
+            REQUIRE_THAT(I({7}), IsEqualTo(nsp->colIdxs(), EqualInt()));
+            REQUIRE_THAT(I({0}), IsEqualTo(rowToDiagonalMap, EqualInt()));
         }
     }
 }
