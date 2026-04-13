@@ -4,8 +4,6 @@
 
 #include "catch2_common.hpp"
 
-#include "catch2_common.hpp"
-
 #include "../dsl/common.hpp"
 
 namespace dsl = NeoN::dsl;
@@ -111,7 +109,7 @@ TEST_CASE("Distributed")
             IsEqualTo(lsDst.matrix().values())
         );
     }
-    SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 0")
+    SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
     {
         firstElement = 12;
         lastElement = 22;
@@ -120,7 +118,7 @@ TEST_CASE("Distributed")
             IsEqualTo(lsDst.matrix().values())
         );
     }
-    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 0")
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 2")
     {
         firstElement = 24;
         lastElement = 34;
@@ -155,23 +153,22 @@ TEST_CASE("Distributed")
     REQUIRE(numIterDist != 0);
     REQUIRE(numIterDist == numIter);
     REQUIRE(initResNormDist != 0);
-    // // REQUIRE(initResNormDist == initResNorm);
+    REQUIRE(initResNormDist == initResNorm);
 
-    // SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
-    // {
-    //     REQUIRE_THAT(
-    //         take(x, 0, 4),
-    //         IsEqualTo(xPart)
-    //     );
-    // }
-    // SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
-    // {
-    //   }
-    // SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 1")
-    // {
-    //   }
+    SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
+    {
+        REQUIRE_THAT(take(x, 0, 4), IsEqualTo(xPart));
+    }
+    SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
+    {
+        REQUIRE_THAT(take(x, 4, 8), IsEqualTo(xPart));
+    }
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 1")
+    {
+        REQUIRE_THAT(take(x, 8, 12), IsEqualTo(xPart));
+    }
 
-    // REQUIRE(finalResNormDist == finalResNorm);
+    // REQUIRE(finalResNormDist == Approx(finalResNorm).margin(1e-08));
 #endif
 }
 
