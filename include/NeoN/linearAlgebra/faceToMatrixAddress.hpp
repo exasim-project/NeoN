@@ -171,13 +171,8 @@ public:
 };
 
 template<typename IndexType>
-std::shared_ptr<const FaceToMatrixAddress<IndexType>>
+std::pair<std::shared_ptr<const FaceToMatrixAddress<IndexType>>, CommunicationPattern>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
-
-template<typename IndexType>
-std::shared_ptr<const FaceToMatrixAddress<IndexType>> createSparsityPatternFaceToMatrixAddressDist(
-    const UnstructuredMesh& mesh, CommunicationPattern& commPattern
-);
 
 /**@brief given a set of rows this function computes the corresponding value offsets */
 inline Vector<localIdx> computeRowToDiagonalMap(

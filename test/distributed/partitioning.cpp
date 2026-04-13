@@ -27,13 +27,14 @@ TEST_CASE("Distributed")
     // global number of cells
     auto nCells = 12;
     NeoN::mpi::Environment mpiEnviron;
-    auto [meshPart, commPattern] =
-        create1DUniformMeshPart(exec, nCells / mpiEnviron.sizeRank(), mpiEnviron);
+    auto meshPart = create1DUniformMeshPart(exec, nCells / mpiEnviron.sizeRank());
 
     SECTION("Has correct partitioned 1d mesh" + execName)
     {
         REQUIRE(meshPart.nCells() == nCells / mpiEnviron.sizeRank());
         REQUIRE(meshPart.nInternalFaces() == 3);
+        REQUIRE(meshPart.boundaryMesh().isDistributed());
+
         SECTION_IF(mpiEnviron.rank() == 0, "Rank == 0 has correct proc boundary " + execName)
         {
             REQUIRE(meshPart.nBoundaryFaces() == 1);
@@ -53,8 +54,10 @@ TEST_CASE("Distributed")
             REQUIRE(meshPart.boundaryMesh().nProcBoundaryPatches() == 1);
         }
     }
-    SECTION("Has correct communication pattern " + execName)
+    SECTION("Can create correct communication pattern " + execName)
     {
+
+        auto commPattern = computeCommunicationPattern(meshPart);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
             auto sendCountsExp = std::vector<int> {0, 1, 0, 1};
@@ -128,9 +131,8 @@ TEST_CASE("Distributed")
 
     SECTION("Can produce correct nonLocalSparsityPattern" + execName)
     {
-        auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddressDist<NeoN::localIdx>(
-            meshPart, commPattern
-        );
+        auto [mi, commPattern] =
+            NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(meshPart);
         auto sp = mi->sparsityPattern();
 
         SECTION("Can produce internal rowOffs and colIdx " + execName)

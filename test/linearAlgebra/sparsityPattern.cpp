@@ -22,7 +22,8 @@ TEST_CASE("SparsityPattern")
     auto nCells = 4;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    auto [mi, commPattern] =
+        NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
     // internal sparsity
     auto sp = mi->sparsityPattern();
 
