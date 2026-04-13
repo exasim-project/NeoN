@@ -180,6 +180,7 @@
     <member refid="classNeoN_1_1BoundaryMesh_1abd9b1b1906b836d58bcaf312194ae564" kind="function"><name>nBoundaries</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1ad55fbfdf171c694d69b25e020e2aa2b4" kind="function"><name>nBoundaryFaces</name></member>
     <member refid="classNeoN_1_1BoundaryMesh_1af0e4cc5bea7a7610fc6351e489a7e19f" kind="function"><name>nProcBoundaryFaces</name></member>
+    <member refid="classNeoN_1_1BoundaryMesh_1ac300ef7b3ce5f62a2c952ffb0f4a16d3" kind="function"><name>isDistributed</name></member>
   </compound>
   <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" kind="class"><name>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</name>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1adbf45e525a5c07ad1b0d9f6707806011" kind="variable"><name>patchID_</name></member>
@@ -380,7 +381,7 @@
   <compound refid="classNeoN_1_1la_1_1DiagonalSolver" kind="class"><name>NeoN::la::DiagonalSolver</name>
     <member refid="classNeoN_1_1la_1_1DiagonalSolver_1af6f81eaced91f053f0358da9ab62fea6" kind="typedef"><name>Base</name></member>
     <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a825b7a56f08d36b4517721d80c64e1fa" kind="function"><name>DiagonalSolver</name></member>
-    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1ad213a7da62d867dfc0c73a4918f4369a" kind="function"><name>solveDist</name></member>
+    <member refid="classNeoN_1_1la_1_1DiagonalSolver_1af3f206c9ce4185fdae7b6ed09cdb75ce" kind="function"><name>solveDist</name></member>
     <member refid="classNeoN_1_1la_1_1DiagonalSolver_1aa6aafa28e2b191081c2034eedde35e92" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a53aec0db1ee1911a0cbc32033c1fe9f1" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1la_1_1DiagonalSolver_1a843edf18e2df8e454bc051b8ee9ddab9" kind="function"><name>clone</name></member>
@@ -503,9 +504,6 @@
     <member refid="classNeoN_1_1dsl_1_1Expression_1ad6124c692980bcb287f0deab83287a4e" kind="function"><name>assembleSpatialOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1aed0971c592bb814a258f3867f53b4ebd" kind="function"><name>assembleTemporalOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ae257aae822cbececca35f52299951bed" kind="function"><name>assemble</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1a4eb11192f35d771ef68ff4e4b15430ad" kind="function"><name>assembleDistributed</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1add1a8b28f06d4c0a5aced3c19d1bc98e" kind="function"><name>assembleDistributed</name></member>
-    <member refid="classNeoN_1_1dsl_1_1Expression_1a89d361dd1588e9790c4d60e9b2df2c49" kind="function"><name>assembleDistributed</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1af285a2284b3bb160ebc34034fb9e7728" kind="function"><name>assemble</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1ad1afa5ea6175ae657a09042c54070d15" kind="function"><name>addOperator</name></member>
     <member refid="classNeoN_1_1dsl_1_1Expression_1a5016d348636ab0980a9f5f893039003d" kind="function"><name>addOperator</name></member>
@@ -828,14 +826,15 @@
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a65995d5a0bf268c6426501fc6eccbf58" kind="typedef"><name>LinearSystemIndexType</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a9d05ae86bcc17e27a86a52cd39d3cac2" kind="variable"><name>matrix_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1ac978b1c5ab11b85b29e8e621c3d79868" kind="variable"><name>nonLocalMatrix_</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1ad8f61684ae766780b6ea05c3d8f0e270" kind="variable"><name>commPattern_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a3b195728c4b92647f3cebc4185775e6d" kind="variable"><name>rhs_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1aa522572bce53e1e93b66de98be73714e" kind="variable"><name>boundaryMatrix_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1af1562b0e6ad2bb14695c53881ef85732" kind="variable"><name>boundaryRhs_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a7224859a629506357ca831397c67fe4d" kind="variable"><name>auxiliaryCoefficients_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a47c883398d3bdc79d7fb1229fa1be778" kind="variable"><name>faceToMatrixAddress_</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a703dabfdf9e21facecd125de333d7819" kind="function"><name>validate</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1a6dad815d6c509f92d6ae69991f240d5c" kind="function"><name>LinearSystem</name></member>
-    <member refid="classNeoN_1_1la_1_1LinearSystem_1ad01c9ee6f31f9ad6cadc72808eea2aad" kind="function"><name>LinearSystem</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1ab0e6e3d099825116cadb1f029dd734c8" kind="function"><name>LinearSystem</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1a75766560322ff295b8f59e15c7c7e61b" kind="function"><name>LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a255f959bddd7b8e50fe0585eb1089135" kind="function"><name>LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a5ae2199cecab82794b73fc783b3e9f59" kind="function"><name>~LinearSystem</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1add7588bf29d737738bb403a48c24f3d9" kind="function"><name>matrix</name></member>
@@ -857,6 +856,7 @@
     <member refid="classNeoN_1_1la_1_1LinearSystem_1af5933e6ad9f7c91c51cd91f04af28a3d" kind="function"><name>faceToMatrixAddress</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1adac2ebce295cf5fa9951ed05c7ef9e54" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1LinearSystem_1a931df4044a05f6209d5fbbe8782e29d0" kind="function"><name>exec</name></member>
+    <member refid="classNeoN_1_1la_1_1LinearSystem_1a3e9487a265b23bfa2c61a1f03dd4b016" kind="function"><name>commPattern</name></member>
   </compound>
   <compound refid="structNeoN_1_1la_1_1LinearSystemView" kind="struct"><name>NeoN::la::LinearSystemView</name>
     <member refid="structNeoN_1_1la_1_1LinearSystemView_1a914114af5c7d3e70a2b60aeaf01ebcdd" kind="variable"><name>matrix</name></member>
@@ -1100,7 +1100,7 @@
     <member refid="classNeoN_1_1la_1_1Solver_1ab933fc36828c686c03f024bd7e14024d" kind="function"><name>Solver</name></member>
     <member refid="classNeoN_1_1la_1_1Solver_1a290350dcd90d29ca8e76c4f3bffb9a37" kind="function"><name>Solver</name></member>
     <member refid="classNeoN_1_1la_1_1Solver_1a89adc0dc1b0e9c6cfc89ba50493a0db2" kind="function"><name>Solver</name></member>
-    <member refid="classNeoN_1_1la_1_1Solver_1a9c1f6a9fb67a3ae9aff9973f6bdbde11" kind="function"><name>solveDist</name></member>
+    <member refid="classNeoN_1_1la_1_1Solver_1a4e6d13d7ff77eb1d73688d1dc87e5f85" kind="function"><name>solveDist</name></member>
     <member refid="classNeoN_1_1la_1_1Solver_1a5d5cf787c83a8f9c5da1a06a78f9db6b" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1la_1_1Solver_1a9f06254ae44a1165bcce2ba6419616a2" kind="function"><name>solve</name></member>
   </compound>
@@ -1109,7 +1109,7 @@
     <member refid="classNeoN_1_1la_1_1SolverFactory_1ac7149d28babc9bec50f39c4a8b70e9d9" kind="function"><name>create</name></member>
     <member refid="classNeoN_1_1la_1_1SolverFactory_1a063c3317c351451b23cc6eda37982efb" kind="function"><name>name</name></member>
     <member refid="classNeoN_1_1la_1_1SolverFactory_1a9d310e6367b0b6e549627ce4aae14f10" kind="function"><name>SolverFactory</name></member>
-    <member refid="classNeoN_1_1la_1_1SolverFactory_1a4ecf324343377b0906dd5e4608e6b4ba" kind="function"><name>solveDist</name></member>
+    <member refid="classNeoN_1_1la_1_1SolverFactory_1aa7bedc321e1a450f22c199f861ff5790" kind="function"><name>solveDist</name></member>
     <member refid="classNeoN_1_1la_1_1SolverFactory_1a53d6795cdf5903a08d9dc0562c3913e2" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1la_1_1SolverFactory_1a3207b330db1c36b90172ce9ecbd0a727" kind="function"><name>solve</name></member>
     <member refid="classNeoN_1_1la_1_1SolverFactory_1a5afeb1be40a3978d69a62ba6d66de867" kind="function"><name>clone</name></member>
@@ -1835,11 +1835,9 @@
   <compound refid="namespaceNeoN_1_1la" kind="namespace"><name>NeoN::la</name>
     <member refid="namespaceNeoN_1_1la_1ac6606b36cee6114533e0f5577be2be5b" kind="typedef"><name>CSRMatrix</name></member>
     <member refid="namespaceNeoN_1_1la_1a90174338eaeb88d2f0d55a3dfdb95add" kind="typedef"><name>COOMatrix</name></member>
-    <member refid="namespaceNeoN_1_1la_1ab0b99cb5bc03a26ce7905a9a6be6e616" kind="function"><name>createSparsityPatternFaceToMatrixAddress</name></member>
-    <member refid="namespaceNeoN_1_1la_1a2c10faf9e4daa928a3217237a37998cc" kind="function"><name>createSparsityPatternFaceToMatrixAddressDist</name></member>
+    <member refid="namespaceNeoN_1_1la_1abfc9c58932e8a44abfee3c6dac77ad26" kind="function"><name>createSparsityPatternFaceToMatrixAddress</name></member>
     <member refid="namespaceNeoN_1_1la_1aecb0a76e49610af8c37e2c020d9bb342" kind="function"><name>computeRowToDiagonalMap</name></member>
-    <member refid="namespaceNeoN_1_1la_1abb112316596935cacba158abb300039b" kind="function"><name>createEmptyLinearSystem</name></member>
-    <member refid="namespaceNeoN_1_1la_1a355de310768523fa731bee5a8c58e2d7" kind="function"><name>createEmptyDistributedLinearSystem</name></member>
+    <member refid="namespaceNeoN_1_1la_1a526ab6c1bb1faea9fac356aee0888256" kind="function"><name>createEmptyLinearSystem</name></member>
     <member refid="namespaceNeoN_1_1la_1adf0e2e0fd0c0edb0caf3488bcc1ec63c" kind="function"><name>upper</name></member>
     <member refid="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" kind="function"><name>scaledInverseDiag</name></member>
     <member refid="namespaceNeoN_1_1la_1adb9cd225a8925a20dc28f935ce424d96" kind="function"><name>scaledInverseDiag</name></member>
