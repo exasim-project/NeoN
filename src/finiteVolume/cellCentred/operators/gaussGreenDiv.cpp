@@ -207,15 +207,28 @@ void computeDivProcBoundImpl(
             auto rowStart = rowOffs[cell];
             auto c = operatorScaling[cell];
 
-            // NOTE here only bweights is taken
-            // thus the other side has to make sure that
-            // bweights_this = (1 - bweights_other)
-            auto alpha = isOwner[bcfacei] > 0.0 ? -bweights[bcfacei] : 1.0 - bweights[bcfacei];
-            auto flux = alpha * faceFluxV[facei];
-            auto value = flux * c * one<ValueType>();
+            // Conservative upwind divergence for processor boundary faces.
+            // S_f points from owner to neighbour by construction; F = faceFlux is signed.
+            //
+            // From the global computeDivImp for face f (own→nei, weight w = 0 or 1 for upwind):
+            //   A[own,own] -= w*F*c         (diagonal of owner)
+            //   A[own,nei] -= (1-w)*F*c     (off-diagonal: owner row, nei column)
+            //   A[nei,own] += w*F*c         (off-diagonal: nei row, own column)
+            //   A[nei,nei] += (1-w)*F*c     (diagonal of neighbour)
+            //
+            // Each rank uses the raw upwind weight: w_raw = (F >= 0) ? 1 : 0.
+            // The owner's diagonal coefficient is w_raw; the non-owner's is (1 - w_raw).
+            auto isOwnerFace = isOwner[bcfacei] > 0.0;
+            auto sign = isOwnerFace ? scalar(-1) : scalar(1);
+            auto w_raw = bweights[facei]; // use global face index, not boundary-local bcfacei
+            // Diagonal weight: owner uses w_raw, non-owner uses (1-w_raw)
+            auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
+            auto F = faceFluxV[facei];
 
-            Kokkos::atomic_add(&values[rowStart + diagOffs[cell]], value);
-            bValues[bcfaceii] += value;
+            Kokkos::atomic_add(
+                &values[rowStart + diagOffs[cell]], sign * w_diag * F * c * one<ValueType>()
+            );
+            bValues[bcfaceii] += sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );

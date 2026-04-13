@@ -109,8 +109,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
 
     // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
-    // const auto recv_connections = gkoArrayView(exec, );
     auto bmtxv = bmtx.sparsity()->colIdxs();
+
     gko::array<int> recv_connections = gko::make_array_view(exec, bmtxv.size(), bmtxv.data());
 
     auto imap = gko::experimental::distributed::index_map<label, label>(

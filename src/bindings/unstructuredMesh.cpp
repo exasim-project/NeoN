@@ -114,6 +114,11 @@ void registerUnstructuredMesh(nb::module_& m)
             "Get the number of boundary faces"
         )
         .def(
+            "n_total_faces",
+            &NeoN::UnstructuredMesh::nTotalFaces,
+            "Get the number of internal faces"
+        )
+        .def(
             "n_boundaries",
             &NeoN::UnstructuredMesh::nBoundaries,
             "Get the number of boundary patches"
