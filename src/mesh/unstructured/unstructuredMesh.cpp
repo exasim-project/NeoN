@@ -5,6 +5,7 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
+#include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
 
@@ -263,9 +264,10 @@ UnstructuredMesh create3DUniformMesh(
 /* @brief helper to create a part of a global 1D mesh
  *
  */
-std::pair<UnstructuredMesh, CommunicationPattern>
-create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environment mpiEnviron)
+UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells)
 {
+    // FIXME make it an argument again
+    mpi::Environment mpiEnviron;
     Vec3 leftBoundary {static_cast<scalar>(mpiEnviron.rank()) / mpiEnviron.sizeRank(), 0.0, 0.0};
     Vec3 rightBoundary {
         static_cast<scalar>(mpiEnviron.rank() + 1) / mpiEnviron.sizeRank(), 0.0, 0.0
@@ -362,9 +364,18 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
     // return ret;
 }
 
+// FIXME
+// NOTE only works for 1d meshes at the moment
 CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 {
-    mpi::Environ mpiEnviron;
+    mpi::Environment mpiEnviron;
+    // early return if not distributed
+    if (!mesh.boundaryMesh().isDistributed())
+    {
+        return {};
+    }
+
+    const auto nCells = mesh.nCells();
     auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1);
     auto recvIdx = std::vector<int>();
     sendCounts[sendCounts.size() - 1] = 1;
@@ -393,7 +404,7 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 
     // FIXME seems unused
     std::vector<localIdx> boundaryMapVector;
-    CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron)
+    CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron);
 }
 
 } // namespace NeoN
