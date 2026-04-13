@@ -261,12 +261,12 @@ void computeLaplacianBoundImpl(
 
             // FIXME deltaCoeffs was previously indexed by facei?
             auto valueMat =
-                flux * operatorScalingOwn * valFrac2 * deltaCoeffs[facei] * one<ValueType>();
+                flux * operatorScalingOwn * valFrac1 * deltaCoeffs[facei] * one<ValueType>();
 
             Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
             bValues[bcfacei] += valueMat;
             ValueType valueRhs = flux * operatorScalingOwn
-                               * (valueFraction[bcfacei] * deltaCoeffs[bcfacei] * refValue[bcfacei]
+                               * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
             Kokkos::atomic_sub(&rhs[own], valueRhs);
             bRhs[bcfacei] = valueRhs;

@@ -73,12 +73,11 @@ la::SolverStats iterativeSolveDistImpl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    CommunicationPattern& commPattern,
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
     exp.read(fvSchemes);
-    exp.assembleDistributed(ls, t, dt, commPattern, ps);
+    exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
@@ -96,7 +95,7 @@ la::SolverStats iterativeSolveDistImpl(
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
-    return solver.solveDist(ls, solution.internalVector(), commPattern);
+    return solver.solveDist(ls, solution.internalVector());
 }
 
 template<typename VectorType, typename IndexType>
