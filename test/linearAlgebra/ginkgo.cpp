@@ -120,7 +120,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         // FIXME
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, bCsrMatrix, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, bCsrMatrix, {}, rhs, bCsrMatrix, bRhs, {}
         );
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
@@ -171,7 +171,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         // FIXME
         auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
-            csrMatrix, bCsrMatrix, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, bCsrMatrix, {}, rhs, bCsrMatrix, bRhs, {}
         );
 
         SECTION("Segregated" + execName)

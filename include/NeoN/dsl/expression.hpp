@@ -137,65 +137,64 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        // FIXME when to create env
-        mpi::Environment env;
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh, env);
+        auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
         assemble(t, dt, ls, ps);
         return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
     };
 
-    // TODO move that to assemble
-    /* @brief construct a linear system and force assembly
-     *
-     * @param ps a vector of functor performing transformation on the created linear system
-     * @return a tuple of the sparsity pattern and the assembled linear system
-     */
-    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<ValueType>>
-    assembleDistributed(
-        const UnstructuredMesh& mesh,
-        scalar t,
-        scalar dt,
-        CommunicationPattern commPattern,
-        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
-    ) const
-    {
-        auto ls = la::createEmptyDistributedLinearSystem<ValueType>(mesh, commPattern);
-        // assemble local part
-        assemble(t, dt, ls, ps);
+    // FIXME remove
+    // // TODO move that to assemble
+    // /* @brief construct a linear system and force assembly
+    //  *
+    //  * @param ps a vector of functor performing transformation on the created linear system
+    //  * @return a tuple of the sparsity pattern and the assembled linear system
+    //  */
+    // std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>,
+    // la::LinearSystem<ValueType>> assembleDistributed(
+    //     const UnstructuredMesh& mesh,
+    //     scalar t,
+    //     scalar dt,
+    //     CommunicationPattern commPattern,
+    //     std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    // ) const
+    // {
+    //     auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
+    //     // assemble local part
+    //     assemble(t, dt, ls, ps);
 
-        // FIXME communication can happen first
-        // communicate processor boundaries
-        // ls.communicate(commPattern);
-        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
-    };
+    //     // FIXME communication can happen first
+    //     // communicate processor boundaries
+    //     // ls.communicate(commPattern);
+    //     return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
+    // };
 
-    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<Vec3>>
-    assembleDistributed(
-        la::LinearSystem<Vec3>& ls,
-        scalar t,
-        scalar dt,
-        CommunicationPattern commPattern,
-        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
-    ) const {
-        // FIXME
-    };
+    // std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<Vec3>>
+    // assembleDistributed(
+    //     la::LinearSystem<Vec3>& ls,
+    //     scalar t,
+    //     scalar dt,
+    //     CommunicationPattern commPattern,
+    //     std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    // ) const {
+    //     // FIXME
+    // };
 
-    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<scalar>>
-    assembleDistributed(
-        la::LinearSystem<scalar>& ls,
-        scalar t,
-        scalar dt,
-        CommunicationPattern commPattern,
-        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
-    ) const
-    {
-        // assemble local part
-        assemble(t, dt, ls, ps);
-        // communicate processor boundaries
-        ls.communicate(commPattern);
+    // std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<scalar>>
+    // assembleDistributed(
+    //     la::LinearSystem<scalar>& ls,
+    //     scalar t,
+    //     scalar dt,
+    //     CommunicationPattern commPattern,
+    //     std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+    // ) const
+    // {
+    //     // assemble local part
+    //     assemble(t, dt, ls, ps);
+    //     // communicate processor boundaries
+    //     ls.communicate(commPattern);
 
-        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
-    };
+    //     return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
+    // };
 
 
     /* @brief assemble into a given linear system

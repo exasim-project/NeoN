@@ -57,7 +57,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const gko::experimental::mpi::communicator& comm,
     const CSRMatrix<scalar, IndexType>& mtx,  //, local mtx
     const COOMatrix<scalar, IndexType>& bmtx, //, local mtx
-    CommunicationPattern& commPattern
+    const CommunicationPattern& commPattern
     // const LinearSystem<scalar, IndexType>& ls
 )
 {
@@ -208,15 +208,14 @@ SolverStatsEntry solve_impl_dist(
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys,
-    Vector<scalar>& x,
-    CommunicationPattern& commPattern
+    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
     // TODO make that selectable via dictionary
     bool forceHostBuffer = false;
     mpi::Environment env;
     auto comm = gko::experimental::mpi::communicator(env.comm(), forceHostBuffer);
+    const CommunicationPattern& commPattern = sys.commPattern();
 
     auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
 

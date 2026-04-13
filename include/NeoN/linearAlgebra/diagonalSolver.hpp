@@ -25,9 +25,7 @@ public:
     static std::string doc() { return "Direct diagonal solver (CSR scan)"; }
     static std::string schema() { return "none"; }
 
-    SolverStats solveDist(
-        const la::LinearSystem<scalar>& sys, Vector<scalar>& x, CommunicationPattern& commPattern
-    ) const override
+    SolverStats solveDist(const la::LinearSystem<scalar>& sys, Vector<scalar>& x) const override
     {
         // FIXME
         return {};
