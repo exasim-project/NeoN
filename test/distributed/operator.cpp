@@ -46,7 +46,6 @@ TEST_CASE("Distributed")
     // start with non distributed setup
     float epsilon = 1e-32;
 
-
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto input = generateInput("upwind", "");
@@ -99,49 +98,32 @@ TEST_CASE("Distributed")
 
     localIdx firstElement = 0;
     localIdx lastElement = 0;
-
-    if (mpiEnviron.rank() == 0)
+    SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
     {
         lastElement = 10;
+        REQUIRE_THAT(
+            take(ls.matrix().values(), firstElement, lastElement),
+            IsEqualTo(lsDst.matrix().values())
+        );
     }
-    if (mpiEnviron.rank() == 1)
+    SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 0")
     {
         firstElement = 12;
         lastElement = 22;
+        REQUIRE_THAT(
+            take(ls.matrix().values(), firstElement, lastElement),
+            IsEqualTo(lsDst.matrix().values())
+        );
     }
-    if (mpiEnviron.rank() == 2)
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 0")
     {
         firstElement = 24;
         lastElement = 34;
+        REQUIRE_THAT(
+            take(ls.matrix().values(), firstElement, lastElement),
+            IsEqualTo(lsDst.matrix().values())
+        );
     }
-
-    // FIXME
-    // SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
-    // {
-    //     compare(
-    //         take(ls.matrix().values(), firstElement, lastElement),
-    //         lsDst.matrix().values(),
-    //         ApproxScalar(1e-15)
-    //     );
-    // }
-
-    // SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
-    // {
-    //     compare(
-    //         take(ls.matrix().values(), firstElement, lastElement),
-    //         lsDst.matrix().values(),
-    //         ApproxScalar(1e-15)
-    //     );
-    // }
-
-    // SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 2")
-    // {
-    //     compare(
-    //         take(ls.matrix().values(), firstElement, lastElement),
-    //         lsDst.matrix().values(),
-    //         ApproxScalar(1e-15)
-    //     );
-    // }
 
 #if NF_WITH_GINKGO
     Dictionary solverDict {
@@ -165,6 +147,7 @@ TEST_CASE("Distributed")
         solverStatsDist.entries[0];
     auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
 
+    std::cout << __FILE__ << ":" << __LINE__ << " numIterDist " << numIterDist << "\n";
     // REQUIRE(numIterDist != 0);
     REQUIRE(numIterDist == numIter);
     REQUIRE(initResNormDist == initResNorm);
