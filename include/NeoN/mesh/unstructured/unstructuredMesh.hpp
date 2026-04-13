@@ -346,8 +346,10 @@ UnstructuredMesh create3DUniformMesh(
  *
  * @param nCells number of local cells on this rank
  */
-std::pair<UnstructuredMesh, CommunicationPattern> create1DUniformMeshPart(
-    const Executor exec, const localIdx nCells, NeoN::mpi::Environment mpiEnviron
-);
+UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells);
+
+/** @brief Given an unstructuredMesh this function computes the corresponding communication pattern
+ */
+CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh);
 
 } // namespace NeoN
