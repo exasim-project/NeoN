@@ -324,6 +324,47 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
         {}                                           // neighbourRank
     );
 
+
+    // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
+    // since proc boundaries come first
+    auto faceCentresH = tmp.faceCentres().copyToHost();
+    auto faceAreasH = tmp.faceAreas().copyToHost();
+    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+    {
+        auto localCells = tmp.nCells();
+        auto tmpValue = faceCentresH.view()[localCells];
+        faceCentresH.view()[localCells] = faceCentresH.view()[localCells - 1];
+        faceCentresH.view()[localCells - 1] = tmpValue;
+        faceAreasH.view()[localCells] = {-1.0, 0.0, 0.0};
+        faceAreasH.view()[localCells - 1] = {1.0, 0.0, 0.0};
+    }
+
+    // Note on rank the proc boundary needs to be turned
+    return {
+        tmp.points(),
+        tmp.cellVolumes(),
+        tmp.cellCentres(),
+        faceAreasH.copyToExecutor(exec),
+        faceCentresH.copyToExecutor(exec),
+        tmp.magFaceAreas(),
+        tmp.faceOwner(),
+        tmp.faceNeighbour(),
+        boundaryMesh
+    };
+
+    // FIXME doesnt work on GPU
+    // if (mpiEnviron.rank() != 0)
+    // {
+    //     ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
+    //     ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
+    // }
+
+    // return ret;
+}
+
+CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
+{
+    mpi::Environ mpiEnviron;
     auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1);
     auto recvIdx = std::vector<int>();
     sendCounts[sendCounts.size() - 1] = 1;
@@ -350,48 +391,9 @@ create1DUniformMeshPart(const Executor exec, const localIdx nCells, mpi::Environ
         recvIdx.push_back(mpiEnviron.rank() * nCells - 1);
     }
 
+    // FIXME seems unused
     std::vector<localIdx> boundaryMapVector;
-
-    // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
-    // since proc boundaries come first
-    auto faceCentresH = tmp.faceCentres().copyToHost();
-    auto faceAreasH = tmp.faceAreas().copyToHost();
-    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
-    {
-        auto localCells = tmp.nCells();
-        auto tmpValue = faceCentresH.view()[localCells];
-        faceCentresH.view()[localCells] = faceCentresH.view()[localCells - 1];
-        faceCentresH.view()[localCells - 1] = tmpValue;
-        faceAreasH.view()[localCells] = {-1.0, 0.0, 0.0};
-        faceAreasH.view()[localCells - 1] = {1.0, 0.0, 0.0};
-    }
-
-    // Note on rank the proc boundary needs to be turned
-
-    return {
-        UnstructuredMesh(
-            tmp.points(),
-            tmp.cellVolumes(),
-            tmp.cellCentres(),
-            faceAreasH.copyToExecutor(exec),
-            faceCentresH.copyToExecutor(exec),
-            tmp.magFaceAreas(),
-            tmp.faceOwner(),
-            tmp.faceNeighbour(),
-            boundaryMesh
-        ),
-        // FIXME remove creation of comm pattern here. And make it a member of uniform mesh
-        CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron)
-    };
-
-    // FIXME doesnt work on GPU
-    // if (mpiEnviron.rank() != 0)
-    // {
-    //     ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
-    //     ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
-    // }
-
-    // return ret;
+    CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron)
 }
 
 } // namespace NeoN

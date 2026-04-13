@@ -340,4 +340,8 @@ UnstructuredMesh create3DUniformMesh(
     scalar lz = 1.0
 );
 
+/** @brief Given an unstructuredMesh this function computes the corresponding communication pattern
+ */
+CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh);
+
 } // namespace NeoN
