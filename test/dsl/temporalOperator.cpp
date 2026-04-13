@@ -85,7 +85,7 @@ TEMPLATE_TEST_CASE("TemporalOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         REQUIRE(b.getType() == Operator::Type::Implicit);
     }
 
-    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh, mpiEnviron);
+    auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
 
     SECTION("Supports Coefficients Implicit " + execName)
     {

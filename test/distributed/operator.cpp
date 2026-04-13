@@ -78,8 +78,7 @@ TEST_CASE("Distributed")
     auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
 
     NeoN::mpi::Environment mpiEnviron;
-    auto [meshPart, commPattern] =
-        create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank(), mpiEnviron);
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
 
     // partition fields and data
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
@@ -96,7 +95,7 @@ TEST_CASE("Distributed")
 
     exprDist.read(inputPart);
 
-    auto [spDst, lsDst] = exprDist.assembleDistributed(meshPart, 1.0, 1.0, commPattern);
+    auto [spDst, lsDst] = exprDist.assemble(meshPart, 1.0, 1.0);
 
     localIdx firstElement = 0;
     localIdx lastElement = 0;
@@ -159,7 +158,7 @@ TEST_CASE("Distributed")
     fill(xPart, 0.0);
 
     auto solverStats = solver.solve(ls, x);
-    auto solverStatsDist = solver.solveDist(lsDst, xPart, commPattern);
+    auto solverStatsDist = solver.solveDist(lsDst, xPart);
 
     auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
         solverStatsDist.entries[0];

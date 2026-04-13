@@ -246,6 +246,8 @@ public:
 
     localIdx nProcBoundaryFaces() const { return procBoundaryFaces_; }
 
+    bool isDistributed() const { return procBoundaryFaces_ > 0; }
+
 private:
 
     /**
