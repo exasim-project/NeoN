@@ -229,7 +229,7 @@ public:
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] const ValueType* cbegin() const { return data_; }
+    [[nodiscard]] const ValueType* begin() const { return data_; }
 
     /**
      * @brief Direct access to the underlying field data
@@ -241,7 +241,7 @@ public:
      * @brief Direct access to the underlying field data
      * @return Pointer to the first cell data in the field.
      */
-    [[nodiscard]] const ValueType* cend() const { return data_ + size(); }
+    [[nodiscard]] const ValueType* end() const { return data_ + size(); }
 
     /**
      * @brief Gets the executor associated with the field.

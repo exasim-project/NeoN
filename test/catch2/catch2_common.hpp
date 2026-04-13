@@ -93,6 +93,13 @@ struct EqualsRangeMatcher : Catch::Matchers::MatcherGenericBase
     {
         using std::begin;
         using std::end;
+        if constexpr (std::is_same_v<ValueType, NeoN::Vector<NeoN::scalar>>)
+        {
+            auto otherHost = other.copyToHost();
+            return std::equal(
+                begin(range.view()), end(range.view()), begin(otherHost), end(otherHost), pred_
+            );
+        }
         return std::equal(begin(range.view()), end(range.view()), begin(other), end(other), pred_);
     }
 
