@@ -190,7 +190,7 @@ void computeLaplacianIntImpl(
         matIt->diagOffset(),
         matIt->ownerOffset(),
         matIt->neighbourOffset(),
-        matIt->sparsityPattern()->rowOffs()
+        ls.matrix().rowOffs()
     );
 
     const auto [gammaV, deltaCoeffs, magFaceArea] = views(

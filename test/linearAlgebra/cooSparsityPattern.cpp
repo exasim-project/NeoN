@@ -16,13 +16,13 @@ namespace NeoN
 
 TEST_CASE("SparsityPattern")
 {
+    using CooSparsityType = NeoN::la::CooSparsityPattern<NeoN::localIdx>;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto nCells = 4;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
-    auto sp = mi->sparsityPattern();
+    auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<CooSparsityType>(mesh);
 
     // clang-format off
     // Mesh:
@@ -37,11 +37,17 @@ TEST_CASE("SparsityPattern")
     // clang-format on
     SECTION("Can produce internal rowOffs and colIdx " + execName)
     {
-        auto rowPtrExp = std::vector<localIdx> {0, 2, 5, 8, 10};
+        auto rowPtrExp = std::vector<localIdx> {0, 0, 1, 1, 1, 2, 2, 2, 3, 3};
         auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
         REQUIRE_THAT(sp->rowOffs(), Equals(rowPtrExp, EqualInt()));
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
+    }
+
+    auto bsp = NeoN::la::createBoundarySparsityPattern<CooSparsityType>(mesh, *mi);
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
+    {
+        REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
     }
 }
 

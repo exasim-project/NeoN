@@ -5,8 +5,9 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
-#include "sparsityPattern.hpp"
-#include "faceToMatrixAddress.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <type_traits>
 
@@ -74,6 +75,7 @@ class Matrix
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
+        // TODO this is not necessarily try for matrix types with padding like ELL
         NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
     }
 
@@ -105,7 +107,34 @@ public:
         const Vector<typename SparsityType::SparsityIndexType>& rowOffs
     )
         : values_(values),
-          sparsityPattern_(std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs)))
+          sparsityPattern_(std::make_shared<const SparsityType>(
+              Vector(colIdxs),
+              Vector(rowOffs),
+              Dimensions {
+                  static_cast<localIdx>(rowOffs.size()), static_cast<localIdx>(rowOffs.size())
+              }
+          ))
+    {
+        validate();
+    }
+
+    /**
+     * @brief Constructor for Matrix with a FaceToMatrixAddress.
+     *
+     * The sparsity pattern and the face-to-matrix address are passed as independent objects.
+     * Only available for matrices whose index type is localIdx.
+     *
+     * @param values The non-zero values of the matrix.
+     * @param sparsity The sparsity pattern of the matrix.
+     * @param faceToMatrixAddress The face-to-matrix address mapping.
+     */
+    Matrix(
+        const Vector<ValueType>& values,
+        std::shared_ptr<const SparsityType> sparsity,
+        std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress
+    )
+        requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
+        : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
     {
         validate();
     }
@@ -187,11 +216,33 @@ public:
     [[nodiscard]] std::shared_ptr<const SparsityType> sparsity() const { return sparsityPattern_; }
 
     /**
+     * @brief Get the FaceToMatrixAddress associated with this matrix (may be null).
+     */
+    [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress() const
+    {
+        return faceToMatrixAddress_;
+    }
+
+    /**
      * @brief Copy the matrix to the host.
      * @return A copy of the matrix on the host.
      */
     [[nodiscard]] Matrix<ValueType, SparsityType> copyToHost() const
     {
+        if constexpr (std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>)
+        {
+            if (faceToMatrixAddress_)
+            {
+                auto hostSp = std::make_shared<const SparsityType>(sparsityPattern_->copyToHost());
+                auto hostFtma = std::make_shared<const FaceToMatrixAddress<localIdx>>(
+                    faceToMatrixAddress_->ownerOffset().copyToHost(),
+                    faceToMatrixAddress_->neighbourOffset().copyToHost(),
+                    faceToMatrixAddress_->diagOffset().copyToHost(),
+                    hostSp->rowOffs().view()
+                );
+                return {values_.copyToHost(), hostSp, hostFtma};
+            }
+        }
         return copyToExecutor(SerialExecutor());
     }
 
@@ -232,11 +283,16 @@ private:
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
     std::shared_ptr<const SparsityType> sparsityPattern_;
+
+    std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress_;
 };
 
 
 template<typename ValueType, typename IndexType>
-using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
+using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
+
+template<typename ValueType, typename IndexType>
+using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
 
 /** @brief extract the upper triangular of the matrix
  * @note this function is meant for testing purposes, it will recompute upper offsets

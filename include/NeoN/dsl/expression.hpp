@@ -9,7 +9,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
@@ -129,8 +130,7 @@ public:
      * @param ps a vector of functor performing transformation on the created linear system
      * @return a tuple of the sparsity pattern and the assembled linear system
      */
-    std::tuple<std::shared_ptr<const la::SparsityPattern<IndexType>>, la::LinearSystem<ValueType>>
-    assemble(
+    la::LinearSystem<ValueType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
@@ -139,7 +139,7 @@ public:
     {
         auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
         assemble(t, dt, ls, ps);
-        return {ls.faceToMatrixAddress()->sparsityPattern(), ls};
+        return ls;
     };
 
     /* @brief assemble into a given linear system

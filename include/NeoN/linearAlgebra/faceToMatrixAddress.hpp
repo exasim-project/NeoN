@@ -5,7 +5,8 @@
 #pragma once
 
 #include "NeoN/core/array.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::la
@@ -13,13 +14,14 @@ namespace NeoN::la
 
 
 /* @class FaceToMatrixAddress
- * @brief class storing the mapping between mesh faces and target matrix sparsity pattern
+ * @brief Stores the mapping between mesh faces and matrix row offsets.
  *
- * Based on given computational mesh this class stores a mapping for a consistent iteration
+ * Based on a given computational mesh this class stores a mapping for a consistent iteration
  * procedure for matrices which share the same sparsity pattern.
  *
  * This class implements the finite volume 3/5/7 pt stencil specific generation
- * of sparsity patterns from a given unstructured mesh
+ * of face-to-matrix offset mappings. The sparsity pattern itself is owned by
+ * the Matrix, not by this class; this class only borrows a view of the row offsets.
  *
  */
 template<typename IndexType = localIdx, typename MeshType = UnstructuredMesh>
@@ -55,55 +57,27 @@ class FaceToMatrixAddress
 
     View<uint8_t> diagOffsetV_;
 
-    // the common sparsity pattern
-    std::shared_ptr<const SparsityPattern<IndexType>> sp_;
-
-    // the common boundary sparsity pattern
-    std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
-
-    // start of a given row.
+    // row offsets borrowed from the owning Matrix's sparsity pattern
     View<const IndexType> rowOffsV_;
-
-private:
-
-    void validate() const;
 
 public:
 
-    /* @brief constructor setting members explicitly */
+    /* @brief constructor
+     *
+     * @param ownerOffset     face-to-lower-offset mapping
+     * @param neighbourOffset face-to-upper-offset mapping
+     * @param diagOffset      cell-to-diagonal-offset mapping
+     * @param rowOffsView     view of row offsets from the owning Matrix's CsrSparsityPattern
+     */
     FaceToMatrixAddress(
         Array<uint8_t> ownerOffset,
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
-        std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
-        std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+        View<const IndexType> rowOffsView
     );
 
     /* @brief copy constructor */
     FaceToMatrixAddress(const FaceToMatrixAddress& mi);
-
-    FaceToMatrixAddress copyToHost() const;
-
-    std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
-
-    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const
-    {
-        return bsp_;
-    }
-
-    const Executor& exec() const { return sp_->exec(); }
-
-    /*@brief return the number of rows in local matrix */
-    localIdx localRows() const { return sp_->rows(); };
-
-    /*@brief return the number of non-zeros in local matrix */
-    localIdx localNonZeros() const { return sp_->nnz(); };
-
-    /*@brief return the number of rows in boundary matrix */
-    localIdx boundaryRows() const { return bsp_->rows(); };
-
-    /*@brief return the number of non-zeros in boundary matrix */
-    localIdx boundaryNonZeros() const { return bsp_->nnz(); };
 
     /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
@@ -157,8 +131,31 @@ public:
     }
 };
 
-template<typename IndexType>
-std::shared_ptr<const FaceToMatrixAddress<IndexType>>
+/* @brief Creates the sparsity pattern and corresponding FaceToMatrixAddress from a mesh.
+ *
+ * The two are returned together because FaceToMatrixAddress borrows the row-offsets
+ * view from the sparsity pattern. The boundary sparsity is created separately
+ * via createBoundarySparsityPattern.
+ *
+ * @tparam SparsityType - The full sparsity pattern type to create, e.g.
+ *         CsrSparsityPattern<localIdx> or CooSparsityPattern<localIdx>
+ */
+template<typename SparsityType>
+std::pair<
+    std::shared_ptr<const SparsityType>,
+    std::shared_ptr<const FaceToMatrixAddress<typename SparsityType::SparsityIndexType>>>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
+
+/* @brief Creates the boundary sparsity pattern from a mesh and an existing
+ * FaceToMatrixAddress (which provides the diagonal offsets needed to compute it).
+ *
+ * @tparam SparsityType - The full sparsity pattern type to create, e.g.
+ *         CooSparsityPattern<localIdx> or CsrSparsityPattern<localIdx>
+ */
+template<typename SparsityType>
+std::shared_ptr<const SparsityType> createBoundarySparsityPattern(
+    const UnstructuredMesh& mesh,
+    const FaceToMatrixAddress<typename SparsityType::SparsityIndexType>& faceToMatrixAddress
+);
 
 }

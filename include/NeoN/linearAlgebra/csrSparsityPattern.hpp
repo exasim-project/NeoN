@@ -6,60 +6,19 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/linearAlgebra/sparsityView.hpp"
 
 namespace NeoN::la
 {
 
-/**
- * @struct MatrixView
- * @brief A view struct to allow easy read/write on all executors.
- *
- * @tparam IndexType The index type of the rows and columns.
- * @todo ideally this should be immutable
- */
-template<typename IndexType>
-struct SparsityView
-{
-    SparsityView(View<const IndexType> colIdxsView, View<const IndexType> rowOffsView)
-        : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
-
-
-    /**
-     * @brief Retrieve a reference to the matrix element at position (i,j).
-     * @param i The row index.
-     * @param j The column index.
-     * @return Reference to the matrix element if it exists.
-     */
-    KOKKOS_INLINE_FUNCTION
-    IndexType entry(const IndexType i, const IndexType j) const
-    {
-        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
-        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
-        {
-            const IndexType localCol = rowOffs[i] + ic;
-            if (colIdxs[localCol] == j)
-            {
-                return localCol;
-            }
-            if (colIdxs[localCol] > j) break;
-        }
-        Kokkos::abort("Memory not allocated for CSR matrix component.");
-        return 0; // compiler warning suppression.
-    }
-
-    View<const IndexType> colIdxs;
-    View<const IndexType> rowOffs;
-};
-
-/* @class SparsityPattern
+/** @class SparsityPattern
  * @brief row and column index representation of a mesh
  *
  * This class implements the finite volume 3/5/7 pt stencil specific generation
  * of sparsity patterns from a given unstructured mesh
- *
  */
 template<typename IndexType>
-class SparsityPattern
+class CsrSparsityPattern
 {
 
     void validate() const;
@@ -69,26 +28,28 @@ public:
     using SparsityIndexType = IndexType;
 
     /* @brief create an "empty" SparsityPattern with a given size  */
-    SparsityPattern(const SparsityPattern& sp);
+    CsrSparsityPattern(const CsrSparsityPattern& sp);
 
-    SparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs);
+    CsrSparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs, Dimensions dim);
 
-    [[nodiscard]] SparsityPattern copyToHost() const
+    [[nodiscard]] CsrSparsityPattern copyToHost() const
     {
-        return SparsityPattern<IndexType>(
-            colIdxs_.copyToExecutor(SerialExecutor()), rowOffs_.copyToExecutor(SerialExecutor())
+        return CsrSparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(SerialExecutor()),
+            rowOffs_.copyToExecutor(SerialExecutor()),
+            dimensions_
         );
     }
 
-    [[nodiscard]] SparsityPattern copyToExecutor(Executor dstExec) const
+    [[nodiscard]] CsrSparsityPattern copyToExecutor(Executor dstExec) const
     {
-        return SparsityPattern<IndexType>(
-            colIdxs_.copyToExecutor(dstExec), rowOffs_.copyToExecutor(dstExec)
+        return CsrSparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(dstExec), rowOffs_.copyToExecutor(dstExec), dimensions_
         );
     }
 
 
-    ~SparsityPattern() = default;
+    ~CsrSparsityPattern() = default;
 
     /*@brief getter for diagOffset */
     const Executor& exec() const { return rowOffs_.exec(); }
@@ -121,6 +82,8 @@ public:
 
 private:
 
+    Dimensions dimensions_;
+
     Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
 
     Vector<IndexType> colIdxs_; //!
@@ -129,6 +92,12 @@ private:
 
     View<IndexType> colIdxsV_;
 };
+
+
+/**@brief given a set off row idx this function converts to rowOffsets
+ */
+template<typename IndexType>
+[[nodiscard]] const Vector<IndexType> rowsToRowOffs(Vector<IndexType>& rows);
 
 
 } // namespace NeoN::la

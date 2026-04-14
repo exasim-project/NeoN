@@ -67,6 +67,32 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             REQUIRE(outHostView[i] == zero<TestType>());
         }
     }
+
+    SECTION("Implicit operation " + execName)
+    {
+        if constexpr (std::is_same_v<TestType, scalar>)
+        {
+            Input input = Dictionary(
+                {{std::string("DivOperator"), std::string("Gauss")},
+                 {std::string("surfaceInterpolation"), std::string("linear")}}
+            );
+            auto op = fvcc::DivOperator(Operator::Type::Implicit, faceFlux, phi, input);
+            auto ls = la::createEmptyLinearSystem<TestType>(mesh);
+            op.implicitOperation(ls);
+
+            // the divergence of a uniform field under a conservative flux is zero,
+            // so A*phi - b must vanish for every cell
+            auto res = Vector<scalar>(exec, mesh.nCells(), 0.0);
+            computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
+
+            auto resHost = res.copyToHost();
+            auto resV = resHost.view();
+            for (localIdx celli = 0; celli < resV.size(); celli++)
+            {
+                REQUIRE(resV[celli] == Catch::Approx(0.0).margin(1e-8));
+            }
+        }
+    }
 }
 
 TEST_CASE("DivOperator implicit boundary contributions are accumulated")

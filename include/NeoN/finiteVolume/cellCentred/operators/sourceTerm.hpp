@@ -9,7 +9,6 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred

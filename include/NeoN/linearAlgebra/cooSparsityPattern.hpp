@@ -1,0 +1,97 @@
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
+//
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/linearAlgebra/sparsityView.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN::la
+{
+
+
+/** @class SparsityPattern
+ * @brief row and column index representation of a mesh
+ *
+ * This class implements the finite volume 3/5/7 pt stencil specific generation
+ * of sparsity patterns from a given unstructured mesh
+ */
+template<typename IndexType>
+class CooSparsityPattern
+{
+
+    void validate() const;
+
+public:
+
+    using SparsityIndexType = IndexType;
+
+    /* @brief create an "empty" SparsityPattern with a given size  */
+    CooSparsityPattern(const CooSparsityPattern& sp);
+
+    CooSparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs, Dimensions dim);
+
+    [[nodiscard]] CooSparsityPattern copyToHost() const
+    {
+        return CooSparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(SerialExecutor()),
+            rowOffs_.copyToExecutor(SerialExecutor()),
+            dimensions_
+        );
+    }
+
+    [[nodiscard]] CooSparsityPattern copyToExecutor(Executor dstExec) const
+    {
+        return CooSparsityPattern<IndexType>(
+            colIdxs_.copyToExecutor(dstExec), rowOffs_.copyToExecutor(dstExec), dimensions_
+        );
+    }
+
+
+    ~CooSparsityPattern() = default;
+
+    /*@brief getter for diagOffset */
+    const Executor& exec() const { return rowOffs_.exec(); }
+
+    /*@brief getter for colIdxs */
+    [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; };
+
+    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
+
+    /*@brief getter for rowOffs */
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; };
+
+    /*@brief getter for rowOffs */
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
+
+    [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
+
+    [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
+
+    /**
+     * @brief Get a view representation of the matrix's data.
+     * @return MatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] SparsityView<IndexType> view() const
+    {
+        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
+    }
+
+    KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
+
+private:
+
+    Dimensions dimensions_;
+
+    Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
+
+    Vector<IndexType> colIdxs_; //!
+
+    View<IndexType> rowOffsV_;
+
+    View<IndexType> colIdxsV_;
+};
+
+} // namespace NeoN::la

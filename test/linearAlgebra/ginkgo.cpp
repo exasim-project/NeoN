@@ -16,9 +16,12 @@ using NeoN::Vec3;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
-using NeoN::la::SparsityPattern;
+using NeoN::la::CsrSparsityPattern;
+using NeoN::la::CooSparsityPattern;
 using NeoN::la::CSRMatrix;
+using NeoN::la::COOMatrix;
 using NeoN::la::Solver;
+using NeoN::la::Dimensions;
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
 {
@@ -96,12 +99,15 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
     Vector<localIdx> bColIdx(exec, {});
-    Vector<localIdx> bRowOffs(exec, std::vector<localIdx> {0});
+    Vector<localIdx> bRowOffs(exec, {});
 
-    auto sparsity =
-        std::make_shared<SparsityPattern<localIdx>>(std::move(colIdx), std::move(rowOffs));
-    auto bSparsity =
-        std::make_shared<SparsityPattern<localIdx>>(std::move(bColIdx), std::move(bRowOffs));
+    const auto nRows = static_cast<localIdx>(rowOffs.size()) - 1;
+    auto sparsity = std::make_shared<CsrSparsityPattern<localIdx>>(
+        std::move(colIdx), std::move(rowOffs), Dimensions {nRows, nRows}
+    );
+    auto bSparsity = std::make_shared<CooSparsityPattern<localIdx>>(
+        std::move(bColIdx), std::move(bRowOffs), Dimensions {0, 0}
+    );
 
     SECTION("Solve linear system scalar " + execName)
     {
@@ -110,11 +116,11 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
 
         Vector<scalar> bValues(exec, {});
-        CSRMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, rhs, bCooMatrix, bRhs
         );
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
@@ -157,14 +163,14 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         CSRMatrix<Vec3, localIdx> csrMatrix(values, sparsity);
         Vector<Vec3> bValues(exec, {});
-        CSRMatrix<Vec3, localIdx> bCsrMatrix(bValues, bSparsity);
+        COOMatrix<Vec3, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<Vec3> bRhs(exec, {});
 
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
         Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
         auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
-            csrMatrix, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, rhs, bCooMatrix, bRhs
         );
 
         SECTION("Segregated" + execName)
