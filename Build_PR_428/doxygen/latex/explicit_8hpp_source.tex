@@ -24,57 +24,60 @@
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sourceTerm_8hpp}{NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gradOperator_8hpp}{NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceIntegrate_8hpp}{NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sourceUTerm_8hpp}{NeoN/finiteVolume/cellCentred/operators/sourceUTerm.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{viscousStressOperator_8hpp}{NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp}{00026}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp}{NeoN::dsl::exp}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00027}00027\ \{}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00029}00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00030}00030\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00031}00031\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00032}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae101ce9bcc7eae9e5f3acdf504196eed}{00032}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae101ce9bcc7eae9e5f3acdf504196eed}{ddt}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00033}00033\ \{}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{fvcc::DdtOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ phi);}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00035}00035\ \}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00036}00036\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00038}00038\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00039}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{00039}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ coeff,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00040}00040\ \{}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm}{fvcc::SourceTerm}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ coeff,\ phi));}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00042}00042\ \}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00044}00044\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00045}00045\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00046}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{00046}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ faceFlux,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00047}00047\ \{}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator}{fvcc::DivOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ faceFlux,\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00050}00050\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00051}00051\ \}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00053}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab0a56fc4db43ca8d92ea4e2f664f2d60}{00053}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ flux);}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00054}00054\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00055}00055\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00056}00056\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00057}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab8f398b6d81a455317e0316820bbe2ca}{00057}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab8f398b6d81a455317e0316820bbe2ca}{laplacian}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ gamma,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00058}00058\ \{}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator}{fvcc::LaplacianOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ gamma,\ phi)}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00061}00061\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00062}00062\ \}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00064}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{00064}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ phi);}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00066}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a2d7e7fbe29ad6808de6e8dc5257bbde2}{00066}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a2d7e7fbe29ad6808de6e8dc5257bbde2}{sourceU}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ coeff);}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00068}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_abb1512cc7629570994ebe7d7ecdd2e23}{00068}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_abb1512cc7629570994ebe7d7ecdd2e23}{viscousStress}}(}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ nu,}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ nut,}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{fvcc::TensorVecField}}\&\ gradU}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00072}00072\ );}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00074}00074\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{viscousStressOperator_8hpp}{NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp}{00025}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp}{NeoN::dsl::exp}}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00028}00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00031}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae101ce9bcc7eae9e5f3acdf504196eed}{00031}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ae101ce9bcc7eae9e5f3acdf504196eed}{ddt}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{fvcc::DdtOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ phi);}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00034}00034\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00036}00036\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00037}00037\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00038}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{00038}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ coeff,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00039}00039\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm}{fvcc::SourceTerm}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ coeff,\ phi));}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00041}00041\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00043}00043\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00044}00044\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00045}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{00045}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ faceFlux,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00046}00046\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator}{fvcc::DivOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ faceFlux,\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00049}00049\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00050}00050\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00052}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab0a56fc4db43ca8d92ea4e2f664f2d60}{00052}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_aac9fb1c1dea9244963b5896902b20b47}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ flux);}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00054}00054\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00055}00055\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00056}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab8f398b6d81a455317e0316820bbe2ca}{00056}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_ab8f398b6d81a455317e0316820bbe2ca}{laplacian}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{fvcc::SurfaceField<scalar>}}\&\ gamma,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00057}00057\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator}{fvcc::LaplacianOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ gamma,\ phi)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00060}00060\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00061}00061\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00063}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{00063}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ phi);}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00065}00065\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00066}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a01589bd06f61d76b4f3de6b32ce39c90}{00066}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ coeff)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00067}00067\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm}{fvcc::SourceTerm}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ coeff));}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00069}00069\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00071}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_abb1512cc7629570994ebe7d7ecdd2e23}{00071}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_abb1512cc7629570994ebe7d7ecdd2e23}{viscousStress}}(}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ nu,}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ nut,}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{fvcc::TensorVecField}}\&\ gradU}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00075}00075\ );}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00077}00077\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

@@ -25,13 +25,12 @@ var searchData=
   ['_7eruntimeselectionfactory_22',['~RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#aa0ccbd38345c974082f541fb373d23d7',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
   ['_7eserialexecutor_23',['~SerialExecutor',['../classNeoN_1_1SerialExecutor.html#abc0bcfedaaeac17db3a9bfce2d5ae062',1,'NeoN::SerialExecutor']]],
   ['_7esourceterm_24',['~SourceTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#ad71d1b4885f9e3600f61cab08513839b',1,'NeoN::finiteVolume::cellCentred::SourceTerm']]],
-  ['_7esourceuterm_25',['~SourceUTerm',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceUTerm.html#adc5d4d4ba4833121dc109679c2ad6361',1,'NeoN::finiteVolume::cellCentred::SourceUTerm']]],
-  ['_7esparsitypattern_26',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a854bd59fe7eef6d6b7f70349889008ff',1,'NeoN::la::SparsityPattern']]],
-  ['_7esurfaceinterpolationfactory_27',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
-  ['_7etimeintegratorbase_28',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['_7eumpireallocator_29',['~UmpireAllocator',['../classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39',1,'NeoN::UmpireAllocator']]],
-  ['_7eumpirepoolallocator_30',['~UmpirePoolAllocator',['../classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783',1,'NeoN::UmpirePoolAllocator']]],
-  ['_7evector_31',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
-  ['_7eviscousstressoperatorfactory_32',['~ViscousStressOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory.html#a5a0e8e5d6c014564efe33f595322be11',1,'NeoN::finiteVolume::cellCentred::ViscousStressOperatorFactory']]],
-  ['_7evolumeboundaryfactory_33',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
+  ['_7esparsitypattern_25',['~SparsityPattern',['../classNeoN_1_1la_1_1SparsityPattern.html#a854bd59fe7eef6d6b7f70349889008ff',1,'NeoN::la::SparsityPattern']]],
+  ['_7esurfaceinterpolationfactory_26',['~SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html#aa435c5701f13b87491e80856c3dddb16',1,'NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory']]],
+  ['_7etimeintegratorbase_27',['~TimeIntegratorBase',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a520f7e266a18cee23fe1648879d32762',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
+  ['_7eumpireallocator_28',['~UmpireAllocator',['../classNeoN_1_1UmpireAllocator.html#a091bb0b8aa44549078c53f853604bb39',1,'NeoN::UmpireAllocator']]],
+  ['_7eumpirepoolallocator_29',['~UmpirePoolAllocator',['../classNeoN_1_1UmpirePoolAllocator.html#a3cc68bdd08c69055c4604e606fa13783',1,'NeoN::UmpirePoolAllocator']]],
+  ['_7evector_30',['~Vector',['../classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835',1,'NeoN::Vector']]],
+  ['_7eviscousstressoperatorfactory_31',['~ViscousStressOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1ViscousStressOperatorFactory.html#a5a0e8e5d6c014564efe33f595322be11',1,'NeoN::finiteVolume::cellCentred::ViscousStressOperatorFactory']]],
+  ['_7evolumeboundaryfactory_32',['~VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a3ba452b07c8ab275d70445f936f6005b',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]]
 ];
