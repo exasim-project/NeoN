@@ -4,8 +4,6 @@
 
 #include "catch2_common.hpp"
 
-#include "catch2_common.hpp"
-
 #include "../dsl/common.hpp"
 
 namespace dsl = NeoN::dsl;
