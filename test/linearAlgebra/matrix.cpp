@@ -79,12 +79,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
                 checkSparseView[3] = csrView.entry(2, 1);
             }
         );
-
-        auto checkHost = checkSparse.copyToHost();
-        REQUIRE(checkHost.view()[0] == 1.0);
-        REQUIRE(checkHost.view()[1] == 5.0);
-        REQUIRE(checkHost.view()[2] == 6.0);
-        REQUIRE(checkHost.view()[3] == 8.0);
+        REQUIRE_THAT(I({1.0, 5.0, 6.0, 8.0}), IsEqualTo(checkSparse));
 
         // Dense
         NeoN::Vector<NeoN::scalar> checkDense(exec, 9);
@@ -106,45 +101,24 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
             }
         );
 
-        checkHost = checkDense.copyToHost();
-        REQUIRE(checkHost.view()[0] == 1.0);
-        REQUIRE(checkHost.view()[1] == 2.0);
-        REQUIRE(checkHost.view()[2] == 3.0);
-        REQUIRE(checkHost.view()[3] == 4.0);
-        REQUIRE(checkHost.view()[4] == 5.0);
-        REQUIRE(checkHost.view()[5] == 6.0);
-        REQUIRE(checkHost.view()[6] == 7.0);
-        REQUIRE(checkHost.view()[7] == 8.0);
-        REQUIRE(checkHost.view()[8] == 9.0);
+        auto expDense = std::vector<NeoN::scalar> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+        REQUIRE_THAT(expDense, IsEqualTo(checkDense));
     }
 
     SECTION("Can extract diagonal " + execName)
     {
-        auto diag = sparseMatrix.diag();
-        auto diagH = diag.copyToHost();
-
-        REQUIRE(diagH.view()[0] == 1.0);
-        REQUIRE(diagH.view()[1] == 5.0);
+        REQUIRE_THAT(I({1.0, 5.0, 0.0}), IsEqualTo(sparseMatrix.diag()));
     }
 
     SECTION("Can extract diagonal " + execName)
     {
-        auto diag = denseMatrix.diag();
-        auto diagH = diag.copyToHost();
-
-        REQUIRE(diagH.view()[0] == 1.0);
-        REQUIRE(diagH.view()[1] == 5.0);
-        REQUIRE(diagH.view()[2] == 9.0);
+        REQUIRE_THAT(I({1.0, 5.0, 9.0}), IsEqualTo(denseMatrix.diag()));
     }
 
     SECTION("Can extract upper " + execName)
     {
         auto upper = NeoN::la::upper(denseMatrix);
-        auto upperH = upper.copyToHost();
-
-        REQUIRE(upperH.view()[0] == 2.0);
-        REQUIRE(upperH.view()[1] == 3.0);
-        REQUIRE(upperH.view()[2] == 6.0);
+        REQUIRE_THAT(I({2.0, 3.0, 6.0}), IsEqualTo(upper));
     }
 
     // SECTION("Can computed scaledInverseDiagonal " + execName)
@@ -184,13 +158,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
                 csrView.entry(2, 1) = -8.0;
             }
         );
-
-        auto hostMatrix = sparseMatrix.copyToHost();
-        auto checkHost = hostMatrix.values().view();
-        REQUIRE(checkHost[0] == -1.0);
-        REQUIRE(checkHost[1] == -5.0);
-        REQUIRE(checkHost[2] == -6.0);
-        REQUIRE(checkHost[3] == -8.0);
+        REQUIRE_THAT(I({-1.0, -5.0, -6.0, -8.0}), IsEqualTo(sparseMatrix.values()));
 
         // Dense
         auto denseView = denseMatrix.view();
@@ -209,71 +177,25 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
                 denseView.entry(2, 2) = -9.0;
             }
         );
-
-        hostMatrix = denseMatrix.copyToHost();
-        checkHost = hostMatrix.values().view();
-        REQUIRE(checkHost[0] == -1.0);
-        REQUIRE(checkHost[1] == -2.0);
-        REQUIRE(checkHost[2] == -3.0);
-        REQUIRE(checkHost[3] == -4.0);
-        REQUIRE(checkHost[4] == -5.0);
-        REQUIRE(checkHost[5] == -6.0);
-        REQUIRE(checkHost[6] == -7.0);
-        REQUIRE(checkHost[7] == -8.0);
-        REQUIRE(checkHost[8] == -9.0);
+        REQUIRE_THAT(
+            I({-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0}),
+            IsEqualTo(denseMatrix.values())
+        );
     }
 
     SECTION("Read directValue on " + execName)
     {
         // Sparse
         NeoN::Vector<NeoN::scalar> checkSparse(exec, 4);
-        auto checkSparseView = checkSparse.view();
         auto csrView = sparseMatrixConst.view();
-        parallelFor(
-            exec,
-            {0, 1},
-            NEON_LAMBDA(const NeoN::localIdx) {
-                checkSparseView[0] = csrView.entry(0);
-                checkSparseView[1] = csrView.entry(1);
-                checkSparseView[2] = csrView.entry(2);
-                checkSparseView[3] = csrView.entry(3);
-            }
-        );
-        auto checkHost = checkSparse.copyToHost();
-        REQUIRE(checkHost.view()[0] == 1.0);
-        REQUIRE(checkHost.view()[1] == 5.0);
-        REQUIRE(checkHost.view()[2] == 6.0);
-        REQUIRE(checkHost.view()[3] == 8.0);
+        checkSparse.apply(NEON_LAMBDA(const NeoN::localIdx i) { return csrView.entry(i); });
+        REQUIRE_THAT(I({1.0, 5.0, 6.0, 8.0}), IsEqualTo(checkSparse));
 
         // Dense
         NeoN::Vector<NeoN::scalar> checkDense(exec, 9);
-        auto checkDenseView = checkDense.view();
         auto denseView = denseMatrixConst.view();
-        parallelFor(
-            exec,
-            {0, 1},
-            NEON_LAMBDA(const NeoN::localIdx) {
-                checkDenseView[0] = denseView.entry(0);
-                checkDenseView[1] = denseView.entry(1);
-                checkDenseView[2] = denseView.entry(2);
-                checkDenseView[3] = denseView.entry(3);
-                checkDenseView[4] = denseView.entry(4);
-                checkDenseView[5] = denseView.entry(5);
-                checkDenseView[6] = denseView.entry(6);
-                checkDenseView[7] = denseView.entry(7);
-                checkDenseView[8] = denseView.entry(8);
-            }
-        );
-        checkHost = checkDense.copyToHost();
-        REQUIRE(checkHost.view()[0] == 1.0);
-        REQUIRE(checkHost.view()[1] == 2.0);
-        REQUIRE(checkHost.view()[2] == 3.0);
-        REQUIRE(checkHost.view()[3] == 4.0);
-        REQUIRE(checkHost.view()[4] == 5.0);
-        REQUIRE(checkHost.view()[5] == 6.0);
-        REQUIRE(checkHost.view()[6] == 7.0);
-        REQUIRE(checkHost.view()[7] == 8.0);
-        REQUIRE(checkHost.view()[8] == 9.0);
+        checkDense.apply(NEON_LAMBDA(const NeoN::localIdx i) { return denseView.entry(i); });
+        REQUIRE_THAT(I({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}), IsEqualTo(checkDense));
     }
 
     SECTION("Update existing directValue on " + execName)
@@ -290,14 +212,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
                 csrView.entry(3) = -8.0;
             }
         );
-
-
-        auto hostMatrix = sparseMatrix.copyToHost();
-        auto checkHost = hostMatrix.values().view();
-        REQUIRE(checkHost[0] == -1.0);
-        REQUIRE(checkHost[1] == -5.0);
-        REQUIRE(checkHost[2] == -6.0);
-        REQUIRE(checkHost[3] == -8.0);
+        REQUIRE_THAT(I({-1.0, -5.0, -6.0, -8.0}), IsEqualTo(sparseMatrix.values()));
 
         // Dense
         auto denseView = denseMatrix.view();
@@ -316,18 +231,10 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
                 denseView.entry(8) = -9.0;
             }
         );
-
-        hostMatrix = denseMatrix.copyToHost();
-        checkHost = hostMatrix.values().view();
-        REQUIRE(checkHost[0] == -1.0);
-        REQUIRE(checkHost[1] == -2.0);
-        REQUIRE(checkHost[2] == -3.0);
-        REQUIRE(checkHost[3] == -4.0);
-        REQUIRE(checkHost[4] == -5.0);
-        REQUIRE(checkHost[5] == -6.0);
-        REQUIRE(checkHost[6] == -7.0);
-        REQUIRE(checkHost[7] == -8.0);
-        REQUIRE(checkHost[8] == -9.0);
+        REQUIRE_THAT(
+            I({-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0}),
+            IsEqualTo(denseMatrix.values())
+        );
     }
 
     SECTION("View " + execName)
@@ -360,9 +267,10 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::Vec3)
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     // sparse matrix
-    NeoN::Vector<TestType> valuesSparse(
-        exec, {{1.0, 1.0, 1.0}, {5.0, 5.0, 5.0}, {6.0, 6.0, 6.0}, {8.0, 8.0, 8.0}}
-    );
+    std::vector<NeoN::Vec3> valuesSparseV {
+        {1.0, 1.0, 1.0}, {5.0, 5.0, 5.0}, {6.0, 6.0, 6.0}, {8.0, 8.0, 8.0}
+    };
+    NeoN::Vector<TestType> valuesSparse(exec, valuesSparseV);
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
 

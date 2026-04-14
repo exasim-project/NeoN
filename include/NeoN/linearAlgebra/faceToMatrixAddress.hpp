@@ -7,6 +7,7 @@
 #include "NeoN/core/array.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN::la
 {
@@ -27,20 +28,24 @@ class FaceToMatrixAddress
 {
 
     // clang-format off
-    // NOTE The following data member store a simple mapping from face ids to offsets in the
-    // corresponding rows.
-    // I.e. Assume the following row  [ . a_18 . a_20 d a_18 . a_20 . ]
-    // where a_i corresponds to a value on a face i
-    // this yields:
-    // ownerOffset[18] = 0
-    // ownerOffset[20] = 1
-    // and
-    // neighbourOffset[18] = 4
-    // neighbourOffset[20] = 5
+    // NOTE The following data members store a simple mapping from face ids to offsets within
+    // the corresponding row of the CSR values array.
+    //
+    // For an internal face f with owner P and neighbour N (P < N by construction):
+    //   ownerOffset[f]      = offset within row P for column N  → A[P, N]  (upper triangular)
+    //   neighbourOffset[f]  = offset within row N for column P  → A[N, P]  (lower triangular)
+    //
+    // Example row layout for a cell with two lower entries and one upper entry:
+    //   Row P: [ A[P,j0]  A[P,j1] | A[P,P] | A[P,N] ]
+    //           lower (j<P)         diag      upper (N>P)
+    //   ownerOffset[f]     = 3   (position of A[P,N] within row P)
+    //   neighbourOffset[f] = 0   (position of A[N,P] within row N)
     // clang-format on
-    Array<uint8_t> ownerOffset_; //! mapping from faceId to lower index in a row
+    Array<uint8_t>
+        ownerOffset_; //! offset within the owner's row for the upper-triangular entry A[own, nei]
 
-    Array<uint8_t> neighbourOffset_; //! mapping from faceId to upper index in a row
+    Array<uint8_t> neighbourOffset_; //! offset within the neighbour's row for the lower-triangular
+                                     //! entry A[nei, own]
 
     Array<uint8_t> diagOffset_; //! mapping from celli to diagonal element offset
 
@@ -51,11 +56,14 @@ class FaceToMatrixAddress
 
     View<uint8_t> diagOffsetV_;
 
-    // the common sparsity pattern
+    // the common local sparsity pattern
     std::shared_ptr<const SparsityPattern<IndexType>> sp_;
 
+    // the common non-local sparsity pattern
+    std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSp_;
+
     // the common boundary sparsity pattern
-    std::shared_ptr<const SparsityPattern<IndexType>> bsp_;
+    std::shared_ptr<const CooSparsityPattern<IndexType>> bsp_;
 
     // start of a given row.
     View<const IndexType> rowOffsV_;
@@ -72,7 +80,8 @@ public:
         Array<uint8_t> neighbourOffset,
         Array<uint8_t> diagOffset,
         std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
-        std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+        std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSparsityPattern,
+        std::shared_ptr<const CooSparsityPattern<IndexType>> boundarySparsityPattern
     );
 
     /* @brief copy constructor */
@@ -82,7 +91,12 @@ public:
 
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern() const { return sp_; }
 
-    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern() const
+    std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSparsityPattern() const
+    {
+        return nonLocalSp_;
+    }
+
+    std::shared_ptr<const CooSparsityPattern<IndexType>> boundarySparsityPattern() const
     {
         return bsp_;
     }
@@ -94,6 +108,9 @@ public:
 
     /*@brief return the number of non-zeros in local matrix */
     localIdx localNonZeros() const { return sp_->nnz(); };
+
+    /*@brief return the number of non-zeros in local matrix */
+    localIdx nonLocalNonZeros() const { return nonLocalSp_->nnz(); };
 
     /*@brief return the number of rows in boundary matrix */
     localIdx boundaryRows() const { return bsp_->rows(); };
@@ -120,29 +137,69 @@ public:
     Array<uint8_t>& diagOffset();
 
     // TODO check performance
-    /* @brief given a cell ID, the function returns index of the diagonal element  */
+    /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
+     *  diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
+     */
     KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
     {
         return rowOffsV_[celli] + diagOffsetV_[celli];
     }
 
-    /* @brief given a cell ID and a face ID, the function returns index of the element in the upper
-     * triangular matrix */
-    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx celli, localIdx faceIdx) const
+    /* @brief Returns the flat values-array index of the upper-triangular entry A[own, nei].
+     *
+     *  By construction own < nei for every internal face, so the column index nei is greater
+     *  than the row index own — this entry lies in the upper triangle.
+     *
+     *  upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
     {
-        return rowOffsV_[celli] + neighbourOffsetV_[faceIdx];
+        return rowOffsV_[own] + ownerOffsetV_[faceIdx];
     }
 
-    /* @brief given a cell ID and a face ID, the function returns index of the element in the lower
-     * triangular matrix */
-    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx celli, localIdx faceIdx) const
+    /* @brief Returns the flat values-array index of the lower-triangular entry A[nei, own].
+     *
+     *  By construction nei > own for every internal face, so the column index own is less
+     *  than the row index nei — this entry lies in the lower triangle.
+     *
+     *  lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
     {
-        return rowOffsV_[celli] + ownerOffsetV_[faceIdx];
+        return rowOffsV_[nei] + neighbourOffsetV_[faceIdx];
     }
 };
 
 template<typename IndexType>
-std::shared_ptr<const FaceToMatrixAddress<IndexType>>
+std::pair<std::shared_ptr<const FaceToMatrixAddress<IndexType>>, CommunicationPattern>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
+
+/**@brief given a set of rows this function computes the corresponding value offsets */
+inline Vector<localIdx> computeRowToDiagonalMap(
+    const Vector<localIdx>& rows, std::shared_ptr<const FaceToMatrixAddress<>> matIt
+)
+{
+
+    const auto exec = rows.exec();
+    Vector<localIdx> ret(exec, rows.size());
+    auto retV = ret.view();
+    const auto rowsV = rows.view();
+    const auto [rowOffs, diagOffs] =
+        views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
+
+    parallelFor(
+        exec,
+        {0, ret.size()},
+        KOKKOS_LAMBDA(const localIdx i) {
+            localIdx cell = rowsV[i];
+            auto rowStart = rowOffs[cell];
+            retV[i] = rowStart + diagOffs[cell];
+        },
+        "computeRowToDiagonalMap"
+    );
+
+    return ret;
+}
+
 
 }

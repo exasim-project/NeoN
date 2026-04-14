@@ -220,7 +220,7 @@ public:
     {
         if (!hasOperatorOfType<OperatorType, Type>(name))
         {
-            throw std::runtime_error("No operator with given name and type found");
+            throw std::runtime_error {"No operator with given name and type found"};
         }
         auto opType = Type;
         auto matchNameAndType = [name, opType](const auto& op)
@@ -237,7 +237,7 @@ public:
                 temporalOperators_.begin(), temporalOperators_.end(), matchNameAndType
             );
         }
-        throw std::runtime_error("Unknown operator type");
+        throw std::runtime_error {"Unknown operator type"};
         // should never be reached, shut up compiler warning
         return spatialOperators_[0];
     }
@@ -248,7 +248,7 @@ public:
     {
         if (!hasOperator<Type>(name))
         {
-            throw std::runtime_error("No operator with given name and type found");
+            throw std::runtime_error {"No operator with given name and type found"};
         }
         auto opType = Type;
         auto matchNameAndType = [name, opType](const auto& op)

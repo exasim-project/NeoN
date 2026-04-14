@@ -14,22 +14,33 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::la::LinearSystem;
+using NeoN::la::Matrix;
 using NeoN::la::CSRMatrix;
+using NeoN::la::COOMatrix;
 
 TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
 
-    SECTION("construct " + execName)
+    Vector<scalar> bvalues(exec, {1.0, 2.0, 3.0});
+    Vector<localIdx> bcolIdx(exec, {0, 1, 2});
+    Vector<localIdx> browOffs(exec, {0, 1, 2});
+
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    // FIXME
+    COOMatrix<scalar, localIdx> cooMatrix(bvalues, bcolIdx, browOffs);
+
+    SECTION("construct from values" + execName)
     {
+        // FIXME
         Vector<scalar> rhs(exec, 3, 0.0);
         LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, csrMatrix, rhs, {}
+            csrMatrix, cooMatrix, {}, rhs, cooMatrix, rhs, {}
         );
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
@@ -57,8 +68,11 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
     SECTION("view read/write " + execName)
     {
+        // FIXME
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
-        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(csrMatrix, rhs, csrMatrix, rhs, {});
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(
+            csrMatrix, cooMatrix, {}, rhs, cooMatrix, rhs, {}
+        );
 
         auto lsView = ls.view();
         auto hostLS = ls.copyToHost();

@@ -39,11 +39,6 @@ void registerUnstructuredMesh(nb::module_& m)
                 NeoN::scalarVector,
                 NeoN::labelVector,
                 NeoN::labelVector,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
                 NeoN::BoundaryMesh>(),
             "points"_a,
             "cell_volumes"_a,
@@ -53,11 +48,6 @@ void registerUnstructuredMesh(nb::module_& m)
             "mag_face_areas"_a,
             "face_owner"_a,
             "face_neighbour"_a,
-            "n_cells"_a,
-            "n_internal_faces"_a,
-            "n_boundary_faces"_a,
-            "n_boundaries"_a,
-            "n_faces"_a,
             "boundary_mesh"_a,
             "Create an UnstructuredMesh with all data"
         )
@@ -129,14 +119,8 @@ void registerUnstructuredMesh(nb::module_& m)
             "Get the number of boundary patches"
         )
         .def(
-            "n_faces",
-            &NeoN::UnstructuredMesh::nFaces,
-            "Get the total number of faces (internal + boundary)"
-        )
-
-        .def(
             "boundary_mesh",
-            &NeoN::UnstructuredMesh::boundaryMesh,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::boundaryMesh, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the boundary mesh"
         )
@@ -152,7 +136,7 @@ void registerUnstructuredMesh(nb::module_& m)
             [](const NeoN::UnstructuredMesh& mesh)
             {
                 return "<UnstructuredMesh: " + std::to_string(mesh.nCells()) + " cells, "
-                     + std::to_string(mesh.nFaces()) + " faces, "
+                     + std::to_string(mesh.nBoundaryFaces()) + " boundary faces, "
                      + std::to_string(mesh.nBoundaries()) + " boundaries>";
             }
         )
@@ -161,7 +145,7 @@ void registerUnstructuredMesh(nb::module_& m)
             [](const NeoN::UnstructuredMesh& mesh)
             {
                 return "UnstructuredMesh(cells=" + std::to_string(mesh.nCells())
-                     + ", faces=" + std::to_string(mesh.nFaces())
+                     + ", faces=" + std::to_string(mesh.nBoundaryFaces())
                      + ", boundaries=" + std::to_string(mesh.nBoundaries()) + ")";
             }
         );
@@ -188,6 +172,8 @@ void registerUnstructuredMesh(nb::module_& m)
         &NeoN::create1DUniformMesh,
         "exec"_a,
         "n_cells"_a,
+        "left"_a,
+        "right"_a,
         "Create a uniform 1D mesh aligned with the x-axis.\n\n"
         "Args:\n"
         "    exec: Executor for parallel operations\n"

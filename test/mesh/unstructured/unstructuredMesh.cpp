@@ -33,49 +33,40 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nBoundaryFaces() == 2);
         REQUIRE(mesh.nInternalFaces() == 3);
         REQUIRE(mesh.nBoundaries() == 2);
-        REQUIRE(mesh.nFaces() == 5);
+        REQUIRE(mesh.nTotalFaces() == 5);
 
         // Verify mesh points
         // bc  [   internal  ]  bc
         // 0.0 [ 0.25 | 0.50 ] 1.0
-        auto hostPoints = mesh.points().copyToHost();
-        REQUIRE(hostPoints.view()[0][0] == 0.25);
-        REQUIRE(hostPoints.view()[1][0] == 0.5);
-        REQUIRE(hostPoints.view()[3][0] == 0.0);
-        REQUIRE(hostPoints.view()[nCells][0] == 1.0);
+        auto pointsExp = std::vector<NeoN::Vec3> {
+            {0.25, 0.0, 0.0}, {0.5, 0.0, 0.0}, {0.75, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}
+        };
+        REQUIRE_THAT(pointsExp, IsEqualTo(mesh.points(), EqualInt()));
 
         // Verify cell centers
-        auto hostCellCentres = mesh.cellCentres().copyToHost();
-        REQUIRE(hostCellCentres.view()[0][0] == 0.125);
-        REQUIRE(hostCellCentres.view()[1][0] == 0.375);
-        REQUIRE(hostCellCentres.view()[2][0] == 0.625);
-        REQUIRE(hostCellCentres.view()[3][0] == 0.875);
+        auto cellCentresExp = std::vector<NeoN::Vec3> {
+            {0.125, 0.0, 0.0}, {0.375, 0.0, 0.0}, {0.625, 0.0, 0.0}, {0.875, 0.0, 0.0}
+        };
+        REQUIRE_THAT(cellCentresExp, IsEqualTo(mesh.cellCentres(), EqualInt()));
 
         // Verify face owners
         // |_3 0 |_0 1 |_1 2 |_2 3 |_4
-        auto hostFaceOwner = mesh.faceOwner().copyToHost();
-        REQUIRE(hostFaceOwner.view()[0] == 0);
-        REQUIRE(hostFaceOwner.view()[1] == 1);
-        REQUIRE(hostFaceOwner.view()[2] == 2);
-        REQUIRE(hostFaceOwner.view()[3] == 0);
-        REQUIRE(hostFaceOwner.view()[4] == 3);
+        auto faceOwnerExp = std::vector<NeoN::label> {0, 1, 2, 0, 3};
+        REQUIRE_THAT(faceOwnerExp, IsEqualTo(mesh.faceOwner(), EqualInt()));
 
         // Verify face neighbors
         // |_3 0 |_0 1 |_1 2 |_2 3 |_4
-        auto hostFaceNeighbour = mesh.faceNeighbour().copyToHost();
-        REQUIRE(hostFaceNeighbour.view()[0] == 1);
-        REQUIRE(hostFaceNeighbour.view()[1] == 2);
-        REQUIRE(hostFaceNeighbour.view()[2] == 3);
+        auto faceNeighbourExp = std::vector<NeoN::label> {1, 2, 3};
+        REQUIRE_THAT(faceNeighbourExp, IsEqualTo(mesh.faceNeighbour(), EqualInt()));
 
         // Verify boundary mesh
-        auto hostBoundaryFaceCells = mesh.boundaryMesh().faceCells().copyToHost();
-        auto hostBoundaryCn = mesh.boundaryMesh().cn().copyToHost();
-        auto hostBoundaryDelta = mesh.boundaryMesh().delta().copyToHost();
-        REQUIRE(hostBoundaryFaceCells.view()[0] == 0);
-        REQUIRE(hostBoundaryFaceCells.view()[1] == 3);
-        REQUIRE(hostBoundaryCn.view()[0][0] == 0.125);
-        REQUIRE(hostBoundaryCn.view()[1][0] == 0.875);
-        REQUIRE(hostBoundaryDelta.view()[0][0] == -0.125);
-        REQUIRE(hostBoundaryDelta.view()[1][0] == 0.125);
+        auto faceCellsExp = std::vector<NeoN::localIdx> {0, 3};
+        REQUIRE_THAT(faceCellsExp, IsEqualTo(mesh.boundaryMesh().faceCells(), EqualInt()));
+
+        auto cnExp = std::vector<NeoN::Vec3> {{0.125, 0.0, 0.0}, {0.875, 0.0, 0.0}};
+        REQUIRE_THAT(cnExp, IsEqualTo(mesh.boundaryMesh().cn(), EqualInt()));
+
+        auto deltaExp = std::vector<NeoN::Vec3> {{-0.125, 0.0, 0.0}, {0.125, 0.0, 0.0}};
+        REQUIRE_THAT(deltaExp, IsEqualTo(mesh.boundaryMesh().delta(), EqualInt()));
     }
 }

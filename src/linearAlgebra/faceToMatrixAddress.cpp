@@ -51,12 +51,13 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
     Array<uint8_t> neighbourOffset,
     Array<uint8_t> diagOffset,
     std::shared_ptr<const SparsityPattern<IndexType>> sparsityPattern,
-    std::shared_ptr<const SparsityPattern<IndexType>> boundarySparsityPattern
+    std::shared_ptr<const CooSparsityPattern<IndexType>> nonLocalSparsityPattern,
+    std::shared_ptr<const CooSparsityPattern<IndexType>> boundarySparsityPattern
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
       ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
-      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), bsp_(boundarySparsityPattern),
-      rowOffsV_(sp_->rowOffs().view())
+      diagOffsetV_(diagOffset_.view()), sp_(sparsityPattern), nonLocalSp_(nonLocalSparsityPattern),
+      bsp_(boundarySparsityPattern), rowOffsV_(sp_->rowOffs().view())
 {
     validate();
 }
@@ -66,7 +67,7 @@ FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(const FaceToMatrix
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
       diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
       neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()), sp_(mi.sp_),
-      bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
+      nonLocalSp_(mi.nonLocalSp_), bsp_(mi.bsp_), rowOffsV_(sp_->rowOffs().view())
 {
     validate();
 }
@@ -82,7 +83,10 @@ FaceToMatrixAddress<IndexType, MeshType>::copyToHost() const
         std::make_shared<SparsityPattern<IndexType>>(
             sp_->colIdxs().copyToHost(), sp_->rowOffs().copyToHost()
         ),
-        std::make_shared<SparsityPattern<IndexType>>(
+        std::make_shared<CooSparsityPattern<IndexType>>(
+            nonLocalSp_->colIdxs().copyToHost(), nonLocalSp_->rowOffs().copyToHost()
+        ),
+        std::make_shared<CooSparsityPattern<IndexType>>(
             bsp_->colIdxs().copyToHost(), bsp_->rowOffs().copyToHost()
         )
     );
@@ -97,20 +101,26 @@ void FaceToMatrixAddress<IndexType, MeshType>::validate() const
 
 template class FaceToMatrixAddress<localIdx, UnstructuredMesh>;
 
+// set boundary sparsity pattern values in COO format
 template<typename IndexType>
 void setBoundarySparsityPattern(
     const UnstructuredMesh& mesh,
     Array<uint8_t>& diagOffs,
-    Vector<IndexType>& bRowOffs,
-    Vector<IndexType>& bColIdx
+    Vector<IndexType>& rowIdx,
+    Vector<IndexType>& colIdx
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
     const auto diagOffsV = diagOffs.view();
     const auto faceCellsV = mesh.boundaryMesh().faceCells().view();
-    auto bRowOffsV = bRowOffs.view();
-    auto bColIdxV = bColIdx.view();
+    auto bRowOffsV = rowIdx.view();
+    auto bColIdxV = colIdx.view();
+
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    NF_ASSERT(nBoundaryFaces == rowIdx.size(), "Inconsistent size");
+    NF_ASSERT(nBoundaryFaces == colIdx.size(), "Inconsistent size");
+
     parallelFor(
         exec,
         {0, nBoundaryFaces},
@@ -122,6 +132,43 @@ void setBoundarySparsityPattern(
         "setSparsityPatternFaceToMatrixAddress::setBoundarySparsity"
     );
 }
+
+// set boundary sparsity pattern values in COO format
+template<typename IndexType>
+void setProcBoundarySparsityPattern(
+    const UnstructuredMesh& mesh,
+    Array<uint8_t>& diagOffs,
+    Vector<IndexType>& rowIdx,
+    Vector<IndexType>& colIdx
+)
+{
+    const auto exec = mesh.exec();
+    const auto diagOffsV = diagOffs.view();
+    const auto faceCellsV = mesh.boundaryMesh().faceCells().view();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    auto rowIdxV = rowIdx.view();
+    auto colIdxV = colIdx.view();
+    localIdx globalOffset = 0;
+
+    NF_ASSERT(nBoundaryFaces + nProcBoundaryFaces == faceCellsV.size(), "Inconsistent size");
+    NF_ASSERT(nProcBoundaryFaces == rowIdx.size(), "Inconsistent size");
+    NF_ASSERT(nProcBoundaryFaces == colIdx.size(), "Inconsistent size");
+
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        KOKKOS_LAMBDA(const localIdx bfacei) {
+            localIdx celli = faceCellsV[bfacei + nBoundaryFaces];
+            // colIdxV[bfacei] = celli + globalOffset; // store global cell id first
+            rowIdxV[bfacei] = celli;
+        },
+        "setSparsityPatternFaceToMatrixAddress::setBoundarySparsity"
+    );
+
+    // FIXME needs communication to other side
+}
+
 
 template<typename IndexType>
 void setSparsityPatternFaceToMatrixAddressSerial(
@@ -236,34 +283,49 @@ void setSparsityPatternFaceToMatrixAddressSerial(
 }
 
 template<typename IndexType>
-std::shared_ptr<const FaceToMatrixAddress<IndexType>>
+std::pair<std::shared_ptr<const FaceToMatrixAddress<IndexType>>, CommunicationPattern>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 {
     const auto exec = mesh.exec();
     const auto nInternalFaces = mesh.nInternalFaces();
-    const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
     const auto nCells = mesh.nCells();
+    const auto commPattern = computeCommunicationPattern(mesh);
     Array<uint8_t> diagOffs(exec, nCells, 0);
     Array<uint8_t> ownOffs(exec, nInternalFaces, 0);
     Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
     Vector<IndexType> rowOffs(exec, nCells + 1, 0);
     Vector<IndexType> colIdx(exec, nCells + 2 * nInternalFaces, 0);
-    Vector<IndexType> bRowOffs(exec, nBoundaryFaces + 1, 0);
-    Vector<IndexType> bColIdx(exec, nBoundaryFaces, 0);
 
     setSparsityPatternFaceToMatrixAddressSerial(mesh, diagOffs, ownOffs, neiOffs, rowOffs, colIdx);
     auto sp =
         std::make_shared<const SparsityPattern<IndexType>>(std::move(colIdx), std::move(rowOffs));
+
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    Vector<IndexType> bRowOffs(exec, nBoundaryFaces, 0);
+    Vector<IndexType> bColIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPattern(mesh, diagOffs, bRowOffs, bColIdx);
-    auto bsp =
-        std::make_shared<const SparsityPattern<IndexType>>(std::move(bColIdx), std::move(bRowOffs));
-    return std::make_shared<const FaceToMatrixAddress<IndexType>>(
-        ownOffs, neiOffs, diagOffs, sp, bsp
+    auto bsp = std::make_shared<const CooSparsityPattern<IndexType>>(
+        std::move(bColIdx), std::move(bRowOffs)
     );
+
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    Vector<IndexType> procRowOffs(exec, nProcBoundaryFaces, 0);
+    // FIXME set everything int setProcBoundarySparsityPattern
+    Vector<IndexType> procColIdx(exec, commPattern.recvIdx);
+    setProcBoundarySparsityPattern(mesh, diagOffs, procRowOffs, procColIdx);
+
+    auto nonLocalSp = std::make_shared<const CooSparsityPattern<IndexType>>(
+        std::move(procColIdx), std::move(procRowOffs)
+    );
+
+    return {
+        std::make_shared<const FaceToMatrixAddress<IndexType>>(
+            ownOffs, neiOffs, diagOffs, sp, nonLocalSp, bsp
+        ),
+        commPattern
+    };
 }
 
-
-template std::shared_ptr<const FaceToMatrixAddress<localIdx>>
-createSparsityPatternFaceToMatrixAddress<localIdx>(const UnstructuredMesh&);
-
+template std::pair<std::shared_ptr<const FaceToMatrixAddress<localIdx>>, CommunicationPattern>
+createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
 }

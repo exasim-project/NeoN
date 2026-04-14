@@ -3,9 +3,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+
 
 namespace NeoN
 {
+
+void BoundaryMesh::validate() const {}
 
 BoundaryMesh::BoundaryMesh(
     const Executor& exec,
@@ -18,10 +23,14 @@ BoundaryMesh::BoundaryMesh(
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
-    std::vector<localIdx> offset
+    std::vector<localIdx> offset,
+    localIdx procBoundaryPatches,
+    std::vector<localIdx> neighbourRank
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
-      delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset) {};
+      delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
+      procBoundaryPatches_(procBoundaryPatches), procBoundaryFaces_(procBoundaryPatches),
+      neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
@@ -58,6 +67,8 @@ View<const Vec3> BoundaryMesh::cn(const localIdx i) const
 
 const vectorVector& BoundaryMesh::sf() const { return Sf_; }
 
+vectorVector& BoundaryMesh::sf() { return Sf_; }
+
 View<const Vec3> BoundaryMesh::sf(const localIdx i) const
 {
     return extractSubView(Sf_, offset_, i);
@@ -71,6 +82,8 @@ View<const scalar> BoundaryMesh::magSf(const localIdx i) const
 }
 
 const vectorVector& BoundaryMesh::nf() const { return nf_; }
+
+vectorVector& BoundaryMesh::nf() { return nf_; }
 
 View<const Vec3> BoundaryMesh::nf(const localIdx i) const
 {
@@ -93,12 +106,35 @@ View<const scalar> BoundaryMesh::weights(const localIdx i) const
 
 const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
 
+scalar BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
+
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
+localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
+
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
+
+// FIXME
+std::vector<localIdx> computeBoundaryMatrixMapVector()
+{
+    // auto isLocalHost = isLocal_.copyToHost();
+    // auto isLocalHostV = isLocalHost.view();
+    auto ret = std::vector<localIdx>();
+    // ret.reserve(isLocalHost.size());
+
+    // for (int i = 0; i < isLocalHost.size(); i++)
+    // {
+    //     if (isLocalHostV[i] != 0)
+    //     {
+    //         ret.push_back(i);
+    //     }
+    // }
+
+    return ret;
+}
 
 
 } // namespace NeoN

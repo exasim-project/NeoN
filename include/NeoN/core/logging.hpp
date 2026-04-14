@@ -13,6 +13,8 @@
 #include <fmt/core.h>
 #include <fmt/chrono.h>
 
+#include "NeoN/core/mpi/environment.hpp"
+
 namespace NeoN::Logging
 {
 
@@ -77,11 +79,13 @@ public:
     }
 };
 
-void setNeonDefaultPattern();
+void setNeonDefaultPattern(NeoN::mpi::Environment& environment);
 
 void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"
 );
+
+void terminate();
 
 /*@brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
@@ -97,6 +101,20 @@ void warn(std::string formatString, Args... args)
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Info);
 }
 
+/*@brief convenience function to call spdlogs debug with std::format */
+template<typename... Args>
+void debug(std::string formatString, Args... args)
+{
+    logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Debug);
+}
+
+/*@brief convenience function to call spdlogs debug with std::format */
+template<typename... Args>
+void error(std::string formatString, Args... args)
+{
+    logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Error);
+    terminate();
+}
 
 /* @class A base class to build additional loggers
  */

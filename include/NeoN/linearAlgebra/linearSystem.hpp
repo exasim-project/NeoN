@@ -6,7 +6,10 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
@@ -52,7 +55,10 @@ struct LinearSystemView
  * equations. It supports the storage of the coefficient matrix and the right-hand side vector, as
  * well as the solution vector.
  */
-template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
+template<
+    typename ValueType,
+    typename MatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
 class LinearSystem
 {
 
@@ -70,7 +76,8 @@ public:
     using LinearSystemIndexType = typename MatrixType::MatrixSparsityType::SparsityIndexType;
 
     LinearSystem(
-        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress
+        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress,
+        CommunicationPattern commPattern
     )
         : matrix_(
             Vector<ValueType>(
@@ -78,6 +85,15 @@ public:
             ),
             faceToMatrixAddress->sparsityPattern()
         ),
+          nonLocalMatrix_(
+              Vector<ValueType>(
+                  faceToMatrixAddress->exec(),
+                  faceToMatrixAddress->nonLocalNonZeros(),
+                  zero<ValueType>()
+              ),
+              faceToMatrixAddress->nonLocalSparsityPattern()
+          ),
+          commPattern_(commPattern),
           rhs_(faceToMatrixAddress->exec(), faceToMatrixAddress->localRows(), zero<ValueType>()),
           boundaryMatrix_(
               Vector<ValueType>(
@@ -99,20 +115,23 @@ public:
 
     LinearSystem(
         const MatrixType& matrix,
+        const BoundaryMatrixType& nonLocalMatrix,
+        const CommunicationPattern commPattern,
         const Vector<ValueType>& rhs,
-        const MatrixType& boundaryMatrix,
+        const BoundaryMatrixType& boundaryMatrix,
         const Vector<ValueType>& boundaryRhs,
         std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
     )
-        : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs),
-          faceToMatrixAddress_(mi)
+        : matrix_(matrix), nonLocalMatrix_(nonLocalMatrix), commPattern_(commPattern), rhs_(rhs),
+          boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs), faceToMatrixAddress_(mi)
     {
         validate();
     }
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
-          boundaryRhs_(ls.boundaryRhs_), faceToMatrixAddress_(ls.faceToMatrixAddress_)
+        : matrix_(ls.matrix_), nonLocalMatrix_(ls.nonLocalMatrix_), commPattern_(ls.commPattern_),
+          rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          faceToMatrixAddress_(ls.faceToMatrixAddress_)
     {}
 
     ~LinearSystem() = default;
@@ -121,9 +140,13 @@ public:
 
     [[nodiscard]] const MatrixType& matrix() const { return matrix_; }
 
-    [[nodiscard]] MatrixType& boundaryMatrix() { return boundaryMatrix_; }
+    [[nodiscard]] BoundaryMatrixType& boundaryMatrix() { return boundaryMatrix_; }
 
-    [[nodiscard]] const MatrixType& boundaryMatrix() const { return boundaryMatrix_; }
+    [[nodiscard]] const BoundaryMatrixType& nonLocalMatrix() const { return nonLocalMatrix_; }
+
+    [[nodiscard]] BoundaryMatrixType& nonLocalMatrix() { return nonLocalMatrix_; }
+
+    [[nodiscard]] const BoundaryMatrixType& boundaryMatrix() const { return boundaryMatrix_; }
 
     [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
 
@@ -139,6 +162,8 @@ public:
         {
             return {
                 matrix_.copyToHost(),
+                nonLocalMatrix_.copyToHost(),
+                commPattern_,
                 rhs_.copyToHost(),
                 boundaryMatrix_.copyToHost(),
                 boundaryRhs_.copyToHost(),
@@ -152,12 +177,17 @@ public:
             std::make_shared<SparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->sparsityPattern()->copyToHost()
             ),
-            std::make_shared<SparsityPattern<LinearSystemIndexType>>(
+            std::make_shared<CooSparsityPattern<LinearSystemIndexType>>(
+                faceToMatrixAddress_->nonLocalSparsityPattern()->copyToHost()
+            ),
+            std::make_shared<CooSparsityPattern<LinearSystemIndexType>>(
                 faceToMatrixAddress_->boundarySparsityPattern()->copyToHost()
             )
         );
         return {
             matrix_.copyToHost(),
+            nonLocalMatrix_.copyToHost(),
+            commPattern_,
             rhs_.copyToHost(),
             boundaryMatrix_.copyToHost(),
             boundaryRhs_.copyToHost(),
@@ -165,11 +195,56 @@ public:
         };
     }
 
+    /** @brief boundaryMatrixMap - bfaceIdx -> matrixAddr */
+    void communicate(CommunicationPattern& commPattern)
+    {
+        auto mpiEnv = commPattern.env;
+        int commRanks = mpiEnv.sizeRank();
+
+        // auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
+        auto nsp = faceToMatrixAddress_->nonLocalSparsityPattern();
+        auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), faceToMatrixAddress_);
+
+        // 1. copy bValues which need to be communicated into sendBuffer
+        auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
+        auto recvBuffer = Vector<ValueType>(exec(), commSize);
+
+        // TODO compute using scan
+        auto sdispls = std::vector<int>(commRanks, 0);
+        for (int i = 1; i < sdispls.size(); i++)
+        {
+            auto prev = sdispls[i - 1];
+            sdispls[i] = commPattern.sendCounts[i - 1] + prev;
+        }
+
+        MPI_Alltoallv(
+            nonLocalMatrix_.values().data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            recvBuffer.data(),
+            commPattern.sendCounts.data(),
+            sdispls.data(),
+            mpi::getType<ValueType>(),
+            mpiEnv.comm()
+        );
+
+        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
+                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
+
+        // 3. apply received values to corresponding matrix
+        // add diagonal contributions
+        add(recvBuffer, rowToDiagonalMap, matrix_.values());
+        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
+                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
+    }
+
+    // FIXME needed?
     void reset()
     {
-        fill(matrix_.values(), zero<ValueType>());
+        matrix_.reset();
+        boundaryMatrix_.reset();
         fill(rhs_, zero<ValueType>());
-        fill(boundaryMatrix_.values(), zero<ValueType>());
         fill(boundaryRhs_, zero<ValueType>());
     }
 
@@ -206,15 +281,23 @@ public:
 
     const Executor& exec() const { return matrix_.exec(); }
 
+    const CommunicationPattern& commPattern() const { return commPattern_; }
+
 private:
 
     // internal values
     MatrixType matrix_;
 
+    // store values on boundaries that are non local
+    // eg on processor boundaries
+    BoundaryMatrixType nonLocalMatrix_;
+
+    CommunicationPattern commPattern_;
+
     Vector<ValueType> rhs_;
 
-    // boundary values
-    MatrixType boundaryMatrix_;
+    // store values on boundaries that are non local
+    BoundaryMatrixType boundaryMatrix_;
 
     Vector<ValueType> boundaryRhs_;
 
@@ -225,10 +308,16 @@ private:
 
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(const UnstructuredMesh& mesh)
+template<
+    typename ValueType,
+    typename InnerMatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
+createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
-    return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
+    auto [faceToMatrixAddress, commPattern] =
+        createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    return {faceToMatrixAddress, commPattern};
 }
 
 

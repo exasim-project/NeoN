@@ -14,6 +14,7 @@ template<typename ValueType, typename IndexType>
 Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
+    fill(diag, zero<ValueType>());
     auto [diagV, rowOffsV, colIdxV, matrixV] =
         views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
 
