@@ -4,8 +4,8 @@ var searchData=
   ['segments_1',['segments',['../classNeoN_1_1SegmentedVectorView.html#a0e101da590fc55027c7a0d0e986d27d3',1,'NeoN::SegmentedVectorView']]],
   ['sigmanut_2',['sigmaNut',['../structNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1_1Coefficients.html#a7eaaf6257f1771e7220ef6a9291ead00',1,'NeoN::turbulenceModels::SpalartAllmarasDDES::Coefficients']]],
   ['solutiondict_5f_3',['solutionDict_',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a319d692ec559c3b0863e06216769a61a',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['solvetime_4',['solveTime',['../structNeoN_1_1la_1_1SolverStats.html#a3ab3d77297ffe4f127da0ea54fd97674',1,'NeoN::la::SolverStats']]],
-  ['sparsitypattern_5f_5',['sparsitypattern_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html#a90ff60c6f54a54e4808014b857e6ae51',1,'NeoN::finiteVolume::cellCentred::DivOperatorFactory::sparsityPattern_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory.html#a3cfd1beb6d7f276c96b761a5ffe21c75',1,'NeoN::finiteVolume::cellCentred::GradOperatorFactory::sparsityPattern_'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#ae307ac3e4d4b0f05dca42c7e2b379231',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory::sparsityPattern_']]],
+  ['solvetime_4',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
+  ['sparsity_5',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView']]],
   ['start_5f_6',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
   ['subcycleindex_7',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
 ];
