@@ -169,11 +169,12 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
     auto hostExec = SerialExecutor {};
     vectorVector meshPointsHost(hostExec, nCells + 1, {0.0, 0.0, 0.0});
     auto meshPointsHostView = meshPointsHost.view();
-    meshPointsHostView[nCells - 1] = leftBoundary;
+    meshPointsHostView[0] = leftBoundary;
     meshPointsHostView[nCells] = rightBoundary;
     auto meshPoints = meshPointsHost.copyToExecutor(exec);
 
     // loop over internal mesh points
+    // Use mesh points as face centres for a 1D mesh
     auto meshPointsView = meshPoints.view();
     auto leftBoundaryX = leftBoundary[0];
     parallelFor(
@@ -198,10 +199,10 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
         "computeCellCenters"
     );
 
-
+    // face normal
     vectorVector faceAreasHost(hostExec, nCells + 1, {1.0, 0.0, 0.0});
     auto faceAreasHostView = faceAreasHost.view();
-    faceAreasHostView[nCells - 1] = {-1.0, 0.0, 0.0}; // left boundary face
+    faceAreasHostView[0] = {-1.0, 0.0, 0.0}; // left boundary face
     auto faceAreas = faceAreasHost.copyToExecutor(exec);
 
     vectorVector faceCenters(exec, meshPoints);
@@ -210,7 +211,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
     labelVector faceOwnerHost(hostExec, nCells + 1);
     labelVector faceNeighbor(exec, nCells - 1);
     auto faceOwnerHostView = faceOwnerHost.view();
-    faceOwnerHostView[nCells - 1] = 0;                          // left boundary face
+    faceOwnerHostView[0] = 0;                                   // left boundary face
     faceOwnerHostView[nCells] = static_cast<label>(nCells) - 1; // right boundary face
     auto faceOwner = faceOwnerHost.copyToExecutor(exec);
 
@@ -227,6 +228,7 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
         "computeFaceOwnerAndNeighbors"
     );
 
+    // Compute delta and deltaCoeffs for boundary mesh
     vectorVector deltaHost(hostExec, 2);
     auto deltaHostView = deltaHost.view();
     auto cellCentersHost = cellCenters.copyToHost();
@@ -243,16 +245,16 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
 
     BoundaryMesh boundaryMesh(
         exec,
-        {exec, {0, nCells - 1}},
-        {exec, {leftBoundary, rightBoundary}},
-        {exec, {cellCentersHostView[0], cellCentersHostView[nCells - 1]}},
-        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
-        {exec, {1.0, 1.0}},
-        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},
-        delta,
-        {exec, {1.0, 1.0}},
+        {exec, {0, nCells - 1}},                                           // faceCells
+        {exec, {leftBoundary, rightBoundary}},                             // cf
+        {exec, {cellCentersHostView[0], cellCentersHostView[nCells - 1]}}, // cn
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},                       // sf
+        {exec, {1.0, 1.0}},                                                // magSf
+        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}},                       // nf
+        delta,                                                             // delta
+        {exec, {1.0, 1.0}},                                                // weights
         deltaCoeffs,
-        {0, 1, 2}
+        {0, 1, 2} // offset
     );
 
     return UnstructuredMesh(
@@ -265,10 +267,10 @@ UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells)
         faceOwner,
         faceNeighbor,
         nCells,
-        nCells - 1,
-        2,
-        2,
-        nCells + 1,
+        nCells - 1, // nInternalFaces
+        2,          // nBoundaryFaces
+        2,          // nBoundaries
+        nCells + 1, // nFaces
         boundaryMesh
     );
 }

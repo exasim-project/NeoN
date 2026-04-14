@@ -44,7 +44,7 @@ public:
      * @param delta A field of delta vectors.
      * @param weights A field of weights used in cell to face interpolation.
      * @param deltaCoeffs A field of cell to face distances.
-     * @param offset The offset of the boundary faces.
+     * @param offset The offset of the boundary faces for each boundary patch.
      */
     BoundaryMesh(
         const Executor& exec,
