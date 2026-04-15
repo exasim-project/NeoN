@@ -1,0 +1,49 @@
+{% set name = "neon" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  script:
+    - export CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-2}
+    - {{ PYTHON }} -m pip install . -vv --no-build-isolation --no-deps
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.22
+    - ninja
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.11.0
+    - nanobind >=2.9.0
+    - nlohmann_json
+    - setuptools
+  run:
+    - python
+    - numpy >=1.19.0
+
+test:
+  requires:
+    - pip
+  imports:
+    - neon
+  commands:
+    - python -c "import neon; print(neon.__version__, neon.__has_serial__)"
+    - python -c "import neon._neon as ext; print('loaded', ext.__name__)"
+
+about:
+  home: https://github.com/exasim-project/NeoN
+  summary: Python bindings for the NeoN CFD framework
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - exasim-project
