@@ -22,8 +22,8 @@ if(DEFINED SKBUILD)
   # scikit-build-core manages installation paths
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
-  # Standalone build - convention is to put bindings .so file in a project name folder
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
+  # Standalone build - always place bindings in a fixed path for tests and local usage
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/develop/bindings/neon)
 endif()
 
 nanobind_add_module(

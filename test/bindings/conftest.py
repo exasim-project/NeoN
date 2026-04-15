@@ -5,7 +5,7 @@
 """
 Test configuration for NeoN Python bindings.
 
-This module automatically locates the neon package from the build directory
+This module imports the neon package from a fixed build path
 and configures pytest fixtures for executor parameterization.
 """
 
@@ -13,11 +13,15 @@ import pytest
 
 # Set up path before importing neon
 import neon
+import sys
+import types
 
+import neon
 
 @pytest.fixture(scope="session", autouse=True)
 def neon_global_session():
     """Initialize NeoN once for all test files in this session."""
+
     neon.initialize()
     yield  # This is where all tests run
     neon.finalize()
@@ -30,6 +34,9 @@ def pytest_configure(config):
 
 def get_available_executors():
     """Get list of executors available at build time."""
+    if not NEON_AVAILABLE:
+        return []
+
     executors = []
     if neon.__has_serial__:
         executors.append(("serial", neon.SerialExecutor))
@@ -56,6 +63,7 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_collection_modifyitems(config, items):
+    """Skip tests based on runtime availability."""
     """Automatically skip GPU tests if GPU is not available."""
     if hasattr(neon, '__has_gpu__') and not neon.__has_gpu__:
         skip_gpu = pytest.mark.skip(reason="GPU not available")
