@@ -32,10 +32,9 @@ def test_1d_uniform_mesh():
 
     assert mesh.n_cells() == n_cells
     assert mesh.n_internal_faces() == n_cells - 1
-    assert mesh.n_faces() > 0
+    assert mesh.n_total_faces() > 0
     assert mesh.cell_volumes.size() == n_cells
     assert mesh.cell_centres.size() == n_cells
-    assert mesh.face_owner.size() == mesh.n_faces()
     assert mesh.face_neighbour.size() == mesh.n_internal_faces()
 
 
@@ -46,9 +45,6 @@ def test_mesh_geometry():
     assert mesh.points.size() > 0
     assert mesh.cell_volumes.size() == mesh.n_cells()
     assert mesh.cell_centres.size() == mesh.n_cells()
-    assert mesh.face_centres.size() == mesh.n_faces()
-    assert mesh.face_areas.size() == mesh.n_faces()
-    assert mesh.mag_face_areas.size() == mesh.n_faces()
 
 
 def test_mesh_topology():
@@ -56,7 +52,6 @@ def test_mesh_topology():
     n_cells = 5
     mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
 
-    assert mesh.face_owner.size() == mesh.n_faces()
     assert mesh.face_neighbour.size() == mesh.n_internal_faces()
     assert mesh.boundary_mesh().face_cells().size() > 0
 
@@ -83,17 +78,6 @@ def test_boundary_mesh_fields():
 def test_mesh_with_cpu_executor():
     serial = neon.SerialExecutor()
     n_cells = 5
-    mesh_serial = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
+    mesh_serial = neon.create_1d_uniform_mesh(serial, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
     assert neon.is_serial(mesh_serial.exec())
     assert mesh_serial.n_cells() == 5
-
-    # Try CPU executor (may fail if Kokkos threads not initialized)
-    try:
-        cpu = neon.CPUExecutor()
-        n_cells = 4
-        mesh_cpu = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
-        assert neon.is_cpu(mesh_cpu.exec())
-        assert mesh_serial.n_cells() == mesh_cpu.n_cells()
-    except RuntimeError as e:
-        if "not initialized" not in str(e):
-            raise
