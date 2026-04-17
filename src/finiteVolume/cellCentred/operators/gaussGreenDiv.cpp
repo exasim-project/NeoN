@@ -225,10 +225,10 @@ void computeDivProcBoundImpl(
             auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
             auto F = faceFluxV[facei];
 
-            Kokkos::atomic_add(
+            Kokkos::atomic_sub(
                 &values[rowStart + diagOffs[cell]], sign * w_diag * F * c * one<ValueType>()
             );
-            bValues[bcfaceii] += sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
+            bValues[bcfaceii] -= sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );
@@ -287,7 +287,7 @@ void computeDivBoundImpl(
             auto valFrac1 = valueFraction[bcfacei];
             auto valFrac2 = 1.0 - valFrac1;
 
-            auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+            auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
             Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
             bValues[bcfacei] += valueMat;
 
