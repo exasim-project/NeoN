@@ -225,10 +225,10 @@ void computeDivProcBoundImpl(
             auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
             auto F = faceFluxV[facei];
 
-            Kokkos::atomic_add(
+            Kokkos::atomic_sub(
                 &values[rowStart + diagOffs[cell]], sign * w_diag * F * c * one<ValueType>()
             );
-            bValues[bcfaceii] += sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
+            bValues[bcfaceii] -= sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );
@@ -287,7 +287,7 @@ void computeDivBoundImpl(
             auto valFrac1 = valueFraction[bcfacei];
             auto valFrac2 = 1.0 - valFrac1;
 
-            auto valueMat = -flux * operatorScalingOwn * valFrac2 * one<ValueType>();
+            auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
             Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
             bValues[bcfacei] += valueMat;
 
@@ -362,7 +362,7 @@ void computeDivImp(
             //   ownFluxContrib = w * F_f       — part attributed to the owner cell value
             //   neiFluxContrib = (1-w) * F_f   — part attributed to the neighbour cell value
 
-            auto ownFluxContrib = faceFluxV[facei] * weightsV[facei] * one<ValueType>();
+            auto ownFluxContrib = -faceFluxV[facei] * weightsV[facei] * one<ValueType>();
             // A[nei, own] — lower triangular: ownFluxContrib enters neighbour → positive sign
             values[rowNeiStart + neiOffs[facei]] += ownFluxContrib * operatorScalingNei;
             // values[matIt->lowerIdx(nei, facei)] += ownFluxContrib * operatorScalingNei;
@@ -372,12 +372,15 @@ void computeDivImp(
                 ownFluxContrib * operatorScalingOwn
             );
 
-            auto neiFluxContrib = faceFluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
+            auto neiFluxContrib = -faceFluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
             // A[own, nei] — upper triangular: neiFluxContrib leaves owner → negative sign
             values[rowOwnStart + ownOffs[facei]] -= neiFluxContrib * operatorScalingOwn;
             // values[matIt->upperIdx(own, facei)] -= neiFluxContrib * operatorScalingOwn;
             // diag[nei] — neiFluxContrib enters neighbour → positive sign
-            values[rowNeiStart + diagOffs[nei]] += neiFluxContrib * operatorScalingNei;
+            Kokkos::atomic_add(
+                &values[rowNeiStart + static_cast<int>(diagOffs[nei])],
+                neiFluxContrib * operatorScalingNei
+            );
         },
         "computeLocalGaussGreenDivCoefficients"
     );
