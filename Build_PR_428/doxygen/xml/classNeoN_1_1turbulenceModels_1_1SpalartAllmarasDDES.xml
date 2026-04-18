@@ -4,6 +4,22 @@
     <compoundname>NeoN::turbulenceModels::SpalartAllmarasDDES</compoundname>
     <includes refid="SpalartAllmarasDDES_8hpp" local="no">SpalartAllmarasDDES.hpp</includes>
     <innerclass refid="structNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1_1Coefficients" prot="public">NeoN::turbulenceModels::SpalartAllmarasDDES::Coefficients</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1ae790ecd37f32402bdc3ad0a740b716fb" prot="public" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">NeoN::finiteVolume::cellCentred::VolumeField</ref>&lt; <ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref> &gt;</type>
+        <definition>using NeoN::turbulenceModels::SpalartAllmarasDDES::VolTensorField =  NeoN::finiteVolume::cellCentred::VolumeField&lt;Tensor&gt;</definition>
+        <argsstring></argsstring>
+        <name>VolTensorField</name>
+        <qualifiedname>NeoN::turbulenceModels::SpalartAllmarasDDES::VolTensorField</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/SpalartAllmarasDDES.hpp" line="69" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/SpalartAllmarasDDES.hpp" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a464eaa3b400f1a833deaa8b30eb674b2" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
@@ -225,10 +241,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/SpalartAllmarasDDES.hpp" line="67" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a669e793a6a4959d59776bd549cd05408" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a9cbedb797ae93d4bfa78d04d5d8da7c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::turbulenceModels::SpalartAllmarasDDES::computeProdSpDDES</definition>
-        <argsstring>(VolScalarField &amp;productionField, VolScalarField &amp;spCoeffField, const VolScalarField &amp;nuTildeField, const VolScalarField &amp;nuField, const VolVectorField &amp;gradUx, const VolVectorField &amp;gradUy, const VolVectorField &amp;gradUz, const VolScalarField &amp;wallDistanceField, const VolScalarField &amp;deltaField, const VolScalarField &amp;gradNuTildeMagSqrField) const</argsstring>
+        <argsstring>(VolScalarField &amp;productionField, VolScalarField &amp;spCoeffField, const VolScalarField &amp;nuTildeField, const VolScalarField &amp;nuField, const VolTensorField &amp;gradU, const VolScalarField &amp;wallDistanceField, const VolScalarField &amp;deltaField, const VolScalarField &amp;gradNuTildeMagSqrField) const</argsstring>
         <name>computeProdSpDDES</name>
         <qualifiedname>NeoN::turbulenceModels::SpalartAllmarasDDES::computeProdSpDDES</qualifiedname>
         <param>
@@ -248,16 +264,8 @@
           <declname>nuField</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1turbulenceModels_1ac725b4bb078047d43105c52aebee3495" kindref="member">VolVectorField</ref> &amp;</type>
-          <declname>gradUx</declname>
-        </param>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1_1turbulenceModels_1ac725b4bb078047d43105c52aebee3495" kindref="member">VolVectorField</ref> &amp;</type>
-          <declname>gradUy</declname>
-        </param>
-        <param>
-          <type>const <ref refid="namespaceNeoN_1_1turbulenceModels_1ac725b4bb078047d43105c52aebee3495" kindref="member">VolVectorField</ref> &amp;</type>
-          <declname>gradUz</declname>
+          <type>const <ref refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1ae790ecd37f32402bdc3ad0a740b716fb" kindref="member">VolTensorField</ref> &amp;</type>
+          <declname>gradU</declname>
         </param>
         <param>
           <type>const <ref refid="namespaceNeoN_1_1turbulenceModels_1a0c4b3bca91bdbb1cd476f6067ffbc01d" kindref="member">VolScalarField</ref> &amp;</type>
@@ -277,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/SpalartAllmarasDDES.hpp" line="69" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/turbulenceModels/SpalartAllmarasDDES.hpp" line="71" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -290,7 +298,7 @@
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1af39765d5e7825c27e4b60db9f942ff64" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>calcNuTildaDiffusionCoeff</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a78d4db0764f09cd3627ed8e54e76aca7" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>coeffs</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a17493fce43e1c298af26f541d20c6867" prot="private" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>coeffs_</name></member>
-      <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a669e793a6a4959d59776bd549cd05408" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>computeProdSpDDES</name></member>
+      <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a9cbedb797ae93d4bfa78d04d5d8da7c0" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>computeProdSpDDES</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a32779bac1def1c0ea85d328a28e50a1a" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>correctNut</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a887779f5d60ae7f376c93d2d55842575" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>cw1</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a8b56dd8b4e5d7d0f4baa4eacc7d51dae" prot="private" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>cw1_</name></member>
@@ -298,6 +306,7 @@
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1aa7703f93323bef05d972a903a5e8ee0d" prot="private" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>mesh_</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a166ee567b930621b439310f3cd425021" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>SpalartAllmarasDDES</name></member>
       <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1a5e56746ccb8b4577e7bc4e7a51ce58f6" prot="private" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>surfInterp_</name></member>
+      <member refid="classNeoN_1_1turbulenceModels_1_1SpalartAllmarasDDES_1ae790ecd37f32402bdc3ad0a740b716fb" prot="public" virt="non-virtual"><scope>NeoN::turbulenceModels::SpalartAllmarasDDES</scope><name>VolTensorField</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

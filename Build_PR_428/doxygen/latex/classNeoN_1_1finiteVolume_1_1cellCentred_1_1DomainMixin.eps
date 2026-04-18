@@ -5,7 +5,7 @@
 %%For: 
 %Magnification: 1.00
 %%Orientation: Portrait
-%%BoundingBox: 0 0 500 240.641708
+%%BoundingBox: 0 0 500 15.238095
 %%Pages: 0
 %%BeginSetup
 %%EndSetup
@@ -19,13 +19,13 @@
 /marginwidth 10 def
 /distx 20 def
 /disty 40 def
-/boundaspect 2.077778 def  % aspect ratio of the BoundingBox (width/height)
+/boundaspect 32.812500 def  % aspect ratio of the BoundingBox (width/height)
 /boundx 500 def
 /boundy boundx boundaspect div def
 /xspacing 0 def
 /yspacing 0 def
-/rows 9 def
-/cols 2 def
+/rows 2 def
+/cols 7 def
 /scalefactor 0 def
 /boxfont /Times-Roman findfont fontheight scalefont def
 
@@ -178,8 +178,7 @@ boxfont setfont
 (NeoN::finiteVolume::cellCentred::SurfaceField< scalar >) cw
 (NeoN::finiteVolume::cellCentred::SurfaceField< NeoN::Vec3 >) cw
 (NeoN::finiteVolume::cellCentred::VolumeField< scalar >) cw
-(NeoN::finiteVolume::cellCentred::VolumeField< Vec3 >) cw
-(NeoN::finiteVolume::cellCentred::VolumeField< NeoN::Vec3 >) cw
+(NeoN::finiteVolume::cellCentred::VolumeField< NeoN::Tensor >) cw
 (NeoN::finiteVolume::cellCentred::SurfaceField< ValueType >) cw
 (NeoN::finiteVolume::cellCentred::VolumeField< ValueType >) cw
 /boxwidth boxwidth marginwidth 2 mul add def
@@ -193,35 +192,32 @@ boundx scalefactor div boundy scalefactor div scale
 
 % ----- classes -----
 
- (NeoN::finiteVolume::cellCentred::DomainMixin< ValueType >) 0.000000 8.000000 box
- (NeoN::finiteVolume::cellCentred::SurfaceField< NeoN::scalar >) 1.000000 7.000000 box
- (NeoN::finiteVolume::cellCentred::SurfaceField< scalar >) 1.000000 6.000000 box
- (NeoN::finiteVolume::cellCentred::SurfaceField< NeoN::Vec3 >) 1.000000 5.000000 box
- (NeoN::finiteVolume::cellCentred::VolumeField< scalar >) 1.000000 4.000000 box
- (NeoN::finiteVolume::cellCentred::VolumeField< Vec3 >) 1.000000 3.000000 box
- (NeoN::finiteVolume::cellCentred::VolumeField< NeoN::Vec3 >) 1.000000 2.000000 box
- (NeoN::finiteVolume::cellCentred::SurfaceField< ValueType >) 1.000000 1.000000 box
- (NeoN::finiteVolume::cellCentred::VolumeField< ValueType >) 1.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::DomainMixin< ValueType >) 3.000000 1.000000 box
+ (NeoN::finiteVolume::cellCentred::SurfaceField< NeoN::scalar >) 0.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::SurfaceField< scalar >) 1.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::SurfaceField< NeoN::Vec3 >) 2.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::VolumeField< scalar >) 3.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::VolumeField< NeoN::Tensor >) 4.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::SurfaceField< ValueType >) 5.000000 0.000000 box
+ (NeoN::finiteVolume::cellCentred::VolumeField< ValueType >) 6.000000 0.000000 box
 
 % ----- relations -----
 
 solid
-1 0.000000 7.250000 out
+1 3.000000 0.250000 out
 solid
-0 0.000000 7.500000 hedge
+0.000000 6.000000 1.000000 conn
 solid
-0 0.000000 6.500000 hedge
+0 0.000000 0.750000 in
 solid
-0 0.000000 5.500000 hedge
+0 1.000000 0.750000 in
 solid
-0 0.000000 4.500000 hedge
+0 2.000000 0.750000 in
 solid
-0 0.000000 3.500000 hedge
+0 3.000000 0.750000 in
 solid
-0 0.000000 2.500000 hedge
+0 4.000000 0.750000 in
 solid
-0 0.000000 1.500000 hedge
+0 5.000000 0.750000 in
 solid
-0 0.000000 0.500000 hedge
-solid
-0.000000 8.000000 0.500000 vedge
+0 6.000000 0.750000 in

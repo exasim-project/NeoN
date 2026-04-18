@@ -76,8 +76,6 @@ class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterp
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}{Surface\+Interpolation\+Factory}}
 \item 
-struct \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{Tensor\+Vec\+Field}}
-\item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected}{Uncorrected}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind}{Upwind}}
@@ -158,8 +156,8 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Su
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae943e0d9df47132f4e227ceff274d664}{surface\+Integrate}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ neighbour, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ owner, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ face\+Cells, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ flux, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ v, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ res, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
 \item 
-void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a9d3b15258aa813e070f0120a208b23df}{compute\+Viscous\+Stress\+Exp}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&surface\+Interpolation\+Vec, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nut, const \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{Tensor\+Vec\+Field}} \&gradU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&rhs, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
-\begin{DoxyCompactList}\small\item\em Explicit contribution for\+: \end{DoxyCompactList}\end{DoxyCompactItemize}
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af005d6b502a55e98e683961b745bdcc5}{compute\+Viscous\+Stress\+Exp\+Tensor}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&surface\+Interpolation\+Tensor, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nu, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&nut, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&gradU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&rhs, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Typedef Documentation}
@@ -299,26 +297,12 @@ void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Upwind\+Interpolation
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Upwind\+Interpolation\+Weights (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{flux,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{src,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{weights }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a9d3b15258aa813e070f0120a208b23df}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a9d3b15258aa813e070f0120a208b23df} 
-\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeViscousStressExp@{computeViscousStressExp}}
-\index{computeViscousStressExp@{computeViscousStressExp}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
-\doxysubsubsection{\texorpdfstring{computeViscousStressExp()}{computeViscousStressExp()}}
-{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Viscous\+Stress\+Exp (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{surface\+Interpolation\+Vec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nut,  }\item[{const \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField}{Tensor\+Vec\+Field}} \&}]{gradU,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{rhs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}}}]{operator\+Scaling }\end{DoxyParamCaption})}
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af005d6b502a55e98e683961b745bdcc5}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af005d6b502a55e98e683961b745bdcc5} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeViscousStressExpTensor@{computeViscousStressExpTensor}}
+\index{computeViscousStressExpTensor@{computeViscousStressExpTensor}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeViscousStressExpTensor()}{computeViscousStressExpTensor()}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Viscous\+Stress\+Exp\+Tensor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&}]{surface\+Interpolation\+Tensor,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nu,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{nut,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&}]{gradU,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{rhs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}}}]{operator\+Scaling }\end{DoxyParamCaption})}
 
-
-
-Explicit contribution for\+: 
-
-
-\begin{DoxyItemize}
-\item fvc\+::div(nu\+Eff \texorpdfstring{$\ast$}{*} dev2(T(fvc\+::grad(\+U))))
-\end{DoxyItemize}
-
-Adds result into {\ttfamily rhs} (\doxylink{classNeoN_1_1Vector}{Vector$<$\+Vec3$>$}) directly.
-
-\begin{DoxyNote}{Note}
-This is called by Viscous\+Stress operators. Not intended to be used from DSL directly. 
-\end{DoxyNote}
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createCalculatedBCs@{createCalculatedBCs}}
 \index{createCalculatedBCs@{createCalculatedBCs}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
@@ -328,7 +312,7 @@ std\+::vector$<$ Boundary\+Type $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+:
 
 
 
-Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createExtrapolatedBCs@{createExtrapolatedBCs}}
@@ -339,7 +323,7 @@ std\+::vector$<$ Boundary\+Type $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+:
 
 
 
-Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00045}{45}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a616a3a0d2d9285da79f5301efe88d399}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a616a3a0d2d9285da79f5301efe88d399} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createFluxCorrBCsFromU@{createFluxCorrBCsFromU}}

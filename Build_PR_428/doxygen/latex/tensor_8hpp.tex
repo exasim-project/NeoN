@@ -1,3 +1,37 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/primitives/tensor.hpp File Reference}
 \hypertarget{tensor_8hpp}{}\label{tensor_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/primitives/tensor.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/primitives/tensor.hpp}}
-{\ttfamily \#include "{}scalar.\+hpp"{}}\newline
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/traits.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1Tensor}{Neo\+N\+::\+Tensor}}
+\begin{DoxyCompactList}\small\item\em A class for the representation of a 3x3 tensor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_adb1e2d9fa2b59aa439c94722a7e5d3d0}{Neo\+N\+::operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a2414025e2597dee527100138954adb7b}{Neo\+N\+::operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v)
+\begin{DoxyCompactList}\small\item\em Matrix-\/vector product T·v. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_ac5d091fc014440e8642f4557b3161dd4}{Neo\+N\+::operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Row-\/vector times matrix v·T. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ada3de36ff0c568c4517d62d93a5e8017}{Neo\+N\+::mag}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Frobenius norm. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a0fb5a5aa0e7d67d37d28197b0e419fa5}{Neo\+N\+::mag\+Sqr}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Frobenius norm squared. \end{DoxyCompactList}\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_a5c0512c698fc1ae956ff732e5128c92b}{Neo\+N\+::operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67}{Neo\+N\+::zero$<$ Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8}{Neo\+N\+::one$<$ Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f}{Neo\+N\+::inv$<$ Tensor $>$}} (\mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}})
+\end{DoxyCompactItemize}

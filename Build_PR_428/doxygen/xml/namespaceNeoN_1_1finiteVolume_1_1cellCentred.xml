@@ -34,7 +34,6 @@
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate" prot="public">NeoN::finiteVolume::cellCentred::SurfaceIntegrate</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" prot="public">NeoN::finiteVolume::cellCentred::SurfaceInterpolation</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" prot="public">NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory</innerclass>
-    <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField" prot="public">NeoN::finiteVolume::cellCentred::TensorVecField</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected" prot="public">NeoN::finiteVolume::cellCentred::Uncorrected</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind" prot="public">NeoN::finiteVolume::cellCentred::Upwind</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorCollection" prot="public">NeoN::finiteVolume::cellCentred::VectorCollection</innerclass>
@@ -381,7 +380,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="31" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="31" bodyend="42"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="33" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="33" bodyend="44"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ac219f7675251df9d46327915c48c74e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -404,7 +403,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="45" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="45" bodyend="55"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="47" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="47" bodyend="57"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &gt;</type>
@@ -857,15 +856,15 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp" line="18" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp" declline="18" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a9d3b15258aa813e070f0120a208b23df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af005d6b502a55e98e683961b745bdcc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::computeViscousStressExp</definition>
-        <argsstring>(const SurfaceInterpolation&lt; Vec3 &gt; &amp;surfaceInterpolationVec, const VolumeField&lt; scalar &gt; &amp;nu, const VolumeField&lt; scalar &gt; &amp;nut, const TensorVecField &amp;gradU, Vector&lt; Vec3 &gt; &amp;rhs, const dsl::Coeff operatorScaling)</argsstring>
-        <name>computeViscousStressExp</name>
-        <qualifiedname>NeoN::finiteVolume::cellCentred::computeViscousStressExp</qualifiedname>
+        <definition>void NeoN::finiteVolume::cellCentred::computeViscousStressExpTensor</definition>
+        <argsstring>(const SurfaceInterpolation&lt; Tensor &gt; &amp;surfaceInterpolationTensor, const VolumeField&lt; scalar &gt; &amp;nu, const VolumeField&lt; scalar &gt; &amp;nut, const VolumeField&lt; Tensor &gt; &amp;gradU, Vector&lt; Vec3 &gt; &amp;rhs, const dsl::Coeff operatorScaling)</argsstring>
+        <name>computeViscousStressExpTensor</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::computeViscousStressExpTensor</qualifiedname>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
-          <declname>surfaceInterpolationVec</declname>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; <ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref> &gt; &amp;</type>
+          <declname>surfaceInterpolationTensor</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
@@ -876,7 +875,7 @@
           <declname>nut</declname>
         </param>
         <param>
-          <type>const <ref refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1TensorVecField" kindref="compound">TensorVecField</ref> &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref> &gt; &amp;</type>
           <declname>gradU</declname>
         </param>
         <param>
@@ -888,21 +887,12 @@
           <declname>operatorScaling</declname>
         </param>
         <briefdescription>
-<para>Explicit contribution for: </para>
         </briefdescription>
         <detaileddescription>
-<para><itemizedlist>
-<listitem><para>fvc::div(nuEff * dev2(T(fvc::grad(U))))</para>
-</listitem></itemizedlist>
-</para>
-<para>Adds result into <computeroutput>rhs</computeroutput> (<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>) directly.</para>
-<para><simplesect kind="note"><para>This is called by ViscousStress operators. Not intended to be used from DSL directly. </para>
-</simplesect>
-</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp" line="40" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp" declline="40" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp" line="31" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/viscousStressOperator.hpp" declline="31" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
