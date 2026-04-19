@@ -92,10 +92,21 @@ VolumeField<ValueType>& VolumeField<ValueType>::operator-=(const ValueType rhs)
 template<typename ValueType>
 void VolumeField<ValueType>::correctBoundaryConditions()
 {
+    auto procPatchOffset = std::vector<localIdx> {};
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
+        if (boundaryCondition.name() == "processor")
+        {
+            auto [start, end] = boundaryCondition.range();
+            procPatchOffset.push_back(start);
+        }
     }
+
+    // FIXME dont recompute communication pattern
+    // exchange processor boundary data
+    auto commPattern = computeCommunicationPattern(this->mesh());
+    communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>

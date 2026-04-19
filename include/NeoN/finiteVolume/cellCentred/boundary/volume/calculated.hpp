@@ -29,6 +29,8 @@ public:
 
     static std::string name() { return "calculated"; }
 
+    virtual std::string getName() const { return name(); }
+
     static std::string doc() { return "TBD"; }
 
     static std::string schema() { return "none"; }
