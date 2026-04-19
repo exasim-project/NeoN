@@ -337,7 +337,7 @@ private:
     std::vector<localIdx> neighbourRank_;
 };
 
-//
+// FIXME is this actually used
 /* @brief   */
 std::vector<localIdx> computeBoundaryMatrixMapVector();
 
