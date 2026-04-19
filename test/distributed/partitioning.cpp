@@ -14,9 +14,30 @@ namespace NeoN
 
 /** @brief helper function to set the processor boundaries of a distributed field */
 template<typename BoundaryType>
-auto setProcessorBoundaryHelper(std::vector<BoundaryType> bcs, size_t rank)
+auto setProcessorBoundaryHelper(
+    UnstructuredMesh& mesh, const std::vector<BoundaryType>& bcs, size_t rank
+)
 {
-    return bcs;
+    auto ret = std::vector<BoundaryType> {};
+    for (int i = 0; i < bcs.size(); i++)
+    {
+        std::string boundaryType = "calculated";
+        if (rank == 0 && i == 1)
+        {
+            boundaryType = "processor";
+        }
+        if (rank == 2 && i == 0)
+        {
+            boundaryType = "processor";
+        }
+        if (rank == 1)
+        {
+            boundaryType = "processor";
+        }
+        auto patchDict = Dictionary({{"type", boundaryType}});
+        ret.emplace_back(mesh, patchDict, i);
+    }
+    return ret;
 }
 
 TEST_CASE("Distributed")
@@ -84,17 +105,30 @@ TEST_CASE("Distributed")
     auto mesh = create1DUniformMesh(exec, nCells);
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     auto U = finiteVolume::cellCentred::VolumeField<scalar>(
-        exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+        exec,
+        "U",
+        mesh,
+        Vector<scalar>(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0}),
+        volBCs
     );
 
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
-    auto volBCsPart = setProcessorBoundaryHelper(volBCsII, mpiEnviron.rank());
+    auto volBCsPart = setProcessorBoundaryHelper(meshPart, volBCsII, mpiEnviron.rank());
     auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
+    uPart.correctBoundaryConditions();
 
     SECTION("Has correct partitioned VolumeField" + execName)
     {
         REQUIRE(uPart.internalVector().size() == nCells / mpiEnviron.sizeRank());
         REQUIRE(uPart.boundaryData().nBoundaries() == 2);
+        // TODO add other ranks
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct " + execName)
+        {
+            auto uPartExp = std::vector<scalar> {1.0, 2.0, 3.0, 4.0};
+            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            auto uPartBoundExp = std::vector<scalar> {0.0, 5.0};
+            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+        }
     }
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
@@ -104,7 +138,7 @@ TEST_CASE("Distributed")
     phi.internalVector() = phiInternal;
 
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
-    auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
+    auto surfaceBCsPart = setProcessorBoundaryHelper(meshPart, surfaceBCsII, mpiEnviron.rank());
     auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron);
     SECTION("Has correct partitioned SurfaceField" + execName)
     {

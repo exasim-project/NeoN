@@ -77,6 +77,8 @@ public:
 
     static std::string name() { return "fixedGradient"; }
 
+    virtual std::string getName() const { return name(); }
+
     static std::string doc() { return "Set a fixed gradient on the boundary."; }
 
     static std::string schema() { return "none"; }
