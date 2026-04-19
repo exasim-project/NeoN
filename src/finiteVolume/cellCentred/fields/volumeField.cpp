@@ -103,10 +103,13 @@ void VolumeField<ValueType>::correctBoundaryConditions()
         }
     }
 
-    // FIXME dont recompute communication pattern
-    // exchange processor boundary data
-    auto commPattern = computeCommunicationPattern(this->mesh());
-    communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());
+    if (procPatchOffset.size() > 0)
+    {
+        // FIXME dont recompute communication pattern
+        // exchange processor boundary data
+        auto commPattern = computeCommunicationPattern(this->mesh());
+        communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());
+    }
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>

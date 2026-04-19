@@ -39,7 +39,6 @@ void setGradientValue(
         mesh.boundaryMesh().deltaCoeffs()
     );
 
-
     NeoN::parallelFor(
         domainVector.exec(),
         range,
