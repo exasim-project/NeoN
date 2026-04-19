@@ -9,6 +9,7 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
