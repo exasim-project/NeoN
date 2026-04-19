@@ -355,7 +355,8 @@ rank-0 example is:
      - ``values[diagIdx(C3)]``
      - 9
 
-A typical operator assembly kernel (e.g. ``gaussGreenDiv.cpp``) follows the pattern:
+The Laplacian kernel illustrates the canonical addressing pattern (symmetric operator,
+``flux = deltaCoeffs * gamma * magSf > 0``):
 
 .. code-block:: cpp
 
@@ -363,16 +364,19 @@ A typical operator assembly kernel (e.g. ``gaussGreenDiv.cpp``) follows the patt
     auto nei = faceNeighbour[facei];
 
     // A[nei, own] — lower triangular, in neighbour's row:
-    values[rowOffs[nei] + neighbourOffset[facei]] += fluxNei;
-    // values[lowerIdx(nei, facei)] += fluxNei;   // equivalent via matrixIterator
+    values[rowOffs[nei] + neighbourOffset[facei]] += flux;
+    // values[lowerIdx(nei, facei)] += flux;   // equivalent via matrixIterator
 
     // A[own, nei] — upper triangular, in owner's row:
-    values[rowOffs[own] + ownerOffset[facei]] -= fluxOwn;
-    // values[upperIdx(own, facei)] -= fluxOwn;   // equivalent via matrixIterator
+    values[rowOffs[own] + ownerOffset[facei]] += flux;
+    // values[upperIdx(own, facei)] += flux;   // equivalent via matrixIterator
 
-    // Update diagonals:
-    Kokkos::atomic_sub(&values[rowOffs[own] + diagOffset[own]], fluxNei);
-    Kokkos::atomic_sub(&values[rowOffs[nei] + diagOffset[nei]], fluxOwn);  // sign depends on operator
+    // Diagonal — flux leaves each cell (symmetric → same magnitude for own and nei):
+    Kokkos::atomic_sub(&values[rowOffs[own] + diagOffset[own]], flux);
+    Kokkos::atomic_sub(&values[rowOffs[nei] + diagOffset[nei]], flux);
+
+The divergence operator uses the same addressing but different signs on the
+off-diagonals and diagonal (asymmetric); see :doc:`operatorAssembly` for details.
 
 Physical Boundary Contributions (COO)
 --------------------------------------
@@ -404,11 +408,13 @@ For the 8-cell example (bf0 → C0):
 
 .. note::
 
-   The ``colIdx`` formula uses ``celli + diagOffset[celli]``, **not** the full flat CSR index
-   ``rowOffs[celli] + diagOffset[celli]``.  The two are equal only for cell 0 (where
-   ``rowOffs[0] = 0``).  How this value is consumed by ``CommunicationPattern`` in
-   ``LinearSystem::communicate()`` (``linearSystem.hpp``) should be verified before
-   relying on ``colIdx`` as a direct index into ``matrix_.values()``.
+   The ``colIdx`` formula uses ``celli + diagOffset[celli]``, **not** the full flat CSR
+   index ``rowOffs[celli] + diagOffset[celli]``.  The two are equal only for cell 0.
+   This value is a **bookkeeping tag**, not a direct index into ``matrix_.values()``.
+   Physical boundary contributions are written directly to the CSR diagonal inside the
+   operator kernels (e.g. ``computeLaplacianBoundImpl``); the COO ``boundaryMatrix_``
+   tracks the face-to-cell mapping for other purposes.  Do **not** use ``bColIdx`` as a
+   flat CSR offset.
 
 Processor Boundary Contributions (COO)
 ---------------------------------------
@@ -441,12 +447,14 @@ The MPI exchange happens in ``LinearSystem::communicate()``
 3. Subtract received values from the local CSR matrix diagonal via
    ``sub(recvBuffer, boundaryMatrixMap, matrix_.values())``.
 
-.. warning::
+.. note::
 
-   As with physical boundaries, ``pColIdx = celli + diagOffset[celli]`` differs from the true
-   flat CSR diagonal index (``rowOffs[celli] + diagOffset[celli]``) for cells beyond cell 0.
-   Verify the scatter logic in ``LinearSystem::communicate()`` and
-   ``CommunicationPattern::boundaryMapVector`` before adding new processor-boundary operators.
+   ``pColIdx = celli + diagOffset[celli]`` is a bookkeeping tag (not a flat CSR offset),
+   same as the physical-boundary case.  ``LinearSystem::communicate()`` does **not** use
+   this colIdx directly; instead it calls ``computeRowToDiagonalMap`` which correctly
+   resolves ``rowOffs[cell] + diagOffset[cell]`` at scatter time.
+   ``CommunicationPattern::boundaryMapVector`` is currently unused (see FIXME in
+   ``unstructuredMesh.cpp``).
 
 How to Access Values in Practice
 ----------------------------------
@@ -467,7 +475,9 @@ How to Access Values in Practice
     values[mi->lowerIdx(nei, f)] += contribution;
     // Equivalent direct form: values[rowOffs[nei] + neighbourOffset[f]] += contribution;
 
-    // 4. Physical or processor boundary contribution:
-    //    Write directly to boundaryMatrix; NeoN scatters it to the CSR
-    //    diagonal automatically during LinearSystem::communicate().
-    ls.boundaryMatrix().values().view()[bcFaceIdx] += bcContribution;
+    // 4. Physical boundary contribution:
+    //    Operator kernels (e.g. computeLaplacianBoundImpl) write directly to
+    //    the CSR diagonal and RHS — there is no automatic scatter from boundaryMatrix.
+    auto own = faceCells[bcFaceIdx];
+    Kokkos::atomic_sub(&values[mi->diagIdx(own)], diagonalContribution);
+    rhs[own] -= rhsContribution;
