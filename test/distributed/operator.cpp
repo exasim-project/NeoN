@@ -61,6 +61,7 @@ TEST_CASE("Distributed")
         exec, "p", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
     );
 
+    srand(42);
     randomizeVector(U);
     randomizeVector(p);
 
@@ -69,6 +70,7 @@ TEST_CASE("Distributed")
     auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
 
     fill(phi.internalVector(), 1.0);
+    srand(42);
     randomizeVector(phi.internalVector());
     fill(gamma.internalVector(), 2.0);
 
@@ -163,7 +165,7 @@ TEST_CASE("Distributed")
     {
         REQUIRE_THAT(take(x, 4, 8), IsEqualTo(xPart));
     }
-    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 1")
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 2")
     {
         REQUIRE_THAT(take(x, 8, 12), IsEqualTo(xPart));
     }
