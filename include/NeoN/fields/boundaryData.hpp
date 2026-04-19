@@ -271,24 +271,5 @@ void communicateBoundaryData(
         NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[idxV[i]]; },
         "copyMap"
     );
-
-    // FIXME TODO remove
-    // std::cout
-    //     << __FILE__ << ":" << __LINE__
-    //     << " after send "
-    //     << " rank " << mpiEnv.rank()
-    //     << " procPatchOffset " <<  procPatchOffset[0]
-    //     <<  " sendCounts ["
-    //     << commPattern.sendCounts[0] << ","
-    //     << commPattern.sendCounts[1] << ","
-    //     << commPattern.sendCounts[2] << "]"
-    //     <<  " sdispl ["
-    //     << sdispls[0] << ","
-    //     << sdispls[1] << ","
-    //     << sdispls[2] << "]"
-    //     << " sendSize " << sendSize
-    //     << " exchange " << boundaryData.view()[procPatchOffset[0]]
-    //     << "\n";
-    // // copy into corresponding boundaryData
 }
 }

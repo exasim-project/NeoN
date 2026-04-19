@@ -26,7 +26,7 @@ auto setProcessorBoundaryHelper(
         {
             boundaryType = "processor";
         }
-        if (rank == 2 && i == 0)
+        if (rank == 2 && i == 1)
         {
             boundaryType = "processor";
         }
@@ -121,12 +121,25 @@ TEST_CASE("Distributed")
     {
         REQUIRE(uPart.internalVector().size() == nCells / mpiEnviron.sizeRank());
         REQUIRE(uPart.boundaryData().nBoundaries() == 2);
-        // TODO add other ranks
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct " + execName)
         {
             auto uPartExp = std::vector<scalar> {1.0, 2.0, 3.0, 4.0};
             REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
             auto uPartBoundExp = std::vector<scalar> {0.0, 5.0};
+            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+        }
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct " + execName)
+        {
+            auto uPartExp = std::vector<scalar> {5.0, 6.0, 7.0, 8.0};
+            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            auto uPartBoundExp = std::vector<scalar> {4.0, 9.0};
+            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+        }
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct " + execName)
+        {
+            auto uPartExp = std::vector<scalar> {9.0, 10.0, 11.0, 12.0};
+            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            auto uPartBoundExp = std::vector<scalar> {0.0, 8.0};
             REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
         }
     }
