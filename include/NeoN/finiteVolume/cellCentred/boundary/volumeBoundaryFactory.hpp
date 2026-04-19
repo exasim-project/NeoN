@@ -58,6 +58,8 @@ public:
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
 
+    virtual std::string getName() const = 0;
+
     BoundaryAttributes attributes() const { return attributes_; }
 
 protected:
@@ -107,6 +109,8 @@ public:
     {
         return boundaryCorrectionStrategy_->attributes();
     }
+
+    const std::string name() const { return boundaryCorrectionStrategy_->getName(); }
 
 private:
 

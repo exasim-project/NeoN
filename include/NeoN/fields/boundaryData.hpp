@@ -4,10 +4,13 @@
 
 #pragma once
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 
 #include <vector>
 #include <utility>
@@ -214,4 +217,59 @@ private:
     localIdx nBoundaryFaces_;      ///< The number of boundary faces.
 };
 
+/**@brief exchange values on processor boundaries*/
+template<typename ValueType>
+void communicateBoundaryData(
+    const CommunicationPattern& commPattern,
+    const std::vector<localIdx> procPatchOffset,
+    Vector<ValueType>& boundaryData
+)
+{
+    // // 2. exchange
+    auto mpiEnv = commPattern.env;
+    auto commRanks = mpiEnv.sizeRank();
+    auto sendSize = commPattern.sendCounts[commRanks];
+
+    // compute send displacements
+    auto sdispls = std::vector<int>(commRanks, 0);
+    int j = 0;
+    for (int i = 0; i < sdispls.size(); i++)
+    {
+        // check if rank communicates data
+        if (commPattern.sendCounts[i] > 0)
+        {
+            // send displ patch start
+            sdispls[i] = procPatchOffset[j];
+            j++;
+        }
+    }
+
+    // FIXME recvBuffer does not need to same size as boundaryData
+    auto recvBuffer = Vector<ValueType>(boundaryData.exec(), boundaryData.size());
+    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
+    MPI_Alltoallv(
+        boundaryData.data(),
+        commPattern.sendCounts.data(),
+        sdispls.data(),
+        mpi::getType<ValueType>(),
+        recvBuffer.data(),
+        commPattern.sendCounts.data(),
+        sdispls.data(),
+        mpi::getType<ValueType>(),
+        mpiEnv.comm()
+    );
+
+    // FIXME TODO this might not be needed communication happens directly into boundaryData
+    auto exec = boundaryData.exec();
+    auto outV = boundaryData.view();
+    const auto idxV = copyIdx.view();
+    const auto inV = recvBuffer.view();
+
+    parallelFor(
+        exec,
+        {0, idxV.size()},
+        NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[idxV[i]]; },
+        "copyMap"
+    );
+}
 }

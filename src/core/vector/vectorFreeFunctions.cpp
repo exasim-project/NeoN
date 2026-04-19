@@ -257,6 +257,7 @@ Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx las
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
+    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
     template Vector<Type> take<Type>(const Vector<Type>&, localIdx, localIdx);                     \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
