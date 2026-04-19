@@ -493,6 +493,10 @@ requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</t
 <tr class="memitem:ae3f513f57a4492debc52c24b55a5d212"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ae3f513f57a4492debc52c24b55a5d212">partitionSurfaceField</a> (FieldType field, auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</td></tr>
 <tr class="memdesc:ae3f513f57a4492debc52c24b55a5d212"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
 <tr class="separator:ae3f513f57a4492debc52c24b55a5d212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad22aa7049c1ab860dc9d30473d9a298" id="r_aad22aa7049c1ab860dc9d30473d9a298"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:aad22aa7049c1ab860dc9d30473d9a298"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aad22aa7049c1ab860dc9d30473d9a298">communicateBoundaryData</a> (const <a class="el" href="structNeoN_1_1CommunicationPattern.html">CommunicationPattern</a> &amp;commPattern, const std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; procPatchOffset, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;boundaryData)</td></tr>
+<tr class="memdesc:aad22aa7049c1ab860dc9d30473d9a298"><td class="mdescLeft">&#160;</td><td class="mdescRight">exchange values on processor boundaries  <br /></td></tr>
+<tr class="separator:aad22aa7049c1ab860dc9d30473d9a298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21e591c80791e44b4750aa9654717512" id="r_a21e591c80791e44b4750aa9654717512"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a21e591c80791e44b4750aa9654717512">computeBoundaryMatrixMapVector</a> ()</td></tr>
 <tr class="separator:a21e591c80791e44b4750aa9654717512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e4ff733c9dc00a516d09fbdacb127f4" id="r_a8e4ff733c9dc00a516d09fbdacb127f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a8e4ff733c9dc00a516d09fbdacb127f4">createSingleCellMesh</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> exec)</td></tr>
@@ -888,6 +892,46 @@ template&lt;typename ValueType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad22aa7049c1ab860dc9d30473d9a298" name="aad22aa7049c1ab860dc9d30473d9a298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad22aa7049c1ab860dc9d30473d9a298">&#9670;&#160;</a></span>communicateBoundaryData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::communicateBoundaryData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNeoN_1_1CommunicationPattern.html">CommunicationPattern</a> &amp;&#160;</td>
+          <td class="paramname"><em>commPattern</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td>
+          <td class="paramname"><em>procPatchOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>boundaryData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>exchange values on processor boundaries </p>
+
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00222">222</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>

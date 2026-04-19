@@ -1,9 +1,12 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/fields/boundary\+Data.hpp File Reference}
 \hypertarget{boundaryData_8hpp}{}\label{boundaryData_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp}}
+{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/vector/vector.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/distributed/communication\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/mpi/operators.\+hpp"{}}\newline
 {\ttfamily \#include $<$vector$>$}\newline
 {\ttfamily \#include $<$utility$>$}\newline
 \doxysubsubsection*{Classes}
@@ -16,3 +19,8 @@ class \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Neo\+N\+::\+Boundary\+Data$<$ 
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aad22aa7049c1ab860dc9d30473d9a298}{Neo\+N\+::communicate\+Boundary\+Data}} (const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&boundary\+Data)
+\begin{DoxyCompactList}\small\item\em exchange values on processor boundaries \end{DoxyCompactList}\end{DoxyCompactItemize}

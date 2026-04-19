@@ -306,6 +306,8 @@ requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...
 \begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Field\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_ae3f513f57a4492debc52c24b55a5d212}{partition\+Surface\+Field}} (Field\+Type field, auto \&mesh, auto bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ, bool flip=false)
 \begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aad22aa7049c1ab860dc9d30473d9a298}{communicate\+Boundary\+Data}} (const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&boundary\+Data)
+\begin{DoxyCompactList}\small\item\em exchange values on processor boundaries \end{DoxyCompactList}\item 
 std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_a21e591c80791e44b4750aa9654717512}{compute\+Boundary\+Matrix\+Map\+Vector}} ()
 \item 
 \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}{create\+Single\+Cell\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec)
@@ -538,6 +540,21 @@ void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_
 \doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_aad22aa7049c1ab860dc9d30473d9a298}\label{namespaceNeoN_aad22aa7049c1ab860dc9d30473d9a298} 
+\index{NeoN@{NeoN}!communicateBoundaryData@{communicateBoundaryData}}
+\index{communicateBoundaryData@{communicateBoundaryData}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{communicateBoundaryData()}{communicateBoundaryData()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::communicate\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&}]{comm\+Pattern,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{proc\+Patch\+Offset,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})}
+
+
+
+exchange values on processor boundaries 
+
+
+
+Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00222}{222}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a21e591c80791e44b4750aa9654717512}\label{namespaceNeoN_a21e591c80791e44b4750aa9654717512} 
 \index{NeoN@{NeoN}!computeBoundaryMatrixMapVector@{computeBoundaryMatrixMapVector}}
