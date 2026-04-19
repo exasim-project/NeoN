@@ -106,12 +106,14 @@ gaussGreenDiv — Explicit
 
 .. note::
 
-   **Explicit (+) vs. implicit (−) sign convention.**
-   The explicit ``computeDiv`` returns :math:`+\nabla \cdot (F\varphi)`.
-   The implicit ``computeDivImp`` assembles :math:`-\nabla \cdot (F\varphi)` into
-   the linear system (conservative form for the transport equation
-   :math:`\partial\varphi/\partial t = -\nabla\cdot(F\varphi) + \ldots`).
-   This sign difference is intentional.
+   **Consistent sign convention.**
+   Both the explicit ``computeDiv`` and the implicit ``computeDivImp`` assemble
+   :math:`+\nabla \cdot (F\varphi)` — the positive divergence operator — matching
+   OpenFOAM's ``fvm::div`` convention.  The DSL equation form mirrors OpenFOAM:
+
+   .. code-block:: cpp
+
+      dsl::solve(ddt(phi) + div(faceFlux, phi) - laplacian(gamma, phi) == source, ...)
 
 Internal faces
 ^^^^^^^^^^^^^^
@@ -146,21 +148,21 @@ After both loops: ``div[celli] *= operatorScaling[celli] / vol[celli]``.
 gaussGreenDiv — Implicit
 ------------------------
 
-``computeDivImp`` assembles the **conservative** implicit divergence operator into a
-``LinearSystem``.
+``computeDivImp`` assembles :math:`+\nabla \cdot (F\varphi)` into a ``LinearSystem``,
+identical in sign to ``computeDivExp`` and to OpenFOAM's ``fvm::div``.
 
-Conservative convention
-^^^^^^^^^^^^^^^^^^^^^^^
+Divergence convention
+^^^^^^^^^^^^^^^^^^^^^
 
 With :math:`F_f > 0` meaning flux from owner P to neighbour N
 (valid because :math:`\mathbf{S}_f` points from owner to neighbour):
 
-- **Owner row** P gets a total contribution of :math:`-F_f`
-  (flux *leaves* owner → negative).
-- **Neighbour row** N gets a total contribution of :math:`+F_f`
-  (flux *enters* neighbour → positive).
+- **Owner row** P: total contribution **+F_f**
+  (:math:`\mathbf{S}_f` is outward from P → positive divergence at P).
+- **Neighbour row** N: total contribution **−F_f**
+  (:math:`\mathbf{S}_f` is inward to N from this face → negative contribution at N).
 
-Global verification: :math:`-F_f + F_f = 0` per face.
+Global verification: :math:`+F_f - F_f = 0` per face ✓
 
 Internal faces
 ^^^^^^^^^^^^^^
@@ -171,13 +173,22 @@ The face-interpolated transported quantity is:
 
    \varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}
 
-The face flux is decomposed into owner and neighbour contributions:
+The face flux :math:`F_f \varphi_f` decomposes linearly into owner and neighbour contributions:
 
 .. math::
 
    F_f \, \varphi_f
-     = \underbrace{w \, F_f}_{\text{ownFluxContrib}} \varphi_\text{own}
-     + \underbrace{(1-w) F_f}_{\text{neiFluxContrib}} \varphi_\text{nei}
+     = w \, F_f \, \varphi_\text{own}
+     + (1-w) F_f \, \varphi_\text{nei}
+
+In the code the variables ``ownFluxContrib`` and ``neiFluxContrib`` carry a
+**pre-applied minus sign** so that uniform ``+=``/``-=`` patterns in the assembly
+loops still produce the correct positive divergence:
+
+.. code-block:: cpp
+
+   ownFluxContrib = -w * F_f           // note: NEGATIVE; code uses this in += and atomic_sub
+   neiFluxContrib = -(1-w) * F_f       // note: NEGATIVE; code uses this in -= and atomic_add
 
 .. list-table:: Implicit divergence — internal face entries
    :header-rows: 1
@@ -185,36 +196,43 @@ The face flux is decomposed into owner and neighbour contributions:
 
    * - Matrix entry
      - Value
-     - Code variable
+     - Sign note
      - Code
    * - A[nei, own]  (lower tri.)
-     - :math:`+w \cdot F_f \cdot \text{scalingNei}`
-     - ``ownFluxContrib``  at ``neiOffs[f]``
+     - :math:`-w \cdot F_f \cdot \text{scalingNei}`
+     - own value → negative contribution to nei's divergence (inward face for N)
      - ``values[rowNeiStart + neiOffs[f]] += ownFluxContrib * scalingNei``
    * - diag[own]
-     - :math:`-w \cdot F_f \cdot \text{scalingOwn}`
-     - ``-ownFluxContrib``
+     - :math:`+w \cdot F_f \cdot \text{scalingOwn}`
+     - own value → positive contribution to P's divergence (outward face for P)
      - ``atomic_sub(&values[diagOwn], ownFluxContrib * scalingOwn)``
    * - A[own, nei]  (upper tri.)
-     - :math:`-(1-w) \cdot F_f \cdot \text{scalingOwn}`
-     - ``-neiFluxContrib`` at ``ownOffs[f]``
+     - :math:`+(1-w) \cdot F_f \cdot \text{scalingOwn}`
+     - nei value → positive contribution to P's divergence
      - ``values[rowOwnStart + ownOffs[f]] -= neiFluxContrib * scalingOwn``
    * - diag[nei]
-     - :math:`+(1-w) \cdot F_f \cdot \text{scalingNei}`
-     - ``neiFluxContrib``
-     - ``values[rowNeiStart + diagNei] += neiFluxContrib * scalingNei``
+     - :math:`-(1-w) \cdot F_f \cdot \text{scalingNei}`
+     - nei value → negative contribution to N's divergence (inward face for N)
+     - ``atomic_add(&values[diagNei], neiFluxContrib * scalingNei)``
 
 Row-sum verification per face:
 
-- Owner row: :math:`-w F_f - (1-w) F_f = -F_f` ✓
-- Neighbour row: :math:`+w F_f + (1-w) F_f = +F_f` ✓
+- Owner row: :math:`+w F_f + (1-w) F_f = +F_f` ✓
+- Neighbour row: :math:`-w F_f - (1-w) F_f = -F_f` ✓
 
 .. note::
 
-   The diagonal is **assembled explicitly** here — there is no separate ``negSumDiag``
-   pass.  This is valid because the conservative sign convention already places
-   :math:`-F_f` on the owner diagonal and :math:`+F_f` on the neighbour diagonal as
-   part of the face-flux decomposition.
+   The diagonal is **assembled explicitly** — there is no separate ``negSumDiag``
+   pass.  Each face contributes :math:`+w F_f` to the owner diagonal and
+   :math:`-(1-w) F_f` to the neighbour diagonal, so the full sums converge to
+   :math:`+F_f` and :math:`-F_f` respectively.
+
+.. note::
+
+   **Matches OpenFOAM.**  OpenFOAM's ``gaussConvectionScheme`` sets
+   ``lower[f] = -w F_f``, ``upper[f] = (1-w) F_f``, then ``negSumDiag()`` gives
+   ``diag[own] += w F_f`` and ``diag[nei] -= (1-w) F_f`` — the **same structure**
+   as NeoN.
 
 Physical boundary
 ^^^^^^^^^^^^^^^^^
@@ -298,7 +316,7 @@ gaussGreenLaplacian — Implicit
 ------------------------------
 
 ``computeLaplacianImpl`` assembles the diffusion operator
-:math:`-\nabla \cdot (\gamma \nabla)` into the linear system.
+:math:`+\nabla \cdot (\gamma \nabla \varphi)` into the linear system.
 
 Internal faces
 ^^^^^^^^^^^^^^
