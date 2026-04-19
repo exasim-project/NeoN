@@ -125,6 +125,8 @@ public:
 
     static std::string name() { return "symmetry"; }
 
+    virtual std::string getName() const { return name(); }
+
     static std::string doc()
     {
         return "Symmetry plane (scalar: zero-gradient; vector: tangential projection).";

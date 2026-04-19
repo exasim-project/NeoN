@@ -8,9 +8,48 @@
 
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/mpi/operators.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
+
+// TODO move to source file
+namespace detail
+{
+// NOTE test with zero gradient first
+// FIXME TODO exchange values on boundaries with neighbour rank
+template<typename ValueType>
+void setProcBoundaryValue(
+    Field<ValueType>& domainVector,
+    const UnstructuredMesh& mesh,
+    std::pair<localIdx, localIdx> range,
+    CommunicationPattern& commPattern
+)
+{
+    const auto iVector = domainVector.internalVector().view();
+
+    auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = views(
+        domainVector.boundaryData().refGrad(),
+        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueFraction(),
+        domainVector.boundaryData().refValue(),
+        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().deltaCoeffs()
+    );
+
+    NeoN::parallelFor(
+        domainVector.exec(),
+        range,
+        NEON_LAMBDA(const localIdx i) {
+            refGradient[i] = zero<ValueType>();
+            value[i] = iVector[faceCells[i]];
+            valueFraction[i] = 0.0;          // only use refGrad
+            refValue[i] = zero<ValueType>(); // not used
+        },
+        "setProcBoundaryValue"
+    );
+}
+}
 
 template<typename ValueType>
 class Processor : public VolumeBoundaryFactory<ValueType>::template Register<Processor<ValueType>>
@@ -22,10 +61,14 @@ public:
     using ProcessorType = Processor<ValueType>;
 
     Processor(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true})
+        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh),
+          commPattern_(computeCommunicationPattern(mesh))
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
+    {
+        detail::setProcBoundaryValue(domainVector, mesh_, this->range(), commPattern_);
+    }
 
     static std::string name() { return "processor"; }
 
@@ -37,5 +80,15 @@ public:
     {
         return std::make_unique<Processor>(*this);
     }
+
+    virtual std::string getName() const { return name(); }
+
+
+private:
+
+    const UnstructuredMesh& mesh_;
+
+    // FIXME TODO do a patch based comm pattern?
+    CommunicationPattern commPattern_;
 };
 }

@@ -29,6 +29,8 @@ public:
 
     static std::string name() { return "empty"; }
 
+    virtual std::string getName() const { return name(); }
+
     static std::string doc() { return "Do nothing on the boundary."; }
 
     static std::string schema() { return "none"; }
