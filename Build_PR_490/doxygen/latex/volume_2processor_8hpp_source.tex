@@ -1,0 +1,166 @@
+\doxysection{processor.\+hpp}
+\hypertarget{volume_2processor_8hpp_source}{}\label{volume_2processor_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp}}
+\mbox{\hyperlink{volume_2processor_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <mpi.h>}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoN/core/mpi/operators.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00022}00022\ \textcolor{comment}{//\ TODO\ move\ to\ source\ file}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00023}00023\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00025}00025\ \textcolor{comment}{//\ NOTE\ test\ with\ zero\ gradient\ first}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00026}00026\ \textcolor{comment}{//\ FIXME\ TODO\ exchange\ values\ on\ boundaries\ with\ neighbour\ rank}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00027}00027\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00028}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a18ff22922a21db00ba9788e11ac8cf4a}{00028}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a18ff22922a21db00ba9788e11ac8cf4a}{setProcBoundaryValue}}(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00029}00029\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00031}00031\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{CommunicationPattern}}\&\ commPattern}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00033}00033\ )}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00034}00034\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iVector\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells,\ deltaCoeffs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_a0eaea763f073e9551063b873665ae14a}{refGrad}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ad85f79e856706dcc3bb9b7cb71a5b7cd}{value}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_af56b59032dd33aa346caed8ed12c876f}{valueFraction}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().\mbox{\hyperlink{classNeoN_1_1BoundaryData_ac9cdc3476319a4dfd80a32e6702850f4}{refValue}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aae76ed2a48eb7c003c982762d366b04a}{faceCells}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b}{deltaCoeffs}}()}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00044}00044\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00046}00046\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ zero<ValueType>();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ iVector[faceCells[i]];}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 0.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refGrad}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ zero<ValueType>();\ \textcolor{comment}{//\ not\ used}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setProcBoundaryValue"{}}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00056}00056\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00057}00057\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00058}00058\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00060}00060\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor}{00061}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor}{Processor}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Processor<ValueType>>}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00062}00062\ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Processor<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00065}00065\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_aea2f2138ec4fdbe150879e9754562314}{00067}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor}{ProcessorType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor}{Processor<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_ab4e9c2c0304cd1d5bc61e470223845ab}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_ab4e9c2c0304cd1d5bc61e470223845ab}{Processor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{true}\}),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ nbrRank\_(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(mesh.boundaryMesh().neighbourRank(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ )[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(patchID)]))}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00073}00073\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ the\ local\ cell\ indices\ adjacent\ to\ this\ processor\ patch}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ faceCellsHost\ =\ mesh.boundaryMesh().faceCells().copyToHost();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ faceCellsView\ =\ faceCellsHost.view();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start\ =\ this-\/>start\_;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ end\ =\ this-\/>end\_;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ patchSize\ =\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(end\ -\/\ start);}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ faceOwnerCells\_.resize(patchSize);}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ i\ =\ 0;\ i\ <\ patchSize;\ ++i)}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ faceOwnerCells\_[i]\ =\ faceCellsView[start\ +\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(i)];}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00083}00083\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_acddc8a16b88357f15b6d23ba311be523}{00085}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_acddc8a16b88357f15b6d23ba311be523}{correctBoundaryCondition}}([[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00086}00086\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00087}00087\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nbrRank\_\ <\ 0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchSize\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(faceOwnerCells\_.size());}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (patchSize\ ==\ 0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pack:\ gather\ internal\ cell\ values\ for\ the\ faces\ of\ this\ patch\ into\ a\ device\ vector}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ faceOwnerDev(domainVector.exec(),\ faceOwnerCells\_.data(),\ patchSize);}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ sendDev(domainVector.exec(),\ patchSize);}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ intView\ =\ domainVector.internalVector().view();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ faceOwnerV\ =\ faceOwnerDev.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sendView\ =\ sendDev.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.exec(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ patchSize\},}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ sendView[i]\ =\ intView[faceOwnerV[i]];\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(domainVector.exec());}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ packed\ values\ to\ host\ for\ MPI}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ sendHost\ =\ sendDev.\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ std::vector<ValueType>\ recvBuf(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(patchSize));}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ mpi::Environment\ mpiEnv;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ MPI\_Sendrecv(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ sendHost.data(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ patchSize\ *\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\textcolor{keyword}{sizeof}(ValueType)),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ MPI\_BYTE,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ nbrRank\_,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ 0,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ recvBuf.data(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ patchSize\ *\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\textcolor{keyword}{sizeof}(ValueType)),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ MPI\_BYTE,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ nbrRank\_,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ 0,}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ MPI\_STATUS\_IGNORE}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ received\ values\ to\ device\ and\ write\ into\ the\ boundary\ data\ patch\ range}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ recvDev(domainVector.exec(),\ recvBuf.data(),\ patchSize);}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ start\ =\ this-\/>start\_;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ bDataView\ =\ domainVector.boundaryData().value().view();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ recvView\ =\ recvDev.\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.exec(),}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ patchSize\},}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ bDataView[start\ +\ i]\ =\ recvView[i];\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(domainVector.exec());}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00141}00141\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00142}00142\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00144}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a40590ab7dda22f02f361d789be22a55c}{00144}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a40590ab7dda22f02f361d789be22a55c}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}processor"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00146}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_ae0823539d681ec383cc12f163b371008}{00146}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_ae0823539d681ec383cc12f163b371008}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00147}00147\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00148}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a886a5e06e82c3f3c43f14fd26dfde5ea}{00148}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a886a5e06e82c3f3c43f14fd26dfde5ea}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00149}00149\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00150}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a2886200f1ed6acda5999b979b4bb58dd}{00150}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Processor_a2886200f1ed6acda5999b979b4bb58dd}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00151}00151\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Processor>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00153}00153\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00154}00154\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00155}00155\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keywordtype}{int}\ nbrRank\_\ \{-\/1\};}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00158}00158\ \ \ \ \ std::vector<localIdx>\ faceOwnerCells\_;}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00159}00159\ \};}
+\DoxyCodeLine{\Hypertarget{volume_2processor_8hpp_source_l00160}00160\ \}}
+
+\end{DoxyCode}
