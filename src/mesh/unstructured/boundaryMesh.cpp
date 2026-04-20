@@ -108,6 +108,8 @@ const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
 
 scalar BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
 
+const std::vector<localIdx>& BoundaryMesh::neighbourRank() const { return neighbourRank_; }
+
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
     return extractSubView(deltaCoeffs_, offset_, i);

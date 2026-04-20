@@ -64,7 +64,10 @@ public:
 
     virtual SolverStats solveDist(
         const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
 
+    virtual SolverStats solveDist(
+        const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
     ) const final;
 
     virtual SolverStats solve(

@@ -370,6 +370,11 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 // NOTE only works for 1d meshes at the moment
 CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 {
+    // If the mesh was constructed from an external source (e.g. OpenFOAM) a correct
+    // CommunicationPattern may have been pre-computed and stored in the stencil database.
+    if (mesh.stencilDB().contains("communicationPattern"))
+        return mesh.stencilDB().get<CommunicationPattern>("communicationPattern");
+
     mpi::Environment mpiEnviron;
     // early return if not distributed
     if (!mesh.boundaryMesh().isDistributed())

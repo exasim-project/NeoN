@@ -62,25 +62,19 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         "basicGeometricScheme::updateWeightsBoundary"
     );
 
+    // Proc boundary weights: w = d_N/(d_P+d_N) = 1 - d_P*deltaCoeffs
+    // d_P = |patch.delta()| (owner cell to face centre, local), deltaCoeffs = 1/(d_P+d_N)
+    // (d_N is on the remote rank; both d_P and d_P+d_N are available from BoundaryMesh).
+    const auto bMeshDeltaV = mesh_.boundaryMesh().delta().view();
+    const auto bMeshDeltaCoeffsV_w = mesh_.boundaryMesh().deltaCoeffs().view();
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            // weightS[facei] = 10.5;
-            // scalar sfdOwn = std::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
-            // scalar sfdNei = std::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
-
-            // if (std::abs(sfdOwn + sfdNei) > ROOTVSMALL)
-            // {
-            //     weightS[facei] = sfdNei / (sfdOwn + sfdNei);
-
-            // }
-            // else
-            // {
-            //     weightS[facei] = 0.5;
-            // }
+            auto bcfacei = facei - nInternalFaces;
+            weightS[facei] = 1.0 - mag(bMeshDeltaV[bcfacei]) * bMeshDeltaCoeffsV_w[bcfacei];
         },
-        "basicGeometricScheme::updateWeightsBoundary"
+        "basicGeometricScheme::updateWeightsProcBoundary"
     );
 }
 
@@ -122,17 +116,18 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
 
-    // FIXME
+    // Proc boundary delta coefficients: use the pre-computed values from the boundary mesh.
+    // The neighbour cell centre is on a remote rank; use the OpenFOAM-provided deltaCoeffs
+    // which account for both sides of the proc boundary.
+    const auto bMeshDeltaCoeffsV = mesh_.boundaryMesh().deltaCoeffs().view();
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            auto own = surfFaceCells[facei - nInternalFaces];
-            Vec3 cellToCellDist = cf[facei] - cellCentre[own];
-
-            deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
+            auto bcfacei = facei - nInternalFaces;
+            deltaCoeff[facei] = bMeshDeltaCoeffsV[bcfacei];
         },
-        "basicGeometricScheme::updateDeltaCoeffsBoundary"
+        "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
     );
 }
 
@@ -180,18 +175,18 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
 
-    // FIXME
+    // Proc boundary non-orthogonal delta coefficients: use the pre-computed deltaCoeffs
+    // from the boundary mesh (same as deltaCoeffs since non-orthogonal correction requires
+    // the neighbour cell centre which is on a remote rank).
+    const auto bMeshDeltaCoeffsV2 = mesh_.boundaryMesh().deltaCoeffs().view();
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            auto own = surfFaceCells[facei - nInternalFaces];
-            Vec3 cellToCellDist = cf[facei] - cellCentre[own];
-            Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
-            scalar orthoDist = faceNormal & cellToCellDist;
-            nonOrthDeltaCoeff[facei] = 0.5 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
+            auto bcfacei = facei - nInternalFaces;
+            nonOrthDeltaCoeff[facei] = bMeshDeltaCoeffsV2[bcfacei];
         },
-        "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
+        "basicGeometricScheme::updateNonOrthDeltaCoeffsProcBoundary"
     );
 }
 

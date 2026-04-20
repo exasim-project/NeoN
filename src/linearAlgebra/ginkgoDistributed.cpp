@@ -7,6 +7,8 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
+#include <algorithm>
+
 namespace NeoN::la::ginkgo
 {
 
@@ -113,6 +115,15 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     gko::array<int> recv_connections = gko::make_array_view(exec, bmtxv.size(), bmtxv.data());
 
+    // Count unique remote cells. With scotch decomposition a single remote cell can be adjacent
+    // to multiple proc boundary faces, so unique cells <= total proc faces.
+    // We compute the unique count by copying recv_connections to host and deduplicating.
+    auto recv_host = gko::array<int>(exec->get_master(), recv_connections);
+    auto* recv_ptr = recv_host.get_data();
+    std::sort(recv_ptr, recv_ptr + recv_host.get_num_elems());
+    auto uniqueEnd = std::unique(recv_ptr, recv_ptr + recv_host.get_num_elems());
+    auto remoteGlobalSize = static_cast<gko::size_type>(std::distance(recv_ptr, uniqueEnd));
+
     auto imap = gko::experimental::distributed::index_map<label, label>(
         exec, partition, comm.rank(), recv_connections
     );
@@ -138,7 +149,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     // here to avoid any dangling pointer
     auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
                                       exec,
-                                      gko::dim<2> {nrows, numNonLocalElements},
+                                      gko::dim<2> {nrows, remoteGlobalSize},
                                       std::move(non_loc_vals),
                                       comp_non_loc_col.as_const_view(),
                                       std::move(non_loc_row)
@@ -206,11 +217,48 @@ SolverStatsEntry solve_impl_dist(
     return {numIter, initResNorm, finalResNorm, duration};
 }
 
+template<unsigned int I>
+void solveComponentDist(auto& sys, auto& x, auto& gkoExec, auto& factory, auto& stats)
+{
+    const CommunicationPattern& commPattern = sys.commPattern();
+    // Force host staging for MPI communication to ensure correctness when CUDA-aware MPI
+    // is unavailable (e.g. WSL2). For CUDA-aware MPI environments this is slower but safe.
+    bool forceHostBuffer = true;
+    auto comm = gko::experimental::mpi::communicator(commPattern.env.comm(), forceHostBuffer);
+
+    auto values = getComponent<I>(sys.matrix().values());
+    auto sparsity = sys.matrix().sparsity();
+    auto localMtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+    auto nlValues = getComponent<I>(sys.nonLocalMatrix().values());
+    auto nlSparsity = sys.nonLocalMatrix().sparsity();
+    auto nonLocalMtx = COOMatrix<scalar, localIdx> {nlValues, nlSparsity};
+
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+
+    auto gkoMtx = createGkoMtxDist(gkoExec, comm, localMtx, nonLocalMtx, commPattern);
+    auto solver = factory->generate(gkoMtx);
+    stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, std::move(solver)));
+    setComponent<I>(xcopy, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+) const
+{
+    auto stats = SolverStats {};
+    solveComponentDist<0>(sys, x, gkoExec_, factory_, stats);
+    solveComponentDist<1>(sys, x, gkoExec_, factory_, stats);
+    solveComponentDist<2>(sys, x, gkoExec_, factory_, stats);
+    return stats;
+}
+
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    // TODO make that selectable via dictionary
+    // Force host staging for MPI; see comment in solveComponentDist.
     bool forceHostBuffer = false;
     const CommunicationPattern& commPattern = sys.commPattern();
     auto comm = gko::experimental::mpi::communicator(commPattern.env.comm(), forceHostBuffer);

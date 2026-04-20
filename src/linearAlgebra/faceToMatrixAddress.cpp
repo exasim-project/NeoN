@@ -310,10 +310,24 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     Vector<IndexType> procRowOffs(exec, nProcBoundaryFaces, 0);
-    // FIXME set everything int setProcBoundarySparsityPattern
-    Vector<IndexType> procColIdx(exec, commPattern.recvIdx);
-    setProcBoundarySparsityPattern(mesh, diagOffs, procRowOffs, procColIdx);
+    Vector<IndexType> procColIdx(exec, nProcBoundaryFaces, 0);
+    if (nProcBoundaryFaces > 0)
+    {
+        // For 3D decomposed meshes (scotch), use the pre-computed CommunicationPattern from
+        // the stencilDB which contains correct global cell indices from MPI exchange.
+        // Fall back to the plain commPattern for 1D cases where stencilDB has no entry.
+        const CommunicationPattern& cp =
+            mesh.stencilDB().contains("communicationPattern")
+                ? mesh.stencilDB().get<CommunicationPattern>("communicationPattern")
+                : commPattern;
 
+        if (cp.recvIdx.size() == static_cast<std::size_t>(nProcBoundaryFaces))
+        {
+            auto recvIdxVec = Vector<IndexType>(exec, cp.recvIdx);
+            procColIdx = std::move(recvIdxVec);
+        }
+        setProcBoundarySparsityPattern(mesh, diagOffs, procRowOffs, procColIdx);
+    }
     auto nonLocalSp = std::make_shared<const CooSparsityPattern<IndexType>>(
         std::move(procColIdx), std::move(procRowOffs)
     );
