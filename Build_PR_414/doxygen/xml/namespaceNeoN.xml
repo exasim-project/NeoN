@@ -2609,15 +2609,21 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" line="100" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp" bodystart="100" bodyend="103"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1a492dde0aa0f1ad6924c6627bc9d26ded" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1aae274afc3d21628e67087bbac45b10c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename FieldType</type>
           </param>
+          <param>
+            <type>typename MeshType</type>
+          </param>
+          <param>
+            <type>typename BcType</type>
+          </param>
         </templateparamlist>
         <type>FieldType</type>
         <definition>FieldType NeoN::partitionVolField</definition>
-        <argsstring>(FieldType field, const auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)</argsstring>
+        <argsstring>(FieldType field, const MeshType &amp;mesh, BcType bcs, NeoN::mpi::Environment mpiEnviron)</argsstring>
         <name>partitionVolField</name>
         <qualifiedname>NeoN::partitionVolField</qualifiedname>
         <param>
@@ -2625,11 +2631,11 @@
           <declname>field</declname>
         </param>
         <param>
-          <type>const auto &amp;</type>
+          <type>const MeshType &amp;</type>
           <declname>mesh</declname>
         </param>
         <param>
-          <type>auto</type>
+          <type>BcType</type>
           <declname>bcs</declname>
         </param>
         <param>
@@ -2643,17 +2649,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" line="16" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" bodystart="16" bodyend="41"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" line="15" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" bodystart="15" bodyend="42"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1ae3f513f57a4492debc52c24b55a5d212" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1ab3822d77e5f5fba2211499c8bc313eda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename FieldType</type>
           </param>
+          <param>
+            <type>typename MeshType</type>
+          </param>
+          <param>
+            <type>typename BcType</type>
+          </param>
         </templateparamlist>
         <type>FieldType</type>
         <definition>FieldType NeoN::partitionSurfaceField</definition>
-        <argsstring>(FieldType field, auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</argsstring>
+        <argsstring>(FieldType field, MeshType &amp;mesh, BcType bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</argsstring>
         <name>partitionSurfaceField</name>
         <qualifiedname>NeoN::partitionSurfaceField</qualifiedname>
         <param>
@@ -2661,11 +2673,11 @@
           <declname>field</declname>
         </param>
         <param>
-          <type>auto &amp;</type>
+          <type>MeshType &amp;</type>
           <declname>mesh</declname>
         </param>
         <param>
-          <type>auto</type>
+          <type>BcType</type>
           <declname>bcs</declname>
         </param>
         <param>
@@ -2684,7 +2696,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" line="46" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" bodystart="46" bodyend="148"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" line="47" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/partitioning.hpp" bodystart="47" bodyend="153"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1aad22aa7049c1ab860dc9d30473d9a298" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

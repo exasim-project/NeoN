@@ -662,23 +662,26 @@ rank-0 example is:</p>
 </tbody>
 </table>
 </div>
-<p>A typical operator assembly kernel (e.g. <code class="docutils literal notranslate"><span class="pre">gaussGreenDiv.cpp</span></code>) follows the pattern:</p>
+<p>The Laplacian kernel illustrates the canonical addressing pattern (symmetric operator,
+<code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">deltaCoeffs</span> <span class="pre">*</span> <span class="pre">gamma</span> <span class="pre">*</span> <span class="pre">magSf</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>):</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceOwner</span><span class="p">[</span><span class="n">facei</span><span class="p">];</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">nei</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceNeighbour</span><span class="p">[</span><span class="n">facei</span><span class="p">];</span>
 
 <span class="c1">// A[nei, own] — lower triangular, in neighbour&#39;s row:</span>
-<span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neighbourOffset</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">fluxNei</span><span class="p">;</span>
-<span class="c1">// values[lowerIdx(nei, facei)] += fluxNei;   // equivalent via matrixIterator</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neighbourOffset</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<span class="c1">// values[lowerIdx(nei, facei)] += flux;   // equivalent via matrixIterator</span>
 
 <span class="c1">// A[own, nei] — upper triangular, in owner&#39;s row:</span>
-<span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownerOffset</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">fluxOwn</span><span class="p">;</span>
-<span class="c1">// values[upperIdx(own, facei)] -= fluxOwn;   // equivalent via matrixIterator</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownerOffset</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<span class="c1">// values[upperIdx(own, facei)] += flux;   // equivalent via matrixIterator</span>
 
-<span class="c1">// Update diagonals:</span>
-<span class="n">Kokkos</span><span class="o">::</span><span class="n">atomic_sub</span><span class="p">(</span><span class="o">&amp;</span><span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="n">own</span><span class="p">]],</span><span class="w"> </span><span class="n">fluxNei</span><span class="p">);</span>
-<span class="n">Kokkos</span><span class="o">::</span><span class="n">atomic_sub</span><span class="p">(</span><span class="o">&amp;</span><span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="n">nei</span><span class="p">]],</span><span class="w"> </span><span class="n">fluxOwn</span><span class="p">);</span><span class="w">  </span><span class="c1">// sign depends on operator</span>
+<span class="c1">// Diagonal — flux leaves each cell (symmetric → same magnitude for own and nei):</span>
+<span class="n">Kokkos</span><span class="o">::</span><span class="n">atomic_sub</span><span class="p">(</span><span class="o">&amp;</span><span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="n">own</span><span class="p">]],</span><span class="w"> </span><span class="n">flux</span><span class="p">);</span>
+<span class="n">Kokkos</span><span class="o">::</span><span class="n">atomic_sub</span><span class="p">(</span><span class="o">&amp;</span><span class="n">values</span><span class="p">[</span><span class="n">rowOffs</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="n">nei</span><span class="p">]],</span><span class="w"> </span><span class="n">flux</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>The divergence operator uses the same addressing but different signs on the
+off-diagonals and diagonal (asymmetric); see <a class="reference internal" href="operatorAssembly.html"><span class="doc">Operator Assembly</span></a> for details.</p>
 </section>
 <section id="physical-boundary-contributions-coo">
 <h2>Physical Boundary Contributions (COO)<a class="headerlink" href="#physical-boundary-contributions-coo" title="Link to this heading">¶</a></h2>
@@ -704,11 +707,13 @@ bColIdx = [0]    (= C0 + diagOffset[C0] = 0 + 0 = 0)
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">colIdx</span></code> formula uses <code class="docutils literal notranslate"><span class="pre">celli</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>, <strong>not</strong> the full flat CSR index
-<code class="docutils literal notranslate"><span class="pre">rowOffs[celli]</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>.  The two are equal only for cell 0 (where
-<code class="docutils literal notranslate"><span class="pre">rowOffs[0]</span> <span class="pre">=</span> <span class="pre">0</span></code>).  How this value is consumed by <code class="docutils literal notranslate"><span class="pre">CommunicationPattern</span></code> in
-<code class="docutils literal notranslate"><span class="pre">LinearSystem::communicate()</span></code> (<code class="docutils literal notranslate"><span class="pre">linearSystem.hpp</span></code>) should be verified before
-relying on <code class="docutils literal notranslate"><span class="pre">colIdx</span></code> as a direct index into <code class="docutils literal notranslate"><span class="pre">matrix_.values()</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">colIdx</span></code> formula uses <code class="docutils literal notranslate"><span class="pre">celli</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>, <strong>not</strong> the full flat CSR
+index <code class="docutils literal notranslate"><span class="pre">rowOffs[celli]</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>.  The two are equal only for cell 0.
+This value is a <strong>bookkeeping tag</strong>, not a direct index into <code class="docutils literal notranslate"><span class="pre">matrix_.values()</span></code>.
+Physical boundary contributions are written directly to the CSR diagonal inside the
+operator kernels (e.g. <code class="docutils literal notranslate"><span class="pre">computeLaplacianBoundImpl</span></code>); the COO <code class="docutils literal notranslate"><span class="pre">boundaryMatrix_</span></code>
+tracks the face-to-cell mapping for other purposes.  Do <strong>not</strong> use <code class="docutils literal notranslate"><span class="pre">bColIdx</span></code> as a
+flat CSR offset.</p>
 </div>
 </section>
 <section id="processor-boundary-contributions-coo">
@@ -736,12 +741,14 @@ pColIdx = [4]    (= C3 + diagOffset[C3] = 3 + 1 = 4)
 <li><p>Subtract received values from the local CSR matrix diagonal via
 <code class="docutils literal notranslate"><span class="pre">sub(recvBuffer,</span> <span class="pre">boundaryMatrixMap,</span> <span class="pre">matrix_.values())</span></code>.</p></li>
 </ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>As with physical boundaries, <code class="docutils literal notranslate"><span class="pre">pColIdx</span> <span class="pre">=</span> <span class="pre">celli</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code> differs from the true
-flat CSR diagonal index (<code class="docutils literal notranslate"><span class="pre">rowOffs[celli]</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>) for cells beyond cell 0.
-Verify the scatter logic in <code class="docutils literal notranslate"><span class="pre">LinearSystem::communicate()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">CommunicationPattern::boundaryMapVector</span></code> before adding new processor-boundary operators.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">pColIdx</span> <span class="pre">=</span> <span class="pre">celli</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code> is a bookkeeping tag (not a flat CSR offset),
+same as the physical-boundary case.  <code class="docutils literal notranslate"><span class="pre">LinearSystem::communicate()</span></code> does <strong>not</strong> use
+this colIdx directly; instead it calls <code class="docutils literal notranslate"><span class="pre">computeRowToDiagonalMap</span></code> which correctly
+resolves <code class="docutils literal notranslate"><span class="pre">rowOffs[cell]</span> <span class="pre">+</span> <span class="pre">diagOffset[cell]</span></code> at scatter time.
+<code class="docutils literal notranslate"><span class="pre">CommunicationPattern::boundaryMapVector</span></code> is currently unused (see FIXME in
+<code class="docutils literal notranslate"><span class="pre">unstructuredMesh.cpp</span></code>).</p>
 </div>
 </section>
 <section id="how-to-access-values-in-practice">
@@ -760,10 +767,12 @@ Verify the scatter logic in <code class="docutils literal notranslate"><span cla
 <span class="n">values</span><span class="p">[</span><span class="n">mi</span><span class="o">-&gt;</span><span class="n">lowerIdx</span><span class="p">(</span><span class="n">nei</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">)]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">contribution</span><span class="p">;</span>
 <span class="c1">// Equivalent direct form: values[rowOffs[nei] + neighbourOffset[f]] += contribution;</span>
 
-<span class="c1">// 4. Physical or processor boundary contribution:</span>
-<span class="c1">//    Write directly to boundaryMatrix; NeoN scatters it to the CSR</span>
-<span class="c1">//    diagonal automatically during LinearSystem::communicate().</span>
-<span class="n">ls</span><span class="p">.</span><span class="n">boundaryMatrix</span><span class="p">().</span><span class="n">values</span><span class="p">().</span><span class="n">view</span><span class="p">()[</span><span class="n">bcFaceIdx</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">bcContribution</span><span class="p">;</span>
+<span class="c1">// 4. Physical boundary contribution:</span>
+<span class="c1">//    Operator kernels (e.g. computeLaplacianBoundImpl) write directly to</span>
+<span class="c1">//    the CSR diagonal and RHS — there is no automatic scatter from boundaryMatrix.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceCells</span><span class="p">[</span><span class="n">bcFaceIdx</span><span class="p">];</span>
+<span class="n">Kokkos</span><span class="o">::</span><span class="n">atomic_sub</span><span class="p">(</span><span class="o">&amp;</span><span class="n">values</span><span class="p">[</span><span class="n">mi</span><span class="o">-&gt;</span><span class="n">diagIdx</span><span class="p">(</span><span class="n">own</span><span class="p">)],</span><span class="w"> </span><span class="n">diagonalContribution</span><span class="p">);</span>
+<span class="n">rhs</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">rhsContribution</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>

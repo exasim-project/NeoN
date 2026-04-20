@@ -302,9 +302,9 @@ requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \
 {\footnotesize template$<$typename... Types$>$ \newline
 requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...)}\\auto \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}} (Types \&... args)
 \begin{DoxyCompactList}\small\item\em Unpacks all views of the passed classes. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Field\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_a492dde0aa0f1ad6924c6627bc9d26ded}{partition\+Vol\+Field}} (Field\+Type field, const auto \&mesh, auto bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ)
+{\footnotesize template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9}{partition\+Vol\+Field}} (Field\+Type field, const Mesh\+Type \&mesh, Bc\+Type bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ)
 \begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Field\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_ae3f513f57a4492debc52c24b55a5d212}{partition\+Surface\+Field}} (Field\+Type field, auto \&mesh, auto bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ, bool flip=false)
+{\footnotesize template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda}{partition\+Surface\+Field}} (Field\+Type field, Mesh\+Type \&mesh, Bc\+Type bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ, bool flip=false)
 \begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aad22aa7049c1ab860dc9d30473d9a298}{communicate\+Boundary\+Data}} (const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&boundary\+Data)
 \begin{DoxyCompactList}\small\item\em exchange values on processor boundaries \end{DoxyCompactList}\item 
@@ -1283,12 +1283,12 @@ void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyper
 
 Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00256}{256}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ae3f513f57a4492debc52c24b55a5d212}\label{namespaceNeoN_ae3f513f57a4492debc52c24b55a5d212} 
+\Hypertarget{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda}\label{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda} 
 \index{NeoN@{NeoN}!partitionSurfaceField@{partitionSurfaceField}}
 \index{partitionSurfaceField@{partitionSurfaceField}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{partitionSurfaceField()}{partitionSurfaceField()}}
-{\footnotesize\ttfamily template$<$typename Field\+Type $>$ \\
-Field\+Type Neo\+N\+::partition\+Surface\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{auto \&}]{mesh,  }\item[{auto}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ,  }\item[{bool}]{flip = {\ttfamily false} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ \\
+Field\+Type Neo\+N\+::partition\+Surface\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{Mesh\+Type \&}]{mesh,  }\item[{Bc\+Type}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ,  }\item[{bool}]{flip = {\ttfamily false} }\end{DoxyParamCaption})}
 
 
 
@@ -1296,14 +1296,14 @@ helper function given a 1D uniform mesh and a rank it will return the part of th
 
 
 
-Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
+Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a492dde0aa0f1ad6924c6627bc9d26ded}\label{namespaceNeoN_a492dde0aa0f1ad6924c6627bc9d26ded} 
+\Hypertarget{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9}\label{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9} 
 \index{NeoN@{NeoN}!partitionVolField@{partitionVolField}}
 \index{partitionVolField@{partitionVolField}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{partitionVolField()}{partitionVolField()}}
-{\footnotesize\ttfamily template$<$typename Field\+Type $>$ \\
-Field\+Type Neo\+N\+::partition\+Vol\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{const auto \&}]{mesh,  }\item[{auto}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ \\
+Field\+Type Neo\+N\+::partition\+Vol\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{const Mesh\+Type \&}]{mesh,  }\item[{Bc\+Type}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ }\end{DoxyParamCaption})}
 
 
 
@@ -1311,7 +1311,7 @@ helper function given a 1D uniform mesh and a rank it will return the part of th
 
 
 
-Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
+Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00015}{15}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}\label{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce} 
 \index{NeoN@{NeoN}!read@{read}}

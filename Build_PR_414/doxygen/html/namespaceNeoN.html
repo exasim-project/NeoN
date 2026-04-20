@@ -485,14 +485,14 @@ requires (hasView&lt;std::remove_reference_t&lt;Types&gt;&gt; &amp;&amp; ...)</t
 <tr class="memitem:af9198d29681d27f9a478aa99c01c00b9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a> (Types &amp;... args)</td></tr>
 <tr class="memdesc:af9198d29681d27f9a478aa99c01c00b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all views of the passed classes.  <br /></td></tr>
 <tr class="separator:af9198d29681d27f9a478aa99c01c00b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a492dde0aa0f1ad6924c6627bc9d26ded" id="r_a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memTemplParams" colspan="2">template&lt;typename FieldType &gt; </td></tr>
-<tr class="memitem:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a492dde0aa0f1ad6924c6627bc9d26ded">partitionVolField</a> (FieldType field, const auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)</td></tr>
-<tr class="memdesc:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
-<tr class="separator:a492dde0aa0f1ad6924c6627bc9d26ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3f513f57a4492debc52c24b55a5d212" id="r_ae3f513f57a4492debc52c24b55a5d212"><td class="memTemplParams" colspan="2">template&lt;typename FieldType &gt; </td></tr>
-<tr class="memitem:ae3f513f57a4492debc52c24b55a5d212"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ae3f513f57a4492debc52c24b55a5d212">partitionSurfaceField</a> (FieldType field, auto &amp;mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</td></tr>
-<tr class="memdesc:ae3f513f57a4492debc52c24b55a5d212"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
-<tr class="separator:ae3f513f57a4492debc52c24b55a5d212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae274afc3d21628e67087bbac45b10c9" id="r_aae274afc3d21628e67087bbac45b10c9"><td class="memTemplParams" colspan="2">template&lt;typename FieldType , typename MeshType , typename BcType &gt; </td></tr>
+<tr class="memitem:aae274afc3d21628e67087bbac45b10c9"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aae274afc3d21628e67087bbac45b10c9">partitionVolField</a> (FieldType field, const MeshType &amp;mesh, BcType bcs, NeoN::mpi::Environment mpiEnviron)</td></tr>
+<tr class="memdesc:aae274afc3d21628e67087bbac45b10c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
+<tr class="separator:aae274afc3d21628e67087bbac45b10c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3822d77e5f5fba2211499c8bc313eda" id="r_ab3822d77e5f5fba2211499c8bc313eda"><td class="memTemplParams" colspan="2">template&lt;typename FieldType , typename MeshType , typename BcType &gt; </td></tr>
+<tr class="memitem:ab3822d77e5f5fba2211499c8bc313eda"><td class="memTemplItemLeft" align="right" valign="top">FieldType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ab3822d77e5f5fba2211499c8bc313eda">partitionSurfaceField</a> (FieldType field, MeshType &amp;mesh, BcType bcs, NeoN::mpi::Environment mpiEnviron, bool flip=false)</td></tr>
+<tr class="memdesc:ab3822d77e5f5fba2211499c8bc313eda"><td class="mdescLeft">&#160;</td><td class="mdescRight">helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank  <br /></td></tr>
+<tr class="separator:ab3822d77e5f5fba2211499c8bc313eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad22aa7049c1ab860dc9d30473d9a298" id="r_aad22aa7049c1ab860dc9d30473d9a298"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:aad22aa7049c1ab860dc9d30473d9a298"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aad22aa7049c1ab860dc9d30473d9a298">communicateBoundaryData</a> (const <a class="el" href="structNeoN_1_1CommunicationPattern.html">CommunicationPattern</a> &amp;commPattern, const std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; procPatchOffset, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;boundaryData)</td></tr>
 <tr class="memdesc:aad22aa7049c1ab860dc9d30473d9a298"><td class="mdescLeft">&#160;</td><td class="mdescRight">exchange values on processor boundaries  <br /></td></tr>
@@ -2891,13 +2891,13 @@ template&lt;typename Kernel , typename ReturnType &gt; </div>
 
 </div>
 </div>
-<a id="ae3f513f57a4492debc52c24b55a5d212" name="ae3f513f57a4492debc52c24b55a5d212"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3f513f57a4492debc52c24b55a5d212">&#9670;&#160;</a></span>partitionSurfaceField()</h2>
+<a id="ab3822d77e5f5fba2211499c8bc313eda" name="ab3822d77e5f5fba2211499c8bc313eda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3822d77e5f5fba2211499c8bc313eda">&#9670;&#160;</a></span>partitionSurfaceField()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename FieldType &gt; </div>
+template&lt;typename FieldType , typename MeshType , typename BcType &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">FieldType NeoN::partitionSurfaceField </td>
@@ -2908,13 +2908,13 @@ template&lt;typename FieldType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramtype">MeshType &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">auto&#160;</td>
+          <td class="paramtype">BcType&#160;</td>
           <td class="paramname"><em>bcs</em>, </td>
         </tr>
         <tr>
@@ -2939,17 +2939,17 @@ template&lt;typename FieldType &gt; </div>
 
 <p>helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank </p>
 
-<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00046">46</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00047">47</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a492dde0aa0f1ad6924c6627bc9d26ded" name="a492dde0aa0f1ad6924c6627bc9d26ded"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a492dde0aa0f1ad6924c6627bc9d26ded">&#9670;&#160;</a></span>partitionVolField()</h2>
+<a id="aae274afc3d21628e67087bbac45b10c9" name="aae274afc3d21628e67087bbac45b10c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae274afc3d21628e67087bbac45b10c9">&#9670;&#160;</a></span>partitionVolField()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename FieldType &gt; </div>
+template&lt;typename FieldType , typename MeshType , typename BcType &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">FieldType NeoN::partitionVolField </td>
@@ -2960,13 +2960,13 @@ template&lt;typename FieldType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const auto &amp;&#160;</td>
+          <td class="paramtype">const MeshType &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">auto&#160;</td>
+          <td class="paramtype">BcType&#160;</td>
           <td class="paramname"><em>bcs</em>, </td>
         </tr>
         <tr>
@@ -2985,7 +2985,7 @@ template&lt;typename FieldType &gt; </div>
 
 <p>helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank </p>
 
-<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00016">16</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="partitioning_8hpp_source.html#l00015">15</a> of file <a class="el" href="partitioning_8hpp_source.html">partitioning.hpp</a>.</p>
 
 </div>
 </div>

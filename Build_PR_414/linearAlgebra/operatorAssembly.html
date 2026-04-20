@@ -370,12 +370,13 @@ the inward area vector for the neighbour.  The subtract for the neighbour follow
 <span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>Explicit (+) vs. implicit (−) sign convention.</strong>
-The explicit <code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> returns <span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span>.
-The implicit <code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles <span class="math notranslate nohighlight">\(-\nabla \cdot (F\varphi)\)</span> into
-the linear system (conservative form for the transport equation
-<span class="math notranslate nohighlight">\(\partial\varphi/\partial t = -\nabla\cdot(F\varphi) + \ldots\)</span>).
-This sign difference is intentional.</p>
+<p><strong>Consistent sign convention.</strong>
+Both the explicit <code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> and the implicit <code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assemble
+<span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span> — the positive divergence operator — matching
+OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">fvm::div</span></code> convention.  The DSL equation form mirrors OpenFOAM:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">solve</span><span class="p">(</span><span class="n">ddt</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">div</span><span class="p">(</span><span class="n">faceFlux</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">laplacian</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
+</pre></div>
+</div>
 </div>
 <section id="internal-faces">
 <h3>Internal faces<a class="headerlink" href="#internal-faces" title="Link to this heading">¶</a></h3>
@@ -407,19 +408,19 @@ from the neighbour’s perspective is <span class="math notranslate nohighlight"
 </section>
 <section id="gaussgreendiv-implicit">
 <h2>gaussGreenDiv — Implicit<a class="headerlink" href="#gaussgreendiv-implicit" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles the <strong>conservative</strong> implicit divergence operator into a
-<code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code>.</p>
-<section id="conservative-convention">
-<h3>Conservative convention<a class="headerlink" href="#conservative-convention" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles <span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span> into a <code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code>,
+identical in sign to <code class="docutils literal notranslate"><span class="pre">computeDivExp</span></code> and to OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">fvm::div</span></code>.</p>
+<section id="divergence-convention">
+<h3>Divergence convention<a class="headerlink" href="#divergence-convention" title="Link to this heading">¶</a></h3>
 <p>With <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> meaning flux from owner P to neighbour N
 (valid because <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour):</p>
 <ul class="simple">
-<li><p><strong>Owner row</strong> P gets a total contribution of <span class="math notranslate nohighlight">\(-F_f\)</span>
-(flux <em>leaves</em> owner → negative).</p></li>
-<li><p><strong>Neighbour row</strong> N gets a total contribution of <span class="math notranslate nohighlight">\(+F_f\)</span>
-(flux <em>enters</em> neighbour → positive).</p></li>
+<li><p><strong>Owner row</strong> P: total contribution <strong>+F_f</strong>
+(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is outward from P → positive divergence at P).</p></li>
+<li><p><strong>Neighbour row</strong> N: total contribution <strong>−F_f</strong>
+(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is inward to N from this face → negative contribution at N).</p></li>
 </ul>
-<p>Global verification: <span class="math notranslate nohighlight">\(-F_f + F_f = 0\)</span> per face.</p>
+<p>Global verification: <span class="math notranslate nohighlight">\(+F_f - F_f = 0\)</span> per face ✓</p>
 </section>
 <section id="id1">
 <h3>Internal faces<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
@@ -428,12 +429,19 @@ from the neighbour’s perspective is <span class="math notranslate nohighlight"
 <div class="math notranslate nohighlight">
 \[\varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}\]</div>
 </div>
-<p>The face flux is decomposed into owner and neighbour contributions:</p>
+<p>The face flux <span class="math notranslate nohighlight">\(F_f \varphi_f\)</span> decomposes linearly into owner and neighbour contributions:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[F_f \, \varphi_f
-  = \underbrace{w \, F_f}_{\text{ownFluxContrib}} \varphi_\text{own}
-  + \underbrace{(1-w) F_f}_{\text{neiFluxContrib}} \varphi_\text{nei}\]</div>
+  = w \, F_f \, \varphi_\text{own}
+  + (1-w) F_f \, \varphi_\text{nei}\]</div>
+</div>
+<p>In the code the variables <code class="docutils literal notranslate"><span class="pre">ownFluxContrib</span></code> and <code class="docutils literal notranslate"><span class="pre">neiFluxContrib</span></code> carry a
+<strong>pre-applied minus sign</strong> so that uniform <code class="docutils literal notranslate"><span class="pre">+=</span></code>/<code class="docutils literal notranslate"><span class="pre">-=</span></code> patterns in the assembly
+loops still produce the correct positive divergence:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ownFluxContrib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F_f</span><span class="w">           </span><span class="c1">// note: NEGATIVE; code uses this in += and atomic_sub</span>
+<span class="n">neiFluxContrib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F_f</span><span class="w">       </span><span class="c1">// note: NEGATIVE; code uses this in -= and atomic_add</span>
+</pre></div>
 </div>
 <div class="table-wrapper colwidths-given docutils container" id="id6">
 <table class="docutils align-default" id="id6">
@@ -447,45 +455,52 @@ from the neighbour’s perspective is <span class="math notranslate nohighlight"
 <thead>
 <tr class="row-odd"><th class="head"><p>Matrix entry</p></th>
 <th class="head"><p>Value</p></th>
-<th class="head"><p>Code variable</p></th>
+<th class="head"><p>Sign note</p></th>
 <th class="head"><p>Code</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>A[nei, own]  (lower tri.)</p></td>
-<td><p><span class="math notranslate nohighlight">\(+w \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ownFluxContrib</span></code>  at <code class="docutils literal notranslate"><span class="pre">neiOffs[f]</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(-w \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p>own value → negative contribution to nei’s divergence (inward face for N)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[f]]</span> <span class="pre">+=</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[own]</p></td>
-<td><p><span class="math notranslate nohighlight">\(-w \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">-ownFluxContrib</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(+w \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>own value → positive contribution to P’s divergence (outward face for P)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOwn],</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>A[own, nei]  (upper tri.)</p></td>
-<td><p><span class="math notranslate nohighlight">\(-(1-w) \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">-neiFluxContrib</span></code> at <code class="docutils literal notranslate"><span class="pre">ownOffs[f]</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(+(1-w) \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>nei value → positive contribution to P’s divergence</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[f]]</span> <span class="pre">-=</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>diag[nei]</p></td>
-<td><p><span class="math notranslate nohighlight">\(+(1-w) \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">neiFluxContrib</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">diagNei]</span> <span class="pre">+=</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(-(1-w) \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p>nei value → negative contribution to N’s divergence (inward face for N)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_add(&amp;values[diagNei],</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei)</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>Row-sum verification per face:</p>
 <ul class="simple">
-<li><p>Owner row: <span class="math notranslate nohighlight">\(-w F_f - (1-w) F_f = -F_f\)</span> ✓</p></li>
-<li><p>Neighbour row: <span class="math notranslate nohighlight">\(+w F_f + (1-w) F_f = +F_f\)</span> ✓</p></li>
+<li><p>Owner row: <span class="math notranslate nohighlight">\(+w F_f + (1-w) F_f = +F_f\)</span> ✓</p></li>
+<li><p>Neighbour row: <span class="math notranslate nohighlight">\(-w F_f - (1-w) F_f = -F_f\)</span> ✓</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The diagonal is <strong>assembled explicitly</strong> here — there is no separate <code class="docutils literal notranslate"><span class="pre">negSumDiag</span></code>
-pass.  This is valid because the conservative sign convention already places
-<span class="math notranslate nohighlight">\(-F_f\)</span> on the owner diagonal and <span class="math notranslate nohighlight">\(+F_f\)</span> on the neighbour diagonal as
-part of the face-flux decomposition.</p>
+<p>The diagonal is <strong>assembled explicitly</strong> — there is no separate <code class="docutils literal notranslate"><span class="pre">negSumDiag</span></code>
+pass.  Each face contributes <span class="math notranslate nohighlight">\(+w F_f\)</span> to the owner diagonal and
+<span class="math notranslate nohighlight">\(-(1-w) F_f\)</span> to the neighbour diagonal, so the full sums converge to
+<span class="math notranslate nohighlight">\(+F_f\)</span> and <span class="math notranslate nohighlight">\(-F_f\)</span> respectively.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Matches OpenFOAM.</strong>  OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">gaussConvectionScheme</span></code> sets
+<code class="docutils literal notranslate"><span class="pre">lower[f]</span> <span class="pre">=</span> <span class="pre">-w</span> <span class="pre">F_f</span></code>, <code class="docutils literal notranslate"><span class="pre">upper[f]</span> <span class="pre">=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code>, then <code class="docutils literal notranslate"><span class="pre">negSumDiag()</span></code> gives
+<code class="docutils literal notranslate"><span class="pre">diag[own]</span> <span class="pre">+=</span> <span class="pre">w</span> <span class="pre">F_f</span></code> and <code class="docutils literal notranslate"><span class="pre">diag[nei]</span> <span class="pre">-=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code> — the <strong>same structure</strong>
+as NeoN.</p>
 </div>
 </section>
 <section id="physical-boundary">
@@ -572,7 +587,7 @@ from high to low concentration).</p>
 <section id="gaussgreenlaplacian-implicit">
 <h2>gaussGreenLaplacian — Implicit<a class="headerlink" href="#gaussgreenlaplacian-implicit" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">computeLaplacianImpl</span></code> assembles the diffusion operator
-<span class="math notranslate nohighlight">\(-\nabla \cdot (\gamma \nabla)\)</span> into the linear system.</p>
+<span class="math notranslate nohighlight">\(+\nabla \cdot (\gamma \nabla \varphi)\)</span> into the linear system.</p>
 <section id="id4">
 <h3>Internal faces<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <p>Face diffusion coefficient: <code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">deltaCoeffs[facei]</span> <span class="pre">*</span> <span class="pre">sGamma[facei]</span> <span class="pre">*</span> <span class="pre">magFaceArea[facei]</span></code>,
@@ -754,7 +769,7 @@ assembly where <code class="docutils literal notranslate"><span class="pre">flux
 </ul>
 </li>
 <li><a class="reference internal" href="#gaussgreendiv-implicit">gaussGreenDiv — Implicit</a><ul>
-<li><a class="reference internal" href="#conservative-convention">Conservative convention</a></li>
+<li><a class="reference internal" href="#divergence-convention">Divergence convention</a></li>
 <li><a class="reference internal" href="#id1">Internal faces</a></li>
 <li><a class="reference internal" href="#physical-boundary">Physical boundary</a></li>
 </ul>
