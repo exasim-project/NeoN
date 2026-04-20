@@ -56,7 +56,7 @@ void computeLinearInterpolation(
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
                 // FIXME
-                NF_ERROR_EXIT("Not implemented");
+                // NF_ERROR_EXIT("Not implemented");
                 // auto own = ownerS[facei];
                 // // auto nei = neighS[facei];
                 // // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];

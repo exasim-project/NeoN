@@ -11,9 +11,10 @@ namespace NeoN
 
 /** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
  owned by this rank */
-template<typename FieldType>
-FieldType
-partitionVolField(FieldType field, const auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron)
+template<typename FieldType, typename MeshType, typename BcType>
+FieldType partitionVolField(
+    FieldType field, const MeshType& mesh, BcType bcs, NeoN::mpi::Environment mpiEnviron
+)
 {
     localIdx localCells = mesh.nCells();
     localIdx firstCell = 0;
@@ -42,9 +43,13 @@ partitionVolField(FieldType field, const auto& mesh, auto bcs, NeoN::mpi::Enviro
 
 /** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
  owned by this rank */
-template<typename FieldType>
+template<typename FieldType, typename MeshType, typename BcType>
 FieldType partitionSurfaceField(
-    FieldType field, auto& mesh, auto bcs, NeoN::mpi::Environment mpiEnviron, bool flip = false
+    FieldType field,
+    MeshType& mesh,
+    BcType bcs,
+    NeoN::mpi::Environment mpiEnviron,
+    bool flip = false
 )
 {
     auto exec = mesh.exec();

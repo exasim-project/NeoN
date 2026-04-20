@@ -309,8 +309,8 @@ TEST_CASE("freeFunctions")
     auto takeRes = take(a, 1, 4);
     auto takeResH = takeRes.copyToHost();
 
-    REQUIRE(takeRes.size() == 3);
-    REQUIRE(takeRes.view()[0] == 2.0);
-    REQUIRE(takeRes.view()[1] == 3.0);
-    REQUIRE(takeRes.view()[2] == 4.0);
+    REQUIRE(takeResH.size() == 3);
+    REQUIRE(takeResH.view()[0] == 2.0);
+    REQUIRE(takeResH.view()[1] == 3.0);
+    REQUIRE(takeResH.view()[2] == 4.0);
 }
