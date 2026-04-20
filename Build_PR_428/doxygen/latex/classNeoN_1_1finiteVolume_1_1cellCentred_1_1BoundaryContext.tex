@@ -1,0 +1,103 @@
+\doxysection{NeoN\+::finite\+Volume\+::cell\+Centred\+::Boundary\+Context Class Reference}
+\hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+
+
+Carries named field references for wall-\/function boundary conditions.  
+
+
+
+
+{\ttfamily \#include $<$boundary\+Context.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a7f1141ef9cf76772300c6d0ca2f36c7a}{insert}} (std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&f)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2d896d54fbe65fb2316169bacdca4788}{insert}} (std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&f)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a1126f80e5252ff0a3fa88e56b6ed3fd3}{insert}} (std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&f)
+\item 
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a5210b890884aeab15cf8bee92441a4cd}{scalar}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a63ab17891ba65c1b101c3b35202e2fd6}{vector}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \& \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a11370944bb1ac22f7267e386af60bc0c}{tensor}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const
+\item 
+bool \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_ad0ac5f05bb32ed8842541fa7314bd85d}{has\+Scalar}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const noexcept
+\item 
+bool \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2a2d43faccc08fea3ceae00160ab436c}{has\+Vector}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const noexcept
+\item 
+bool \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a19e3e828bd6e8cef43ac924813317833}{has\+Tensor}} (const std\+::string \&\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}) const noexcept
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Carries named field references for wall-\/function boundary conditions. 
+
+Wall functions that need auxiliary fields (U, nu, near\+Wall\+Dist, omega, k …) look up what they need by name instead of accepting a fixed argument list. All fields are stored as non-\/owning const pointers; the caller is responsible for ensuring the lifetime of the referenced fields exceeds the context. 
+
+Definition at line \mbox{\hyperlink{boundaryContext_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{boundaryContext_8hpp_source}{boundary\+Context.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_ad0ac5f05bb32ed8842541fa7314bd85d}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_ad0ac5f05bb32ed8842541fa7314bd85d} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!hasScalar@{hasScalar}}
+\index{hasScalar@{hasScalar}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{hasScalar()}{hasScalar()}}
+{\footnotesize\ttfamily bool Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::has\+Scalar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a19e3e828bd6e8cef43ac924813317833}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a19e3e828bd6e8cef43ac924813317833} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!hasTensor@{hasTensor}}
+\index{hasTensor@{hasTensor}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{hasTensor()}{hasTensor()}}
+{\footnotesize\ttfamily bool Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::has\+Tensor (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2a2d43faccc08fea3ceae00160ab436c}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2a2d43faccc08fea3ceae00160ab436c} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!hasVector@{hasVector}}
+\index{hasVector@{hasVector}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{hasVector()}{hasVector()}}
+{\footnotesize\ttfamily bool Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::has\+Vector (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a7f1141ef9cf76772300c6d0ca2f36c7a}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a7f1141ef9cf76772300c6d0ca2f36c7a} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!insert@{insert}}
+\index{insert@{insert}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::insert (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{f }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a1126f80e5252ff0a3fa88e56b6ed3fd3}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a1126f80e5252ff0a3fa88e56b6ed3fd3} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!insert@{insert}}
+\index{insert@{insert}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::insert (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \&}]{f }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2d896d54fbe65fb2316169bacdca4788}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a2d896d54fbe65fb2316169bacdca4788} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!insert@{insert}}
+\index{insert@{insert}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::insert (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{f }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a5210b890884aeab15cf8bee92441a4cd}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a5210b890884aeab15cf8bee92441a4cd} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!scalar@{scalar}}
+\index{scalar@{scalar}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{scalar()}{scalar()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::scalar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a11370944bb1ac22f7267e386af60bc0c}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a11370944bb1ac22f7267e386af60bc0c} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!tensor@{tensor}}
+\index{tensor@{tensor}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{tensor()}{tensor()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ \& Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::tensor (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a63ab17891ba65c1b101c3b35202e2fd6}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_a63ab17891ba65c1b101c3b35202e2fd6} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}!vector@{vector}}
+\index{vector@{vector}!NeoN::finiteVolume::cellCentred::BoundaryContext@{NeoN::finiteVolume::cellCentred::BoundaryContext}}
+\doxysubsubsection{\texorpdfstring{vector()}{vector()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \& Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Context\+::vector (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/finite\+Volume/cell\+Centred/boundary/\mbox{\hyperlink{boundaryContext_8hpp}{boundary\+Context.\+hpp}}\end{DoxyCompactItemize}
