@@ -96,6 +96,23 @@ struct ApproxVec3
     }
 };
 
+struct ApproxVector
+{
+    NeoN::Vec3 margin;
+
+    ApproxVector(NeoN::Vec3 v) : margin(v) {}
+    ApproxVector(NeoN::scalar v) : margin({v, v, v}) {}
+
+    bool operator()(NeoN::Vec3 rhs, NeoN::Vec3 lhs) const
+    {
+        NeoN::Vec3 diff(rhs[0] - lhs[0], rhs[1] - lhs[1], rhs[2] - lhs[2]);
+
+        return Catch::Approx(0).margin(margin[0]) == diff[0]
+            && Catch::Approx(0).margin(margin[1]) == diff[1]
+            && Catch::Approx(0).margin(margin[2]) == diff[2];
+    }
+};
+
 /** @brief Predicate for exact equality comparison using the built-in == operator.
  *
  * Used with @ref EqualsMatcher and @ref Equals to compare integer or
@@ -146,6 +163,13 @@ struct EqualsRangeMatcher : Catch::Matchers::MatcherGenericBase
         using std::begin;
         using std::end;
         if constexpr (std::is_same_v<ValueType, NeoN::Vector<NeoN::scalar>>)
+        {
+            auto otherHost = other.copyToHost();
+            return std::equal(
+                begin(range.view()), end(range.view()), begin(otherHost), end(otherHost), pred_
+            );
+        }
+        if constexpr (std::is_same_v<ValueType, NeoN::Vector<NeoN::Vec3>>)
         {
             auto otherHost = other.copyToHost();
             return std::equal(

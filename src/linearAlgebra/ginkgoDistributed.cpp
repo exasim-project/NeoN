@@ -206,6 +206,28 @@ SolverStatsEntry solve_impl_dist(
     return {numIter, initResNorm, finalResNorm, duration};
 }
 
+template<unsigned int I>
+void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
+{
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    auto values = getComponent<I>(sys.matrix().values());
+    auto sparsity = sys.matrix().sparsity();
+    auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+    auto nonLocalValues = getComponent<I>(sys.nonLocalMatrix().values());
+    auto nonLocalSparsity = sys.nonLocalMatrix().sparsity();
+    auto nonLocalMtx = COOMatrix<scalar, localIdx> {values, nonLocalSparsity};
+
+    const CommunicationPattern& commPattern = sys.commPattern();
+    bool forceHostBuffer = false;
+    auto comm = gko::experimental::mpi::communicator(commPattern.env.comm(), forceHostBuffer);
+    auto gkoMtx = createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern);
+    auto solver = factory->generate(gkoMtx);
+    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, std::move(solver)));
+    setComponent<I>(xcopy, x);
+}
+
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -218,6 +240,18 @@ SolverStats GinkgoSolver::solveDist(
     auto solver = factory_->generate(gkoMtx);
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+) const
+{
+    auto stats = SolverStats {};
+    solveComponentDist<0>(sys, x, gkoExec_, factory_, stats);
+    solveComponentDist<1>(sys, x, gkoExec_, factory_, stats);
+    solveComponentDist<2>(sys, x, gkoExec_, factory_, stats);
+    return stats;
+}
+
 }
 
 #endif

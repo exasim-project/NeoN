@@ -29,8 +29,7 @@ BoundaryMesh::BoundaryMesh(
 )
     : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
       delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset),
-      procBoundaryPatches_(procBoundaryPatches), procBoundaryFaces_(procBoundaryPatches),
-      neighbourRank_(neighbourRank) {};
+      procBoundaryPatches_(procBoundaryPatches), neighbourRank_(neighbourRank) {};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
@@ -108,12 +107,23 @@ const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
 
 scalar BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
 
+const std::vector<localIdx>& BoundaryMesh::neighbourRank() const { return neighbourRank_; }
+
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
 localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
+
+localIdx BoundaryMesh::nProcBoundaryFaces() const
+{
+    if (nProcBoundaryPatches() == 0)
+    {
+        return 0;
+    }
+    return offset_[offset_.size() - 1] - offset_[offset_.size() - nProcBoundaryPatches() - 1];
+}
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
 

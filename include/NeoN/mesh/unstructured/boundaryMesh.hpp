@@ -246,9 +246,9 @@ public:
 
     localIdx nBoundaryFaces() const { return faceCells_.size() - nProcBoundaryFaces(); }
 
-    localIdx nProcBoundaryFaces() const { return procBoundaryFaces_; }
+    localIdx nProcBoundaryFaces() const;
 
-    bool isDistributed() const { return procBoundaryFaces_ > 0; }
+    bool isDistributed() const { return nProcBoundaryFaces() > 0; }
 
 private:
 
@@ -326,12 +326,12 @@ private:
      */
     localIdx procBoundaryPatches_;
 
-    /**
-     * @brief number of processor patches
-     *
-     * Vector of cell to face distances.
-     */
-    localIdx procBoundaryFaces_;
+    // /**
+    //  * @brief number of processor patches
+    //  *
+    //  * Vector of cell to face distances.
+    //  */
+    // localIdx procBoundaryFaces_;
 
     /**
      * @brief The mpi rank of the corresponding neighbour patch
