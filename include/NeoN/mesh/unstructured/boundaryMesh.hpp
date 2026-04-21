@@ -270,7 +270,7 @@ public:
      */
     bool isDistributed() const { return nProcBoundaryFaces() > 0; }
 
-    bool isDistributed() const { return procBoundaryFaces_ > 0; }
+    bool isDistributed() const { return nProcBoundaryFaces() > 0; }
 
 private:
 

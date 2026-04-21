@@ -122,6 +122,8 @@ localIdx BoundaryMesh::neighbourRankForRange(std::pair<localIdx, localIdx> range
     return -1;
 }
 
+const std::vector<localIdx>& BoundaryMesh::neighbourRank() const { return neighbourRank_; }
+
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
     return extractSubView(deltaCoeffs_, offset_, i);

@@ -390,7 +390,6 @@ void communicateBoundaryData(
     Vector<ValueType>& boundaryData
 )
 {
-    // // 2. exchange
     auto mpiEnv = commPattern.env;
     auto commRanks = mpiEnv.sizeRank();
     auto sendSize = commPattern.sendCounts[commRanks];
@@ -411,7 +410,6 @@ void communicateBoundaryData(
 
     // FIXME recvBuffer does not need to same size as boundaryData
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), boundaryData.size());
-    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
     MPI_Alltoallv(
         boundaryData.data(),
         commPattern.sendCounts.data(),
@@ -425,6 +423,7 @@ void communicateBoundaryData(
     );
 
     // FIXME TODO this might not be needed communication happens directly into boundaryData
+    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
     auto exec = boundaryData.exec();
     auto outV = boundaryData.view();
     const auto idxV = copyIdx.view();
@@ -437,4 +436,85 @@ void communicateBoundaryData(
         "copyMap"
     );
 }
+
+// Specialization for Vec3
+template<>
+inline void communicateBoundaryData(
+    const CommunicationPattern& commPattern,
+    const std::vector<localIdx> procPatchOffset,
+    Vector<Vec3>& boundaryData
+)
+{
+    auto mpiEnv = commPattern.env;
+    auto commRanks = mpiEnv.sizeRank();
+    auto sendSize = commPattern.sendCounts[commRanks];
+
+    // compute send displacements
+    std::vector<localIdx> sendCounts(commPattern.sendCounts.size(), 0);
+    for (int i = 0; i < sendCounts.size(); i++)
+    {
+        sendCounts[i] = commPattern.sendCounts[i] * 3;
+    }
+
+    auto sdispls = std::vector<int>(commRanks, 0);
+    int j = 0;
+    for (int i = 0; i < sdispls.size(); i++)
+    {
+        // check if rank communicates data
+        if (sendCounts[i] > 0)
+        {
+            // send displ patch start
+            sdispls[i] = 3 * procPatchOffset[j];
+            j++;
+        }
+    }
+
+    // FIXME recvBuffer does not need to be same size as boundaryData
+    auto exec = boundaryData.exec();
+    auto boundaryDataSize = boundaryData.size();
+    auto sendBuffer = Vector<NeoN::scalar>(boundaryData.exec(), 3 * boundaryData.size());
+    auto sendBufferV = sendBuffer.view();
+    auto boundaryDataV = boundaryData.view();
+
+    parallelFor(
+        exec,
+        {0, boundaryData.size()},
+        NEON_LAMBDA(const localIdx i) {
+            sendBufferV[3 * i + 0] = boundaryDataV[i][0];
+            sendBufferV[3 * i + 1] = boundaryDataV[i][1];
+            sendBufferV[3 * i + 2] = boundaryDataV[i][2];
+        },
+        "copyMap"
+    );
+
+    auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), 3 * boundaryData.size());
+    auto recvBufferV = recvBuffer.view();
+    MPI_Alltoallv(
+        sendBuffer.data(),
+        sendCounts.data(),
+        sdispls.data(),
+        mpi::getType<scalar>(),
+        recvBuffer.data(),
+        sendCounts.data(),
+        sdispls.data(),
+        mpi::getType<scalar>(),
+        mpiEnv.comm()
+    );
+
+    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
+    auto outV = boundaryData.view();
+    const auto idxV = copyIdx.view();
+    const auto inV = recvBuffer.view();
+    parallelFor(
+        exec,
+        {0, idxV.size()},
+        NEON_LAMBDA(const localIdx i) {
+            outV[idxV[i]][0] = inV[3 * idxV[i] + 0];
+            outV[idxV[i]][1] = inV[3 * idxV[i] + 1];
+            outV[idxV[i]][2] = inV[3 * idxV[i] + 2];
+        },
+        "copyMap"
+    );
+}
+
 }

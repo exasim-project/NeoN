@@ -93,6 +93,28 @@ TEST_CASE("Distributed")
     auto vecU = finiteVolume::cellCentred::VolumeField<Vec3>(
         exec, "U", mesh, Vector<Vec3>(exec, vecVals), volVecBCs
     );
+    auto volVecBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto vecU = finiteVolume::cellCentred::VolumeField<Vec3>(
+        exec,
+        "U",
+        mesh,
+        Vector<Vec3>(
+            exec,
+            {1.0 * one<Vec3>(),
+             2.0 * one<Vec3>(),
+             3.0 * one<Vec3>(),
+             4.0 * one<Vec3>(),
+             5.0 * one<Vec3>(),
+             6.0 * one<Vec3>(),
+             7.0 * one<Vec3>(),
+             8.0 * one<Vec3>(),
+             9.0 * one<Vec3>(),
+             10.0 * one<Vec3>(),
+             11.0 * one<Vec3>(),
+             12.0 * one<Vec3>()}
+        ),
+        volVecBCs
+    );
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
