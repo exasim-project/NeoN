@@ -8,9 +8,29 @@
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
+#include "NeoN/core/mpi/operators.hpp"
 
 namespace NeoN
 {
+
+localIdx computeGlobalOffset(const BoundaryMesh& boundaryMesh, localIdx localNCells)
+{
+    if (!boundaryMesh.isDistributed())
+    {
+        return 0;
+    }
+    mpi::Environment mpiEnviron;
+    const auto nRanks = mpiEnviron.sizeRank();
+    const auto myRank = mpiEnviron.rank();
+    auto allNCells = std::vector<int>(nRanks);
+    MPI_Allgather(&localNCells, 1, MPI_INT, allNCells.data(), 1, MPI_INT, mpiEnviron.comm());
+    std::vector<localIdx> globalOffset(nRanks + 1, 0);
+    for (int i = 0; i < nRanks; i++)
+    {
+        globalOffset[i + 1] = globalOffset[i] + allNCells[i];
+    }
+    return globalOffset[myRank];
+}
 
 UnstructuredMesh::UnstructuredMesh(
     Executor exec,
@@ -27,7 +47,8 @@ UnstructuredMesh::UnstructuredMesh(
     : exec_(exec), points_(points), cellVolumes_(cellVolumes), cellCentres_(cellCentres),
       faceAreas_(faceAreas), faceCentres_(faceCentres), magFaceAreas_(magFaceAreas),
       faceOwner_(faceOwner), faceNeighbour_(faceNeighbour), nCells_(cellVolumes.size()),
-      nInternalFaces_(faceNeighbour.size()), boundaryMesh_(boundaryMesh), stencilDataBase_()
+      nInternalFaces_(faceNeighbour.size()), boundaryMesh_(boundaryMesh),
+      globalOffset_(computeGlobalOffset(boundaryMesh, cellVolumes.size())), stencilDataBase_()
 {}
 
 UnstructuredMesh::UnstructuredMesh(
@@ -102,6 +123,8 @@ localIdx UnstructuredMesh::nTotalFaces() const
 {
     return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
 }
+
+localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 
@@ -282,12 +305,15 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     // regular boundary first, processor boundary follow
     auto faceCellVec = std::vector<localIdx>();
     auto boundaryWeights = std::vector<scalar>();
+    auto neighRanks = std::vector<localIdx>();
     if (mpiEnviron.rank() != 0 && mpiEnviron.rank() != mpiEnviron.sizeRank() - 1)
     {
         faceCellVec.push_back(0);
         faceCellVec.push_back(nCells - 1);
         boundaryWeights.push_back(-1.0);
         boundaryWeights.push_back(1.0);
+        neighRanks.push_back(mpiEnviron.rank() - 1);
+        neighRanks.push_back(mpiEnviron.rank() + 1);
     }
     // first rank
     if (mpiEnviron.rank() == 0)
@@ -296,6 +322,7 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
         faceCellVec.push_back(nCells - 1);
         boundaryWeights.push_back(-1.0);
         boundaryWeights.push_back(1.0);
+        neighRanks.push_back(1);
     }
     // last rank
     if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
@@ -304,9 +331,11 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
         faceCellVec.push_back(0);
         boundaryWeights.push_back(1.0);
         boundaryWeights.push_back(-1.0);
+        neighRanks.push_back(mpiEnviron.rank() - 1);
     }
 
     labelVector faceCells(exec, faceCellVec);
+
 
     auto tmp = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
     BoundaryMesh boundaryMesh(
@@ -323,9 +352,8 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
         tmp.boundaryMesh().deltaCoeffs(),            // deltaCoeffs --> mag(1 / delta)
         {0, 1, 2},                                   // offset
         nProcBoundaryFaces,                          // number of proc boundary patches
-        {}                                           // neighbourRank
+        neighRanks                                   // neighbourRank
     );
-
 
     // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
     // since proc boundaries come first
@@ -364,8 +392,6 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     // return ret;
 }
 
-// FIXME
-// NOTE only works for 1d meshes at the moment
 CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 {
     mpi::Environment mpiEnviron;
@@ -376,31 +402,54 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     }
 
     const auto nCells = mesh.nCells();
-    auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1);
-    auto recvIdx = std::vector<int>();
-    sendCounts[sendCounts.size() - 1] = 1;
-    // middle
-    // [0 1 2 3], [4 5 6 7] [8 9 10 11]
-    if (mpiEnviron.rank() != 0 && mpiEnviron.rank() != mpiEnviron.sizeRank() - 1)
+    auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1, 0);
+
+    const auto neighbourRanks = mesh.boundaryMesh().neighbourRank();
+    const auto offsets = mesh.boundaryMesh().offset();
+    const auto nInnerBoundaries =
+        mesh.boundaryMesh().nBoundaries() - mesh.boundaryMesh().nProcBoundaryPatches();
+
+    for (int i = 0; i < neighbourRanks.size(); i++)
     {
-        sendCounts[sendCounts.size() - 1] = 2;
-        sendCounts[mpiEnviron.rank() - 1] = 1;
-        sendCounts[mpiEnviron.rank() + 1] = 1;
-        recvIdx.push_back(nCells - 1);
-        recvIdx.push_back((mpiEnviron.rank() + 1) * nCells);
+        auto targetRank = neighbourRanks[i];
+        auto patchSize = offsets[nInnerBoundaries + i + 1] - offsets[nInnerBoundaries + i];
+        sendCounts[targetRank] = patchSize;
+        sendCounts[mpiEnviron.sizeRank()] += patchSize;
     }
-    // first rank
-    if (mpiEnviron.rank() == 0)
+
+    // compute sendIdx
+    auto globalOffset = mesh.globalOffset();
+    const auto faceCells = mesh.boundaryMesh().faceCells();
+    auto faceCellsH = faceCells.copyToHost();
+    auto buffer = std::vector<localIdx>();
+    buffer.reserve(mesh.boundaryMesh().nProcBoundaryFaces());
+    auto procStart = offsets[nInnerBoundaries];
+    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
     {
-        sendCounts[1] = 1;
-        recvIdx.push_back(nCells);
+        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
     }
-    // last rank
-    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+
+    // exchange sendIdx
+    // TODO this is assumes that patches and indices are ordered
+    // compute send displacements
+    auto sdispl = std::vector<localIdx>(mpiEnviron.sizeRank(), 0);
+    for (int i = 1; i < sdispl.size(); i++)
     {
-        sendCounts[mpiEnviron.rank() - 1] = 1;
-        recvIdx.push_back(mpiEnviron.rank() * nCells - 1);
+        sdispl[i] = sdispl[i - 1] + sendCounts[i - 1];
     }
+    auto recvIdx = std::vector<localIdx>(buffer.size());
+
+    MPI_Alltoallv(
+        buffer.data(),
+        sendCounts.data(),
+        sdispl.data(),
+        mpi::getType<localIdx>(),
+        recvIdx.data(),
+        sendCounts.data(),
+        sdispl.data(),
+        mpi::getType<localIdx>(),
+        mpiEnviron.comm()
+    );
 
     // FIXME seems unused
     std::vector<localIdx> boundaryMapVector;
