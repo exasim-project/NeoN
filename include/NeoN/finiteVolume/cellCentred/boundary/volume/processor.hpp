@@ -22,8 +22,7 @@ template<typename ValueType>
 void setProcBoundaryValue(
     Field<ValueType>& domainVector,
     const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range,
-    CommunicationPattern& commPattern
+    std::pair<localIdx, localIdx> range
 )
 {
     const auto iVector = domainVector.internalVector().view();
@@ -61,13 +60,12 @@ public:
     using ProcessorType = Processor<ValueType>;
 
     Processor(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh),
-          commPattern_(computeCommunicationPattern(mesh))
+        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh)
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
     {
-        detail::setProcBoundaryValue(domainVector, mesh_, this->range(), commPattern_);
+        detail::setProcBoundaryValue(domainVector, mesh_, this->range());
     }
 
     static std::string name() { return "processor"; }
@@ -87,8 +85,5 @@ public:
 private:
 
     const UnstructuredMesh& mesh_;
-
-    // FIXME TODO do a patch based comm pattern?
-    CommunicationPattern commPattern_;
 };
 }

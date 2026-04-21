@@ -197,6 +197,13 @@ public:
     localIdx nBoundaries() const;
 
     /**
+     * @brief
+     *
+     * @return
+     */
+    localIdx globalOffset() const;
+
+    /**
      * @brief Get the boundary mesh.
      *
      * @return The boundary mesh.
@@ -288,6 +295,9 @@ private:
      * that are used to define boundary conditions in the mesh.
      */
     BoundaryMesh boundaryMesh_;
+
+    //
+    localIdx globalOffset_;
 
     /**
      * @brief Stencil data base.

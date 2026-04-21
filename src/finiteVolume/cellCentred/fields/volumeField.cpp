@@ -92,6 +92,7 @@ VolumeField<ValueType>& VolumeField<ValueType>::operator-=(const ValueType rhs)
 template<typename ValueType>
 void VolumeField<ValueType>::correctBoundaryConditions()
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto procPatchOffset = std::vector<localIdx> {};
     for (auto& boundaryCondition : boundaryConditions_)
     {

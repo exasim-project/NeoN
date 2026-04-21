@@ -56,6 +56,9 @@ public:
     solveDist(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
 
     virtual SolverStats
+    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
+
+    virtual SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
 
     virtual SolverStats
@@ -92,6 +95,13 @@ public:
     {
         return solverInstance_->solveDist(ls, field);
     }
+
+    SolverStats
+    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
+    {
+        return solverInstance_->solveDist(ls, field);
+    }
+
 
     SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
