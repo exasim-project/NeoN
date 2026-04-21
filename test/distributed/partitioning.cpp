@@ -82,21 +82,27 @@ TEST_CASE("Distributed")
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
             auto sendCountsExp = std::vector<int> {0, 1, 0, 1};
+            auto neighRanksExp = std::vector<int> {1};
             auto recvIdxExp = std::vector<int> {4};
+            REQUIRE(meshPart.boundaryMesh().neighbourRank() == neighRanksExp);
             REQUIRE(commPattern.sendCounts == sendCountsExp);
             REQUIRE(commPattern.recvIdx == recvIdxExp);
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
             auto sendCountsExp = std::vector<int> {1, 0, 1, 2};
+            auto neighRanksExp = std::vector<int> {0, 2};
             auto recvIdxExp = std::vector<int> {3, 8};
+            REQUIRE(meshPart.boundaryMesh().neighbourRank() == neighRanksExp);
             REQUIRE(commPattern.sendCounts == sendCountsExp);
             REQUIRE(commPattern.recvIdx == recvIdxExp);
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
         {
             auto sendCountsExp = std::vector<int> {0, 1, 0, 1};
+            auto neighRanksExp = std::vector<int> {1};
             auto recvIdxExp = std::vector<int> {7};
+            REQUIRE(meshPart.boundaryMesh().neighbourRank() == neighRanksExp);
             REQUIRE(commPattern.sendCounts == sendCountsExp);
             REQUIRE(commPattern.recvIdx == recvIdxExp);
         }
@@ -111,11 +117,37 @@ TEST_CASE("Distributed")
         Vector<scalar>(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0}),
         volBCs
     );
+    auto volVecBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto vecU = finiteVolume::cellCentred::VolumeField<Vec3>(
+        exec,
+        "U",
+        mesh,
+        Vector<Vec3>(
+            exec,
+            {1.0 * one<Vec3>(),
+             2.0 * one<Vec3>(),
+             3.0 * one<Vec3>(),
+             4.0 * one<Vec3>(),
+             5.0 * one<Vec3>(),
+             6.0 * one<Vec3>(),
+             7.0 * one<Vec3>(),
+             8.0 * one<Vec3>(),
+             9.0 * one<Vec3>(),
+             10.0 * one<Vec3>(),
+             11.0 * one<Vec3>(),
+             12.0 * one<Vec3>()}
+        ),
+        volVecBCs
+    );
 
     auto volBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
     auto volBCsPart = setProcessorBoundaryHelper(meshPart, volBCsII, mpiEnviron.rank());
+    auto volVecBCsII = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(meshPart);
+    auto volVecBCsPart = setProcessorBoundaryHelper(meshPart, volVecBCsII, mpiEnviron.rank());
     auto uPart = partitionVolField(U, meshPart, volBCsPart, mpiEnviron);
+    auto uVecPart = partitionVolField(vecU, meshPart, volVecBCsPart, mpiEnviron);
     uPart.correctBoundaryConditions();
+    uVecPart.correctBoundaryConditions();
 
     SECTION("Has correct partitioned VolumeField" + execName)
     {
@@ -124,23 +156,47 @@ TEST_CASE("Distributed")
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct " + execName)
         {
             auto uPartExp = std::vector<scalar> {1.0, 2.0, 3.0, 4.0};
+            auto uVecPartExp = std::vector<Vec3> {
+                1.0 * one<Vec3>(), 2.0 * one<Vec3>(), 3.0 * one<Vec3>(), 4.0 * one<Vec3>()
+            };
             REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
             auto uPartBoundExp = std::vector<scalar> {0.0, 5.0};
+            auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 5.0 * one<Vec3>()};
             REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(
+                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+            );
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct " + execName)
         {
             auto uPartExp = std::vector<scalar> {5.0, 6.0, 7.0, 8.0};
+            auto uVecPartExp = std::vector<Vec3> {
+                5.0 * one<Vec3>(), 6.0 * one<Vec3>(), 7.0 * one<Vec3>(), 8.0 * one<Vec3>()
+            };
             REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
             auto uPartBoundExp = std::vector<scalar> {4.0, 9.0};
+            auto uVecPartBoundExp = std::vector<Vec3> {4.0 * one<Vec3>(), 9.0 * one<Vec3>()};
             REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(
+                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+            );
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct " + execName)
         {
             auto uPartExp = std::vector<scalar> {9.0, 10.0, 11.0, 12.0};
+            auto uVecPartExp = std::vector<Vec3> {
+                9.0 * one<Vec3>(), 10.0 * one<Vec3>(), 11.0 * one<Vec3>(), 12.0 * one<Vec3>()
+            };
             REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
+            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
             auto uPartBoundExp = std::vector<scalar> {0.0, 8.0};
+            auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 8.0 * one<Vec3>()};
             REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(
+                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+            );
         }
     }
 
