@@ -83,99 +83,103 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00079}00079\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ ps}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00080}00080\ )}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00081}00081\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00082}00082\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e}{read}}(fvSchemes);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00083}00083\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae257aae822cbececca35f52299951bed}{assemble}}(t,\ dt,\ ls,\ ps);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{//\ TODO\ move\ that\ to\ expression\ explicit\ operation\ or}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ into\ functor\ ?}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keyword}{auto}\ expTmp\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(solution.mesh().nCells());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{auto}\ [vol,\ expSource,\ rhs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.mesh().cellVolumes(),\ expTmp,\ ls.rhs());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00090}00090\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ solution.exec(),}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00094}00094\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{keyword}{auto}\ solver\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{la::Solver}}(solution.exec(),\ fvSolution);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00097}00097\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(solution.exec());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00082}00082\ \ \ \ \ NF\_PING();}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00083}00083\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e}{read}}(fvSchemes);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00084}00084\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae257aae822cbececca35f52299951bed}{assemble}}(t,\ dt,\ ls,\ ps);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00085}00085\ \ \ \ \ NF\_PING();}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{//\ TODO\ move\ that\ to\ expression\ explicit\ operation\ or}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{comment}{//\ into\ functor\ ?}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{auto}\ expTmp\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(solution.mesh().nCells());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{auto}\ [vol,\ expSource,\ rhs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.mesh().cellVolumes(),\ expTmp,\ ls.rhs());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00092}00092\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ solution.exec(),}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00096}00096\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00097}00097\ \ \ \ \ NF\_PING();}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00098}00098\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{comment}{//\ Do\ some\ sanity\ checks\ before\ trying\ to\ solve}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00100}00100\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(ls.exec()\ ==\ solution.exec(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solveDist(ls,\ solution.internalVector());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00102}00102\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00103}00103\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00104}00104\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00105}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ab8c0a600efdf6dbdaaf08fc691295016}{00105}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a3a9d50fc03775aa25cd5856b68774e45}{iterativeSolveImpl}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00106}00106\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType>}}\&\ exp,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00107}00107\ \ \ \ \ VectorType\&\ solution,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00108}00108\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00109}00109\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00111}00111\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ ps}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00112}00112\ )}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00113}00113\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{keyword}{auto}\ [sparsity,\ ls]\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae257aae822cbececca35f52299951bed}{assemble}}(solution.mesh(),\ t,\ dt,\ ps);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{comment}{//\ TODO\ move\ that\ to\ expression\ explicit\ operation\ or}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ into\ functor\ ?}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{keyword}{auto}\ expTmp\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(solution.mesh().nCells());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keyword}{auto}\ [vol,\ expSource,\ rhs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.mesh().cellVolumes(),\ expTmp,\ ls.rhs());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00121}00121\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ solution.exec(),}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00125}00125\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00126}00126\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keyword}{auto}\ solver\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{la::Solver}}(solution.exec(),\ fvSolution);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00128}00128\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(solution.exec());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00129}00129\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solve(ls,\ solution.internalVector());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00130}00130\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00131}00131\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00132}00132\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00133}00133\ \textcolor{comment}{/*\ @brief\ solve\ an\ expression}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00134}00134\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00135}00135\ \textcolor{comment}{\ *\ @param\ exp\ -\/\ Expression\ which\ is\ to\ be\ solved/updated.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00136}00136\ \textcolor{comment}{\ *\ @param\ solution\ -\/\ Solution\ field,\ where\ the\ solution\ will\ be\ 'written\ to'.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00137}00137\ \textcolor{comment}{\ *\ @param\ t\ -\/\ the\ time\ at\ the\ start\ of\ the\ time\ step.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00138}00138\ \textcolor{comment}{\ *\ @param\ dt\ -\/\ time\ step\ for\ the\ temporal\ integration}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00139}00139\ \textcolor{comment}{\ *\ @param\ fvSchemes\ -\/\ Dictionary\ containing\ spatial\ operator\ and\ time\ \ integration\ properties}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00140}00140\ \textcolor{comment}{\ *\ @param\ fvSolution\ -\/\ Dictionary\ containing\ linear\ solver\ properties}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00141}00141\ \textcolor{comment}{\ *\ @param\ p\ -\/\ A\ chainable\ functor\ that\ performs\ manipulations\ on\ the\ assembled\ system}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00142}00142\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00143}00143\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00144}\mbox{\hyperlink{namespaceNeoN_1_1dsl_afd840b9e5c1febbcc8226e92f97c67cf}{00144}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_afd840b9e5c1febbcc8226e92f97c67cf}{solve}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00145}00145\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType,\ IndexType>}}\&\ exp,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00146}00146\ \ \ \ \ VectorType\&\ solution,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00147}00147\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00148}00148\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution,}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00151}00151\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ p\ =\ \{\}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00152}00152\ )}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00153}00153\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keywordflow}{if}\ (exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43}{temporalOperators}}().size()\ ==\ 0\ \&\&\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae0858624a15c595fd931a3c272ec8146}{spatialOperators}}().size()\ ==\ 0)}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00155}00155\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ temporal\ or\ implicit\ terms\ to\ solve."{}});}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00157}00157\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00158}00158\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e}{read}}(fvSchemes);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00159}00159\ \ \ \ \ \textcolor{keyword}{auto}\ integrator\ =\ timeIntegration::TimeIntegration<VectorType>(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ fvSchemes.\mbox{\hyperlink{classNeoN_1_1Dictionary_a5fba75245132842e0ad343b4fceaca39}{subDict}}(\textcolor{stringliteral}{"{}timeIntegration"{}}),\ fvSolution}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00161}00161\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00162}00162\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keywordflow}{if}\ (exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43}{temporalOperators}}().size()\ >\ 0\ \&\&\ integrator.explicitIntegration())}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00164}00164\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ integrate\ equations\ in\ time}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ integrator.solve(exp,\ solution,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\{.numIter\ =\ -\/1,\ .initResNorm\ =\ 0,\ .finalResNorm\ =\ 0,\ .solveTime\ =\ 0\}\};}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00168}00168\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00170}00170\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a3a9d50fc03775aa25cd5856b68774e45}{detail::iterativeSolveImpl}}(exp,\ solution,\ t,\ dt,\ fvSolution,\ p);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{auto}\ solver\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{la::Solver}}(solution.exec(),\ fvSolution);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00100}00100\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(solution.exec());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00101}00101\ \ \ \ \ NF\_PING();}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ Do\ some\ sanity\ checks\ before\ trying\ to\ solve}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(ls.exec()\ ==\ solution.exec(),\ \textcolor{stringliteral}{"{}Executors\ are\ not\ the\ same"{}});}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solveDist(ls,\ solution.internalVector());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00106}00106\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00108}00108\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00109}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ab8c0a600efdf6dbdaaf08fc691295016}{00109}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a3a9d50fc03775aa25cd5856b68774e45}{iterativeSolveImpl}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00110}00110\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType>}}\&\ exp,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00111}00111\ \ \ \ \ VectorType\&\ solution,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00112}00112\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00113}00113\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00115}00115\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ ps}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00116}00116\ )}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00117}00117\ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{auto}\ [sparsity,\ ls]\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae257aae822cbececca35f52299951bed}{assemble}}(solution.mesh(),\ t,\ dt,\ ps);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{comment}{//\ TODO\ move\ that\ to\ expression\ explicit\ operation\ or}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ into\ functor\ ?}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keyword}{auto}\ expTmp\ =\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(solution.mesh().nCells());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{keyword}{auto}\ [vol,\ expSource,\ rhs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.mesh().cellVolumes(),\ expTmp,\ ls.rhs());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00125}00125\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ solution.exec(),}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00129}00129\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00131}00131\ \ \ \ \ \textcolor{keyword}{auto}\ solver\ =\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{la::Solver}}(solution.exec(),\ fvSolution);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00132}00132\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(solution.exec());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{keywordflow}{return}\ solver.solve(ls,\ solution.internalVector());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00134}00134\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00135}00135\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00137}00137\ \textcolor{comment}{/*\ @brief\ solve\ an\ expression}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00138}00138\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00139}00139\ \textcolor{comment}{\ *\ @param\ exp\ -\/\ Expression\ which\ is\ to\ be\ solved/updated.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00140}00140\ \textcolor{comment}{\ *\ @param\ solution\ -\/\ Solution\ field,\ where\ the\ solution\ will\ be\ 'written\ to'.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00141}00141\ \textcolor{comment}{\ *\ @param\ t\ -\/\ the\ time\ at\ the\ start\ of\ the\ time\ step.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00142}00142\ \textcolor{comment}{\ *\ @param\ dt\ -\/\ time\ step\ for\ the\ temporal\ integration}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00143}00143\ \textcolor{comment}{\ *\ @param\ fvSchemes\ -\/\ Dictionary\ containing\ spatial\ operator\ and\ time\ \ integration\ properties}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00144}00144\ \textcolor{comment}{\ *\ @param\ fvSolution\ -\/\ Dictionary\ containing\ linear\ solver\ properties}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00145}00145\ \textcolor{comment}{\ *\ @param\ p\ -\/\ A\ chainable\ functor\ that\ performs\ manipulations\ on\ the\ assembled\ system}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00146}00146\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00147}00147\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType,\ \textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00148}\mbox{\hyperlink{namespaceNeoN_1_1dsl_afd840b9e5c1febbcc8226e92f97c67cf}{00148}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la::SolverStats}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_afd840b9e5c1febbcc8226e92f97c67cf}{solve}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00149}00149\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression<typename\ VectorType::ElementType,\ IndexType>}}\&\ exp,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00150}00150\ \ \ \ \ VectorType\&\ solution,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00151}00151\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00152}00152\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSchemes,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ fvSolution,}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00155}00155\ \ \ \ \ std::vector<\mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{PostAssemblyBase<typename\ VectorType::ElementType,\ IndexType>}}>\ p\ =\ \{\}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00156}00156\ )}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00157}00157\ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00158}00158\ \ \ \ \ \textcolor{keywordflow}{if}\ (exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43}{temporalOperators}}().size()\ ==\ 0\ \&\&\ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae0858624a15c595fd931a3c272ec8146}{spatialOperators}}().size()\ ==\ 0)}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00159}00159\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}No\ temporal\ or\ implicit\ terms\ to\ solve."{}});}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00161}00161\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00162}00162\ \ \ \ \ exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e}{read}}(fvSchemes);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keyword}{auto}\ integrator\ =\ timeIntegration::TimeIntegration<VectorType>(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ fvSchemes.\mbox{\hyperlink{classNeoN_1_1Dictionary_a5fba75245132842e0ad343b4fceaca39}{subDict}}(\textcolor{stringliteral}{"{}timeIntegration"{}}),\ fvSolution}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00165}00165\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00167}00167\ \ \ \ \ \textcolor{keywordflow}{if}\ (exp.\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43}{temporalOperators}}().size()\ >\ 0\ \&\&\ integrator.explicitIntegration())}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00168}00168\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ integrate\ equations\ in\ time}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ integrator.solve(exp,\ solution,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\{.numIter\ =\ -\/1,\ .initResNorm\ =\ 0,\ .finalResNorm\ =\ 0,\ .solveTime\ =\ 0\}\};}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00172}00172\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00173}00173\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00174}00174\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00175}00175\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00174}00174\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a3a9d50fc03775aa25cd5856b68774e45}{detail::iterativeSolveImpl}}(exp,\ solution,\ t,\ dt,\ fvSolution,\ p);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00176}00176\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00177}00177\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00179}00179\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
 
 \end{DoxyCode}
