@@ -248,6 +248,8 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{S
 \begin{DoxyCompactList}\small\item\em Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T) \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a6321a4a8d56ef340c538371b4ab37604}{two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
 \begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T (= 2\texorpdfstring{$\ast$}{*}symm(T)) as a full tensor. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67}{dev\+Two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T -\/ (2/3)\texorpdfstring{$\ast$}{*}tr(T)\texorpdfstring{$\ast$}{*}I — matches Open\+FOAM dev\+Two\+Symm, used for viscous stress. \end{DoxyCompactList}\item 
 std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_ad8d7c8733d83b2d0fb047069a233ca0d}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
 \item 
 template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_ae1af248d731afe03b7a9ba6cd8d29314}{zero$<$ Symm\+Tensor $>$}} ()
@@ -593,6 +595,20 @@ a 2D mesh in 3D space with left, right, top, bottom boundary faces with the cent
 \doxysubsubsection{\texorpdfstring{demangle()}{demangle()}}
 {\footnotesize\ttfamily std\+::string Neo\+N\+::demangle (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{mangled\+Name }\end{DoxyParamCaption})}
 
+\Hypertarget{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67}\label{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67} 
+\index{NeoN@{NeoN}!devTwoSymm@{devTwoSymm}}
+\index{devTwoSymm@{devTwoSymm}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{devTwoSymm()}{devTwoSymm()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} Neo\+N\+::dev\+Two\+Symm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+T + T\texorpdfstring{$^\wedge$}{\string^}T -\/ (2/3)\texorpdfstring{$\ast$}{*}tr(T)\texorpdfstring{$\ast$}{*}I — matches Open\+FOAM dev\+Two\+Symm, used for viscous stress. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00238}{238}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_aefc166c5e1455273c2baa753db91ecf5}\label{namespaceNeoN_aefc166c5e1455273c2baa753db91ecf5} 
 \index{NeoN@{NeoN}!equal@{equal}}
 \index{equal@{equal}!NeoN@{NeoN}}
@@ -772,7 +788,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{S
 
 
 
-Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00252}{252}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00267}{267}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f}\label{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f} 
 \index{NeoN@{NeoN}!inv$<$ Tensor $>$@{inv$<$ Tensor $>$}}
@@ -1023,7 +1039,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{S
 
 
 
-Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00246}{246}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00261}{261}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8}\label{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8} 
 \index{NeoN@{NeoN}!one$<$ Tensor $>$@{one$<$ Tensor $>$}}
@@ -1630,7 +1646,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{S
 
 
 
-Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00240}{240}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00255}{255}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67}\label{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67} 
 \index{NeoN@{NeoN}!zero$<$ Tensor $>$@{zero$<$ Tensor $>$}}

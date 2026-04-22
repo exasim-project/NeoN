@@ -413,29 +413,43 @@
 <codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="234"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="235"><highlight class="normal"></highlight></codeline>
-<codeline lineno="236" refid="namespaceNeoN_1ad8d7c8733d83b2d0fb047069a233ca0d" refkind="member"><highlight class="normal">std::ostream&amp;<sp/><ref refid="namespaceNeoN_1a217f8ac0be9056e594e2eb1bfd7caae7" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/>out,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>&amp;<sp/>s);</highlight></codeline>
-<codeline lineno="237"><highlight class="normal"></highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight></codeline>
-<codeline lineno="239"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="240" refid="namespaceNeoN_1ae1af248d731afe03b7a9ba6cd8d29314" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1ae1af248d731afe03b7a9ba6cd8d29314" kindref="member">zero&lt;SymmTensor&gt;</ref>()</highlight></codeline>
-<codeline lineno="241"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0);</highlight></codeline>
-<codeline lineno="243"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="244"><highlight class="normal"></highlight></codeline>
-<codeline lineno="245"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="246" refid="namespaceNeoN_1adf7dfbd9447cdce1bdbb99736094c904" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1adf7dfbd9447cdce1bdbb99736094c904" kindref="member">one&lt;SymmTensor&gt;</ref>()</highlight></codeline>
-<codeline lineno="247"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(1));</highlight></codeline>
+<codeline lineno="237"><highlight class="normal">KOKKOS_INLINE_FUNCTION</highlight></codeline>
+<codeline lineno="238" refid="namespaceNeoN_1abe63c2a7df727ae21d3a12bb24ef5d67" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1abe63c2a7df727ae21d3a12bb24ef5d67" kindref="member">devTwoSymm</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref>&amp;<sp/>t)</highlight></codeline>
+<codeline lineno="239"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>sph<sp/>=<sp/>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(2)<sp/>/<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(3))<sp/>*<sp/>(t(0,<sp/>0)<sp/>+<sp/>t(1,<sp/>1)<sp/>+<sp/>t(2,<sp/>2));</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(2)<sp/>*<sp/>t(0,<sp/>0)<sp/>-<sp/>sph,</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t(0,<sp/>1)<sp/>+<sp/>t(1,<sp/>0),</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t(0,<sp/>2)<sp/>+<sp/>t(2,<sp/>0),</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(2)<sp/>*<sp/>t(1,<sp/>1)<sp/>-<sp/>sph,</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t(1,<sp/>2)<sp/>+<sp/>t(2,<sp/>1),</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(2)<sp/>*<sp/>t(2,<sp/>2)<sp/>-<sp/>sph</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="249"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="250"><highlight class="normal"></highlight></codeline>
-<codeline lineno="251"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
-<codeline lineno="252" refid="namespaceNeoN_1af56d62c57a1bad47bc71e37683a1229e" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1af56d62c57a1bad47bc71e37683a1229e" kindref="member">inv&lt;SymmTensor&gt;</ref>(<ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>)</highlight></codeline>
-<codeline lineno="253"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(1));</highlight></codeline>
-<codeline lineno="255"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="256"><highlight class="normal"></highlight></codeline>
-<codeline lineno="257"><highlight class="normal"></highlight></codeline>
-<codeline lineno="258"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251" refid="namespaceNeoN_1ad8d7c8733d83b2d0fb047069a233ca0d" refkind="member"><highlight class="normal">std::ostream&amp;<sp/><ref refid="namespaceNeoN_1a217f8ac0be9056e594e2eb1bfd7caae7" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/>out,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>&amp;<sp/>s);</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="255" refid="namespaceNeoN_1ae1af248d731afe03b7a9ba6cd8d29314" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1ae1af248d731afe03b7a9ba6cd8d29314" kindref="member">zero&lt;SymmTensor&gt;</ref>()</highlight></codeline>
+<codeline lineno="256"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0,<sp/>0.0);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="261" refid="namespaceNeoN_1adf7dfbd9447cdce1bdbb99736094c904" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1adf7dfbd9447cdce1bdbb99736094c904" kindref="member">one&lt;SymmTensor&gt;</ref>()</highlight></codeline>
+<codeline lineno="262"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(1));</highlight></codeline>
+<codeline lineno="264"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="267" refid="namespaceNeoN_1af56d62c57a1bad47bc71e37683a1229e" refkind="member"><highlight class="normal">KOKKOS_INLINE_FUNCTION<sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref><sp/><ref refid="namespaceNeoN_1af56d62c57a1bad47bc71e37683a1229e" kindref="member">inv&lt;SymmTensor&gt;</ref>(<ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>)</highlight></codeline>
+<codeline lineno="268"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1SymmTensor" kindref="compound">SymmTensor</ref>(<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>(1));</highlight></codeline>
+<codeline lineno="270"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/primitives/symmTensor.hpp"/>
   </compounddef>

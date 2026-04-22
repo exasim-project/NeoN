@@ -339,35 +339,51 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>}</div>
 </div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ad8d7c8733d83b2d0fb047069a233ca0d">  236</a></span>std::ostream&amp; <a class="code hl_function" href="namespaceNeoN.html#a217f8ac0be9056e594e2eb1bfd7caae7">operator&lt;&lt;</a>(std::ostream&amp; out, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>&amp; s);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keyword">template</span>&lt;&gt;</div>
-<div class="foldopen" id="foldopen00240" data-start="{" data-end="}">
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">  240</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">zero&lt;SymmTensor&gt;</a>()</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>{</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>}</div>
-</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="keyword">template</span>&lt;&gt;</div>
-<div class="foldopen" id="foldopen00246" data-start="{" data-end="}">
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">  246</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">one&lt;SymmTensor&gt;</a>()</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>{</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(1));</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>KOKKOS_INLINE_FUNCTION</div>
+<div class="foldopen" id="foldopen00238" data-start="{" data-end="}">
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#abe63c2a7df727ae21d3a12bb24ef5d67">  238</a></span><a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#abe63c2a7df727ae21d3a12bb24ef5d67">devTwoSymm</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Tensor.html">Tensor</a>&amp; t)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>{</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> sph = (<a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(2) / <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(3)) * (t(0, 0) + t(1, 1) + t(2, 2));</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(2) * t(0, 0) - sph,</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        t(0, 1) + t(1, 0),</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        t(0, 2) + t(2, 0),</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(2) * t(1, 1) - sph,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        t(1, 2) + t(2, 1),</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(2) * t(2, 2) - sph</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    );</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>}</div>
 </div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="keyword">template</span>&lt;&gt;</div>
-<div class="foldopen" id="foldopen00252" data-start="{" data-end="}">
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">  252</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">inv&lt;SymmTensor&gt;</a>(<a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>)</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>{</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(1));</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>}</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ad8d7c8733d83b2d0fb047069a233ca0d">  251</a></span>std::ostream&amp; <a class="code hl_function" href="namespaceNeoN.html#a217f8ac0be9056e594e2eb1bfd7caae7">operator&lt;&lt;</a>(std::ostream&amp; out, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>&amp; s);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="keyword">template</span>&lt;&gt;</div>
+<div class="foldopen" id="foldopen00255" data-start="{" data-end="}">
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">  255</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">zero&lt;SymmTensor&gt;</a>()</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>{</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>}</div>
 </div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="keyword">template</span>&lt;&gt;</div>
+<div class="foldopen" id="foldopen00261" data-start="{" data-end="}">
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">  261</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">one&lt;SymmTensor&gt;</a>()</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>{</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(1));</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>}</div>
+</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="keyword">template</span>&lt;&gt;</div>
+<div class="foldopen" id="foldopen00267" data-start="{" data-end="}">
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno"><a class="line" href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">  267</a></span>KOKKOS_INLINE_FUNCTION <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> <a class="code hl_function" href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">inv&lt;SymmTensor&gt;</a>(<a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>)</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>{</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(1));</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>}</div>
+</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>} <span class="comment">// namespace NeoN</span></div>
 <div class="ttc" id="aclassNeoN_1_1SymmTensor_html"><div class="ttname"><a href="classNeoN_1_1SymmTensor.html">NeoN::SymmTensor</a></div><div class="ttdoc">A class for the representation of a symmetric 3x3 tensor.</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00027">symmTensor.hpp:28</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1SymmTensor_html_a0c4453a88e65aaf45ab385cc4c83eefd"><div class="ttname"><a href="classNeoN_1_1SymmTensor.html#a0c4453a88e65aaf45ab385cc4c83eefd">NeoN::SymmTensor::operator==</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION bool operator==(const SymmTensor &amp;rhs) const</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00084">symmTensor.hpp:84</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1SymmTensor_html_a41937419c927f57ca015b8ecf4c5b66c"><div class="ttname"><a href="classNeoN_1_1SymmTensor.html#a41937419c927f57ca015b8ecf4c5b66c">NeoN::SymmTensor::SymmTensor</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor(const scalar diag)</div><div class="ttdoc">Construct scalar-times-identity symmetric tensor.</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00040">symmTensor.hpp:40</a></div></div>
@@ -397,10 +413,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespaceNeoN_html_a8eccef56c9667da6b3a753064270aef4"><div class="ttname"><a href="namespaceNeoN.html#a8eccef56c9667da6b3a753064270aef4">NeoN::operator*</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor operator*(const scalar s, const SymmTensor &amp;st)</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00173">symmTensor.hpp:173</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a93c8d00d3aa9fc6f9271c4c0b4f0da97"><div class="ttname"><a href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a></div><div class="ttdeci">float scalar</div><div class="ttdef"><b>Definition</b> <a href="scalar_8hpp_source.html#l00017">scalar.hpp:17</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a952ff71e45ff1b1d35c491ef700f03cf"><div class="ttname"><a href="namespaceNeoN.html#a952ff71e45ff1b1d35c491ef700f03cf">NeoN::symm</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor symm(const Tensor &amp;t)</div><div class="ttdoc">Symmetric part of a full tensor: ½(T + T^T)</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00207">symmTensor.hpp:207</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_adf7dfbd9447cdce1bdbb99736094c904"><div class="ttname"><a href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">NeoN::one&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor one&lt; SymmTensor &gt;()</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00246">symmTensor.hpp:246</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_ae1af248d731afe03b7a9ba6cd8d29314"><div class="ttname"><a href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">NeoN::zero&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor zero&lt; SymmTensor &gt;()</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00240">symmTensor.hpp:240</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_abe63c2a7df727ae21d3a12bb24ef5d67"><div class="ttname"><a href="namespaceNeoN.html#abe63c2a7df727ae21d3a12bb24ef5d67">NeoN::devTwoSymm</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor devTwoSymm(const Tensor &amp;t)</div><div class="ttdoc">T + T^T - (2/3)*tr(T)*I — matches OpenFOAM devTwoSymm, used for viscous stress.</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00238">symmTensor.hpp:238</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_adf7dfbd9447cdce1bdbb99736094c904"><div class="ttname"><a href="namespaceNeoN.html#adf7dfbd9447cdce1bdbb99736094c904">NeoN::one&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor one&lt; SymmTensor &gt;()</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00261">symmTensor.hpp:261</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_ae1af248d731afe03b7a9ba6cd8d29314"><div class="ttname"><a href="namespaceNeoN.html#ae1af248d731afe03b7a9ba6cd8d29314">NeoN::zero&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor zero&lt; SymmTensor &gt;()</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00255">symmTensor.hpp:255</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_ae802d24c1917f744e65365def8de9889"><div class="ttname"><a href="namespaceNeoN.html#ae802d24c1917f744e65365def8de9889">NeoN::magSqr</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar magSqr(const SymmTensor &amp;s)</div><div class="ttdoc">Frobenius norm squared.</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00199">symmTensor.hpp:199</a></div></div>
-<div class="ttc" id="anamespaceNeoN_html_af56d62c57a1bad47bc71e37683a1229e"><div class="ttname"><a href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">NeoN::inv&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor inv&lt; SymmTensor &gt;(SymmTensor)</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00252">symmTensor.hpp:252</a></div></div>
+<div class="ttc" id="anamespaceNeoN_html_af56d62c57a1bad47bc71e37683a1229e"><div class="ttname"><a href="namespaceNeoN.html#af56d62c57a1bad47bc71e37683a1229e">NeoN::inv&lt; SymmTensor &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION SymmTensor inv&lt; SymmTensor &gt;(SymmTensor)</div><div class="ttdef"><b>Definition</b> <a href="symmTensor_8hpp_source.html#l00267">symmTensor.hpp:267</a></div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
 <div class="ttc" id="atensor_8hpp_html"><div class="ttname"><a href="tensor_8hpp.html">tensor.hpp</a></div></div>
 <div class="ttc" id="atraits_8hpp_html"><div class="ttname"><a href="traits_8hpp.html">traits.hpp</a></div></div>

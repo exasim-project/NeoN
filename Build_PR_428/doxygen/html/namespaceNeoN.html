@@ -400,6 +400,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a6321a4a8d56ef340c538371b4ab37604" id="r_a6321a4a8d56ef340c538371b4ab37604"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="classNeoN_1_1Tensor.html">Tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#a6321a4a8d56ef340c538371b4ab37604">twoSymm</a> (const <a class="el" href="classNeoN_1_1Tensor.html">Tensor</a> &amp;t)</td></tr>
 <tr class="memdesc:a6321a4a8d56ef340c538371b4ab37604"><td class="mdescLeft">&#160;</td><td class="mdescRight">T + T^T (= 2*symm(T)) as a full tensor.  <br /></td></tr>
 <tr class="separator:a6321a4a8d56ef340c538371b4ab37604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe63c2a7df727ae21d3a12bb24ef5d67" id="r_abe63c2a7df727ae21d3a12bb24ef5d67"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="classNeoN_1_1SymmTensor.html">SymmTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#abe63c2a7df727ae21d3a12bb24ef5d67">devTwoSymm</a> (const <a class="el" href="classNeoN_1_1Tensor.html">Tensor</a> &amp;t)</td></tr>
+<tr class="memdesc:abe63c2a7df727ae21d3a12bb24ef5d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">T + T^T - (2/3)*tr(T)*I — matches OpenFOAM devTwoSymm, used for viscous stress.  <br /></td></tr>
+<tr class="separator:abe63c2a7df727ae21d3a12bb24ef5d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8d7c8733d83b2d0fb047069a233ca0d" id="r_ad8d7c8733d83b2d0fb047069a233ca0d"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#ad8d7c8733d83b2d0fb047069a233ca0d">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> &amp;s)</td></tr>
 <tr class="separator:ad8d7c8733d83b2d0fb047069a233ca0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1af248d731afe03b7a9ba6cd8d29314" id="r_ae1af248d731afe03b7a9ba6cd8d29314"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
@@ -991,6 +994,28 @@ template&lt;typename... Args&gt; </div>
 
 </div>
 </div>
+<a id="abe63c2a7df727ae21d3a12bb24ef5d67" name="abe63c2a7df727ae21d3a12bb24ef5d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe63c2a7df727ae21d3a12bb24ef5d67">&#9670;&#160;</a></span>devTwoSymm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION <a class="el" href="classNeoN_1_1SymmTensor.html">SymmTensor</a> NeoN::devTwoSymm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Tensor.html">Tensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>T + T^T - (2/3)*tr(T)*I — matches OpenFOAM devTwoSymm, used for viscous stress. </p>
+
+<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00238">238</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
+
+</div>
+</div>
 <a id="aefc166c5e1455273c2baa753db91ecf5" name="aefc166c5e1455273c2baa753db91ecf5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefc166c5e1455273c2baa753db91ecf5">&#9670;&#160;</a></span>equal() <span class="overload">[1/3]</span></h2>
 
@@ -1417,7 +1442,7 @@ template&lt;&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00252">252</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00267">267</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
 
 </div>
 </div>
@@ -1971,7 +1996,7 @@ template&lt;&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00246">246</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00261">261</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
 
 </div>
 </div>
@@ -3570,7 +3595,7 @@ template&lt;&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00240">240</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symmTensor_8hpp_source.html#l00255">255</a> of file <a class="el" href="symmTensor_8hpp_source.html">symmTensor.hpp</a>.</p>
 
 </div>
 </div>
