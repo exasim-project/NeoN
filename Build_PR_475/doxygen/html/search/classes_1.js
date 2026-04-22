@@ -6,7 +6,7 @@ var searchData=
   ['baselogger_3',['BaseLogger',['../classNeoN_1_1Logging_1_1BaseLogger.html',1,'NeoN::Logging']]],
   ['basicgeometryscheme_4',['BasicGeometryScheme',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['boundaryattributes_5',['BoundaryAttributes',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['boundarydata_6',['boundarydata',['../classNeoN_1_1BoundaryData.html',1,'NeoN::BoundaryData&lt; T &gt;'],['../structNeoN_1_1detail_1_1BoundaryData.html',1,'NeoN::detail::BoundaryData']]],
+  ['boundarydata_6',['BoundaryData',['../classNeoN_1_1BoundaryData.html',1,'NeoN']]],
   ['boundarydata_3c_20neon_3a_3ascalar_20_3e_7',['BoundaryData&lt; NeoN::scalar &gt;',['../classNeoN_1_1BoundaryData.html',1,'NeoN']]],
   ['boundarydata_3c_20neon_3a_3avec3_20_3e_8',['BoundaryData&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1BoundaryData.html',1,'NeoN']]],
   ['boundarydata_3c_20scalar_20_3e_9',['BoundaryData&lt; scalar &gt;',['../classNeoN_1_1BoundaryData.html',1,'NeoN']]],

@@ -2,7 +2,6 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1detail" kind="namespace" language="C++">
     <compoundname>NeoN::detail</compoundname>
-    <innerclass refid="structNeoN_1_1detail_1_1BoundaryData" prot="public">NeoN::detail::BoundaryData</innerclass>
     <innerclass refid="structNeoN_1_1detail_1_1CellData" prot="public">NeoN::detail::CellData</innerclass>
     <innerclass refid="structNeoN_1_1detail_1_1FaceData" prot="public">NeoN::detail::FaceData</innerclass>
     <innerclass refid="structNeoN_1_1detail_1_1MeshParams" prot="public">NeoN::detail::MeshParams</innerclass>
@@ -146,15 +145,23 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="59" column="10" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="59" declcolumn="10"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1detail_1aebfd3e2864e9a9e08aea865c94c5a0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1aa0a6c3d04b795a60851efac68cd47f82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structNeoN_1_1detail_1_1FaceData" kindref="compound">FaceData</ref></type>
         <definition>FaceData NeoN::detail::generateInternalFaces</definition>
-        <argsstring>(const MeshParams &amp;p)</argsstring>
+        <argsstring>(const MeshParams &amp;p, const localIdx nInternalFaces, const localIdx nFaces)</argsstring>
         <name>generateInternalFaces</name>
         <qualifiedname>NeoN::detail::generateInternalFaces</qualifiedname>
         <param>
           <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
           <declname>p</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nFaces</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -162,17 +169,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="61" column="10" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="61" declcolumn="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="62" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="62" declcolumn="1"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ae81c7dae11cf5d6e038f14588b2f00c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structNeoN_1_1detail_1_1BoundaryData" kindref="compound">BoundaryData</ref></type>
-        <definition>BoundaryData NeoN::detail::generateBoundaryData</definition>
-        <argsstring>(const Executor exec, const MeshParams &amp;p, const std::vector&lt; Vec3 &gt; &amp;centres, FaceData &amp;faces)</argsstring>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ae0c7671e11e2a04a1c43cd54f381f99f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref></type>
+        <definition>BoundaryMesh NeoN::detail::generateBoundaryData</definition>
+        <argsstring>(const Executor exec, const int dim, const MeshParams &amp;p, const std::vector&lt; Vec3 &gt; &amp;centres, FaceData &amp;faces, const localIdx nInternalFaces, const localIdx nBoundaryFaces, const std::vector&lt; localIdx &gt; offset)</argsstring>
         <name>generateBoundaryData</name>
         <qualifiedname>NeoN::detail::generateBoundaryData</qualifiedname>
         <param>
           <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
           <declname>exec</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>dim</declname>
         </param>
         <param>
           <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
@@ -186,27 +197,17 @@
           <type><ref refid="structNeoN_1_1detail_1_1FaceData" kindref="compound">FaceData</ref> &amp;</type>
           <declname>faces</declname>
         </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="63" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="63" declcolumn="14"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ab62a90a24e1739e06f59337896cd20bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>std::vector&lt; std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt;</type>
-        <definition>std::vector&lt; std::vector&lt; localIdx &gt; &gt; NeoN::detail::buildFaceNodes</definition>
-        <argsstring>(const MeshParams &amp;p, localIdx nFaces)</argsstring>
-        <name>buildFaceNodes</name>
-        <qualifiedname>NeoN::detail::buildFaceNodes</qualifiedname>
         <param>
-          <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
-          <declname>p</declname>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
         </param>
         <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>nFaces</declname>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBoundaryFaces</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>offset</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -214,29 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="67" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="67" declcolumn="13"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ab4c927a7499be64de12245a634a227f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void NeoN::detail::storeFaceNodesInStencilDB</definition>
-        <argsstring>(UnstructuredMesh &amp;mesh, const std::vector&lt; std::vector&lt; localIdx &gt; &gt; &amp;faceNodesVec)</argsstring>
-        <name>storeFaceNodesInStencilDB</name>
-        <qualifiedname>NeoN::detail::storeFaceNodesInStencilDB</qualifiedname>
-        <param>
-          <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
-          <declname>mesh</declname>
-        </param>
-        <param>
-          <type>const std::vector&lt; std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt; &amp;</type>
-          <declname>faceNodesVec</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="69" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="69" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" line="64" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshGenerator.hpp" declline="64" declcolumn="14"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

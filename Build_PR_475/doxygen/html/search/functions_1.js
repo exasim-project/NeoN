@@ -15,6 +15,5 @@ var searchData=
   ['boundaryrows_12',['boundaryRows',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#ab5b592f160ae95c35e4080c03e6e7c69',1,'NeoN::la::FaceToMatrixAddress']]],
   ['boundarysparsitypattern_13',['boundarySparsityPattern',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#acb5b0e9ba80a352c2092a5c4c7c6be68',1,'NeoN::la::FaceToMatrixAddress']]],
   ['boundarytypes_14',['boundaryTypes',['../classNeoN_1_1BoundaryData.html#a60a1ed15ef5cadb62c0512a285ed8629',1,'NeoN::BoundaryData']]],
-  ['bounds_15',['bounds',['../classNeoN_1_1SegmentedVectorView.html#ae951634d8f5ebd5fb95d7e165af78ccc',1,'NeoN::SegmentedVectorView']]],
-  ['buildfacenodes_16',['buildFaceNodes',['../namespaceNeoN_1_1detail.html#ab62a90a24e1739e06f59337896cd20bc',1,'NeoN::detail']]]
+  ['bounds_15',['bounds',['../classNeoN_1_1SegmentedVectorView.html#ae951634d8f5ebd5fb95d7e165af78ccc',1,'NeoN::SegmentedVectorView']]]
 ];
