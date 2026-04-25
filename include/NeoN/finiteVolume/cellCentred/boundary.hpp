@@ -36,9 +36,16 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
     std::vector<BoundaryType> bcs;
     bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
 
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
+    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
+        bcs.emplace_back(mesh, patchDict, patchID);
+    }
+    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    {
+        Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;
@@ -49,9 +56,16 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
     bcs.reserve(mesh.nBoundaries());
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
+    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("extrapolated")}});
+        bcs.emplace_back(mesh, patchDict, patchID);
+    }
+    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    {
+        Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;

@@ -245,11 +245,18 @@ TEST_CASE("Distributed")
             REQUIRE_THAT(colIdxExp, IsEqualTo(sp->colIdxs(), EqualInt()));
         }
 
+        auto diagOffset = mi->diagOffset();
+        auto ownerOffset = mi->ownerOffset();
+        auto neighOffset = mi->neighbourOffset();
         auto bsp = mi->boundarySparsityPattern();
         auto nsp = mi->nonLocalSparsityPattern();
         auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), mi);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
+            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
+            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
+            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+
             REQUIRE_THAT(I({0}), IsEqualTo(bsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({4}), IsEqualTo(nsp->colIdxs(), EqualInt()));
@@ -257,6 +264,10 @@ TEST_CASE("Distributed")
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
+            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
+            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
+            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+
             REQUIRE_THAT(std::vector<localIdx> {}, IsEqualTo(bsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({0, 3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({3, 8}), IsEqualTo(nsp->colIdxs(), EqualInt()));
@@ -264,6 +275,10 @@ TEST_CASE("Distributed")
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 0 has correct proc boundary " + execName)
         {
+            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
+            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
+            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+
             REQUIRE_THAT(I({3}), IsEqualTo(bsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({0}), IsEqualTo(nsp->rowOffs(), EqualInt()));
             REQUIRE_THAT(I({7}), IsEqualTo(nsp->colIdxs(), EqualInt()));
