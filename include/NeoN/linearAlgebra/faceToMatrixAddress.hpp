@@ -128,6 +128,7 @@ public:
     /*@brief getter for neighbourOffset */
     const Array<uint8_t>& neighbourOffset() const;
 
+    // FIXME these are probably incorrect in distributed mode
     /*@brief getter for diagOffset */
     const Array<uint8_t>& diagOffset() const;
 
