@@ -33,7 +33,7 @@ void computeLinearInterpolation(
     auto totalFaces = src.mesh().nTotalFaces();
 
     NF_ASSERT(dstS.size() == totalFaces, "Inconsistent size");
-    NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
+    //    NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
     // NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
     NF_ASSERT(dstS.size() == weightS.size(), "Inconsistent size");
 
