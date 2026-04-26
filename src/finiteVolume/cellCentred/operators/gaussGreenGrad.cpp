@@ -64,6 +64,7 @@ void computeGrad(
     );
 
     // Boundary faces: only the owner cell is on this rank.
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
