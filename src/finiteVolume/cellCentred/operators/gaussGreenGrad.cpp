@@ -63,15 +63,52 @@ void computeGrad(
     );
 
     // Boundary faces: only the owner cell is on this rank.
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
     parallelFor(
         exec,
-        {nInternalFaces, surfPhif.size()},
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
             Vec3 valueOwn = faceAreaS[i] * surfPhif[i]; // +S_f * φ_f (S_f outward from owner)
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
+    );
+
+    // Processor-boundary faces.
+    //
+    // Each proc face has its local owner cell on this rank and its ghost cell
+    // on the neighbour rank. The Green-Gauss gradient still needs +S_f * φ_f at
+    // the owner cell. The face value is the linear interpolation between own
+    // and ghost cell-centre values:
+    //     φ_f = w * φ_own + (1 - w) * φ_ghost
+    // The ghost value is in `in.boundaryData().value()` at the proc tail
+    // (populated by `in.correctBoundaryConditions()` before this call). The
+    // SurfaceInterpolation::interpolate(...) above does not currently populate
+    // surfPhif for proc faces (see linear.cpp ~line 56 — the proc-boundary
+    // branch is a stub) so the existing physical-boundary loop adds zero
+    // contribution for proc faces; we add the correct contribution here.
+    //
+    // TODO: once `Linear::interpolate` populates proc faces, this can fall
+    // back to reading surfPhif[i] like the physical-boundary path. For now we
+    // recompute the interpolation locally.
+    const auto inV = in.internalVector().view();
+    const auto inBoundV = in.boundaryData().value().view();
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, surfPhif.size()},
+        NEON_LAMBDA(const localIdx i) {
+            auto bfacei = i - nInternalFaces;
+            auto own = surfFaceCells[bfacei];
+            auto ownVal = inV[own];
+            auto ghostVal = inBoundV[bfacei];
+            // FIXME use proper geometric weight once available for proc faces.
+            const scalar w = scalar(0.5);
+            scalar faceVal = w * ownVal + (scalar(1) - w) * ghostVal;
+            Vec3 valueOwn = faceAreaS[i] * faceVal;
+            Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
+        },
+        "computeProcGradBoundary"
     );
 
     parallelFor(

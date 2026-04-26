@@ -221,7 +221,7 @@ private:
 template<typename ValueType>
 void communicateBoundaryData(
     const CommunicationPattern& commPattern,
-    const std::vector<localIdx> procPatchOffset,
+    const std::vector<std::pair<localIdx, localIdx>> procPatchOffset,
     Vector<ValueType>& boundaryData
 )
 {
@@ -238,7 +238,8 @@ void communicateBoundaryData(
         if (commPattern.sendCounts[i] > 0)
         {
             // send displ patch start
-            sdispls[i] = procPatchOffset[j];
+            auto [start, end] = procPatchOffset[j];
+            sdispls[i] = start;
             j++;
         }
     }
@@ -258,16 +259,22 @@ void communicateBoundaryData(
     );
 
     // FIXME TODO this might not be needed communication happens directly into boundaryData
-    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
+    // auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
     auto exec = boundaryData.exec();
     auto outV = boundaryData.view();
-    const auto idxV = copyIdx.view();
+    // const auto idxV = copyIdx.view();
     const auto inV = recvBuffer.view();
 
     parallelFor(
         exec,
-        {0, idxV.size()},
-        NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = inV[idxV[i]]; },
+        {0, procPatchOffset.size()},
+        NEON_LAMBDA(const localIdx p) {
+            auto [start, end] = procPatchOffset[p];
+            for (auto i = start; i < end; i++)
+            {
+                outV[i] = inV[i];
+            }
+        },
         "copyMap"
     );
 }
@@ -276,7 +283,7 @@ void communicateBoundaryData(
 template<>
 inline void communicateBoundaryData(
     const CommunicationPattern& commPattern,
-    const std::vector<localIdx> procPatchOffset,
+    const std::vector<std::pair<localIdx, localIdx>> procPatchOffset,
     Vector<Vec3>& boundaryData
 )
 {
@@ -299,7 +306,8 @@ inline void communicateBoundaryData(
         if (sendCounts[i] > 0)
         {
             // send displ patch start
-            sdispls[i] = 3 * procPatchOffset[j];
+            auto [start, end] = procPatchOffset[j];
+            sdispls[i] = 3 * start;
             j++;
         }
     }
@@ -336,17 +344,19 @@ inline void communicateBoundaryData(
         mpiEnv.comm()
     );
 
-    auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
-    auto outV = boundaryData.view();
-    const auto idxV = copyIdx.view();
     const auto inV = recvBuffer.view();
+    auto outV = boundaryData.view();
     parallelFor(
         exec,
-        {0, idxV.size()},
-        NEON_LAMBDA(const localIdx i) {
-            outV[idxV[i]][0] = inV[3 * idxV[i] + 0];
-            outV[idxV[i]][1] = inV[3 * idxV[i] + 1];
-            outV[idxV[i]][2] = inV[3 * idxV[i] + 2];
+        {0, procPatchOffset.size()},
+        NEON_LAMBDA(const localIdx p) {
+            auto [start, end] = procPatchOffset[p];
+            for (auto i = start; i < end; i++)
+            {
+                outV[i][0] = inV[3 * i + 0];
+                outV[i][1] = inV[3 * i + 1];
+                outV[i][2] = inV[3 * i + 2];
+            }
         },
         "copyMap"
     );

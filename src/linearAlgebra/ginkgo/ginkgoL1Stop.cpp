@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
-#if NF_WITH_GINKGO
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
 namespace NeoN::la::ginkgo
 {
 
+#if NF_WITH_GINKGO
 
 class StoppingCriterion
 {

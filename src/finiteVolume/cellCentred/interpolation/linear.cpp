@@ -57,6 +57,7 @@ void computeLinearInterpolation(
             // proc boundary
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
+                std::cout << __FILE__ << " : " << __LINE__ << " compute weight on proc boundary \n";
                 // FIXME
                 // NF_ERROR_EXIT("Not implemented");
                 // auto own = ownerS[facei];
