@@ -303,18 +303,5 @@ void negLUx(
     Vector<Vec3>& out
 );
 
-/** @brief computes out = -(L+U) x
- *
- * @notes explicitly sets out values to zero
- */
-void scaledInvDiagNegLUx(
-    const CSRMatrix<Vec3, localIdx>& mtx,
-    const Vector<Vec3>& a,
-    const Vector<Vec3>& b,
-    const Vector<scalar>& vol,
-    Vector<scalar>& rAU,
-    Vector<Vec3>& out
-);
-
 
 } // namespace NeoN

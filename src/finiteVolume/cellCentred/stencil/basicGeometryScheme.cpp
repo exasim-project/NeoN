@@ -62,25 +62,31 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         "basicGeometricScheme::updateWeightsBoundary"
     );
 
+    // Processor boundary: linear interpolation weight between the local owner cell
+    // and the ghost cell on the neighbouring rank.
+    //
+    // For an internal face the weight is
+    //   w = sfdNei / (sfdOwn + sfdNei)    with    sfdOwn = |Sf · (cf - c_own)|,
+    //                                              sfdNei = |Sf · (c_nei - cf)|,
+    // matching `phi_f = w * phi_own + (1 - w) * phi_nei`.
+    //
+    // For processor faces we don't have c_nei locally (the ghost cell center is on
+    // another rank). Without an extra MPI exchange of cell centers, the consistent
+    // convention with updateNonOrthDeltaCoeffs / updateDeltaCoeffs (which both use
+    // the face-as-midpoint assumption — see the 0.5/orthoDist factor below) is
+    // sfdNei == sfdOwn, giving w = 0.5. That matches what processorPolyPatch::
+    // makeWeights produces on a uniformly decomposed mesh and gives the symmetric
+    // linear interpolation `phi_f = 0.5 * phi_own + 0.5 * phi_ghost` consumed by
+    // `flux()` and the implicit divergence operator's proc-boundary handling.
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            // weightS[facei] = 10.5;
-            // scalar sfdOwn = std::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
-            // scalar sfdNei = std::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
-
-            // if (std::abs(sfdOwn + sfdNei) > ROOTVSMALL)
-            // {
-            //     weightS[facei] = sfdNei / (sfdOwn + sfdNei);
-
-            // }
-            // else
-            // {
-            //     weightS[facei] = 0.5;
-            // }
+            const auto bcfacei = facei - nInternalFaces;
+            weightS[facei] = 0.5;
+            weightB[bcfacei] = 0.5;
         },
-        "basicGeometricScheme::updateWeightsBoundary"
+        "basicGeometricScheme::updateWeightsProcBoundary"
     );
 }
 

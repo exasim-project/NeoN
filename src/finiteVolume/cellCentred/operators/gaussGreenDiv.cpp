@@ -224,11 +224,15 @@ void computeDivProcBoundImpl(
             // Diagonal weight: owner uses w_raw, non-owner uses (1-w_raw)
             auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
             auto F = faceFluxV[facei];
+            auto value = sign * w_diag * F * c * one<ValueType>();
 
-            Kokkos::atomic_sub(
-                &values[rowStart + diagOffs[cell]], sign * w_diag * F * c * one<ValueType>()
-            );
-            bValues[bcfaceii] -= sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
+            Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
+            // bValues[bcfaceii] += value ; // this will be
+
+            // Off-diagonal (ghost coupling): A[own,ghost] = (1-w_diag)*F*c, analogous
+            // to the internal-face A[own,nei] = (1-w)*F*c in computeDivImp.
+            auto valueOff = (1.0 - w_diag) * F * c * one<ValueType>();
+            bValues[bcfaceii] += valueOff;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );
@@ -289,7 +293,7 @@ void computeDivBoundImpl(
 
             auto valueMat = flux * operatorScalingOwn * valFrac2 * one<ValueType>();
             Kokkos::atomic_add(&values[rowOwnStart + diagOffs[own]], valueMat);
-            bValues[bcfacei] += valueMat;
+            bValues[bcfacei] -= valueMat;
 
             auto valueRhs = (flux * operatorScalingOwn * (valFrac1 * refValue[bcfacei]))
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
