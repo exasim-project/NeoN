@@ -93,14 +93,14 @@ template<typename ValueType>
 void VolumeField<ValueType>::correctBoundaryConditions()
 {
     NeoN::mpi::Environment mpiEnviron;
-    auto procPatchOffset = std::vector<localIdx> {};
+    auto procPatchOffset = std::vector<std::pair<localIdx, localIdx>> {};
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
         if (boundaryCondition.name() == "processor")
         {
             auto [start, end] = boundaryCondition.range();
-            procPatchOffset.push_back(start);
+            procPatchOffset.emplace_back(start, end);
         }
     }
 

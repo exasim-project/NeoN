@@ -89,30 +89,30 @@ public:
     Solver(const Executor& exec, const Dictionary& dict)
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
-    SolverStats solveDist(
-        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field
-    ) const
-    {
-        return solverInstance_->solveDist(ls, field);
-    }
-
-    SolverStats
-    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
-    {
-        return solverInstance_->solveDist(ls, field);
-    }
-
-
     SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
     {
-        return solverInstance_->solve(ls, field);
+        if (ls.commPattern().sendCounts.size())
+        {
+            return solverInstance_->solveDist(ls, field);
+        }
+        else
+        {
+            return solverInstance_->solve(ls, field);
+        }
     }
 
     SolverStats
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
     {
-        return solverInstance_->solve(ls, field);
+        if (ls.commPattern().sendCounts.size())
+        {
+            return solverInstance_->solveDist(ls, field);
+        }
+        else
+        {
+            return solverInstance_->solve(ls, field);
+        }
     }
 
 private:

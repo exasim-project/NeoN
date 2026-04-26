@@ -244,6 +244,7 @@ public:
     {
         matrix_.reset();
         boundaryMatrix_.reset();
+        nonLocalMatrix_.reset();
         fill(rhs_, zero<ValueType>());
         fill(boundaryRhs_, zero<ValueType>());
     }
@@ -318,6 +319,148 @@ createEmptyLinearSystem(const UnstructuredMesh& mesh)
     auto [faceToMatrixAddress, commPattern] =
         createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
     return {faceToMatrixAddress, commPattern};
+}
+
+/** @brief computes out = -(L+U) x
+ *
+ * a - momentum vector
+ *
+ * @notes - explicitly sets out values to zero
+ * @notes - assumes a boundary values to corrected
+ */
+// void scaledInvDiagNegLUx(
+//     const la::LinearSystem<Vec3>& ls,
+//     //const CSRMatrix<Vec3, localIdx>& mtx,
+//     const Vector<Vec3>& a,
+//     //const Vector<Vec3>& b,
+//     const Vector<scalar>& vol,
+//     Vector<scalar>& rAU,
+//     Vector<Vec3>& out
+// );
+//
+/** @brief for testing purposes this function removes boundary contributions previously added to the
+ * matrix diagonal*/
+template<typename ValueType>
+inline la::LinearSystem<ValueType>
+removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
+{
+    auto ls = la::LinearSystem<ValueType>(lsIn);
+    const auto matIt = ls.faceToMatrixAddress();
+    auto lsView = ls.view();
+    auto& matrix = lsView.matrix;
+    auto& rhs = lsView.rhs;
+    auto& bMatrix = lsView.boundaryMatrix;
+    auto& bRhs = lsView.boundaryRhs;
+    auto& mtx = ls.matrix();
+    const auto [diagOffs, rowOffs] = views(matIt->diagOffset(), mtx.rowOffs());
+
+    // Boundary matrix
+    parallelFor(
+        ls.exec(),
+        {0, bMatrix.values.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            Kokkos::atomic_add(
+                &matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]
+            );
+            Kokkos::atomic_sub(&rhs[celli], bRhs[facei]);
+        },
+        "addBoundaryContributions"
+    );
+
+    //
+    auto nonLocalMatrix = ls.nonLocalMatrix().view();
+    parallelFor(
+        ls.exec(),
+        {0, nonLocalMatrix.values.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto celli =
+                nonLocalMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            Kokkos::atomic_add(
+                &matrix.values[rowOffs[celli] + diagOffs[celli]], nonLocalMatrix.values[facei]
+            );
+            // FIXME add
+            // Kokkos::atomic_sub(&rhs[celli], bRhs[facei]);
+        },
+        "addBoundaryContributions"
+    );
+
+    return ls;
+}
+
+inline void scaledInvDiagNegLUx(
+    const la::LinearSystem<Vec3>& ls, // In,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& aBound,
+    const UnstructuredMesh& mesh,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+)
+{
+    // auto ls = removeBoundaryContributions(lsIn);
+    auto& mtx = ls.matrix();
+
+    auto& vol = mesh.cellVolumes();
+    auto& bMesh = mesh.boundaryMesh();
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+
+    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, aBoundV, bV] = views(
+        mtx.sparsity()->rowOffs(),
+        ls.matrix().sparsity()->colIdxs(),
+        mtx.values(),
+        rAU,
+        vol,
+        a,
+        aBound,
+        ls.rhs()
+    );
+    const auto [nonLocalMtx, nonLocalRows] =
+        views(ls.nonLocalMatrix().values(), ls.nonLocalMatrix().rowOffs());
+    auto outV = out.view();
+
+    auto procFacesStart = bMesh.nBoundaryFaces();
+
+    // localIdx curNonLocalRow = 0;
+    parallelFor(
+        mtx.exec(),
+        {0, mtx.nRows()},
+        NEON_LAMBDA(const localIdx rowi) {
+            // local mtx first
+            outV[rowi] = zero<Vec3>();
+            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            {
+                auto colI = colIdxV[i];
+                if (rowi == colI)
+                {
+                    rAUV[rowi] = volV[rowi] / matrixV[i][0];
+                }
+                else
+                {
+                    outV[rowi] -= matrixV[i] * aV[colI];
+                }
+            }
+
+            // check
+            // FIXME this scans everytime all boundary values
+            localIdx curNonLocalRow = 0;
+            auto nonLocalVal = zero<Vec3>();
+            for (auto i = 0; i < nonLocalRows.size(); i++)
+            {
+                if (nonLocalRows[i] == rowi)
+                {
+                    nonLocalVal = nonLocalMtx[i];
+                    curNonLocalRow = i;
+                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];
+                    // curNonLocalRow = 0;
+                    // break;
+                }
+            }
+
+            outV[rowi] += bV[rowi];
+            outV[rowi] *= rAUV[rowi] / volV[rowi];
+        }
+    );
 }
 
 
