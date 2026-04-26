@@ -217,7 +217,7 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
 
     auto nonLocalValues = getComponent<I>(sys.nonLocalMatrix().values());
     auto nonLocalSparsity = sys.nonLocalMatrix().sparsity();
-    auto nonLocalMtx = COOMatrix<scalar, localIdx> {values, nonLocalSparsity};
+    auto nonLocalMtx = COOMatrix<scalar, localIdx> {nonLocalValues, nonLocalSparsity};
 
     const CommunicationPattern& commPattern = sys.commPattern();
     bool forceHostBuffer = false;

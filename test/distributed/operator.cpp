@@ -146,7 +146,7 @@ TEST_CASE("Distributed")
     fill(xPart, 0.0);
 
     auto solverStats = solver.solve(ls, x);
-    auto solverStatsDist = solver.solveDist(lsDst, xPart);
+    auto solverStatsDist = solver.solve(lsDst, xPart);
 
     auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
         solverStatsDist.entries[0];
