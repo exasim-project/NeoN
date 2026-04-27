@@ -5,7 +5,6 @@
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-
 # has to be first since it adds the main target
 add_subdirectory(catch2)
 set(TEST_CATCH2_DIR ${CMAKE_CURRENT_LIST_DIR}/catch2)
@@ -32,6 +31,22 @@ function(NeoN_unit_test TEST)
   add_executable(${NeoN_COMMAND} "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
+  if(NeoN_WITH_JULIA)
+    execute_process(
+        COMMAND julia -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
+        OUTPUT_VARIABLE JULIA_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    execute_process(
+      COMMAND echo "JULIA_DIR: --------> '${JULIA_DIR}'"
+    )
+    target_include_directories(${NeoN_COMMAND} PRIVATE "${JULIA_DIR}/include/julia")
+    target_link_libraries(${NeoN_COMMAND} PRIVATE
+        "${JULIA_DIR}/lib/libjulia.so"
+    )
+    target_link_options(${NeoN_COMMAND} PRIVATE "-Wl,-rpath,${JULIA_DIR}/lib")
+  endif()
+
   if(NeoN_WITH_PETSC)
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES})
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES}
@@ -57,12 +72,12 @@ function(NeoN_unit_test TEST)
     set_target_properties(
       ${NeoN_COMMAND}
       PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
-                 LIBRARY_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
-                 ARCHIVE_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>)
+                LIBRARY_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
+                ARCHIVE_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>)
   else()
     # cmake-lint: disable=C0307
     set_target_properties(${NeoN_COMMAND} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                                     ${NeoN_WORKING_DIRECTORY})
+                                                    ${NeoN_WORKING_DIRECTORY})
   endif()
 
   if(NOT NeoN_MPI_SIZE)
@@ -83,14 +98,18 @@ function(NeoN_unit_test TEST)
       set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
     endif()
   endif()
+
 endfunction()
 
 add_subdirectory(core)
-add_subdirectory(dsl)
-add_subdirectory(fields)
-add_subdirectory(finiteVolume)
-add_subdirectory(linearAlgebra)
-add_subdirectory(mesh)
-add_subdirectory(timeIntegration)
+# FIXME remove 
+if(NOT NeoN_WITH_JULIA)
+  add_subdirectory(dsl)
+  add_subdirectory(fields)
+  add_subdirectory(finiteVolume)
+  add_subdirectory(linearAlgebra)
+  add_subdirectory(mesh)
+  add_subdirectory(timeIntegration)
 
-add_subdirectory(bindings)
+  add_subdirectory(bindings)
+endif()
