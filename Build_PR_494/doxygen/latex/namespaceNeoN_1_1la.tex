@@ -45,6 +45,10 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \begin{DoxyCompactList}\small\item\em given a set of rows this function computes the corresponding value offsets \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type , typename Inner\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Inner\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a526ab6c1bb1faea9fac356aee0888256}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
+void \mbox{\hyperlink{namespaceNeoN_1_1la_a6bfb83b8f18cb760ed98f0633b440df0}{scaled\+Inv\+Diag\+Neg\+LUx}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&\mbox{\hyperlink{structa}{a}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&a\+Bound, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&r\+AU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
+\begin{DoxyCompactList}\small\item\em computes out = -\/(L+U) x \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5a0ad3d154c390bb75b1e2581b775fd9}{remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls\+In)
+\begin{DoxyCompactList}\small\item\em for testing purposes this function removes boundary contributions previously added to the matrix diagonal \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_adf0e2e0fd0c0edb0caf3488bcc1ec63c}{upper}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&)
 \begin{DoxyCompactList}\small\item\em extract the upper triangular of the matrix \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5f10a5012c985982b6ab270fdc14f98b}{scaled\+Inverse\+Diag}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&)
@@ -58,8 +62,6 @@ void \mbox{\hyperlink{namespaceNeoN_1_1la_a33308f3eac7d3dfc36a4f60ffe6dd8ae}{sca
 {\footnotesize template$<$unsigned int I$>$ }\\auto \mbox{\hyperlink{namespaceNeoN_1_1la_a52a50e55f8c3581196746319dd5275f6}{get\+Component}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_1_1la_a81ea5bf6450cb2402acf9f981d5583ab}{neg\+LUx}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&\mbox{\hyperlink{structa}{a}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&r\+AU, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&vol, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
-\begin{DoxyCompactList}\small\item\em computes out = -\/(L+U) x \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4}{scaled\+Inv\+Diag\+Neg\+LUx}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&\mbox{\hyperlink{structa}{a}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&vol, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&r\+AU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
 \begin{DoxyCompactList}\small\item\em computes out = -\/(L+U) x \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ad6d454dd6fb2e31259a6349219c08629}{unpack\+Col\+Idx}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&unpacked\+Row\+Offs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&packed\+Row\+Offs)
 \item 
@@ -167,17 +169,38 @@ computes out = -\/(L+U) x
 \doxysubsubsection{\texorpdfstring{packVecValues()}{packVecValues()}}
 {\footnotesize\ttfamily void Neo\+N\+::la\+::pack\+Vec\+Values (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{in,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4}\label{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4} 
+\Hypertarget{namespaceNeoN_1_1la_a5a0ad3d154c390bb75b1e2581b775fd9}\label{namespaceNeoN_1_1la_a5a0ad3d154c390bb75b1e2581b775fd9} 
+\index{NeoN::la@{NeoN::la}!removeBoundaryContributions@{removeBoundaryContributions}}
+\index{removeBoundaryContributions@{removeBoundaryContributions}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{removeBoundaryContributions()}{removeBoundaryContributions()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ Neo\+N\+::la\+::remove\+Boundary\+Contributions (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls\+In }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+for testing purposes this function removes boundary contributions previously added to the matrix diagonal 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00418}{418}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_a6bfb83b8f18cb760ed98f0633b440df0}\label{namespaceNeoN_1_1la_a6bfb83b8f18cb760ed98f0633b440df0} 
 \index{NeoN::la@{NeoN::la}!scaledInvDiagNegLUx@{scaledInvDiagNegLUx}}
 \index{scaledInvDiagNegLUx@{scaledInvDiagNegLUx}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{scaledInvDiagNegLUx()}{scaledInvDiagNegLUx()}}
-{\footnotesize\ttfamily void Neo\+N\+::la\+::scaled\+Inv\+Diag\+Neg\+LUx (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_1_1la_ac6606b36cee6114533e0f5577be2be5b}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{a,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{vol,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{r\+AU,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::scaled\+Inv\+Diag\+Neg\+LUx (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{ls,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{a,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{a\+Bound,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{r\+AU,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
 computes out = -\/(L+U) x 
 
-@notes explicitly sets out values to zero \Hypertarget{namespaceNeoN_1_1la_aff7498eb1e453e6ecb371c5c9a2c0264}\label{namespaceNeoN_1_1la_aff7498eb1e453e6ecb371c5c9a2c0264} 
+a -\/ momentum vector
+
+@notes -\/ explicitly sets out values to zero @notes -\/ assumes a boundary values to corrected 
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00340}{340}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_aff7498eb1e453e6ecb371c5c9a2c0264}\label{namespaceNeoN_1_1la_aff7498eb1e453e6ecb371c5c9a2c0264} 
 \index{NeoN::la@{NeoN::la}!scaledInverseDiag@{scaledInverseDiag}}
 \index{scaledInverseDiag@{scaledInverseDiag}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{scaledInverseDiag()}{scaledInverseDiag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
