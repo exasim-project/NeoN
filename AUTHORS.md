@@ -13,4 +13,5 @@ Hendrik Hetmann <hendrik.hetmann@upstream-cfd.de>, Upstream CFD GmbH\
 Marcel Koch <marcel.koch@kit.edu>, Karlsruhe Institute of Technology\
 Roman Mishchuk <roman.mishchuk@tum.de>, Technical University of Munich\
 Yu-Hsiang Tsai <yhmtsai@gmail.com>, Technical University of Munich\
-Dheeraj Raghunathan <dheeraj.raghunathan@tum.de>, Technical University of Munich
+Dheeraj Raghunathan <dheeraj.raghunathan@tum.de>, Technical University of Munich\
+Lukas Petermann <lukas.petermann@ovgu.de>, Otto-von-Guericke University Magdeburg (OvGU)
