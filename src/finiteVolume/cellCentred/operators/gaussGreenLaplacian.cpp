@@ -269,7 +269,7 @@ void computeLaplacianBoundImpl(
                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
             Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] = valueRhs;
+            bRhs[bcfacei] += valueRhs;
         },
         "computeInterfaceLaplacianCoefficients"
     );
