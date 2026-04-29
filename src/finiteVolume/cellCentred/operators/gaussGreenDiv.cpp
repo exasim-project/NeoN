@@ -229,9 +229,26 @@ void computeDivProcBoundImpl(
             Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
             // bValues[bcfaceii] += value ; // this will be
 
-            // Off-diagonal (ghost coupling): A[own,ghost] = (1-w_diag)*F*c, analogous
-            // to the internal-face A[own,nei] = (1-w)*F*c in computeDivImp.
-            auto valueOff = (1.0 - w_diag) * F * c * one<ValueType>();
+            // Off-diagonal (ghost coupling).
+            //
+            // Div is asymmetric: in the global computeDivImp the two off-diagonals
+            // around face (own, nei) are
+            //     M[own, nei] = +F * (1 - w) * c       (upper)
+            //     M[nei, own] = -F *  w      * c       (lower)
+            // i.e. they have opposite signs.
+            //
+            // On the owner-side rank we are storing M[local=own, ghost=nei]:
+            //   sign = -1, w_diag = w_raw, so we want valueOff = +F*(1-w_raw)*c
+            // On the non-owner-side rank we are storing M[local=nei, ghost=own]:
+            //   sign = +1, w_diag = (1 - w_raw), so we want valueOff = -F*w_raw*c
+            //                                              = -F*(1 - w_diag)*c
+            //
+            // Both cases are captured by negating `sign` in front of the magnitude:
+            //   owner:     -(-1) * (1 - w_raw)        = +(1 - w)
+            //   non-owner: -(+1) * (1 - (1-w_raw))    = -w
+            // This mirrors the diag formula `value = sign * w_diag * F * c`, which
+            // already encodes the asymmetric +diag[own]/-diag[nei] split correctly.
+            auto valueOff = -sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
             bValues[bcfaceii] += valueOff;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
@@ -299,7 +316,7 @@ void computeDivBoundImpl(
                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffs[bcfacei]);
 
             Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] = valueRhs;
+            bRhs[bcfacei] += valueRhs;
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );
