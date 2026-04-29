@@ -109,7 +109,7 @@ Constructor for the \doxylink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh} class.
 \begin{DoxyParams}{Parameters}
 {\em exec} & The executor used for computations. \\
 \hline
-{\em face\+Cells} & \doxylink{classNeoN_1_1Vector}{Vector} holding the cell index of the neighbouring cell of a boundary face face. \\
+{\em face\+Cells} & A list of the neighboring cells of each boundary face. \\
 \hline
 {\em Cf} & A field of face centres. \\
 \hline
@@ -125,11 +125,13 @@ Constructor for the \doxylink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh} class.
 \hline
 {\em weights} & A field of weights used in cell to face interpolation. \\
 \hline
-{\em delta\+Coeffs} & A field of cell to face distances. \\
+{\em delta\+Coeffs} & A field of the inverse of distances between boundary faces and their neighboring cell centers \\
 \hline
 {\em offset} & The offsets of the boundary faces, i.\+e. offset\mbox{[}i\mbox{]}, offset\mbox{[}i+1\mbox{]} define begging and end of a patch. \\
 \hline
-{\em neighbour\+Rank} & corresponding mpi\+Rank of proc patch \\
+{\em delta\+Coeffs} & A field of cell to face distances. \\
+\hline
+{\em neighbour\+Rank} & corresponding mpi\+Rank ouf neighbour \\
 \hline
 \end{DoxyParams}
 
@@ -298,7 +300,7 @@ A view of face cells for the specified boundary face.
 
 
 
-Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00249}{249}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00251}{251}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1BoundaryMesh_a8650bdda6efcdc3eddc7aa7124bbf53d}\label{classNeoN_1_1BoundaryMesh_a8650bdda6efcdc3eddc7aa7124bbf53d} 
 \index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!magSf@{magSf}}
@@ -339,7 +341,7 @@ A view of magnitudes of face areas normals for the specified boundary face.
 
 
 
-Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00243}{243}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00245}{245}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1BoundaryMesh_ad55fbfdf171c694d69b25e020e2aa2b4}\label{classNeoN_1_1BoundaryMesh_ad55fbfdf171c694d69b25e020e2aa2b4} 
 \index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!nBoundaryFaces@{nBoundaryFaces}}
@@ -349,7 +351,7 @@ Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00243}{243}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00245}{245}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00247}{247}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1BoundaryMesh_a69e62a927b8028e6d77d09a6dca8475c}\label{classNeoN_1_1BoundaryMesh_a69e62a927b8028e6d77d09a6dca8475c} 
 \index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!neighbourRank@{neighbourRank}}

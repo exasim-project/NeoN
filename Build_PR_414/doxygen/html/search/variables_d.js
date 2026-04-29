@@ -1,11 +1,8 @@
 var searchData=
 [
-  ['schema_0',['schema',['../classNeoN_1_1BaseClassData.html#a052d4fcd85c84d48600307cf1441f1b6',1,'NeoN::BaseClassData::schema'],['../classNeoN_1_1DerivedClassDocumentation.html#a309f623249a9a7558e51375e8e7a61eb',1,'NeoN::DerivedClassDocumentation::schema']]],
-  ['segments_1',['segments',['../classNeoN_1_1SegmentedVectorView.html#a0e101da590fc55027c7a0d0e986d27d3',1,'NeoN::SegmentedVectorView']]],
-  ['sendcounts_2',['sendCounts',['../structNeoN_1_1CommunicationPattern.html#a5da383216da50923b22402c03aacf46d',1,'NeoN::CommunicationPattern']]],
-  ['solutiondict_5f_3',['solutionDict_',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a319d692ec559c3b0863e06216769a61a',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
-  ['solvetime_4',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
-  ['sparsity_5',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView']]],
-  ['start_5f_6',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
-  ['subcycleindex_7',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
+  ['recvidx_0',['recvIdx',['../structNeoN_1_1CommunicationPattern.html#ae16d8b84eb431d96b6764dae6f8b88d5',1,'NeoN::CommunicationPattern']]],
+  ['registered_1',['registered',['../structNeoN_1_1RegisterDocumentation.html#a20d21eaef0b07bedda68a1208920b401',1,'NeoN::RegisterDocumentation::REGISTERED'],['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html#a62badbe3487383c000b5bd4e0f39561c',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register::REGISTERED']]],
+  ['rhs_2',['rhs',['../structNeoN_1_1la_1_1LinearSystemView.html#a91465af280c229b7fa06eb8018b83a39',1,'NeoN::la::LinearSystemView']]],
+  ['rootvsmall_3',['ROOTVSMALL',['../namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0',1,'NeoN']]],
+  ['rowoffs_4',['rowOffs',['../structNeoN_1_1la_1_1SparsityView.html#acfac377b626675a92f8556481c10021f',1,'NeoN::la::SparsityView']]]
 ];

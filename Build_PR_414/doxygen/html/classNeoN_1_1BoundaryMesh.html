@@ -282,7 +282,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exec</td><td>The executor used for computations. </td></tr>
-    <tr><td class="paramname">faceCells</td><td><a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> holding the cell index of the neighbouring cell of a boundary face face. </td></tr>
+    <tr><td class="paramname">faceCells</td><td>A list of the neighboring cells of each boundary face. </td></tr>
     <tr><td class="paramname">Cf</td><td>A field of face centres. </td></tr>
     <tr><td class="paramname">Cn</td><td>A field of neighbor cell centers. </td></tr>
     <tr><td class="paramname">Sf</td><td>A field of face areas normals. </td></tr>
@@ -290,9 +290,10 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramname">nf</td><td>A field of face unit normals. </td></tr>
     <tr><td class="paramname">delta</td><td>A field of delta vectors. </td></tr>
     <tr><td class="paramname">weights</td><td>A field of weights used in cell to face interpolation. </td></tr>
-    <tr><td class="paramname">deltaCoeffs</td><td>A field of cell to face distances. </td></tr>
+    <tr><td class="paramname">deltaCoeffs</td><td>A field of the inverse of distances between boundary faces and their neighboring cell centers </td></tr>
     <tr><td class="paramname">offset</td><td>The offsets of the boundary faces, i.e. offset[i], offset[i+1] define begging and end of a patch. </td></tr>
-    <tr><td class="paramname">neighbourRank</td><td>corresponding mpiRank of proc patch </td></tr>
+    <tr><td class="paramname">deltaCoeffs</td><td>A field of cell to face distances. </td></tr>
+    <tr><td class="paramname">neighbourRank</td><td>corresponding mpiRank ouf neighbour </td></tr>
   </table>
   </dd>
 </dl>
@@ -558,7 +559,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00249">249</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00251">251</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -632,7 +633,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00243">243</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00245">245</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -659,7 +660,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00245">245</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00247">247</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
