@@ -348,6 +348,7 @@ UnstructuredMesh create3DUniformMesh(
     scalar Lx = 1.0,
     scalar Ly = 1.0,
     scalar Lz = 1.0
+);
 
 /** @brief A factory function for a 1D mesh
  *

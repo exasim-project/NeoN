@@ -271,11 +271,6 @@ UnstructuredMesh create3DUniformMesh(
         {exec, std::move(faces.magnitudes)},
         {exec, std::move(faces.owner)},
         labelVector(exec, std::move(faces.neighbour)),
-        nCells,
-        nInternalFaces,
-        nBoundaryFaces,
-        offset.size() - 1, // nBoundaries
-        nFaces,
         std::move(boundaryMesh)
     );
 
@@ -291,10 +286,7 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 {
     // FIXME make it an argument again
     mpi::Environment mpiEnviron;
-    Vec3 leftBoundary {static_cast<scalar>(mpiEnviron.rank()) / mpiEnviron.sizeRank(), 0.0, 0.0};
-    Vec3 rightBoundary {
-        static_cast<scalar>(mpiEnviron.rank() + 1) / mpiEnviron.sizeRank(), 0.0, 0.0
-    };
+    scalar rightBoundary {static_cast<scalar>(1.0) / mpiEnviron.sizeRank()};
 
     localIdx nProcBoundaryFaces = 2;
     if (mpiEnviron.rank() == 0 || mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
@@ -337,12 +329,12 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     labelVector faceCells(exec, faceCellVec);
 
 
-    auto tmp = create1DUniformMesh(exec, nCells, leftBoundary, rightBoundary);
+    auto tmp = create1DUniformMesh(exec, nCells, rightBoundary);
     BoundaryMesh boundaryMesh(
         exec,
         faceCells,
-        {exec, {leftBoundary, rightBoundary}}, // cf
-        tmp.boundaryMesh().cn(),               // cn
+        {exec, {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}}}, // cf
+        tmp.boundaryMesh().cn(),                              // cn
         {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}
         },                  // sf FIXME the order of the rest is potentially wrong
         {exec, {1.0, 1.0}}, // magSf
