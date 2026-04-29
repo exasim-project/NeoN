@@ -55,17 +55,20 @@ void computeLinearInterpolation(
                 dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
             }
             // proc boundary
+            //
+            // Same linear blend as an internal face, but the neighbour cell
+            // lives on another rank. After VolumeField::correctBoundaryConditions
+            // the exchanged neighbour value sits in boundS[bcfacei]
+            // (see volumeBoundary::Processor::setProcBoundaryValue +
+            //  communicateBoundaryData in volumeField.cpp:107-113), so the
+            // owner-side weight is applied to the local cell and (1-w) to the
+            // post-exchange remote value.
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
-                std::cout << __FILE__ << " : " << __LINE__ << " compute weight on proc boundary \n";
-                // FIXME
-                // NF_ERROR_EXIT("Not implemented");
-                // auto own = ownerS[facei];
-                // // auto nei = neighS[facei];
-                // // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
-                // dstS[facei] = one<ValueType>();
-                // dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
-                // std::cout << __FILE__ << ":" << __LINE__ << "\n";
+                auto own = ownerS[facei];
+                auto bcfacei = facei - nInternalFaces;
+                dstS[facei] =
+                    weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
             }
         },
         "computeLinearInterpolation"
