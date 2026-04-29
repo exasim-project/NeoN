@@ -3253,6 +3253,106 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="333" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" declline="333" declcolumn="18"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a5d069752428b08d28515fc2308803769" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>
+        <definition>UnstructuredMesh NeoN::create3DUniformMesh</definition>
+        <argsstring>(const Executor exec, localIdx nx, localIdx ny, localIdx nz, scalar Lx=1.0, scalar Ly=1.0, scalar Lz=1.0)</argsstring>
+        <name>create3DUniformMesh</name>
+        <qualifiedname>NeoN::create3DUniformMesh</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>ny</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nz</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>Lx</declname>
+          <defval>1.0</defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>Ly</declname>
+          <defval>1.0</defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>Lz</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+<para>A factory function for a uniform 3D hex mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates an nx × ny × nz structured hex mesh on [0,Lx] × [0,Ly] × [0,Lz]. Six boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly), front (z=0), back (z=Lz). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="343" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" declline="343" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a5ca0ed5f55849795e430b6acc473eb60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>
+        <definition>UnstructuredMesh NeoN::create1DUniformMeshPart</definition>
+        <argsstring>(const Executor exec, const localIdx nCells)</argsstring>
+        <name>create1DUniformMeshPart</name>
+        <qualifiedname>NeoN::create1DUniformMeshPart</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nCells</declname>
+        </param>
+        <briefdescription>
+<para>A factory function for a 1D mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A 1D mesh in 3D space in which each cell has a left and a right face. The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nCells</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of local cells on this rank </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="360" column="18" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" declline="360" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1ad66a224fda9497a27ba631cc4be27172" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref></type>
+        <definition>CommunicationPattern NeoN::computeCommunicationPattern</definition>
+        <argsstring>(const UnstructuredMesh &amp;mesh)</argsstring>
+        <name>computeCommunicationPattern</name>
+        <qualifiedname>NeoN::computeCommunicationPattern</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <briefdescription>
+<para>Given an unstructuredMesh this function computes the corresponding communication pattern. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="364" column="22" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" declline="364" declcolumn="22"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
