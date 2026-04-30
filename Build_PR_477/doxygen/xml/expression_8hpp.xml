@@ -88,14 +88,14 @@
         <childnode refid="40" relation="include">
         </childnode>
       </node>
-      <node id="73">
+      <node id="76">
         <label>NeoN/core/database/fieldDatabase.hpp</label>
         <link refid="fieldDatabase_8hpp"/>
-        <childnode refid="74" relation="include">
+        <childnode refid="77" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="75" relation="include">
+        <childnode refid="74" relation="include">
         </childnode>
         <childnode refid="63" relation="include">
         </childnode>
@@ -264,6 +264,18 @@
         <label>NeoN/core/primitives/scalar.hpp</label>
         <link refid="scalar_8hpp"/>
         <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="75">
+        <label>NeoN/core/primitives/tensor.hpp</label>
+        <link refid="tensor_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -472,6 +484,22 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="73">
+        <label>NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp</label>
+        <link refid="boundaryContext_8hpp"/>
+        <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="75" relation="include">
+        </childnode>
+      </node>
       <node id="72">
         <label>NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</label>
         <link refid="boundaryPatchMixin_8hpp"/>
@@ -518,6 +546,8 @@
         <childnode refid="70" relation="include">
         </childnode>
         <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="76" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
@@ -658,7 +688,7 @@
       <node id="20">
         <label>memory</label>
       </node>
-      <node id="74">
+      <node id="77">
         <label>optional</label>
       </node>
       <node id="19">
@@ -670,7 +700,7 @@
       <node id="8">
         <label>sstream</label>
       </node>
-      <node id="75">
+      <node id="74">
         <label>stdexcept</label>
       </node>
       <node id="7">
@@ -960,7 +990,7 @@
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!hasOperatorOfType&lt;OperatorType,<sp/>Type&gt;(<ref refid="namespaceNeoN_1aa67294511d0c7da987259a7b1a3ba59d" kindref="member">name</ref>))</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;No<sp/>operator<sp/>with<sp/>given<sp/>name<sp/>and<sp/>type<sp/>found&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error<sp/>{</highlight><highlight class="stringliteral">&quot;No<sp/>operator<sp/>with<sp/>given<sp/>name<sp/>and<sp/>type<sp/>found&quot;</highlight><highlight class="normal">};</highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>opType<sp/>=<sp/>Type;</highlight></codeline>
 <codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>matchNameAndType<sp/>=<sp/>[<ref refid="namespaceNeoN_1aa67294511d0c7da987259a7b1a3ba59d" kindref="member">name</ref>,<sp/>opType](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>op)</highlight></codeline>
@@ -977,7 +1007,7 @@
 <codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>temporalOperators_.begin(),<sp/>temporalOperators_.end(),<sp/>matchNameAndType</highlight></codeline>
 <codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;Unknown<sp/>operator<sp/>type&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error<sp/>{</highlight><highlight class="stringliteral">&quot;Unknown<sp/>operator<sp/>type&quot;</highlight><highlight class="normal">};</highlight></codeline>
 <codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>should<sp/>never<sp/>be<sp/>reached,<sp/>shut<sp/>up<sp/>compiler<sp/>warning</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spatialOperators_[0];</highlight></codeline>
 <codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -987,7 +1017,7 @@
 <codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!hasOperator&lt;Type&gt;(<ref refid="namespaceNeoN_1aa67294511d0c7da987259a7b1a3ba59d" kindref="member">name</ref>))</highlight></codeline>
 <codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;No<sp/>operator<sp/>with<sp/>given<sp/>name<sp/>and<sp/>type<sp/>found&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error<sp/>{</highlight><highlight class="stringliteral">&quot;No<sp/>operator<sp/>with<sp/>given<sp/>name<sp/>and<sp/>type<sp/>found&quot;</highlight><highlight class="normal">};</highlight></codeline>
 <codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>opType<sp/>=<sp/>Type;</highlight></codeline>
 <codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>matchNameAndType<sp/>=<sp/>[<ref refid="namespaceNeoN_1aa67294511d0c7da987259a7b1a3ba59d" kindref="member">name</ref>,<sp/>opType](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>op)</highlight></codeline>
