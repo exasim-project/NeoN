@@ -4,6 +4,8 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/core/mpi/environment.hpp"
@@ -107,6 +109,104 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
 BasicGeometryScheme::BasicGeometryScheme(const UnstructuredMesh& mesh)
     : GeometrySchemeFactory(mesh), mesh_(mesh)
 {}
+
+namespace
+{
+
+/**
+ * @brief Build the (start, end) ranges of all processor-boundary patches in the
+ *        boundaryData layout (i.e. into a vector sized nBoundaryFaces + nProcBoundaryFaces).
+ *
+ * Processor patches are the trailing patches in the boundary mesh; their offsets
+ * already point into the boundary-data layout where the proc tail begins at
+ * `boundaryMesh.nBoundaryFaces()`.
+ */
+std::vector<std::pair<localIdx, localIdx>> collectProcPatchOffsets(const UnstructuredMesh& mesh)
+{
+    std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+    const auto& patchOffsets = mesh.boundaryMesh().offset();
+    const auto totalPatches = mesh.boundaryMesh().nBoundaries();
+    const auto procPatchCount = mesh.boundaryMesh().nProcBoundaryPatches();
+    if (procPatchCount == 0)
+    {
+        return procPatchOffset;
+    }
+    const auto firstProcPatch = totalPatches - procPatchCount;
+    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
+    for (localIdx p = firstProcPatch; p < totalPatches; ++p)
+    {
+        procPatchOffset.emplace_back(patchOffsets[p], patchOffsets[p + 1]);
+    }
+    return procPatchOffset;
+}
+
+/**
+ * @brief Exchange the local owner-to-face orthogonal distance across processor
+ *        patches via MPI_Alltoallv.
+ *
+ * Returns a `Vector<scalar>` sized like `boundaryData().value()` (i.e.
+ * `nBoundaryFaces + nProcBoundaryFaces`). Before the exchange the proc-tail
+ * entries hold this rank's `|n · (cf - c_own)|` (the local owner-to-face distance
+ * projected onto the face normal). After the exchange they hold the matching
+ * neighbour rank's local distance for the same physical face — i.e. the local
+ * `d_neighbour`. Physical-boundary entries are left at zero.
+ *
+ * If the mesh is not distributed (no processor patches) the data is left
+ * untouched and no MPI call is made.
+ */
+Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    const auto nBoundaryFaces = mesh.boundaryMesh().nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.boundaryMesh().nProcBoundaryFaces();
+    const auto totalBoundary = nBoundaryFaces + nProcBoundaryFaces;
+
+    Vector<scalar> dExchange(exec, totalBoundary, 0.0);
+
+    if (nProcBoundaryFaces == 0)
+    {
+        return dExchange;
+    }
+
+    const auto cf = mesh.faceCentres().view();
+    const auto cellCentre = mesh.cellCentres().view();
+    const auto faceAreaVec3 = mesh.faceAreas().view();
+    const auto faceArea = mesh.magFaceAreas().view();
+    const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto totalFaces = mesh.nTotalFaces();
+    auto dExchangeV = dExchange.view();
+
+    // Fill local d_own at the proc-tail positions.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, totalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto bfacei = facei - nInternalFaces;
+            const auto own = surfFaceCells[bfacei];
+            const Vec3 cellToFace = cf[facei] - cellCentre[own];
+            const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+            // Owner side: outward normal from own cell, distance is positive.
+            // Use std::abs defensively in case of unusual mesh orientations.
+            dExchangeV[bfacei] = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+        },
+        "exchangeProcOwnerDistance::fillLocal"
+    );
+
+    auto procPatchOffset = collectProcPatchOffsets(mesh);
+    if (procPatchOffset.empty())
+    {
+        return dExchange;
+    }
+
+    // FIXME share commPattern with VolumeField::correctBoundaryConditions to avoid
+    // recomputing it once per geometry update. For now match the pattern used there.
+    auto commPattern = computeCommunicationPattern(mesh);
+    communicateBoundaryData(commPattern, procPatchOffset, dExchange);
+
+    return dExchange;
+}
+
+} // namespace
 
 void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scalar>& weights)
 {
