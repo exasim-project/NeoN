@@ -4,7 +4,10 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -12,6 +15,104 @@ namespace NeoN::finiteVolume::cellCentred
 BasicGeometryScheme::BasicGeometryScheme(const UnstructuredMesh& mesh)
     : GeometrySchemeFactory(mesh), mesh_(mesh)
 {}
+
+namespace
+{
+
+/**
+ * @brief Build the (start, end) ranges of all processor-boundary patches in the
+ *        boundaryData layout (i.e. into a vector sized nBoundaryFaces + nProcBoundaryFaces).
+ *
+ * Processor patches are the trailing patches in the boundary mesh; their offsets
+ * already point into the boundary-data layout where the proc tail begins at
+ * `boundaryMesh.nBoundaryFaces()`.
+ */
+std::vector<std::pair<localIdx, localIdx>> collectProcPatchOffsets(const UnstructuredMesh& mesh)
+{
+    std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+    const auto& patchOffsets = mesh.boundaryMesh().offset();
+    const auto totalPatches = mesh.boundaryMesh().nBoundaries();
+    const auto procPatchCount = mesh.boundaryMesh().nProcBoundaryPatches();
+    if (procPatchCount == 0)
+    {
+        return procPatchOffset;
+    }
+    const auto firstProcPatch = totalPatches - procPatchCount;
+    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
+    for (localIdx p = firstProcPatch; p < totalPatches; ++p)
+    {
+        procPatchOffset.emplace_back(patchOffsets[p], patchOffsets[p + 1]);
+    }
+    return procPatchOffset;
+}
+
+/**
+ * @brief Exchange the local owner-to-face orthogonal distance across processor
+ *        patches via MPI_Alltoallv.
+ *
+ * Returns a `Vector<scalar>` sized like `boundaryData().value()` (i.e.
+ * `nBoundaryFaces + nProcBoundaryFaces`). Before the exchange the proc-tail
+ * entries hold this rank's `|n · (cf - c_own)|` (the local owner-to-face distance
+ * projected onto the face normal). After the exchange they hold the matching
+ * neighbour rank's local distance for the same physical face — i.e. the local
+ * `d_neighbour`. Physical-boundary entries are left at zero.
+ *
+ * If the mesh is not distributed (no processor patches) the data is left
+ * untouched and no MPI call is made.
+ */
+Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    const auto nBoundaryFaces = mesh.boundaryMesh().nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.boundaryMesh().nProcBoundaryFaces();
+    const auto totalBoundary = nBoundaryFaces + nProcBoundaryFaces;
+
+    Vector<scalar> dExchange(exec, totalBoundary, 0.0);
+
+    if (nProcBoundaryFaces == 0)
+    {
+        return dExchange;
+    }
+
+    const auto cf = mesh.faceCentres().view();
+    const auto cellCentre = mesh.cellCentres().view();
+    const auto faceAreaVec3 = mesh.faceAreas().view();
+    const auto faceArea = mesh.magFaceAreas().view();
+    const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto totalFaces = mesh.nTotalFaces();
+    auto dExchangeV = dExchange.view();
+
+    // Fill local d_own at the proc-tail positions.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, totalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto bfacei = facei - nInternalFaces;
+            const auto own = surfFaceCells[bfacei];
+            const Vec3 cellToFace = cf[facei] - cellCentre[own];
+            const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+            // Owner side: outward normal from own cell, distance is positive.
+            // Use std::abs defensively in case of unusual mesh orientations.
+            dExchangeV[bfacei] = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+        },
+        "exchangeProcOwnerDistance::fillLocal"
+    );
+
+    auto procPatchOffset = collectProcPatchOffsets(mesh);
+    if (procPatchOffset.empty())
+    {
+        return dExchange;
+    }
+
+    // FIXME share commPattern with VolumeField::correctBoundaryConditions to avoid
+    // recomputing it once per geometry update. For now match the pattern used there.
+    auto commPattern = computeCommunicationPattern(mesh);
+    communicateBoundaryData(commPattern, procPatchOffset, dExchange);
+
+    return dExchange;
+}
+
+} // namespace
 
 void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scalar>& weights)
 {
@@ -70,24 +171,42 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     //                                              sfdNei = |Sf · (c_nei - cf)|,
     // matching `phi_f = w * phi_own + (1 - w) * phi_nei`.
     //
-    // For processor faces we don't have c_nei locally (the ghost cell center is on
-    // another rank). Without an extra MPI exchange of cell centers, the consistent
-    // convention with updateNonOrthDeltaCoeffs / updateDeltaCoeffs (which both use
-    // the face-as-midpoint assumption — see the 0.5/orthoDist factor below) is
-    // sfdNei == sfdOwn, giving w = 0.5. That matches what processorPolyPatch::
-    // makeWeights produces on a uniformly decomposed mesh and gives the symmetric
-    // linear interpolation `phi_f = 0.5 * phi_own + 0.5 * phi_ghost` consumed by
-    // `flux()` and the implicit divergence operator's proc-boundary handling.
-    parallelFor(
-        exec,
-        {nInternalFaces + nBoundaryFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            const auto bcfacei = facei - nInternalFaces;
-            weightS[facei] = 0.5;
-            weightB[bcfacei] = 0.5;
-        },
-        "basicGeometricScheme::updateWeightsProcBoundary"
-    );
+    // For processor faces c_nei lives on the neighbour rank. To mirror
+    // OpenFOAM's processorFvPatch::makeWeights (which is consistent on both sides
+    // of the cut and produces a symmetric Laplacian matrix at proc boundaries) we
+    // exchange the local owner-to-face distance via MPI and form
+    //   w = d_nei / (d_own + d_nei)
+    // where d_own and d_nei are the projections of (cf - c_own) onto the face
+    // normal on each side. On a uniform decomposition this collapses to 0.5.
+    //
+    // Skip the exchange and the loop entirely on a serial / non-distributed mesh
+    // — `nProcBoundaryFaces == 0` ⇒ no proc faces, no MPI work, and no Vector
+    // allocation that would otherwise happen for nothing.
+    if (mesh_.boundaryMesh().nProcBoundaryFaces() > 0)
+    {
+        auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
+        auto dNeighbourBoundaryV = dNeighbourBoundary.view();
+        const auto procFaceCells = mesh_.boundaryMesh().faceCells().view();
+        parallelFor(
+            exec,
+            {nInternalFaces + nBoundaryFaces, totalFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                const auto bcfacei = facei - nInternalFaces;
+                const auto own = procFaceCells[bcfacei];
+                const Vec3 cellToFace = cf[facei] - c[own];
+                const scalar magSf = std::sqrt(sf[facei] & sf[facei]);
+                const Vec3 faceNormal =
+                    (magSf > ROOTVSMALL ? scalar(1) / magSf : scalar(0)) * sf[facei];
+                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dNei = dNeighbourBoundaryV[bcfacei];
+                const scalar denom = dOwn + dNei;
+                const scalar w = (denom > ROOTVSMALL) ? (dNei / denom) : scalar(0.5);
+                weightS[facei] = w;
+                weightB[bcfacei] = w;
+            },
+            "basicGeometricScheme::updateWeightsProcBoundary"
+        );
+    }
 }
 
 void BasicGeometryScheme::updateDeltaCoeffs(
@@ -186,19 +305,44 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
 
-    // FIXME
-    parallelFor(
-        exec,
-        {nInternalFaces + nBoundaryFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            auto own = surfFaceCells[facei - nInternalFaces];
-            Vec3 cellToCellDist = cf[facei] - cellCentre[own];
-            Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
-            scalar orthoDist = faceNormal & cellToCellDist;
-            nonOrthDeltaCoeff[facei] = 0.5 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
-        },
-        "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
-    );
+    // Processor boundary nonOrthDeltaCoeffs.
+    //
+    // The Laplacian assembly at processor patches uses this coefficient as the
+    // inverse cell-to-cell distance across the proc face. To make the assembled
+    // matrix symmetric across the cut on non-uniform meshes we need
+    //   1 / (d_own + d_nei)
+    // computed identically on both ranks, where d_nei is the matching neighbour-
+    // side owner-to-face distance fetched via MPI. The previous formulation
+    //   0.5 / d_own
+    // was only correct on uniform decompositions (d_own == d_nei) and produced an
+    // asymmetric Laplacian — and a visible pressure dipole at proc boundaries —
+    // on graded meshes.
+    //
+    // Skip on serial / non-distributed meshes (no proc faces ⇒ nothing to do).
+    if (mesh_.boundaryMesh().nProcBoundaryFaces() > 0)
+    {
+        auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
+        auto dNeighbourBoundaryV = dNeighbourBoundary.view();
+        parallelFor(
+            exec,
+            {nInternalFaces + nBoundaryFaces, totalFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                const auto bcfacei = facei - nInternalFaces;
+                const auto own = surfFaceCells[bcfacei];
+                const Vec3 cellToFace = cf[facei] - cellCentre[own];
+                const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dNei = dNeighbourBoundaryV[bcfacei];
+                const scalar dCellToCell = dOwn + dNei;
+                // Cell-to-cell vector approximation for the floor (avoid divide-by-zero
+                // / very small denominators in pathological cases).
+                const Vec3 approxCellToCell = cellToFace + faceNormal * dNei;
+                nonOrthDeltaCoeff[facei] =
+                    1.0 / std::max(dCellToCell, scalar(0.05) * mag(approxCellToCell));
+            },
+            "basicGeometricScheme::updateNonOrthDeltaCoeffsProcBoundary"
+        );
+    }
 }
 
 
