@@ -74,7 +74,15 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const CommunicationPattern& commPattern
 )
 {
-    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
+    // Ginkgo's distributed components (Matrix, Schwarz preconditioner, …) default
+    // their global index type to gko::int64. NeoN's `label` is int32 in the default
+    // build, so using <scalar, label, label> for the distributed matrix produces
+    // <double, int, int>, which mismatches the Schwarz factory built from the
+    // dictionary (<double, int, long long>) and aborts at gko::as<...>() inside
+    // Schwarz::generate. Use gko::int64 for the global index throughout to align
+    // with Schwarz's default instantiation.
+    using global_index_type = gko::int64;
+    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, global_index_type>;
     const auto [coeffsV, sparsityV] = mtx.view();
 
     // NOTE we get a const view of the system but need a non const view to vals and indices
@@ -95,27 +103,52 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
 
     // TODO dont recreate
-    auto partition =
-        gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
+    auto partition = gko::share(
+        gko::experimental::distributed::build_partition_from_local_size<label, global_index_type>(
             exec, comm, nrows
-        ));
+        )
+    );
 
     std::shared_ptr<const gko::LinOp> localMtx =
         gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
             exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
         ));
 
-    // Non local part of matrix
-    auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
-
-    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
+    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing.
+    // The COO sparsity stores them as IndexType (= label = int32). Cast up to
+    // global_index_type (int64) because that's what the index_map / partition / matrix
+    // template arguments require above.
     auto bmtxv = bmtx.sparsity()->colIdxs();
+    const auto nRecv = static_cast<gko::size_type>(bmtxv.size());
 
-    gko::array<int> recv_connections = gko::make_array_view(exec, bmtxv.size(), bmtxv.data());
+    gko::array<global_index_type> recv_connections {exec, nRecv};
+    {
+        // Stage on host: the cast from int32 -> int64 is a sequential scalar
+        // operation done once per solve setup; size is the number of proc-boundary
+        // off-diagonal entries on this rank.
+        auto host = exec->get_master();
+        auto srcView = gko::array<IndexType>::const_view(exec, nRecv, bmtxv.data());
+        auto srcArr = srcView.copy_to_array();
+        srcArr.set_executor(host);
+        gko::array<global_index_type> hostRecv {host, nRecv};
+        auto srcPtr = srcArr.get_const_data();
+        auto dstPtr = hostRecv.get_data();
+        for (gko::size_type i = 0; i < nRecv; ++i)
+        {
+            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
+        }
+        recv_connections = std::move(hostRecv);
+        recv_connections.set_executor(exec);
+    }
 
-    auto imap = gko::experimental::distributed::index_map<label, label>(
+    auto imap = gko::experimental::distributed::index_map<label, global_index_type>(
         exec, partition, comm.rank(), recv_connections
     );
+
+    // Non local part of matrix
+    auto numNonLocalElements =
+        imap.get_non_local_size(); // commPattern.sendCounts[commPattern.sendCounts.size() - 1];
+
 
     auto non_loc_vals = gko::array<scalar>::const_view(
         exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.values().data()
@@ -124,12 +157,32 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->rowOffs().data()
     );
 
-    auto non_loc_col = gko::array<IndexType>::const_view(
-                           exec,
-                           static_cast<gko::size_type>(numNonLocalElements),
-                           bmtx.sparsity()->colIdxs().data()
-    )
-                           .copy_to_array();
+    // imap is templated on <label, global_index_type=int64>, so map_to_local expects
+    // the input to be a gko::array<global_index_type>. Cast colIdxs (int32) to int64.
+    gko::array<global_index_type> non_loc_col {
+        exec, static_cast<gko::size_type>(numNonLocalElements)
+    };
+    {
+        auto host = exec->get_master();
+        auto srcView = gko::array<IndexType>::const_view(
+            exec,
+            static_cast<gko::size_type>(numNonLocalElements),
+            bmtx.sparsity()->colIdxs().data()
+        );
+        auto srcArr = srcView.copy_to_array();
+        srcArr.set_executor(host);
+        gko::array<global_index_type> hostCol {
+            host, static_cast<gko::size_type>(numNonLocalElements)
+        };
+        auto srcPtr = srcArr.get_const_data();
+        auto dstPtr = hostCol.get_data();
+        for (gko::size_type i = 0; i < static_cast<gko::size_type>(numNonLocalElements); ++i)
+        {
+            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
+        }
+        non_loc_col = std::move(hostCol);
+        non_loc_col.set_executor(exec);
+    }
 
     auto comp_non_loc_col =
         imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
@@ -232,6 +285,7 @@ SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
+    std::cout << __FILE__ << ":" << __LINE__ << " solve dist \n";
     // TODO make that selectable via dictionary
     bool forceHostBuffer = false;
     const CommunicationPattern& commPattern = sys.commPattern();

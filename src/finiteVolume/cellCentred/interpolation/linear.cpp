@@ -22,6 +22,13 @@ void computeLinearInterpolation(
     NeoN::mpi::Environment mpiEnviron;
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
+    // Also populate dst.boundaryData().value(): callers that iterate the
+    // SurfaceField's per-patch boundary view (e.g. nf::compare with
+    // withBoundaries=true, or any operator that consumes the boundary
+    // representation of an interpolated surface field) need the boundary
+    // half to carry the same value the kernel writes into internalVector
+    // at boundary face indices.
+    auto dstBnd = dst.boundaryData().value().view();
     const auto [srcS, weightS, ownerS, neighS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
@@ -52,7 +59,9 @@ void computeLinearInterpolation(
             // regular boundary
             if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
             {
-                dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
+                auto bcfacei = facei - nInternalFaces;
+                dstS[facei] = weightS[facei] * boundS[bcfacei];
+                dstBnd[bcfacei] = dstS[facei];
             }
             // proc boundary
             //
@@ -69,6 +78,7 @@ void computeLinearInterpolation(
                 auto bcfacei = facei - nInternalFaces;
                 dstS[facei] =
                     weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
+                dstBnd[bcfacei] = dstS[facei];
             }
         },
         "computeLinearInterpolation"
