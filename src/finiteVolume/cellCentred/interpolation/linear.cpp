@@ -29,11 +29,12 @@ void computeLinearInterpolation(
     // half to carry the same value the kernel writes into internalVector
     // at boundary face indices.
     auto dstBnd = dst.boundaryData().value().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
+    const auto [srcS, weightS, ownerS, neighS, faceCellS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
+        dst.mesh().boundaryMesh().faceCells(),
         src.boundaryData().value()
     );
 
@@ -54,7 +55,7 @@ void computeLinearInterpolation(
             {
                 auto own = ownerS[facei];
                 auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                dstS[facei] = weightS[facei] * srcS[own] + (1.0 - weightS[facei]) * srcS[nei];
             }
             // regular boundary
             if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
@@ -74,10 +75,10 @@ void computeLinearInterpolation(
             // post-exchange remote value.
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
-                auto own = ownerS[facei];
                 auto bcfacei = facei - nInternalFaces;
+                auto own = faceCellS[bcfacei];
                 dstS[facei] =
-                    weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
+                    (1- weightS[facei]) * srcS[own] +  weightS[facei] * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }
         },

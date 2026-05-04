@@ -285,7 +285,6 @@ SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    std::cout << __FILE__ << ":" << __LINE__ << " solve dist \n";
     // TODO make that selectable via dictionary
     bool forceHostBuffer = false;
     const CommunicationPattern& commPattern = sys.commPattern();

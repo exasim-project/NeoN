@@ -187,6 +187,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
         auto dNeighbourBoundaryV = dNeighbourBoundary.view();
         const auto procFaceCells = mesh_.boundaryMesh().faceCells().view();
+        // FIXME is std::abs available on GPU?
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},
