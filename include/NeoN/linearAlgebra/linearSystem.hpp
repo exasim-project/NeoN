@@ -470,6 +470,7 @@ inline void scaledInvDiagNegLUx(
                 {
                     nonLocalVal = nonLocalMtx[i];
                     curNonLocalRow = i;
+                    // FIXME is the sign correct?
                     outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];
                     // curNonLocalRow = 0;
                     // break;
