@@ -34,8 +34,8 @@ void computeLinearInterpolation(
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryData().value(),
-        dst.mesh().boundaryMesh().faceCells()
+        dst.mesh().boundaryMesh().faceCells(),
+        src.boundaryData().value()
     );
 
     auto nInternalFaces = src.mesh().nInternalFaces();
@@ -55,7 +55,7 @@ void computeLinearInterpolation(
             {
                 auto own = ownerS[facei];
                 auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                dstS[facei] = weightS[facei] * srcS[own] + (1.0 - weightS[facei]) * srcS[nei];
             }
             // regular boundary
             if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
@@ -78,9 +78,9 @@ void computeLinearInterpolation(
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
                 auto bcfacei = facei - nInternalFaces;
-                auto own = bcFaceCells[bcfacei];
+                auto own = faceCellS[bcfacei];
                 dstS[facei] =
-                    weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
+                    (1- weightS[facei]) * srcS[own] +  weightS[facei] * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }
         },

@@ -170,7 +170,7 @@ TEST_CASE("Distributed")
         REQUIRE_THAT(take(x, 8, 12), IsEqualTo(xPart));
     }
 
-    REQUIRE(finalResNormDist == Catch::Approx(finalResNorm).margin(1e-08));
+    REQUIRE(finalResNormDist == Catch::Approx(finalResNorm).margin(1e-32));
 #endif
 }
 
