@@ -59,6 +59,13 @@ void computeDiv(
     // for transport equations where ∂φ/∂t = −∇·(F φ) + ...).
 
     // check if the executor is GPU
+    // Total face count covers internal + physical boundary + processor boundary.
+    // `faceFlux` and `phiF` are sized over all faces; `faceCells` covers the
+    // boundary tail (physical patches followed by processor patches), so the
+    // owner cell of any boundary or processor face is `faceCells[facei -
+    // nInternalFaces]`.
+    const auto nTotalFaces = static_cast<localIdx>(faceFlux.size());
+
     if (std::holds_alternative<SerialExecutor>(exec))
     {
         for (localIdx i = 0; i < nInternalFaces; i++)
@@ -73,6 +80,19 @@ void computeDiv(
             auto own = faceCells[i - nInternalFaces];
             ValueType valueOwn = faceFlux[i] * phiF[i];
             res[own] += valueOwn; // boundary face: F_f outward from owner
+        }
+
+        // Processor boundary faces: the ghost cell is on the neighbour rank, so
+        // only the local owner receives the contribution. Without this loop the
+        // pressure equation's RHS (= div(phiHbyA)) misses the proc-face flux at
+        // proc-adjacent cells; the resulting phantom source/sink term drives a
+        // runaway dipole at every processor patch in any case with non-trivial
+        // advective flux through the cut (e.g. cylinder/channel flow).
+        for (localIdx i = nInternalFaces + nBoundaryFaces; i < nTotalFaces; i++)
+        {
+            auto own = faceCells[i - nInternalFaces];
+            ValueType valueOwn = faceFlux[i] * phiF[i];
+            res[own] += valueOwn;
         }
 
         // TODO does it make sense to store invVol and multiply?
@@ -103,6 +123,18 @@ void computeDiv(
                 Kokkos::atomic_add(&res[own], valueOwn); // boundary face: F_f outward from owner
             },
             "sumFluxesBoundary"
+        );
+
+        // Processor boundary faces: see comment above the serial branch.
+        parallelFor(
+            exec,
+            {nInternalFaces + nBoundaryFaces, nTotalFaces},
+            NEON_LAMBDA(const localIdx i) {
+                auto own = faceCells[i - nInternalFaces];
+                ValueType valueOwn = faceFlux[i] * phiF[i];
+                Kokkos::atomic_add(&res[own], valueOwn);
+            },
+            "sumFluxesProcBoundary"
         );
 
         parallelFor(

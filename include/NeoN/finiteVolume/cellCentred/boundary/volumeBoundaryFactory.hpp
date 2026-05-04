@@ -25,7 +25,7 @@ class BoundaryContext;
 struct BoundaryAttributes
 {
     bool assignable; ///< whether values can be assigned to the boundary patch
-    bool fixesValue;
+    bool fixesValue; ///< whether the bc sets a fixedValue ie. fixing the flux
 };
 
 template<typename ValueType>
