@@ -79,8 +79,7 @@ void computeLinearInterpolation(
             {
                 auto bcfacei = facei - nInternalFaces;
                 auto own = faceCellS[bcfacei];
-                dstS[facei] =
-                    (1- weightS[facei]) * srcS[own] +  weightS[facei] * boundS[bcfacei];
+                dstS[facei] = (1 - weightS[facei]) * srcS[own] + weightS[facei] * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }
         },
