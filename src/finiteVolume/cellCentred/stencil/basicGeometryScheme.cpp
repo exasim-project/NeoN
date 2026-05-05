@@ -73,24 +73,30 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
         return dExchange;
     }
 
-    const auto cf = mesh.faceCentres().view();
     const auto cellCentre = mesh.cellCentres().view();
-    const auto faceAreaVec3 = mesh.faceAreas().view();
-    const auto faceArea = mesh.magFaceAreas().view();
+    const auto bcCf = mesh.boundaryMesh().cf().view();
+    const auto bcSf = mesh.boundaryMesh().sf().view();
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
     const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto totalFaces = mesh.nTotalFaces();
     auto dExchangeV = dExchange.view();
 
     // Fill local d_own at the proc-tail positions.
+    //
+    // mesh.faceCentres()/faceAreas()/magFaceAreas() are sized over OpenFOAM's
+    // full face list (which includes empty patches like defaultFaces); indexing
+    // them with the compressed proc-face index reads the wrong empty-patch face.
+    // bm.cf()/sf()/magSf() are in the compressed boundary-tail layout that
+    // matches `bcfacei = facei - nInternalFaces`, so use those instead.
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
             const auto bfacei = facei - nInternalFaces;
             const auto own = surfFaceCells[bfacei];
-            const Vec3 cellToFace = cf[facei] - cellCentre[own];
-            const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+            const Vec3 cellToFace = bcCf[bfacei] - cellCentre[own];
+            const Vec3 faceNormal = (1.0 / bcMagSf[bfacei]) * bcSf[bfacei];
             // Owner side: outward normal from own cell, distance is positive.
             // Use std::abs defensively in case of unusual mesh orientations.
             dExchangeV[bfacei] = std::abs(static_cast<scalar>(faceNormal & cellToFace));
@@ -187,16 +193,22 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
         auto dNeighbourBoundaryV = dNeighbourBoundary.view();
         const auto procFaceCells = mesh_.boundaryMesh().faceCells().view();
+        // bm.cf()/sf() are in compressed boundary-tail indexing matching
+        // bcfacei = facei - nInternalFaces. Using mesh_.faceCentres()/faceAreas()
+        // here would index into OpenFOAM's full face list (which includes empty
+        // patches) and read the wrong face's geometry.
+        const auto bcCf = mesh_.boundaryMesh().cf().view();
+        const auto bcSf = mesh_.boundaryMesh().sf().view();
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},
             NEON_LAMBDA(const localIdx facei) {
                 const auto bcfacei = facei - nInternalFaces;
                 const auto own = procFaceCells[bcfacei];
-                const Vec3 cellToFace = cf[facei] - c[own];
-                const scalar magSf = std::sqrt(sf[facei] & sf[facei]);
+                const Vec3 cellToFace = bcCf[bcfacei] - c[own];
+                const scalar magSf = std::sqrt(bcSf[bcfacei] & bcSf[bcfacei]);
                 const Vec3 faceNormal =
-                    (magSf > ROOTVSMALL ? scalar(1) / magSf : scalar(0)) * sf[facei];
+                    (magSf > ROOTVSMALL ? scalar(1) / magSf : scalar(0)) * bcSf[bcfacei];
                 const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
                 const scalar dNei = dNeighbourBoundaryV[bcfacei];
                 const scalar denom = dOwn + dNei;
@@ -247,18 +259,27 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
 
-    // FIXME
-    parallelFor(
-        exec,
-        {nInternalFaces + nBoundaryFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            auto own = surfFaceCells[facei - nInternalFaces];
-            Vec3 cellToCellDist = cf[facei] - cellCentre[own];
+    // FIXME proc-face deltaCoeffs should mirror updateNonOrthDeltaCoeffs and
+    // use the cell-to-cell distance across the cut (d_own + d_nei) instead of
+    // the local owner-to-face distance — without that the Laplacian assembled
+    // from these coefficients is asymmetric on graded meshes. As a minimum fix
+    // for the empty-patch indexing bug, use bm.cf() (compressed) so we read the
+    // right face here; the asymmetry concern is tracked separately.
+    {
+        const auto bcCf = mesh_.boundaryMesh().cf().view();
+        parallelFor(
+            exec,
+            {nInternalFaces + nBoundaryFaces, totalFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                const auto bcfacei = facei - nInternalFaces;
+                auto own = surfFaceCells[bcfacei];
+                Vec3 cellToCellDist = bcCf[bcfacei] - cellCentre[own];
 
-            deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
-        },
-        "basicGeometricScheme::updateDeltaCoeffsBoundary"
-    );
+                deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
+            },
+            "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
+        );
+    }
 }
 
 
@@ -323,14 +344,21 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     {
         auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
         auto dNeighbourBoundaryV = dNeighbourBoundary.view();
+        // bm.cf()/sf()/magSf() are in compressed boundary-tail indexing matching
+        // bcfacei. mesh_.faceCentres()/faceAreas()/magFaceAreas() are sized over
+        // OpenFOAM's full face list (incl. empty patches) and would read the
+        // wrong face here.
+        const auto bcCf = mesh_.boundaryMesh().cf().view();
+        const auto bcSf = mesh_.boundaryMesh().sf().view();
+        const auto bcMagSf = mesh_.boundaryMesh().magSf().view();
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},
             NEON_LAMBDA(const localIdx facei) {
                 const auto bcfacei = facei - nInternalFaces;
                 const auto own = surfFaceCells[bcfacei];
-                const Vec3 cellToFace = cf[facei] - cellCentre[own];
-                const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+                const Vec3 cellToFace = bcCf[bcfacei] - cellCentre[own];
+                const Vec3 faceNormal = (1.0 / bcMagSf[bcfacei]) * bcSf[bcfacei];
                 const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
                 const scalar dNei = dNeighbourBoundaryV[bcfacei];
                 const scalar dCellToCell = dOwn + dNei;
