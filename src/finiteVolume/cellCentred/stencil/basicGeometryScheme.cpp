@@ -128,6 +128,10 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     const auto cf = mesh_.faceCentres().view();
     const auto c = mesh_.cellCentres().view();
     const auto sf = mesh_.faceAreas().view();
+    const auto bcCf = mesh_.boundaryMesh().cf().view();
+    const auto bcSf = mesh_.boundaryMesh().sf().view();
+    const auto bcMagSf = mesh_.boundaryMesh().magSf().view();
+
 
     const auto [weightS, weightB] = views(weights.internalVector(), weights.boundaryData().value());
 
