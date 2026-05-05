@@ -193,12 +193,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
         auto dNeighbourBoundaryV = dNeighbourBoundary.view();
         const auto procFaceCells = mesh_.boundaryMesh().faceCells().view();
-        // bm.cf()/sf() are in compressed boundary-tail indexing matching
-        // bcfacei = facei - nInternalFaces. Using mesh_.faceCentres()/faceAreas()
-        // here would index into OpenFOAM's full face list (which includes empty
-        // patches) and read the wrong face's geometry.
-        const auto bcCf = mesh_.boundaryMesh().cf().view();
-        const auto bcSf = mesh_.boundaryMesh().sf().view();
+        // FIXME is std::abs available on GPU?
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},

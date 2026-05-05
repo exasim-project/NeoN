@@ -29,13 +29,22 @@ void computeLinearInterpolation(
     // half to carry the same value the kernel writes into internalVector
     // at boundary face indices.
     auto dstBnd = dst.boundaryData().value().view();
+<<<<<<< fix/procDiscontinuity
     const auto [srcS, weightS, ownerS, neighS, boundS, bcFaceCells] = views(
+=======
+    const auto [srcS, weightS, ownerS, neighS, faceCellS, boundS] = views(
+>>>>>>> stack/distributed
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
+<<<<<<< fix/procDiscontinuity
         src.boundaryData().value(),
         dst.mesh().boundaryMesh().faceCells()
+=======
+        dst.mesh().boundaryMesh().faceCells(),
+        src.boundaryData().value()
+>>>>>>> stack/distributed
     );
 
     auto nInternalFaces = src.mesh().nInternalFaces();
@@ -55,7 +64,7 @@ void computeLinearInterpolation(
             {
                 auto own = ownerS[facei];
                 auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                dstS[facei] = weightS[facei] * srcS[own] + (1.0 - weightS[facei]) * srcS[nei];
             }
             // regular boundary
             if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
@@ -78,9 +87,13 @@ void computeLinearInterpolation(
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
                 auto bcfacei = facei - nInternalFaces;
+<<<<<<< fix/procDiscontinuity
                 auto own = bcFaceCells[bcfacei];
+=======
+                auto own = faceCellS[bcfacei];
+>>>>>>> stack/distributed
                 dstS[facei] =
-                    weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
+                    (1- weightS[facei]) * srcS[own] +  weightS[facei] * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }
         },
