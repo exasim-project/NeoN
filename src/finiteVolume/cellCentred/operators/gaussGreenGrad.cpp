@@ -291,6 +291,7 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    // Physical (non-proc) boundary faces: OF and compressed indices coincide here.
     parallelFor(
         exec,
         {0, nBnd},
@@ -308,6 +309,26 @@ void computeGradTensor(
             }
         },
         "computeGradTensorBoundary"
+    );
+
+    // Processor boundary faces: read S_f from the compressed boundary-tail view.
+    parallelFor(
+        exec,
+        {nInt + nBnd, nFaces},
+        NEON_LAMBDA(const localIdx f) {
+            const localIdx bi = f - nInt;
+            const auto o = bFaceCells[bi];
+            const Vec3 sf = bcSf[bi];
+            const Vec3 uf = UfAll[f];
+            for (int row = 0; row < 3; ++row)
+            {
+                for (int col = 0; col < 3; ++col)
+                {
+                    atomicAddTensor(&gT[o], row, col, sf[col] * uf[row]);
+                }
+            }
+        },
+        "computeGradTensorProcBoundary"
     );
 
     parallelFor(

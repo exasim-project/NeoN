@@ -167,24 +167,30 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
         return dExchange;
     }
 
-    const auto cf = mesh.faceCentres().view();
     const auto cellCentre = mesh.cellCentres().view();
-    const auto faceAreaVec3 = mesh.faceAreas().view();
-    const auto faceArea = mesh.magFaceAreas().view();
+    const auto bcCf = mesh.boundaryMesh().cf().view();
+    const auto bcSf = mesh.boundaryMesh().sf().view();
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
     const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto totalFaces = mesh.nTotalFaces();
     auto dExchangeV = dExchange.view();
 
     // Fill local d_own at the proc-tail positions.
+    //
+    // mesh.faceCentres()/faceAreas()/magFaceAreas() are sized over OpenFOAM's
+    // full face list (which includes empty patches like defaultFaces); indexing
+    // them with the compressed proc-face index reads the wrong empty-patch face.
+    // bm.cf()/sf()/magSf() are in the compressed boundary-tail layout that
+    // matches `bcfacei = facei - nInternalFaces`, so use those instead.
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, totalFaces},
         NEON_LAMBDA(const localIdx facei) {
             const auto bfacei = facei - nInternalFaces;
             const auto own = surfFaceCells[bfacei];
-            const Vec3 cellToFace = cf[facei] - cellCentre[own];
-            const Vec3 faceNormal = (1.0 / faceArea[facei]) * faceAreaVec3[facei];
+            const Vec3 cellToFace = bcCf[bfacei] - cellCentre[own];
+            const Vec3 faceNormal = (1.0 / bcMagSf[bfacei]) * bcSf[bfacei];
             // Owner side: outward normal from own cell, distance is positive.
             // Use std::abs defensively in case of unusual mesh orientations.
             dExchangeV[bfacei] = std::abs(static_cast<scalar>(faceNormal & cellToFace));
