@@ -83,29 +83,24 @@ void computeGrad(
     // and ghost cell-centre values:
     //     φ_f = w * φ_own + (1 - w) * φ_ghost
     // The ghost value is in `in.boundaryData().value()` at the proc tail
-    // (populated by `in.correctBoundaryConditions()` before this call). The
-    // SurfaceInterpolation::interpolate(...) above does not currently populate
-    // surfPhif for proc faces (see linear.cpp ~line 56 — the proc-boundary
-    // branch is a stub) so the existing physical-boundary loop adds zero
-    // contribution for proc faces; we add the correct contribution here.
+    // (populated by `in.correctBoundaryConditions()` before this call).
     //
-    // TODO: once `Linear::interpolate` populates proc faces, this can fall
-    // back to reading surfPhif[i] like the physical-boundary path. For now we
-    // recompute the interpolation locally.
-    const auto inV = in.internalVector().view();
-    const auto inBoundV = in.boundaryData().value().view();
+    // surfPhif (the result of SurfaceInterpolation::interpolate) DOES populate
+    // proc-face entries (see linear.cpp), and the linear interpolation kernel
+    // uses the correct geometric weight from basicGeometryScheme. So we read
+    // surfPhif[i] for the face value (consistent with internal-face path).
+    //
+    // For the face area we MUST use bm.sf() (compressed boundary-tail layout
+    // matching bcfacei). mesh.faceAreas() is in OpenFOAM's full face list incl.
+    // empty patches; indexing it with the compressed proc-face index reads the
+    // wrong face's area.
     parallelFor(
         exec,
         {nInternalFaces + nBoundaryFaces, surfPhif.size()},
         NEON_LAMBDA(const localIdx i) {
-            auto bfacei = i - nInternalFaces;
-            auto own = surfFaceCells[bfacei];
-            auto ownVal = inV[own];
-            auto ghostVal = inBoundV[bfacei];
-            // FIXME use proper geometric weight once available for proc faces.
-            const scalar w = scalar(0.5);
-            scalar faceVal = w * ownVal + (scalar(1) - w) * ghostVal;
-            Vec3 valueOwn = faceAreaS[i] * faceVal;
+            const auto bcfacei = i - nInternalFaces;
+            const auto own = surfFaceCells[bcfacei];
+            Vec3 valueOwn = sBSf[bcfacei] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeProcGradBoundary"
@@ -280,10 +275,15 @@ void computeGradTensor(
         mesh.cellVolumes(),
         mesh.boundaryMesh().faceCells()
     );
+    // Boundary-tail face areas (compressed indexing). Use this for proc faces;
+    // mesh.faceAreas() is OF-full and reads the wrong face for compressed proc
+    // indices (which sit past the empty defaultFaces patch in OF).
+    const auto bcSf = mesh.boundaryMesh().sf().view();
 
     const localIdx nInt = mesh.nInternalFaces();
-    const localIdx nBnd = mesh.boundaryMesh().offset().back();
-    const localIdx nFaces = nInt + nBnd;
+    const localIdx nBnd = mesh.nBoundaryFaces();
+    const localIdx nProcBnd = mesh.boundaryMesh().nProcBoundaryFaces();
+    const localIdx nFaces = nInt + nBnd + nProcBnd;
 
     parallelFor(
         exec,
@@ -307,9 +307,10 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    // Physical (non-proc) boundary faces: OF and compressed indices coincide here.
     parallelFor(
         exec,
-        {nInt, nFaces},
+        {nInt, nInt + nBnd},
         NEON_LAMBDA(const localIdx f) {
             const localIdx bi = f - nInt;
             const auto o = bFaceCells[bi];
@@ -324,6 +325,26 @@ void computeGradTensor(
             }
         },
         "computeGradTensorBoundary"
+    );
+
+    // Processor boundary faces: read S_f from the compressed boundary-tail view.
+    parallelFor(
+        exec,
+        {nInt + nBnd, nFaces},
+        NEON_LAMBDA(const localIdx f) {
+            const localIdx bi = f - nInt;
+            const auto o = bFaceCells[bi];
+            const Vec3 sf = bcSf[bi];
+            const Vec3 uf = UfAll[f];
+            for (int row = 0; row < 3; ++row)
+            {
+                for (int col = 0; col < 3; ++col)
+                {
+                    atomicAddTensor(&gT[o], row, col, sf[col] * uf[row]);
+                }
+            }
+        },
+        "computeGradTensorProcBoundary"
     );
 
     parallelFor(

@@ -27,8 +27,14 @@ void computeLaplacianExp(
 
     const auto [result, faceArea, fnGrad, vol] =
         views(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
+    // Boundary-tail face area (compressed indexing matching bcfacei). Used for
+    // proc faces because mesh.magFaceAreas() is in OpenFOAM's full face list
+    // (incl. empty patches like defaultFaces) — indexing it with the compressed
+    // proc-face index reads the wrong face's area.
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
 
     auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss Laplacian: ∇·(γ∇φ)_C = (1/V_C) * sum_f γ_f * |S_f| * (∂φ/∂n)_f
     //
@@ -56,10 +62,13 @@ void computeLaplacianExp(
         "computeLaplacianExplicitInternal"
     );
 
-    // Boundary faces: only the owner cell is on this rank.
+    // Physical (non-proc) boundary faces: only the owner cell is on this rank.
+    // For non-proc patches, OpenFOAM's full face index and NeoN's compressed
+    // index agree (empty patches like defaultFaces have size()==0 in fvPatch),
+    // so faceArea[i] = mesh.magFaceAreas()[i] is correct here.
     parallelFor(
         exec,
-        {nInternalFaces, fnGrad.size()},
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
             ValueType valueOwn =
@@ -67,6 +76,21 @@ void computeLaplacianExp(
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
+    );
+
+    // Processor boundary faces: same operation but read the face area from the
+    // boundary-mesh (compressed) view because mesh.magFaceAreas() is in OF's
+    // full face list including empty patches.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, fnGrad.size()},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            auto own = surfFaceCells[bcfacei];
+            ValueType valueOwn = bcMagSf[bcfacei] * fnGrad[i];
+            Kokkos::atomic_add(&result[own], valueOwn);
+        },
+        "computeLaplacianExplicitProcBoundary"
     );
 
     parallelFor(
@@ -103,12 +127,17 @@ void computeLaplacianProcBoundImpl(
 
     auto gammaV = gamma.internalVector().view();
 
-    const auto [deltaCoeffs, magFaceArea, surfFaceCells] = views(
+    // bm.magSf() is in the compressed boundary-tail layout matching bcfacei.
+    // mesh.magFaceAreas() is in OpenFOAM's full face list (incl. empty patches);
+    // indexing it with the compressed proc-face index reads the wrong face's
+    // area, which produces wrong Laplacian matrix coefficients at proc patches
+    // and a visible pressure discontinuity across the cut.
+    const auto [deltaCoeffs, surfFaceCells] = views(
         faceNormalGradient.deltaCoeffs().internalVector(),
-        mesh.magFaceAreas(),
         mesh.boundaryMesh().faceCells() //,
                                         // mesh.boundaryMesh().deltaCoeffs()
     );
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
 
     const auto matIt = ls.faceToMatrixAddress();
     auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
@@ -141,7 +170,7 @@ void computeLaplacianProcBoundImpl(
             auto rowStart = rowOffs[cell];
             auto c = operatorScaling[cell];
 
-            auto flux = gammaV[facei] * magFaceArea[facei] * deltaCoeffs[facei];
+            auto flux = gammaV[facei] * bcMagSf[bcfacei] * deltaCoeffs[facei];
             auto value = flux * c * one<ValueType>();
 
             Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);

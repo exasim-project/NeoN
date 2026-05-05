@@ -29,12 +29,13 @@ void computeLinearInterpolation(
     // half to carry the same value the kernel writes into internalVector
     // at boundary face indices.
     auto dstBnd = dst.boundaryData().value().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
+    const auto [srcS, weightS, ownerS, neighS, boundS, bcFaceCells] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
-        src.boundaryData().value()
+        src.boundaryData().value(),
+        dst.mesh().boundaryMesh().faceCells()
     );
 
     auto nInternalFaces = src.mesh().nInternalFaces();
@@ -67,15 +68,17 @@ void computeLinearInterpolation(
             //
             // Same linear blend as an internal face, but the neighbour cell
             // lives on another rank. After VolumeField::correctBoundaryConditions
-            // the exchanged neighbour value sits in boundS[bcfacei]
-            // (see volumeBoundary::Processor::setProcBoundaryValue +
-            //  communicateBoundaryData in volumeField.cpp:107-113), so the
-            // owner-side weight is applied to the local cell and (1-w) to the
-            // post-exchange remote value.
+            // the exchanged neighbour value sits in boundS[bcfacei].
+            //
+            // Use bm.faceCells() (compressed indexing matching the boundary tail
+            // of the surface field) for the owner cell. mesh.faceOwner() is in
+            // OpenFOAM's full face indexing which includes empty patches;
+            // indexing it with the compressed proc-face index reads the wrong
+            // (empty-patch) face's owner.
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
-                auto own = ownerS[facei];
                 auto bcfacei = facei - nInternalFaces;
+                auto own = bcFaceCells[bcfacei];
                 dstS[facei] =
                     weightS[facei] * srcS[own] + (scalar(1) - weightS[facei]) * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
