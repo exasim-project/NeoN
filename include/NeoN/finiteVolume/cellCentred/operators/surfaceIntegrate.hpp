@@ -77,8 +77,11 @@ public:
     dsl::Operator::Type getType() const { return type_; }
 
     std::string getName() const { return "SurfaceIntegrate"; }
+    std::string juliaOP() const { return getName(); }
 
 private:
+
+    std::string juliaEvalString_;
 
     const SurfaceField<ValueType>& flux_;
     dsl::Operator::Type type_;

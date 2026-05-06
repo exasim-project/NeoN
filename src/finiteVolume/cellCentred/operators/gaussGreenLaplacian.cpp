@@ -98,9 +98,9 @@ void computeLaplacianImpl(
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = views(
-        gamma.internalVector(),
-        faceNormalGradient.deltaCoeffs().internalVector(),
-        mesh.magFaceAreas()
+        gamma.internalVector(),                            // scalar
+        faceNormalGradient.deltaCoeffs().internalVector(), // scalar
+        mesh.magFaceAreas()                                // scalar
     );
 
     auto rhs = ls.rhs().view();
@@ -134,10 +134,18 @@ void computeLaplacianImpl(
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
             );
+            // if (facei < 5)
+            // {
+            // std::cout << "face 1: " << rowNeiStart << ", " << rowOwnStart << std::endl;
+            // std::cout << "face 1: " << unsigned(diagOffs[nei]) << ", "
+            //           << unsigned(diagOffs[own]) << std::endl;
+            // std::cout << "flux: " << flux << std::endl;
+            // std::cout << "deltacoeff: " << deltaCoeffs[facei] << std::endl;
+            // }
         },
         "computeLocalLaplacianCoefficients"
     );
-
+    return;
     auto [refGradient, value, valueFraction, refValue] = views(
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
@@ -176,8 +184,13 @@ void computeLaplacianImpl(
 }
 
 #define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                       \
-    template void computeLaplacianImpl<                                                            \
-        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
+    template void computeLaplacianImpl<TYPENAME>(                                                  \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const dsl::Coeff,                                                                          \
+        const FaceNormalGradient<TYPENAME>&                                                        \
+    )
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);

@@ -13,6 +13,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -94,8 +95,8 @@ public:
     // copy constructor
     LaplacianOperator(const LaplacianOperator& lapOp)
         : dsl::OperatorMixin<VolumeField<ValueType>>(
-            lapOp.exec_, lapOp.coeffs_, lapOp.field_, lapOp.type_
-        ),
+              lapOp.exec_, lapOp.coeffs_, lapOp.field_, lapOp.type_
+          ),
           gamma_(lapOp.gamma_),
           laplacianOperatorStrategy_(
               lapOp.laplacianOperatorStrategy_ ? lapOp.laplacianOperatorStrategy_->clone() : nullptr
@@ -126,7 +127,10 @@ public:
         dsl::Operator::Type termType, const SurfaceField<scalar>& gamma, VolumeField<ValueType>& phi
     )
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          gamma_(gamma), laplacianOperatorStrategy_(nullptr) {};
+          gamma_(gamma), laplacianOperatorStrategy_(nullptr)
+    {
+        std::cout << "LaplacaianOperator Constructor\n";
+    };
 
 
     void explicitOperation(Vector<ValueType>& source) const
@@ -140,6 +144,7 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
+        std::cout << "Laplacian::implicitOperation\n";
         NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
         laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
@@ -182,13 +187,26 @@ public:
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }
+        juliaEvalString_ = std::format("Laplace{{Float64}}(1.0)");
+        std::cout << "after reading laplace: " << juliaEvalString_ << std::endl;
     }
 
     std::string getName() const { return "LaplacianOperator"; }
 
+    std::string juliaOP() const { return juliaEvalString_; }
+    std::string juliaOP() { return juliaEvalString_; }
+
+    NeoN::finiteVolume::cellCentred::FaceNormalGradient<ValueType> faceNormalGradient() const
+    {
+        return laplacianOperatorStrategy_->faceNormalGradient();
+    }
+
+
 private:
 
     const SurfaceField<scalar>& gamma_;
+
+    std::string juliaEvalString_;
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> laplacianOperatorStrategy_;
 };

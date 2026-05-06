@@ -42,6 +42,7 @@ la::SolverStats iterativeSolveImpl(
 )
 {
     exp.read(fvSchemes);
+    std::cout << "here?\n";
     exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
@@ -50,9 +51,9 @@ la::SolverStats iterativeSolveImpl(
     auto expTmp = exp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
     parallelFor(
-        solution.exec(),
-        {0, rhs.size()},
-        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        solution.exec(), {0, rhs.size()}, NEON_LAMBDA(const localIdx i) {
+            rhs[i] -= expSource[i] * vol[i];
+        }
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
@@ -81,9 +82,9 @@ la::SolverStats iterativeSolveImpl(
     auto expTmp = exp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
     parallelFor(
-        solution.exec(),
-        {0, rhs.size()},
-        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        solution.exec(), {0, rhs.size()}, NEON_LAMBDA(const localIdx i) {
+            rhs[i] -= expSource[i] * vol[i];
+        }
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);

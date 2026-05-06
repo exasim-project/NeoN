@@ -102,4 +102,15 @@ auto views(Types&... args)
     return std::tuple(args.view()...);
 }
 
+/**
+ * @brief Gathers all Julia ptrs of the passed classes.
+ * @tparam Types Types of the classes with views
+ * @return Tuple containing the julia pointers.
+ */
+template<typename... Types>
+auto juliaPtrs(Types&... args)
+{
+    return std::tuple(args.juliaPtr()...);
+}
+
 } // namespace NeoN

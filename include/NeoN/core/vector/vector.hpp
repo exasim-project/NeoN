@@ -3,15 +3,16 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/view.hpp"
-
+#ifdef USE_JULIA
+#include <julia.h>
+#endif
 #include <vector>
-
 
 namespace NeoN
 {
@@ -29,6 +30,63 @@ class Vector
 public:
 
     using VectorValueType = ValueType;
+#ifdef USE_JULIA
+
+    /**
+     * @brief Prepare pointer to pass to julia
+     */
+    jl_array_t* juliaPtr() const
+    {
+        if constexpr (std::is_same_v<VectorValueType, float>)
+        {
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<VectorValueType, double>)
+        {
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<VectorValueType, label>)
+        {
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<VectorValueType, localIdx>)
+        {
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
+        {
+            auto viewA = view();
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 2);
+
+            size_t dims[2] = {3, size()};
+
+            jl_array_t* julia_ptr = jl_alloc_array_nd(array_type, dims, 2);
+
+            float* p = jl_array_data(julia_ptr, float);
+
+            for (size_t i = 0; i < size(); ++i)
+            {
+                p[0 + 3 * i] = viewA[i][0];
+                p[1 + 3 * i] = viewA[i][1];
+                p[2 + 3 * i] = viewA[i][2];
+            }
+            return julia_ptr;
+        }
+        else
+        {
+            std::cout << "unknown type" << std::endl;
+        }
+    }
+#endif
+
 
     /**
      * @brief Create an uninitialized Vector with a given size on an executor
@@ -74,7 +132,8 @@ public:
     Vector(const Executor& exec, const Vector<ValueType>& in);
 
     /**
-     * @brief Copy constructor, creates a new field with the same size and data as the parsed field.
+     * @brief Copy constructor, creates a new field with the same size and data as the parsed
+     * field.
      * @param rhs The field to copy from.
      */
     Vector(const Vector<ValueType>& rhs);
@@ -167,7 +226,7 @@ public:
      *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
-        requires requires(ValueType a, ValueType b) { a* b; };
+        requires requires(ValueType a, ValueType b) { a * b; };
 
     /**
      * @brief Arithmetic multiply operator, multiplies every cell in the field by a scalar.
@@ -178,7 +237,7 @@ public:
      *       See notes regarding concepts https://eel.is/c++draft/expr.prim.req
      */
     [[nodiscard]] Vector<ValueType> operator*(const scalar rhs)
-        requires requires(ValueType a, scalar b) { a* b; };
+        requires requires(ValueType a, scalar b) { a * b; };
 
     /**
      * @brief Assignment multiply operator, multiplies this field by another field element-wise.

@@ -110,6 +110,8 @@ public:
         return std::make_unique<GaussGreenLaplacian<ValueType>>(*this);
     };
 
+    FaceNormalGradient<ValueType> faceNormalGradient() const { return faceNormalGradient_; };
+
 private:
 
     SurfaceInterpolation<ValueType> surfaceInterpolation_;

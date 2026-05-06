@@ -47,6 +47,7 @@ public:
     void read(const Input&);
 
     std::string getName() const { return "DdtOperator"; }
+    std::string getName() { return "DdtOperator"; }
 
 private:
 

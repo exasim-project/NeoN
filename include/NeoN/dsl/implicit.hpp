@@ -39,6 +39,8 @@ template<typename ValueType>
 SpatialOperator<ValueType>
 div(fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<ValueType>& phi)
 {
+    std::cout << "in implicit::div\n";
+
     return SpatialOperator<ValueType>(
         fvcc::DivOperator(dsl::Operator::Type::Implicit, faceFlux, phi)
     );

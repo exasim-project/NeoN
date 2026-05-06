@@ -88,8 +88,8 @@ public:
     // copy constructor
     DivOperator(const DivOperator& divOp)
         : dsl::OperatorMixin<VolumeField<ValueType>>(
-            divOp.exec_, divOp.coeffs_, divOp.field_, divOp.type_
-        ),
+              divOp.exec_, divOp.coeffs_, divOp.field_, divOp.type_
+          ),
           faceFlux_(divOp.faceFlux_),
           divOperatorStrategy_(
               divOp.divOperatorStrategy_ ? divOp.divOperatorStrategy_->clone() : nullptr
@@ -103,7 +103,8 @@ public:
     )
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
           faceFlux_(faceFlux),
-          divOperatorStrategy_(DivOperatorFactory<ValueType>::create(phi.exec(), phi.mesh(), input)
+          divOperatorStrategy_(
+              DivOperatorFactory<ValueType>::create(phi.exec(), phi.mesh(), input)
           ) {};
 
     DivOperator(
@@ -121,7 +122,10 @@ public:
         const VolumeField<ValueType>& phi
     )
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          faceFlux_(faceFlux), divOperatorStrategy_(nullptr) {};
+          faceFlux_(faceFlux), divOperatorStrategy_(nullptr)
+    {
+        std::cout << "in DivOperator Constructor\n";
+    };
 
 
     void explicitOperation(Vector<ValueType>& source) const
@@ -135,12 +139,22 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
+        std::cout << "strategy: " << divOperatorStrategy_->name() << std::endl;
         NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
         divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
     [[deprecated("use explicit or implicit operation")]] void div(auto&&... args) const
+    {
+        std::cout << "in div\n";
+        const auto operatorScaling = this->getCoefficient();
+        divOperatorStrategy_->div(
+            std::forward<decltype(args)>(args)..., faceFlux_, this->getVector(), operatorScaling
+        );
+    }
+
+    [[deprecated("Experimental Julia Interface")]] void divJulia(auto&&... args) const
     {
         const auto operatorScaling = this->getCoefficient();
         divOperatorStrategy_->div(
@@ -155,23 +169,34 @@ public:
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
+            std::cout << "in divoperator::read\n";
             auto tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            juliaEvalString_ =
+                std::format("Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), 1.0)", scheme, scheme);
         }
         else
         {
             auto tokens = std::get<NeoN::TokenList>(input);
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            juliaEvalString_ =
+                std::format("Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), 1.0)", scheme, scheme);
         }
     }
 
     std::string getName() const { return "DivOperator"; }
+    std::string juliaOP() const { return juliaEvalString_; }
+    std::string juliaOP() { return juliaEvalString_; }
 
 private:
 
     const SurfaceField<NeoN::scalar>& faceFlux_;
+
+    std::string juliaEvalString_;
 
     std::unique_ptr<DivOperatorFactory<ValueType>> divOperatorStrategy_;
 };

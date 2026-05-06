@@ -11,6 +11,10 @@
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <string>
+#ifdef USE_JULIA
+
+#include <julia.h>
+#endif
 
 namespace NeoN::la
 {
@@ -73,11 +77,13 @@ public:
         std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress
     )
         : matrix_(
-            Vector<ValueType>(
-                faceToMatrixAddress->exec(), faceToMatrixAddress->localNonZeros(), zero<ValueType>()
-            ),
-            faceToMatrixAddress->sparsityPattern()
-        ),
+              Vector<ValueType>(
+                  faceToMatrixAddress->exec(),
+                  faceToMatrixAddress->localNonZeros(),
+                  zero<ValueType>()
+              ),
+              faceToMatrixAddress->sparsityPattern()
+          ),
           rhs_(faceToMatrixAddress->exec(), faceToMatrixAddress->localRows(), zero<ValueType>()),
           boundaryMatrix_(
               Vector<ValueType>(
@@ -116,6 +122,11 @@ public:
     {}
 
     ~LinearSystem() = default;
+#ifdef USE_JULIA
+
+    [[nodiscard]] jl_array_t* juliaPtr() { return matrix_.juliaPtr(); }
+    [[nodiscard]] jl_array_t* RhsjuliaPtr() { return rhs_.juliaPtr(); }
+#endif
 
     [[nodiscard]] MatrixType& matrix() { return matrix_; }
 

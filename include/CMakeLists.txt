@@ -77,6 +77,28 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_definitions(NeoN_public_api INTERFACE NF_DEBUG)
 endif()
 
+if(NeoN_WITH_JULIA)
+  target_compile_definitions(NeoN_public_api INTERFACE USE_JULIA=1)
+endif()
+if(NeoN_WITH_JULIA)
+execute_process(
+  COMMAND julia -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
+  OUTPUT_VARIABLE JULIA_DIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+    COMMAND echo "JULIA_DIR: --------> '${JULIA_DIR}'"
+    )
+    target_include_directories(NeoN_public_api INTERFACE "${JULIA_DIR}/include/julia")
+    target_link_libraries(NeoN_public_api INTERFACE
+    "${JULIA_DIR}/lib/libjulia.so"
+    )
+    execute_process(
+      COMMAND echo "IN SRC:: JULIA_DIR: --------> '${JULIA_DIR}'"
+    )
+  target_link_options(NeoN_public_api INTERFACE "-Wl,-rpath,${JULIA_DIR}/lib")
+endif()
+
 if(${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo)
   target_compile_definitions(NeoN_public_api INTERFACE NF_DEBUG_INFO)
 endif()

@@ -17,6 +17,7 @@
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 
 namespace NeoN::dsl
 {
@@ -59,10 +60,26 @@ public:
         for (auto& op : temporalOperators_)
         {
             op.read(input);
+            if (juliaEvalString_ != "")
+            {
+                juliaEvalString_ += " + " + op.juliaOP();
+            }
+            else
+            {
+                juliaEvalString_ += op.juliaOP();
+            }
         }
         for (auto& op : spatialOperators_)
         {
             op.read(input);
+            if (juliaEvalString_ != "")
+            {
+                juliaEvalString_ += " + " + op.juliaOP();
+            }
+            else
+            {
+                juliaEvalString_ += op.juliaOP();
+            }
         }
     }
 
@@ -103,6 +120,7 @@ public:
     {
         for (auto& op : spatialOperators_)
         {
+            std::cout << "spatOP: " << op.getName() << "\n";
             if (op.getType() == Operator::Type::Implicit)
             {
                 op.implicitOperation(ls);
@@ -153,14 +171,15 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
+        std::cout << "in assembly\n";
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
         // perform post assembly transformations
-        for (auto p : ps)
-        {
-            p(ls);
-        }
+        // for (auto p : ps)
+        // {
+        //     p(ls);
+        // }
     };
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
@@ -286,9 +305,27 @@ public:
 
     const Executor& exec() const { return exec_; }
 
+    std::string juliaOP() { return juliaEvalString_; }
+    std::string juliaOP() const { return juliaEvalString_; }
+
+    // std::optional<NeoN::finiteVolume::cellCentred::FaceNormalGradient<ValueType>>
+    // deltaCoeffs() const
+    // {
+    //     auto l = std::string("LaplacianOperator");
+    //     for (auto& op : spatialOperators_)
+    //     {
+    //         if (op.getName() == l)
+    //         {
+    //             return op.faceNormalGradient().deltaCoeffs();
+    //         }
+    //     }
+    // }
+
 private:
 
     const Executor exec_;
+
+    std::string juliaEvalString_;
 
     std::vector<TemporalOperator<ValueType>> temporalOperators_;
 
@@ -300,6 +337,10 @@ template<typename ValueType>
 operator+(Expression<ValueType> lhs, const Expression<ValueType>& rhs)
 {
     lhs.addExpression(rhs);
+    std::cout << "before: " << lhs.juliaOP() << std::endl;
+    lhs.juliaOP() += " + " + rhs.juliaOP();
+    std::cout << "after: " << lhs.juliaOP() << std::endl;
+
     return lhs;
 }
 
@@ -308,6 +349,9 @@ template<typename ValueType>
 operator+(Expression<ValueType> lhs, const SpatialOperator<ValueType>& rhs)
 {
     lhs.addOperator(rhs);
+    std::cout << "before: " << lhs.juliaOP() << std::endl;
+    lhs.juliaOP() += " + " + rhs.juliaOP();
+    std::cout << "after: " << lhs.juliaOP() << std::endl;
     return lhs;
 }
 
@@ -319,6 +363,9 @@ operator+(leftOperator lhs, rightOperator rhs)
     Expression<ValueType> expr(lhs.exec());
     expr.addOperator(lhs);
     expr.addOperator(rhs);
+    std::cout << "before: " << lhs.juliaOP() << std::endl;
+    expr.juliaOP() = lhs.juliaOP() + " + " + rhs.juliaOP();
+    std::cout << "after: " << lhs.juliaOP() << std::endl;
     return expr;
 }
 
@@ -343,6 +390,8 @@ template<typename ValueType>
 operator-(Expression<ValueType> lhs, const Expression<ValueType>& rhs)
 {
     lhs.addExpression(-1.0 * rhs);
+    lhs.juliaOP() += " - " + rhs.juliaOP();
+
     return lhs;
 }
 
@@ -351,6 +400,8 @@ template<typename ValueType>
 operator-(Expression<ValueType> lhs, const SpatialOperator<ValueType>& rhs)
 {
     lhs.addOperator(-1.0 * rhs);
+    lhs.juliaOP() += " - " + rhs.juliaOP();
+
     return lhs;
 }
 
@@ -362,6 +413,7 @@ operator-(leftOperator lhs, rightOperator rhs)
     Expression<ValueType> expr(lhs.exec());
     expr.addOperator(lhs);
     expr.addOperator(Coeff(-1) * rhs);
+    expr.juliaOP() = lhs.juliaOP() + " - " + rhs.juliaOP();
     return expr;
 }
 

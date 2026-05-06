@@ -9,6 +9,10 @@
 #include "faceToMatrixAddress.hpp"
 
 #include <type_traits>
+#ifdef USE_JULIA
+
+#include <julia.h>
+#endif
 
 namespace NeoN::la
 {
@@ -114,6 +118,14 @@ public:
      * @brief Default destructor.
      */
     ~Matrix() = default;
+#ifdef USE_JULIA
+
+    /**
+     * @brief Prepare the pointer to hand to Julia.
+     * @return Julia-friendly reference to the data.
+     */
+    jl_array_t* juliaPtr() { return values_.juliaPtr(); }
+#endif
 
     /**
      * @brief Get the executor associated with this matrix.
@@ -260,8 +272,9 @@ void scaledInverseDiag(
  * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
  * entries are identical
  */
-[[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress<localIdx>& mi, const Vector<scalar>&);
+[[nodiscard]] Vector<scalar> scaledInverseDiag(
+    const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress<localIdx>& mi, const Vector<scalar>&
+);
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,

@@ -6,7 +6,9 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-
+#ifdef USE_JULIA
+#include <julia.h>
+#endif
 namespace NeoN::dsl
 {
 
@@ -44,8 +46,31 @@ public:
 
 
     Coeff& operator*=(const Coeff& rhs);
+#ifdef USE_JULIA
 
-
+    // jl_array_t* juliaPtr() const
+    // {
+    //     if (hasView_)
+    //     {
+    //         if constexpr (std::is_same_v<scalar, float>)
+    //         {
+    //             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+    //             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, view_.data, view_.size(),
+    //             0); return julia_ptr;
+    //         }
+    //         else if constexpr (std::is_same_v<scalar, double>)
+    //         {
+    //             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+    //             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, view_.data, view_.size(),
+    //             0); return julia_ptr;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         std::cerr << "Coeff has no view\n"
+    //     }
+    // }
+#endif
 private:
 
     scalar coeff_;

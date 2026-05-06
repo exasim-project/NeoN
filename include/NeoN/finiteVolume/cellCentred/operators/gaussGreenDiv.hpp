@@ -49,6 +49,13 @@ public:
 
     static std::string schema() { return "none"; }
 
+    // static std::string juliaOP()
+    // {
+    //     auto t = constexpr(std::is_same_v<ValueType, float>) ? "Float32" : "Float64";
+    //     auto scheme = surfaceInterpolation_->name();
+    //     return std::format("Div\{{}, {}\}", t, scheme)
+    // }
+
     GaussGreenDiv(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
         : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs) {};
 
@@ -98,7 +105,13 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
+        std::cout << "gaussgreendiv\n";
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::cout << "Assembly time (C++) = "
+                  << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
+                  << "[µs]" << std::endl;
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override

@@ -91,6 +91,7 @@ public:
     Operator::Type getType() const { return model_->getType(); }
 
     std::string getName() const { return model_->getName(); }
+    std::string juliaOP() { return model_->getName(); }
 
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 

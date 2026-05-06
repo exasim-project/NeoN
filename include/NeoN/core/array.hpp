@@ -12,7 +12,9 @@
 
 #include <variant>
 #include <vector>
-
+#ifdef USE_JULIA
+#include <julia.h>
+#endif
 
 namespace NeoN
 {
@@ -30,7 +32,55 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
+#ifdef USE_JULIA
 
+    /**
+     * @brief Prepare pointer to pass to julia
+     */
+    jl_array_t* juliaPtr() const
+    {
+        if constexpr (std::is_same_v<ArrayValueType, float>)
+        {
+            std::cout << "vector is jl_float32_type\n";
+
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<ArrayValueType, double>)
+        {
+            std::cout << "vector is jl_float64_type\n";
+
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<ArrayValueType, label>)
+        {
+            std::cout << "vector is jl_int32_type\n";
+
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<ArrayValueType, localIdx>)
+        {
+            std::cout << "vector is jl_int32_type\n";
+
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+        else if constexpr (std::is_same_v<ArrayValueType, uint8_t>)
+        {
+            std::cout << "vector is jl_uint8_type\n";
+
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint8_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+            return julia_ptr;
+        }
+    }
+#endif
     /**
      * @brief Create an uninitialized Array with a given size on an executor
      * @param exec  Executor associated to the field

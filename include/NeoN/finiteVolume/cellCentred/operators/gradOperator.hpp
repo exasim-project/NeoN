@@ -96,16 +96,16 @@ public:
     // copy constructor
     GradOperator(const GradOperator& gradOp)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            gradOp.exec_, gradOp.coeffs_, gradOp.field_, gradOp.type_
-        ),
+              gradOp.exec_, gradOp.coeffs_, gradOp.field_, gradOp.type_
+          ),
           gradOperatorStrategy_(
               gradOp.gradOperatorStrategy_ ? gradOp.gradOperatorStrategy_->clone() : nullptr
           ) {};
 
     GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi, const Input& input)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
+              phi.exec(), dsl::Coeff(1.0), phi, termType
+          ),
           gradOperatorStrategy_(
               GradOperatorFactory<ValueType>::create(phi.exec(), phi.mesh(), input)
           ) {};
@@ -116,14 +116,14 @@ public:
         std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy
     )
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
+              phi.exec(), dsl::Coeff(1.0), phi, termType
+          ),
           gradOperatorStrategy_(std::move(gradOperatorStrategy)) {};
 
     GradOperator(dsl::Operator::Type termType, const VolumeField<scalar>& phi)
         : dsl::OperatorMixin<VolumeField<ValueType>, VolumeField<scalar>>(
-            phi.exec(), dsl::Coeff(1.0), phi, termType
-        ),
+              phi.exec(), dsl::Coeff(1.0), phi, termType
+          ),
           gradOperatorStrategy_(nullptr) {};
 
 
@@ -163,18 +163,31 @@ public:
             auto tokens = dict.subDict("gradSchemes").get<NeoN::TokenList>(schemeName);
             gradOperatorStrategy_ =
                 GradOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            // auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            // // FIXME
+            // juliaEvalString_ =
+            //     std::format("Div{{Float64, {}}}({}{{Float64}}(), 1.0)", scheme, scheme);
         }
         else
         {
             auto tokens = std::get<NeoN::TokenList>(input);
             gradOperatorStrategy_ =
                 GradOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            // auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            // juliaEvalString_ =
+            //     std::format("Div{{Float64, {}}}({}{{Float64}}(), 1.0)", scheme, scheme);
         }
     }
 
     std::string getName() const { return "GradOperator"; }
 
+    std::string juliaOP() { return getName(); }
+    std::string juliaOP() const { return getName(); }
+
+
 private:
+
+    std::string juliaEvalString_;
 
     std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy_;
 };
