@@ -43,8 +43,8 @@ TEST_CASE("SparsityPattern")
         auto rowPtrExp = std::vector<localIdx> {0, 2, 5, 8, 10};
         auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-        REQUIRE_THAT(rowPtrExp, IsEqualTo(sp->rowOffs(), EqualInt()));
-        REQUIRE_THAT(colIdxExp, IsEqualTo(sp->colIdxs(), EqualInt()));
+        REQUIRE_THAT(sp->rowOffs(), Equals(rowPtrExp, EqualInt()));
+        REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 
     auto bsp = mi->boundarySparsityPattern();

@@ -75,14 +75,14 @@ TEST_CASE("Utilities")
     {
         auto res = NeoN::la::unpackRowOffs(rowOffs);
         auto rowOffsExp = std::vector<localIdx> {0, 3, 6, 9, 12, 15, 18, 21, 24, 27};
-        REQUIRE_THAT(rowOffsExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(rowOffsExp, EqualInt()));
     }
 
     SECTION("Can unpackRowOffs2 " + execName)
     {
         auto res = NeoN::la::unpackRowOffs(rowOffsS);
         auto exp = std::vector<localIdx> {0, 2, 4, 6, 9, 12, 15, 17, 19, 21};
-        REQUIRE_THAT(exp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(exp, EqualInt()));
     }
 
     SECTION("Can unpack mtxValues " + execName)
@@ -92,7 +92,7 @@ TEST_CASE("Utilities")
         auto exp = std::vector<scalar> {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0,
                                         4.0, 5.0, 6.0, 4.0, 5.0, 6.0, 4.0, 5.0, 6.0,
                                         7.0, 8.0, 9.0, 7.0, 8.0, 9.0, 7.0, 8.0, 9.0};
-        REQUIRE_THAT(exp, IsEqualTo(res));
+        REQUIRE_THAT(res, Equals(exp));
     }
 
     SECTION("Can unpackColIdx sparse " + execName)
@@ -113,7 +113,7 @@ TEST_CASE("Utilities")
             4, 7,    // row 8
             5, 8     // row 9
         };
-        REQUIRE_THAT(colIdxExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(colIdxExp, EqualInt()));
     }
 
     SECTION("Can unpackColIdx dense " + execName)
@@ -134,7 +134,7 @@ TEST_CASE("Utilities")
             1, 4, 7, // row 8
             2, 5, 8  // row 9
         };
-        REQUIRE_THAT(colIdxExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(colIdxExp, EqualInt()));
     }
 
     // Residual of scalar matrix
@@ -143,16 +143,16 @@ TEST_CASE("Utilities")
     // [ 7 8 9 ]   [1]   [2]   [24]    [2]   [22]
     SECTION("Can compute residual on " + execName)
     {
-        // FIXME
-        // Vector<scalar> rhs(exec, 3, 2.0);
-        // Vector<scalar> x(exec, 3, 1.0);
-        // Vector<scalar> res(exec, 3, 0.0);
-        // LinearSystem<scalar> linearSystem(
-        //     csrMatrix, rhs, {}, csrMatrix, rhs, {}
-        // );
+        Vector<scalar> rhs(exec, 3, 2.0);
+        Vector<scalar> x(exec, 3, 1.0);
+        Vector<scalar> res(exec, 3, 0.0);
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
+            csrMatrix, rhs, csrMatrix, rhs, {}
+        );
 
-        // // NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
-        // auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
-        // REQUIRE_THAT(residualExp, IsEqualTo(res, ApproxScalar(1e-15)));
+        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
+
+        auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
+        REQUIRE_THAT(res, Equals(residualExp, ApproxScalar(1e-15)));
     }
 }

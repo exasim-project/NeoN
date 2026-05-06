@@ -53,28 +53,28 @@ TEST_CASE("Unstructured Mesh")
         auto cellCentresExp = std::vector<NeoN::Vec3> {
             {0.125, 0.5, 0.5}, {0.375, 0.5, 0.5}, {0.625, 0.5, 0.5}, {0.875, 0.5, 0.5}
         };
-        REQUIRE_THAT(cellCentresExp, IsEqualTo(mesh.cellCentres(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(mesh.cellCentres(), Equals(cellCentresExp, ApproxVec3 {1e-12}));
 
         // Verify face owners (x-direction)
         auto faceOwnerExp = std::vector<NeoN::label> {0, 1, 2, 0, 3};
-        REQUIRE_THAT(faceOwnerExp, IsEqualTo(mesh.faceOwner(), EqualInt()));
+        REQUIRE_THAT(mesh.faceOwner(), Equals(faceOwnerExp, EqualInt()));
 
         // Verify face neighbours (x-direction)
         auto faceNeighbourExp = std::vector<NeoN::label> {1, 2, 3};
-        REQUIRE_THAT(faceNeighbourExp, IsEqualTo(mesh.faceNeighbour(), EqualInt()));
+        REQUIRE_THAT(mesh.faceNeighbour(), Equals(faceNeighbourExp, EqualInt()));
 
         // Verify boundary mesh: first 2 boundary faces are xmin/xmax
         // Verify neighbouring cell for boundary faces
         auto faceCellsExp = std::vector<NeoN::localIdx> {0, 3};
-        REQUIRE_THAT(faceCellsExp, IsEqualTo(mesh.boundaryMesh().faceCells(), EqualInt()));
+        REQUIRE_THAT(mesh.boundaryMesh().faceCells(), Equals(faceCellsExp, EqualInt()));
 
         // // Verify neighbor cell centres
         auto cnExp = std::vector<NeoN::Vec3> {{0.125, 0.5, 0.5}, {0.875, 0.5, 0.5}};
-        REQUIRE_THAT(cnExp, IsEqualTo(mesh.boundaryMesh().cn(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(mesh.boundaryMesh().cn(), Equals(cnExp, ApproxVec3 {1e-12}));
 
         // // Verify delta vectors
         auto deltaExp = std::vector<NeoN::Vec3> {{-0.125, 0.0, 0.0}, {0.125, 0.0, 0.0}};
-        REQUIRE_THAT(deltaExp, IsEqualTo(mesh.boundaryMesh().delta(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(mesh.boundaryMesh().delta(), Equals(deltaExp, ApproxVec3 {1e-12}));
 
         // Verify stencilDB has patchNames
         REQUIRE(mesh.stencilDB().contains(std::string("stencilPatchNames")));
@@ -105,13 +105,13 @@ TEST_CASE("Unstructured Mesh")
 
         // Verify cell volumes (each cell is 0.5 * 0.5 * 1.0 = 0.25)
         auto cellVolumesExp = {0.25, 0.25, 0.25, 0.25};
-        REQUIRE_THAT(cellVolumesExp, IsEqualTo(mesh.cellVolumes(), ApproxScalar(1e-12)));
+        REQUIRE_THAT(mesh.cellVolumes(), Equals(cellVolumesExp, ApproxScalar(1e-12)));
 
         // Verify cell centres (z should be 0.5, halfway through the slab)
         auto cellCentresExp = std::vector<NeoN::Vec3> {
             {0.25, 0.25, 0.5}, {0.75, 0.25, 0.5}, {0.25, 0.75, 0.5}, {0.75, 0.75, 0.5}
         };
-        REQUIRE_THAT(cellCentresExp, IsEqualTo(mesh.cellCentres(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(mesh.cellCentres(), Equals(cellCentresExp, ApproxVec3 {1e-12}));
 
         // Verify the number of neighbouring cells for boundary faces
         // 4 patches: left(2), right(2), bottom(2), top(2)
@@ -130,7 +130,7 @@ TEST_CASE("Unstructured Mesh")
             {0.0, 0.25, 0.0},
             {0.0, 0.25, 0.0}
         };
-        REQUIRE_THAT(boundaryDeltaExp, IsEqualTo(bm.delta(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(bm.delta(), Equals(boundaryDeltaExp, ApproxVec3 {1e-12}));
     }
 
     SECTION("Uniform 2D mesh stores patch names in stencilDB " + execName)
@@ -175,7 +175,7 @@ TEST_CASE("Unstructured Mesh")
 
         // Cell volume = (3/3) * (2/2) * 1.0 = 1.0
         auto cellVolumesExp = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-        REQUIRE_THAT(cellVolumesExp, IsEqualTo(mesh.cellVolumes(), ApproxScalar(1e-12)));
+        REQUIRE_THAT(mesh.cellVolumes(), Equals(cellVolumesExp, ApproxScalar(1e-12)));
     }
 
     SECTION("2D mesh patch face centres lie on correct planes (3x2) " + execName)
@@ -215,7 +215,7 @@ TEST_CASE("Unstructured Mesh")
             {1.5, ymax, 0.5},
             {2.5, ymax, 0.5} // top
         };
-        REQUIRE_THAT(cfExp, IsEqualTo(bm.cf(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(bm.cf(), Equals(cfExp, ApproxVec3 {1e-12}));
     }
 
     SECTION("Can create a uniform 3D mesh (2x2x2) " + execName)
@@ -243,7 +243,7 @@ TEST_CASE("Unstructured Mesh")
 
         // Each cell is 0.5 * 0.5 * 0.5 = 0.125
         auto cellVolumesExp = {0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125};
-        REQUIRE_THAT(cellVolumesExp, IsEqualTo(mesh.cellVolumes(), ApproxScalar(1e-12)));
+        REQUIRE_THAT(mesh.cellVolumes(), Equals(cellVolumesExp, ApproxScalar(1e-12)));
 
         // Cell centres at 0.25 increments
         // cell(0,0,0) → (0.25, 0.25, 0.25)
@@ -258,7 +258,7 @@ TEST_CASE("Unstructured Mesh")
             {0.25, 0.75, 0.75},
             {0.75, 0.75, 0.75}
         };
-        REQUIRE_THAT(cellCentresExp, IsEqualTo(mesh.cellCentres(), ApproxVec3 {1e-12}));
+        REQUIRE_THAT(mesh.cellCentres(), Equals(cellCentresExp, ApproxVec3 {1e-12}));
 
         // Boundary delta: left boundary first face should have negative x delta
         auto hostBndDelta = mesh.boundaryMesh().delta().copyToHost();
@@ -289,7 +289,7 @@ TEST_CASE("Unstructured Mesh")
         // Cell volume = (3/3) * (2/2) * (2/2) = 1.0
         auto cellVolumesExp =
             std::vector<NeoN::scalar> {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-        REQUIRE_THAT(cellVolumesExp, IsEqualTo(mesh.cellVolumes(), ApproxScalar(1e-12)));
+        REQUIRE_THAT(mesh.cellVolumes(), Equals(cellVolumesExp, ApproxScalar(1e-12)));
     }
 
     SECTION("3D mesh patch face centres lie on correct planes (3x2x4) " + execName)

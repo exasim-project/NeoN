@@ -30,17 +30,16 @@ TEST_CASE("Coeff")
         Coeff d {3.0, fA};
         dsl::detail::toVector(d, res);
         auto resDexp = std::vector<NeoN::scalar> {6.0, 6.0, 6.0};
-        REQUIRE_THAT(resDexp, IsEqualTo(res));
+        REQUIRE_THAT(res, Equals(resDexp));
 
         Coeff e = d * b;
         dsl::detail::toVector(e, res);
         auto resEexp = std::vector<NeoN::scalar> {12.0, 12.0, 12.0};
-        REQUIRE_THAT(resEexp, IsEqualTo(res));
-
+        REQUIRE_THAT(res, Equals(resEexp));
         Coeff f = b * d;
         dsl::detail::toVector(f, res);
         auto resFexp = std::vector<NeoN::scalar> {12.0, 12.0, 12.0};
-        REQUIRE_THAT(resFexp, IsEqualTo(res));
+        REQUIRE_THAT(res, Equals(resFexp));
     }
 
     SECTION("evaluation in parallelFor" + execName)
@@ -57,7 +56,7 @@ TEST_CASE("Coeff")
                 fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
             );
             auto resAexp = std::vector<NeoN::scalar> {3.0, 3.0, 3.0};
-            REQUIRE_THAT(resAexp, IsEqualTo(fieldA));
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
 
         SECTION("scalar")
@@ -67,7 +66,7 @@ TEST_CASE("Coeff")
                 fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
             );
             auto resAexp = std::vector<NeoN::scalar> {4.0, 4.0, 4.0};
-            REQUIRE_THAT(resAexp, IsEqualTo(fieldA));
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
 
         SECTION("view and scalar")
@@ -77,7 +76,7 @@ TEST_CASE("Coeff")
                 fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
             );
             auto resAexp = std::vector<NeoN::scalar> {-3.0, -3.0, -3.0};
-            REQUIRE_THAT(resAexp, IsEqualTo(fieldA));
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
     }
 }

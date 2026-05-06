@@ -37,7 +37,7 @@ TEST_CASE("FaceToMatrixAddress")
     SECTION("has correct diagOffs" + execName)
     {
         auto exp = std::vector<NeoN::localIdx> {0, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        REQUIRE_THAT(exp, IsEqualTo(mi->diagOffset(), EqualInt()));
+        REQUIRE_THAT(mi->diagOffset(), Equals(exp, EqualInt()));
     }
 }
 
