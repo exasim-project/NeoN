@@ -159,13 +159,13 @@ TEST_CASE("Distributed")
             auto uVecPartExp = std::vector<Vec3> {
                 1.0 * one<Vec3>(), 2.0 * one<Vec3>(), 3.0 * one<Vec3>(), 4.0 * one<Vec3>()
             };
-            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
-            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
+            REQUIRE_THAT(uPart.internalVector(), Equals(uPartExp));
+            REQUIRE_THAT(uVecPart.internalVector(), Equals(uVecPartExp, ApproxVec3 {1e-32}));
             auto uPartBoundExp = std::vector<scalar> {0.0, 5.0};
             auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 5.0 * one<Vec3>()};
-            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(uPart.boundaryData().value(), Equals(uPartBoundExp));
             REQUIRE_THAT(
-                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+                uVecPart.boundaryData().value(), Equals(uVecPartBoundExp, ApproxVec3 {1e-32})
             );
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct " + execName)
@@ -174,13 +174,13 @@ TEST_CASE("Distributed")
             auto uVecPartExp = std::vector<Vec3> {
                 5.0 * one<Vec3>(), 6.0 * one<Vec3>(), 7.0 * one<Vec3>(), 8.0 * one<Vec3>()
             };
-            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
-            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
+            REQUIRE_THAT(uPart.internalVector(), Equals(uPartExp));
+            REQUIRE_THAT(uVecPart.internalVector(), Equals(uVecPartExp, ApproxVec3 {1e-32}));
             auto uPartBoundExp = std::vector<scalar> {4.0, 9.0};
             auto uVecPartBoundExp = std::vector<Vec3> {4.0 * one<Vec3>(), 9.0 * one<Vec3>()};
-            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(uPart.boundaryData().value(), Equals(uPartBoundExp));
             REQUIRE_THAT(
-                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+                uVecPart.boundaryData().value(), Equals(uVecPartBoundExp, ApproxVec3 {1e-32})
             );
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct " + execName)
@@ -189,13 +189,13 @@ TEST_CASE("Distributed")
             auto uVecPartExp = std::vector<Vec3> {
                 9.0 * one<Vec3>(), 10.0 * one<Vec3>(), 11.0 * one<Vec3>(), 12.0 * one<Vec3>()
             };
-            REQUIRE_THAT(uPartExp, IsEqualTo(uPart.internalVector()));
-            REQUIRE_THAT(uVecPartExp, IsEqualTo(uVecPart.internalVector(), ApproxVector(1e-32)));
+            REQUIRE_THAT(uPart.internalVector(), Equals(uPartExp));
+            REQUIRE_THAT(uVecPart.internalVector(), Equals(uVecPartExp, ApproxVec3 {1e-32}));
             auto uPartBoundExp = std::vector<scalar> {0.0, 8.0};
             auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 8.0 * one<Vec3>()};
-            REQUIRE_THAT(uPartBoundExp, IsEqualTo(uPart.boundaryData().value()));
+            REQUIRE_THAT(uPart.boundaryData().value(), Equals(uPartBoundExp));
             REQUIRE_THAT(
-                uVecPartBoundExp, IsEqualTo(uVecPart.boundaryData().value(), ApproxVector(1e-32))
+                uVecPart.boundaryData().value(), Equals(uVecPartBoundExp, ApproxVec3 {1e-32})
             );
         }
     }
@@ -216,17 +216,17 @@ TEST_CASE("Distributed")
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
             auto phiExp = std::vector<scalar> {1.0, 2.0, 3.0, 20.0, 4.0};
-            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
+            REQUIRE_THAT(phiPart.internalVector(), Equals(phiExp));
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
             auto phiExp = std::vector<scalar> {5.0, 6.0, 7.0, 4.0, 8.0};
-            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
+            REQUIRE_THAT(phiPart.internalVector(), Equals(phiExp));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct proc boundary " + execName)
         {
             auto phiExp = std::vector<scalar> {9.0, 10.0, 11.0, 30.0, 8.0};
-            REQUIRE_THAT(phiExp, IsEqualTo(phiPart.internalVector()));
+            REQUIRE_THAT(phiPart.internalVector(), Equals(phiExp));
         }
     }
 
@@ -241,8 +241,8 @@ TEST_CASE("Distributed")
             auto rowPtrExp = std::vector<localIdx> {0, 2, 5, 8, 10};
             auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-            REQUIRE_THAT(rowPtrExp, IsEqualTo(sp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(colIdxExp, IsEqualTo(sp->colIdxs(), EqualInt()));
+            REQUIRE_THAT(sp->rowOffs(), Equals(rowPtrExp, EqualInt()));
+            REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
         }
 
         auto diagOffset = mi->diagOffset();
@@ -253,36 +253,36 @@ TEST_CASE("Distributed")
         auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), mi);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct proc boundary " + execName)
         {
-            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
-            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
-            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+            REQUIRE_THAT(diagOffset, Equals(I({0, 1, 1, 1}), EqualInt()));
+            REQUIRE_THAT(ownerOffset, Equals(I({1, 2, 2}), EqualInt()));
+            REQUIRE_THAT(neighOffset, Equals(I({0, 0, 0}), EqualInt()));
 
-            REQUIRE_THAT(I({0}), IsEqualTo(bsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({4}), IsEqualTo(nsp->colIdxs(), EqualInt()));
-            REQUIRE_THAT(I({9}), IsEqualTo(rowToDiagonalMap, EqualInt()));
+            REQUIRE_THAT(bsp->rowOffs(), Equals(I({0}), EqualInt()));
+            REQUIRE_THAT(nsp->rowOffs(), Equals(I({3}), EqualInt()));
+            REQUIRE_THAT(nsp->colIdxs(), Equals(I({4}), EqualInt()));
+            REQUIRE_THAT(rowToDiagonalMap, Equals(I({9}), EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct proc boundary " + execName)
         {
-            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
-            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
-            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+            REQUIRE_THAT(diagOffset, Equals(I({0, 1, 1, 1}), EqualInt()));
+            REQUIRE_THAT(ownerOffset, Equals(I({1, 2, 2}), EqualInt()));
+            REQUIRE_THAT(neighOffset, Equals(I({0, 0, 0}), EqualInt()));
 
-            REQUIRE_THAT(std::vector<localIdx> {}, IsEqualTo(bsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({0, 3}), IsEqualTo(nsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({3, 8}), IsEqualTo(nsp->colIdxs(), EqualInt()));
-            REQUIRE_THAT(I({0, 9}), IsEqualTo(rowToDiagonalMap, EqualInt()));
+            REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {}, EqualInt()));
+            REQUIRE_THAT(nsp->rowOffs(), Equals(I({0, 3}), EqualInt()));
+            REQUIRE_THAT(nsp->colIdxs(), Equals(I({3, 8}), EqualInt()));
+            REQUIRE_THAT(rowToDiagonalMap, Equals(I({0, 9}), EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 0 has correct proc boundary " + execName)
         {
-            REQUIRE_THAT(I({0, 1, 1, 1}), IsEqualTo(diagOffset, EqualInt()));
-            REQUIRE_THAT(I({1, 2, 2}), IsEqualTo(ownerOffset, EqualInt()));
-            REQUIRE_THAT(I({0, 0, 0}), IsEqualTo(neighOffset, EqualInt()));
+            REQUIRE_THAT(diagOffset, Equals(I({0, 1, 1, 1}), EqualInt()));
+            REQUIRE_THAT(ownerOffset, Equals(I({1, 2, 2}), EqualInt()));
+            REQUIRE_THAT(neighOffset, Equals(I({0, 0, 0}), EqualInt()));
 
-            REQUIRE_THAT(I({3}), IsEqualTo(bsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({0}), IsEqualTo(nsp->rowOffs(), EqualInt()));
-            REQUIRE_THAT(I({7}), IsEqualTo(nsp->colIdxs(), EqualInt()));
-            REQUIRE_THAT(I({0}), IsEqualTo(rowToDiagonalMap, EqualInt()));
+            REQUIRE_THAT(bsp->rowOffs(), Equals(I({3}), EqualInt()));
+            REQUIRE_THAT(nsp->rowOffs(), Equals(I({0}), EqualInt()));
+            REQUIRE_THAT(nsp->colIdxs(), Equals(I({7}), EqualInt()));
+            REQUIRE_THAT(rowToDiagonalMap, Equals(I({0}), EqualInt()));
         }
     }
 }

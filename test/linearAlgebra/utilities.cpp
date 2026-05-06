@@ -146,12 +146,13 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
-        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
-            csrMatrix, rhs, csrMatrix, rhs, {}
-        );
+        // FIXME
+        // LinearSystem<scalar> linearSystem(
+        //     csrMatrix, rhs, csrMatrix, rhs, {}
+        // );
 
-        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
-
+        // FIXME avoid *<...>.get()
+        // NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
         REQUIRE_THAT(res, Equals(residualExp, ApproxScalar(1e-15)));
     }
