@@ -258,18 +258,28 @@ void communicateBoundaryData(
         mpiEnv.comm()
     );
 
-    // FIXME TODO this might not be needed communication happens directly into boundaryData
-    // auto copyIdx = Vector<localIdx>(boundaryData.exec(), procPatchOffset);
     auto exec = boundaryData.exec();
     auto outV = boundaryData.view();
-    // const auto idxV = copyIdx.view();
     const auto inV = recvBuffer.view();
+
+    // Mirror procPatchOffset to a device-resident Vector so the kernel can read
+    // it on GPU. Capturing the host std::vector by value into a device lambda
+    // dereferences host memory on device and trips Kokkos' bounds check.
+    auto offsetHost = std::vector<localIdx>(2 * procPatchOffset.size());
+    for (std::size_t p = 0; p < procPatchOffset.size(); p++)
+    {
+        offsetHost[2 * p] = procPatchOffset[p].first;
+        offsetHost[2 * p + 1] = procPatchOffset[p].second;
+    }
+    auto offsetVec = Vector<localIdx>(exec, offsetHost);
+    const auto offsetV = offsetVec.view();
 
     parallelFor(
         exec,
         {0, procPatchOffset.size()},
         NEON_LAMBDA(const localIdx p) {
-            auto [start, end] = procPatchOffset[p];
+            const auto start = offsetV[2 * p];
+            const auto end = offsetV[2 * p + 1];
             for (auto i = start; i < end; i++)
             {
                 outV[i] = inV[i];
@@ -346,11 +356,23 @@ inline void communicateBoundaryData(
 
     const auto inV = recvBuffer.view();
     auto outV = boundaryData.view();
+
+    // Mirror procPatchOffset to a device-resident Vector — see scalar overload.
+    auto offsetHost = std::vector<localIdx>(2 * procPatchOffset.size());
+    for (std::size_t p = 0; p < procPatchOffset.size(); p++)
+    {
+        offsetHost[2 * p] = procPatchOffset[p].first;
+        offsetHost[2 * p + 1] = procPatchOffset[p].second;
+    }
+    auto offsetVec = Vector<localIdx>(exec, offsetHost);
+    const auto offsetV = offsetVec.view();
+
     parallelFor(
         exec,
         {0, procPatchOffset.size()},
         NEON_LAMBDA(const localIdx p) {
-            auto [start, end] = procPatchOffset[p];
+            const auto start = offsetV[2 * p];
+            const auto end = offsetV[2 * p + 1];
             for (auto i = start; i < end; i++)
             {
                 outV[i][0] = inV[3 * i + 0];
