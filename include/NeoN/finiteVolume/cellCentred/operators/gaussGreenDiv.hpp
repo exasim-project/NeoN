@@ -106,12 +106,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         std::cout << "gaussgreendiv\n";
-        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
-        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        std::cout << "Assembly time (C++) = "
-                  << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
-                  << "[µs]" << std::endl;
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
