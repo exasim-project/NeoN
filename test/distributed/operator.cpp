@@ -107,8 +107,7 @@ TEST_CASE("Distributed")
     {
         lastElement = 10;
         REQUIRE_THAT(
-            take(ls.matrix().values(), firstElement, lastElement),
-            IsEqualTo(lsDst.matrix().values())
+            lsDst.matrix().values(), Equals(take(ls.matrix().values(), firstElement, lastElement))
         );
     }
     SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
@@ -116,8 +115,7 @@ TEST_CASE("Distributed")
         firstElement = 12;
         lastElement = 22;
         REQUIRE_THAT(
-            take(ls.matrix().values(), firstElement, lastElement),
-            IsEqualTo(lsDst.matrix().values())
+            lsDst.matrix().values(), Equals(take(ls.matrix().values(), firstElement, lastElement))
         );
     }
     SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 2")
@@ -125,8 +123,7 @@ TEST_CASE("Distributed")
         firstElement = 24;
         lastElement = 34;
         REQUIRE_THAT(
-            take(ls.matrix().values(), firstElement, lastElement),
-            IsEqualTo(lsDst.matrix().values())
+            lsDst.matrix().values(), Equals(take(ls.matrix().values(), firstElement, lastElement))
         );
     }
 
@@ -159,15 +156,15 @@ TEST_CASE("Distributed")
 
     SECTION_IF(mpiEnviron.rank() == 0, "Correct mtx on rank 0")
     {
-        REQUIRE_THAT(take(x, 0, 4), IsEqualTo(xPart));
+        REQUIRE_THAT(xPart, Equals(take(x, 0, 4)));
     }
     SECTION_IF(mpiEnviron.rank() == 1, "Correct mtx on rank 1")
     {
-        REQUIRE_THAT(take(x, 4, 8), IsEqualTo(xPart));
+        REQUIRE_THAT(xPart, Equals(take(x, 4, 8)));
     }
     SECTION_IF(mpiEnviron.rank() == 2, "Correct mtx on rank 2")
     {
-        REQUIRE_THAT(take(x, 8, 12), IsEqualTo(xPart));
+        REQUIRE_THAT(xPart, Equals(take(x, 8, 12)));
     }
 
     REQUIRE(finalResNormDist == Catch::Approx(finalResNorm).margin(1e-32));

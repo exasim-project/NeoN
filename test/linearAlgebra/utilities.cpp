@@ -143,14 +143,15 @@ TEST_CASE("Utilities")
     // [ 7 8 9 ]   [1]   [2]   [24]    [2]   [22]
     SECTION("Can compute residual on " + execName)
     {
+        Vector<scalar> rhs(exec, 3, 2.0);
+        Vector<scalar> x(exec, 3, 1.0);
+        Vector<scalar> res(exec, 3, 0.0);
         // FIXME
-        // Vector<scalar> rhs(exec, 3, 2.0);
-        // Vector<scalar> x(exec, 3, 1.0);
-        // Vector<scalar> res(exec, 3, 0.0);
         // LinearSystem<scalar> linearSystem(
-        //     csrMatrix, rhs, {}, csrMatrix, rhs, {}
+        //     csrMatrix, rhs, csrMatrix, rhs, {}
         // );
 
+        // FIXME avoid *<...>.get()
         // NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
         REQUIRE_THAT(res, Equals(residualExp, ApproxScalar(1e-15)));

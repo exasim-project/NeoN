@@ -52,7 +52,7 @@ TEST_CASE("SparsityPattern")
     {
         // auto colIdxExp = Vector<localIdx>(exec, {0, 4});
 
-        REQUIRE_THAT(I({0, 3}), IsEqualTo(bsp->rowOffs(), EqualInt()));
+        REQUIRE_THAT(bsp->rowOffs(), Equals(I({0, 3}), EqualInt()));
         // FIXME
         // compare(bsp->colIdxs(), colIdxExp, EqualInt());
     }
@@ -64,8 +64,8 @@ TEST_CASE("SparsityPattern")
         auto rowPtrExp = std::vector<localIdx> {};
         auto colIdxExp = std::vector<localIdx> {};
 
-        REQUIRE_THAT(rowPtrExp, IsEqualTo(nonLocalSp->rowOffs(), EqualInt()));
-        REQUIRE_THAT(colIdxExp, IsEqualTo(nonLocalSp->colIdxs(), EqualInt()));
+        REQUIRE_THAT(nonLocalSp->rowOffs(), Equals(rowPtrExp, EqualInt()));
+        REQUIRE_THAT(nonLocalSp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 }
 
