@@ -539,21 +539,22 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>                {</div>
 <div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>                    nonLocalVal = nonLocalMtx[i];</div>
 <div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span>                    curNonLocalRow = i;</div>
-<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];</div>
-<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>                    <span class="comment">// curNonLocalRow = 0;</span></div>
-<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>                    <span class="comment">// break;</span></div>
-<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>                }</div>
-<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>            }</div>
-<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span> </div>
-<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>            outV[rowi] += bV[rowi];</div>
-<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>            outV[rowi] *= rAUV[rowi] / volV[rowi];</div>
-<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>        }</div>
-<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>    );</div>
-<div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span>}</div>
+<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>                    <span class="comment">// FIXME is the sign correct?</span></div>
+<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];</div>
+<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>                    <span class="comment">// curNonLocalRow = 0;</span></div>
+<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>                    <span class="comment">// break;</span></div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>                }</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>            }</div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span> </div>
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>            outV[rowi] += bV[rowi];</div>
+<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>            outV[rowi] *= rAUV[rowi] / volV[rowi];</div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>        }</div>
+<div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span>    );</div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>}</div>
 </div>
-<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span> </div>
 <div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span> </div>
-<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>} <span class="comment">// namespace NeoN::la</span></div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span> </div>
+<div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>} <span class="comment">// namespace NeoN::la</span></div>
 <div class="ttc" id="aclassNeoN_1_1Dictionary_html"><div class="ttname"><a href="classNeoN_1_1Dictionary.html">NeoN::Dictionary</a></div><div class="ttdoc">A class representing a dictionary that stores key-value pairs.</div><div class="ttdef"><b>Definition</b> <a href="dictionary_8hpp_source.html#l00036">dictionary.hpp:37</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UnstructuredMesh_html"><div class="ttname"><a href="classNeoN_1_1UnstructuredMesh.html">NeoN::UnstructuredMesh</a></div><div class="ttdoc">Represents an unstructured mesh in NeoN.</div><div class="ttdef"><b>Definition</b> <a href="unstructuredMesh_8hpp_source.html#l00031">unstructuredMesh.hpp:32</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UnstructuredMesh_html_a2bfdd3e60fd2916c0e35beebe83d6ee7"><div class="ttname"><a href="classNeoN_1_1UnstructuredMesh.html#a2bfdd3e60fd2916c0e35beebe83d6ee7">NeoN::UnstructuredMesh::cellVolumes</a></div><div class="ttdeci">const scalarVector &amp; cellVolumes() const</div><div class="ttdoc">Get the field of cell volumes in the mesh.</div></div>
