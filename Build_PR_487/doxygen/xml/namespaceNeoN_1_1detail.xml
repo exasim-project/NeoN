@@ -2,6 +2,9 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1detail" kind="namespace" language="C++">
     <compoundname>NeoN::detail</compoundname>
+    <innerclass refid="structNeoN_1_1detail_1_1CellData" prot="public">NeoN::detail::CellData</innerclass>
+    <innerclass refid="structNeoN_1_1detail_1_1FaceData" prot="public">NeoN::detail::FaceData</innerclass>
+    <innerclass refid="structNeoN_1_1detail_1_1MeshParams" prot="public">NeoN::detail::MeshParams</innerclass>
     <sectiondef kind="func">
       <memberdef kind="function" id="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -105,6 +108,249 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" line="26" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vectorFreeFunctions.hpp" declline="26" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ae213223b956fbfb479737d08d01567d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>std::vector&lt; Vec3 &gt; NeoN::detail::generatePoints</definition>
+        <argsstring>(const MeshParams &amp;p)</argsstring>
+        <name>generatePoints</name>
+        <qualifiedname>NeoN::detail::generatePoints</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+<para>Generate mesh vertex coordinates for a uniform Cartesian grid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates a structured set of points spanning a 3D rectangular domain with uniform spacing in x, y, and z directions.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mesh parameters defining resolution and domain size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of point coordinates in structured ordering </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" line="77" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" declline="77" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1a76af3b5185dcb88f59c85691a1021d33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1detail_1_1CellData" kindref="compound">CellData</ref></type>
+        <definition>CellData NeoN::detail::generateCellData</definition>
+        <argsstring>(const MeshParams &amp;p)</argsstring>
+        <name>generateCellData</name>
+        <qualifiedname>NeoN::detail::generateCellData</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+<para>Generate cell volumes and cell-center coordinates. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Computes geometric properties of each cell in a uniform Cartesian mesh, assuming constant spacing in all coordinate directions.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mesh parameters </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="structNeoN_1_1detail_1_1CellData" kindref="compound">CellData</ref> containing volumes and cell centers </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" line="87" column="10" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" declline="87" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1aa0a6c3d04b795a60851efac68cd47f82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1detail_1_1FaceData" kindref="compound">FaceData</ref></type>
+        <definition>FaceData NeoN::detail::generateInternalFaces</definition>
+        <argsstring>(const MeshParams &amp;p, const localIdx nInternalFaces, const localIdx nFaces)</argsstring>
+        <name>generateInternalFaces</name>
+        <qualifiedname>NeoN::detail::generateInternalFaces</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nFaces</declname>
+        </param>
+        <briefdescription>
+<para>Generate internal face data for a 3D uniform mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructs face areas, centers, magnitudes, and owner/neighbour connectivity for all internal faces in x-, y-, and z-directions.</para>
+<para>Face ordering:<itemizedlist>
+<listitem><para>First: x-normal faces</para>
+</listitem><listitem><para>Second: y-normal faces</para>
+</listitem><listitem><para>Third: z-normal faces</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mesh parameters </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nInternalFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of internal faces </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Total number of faces </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="structNeoN_1_1detail_1_1FaceData" kindref="compound">FaceData</ref> containing internal face geometry and connectivity </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" line="105" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" declline="105" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1a1ba36ee95f10f606522c64080373761c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref></type>
+        <definition>BoundaryMesh NeoN::detail::generateBoundaryData</definition>
+        <argsstring>(const Executor exec, const int dim, const MeshParams &amp;p, const std::vector&lt; Vec3 &gt; &amp;centres, const localIdx nInternalFaces, const localIdx nBoundaryFaces, const std::vector&lt; localIdx &gt; offset, FaceData &amp;faces)</argsstring>
+        <name>generateBoundaryData</name>
+        <qualifiedname>NeoN::detail::generateBoundaryData</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1detail_1_1MeshParams" kindref="compound">MeshParams</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>centres</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nInternalFaces</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBoundaryFaces</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type><ref refid="structNeoN_1_1detail_1_1FaceData" kindref="compound">FaceData</ref> &amp;</type>
+          <declname>faces</declname>
+        </param>
+        <briefdescription>
+<para>Generate boundary face data for a 3D uniform mesh. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructs boundary face geometry, connectivity, and interpolation data for all six domain boundaries (x-, y-, z-directions).</para>
+<para>Supports 1D, 2D, and 3D configurations depending on dimension parameter.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Execution context </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Spatial dimension (1, 2, or 3) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mesh parameters </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centres</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Cell center coordinates </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nInternalFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of internal faces </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nBoundaryFaces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of boundary faces </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>offset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Boundary face offset mapping for patch indexing </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faces</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>face data including boundary faces </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classNeoN_1_1BoundaryMesh" kindref="compound">BoundaryMesh</ref> containing all boundary-related geometric data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" line="124" column="14" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp" declline="124" declcolumn="14"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
