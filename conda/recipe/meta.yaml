@@ -1,4 +1,4 @@
-{% set name = "neon" %}
+{% set name = "exasim-neon" %}
 {% set version = "0.1.0" %}
 
 package:
@@ -11,7 +11,7 @@ source:
 build:
   number: 0
   script:
-    - export CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-2}
+    - export CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-1}
     - {{ PYTHON }} -m pip install . -vv --no-build-isolation --no-deps
 
 requirements:

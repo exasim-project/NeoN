@@ -152,3 +152,21 @@ def test_dsl_vector_operators(executor):
     res_eqn = eqn1 - eqn2
     assert isinstance(res_eqn, neon.ExpressionVector)
     assert res_eqn.size() == 4
+
+
+def test_dsl_scalar_assemble(executor):
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10)
+    phi = neon.ScalarVolumeField(exec, "phi", mesh)
+    db = neon.Database()
+    phi_reg = neon.register_volume_field(db, "fields", phi)
+
+    equation = imp.source(phi_reg, phi_reg) + imp.source(phi_reg, phi_reg)
+    assert hasattr(equation, "assemble")
+
+    sparsity, linear_system = equation.assemble(mesh, 0.0, 1.0)
+
+    assert isinstance(sparsity, neon.SparsityPattern)
+    assert isinstance(linear_system, neon.LinearSystemScalar)
+    assert sparsity.rows() == mesh.n_cells()
+    assert sparsity.nnz() > 0
