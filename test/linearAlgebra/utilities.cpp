@@ -147,6 +147,7 @@ TEST_CASE("Utilities")
             csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
         );
 
+        // FIXME avoid *<...>.get()
         // NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
         REQUIRE_THAT(res, Equals(residualExp, Approx(1e-15)));
