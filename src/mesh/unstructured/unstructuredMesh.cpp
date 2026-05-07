@@ -328,25 +328,58 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 
     labelVector faceCells(exec, faceCellVec);
 
+    // The boundaryMesh stores boundary patches in the order they appear in
+    // faceCellVec ("regular boundary first, processor boundary follow"). On the
+    // last rank that order is [xmax_regular, proc_left], so the entry at index 0
+    // is the right-side face and the entry at index 1 is the left-side face —
+    // the opposite of rank 0 / middle ranks. cf/sf/nf must reflect this so that
+    // proc-face deltaCoeffs (which reads bm.cf()/bm.sf() in compressed indexing)
+    // computes 1/cellWidth instead of 7/cellWidth on the last rank.
+    std::vector<Vec3> bcCfVec {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}};
+    std::vector<Vec3> bcSfVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
+    std::vector<Vec3> bcNfVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
+    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
+    {
+        std::swap(bcCfVec[0], bcCfVec[1]);
+        std::swap(bcSfVec[0], bcSfVec[1]);
+        std::swap(bcNfVec[0], bcNfVec[1]);
+    }
 
     auto tmp = create1DUniformMesh(exec, nCells, rightBoundary);
     BoundaryMesh boundaryMesh(
         exec,
         faceCells,
-        {exec, {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}}}, // cf
-        tmp.boundaryMesh().cn(),                              // cn
-        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}
-        },                  // sf FIXME the order of the rest is potentially wrong
-        {exec, {1.0, 1.0}}, // magSf
-        {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}}, // nf
-        tmp.boundaryMesh().delta(),                  // deltaCoeffs --> mag(1 / delta)
-        {exec, boundaryWeights},                     // weights
-        tmp.boundaryMesh().deltaCoeffs(),            // deltaCoeffs --> mag(1 / delta)
-        {0, 1, 2},                                   // offset
-        nProcBoundaryFaces,                          // number of proc boundary patches
-        neighRanks                                   // neighbourRank
+        {exec, bcCfVec},                  // cf
+        tmp.boundaryMesh().cn(),          // cn
+        {exec, bcSfVec},                  // sf
+        {exec, {1.0, 1.0}},               // magSf
+        {exec, bcNfVec},                  // nf
+        tmp.boundaryMesh().delta(),       // deltaCoeffs --> mag(1 / delta)
+        {exec, boundaryWeights},          // weights
+        tmp.boundaryMesh().deltaCoeffs(), // deltaCoeffs --> mag(1 / delta)
+        {0, 1, 2},                        // offset
+        nProcBoundaryFaces,               // number of proc boundary patches
+        neighRanks                        // neighbourRank
     );
-
+    /*
+        auto tmp = create1DUniformMesh(exec, nCells, rightBoundary);
+        BoundaryMesh boundaryMesh(
+            exec,
+            faceCells,
+            {exec, {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}}}, // cf
+            tmp.boundaryMesh().cn(),                              // cn
+            {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}
+            },                  // sf FIXME the order of the rest is potentially wrong
+            {exec, {1.0, 1.0}}, // magSf
+            {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}}, // nf
+            tmp.boundaryMesh().delta(),                  // deltaCoeffs --> mag(1 / delta)
+            {exec, boundaryWeights},                     // weights
+            tmp.boundaryMesh().deltaCoeffs(),            // deltaCoeffs --> mag(1 / delta)
+            {0, 1, 2},                                   // offset
+            nProcBoundaryFaces,                          // number of proc boundary patches
+            neighRanks                                   // neighbourRank
+        );
+    */
     // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
     // since proc boundaries come first
     auto faceCentresH = tmp.faceCentres().copyToHost();

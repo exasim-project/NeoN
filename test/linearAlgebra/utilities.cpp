@@ -14,6 +14,7 @@ using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
+using NeoN::la::CSRMatrix;
 using NeoN::la::LinearSystem;
 using NeoN::la::Matrix;
 
@@ -146,6 +147,9 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
+
+        CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
         // FIXME
         // LinearSystem<scalar> linearSystem(
         //     csrMatrix, rhs, csrMatrix, rhs, {}
