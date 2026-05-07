@@ -196,16 +196,14 @@ public:
     }
 
     /** @brief boundaryMatrixMap - bfaceIdx -> matrixAddr */
-    void communicate(CommunicationPattern& commPattern)
+    void communicate(const CommunicationPattern& commPattern)
     {
         auto mpiEnv = commPattern.env;
         int commRanks = mpiEnv.sizeRank();
 
-        // auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
         auto nsp = faceToMatrixAddress_->nonLocalSparsityPattern();
         auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), faceToMatrixAddress_);
 
-        // 1. copy bValues which need to be communicated into sendBuffer
         auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
         auto recvBuffer = Vector<ValueType>(exec(), commSize);
 
@@ -229,14 +227,10 @@ public:
             mpiEnv.comm()
         );
 
-        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
-                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
-
-        // 3. apply received values to corresponding matrix
-        // add diagonal contributions
+        // Apply received off-diagonal coefficients into the local matrix diagonal
+        // (folds processor-patch coupling into a fixed-value Dirichlet against the
+        // exchanged ghost cell value of the unknown).
         add(recvBuffer, rowToDiagonalMap, matrix_.values());
-        std::cout << __FILE__ << ":" << __LINE__ << " rank " << mpiEnv.rank() << " recvBuffer "
-                  << recvBuffer.view()[0] << " matrixValue " << matrix_.values().view()[9] << "\n";
     }
 
     // FIXME needed?

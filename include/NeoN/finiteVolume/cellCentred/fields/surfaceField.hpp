@@ -131,16 +131,11 @@ public:
     /**
      * @brief Corrects the boundary conditions of the surface field.
      *
-     * This function applies the correctBoundaryConditions() method to each boundary condition in
-     * the field.
+     * Applies each boundary condition's correctBoundaryCondition() and, when running
+     * distributed, exchanges the processor-patch tail of `boundaryData().value()` across
+     * ranks via MPI Alltoallv. Mirrors VolumeField::correctBoundaryConditions().
      */
-    void correctBoundaryConditions()
-    {
-        for (auto& boundaryCondition : boundaryConditions_)
-        {
-            boundaryCondition.correctBoundaryCondition(this->field_);
-        }
-    }
+    void correctBoundaryConditions();
 
     std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const
     {

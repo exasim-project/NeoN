@@ -15,8 +15,14 @@ namespace NeoN::finiteVolume::cellCentred::surfaceBoundary
 
 namespace detail
 {
-// NOTE test with zero gradient first
-// FIXME TODO exchange values on boundaries with neighbour rank
+// Surface processor BC: stage the locally-computed face value into
+// boundaryData.value() so that the subsequent MPI exchange in
+// SurfaceField::correctBoundaryConditions() has well-defined sender data.
+//
+// Indexing: SurfaceField::internalVector() spans [0, nTotalFaces) in the
+// compressed face order. For processor faces, compressed face index is
+// `nInternalFaces + bcfaceI` where bcfaceI is the boundary face index
+// (the index space `range` is expressed in).
 template<typename ValueType>
 void setProcBoundaryValue(
     Field<ValueType>& domainVector,
@@ -25,25 +31,13 @@ void setProcBoundaryValue(
 )
 {
     const auto iVector = domainVector.internalVector().view();
-
-    auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = views(
-        domainVector.boundaryData().refGrad(),
-        domainVector.boundaryData().value(),
-        domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().deltaCoeffs()
-    );
+    auto value = domainVector.boundaryData().value().view();
+    const auto nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        NEON_LAMBDA(const localIdx i) {
-            refGradient[i] = zero<ValueType>();
-            value[i] = iVector[faceCells[i]];
-            valueFraction[i] = 0.0;          // only use refGrad
-            refValue[i] = zero<ValueType>(); // not used
-        },
+        NEON_LAMBDA(const localIdx i) { value[i] = iVector[nInternalFaces + i]; },
         "setProcBoundaryValue"
     );
 }
@@ -60,9 +54,9 @@ public:
         : Base(mesh, dict, patchID), mesh_(mesh)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        // detail::setProcBoundaryValue(domainVector, mesh_, this->range());
+        detail::setProcBoundaryValue(domainVector, mesh_, this->range());
     }
 
 
