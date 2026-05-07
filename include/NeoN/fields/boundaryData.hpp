@@ -246,6 +246,12 @@ void communicateBoundaryData(
 
     // FIXME recvBuffer does not need to same size as boundaryData
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), boundaryData.size());
+
+    // Flush any pending GPU kernels writing to boundaryData before MPI reads it.
+    // Kernels launched by per-BC correctBoundaryCondition() in the caller are async
+    // on the GPU executor; without this fence MPI would send pre-kernel device data.
+    fence(boundaryData.exec());
+
     MPI_Alltoallv(
         boundaryData.data(),
         commPattern.sendCounts.data(),
@@ -287,6 +293,9 @@ void communicateBoundaryData(
         },
         "copyMap"
     );
+
+    // Ensure the unpack kernel completes before callers continue to use boundaryData.
+    fence(exec);
 }
 
 // Specialization for Vec3
@@ -301,8 +310,10 @@ inline void communicateBoundaryData(
     auto commRanks = mpiEnv.sizeRank();
     auto sendSize = commPattern.sendCounts[commRanks];
 
-    // compute send displacements
-    std::vector<localIdx> sendCounts(commPattern.sendCounts.size(), 0);
+    // compute send displacements. MPI_Alltoallv requires `int` count/displacement
+    // arrays — using std::vector<int> here matches the MPI signature regardless of
+    // how localIdx is configured at build time.
+    std::vector<int> sendCounts(commPattern.sendCounts.size(), 0);
     for (int i = 0; i < sendCounts.size(); i++)
     {
         sendCounts[i] = commPattern.sendCounts[i] * 3;
@@ -342,6 +353,11 @@ inline void communicateBoundaryData(
 
     auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), 3 * boundaryData.size());
     auto recvBufferV = recvBuffer.view();
+
+    // Flush the pack kernel above (and any caller-launched BC kernels) before MPI
+    // reads sendBuffer. parallelFor is async on GPU.
+    fence(exec);
+
     MPI_Alltoallv(
         sendBuffer.data(),
         sendCounts.data(),
@@ -382,6 +398,9 @@ inline void communicateBoundaryData(
         },
         "copyMap"
     );
+
+    // Ensure the unpack kernel completes before callers continue to use boundaryData.
+    fence(exec);
 }
 
 }

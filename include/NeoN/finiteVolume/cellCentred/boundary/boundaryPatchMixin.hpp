@@ -41,7 +41,7 @@ public:
 
     localIdx patchStart() const { return start_; };
 
-    localIdx patchEnd() const { return start_; };
+    localIdx patchEnd() const { return end_; };
 
     localIdx patchSize() const { return end_ - start_; }
 
