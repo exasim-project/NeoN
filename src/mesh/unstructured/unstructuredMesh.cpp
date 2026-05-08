@@ -445,45 +445,46 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
         sendCounts[mpiEnviron.sizeRank()] += patchSize;
     }
 
-    // Build send buffer in ascending-rank order.
+    // Build send buffer in MESH-BOUNDARY order: each proc patch is appended in
+    // the order it appears in the boundary mesh (the natural layout of
+    // boundaryMesh().faceCells()).
     //
-    // MPI_Alltoallv reads the buffer at offsets `sdispl[r]` for the slice that
-    // goes to rank r, with sdispl built as the running sum of sendCounts (which
-    // is indexed by rank). So the buffer MUST be laid out in ascending rank
-    // order. Iterating proc patches in mesh order would be wrong on any rank
-    // where mesh-order != ascending neighbour-rank order — slices for some
-    // ranks would point at other ranks' data, and the resulting recvIdx would
-    // be wrong (faces appear to come from / go to the wrong rank).
+    // recvIdx is then naturally in MESH-BOUNDARY order on the receiving side,
+    // which is what the consumer in setProcBoundarySparsityPattern expects:
+    // procRowOffs[i] holds the local mesh-order owner of proc-face i, paired
+    // with procColIdx[i] = recvIdx[i] = the global ghost cell across that
+    // same proc-face i.
+    //
+    // The MPI Alltoallv displacement for rank r MUST therefore point at the
+    // mesh-order patch targeting rank r, NOT at the running cumulative sum of
+    // sendCounts (which only matches mesh-order on decompositions where
+    // neighbourRanks is already ascending). The previous implementation used
+    // the running-sum approach and shipped wrong data to wrong ranks on every
+    // non-ascending decomposition — and even after the data arrived at the
+    // right rank (in earlier sort-buffer-by-rank attempts) the recvIdx fell
+    // out of sync with mesh-order procRowOffs and corrupted the sparsity
+    // pattern. Doing the per-rank lookup here keeps both invariants intact.
     auto globalOffset = mesh.globalOffset();
     const auto faceCells = mesh.boundaryMesh().faceCells();
     auto faceCellsH = faceCells.copyToHost();
 
-    // Sort proc patches by ascending neighbour rank.
-    std::vector<std::size_t> patchOrder(neighbourRanks.size());
-    std::iota(patchOrder.begin(), patchOrder.end(), 0);
-    std::sort(
-        patchOrder.begin(),
-        patchOrder.end(),
-        [&](std::size_t a, std::size_t b) { return neighbourRanks[a] < neighbourRanks[b]; }
-    );
-
     auto buffer = std::vector<localIdx>();
     buffer.reserve(mesh.boundaryMesh().nProcBoundaryFaces());
-    for (std::size_t idx : patchOrder)
+    auto procStart = offsets[nInnerBoundaries];
+    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
     {
-        const auto patchStart = offsets[nInnerBoundaries + idx];
-        const auto patchEnd = offsets[nInnerBoundaries + idx + 1];
-        for (auto f = patchStart; f < patchEnd; f++)
-        {
-            buffer.push_back(faceCellsH.view()[f] + globalOffset);
-        }
+        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
     }
 
-    // compute send displacements (running sum of sendCounts, indexed by rank).
+    // For each mesh-order proc patch i with target rank neighbourRanks[i], the
+    // displacement into the proc-tail buffer for rank r is the patch start
+    // offset relative to procStart. Ranks that don't communicate keep the
+    // default 0 displacement (sendCounts[r] == 0 means no bytes are read).
     auto sdispl = std::vector<localIdx>(mpiEnviron.sizeRank(), 0);
-    for (int i = 1; i < sdispl.size(); i++)
+    for (int i = 0; i < neighbourRanks.size(); i++)
     {
-        sdispl[i] = sdispl[i - 1] + sendCounts[i - 1];
+        const auto targetRank = neighbourRanks[i];
+        sdispl[targetRank] = offsets[nInnerBoundaries + i] - procStart;
     }
     auto recvIdx = std::vector<localIdx>(buffer.size());
 

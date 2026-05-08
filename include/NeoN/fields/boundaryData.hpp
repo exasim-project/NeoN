@@ -217,11 +217,28 @@ private:
     localIdx nBoundaryFaces_;      ///< The number of boundary faces.
 };
 
-/**@brief exchange values on processor boundaries*/
+/**@brief exchange values on processor boundaries
+ *
+ * @param procPatchOffset (start, end) ranges of each proc patch in the
+ *        boundaryData layout, IN MESH-BOUNDARY ORDER.
+ * @param targetRanks for each entry of procPatchOffset, the neighbour rank it
+ *        communicates with. Must be parallel to procPatchOffset.
+ *
+ * Mesh-order is decomposition-dependent — patch 0 may target rank 7 and patch
+ * 1 may target rank 3. The MPI Alltoallv displacement for rank r MUST be the
+ * start offset of the mesh-order patch that targets r, NOT a running sum over
+ * ranks. The previous implementation assumed mesh-order matched ascending-
+ * rank order and shipped wrong data to wrong ranks otherwise.
+ *
+ * Mesh-order is also what downstream consumers (e.g. setProcBoundarySparsity-
+ * Pattern) expect for the resulting layout — sorting procPatchOffset by rank
+ * inside this routine would corrupt the matrix sparsity row/col pairing.
+ */
 template<typename ValueType>
 void communicateBoundaryData(
     const CommunicationPattern& commPattern,
     const std::vector<std::pair<localIdx, localIdx>> procPatchOffset,
+    const std::vector<int>& targetRanks,
     Vector<ValueType>& boundaryData
 )
 {
@@ -229,19 +246,17 @@ void communicateBoundaryData(
     auto commRanks = mpiEnv.sizeRank();
     auto sendSize = commPattern.sendCounts[commRanks];
 
-    // compute send displacements
+    // For each mesh-order patch, point sdispls[targetRank] at that patch's
+    // start offset in boundaryData. Ranks not in targetRanks keep the default
+    // 0 displacement (sendCounts[r] == 0 means MPI reads no bytes from there).
+    NF_ASSERT(
+        procPatchOffset.size() == targetRanks.size(),
+        "procPatchOffset and targetRanks must have the same length"
+    );
     auto sdispls = std::vector<int>(commRanks, 0);
-    int j = 0;
-    for (int i = 0; i < sdispls.size(); i++)
+    for (std::size_t p = 0; p < procPatchOffset.size(); ++p)
     {
-        // check if rank communicates data
-        if (commPattern.sendCounts[i] > 0)
-        {
-            // send displ patch start
-            auto [start, end] = procPatchOffset[j];
-            sdispls[i] = start;
-            j++;
-        }
+        sdispls[targetRanks[p]] = static_cast<int>(procPatchOffset[p].first);
     }
 
     // FIXME recvBuffer does not need to same size as boundaryData
@@ -303,6 +318,7 @@ template<>
 inline void communicateBoundaryData(
     const CommunicationPattern& commPattern,
     const std::vector<std::pair<localIdx, localIdx>> procPatchOffset,
+    const std::vector<int>& targetRanks,
     Vector<Vec3>& boundaryData
 )
 {
@@ -319,18 +335,16 @@ inline void communicateBoundaryData(
         sendCounts[i] = commPattern.sendCounts[i] * 3;
     }
 
+    // Per-rank displacement using the mesh-order target rank for each patch.
+    // See the scalar overload above for rationale.
+    NF_ASSERT(
+        procPatchOffset.size() == targetRanks.size(),
+        "procPatchOffset and targetRanks must have the same length"
+    );
     auto sdispls = std::vector<int>(commRanks, 0);
-    int j = 0;
-    for (int i = 0; i < sdispls.size(); i++)
+    for (std::size_t p = 0; p < procPatchOffset.size(); ++p)
     {
-        // check if rank communicates data
-        if (sendCounts[i] > 0)
-        {
-            // send displ patch start
-            auto [start, end] = procPatchOffset[j];
-            sdispls[i] = 3 * start;
-            j++;
-        }
+        sdispls[targetRanks[p]] = 3 * static_cast<int>(procPatchOffset[p].first);
     }
 
     // FIXME recvBuffer does not need to be same size as boundaryData

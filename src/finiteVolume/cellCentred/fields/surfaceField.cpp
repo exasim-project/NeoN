@@ -27,10 +27,11 @@ void SurfaceField<ValueType>::correctBoundaryConditions()
     const auto procPatchCount = bm.nProcBoundaryPatches();
     const auto firstProcPatch = totalPatches - procPatchCount;
 
-    // Collect (neighbourRank, start, end) and sort by ascending neighbourRank.
-    // communicateBoundaryData expects procPatchOffset in ascending neighbour-rank
-    // order; mesh-order is decomposition-dependent and may not match.
-    std::vector<std::tuple<localIdx, localIdx, localIdx>> procTriples;
+    // Collect proc-patch (start, end) ranges in MESH-BOUNDARY ORDER, paired
+    // with their target ranks. communicateBoundaryData uses targetRanks for
+    // per-rank Alltoallv displacements so mesh-order is preserved end-to-end.
+    std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+    std::vector<int> targetRanks;
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
@@ -38,27 +39,18 @@ void SurfaceField<ValueType>::correctBoundaryConditions()
         {
             const auto procIdx = boundaryCondition.patchID() - firstProcPatch;
             auto [start, end] = boundaryCondition.range();
-            procTriples.emplace_back(nbrRanks[procIdx], start, end);
+            procPatchOffset.emplace_back(start, end);
+            targetRanks.push_back(static_cast<int>(nbrRanks[procIdx]));
         }
     }
 
-    if (!procTriples.empty())
+    if (!procPatchOffset.empty())
     {
-        std::sort(
-            procTriples.begin(),
-            procTriples.end(),
-            [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); }
-        );
-        std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
-        procPatchOffset.reserve(procTriples.size());
-        for (const auto& t : procTriples)
-        {
-            procPatchOffset.emplace_back(std::get<1>(t), std::get<2>(t));
-        }
-
         // FIXME dont recompute communication pattern
         auto commPattern = computeCommunicationPattern(this->mesh());
-        communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());
+        communicateBoundaryData(
+            commPattern, procPatchOffset, targetRanks, this->field_.boundaryData().value()
+        );
     }
 }
 

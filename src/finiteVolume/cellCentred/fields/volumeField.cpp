@@ -97,19 +97,19 @@ void VolumeField<ValueType>::correctBoundaryConditions()
 {
     NeoN::mpi::Environment mpiEnviron;
 
-    // Identify processor patches and collect their (start, end) ranges paired with
-    // the neighbour rank for sorting. communicateBoundaryData walks ranks in
-    // ascending order and consumes the j-th procPatchOffset entry for the j-th
-    // rank with non-zero send count, so the offsets MUST be in ascending
-    // neighbour-rank order. Mesh-order is not the same as ascending rank-order
-    // in general (decomposition-dependent), so we sort here.
+    // Collect proc-patch (start, end) ranges in MESH-BOUNDARY ORDER, paired
+    // with their target neighbour ranks. communicateBoundaryData uses
+    // targetRanks to compute per-rank Alltoallv displacements, so mesh-order
+    // is preserved end-to-end (which is what setProcBoundarySparsityPattern
+    // and the matrix layout expect).
     const auto& bm = this->mesh().boundaryMesh();
     const auto& nbrRanks = bm.neighbourRank();
     const auto totalPatches = bm.nBoundaries();
     const auto procPatchCount = bm.nProcBoundaryPatches();
     const auto firstProcPatch = totalPatches - procPatchCount;
 
-    std::vector<std::tuple<localIdx, localIdx, localIdx>> procTriples;
+    std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+    std::vector<int> targetRanks;
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
@@ -117,28 +117,19 @@ void VolumeField<ValueType>::correctBoundaryConditions()
         {
             const auto procIdx = boundaryCondition.patchID() - firstProcPatch;
             auto [start, end] = boundaryCondition.range();
-            procTriples.emplace_back(nbrRanks[procIdx], start, end);
+            procPatchOffset.emplace_back(start, end);
+            targetRanks.push_back(static_cast<int>(nbrRanks[procIdx]));
         }
     }
 
-    if (!procTriples.empty())
+    if (!procPatchOffset.empty())
     {
-        std::sort(
-            procTriples.begin(),
-            procTriples.end(),
-            [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); }
-        );
-        std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
-        procPatchOffset.reserve(procTriples.size());
-        for (const auto& t : procTriples)
-        {
-            procPatchOffset.emplace_back(std::get<1>(t), std::get<2>(t));
-        }
-
         // FIXME dont recompute communication pattern
         // exchange processor boundary data
         auto commPattern = computeCommunicationPattern(this->mesh());
-        communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());
+        communicateBoundaryData(
+            commPattern, procPatchOffset, targetRanks, this->field_.boundaryData().value()
+        );
     }
 }
 

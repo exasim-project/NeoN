@@ -25,55 +25,40 @@ namespace
 /**
  * @brief Build the (start, end) ranges of all processor-boundary patches in the
  *        boundaryData layout (i.e. into a vector sized nBoundaryFaces + nProcBoundaryFaces),
- *        sorted by ascending neighbour rank.
+ *        in MESH-BOUNDARY ORDER, paired with their target ranks.
  *
  * Processor patches are the trailing patches in the boundary mesh; their offsets
  * already point into the boundary-data layout where the proc tail begins at
  * `boundaryMesh.nBoundaryFaces()`.
  *
- * The returned vector is sorted by ascending neighbour rank because
- * `communicateBoundaryData` builds MPI Alltoallv displacements by iterating
- * ranks in ascending order and consuming the j-th procPatchOffset entry for the
- * j-th rank with non-zero send count. If procPatchOffset were in mesh order
- * (the order patches appear in the boundary mesh, which is decomposition-
- * dependent), the displacement for rank i would point at the wrong patch's
- * data on any rank where mesh-order != ascending neighbour-rank order, and
- * proc-face data would be exchanged with the wrong rank.
+ * communicateBoundaryData uses targetRanks to compute MPI Alltoallv
+ * displacements per-rank, so mesh-order is preserved end-to-end (which is
+ * what downstream consumers like setProcBoundarySparsityPattern expect).
  */
-std::vector<std::pair<localIdx, localIdx>> collectProcPatchOffsets(const UnstructuredMesh& mesh)
+std::pair<std::vector<std::pair<localIdx, localIdx>>, std::vector<int>>
+collectProcPatchOffsets(const UnstructuredMesh& mesh)
 {
     std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+    std::vector<int> targetRanks;
     const auto& patchOffsets = mesh.boundaryMesh().offset();
     const auto& nbrRanks = mesh.boundaryMesh().neighbourRank();
     const auto totalPatches = mesh.boundaryMesh().nBoundaries();
     const auto procPatchCount = mesh.boundaryMesh().nProcBoundaryPatches();
     if (procPatchCount == 0)
     {
-        return procPatchOffset;
+        return {procPatchOffset, targetRanks};
     }
     const auto firstProcPatch = totalPatches - procPatchCount;
 
-    // Build (neighbourRank, start, end) triples, then sort by neighbourRank.
-    // nbrRanks is indexed from the first proc patch (size == procPatchCount).
-    std::vector<std::tuple<localIdx, localIdx, localIdx>> triples;
-    triples.reserve(static_cast<std::size_t>(procPatchCount));
+    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
+    targetRanks.reserve(static_cast<std::size_t>(procPatchCount));
     for (localIdx p = firstProcPatch; p < totalPatches; ++p)
     {
         const auto procIdx = p - firstProcPatch;
-        triples.emplace_back(nbrRanks[procIdx], patchOffsets[p], patchOffsets[p + 1]);
+        procPatchOffset.emplace_back(patchOffsets[p], patchOffsets[p + 1]);
+        targetRanks.push_back(static_cast<int>(nbrRanks[procIdx]));
     }
-    std::sort(
-        triples.begin(),
-        triples.end(),
-        [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); }
-    );
-
-    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
-    for (const auto& t : triples)
-    {
-        procPatchOffset.emplace_back(std::get<1>(t), std::get<2>(t));
-    }
-    return procPatchOffset;
+    return {procPatchOffset, targetRanks};
 }
 
 /**
@@ -134,7 +119,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
         "exchangeProcOwnerDistance::fillLocal"
     );
 
-    auto procPatchOffset = collectProcPatchOffsets(mesh);
+    auto [procPatchOffset, targetRanks] = collectProcPatchOffsets(mesh);
     if (procPatchOffset.empty())
     {
         return dExchange;
@@ -143,7 +128,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
     // FIXME share commPattern with VolumeField::correctBoundaryConditions to avoid
     // recomputing it once per geometry update. For now match the pattern used there.
     auto commPattern = computeCommunicationPattern(mesh);
-    communicateBoundaryData(commPattern, procPatchOffset, dExchange);
+    communicateBoundaryData(commPattern, procPatchOffset, targetRanks, dExchange);
 
     return dExchange;
 }
