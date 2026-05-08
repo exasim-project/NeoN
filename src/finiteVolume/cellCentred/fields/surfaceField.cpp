@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <tuple>
+
 #include "NeoN/core/macros.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -19,23 +22,40 @@ void SurfaceField<ValueType>::correctBoundaryConditions()
     // expose name()/getName() like VolumeBoundary does, so we use the patchID
     // range instead.
     const auto& bm = this->mesh().boundaryMesh();
+    const auto& nbrRanks = bm.neighbourRank();
     const auto totalPatches = bm.nBoundaries();
     const auto procPatchCount = bm.nProcBoundaryPatches();
     const auto firstProcPatch = totalPatches - procPatchCount;
 
-    auto procPatchOffset = std::vector<std::pair<localIdx, localIdx>> {};
+    // Collect (neighbourRank, start, end) and sort by ascending neighbourRank.
+    // communicateBoundaryData expects procPatchOffset in ascending neighbour-rank
+    // order; mesh-order is decomposition-dependent and may not match.
+    std::vector<std::tuple<localIdx, localIdx, localIdx>> procTriples;
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
         if (procPatchCount > 0 && boundaryCondition.patchID() >= firstProcPatch)
         {
+            const auto procIdx = boundaryCondition.patchID() - firstProcPatch;
             auto [start, end] = boundaryCondition.range();
-            procPatchOffset.emplace_back(start, end);
+            procTriples.emplace_back(nbrRanks[procIdx], start, end);
         }
     }
 
-    if (procPatchOffset.size() > 0)
+    if (!procTriples.empty())
     {
+        std::sort(
+            procTriples.begin(),
+            procTriples.end(),
+            [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); }
+        );
+        std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
+        procPatchOffset.reserve(procTriples.size());
+        for (const auto& t : procTriples)
+        {
+            procPatchOffset.emplace_back(std::get<1>(t), std::get<2>(t));
+        }
+
         // FIXME dont recompute communication pattern
         auto commPattern = computeCommunicationPattern(this->mesh());
         communicateBoundaryData(commPattern, procPatchOffset, this->field_.boundaryData().value());

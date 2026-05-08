@@ -86,7 +86,12 @@ public:
         const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, "", mesh, internalVector, boundaryVectors),
+        // Use the 4-arg DomainMixin (no size check) with an explicit Field —
+        // the 5-arg form asserts mesh.nCells() == internalVector.size() which
+        // is wrong for a SurfaceField (size is nTotalFaces, not nCells).
+        : DomainMixin<ValueType>(
+            exec, "", mesh, Field<ValueType>(exec, internalVector, boundaryVectors)
+        ),
           FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
 

@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <tuple>
+
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
@@ -21,16 +24,27 @@ namespace
 
 /**
  * @brief Build the (start, end) ranges of all processor-boundary patches in the
- *        boundaryData layout (i.e. into a vector sized nBoundaryFaces + nProcBoundaryFaces).
+ *        boundaryData layout (i.e. into a vector sized nBoundaryFaces + nProcBoundaryFaces),
+ *        sorted by ascending neighbour rank.
  *
  * Processor patches are the trailing patches in the boundary mesh; their offsets
  * already point into the boundary-data layout where the proc tail begins at
  * `boundaryMesh.nBoundaryFaces()`.
+ *
+ * The returned vector is sorted by ascending neighbour rank because
+ * `communicateBoundaryData` builds MPI Alltoallv displacements by iterating
+ * ranks in ascending order and consuming the j-th procPatchOffset entry for the
+ * j-th rank with non-zero send count. If procPatchOffset were in mesh order
+ * (the order patches appear in the boundary mesh, which is decomposition-
+ * dependent), the displacement for rank i would point at the wrong patch's
+ * data on any rank where mesh-order != ascending neighbour-rank order, and
+ * proc-face data would be exchanged with the wrong rank.
  */
 std::vector<std::pair<localIdx, localIdx>> collectProcPatchOffsets(const UnstructuredMesh& mesh)
 {
     std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
     const auto& patchOffsets = mesh.boundaryMesh().offset();
+    const auto& nbrRanks = mesh.boundaryMesh().neighbourRank();
     const auto totalPatches = mesh.boundaryMesh().nBoundaries();
     const auto procPatchCount = mesh.boundaryMesh().nProcBoundaryPatches();
     if (procPatchCount == 0)
@@ -38,10 +52,26 @@ std::vector<std::pair<localIdx, localIdx>> collectProcPatchOffsets(const Unstruc
         return procPatchOffset;
     }
     const auto firstProcPatch = totalPatches - procPatchCount;
-    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
+
+    // Build (neighbourRank, start, end) triples, then sort by neighbourRank.
+    // nbrRanks is indexed from the first proc patch (size == procPatchCount).
+    std::vector<std::tuple<localIdx, localIdx, localIdx>> triples;
+    triples.reserve(static_cast<std::size_t>(procPatchCount));
     for (localIdx p = firstProcPatch; p < totalPatches; ++p)
     {
-        procPatchOffset.emplace_back(patchOffsets[p], patchOffsets[p + 1]);
+        const auto procIdx = p - firstProcPatch;
+        triples.emplace_back(nbrRanks[procIdx], patchOffsets[p], patchOffsets[p + 1]);
+    }
+    std::sort(
+        triples.begin(),
+        triples.end(),
+        [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); }
+    );
+
+    procPatchOffset.reserve(static_cast<std::size_t>(procPatchCount));
+    for (const auto& t : triples)
+    {
+        procPatchOffset.emplace_back(std::get<1>(t), std::get<2>(t));
     }
     return procPatchOffset;
 }

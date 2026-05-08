@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <numeric>
+
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
@@ -442,21 +445,41 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
         sendCounts[mpiEnviron.sizeRank()] += patchSize;
     }
 
-    // compute sendIdx
+    // Build send buffer in ascending-rank order.
+    //
+    // MPI_Alltoallv reads the buffer at offsets `sdispl[r]` for the slice that
+    // goes to rank r, with sdispl built as the running sum of sendCounts (which
+    // is indexed by rank). So the buffer MUST be laid out in ascending rank
+    // order. Iterating proc patches in mesh order would be wrong on any rank
+    // where mesh-order != ascending neighbour-rank order — slices for some
+    // ranks would point at other ranks' data, and the resulting recvIdx would
+    // be wrong (faces appear to come from / go to the wrong rank).
     auto globalOffset = mesh.globalOffset();
     const auto faceCells = mesh.boundaryMesh().faceCells();
     auto faceCellsH = faceCells.copyToHost();
+
+    // Sort proc patches by ascending neighbour rank.
+    std::vector<std::size_t> patchOrder(neighbourRanks.size());
+    std::iota(patchOrder.begin(), patchOrder.end(), 0);
+    std::sort(
+        patchOrder.begin(),
+        patchOrder.end(),
+        [&](std::size_t a, std::size_t b) { return neighbourRanks[a] < neighbourRanks[b]; }
+    );
+
     auto buffer = std::vector<localIdx>();
     buffer.reserve(mesh.boundaryMesh().nProcBoundaryFaces());
-    auto procStart = offsets[nInnerBoundaries];
-    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
+    for (std::size_t idx : patchOrder)
     {
-        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
+        const auto patchStart = offsets[nInnerBoundaries + idx];
+        const auto patchEnd = offsets[nInnerBoundaries + idx + 1];
+        for (auto f = patchStart; f < patchEnd; f++)
+        {
+            buffer.push_back(faceCellsH.view()[f] + globalOffset);
+        }
     }
 
-    // exchange sendIdx
-    // TODO this is assumes that patches and indices are ordered
-    // compute send displacements
+    // compute send displacements (running sum of sendCounts, indexed by rank).
     auto sdispl = std::vector<localIdx>(mpiEnviron.sizeRank(), 0);
     for (int i = 1; i < sdispl.size(); i++)
     {
