@@ -13,11 +13,21 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename ValueType>
 void SurfaceField<ValueType>::correctBoundaryConditions()
 {
+    // Identify processor patches by patchID. Processor patches are the trailing
+    // patches in the boundary mesh (same convention used in
+    // basicGeometryScheme::collectProcPatchOffsets). SurfaceBoundary does not
+    // expose name()/getName() like VolumeBoundary does, so we use the patchID
+    // range instead.
+    const auto& bm = this->mesh().boundaryMesh();
+    const auto totalPatches = bm.nBoundaries();
+    const auto procPatchCount = bm.nProcBoundaryPatches();
+    const auto firstProcPatch = totalPatches - procPatchCount;
+
     auto procPatchOffset = std::vector<std::pair<localIdx, localIdx>> {};
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
-        if (boundaryCondition.name() == "processor")
+        if (procPatchCount > 0 && boundaryCondition.patchID() >= firstProcPatch)
         {
             auto [start, end] = boundaryCondition.range();
             procPatchOffset.emplace_back(start, end);

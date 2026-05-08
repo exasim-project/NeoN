@@ -67,7 +67,7 @@ public:
         const Field<ValueType>& domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, domainVector), FieldDatabaseMixin(),
+        : DomainMixin<ValueType>(exec, "", mesh, domainVector), FieldDatabaseMixin(),
           boundaryConditions_(boundaryConditions)
     {}
 
@@ -86,7 +86,7 @@ public:
         const BoundaryData<ValueType>& boundaryVectors,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions
     )
-        : DomainMixin<ValueType>(exec, mesh, {exec, mesh, internalVector, boundaryVectors}),
+        : DomainMixin<ValueType>(exec, "", mesh, internalVector, boundaryVectors),
           FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
 
