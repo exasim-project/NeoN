@@ -70,6 +70,13 @@ void computeLinearInterpolation(
             // lives on another rank. After VolumeField::correctBoundaryConditions
             // the exchanged neighbour value sits in boundS[bcfacei].
             //
+            // Weight convention (see basicGeometryScheme): w = d_nei/(d_own+d_nei),
+            // matching phi_f = w * phi_own + (1 - w) * phi_nei. The internal-face
+            // branch above and pressureVelocityCoupling::flux() both follow this;
+            // the proc branch must too, otherwise on graded meshes (w != 0.5) the
+            // owner and ghost ranks compute different face values and a
+            // discontinuity appears across the cut.
+            //
             // Use bm.faceCells() (compressed indexing matching the boundary tail
             // of the surface field) for the owner cell. mesh.faceOwner() is in
             // OpenFOAM's full face indexing which includes empty patches;
@@ -79,7 +86,7 @@ void computeLinearInterpolation(
             {
                 auto bcfacei = facei - nInternalFaces;
                 auto own = faceCellS[bcfacei];
-                dstS[facei] = (1 - weightS[facei]) * srcS[own] + weightS[facei] * boundS[bcfacei];
+                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }
         },
