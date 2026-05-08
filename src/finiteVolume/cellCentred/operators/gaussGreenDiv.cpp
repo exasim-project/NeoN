@@ -216,8 +216,7 @@ void computeDivProcBoundImpl(
     const auto [rowOffs, diagOffs] =
         views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
 
-    const auto [surfFaceCells, isOwner] =
-        views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().weights());
+    const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
 
     const auto [bweights] = views(weights.internalVector());
 
@@ -239,49 +238,46 @@ void computeDivProcBoundImpl(
             auto rowStart = rowOffs[cell];
             auto c = operatorScaling[cell];
 
-            // Conservative upwind divergence for processor boundary faces.
-            // S_f points from owner to neighbour by construction; F = faceFlux is signed.
+            // Conservative upwind divergence at a processor boundary face.
             //
-            // From the global computeDivImp for face f (own→nei, weight w = 0 or 1 for upwind):
-            //   A[own,own] -= w*F*c         (diagonal of owner)
-            //   A[own,nei] -= (1-w)*F*c     (off-diagonal: owner row, nei column)
-            //   A[nei,own] += w*F*c         (off-diagonal: nei row, own column)
-            //   A[nei,nei] += (1-w)*F*c     (diagonal of neighbour)
+            // Both ranks treat their local cell as the "owner" of the shared
+            // face. F_local is this rank's view of the face flux (positive ⇒
+            // leaving the local cell), w_local the local upwind weight
+            // (1 if F_local ≥ 0, else 0). The local-flux convention flips
+            // sign across the cut, and so does w_local — by construction
+            // w_A + w_B = 1.
             //
-            // Each rank uses the raw upwind weight: w_raw = (F >= 0) ? 1 : 0.
-            // The owner's diagonal coefficient is w_raw; the non-owner's is (1 - w_raw).
-            auto isOwnerFace = isOwner[bcfacei] > 0.0;
-            auto sign = isOwnerFace ? scalar(-1) : scalar(1);
-            auto w_raw = bweights[facei]; // use global face index, not boundary-local bcfacei
-            // Diagonal weight: owner uses w_raw, non-owner uses (1-w_raw)
-            auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
-            auto F = faceFluxV[facei];
-            auto value = sign * w_diag * F * c * one<ValueType>();
+            // The internal-face computeDivImp convention writes
+            //     M[own, own] = +F * w * c          (owner diag)
+            //     M[own, nei] = +F * (1 - w) * c    (upper)
+            //     M[nei, nei] = -F * (1 - w) * c    (neighbour diag)
+            //     M[nei, own] = -F * w * c          (lower)
+            //
+            // On the owner-side rank: F_local = F_global, w_local = w_global.
+            //     diag        += F_local * w_local       * c   = +F*w*c       (= M[own, own])
+            //     nonLocal    += F_local * (1 - w_local) * c   = +F*(1-w)*c   (= M[own, ghost=nei])
+            //
+            // On the non-owner-side rank: F_local = -F_global, w_local = 1 - w_global.
+            //     diag        += F_local * w_local       * c   = -F*(1-w)*c   (= M[nei, nei])
+            //     nonLocal    += F_local * (1 - w_local) * c   = -F*w*c       (= M[nei, ghost=own])
+            //
+            // So a single formula in the local convention covers both sides
+            // and gives the exact same matrix entries as the internal-face
+            // assembly would for the same face — no per-rank ownership
+            // branch required. The previous implementation introduced an
+            // `isOwner = boundaryMesh().weights() > 0.0` flag that was
+            // always true on both sides (those weights are linear
+            // interpolation weights in (0, 1), not 0/1 ownership flags),
+            // so its `sign` and `w_diag` terms collapsed to algebraically
+            // the same expressions as below.
+            const auto F_local = faceFluxV[facei];
+            const auto w_local = bweights[facei];
 
-            Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
-            // bValues[bcfaceii] += value ; // this will be
+            const auto diagContrib = F_local * w_local * c * one<ValueType>();
+            Kokkos::atomic_add(&values[rowStart + diagOffs[cell]], diagContrib);
 
-            // Off-diagonal (ghost coupling).
-            //
-            // Div is asymmetric: in the global computeDivImp the two off-diagonals
-            // around face (own, nei) are
-            //     M[own, nei] = +F * (1 - w) * c       (upper)
-            //     M[nei, own] = -F *  w      * c       (lower)
-            // i.e. they have opposite signs.
-            //
-            // On the owner-side rank we are storing M[local=own, ghost=nei]:
-            //   sign = -1, w_diag = w_raw, so we want valueOff = +F*(1-w_raw)*c
-            // On the non-owner-side rank we are storing M[local=nei, ghost=own]:
-            //   sign = +1, w_diag = (1 - w_raw), so we want valueOff = -F*w_raw*c
-            //                                              = -F*(1 - w_diag)*c
-            //
-            // Both cases are captured by negating `sign` in front of the magnitude:
-            //   owner:     -(-1) * (1 - w_raw)        = +(1 - w)
-            //   non-owner: -(+1) * (1 - (1-w_raw))    = -w
-            // This mirrors the diag formula `value = sign * w_diag * F * c`, which
-            // already encodes the asymmetric +diag[own]/-diag[nei] split correctly.
-            auto valueOff = -sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
-            bValues[bcfaceii] += valueOff;
+            const auto offDiagContrib = F_local * (scalar(1) - w_local) * c * one<ValueType>();
+            bValues[bcfaceii] += offDiagContrib;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );
