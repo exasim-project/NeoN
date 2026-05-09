@@ -86,15 +86,15 @@ void computeLaplacianImpl(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
+
     const auto matIt = ls.faceToMatrixAddress();
-    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs, rowOffs] = views(
+    const auto [owner, neighbour, surfFaceCells, diagOffs, ownOffs, neiOffs] = views(
         mesh.faceOwner(),
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells(),
         matIt->diagOffset(),
         matIt->ownerOffset(),
-        matIt->neighbourOffset(),
-        matIt->sparsityPattern()->rowOffs()
+        matIt->neighbourOffset()
     );
 
     const auto [sGamma, deltaCoeffs, magFaceArea] = views(
@@ -103,8 +103,8 @@ void computeLaplacianImpl(
         mesh.magFaceAreas()
     );
 
+    auto matView = ls.matrix().view();
     auto rhs = ls.rhs().view();
-    auto values = ls.matrix().values().view();
 
     parallelFor(
         exec,
@@ -116,23 +116,27 @@ void computeLaplacianImpl(
             auto nei = neighbour[facei];
 
             // add neighbour contribution upper
-            auto rowNeiStart = rowOffs[nei];
-            auto rowOwnStart = rowOffs[own];
+            auto rowNeiStart = matView.sparsity.rowOffs[nei];
+            auto rowOwnStart = matView.sparsity.rowOffs[own];
 
             auto operatorScalingNei = operatorScaling[nei];
             auto operatorScalingOwn = operatorScaling[own];
 
             // scalar valueNei = (1 - weight) * flux;
-            values[rowNeiStart + neiOffs[facei]] += flux * one<ValueType>() * operatorScalingNei;
+            matView.values[rowNeiStart + neiOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], flux * one<ValueType>() * operatorScalingOwn
+                &matView.values[rowOwnStart + diagOffs[own]],
+                flux * one<ValueType>() * operatorScalingOwn
             );
 
             // upper triangular part
             // add owner contribution lower
-            values[rowOwnStart + ownOffs[facei]] += flux * one<ValueType>() * operatorScalingOwn;
+            matView.values[rowOwnStart + ownOffs[facei]] +=
+                flux * one<ValueType>() * operatorScalingOwn;
             Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], flux * one<ValueType>() * operatorScalingNei
+                &matView.values[rowNeiStart + diagOffs[nei]],
+                flux * one<ValueType>() * operatorScalingNei
             );
         },
         "computeLocalLaplacianCoefficients"
@@ -145,9 +149,8 @@ void computeLaplacianImpl(
         phi.boundaryData().refValue()
     );
 
-    auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
-
+    auto bRhs = ls.boundaryRhs().view();
 
     parallelFor(
         exec,
@@ -157,19 +160,18 @@ void computeLaplacianImpl(
             auto flux = sGamma[facei] * magFaceArea[facei];
 
             auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
             auto operatorScalingOwn = operatorScaling[own];
 
             ValueType valueMat = flux * operatorScalingOwn * valueFraction[bcfacei]
                                * deltaCoeffs[facei] * one<ValueType>();
-            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-            bValues[bcfacei] = valueMat;
+            // Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+            bValues[bcfacei] -= valueMat; // MINUS: addBoundaryContributions ADDs, Laplacian SUBs
 
             ValueType valueRhs = flux * operatorScalingOwn
                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-            Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] = valueRhs;
+            // Kokkos::atomic_sub(&rhs[own], valueRhs);
+            bRhs[bcfacei] += valueRhs;
         },
         "computeInterfaceLaplacianCoefficients"
     );
