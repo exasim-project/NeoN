@@ -259,8 +259,23 @@ void communicateBoundaryData(
         sdispls[targetRanks[p]] = static_cast<int>(procPatchOffset[p].first);
     }
 
-    // FIXME recvBuffer does not need to same size as boundaryData
-    auto recvBuffer = Vector<ValueType>(boundaryData.exec(), boundaryData.size());
+    // MPI-01 fix: derive per-rank recv counts via MPI_Alltoall on send counts.
+    auto recvCountsVec = std::vector<int>(commRanks, 0);
+    {
+        auto sendCountsInt = std::vector<int>(commRanks, 0);
+        for (int r = 0; r < commRanks; ++r)
+            sendCountsInt[r] = static_cast<int>(commPattern.sendCounts[r]);
+        MPI_Alltoall(
+            sendCountsInt.data(), 1, MPI_INT, recvCountsVec.data(), 1, MPI_INT, mpiEnv.comm()
+        );
+    }
+    auto rdispls = std::vector<int>(commRanks, 0);
+    for (int r = 1; r < commRanks; ++r)
+        rdispls[r] = rdispls[r - 1] + recvCountsVec[r - 1];
+    int totalRecv = (commRanks > 0) ? rdispls.back() + recvCountsVec.back() : 0;
+
+    // MPI-03 fix: size recvBuffer to actual recv count, not full boundary size.
+    auto recvBuffer = Vector<ValueType>(boundaryData.exec(), static_cast<localIdx>(totalRecv));
 
     // Flush any pending GPU kernels writing to boundaryData before MPI reads it.
     // Kernels launched by per-BC correctBoundaryCondition() in the caller are async
@@ -273,8 +288,8 @@ void communicateBoundaryData(
         sdispls.data(),
         mpi::getType<ValueType>(),
         recvBuffer.data(),
-        commPattern.sendCounts.data(),
-        sdispls.data(),
+        recvCountsVec.data(),
+        rdispls.data(),
         mpi::getType<ValueType>(),
         mpiEnv.comm()
     );
@@ -283,14 +298,17 @@ void communicateBoundaryData(
     auto outV = boundaryData.view();
     const auto inV = recvBuffer.view();
 
-    // Mirror procPatchOffset to a device-resident Vector so the kernel can read
-    // it on GPU. Capturing the host std::vector by value into a device lambda
-    // dereferences host memory on device and trips Kokkos' bounds check.
-    auto offsetHost = std::vector<localIdx>(2 * procPatchOffset.size());
+    // Build a per-patch descriptor: [outStart, outEnd, inStart] so the unpack
+    // kernel knows both where to write (outStart..outEnd in boundaryData) and
+    // where to read (inStart in recvBuffer, which is rdispls[targetRank]).
+    // Mirror to a device-resident Vector — capturing host data in a GPU lambda
+    // dereferences host memory on device and trips Kokkos bounds checks.
+    auto offsetHost = std::vector<localIdx>(3 * procPatchOffset.size());
     for (std::size_t p = 0; p < procPatchOffset.size(); p++)
     {
-        offsetHost[2 * p] = procPatchOffset[p].first;
-        offsetHost[2 * p + 1] = procPatchOffset[p].second;
+        offsetHost[3 * p] = procPatchOffset[p].first;
+        offsetHost[3 * p + 1] = procPatchOffset[p].second;
+        offsetHost[3 * p + 2] = static_cast<localIdx>(rdispls[targetRanks[p]]);
     }
     auto offsetVec = Vector<localIdx>(exec, offsetHost);
     const auto offsetV = offsetVec.view();
@@ -299,11 +317,12 @@ void communicateBoundaryData(
         exec,
         {0, procPatchOffset.size()},
         NEON_LAMBDA(const localIdx p) {
-            const auto start = offsetV[2 * p];
-            const auto end = offsetV[2 * p + 1];
-            for (auto i = start; i < end; i++)
+            const auto outStart = offsetV[3 * p];
+            const auto outEnd = offsetV[3 * p + 1];
+            const auto inStart = offsetV[3 * p + 2];
+            for (localIdx j = 0; j < outEnd - outStart; j++)
             {
-                outV[i] = inV[i];
+                outV[outStart + j] = inV[inStart + j];
             }
         },
         "copyMap"
@@ -335,6 +354,14 @@ inline void communicateBoundaryData(
         sendCounts[i] = commPattern.sendCounts[i] * 3;
     }
 
+    // MPI-01 fix: derive per-rank recv counts from the 3x-multiplied send counts.
+    auto recvCountsVec = std::vector<int>(commRanks, 0);
+    MPI_Alltoall(sendCounts.data(), 1, MPI_INT, recvCountsVec.data(), 1, MPI_INT, mpiEnv.comm());
+    auto rdispls = std::vector<int>(commRanks, 0);
+    for (int r = 1; r < commRanks; ++r)
+        rdispls[r] = rdispls[r - 1] + recvCountsVec[r - 1];
+    int totalRecv3 = (commRanks > 0) ? rdispls.back() + recvCountsVec.back() : 0;
+
     // Per-rank displacement using the mesh-order target rank for each patch.
     // See the scalar overload above for rationale.
     NF_ASSERT(
@@ -347,7 +374,6 @@ inline void communicateBoundaryData(
         sdispls[targetRanks[p]] = 3 * static_cast<int>(procPatchOffset[p].first);
     }
 
-    // FIXME recvBuffer does not need to be same size as boundaryData
     auto exec = boundaryData.exec();
     auto boundaryDataSize = boundaryData.size();
     auto sendBuffer = Vector<NeoN::scalar>(boundaryData.exec(), 3 * boundaryData.size());
@@ -365,7 +391,8 @@ inline void communicateBoundaryData(
         "copyMap"
     );
 
-    auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), 3 * boundaryData.size());
+    // MPI-03 fix: size to actual recv scalar count.
+    auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), static_cast<localIdx>(totalRecv3));
     auto recvBufferV = recvBuffer.view();
 
     // Flush the pack kernel above (and any caller-launched BC kernels) before MPI
@@ -378,8 +405,8 @@ inline void communicateBoundaryData(
         sdispls.data(),
         mpi::getType<scalar>(),
         recvBuffer.data(),
-        sendCounts.data(),
-        sdispls.data(),
+        recvCountsVec.data(),
+        rdispls.data(),
         mpi::getType<scalar>(),
         mpiEnv.comm()
     );
@@ -387,12 +414,15 @@ inline void communicateBoundaryData(
     const auto inV = recvBuffer.view();
     auto outV = boundaryData.view();
 
-    // Mirror procPatchOffset to a device-resident Vector — see scalar overload.
-    auto offsetHost = std::vector<localIdx>(2 * procPatchOffset.size());
+    // Build a per-patch descriptor: [outStart, outEnd, inStart (in scalar units)]
+    // mirroring rdispls[targetRank] so the unpack kernel reads from the correct
+    // position in the compacted recvBuffer. Mirror to device — see scalar overload.
+    auto offsetHost = std::vector<localIdx>(3 * procPatchOffset.size());
     for (std::size_t p = 0; p < procPatchOffset.size(); p++)
     {
-        offsetHost[2 * p] = procPatchOffset[p].first;
-        offsetHost[2 * p + 1] = procPatchOffset[p].second;
+        offsetHost[3 * p] = procPatchOffset[p].first;
+        offsetHost[3 * p + 1] = procPatchOffset[p].second;
+        offsetHost[3 * p + 2] = static_cast<localIdx>(rdispls[targetRanks[p]]);
     }
     auto offsetVec = Vector<localIdx>(exec, offsetHost);
     const auto offsetV = offsetVec.view();
@@ -401,13 +431,14 @@ inline void communicateBoundaryData(
         exec,
         {0, procPatchOffset.size()},
         NEON_LAMBDA(const localIdx p) {
-            const auto start = offsetV[2 * p];
-            const auto end = offsetV[2 * p + 1];
-            for (auto i = start; i < end; i++)
+            const auto outStart = offsetV[3 * p];
+            const auto outEnd = offsetV[3 * p + 1];
+            const auto inStart = offsetV[3 * p + 2]; // scalar offset in recvBuffer
+            for (localIdx j = 0; j < outEnd - outStart; j++)
             {
-                outV[i][0] = inV[3 * i + 0];
-                outV[i][1] = inV[3 * i + 1];
-                outV[i][2] = inV[3 * i + 2];
+                outV[outStart + j][0] = inV[inStart + 3 * j + 0];
+                outV[outStart + j][1] = inV[inStart + 3 * j + 1];
+                outV[outStart + j][2] = inV[inStart + 3 * j + 2];
             }
         },
         "copyMap"

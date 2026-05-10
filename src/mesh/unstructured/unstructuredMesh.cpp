@@ -488,14 +488,23 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     }
     auto recvIdx = std::vector<localIdx>(buffer.size());
 
+    // MPI-01 fix: derive per-rank recv counts by exchanging send counts.
+    auto recvCounts = std::vector<int>(mpiEnviron.sizeRank(), 0);
+    MPI_Alltoall(sendCounts.data(), 1, MPI_INT, recvCounts.data(), 1, MPI_INT, mpiEnviron.comm());
+    auto rdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
+    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
+        rdispl[r] = rdispl[r - 1] + recvCounts[r - 1];
+    int totalRecv = rdispl.back() + recvCounts.back();
+    recvIdx.resize(static_cast<std::size_t>(totalRecv));
+
     MPI_Alltoallv(
         buffer.data(),
         sendCounts.data(),
         sdispl.data(),
         mpi::getType<localIdx>(),
         recvIdx.data(),
-        sendCounts.data(),
-        sdispl.data(),
+        recvCounts.data(),
+        rdispl.data(),
         mpi::getType<localIdx>(),
         mpiEnviron.comm()
     );
