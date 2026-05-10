@@ -145,7 +145,6 @@ void computeLaplacianImpl(
         },
         "computeLocalLaplacianCoefficients"
     );
-    return;
     auto [refGradient, value, valueFraction, refValue] = views(
         phi.boundaryData().refGrad(),
         phi.boundaryData().value(),
@@ -156,7 +155,7 @@ void computeLaplacianImpl(
     auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
 
-
+    std::cout << "deltacoeffs length " << deltaCoeffs.size() << std::endl;
     parallelFor(
         exec,
         {nInternalFaces, sGamma.size()},
@@ -178,6 +177,18 @@ void computeLaplacianImpl(
                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
             Kokkos::atomic_sub(&rhs[own], valueRhs);
             bRhs[bcfacei] = valueRhs;
+            if (bcfacei < 4)
+            {
+                std::cout << "NEON (refValue): " << refValue[bcfacei] << std::endl;
+                std::cout << "NEON (refGradient): " << refGradient[bcfacei] << std::endl;
+                std::cout << "NEON (valuemat): " << valueMat << std::endl;
+                // std::cout << "NEON (faceFlux):" << std::endl;
+                // std::cout << "NEON (valueFractions): " << valueFraction[bcfacei] << std::endl;
+                // std::cout << "NEON (deltaCoeffs): " << deltaCoeffs[facei] << ", "
+                //           << deltaCoeffs[bcfacei] << std::endl;
+                // std::cout << "NEON (gamma): " << sGamma[facei] << std::endl;
+                // std::cout << "NEON (magFaceArea): " << magFaceArea[facei] << std::endl;
+            }
         },
         "computeInterfaceLaplacianCoefficients"
     );

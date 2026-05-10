@@ -165,6 +165,7 @@ public:
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();
+        const auto operatorScaling = this->getCoefficient();
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
@@ -174,8 +175,12 @@ public:
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
             auto scheme = tokens.get<std::string>(tokens.size() - 1);
-            juliaEvalString_ =
-                std::format("Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), 1.0)", scheme, scheme);
+            juliaEvalString_ = std::format(
+                "Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), {})",
+                scheme,
+                scheme,
+                operatorScaling[0]
+            );
         }
         else
         {
@@ -183,14 +188,20 @@ public:
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
             auto scheme = tokens.get<std::string>(tokens.size() - 1);
-            juliaEvalString_ =
-                std::format("Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), 1.0)", scheme, scheme);
+            juliaEvalString_ = std::format(
+                "Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), {})",
+                scheme,
+                scheme,
+                operatorScaling[0]
+            );
         }
     }
 
     std::string getName() const { return "DivOperator"; }
     std::string juliaOP() const { return juliaEvalString_; }
     std::string juliaOP() { return juliaEvalString_; }
+    // jl_array_t* fuckoff() { throw std::logic_error("fuckoff() not implemented for this
+    // operator"); }
 
 private:
 

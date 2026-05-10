@@ -187,7 +187,8 @@ public:
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }
-        juliaEvalString_ = std::format("Laplace{{Float64}}(1.0)");
+        const auto operatorScaling = this->getCoefficient();
+        juliaEvalString_ = std::format("Laplace{{Float64}}({})", operatorScaling[0]);
         std::cout << "after reading laplace: " << juliaEvalString_ << std::endl;
     }
 

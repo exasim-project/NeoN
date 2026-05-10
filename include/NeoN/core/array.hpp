@@ -41,30 +41,40 @@ public:
     {
         if constexpr (std::is_same_v<ArrayValueType, float>)
         {
+            // std::cout << "array is float\n";
+
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<ArrayValueType, double>)
         {
+            // std::cout << "array is double\n";
+
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<ArrayValueType, label>)
         {
+            // std::cout << "array is label\n";
+
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<ArrayValueType, localIdx>)
         {
+            // std::cout << "array is localIdx\n";
+
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<ArrayValueType, uint8_t>)
         {
+            // std::cout << "array is uint8_t\n";
+
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint8_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;

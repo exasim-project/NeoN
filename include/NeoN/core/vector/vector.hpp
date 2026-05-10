@@ -39,46 +39,54 @@ public:
     {
         if constexpr (std::is_same_v<VectorValueType, float>)
         {
+            // std::cout << "vector is float\n";
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<VectorValueType, double>)
         {
+            // std::cout << "vector is double\n";
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<VectorValueType, label>)
         {
+            // std::cout << "vector is label\n";
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<VectorValueType, localIdx>)
         {
+            // std::cout << "vector is localIdx\n";
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
             return julia_ptr;
         }
         else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
         {
-            auto viewA = view();
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 2);
-
-            size_t dims[2] = {3, size()};
-
-            jl_array_t* julia_ptr = jl_alloc_array_nd(array_type, dims, 2);
-
-            float* p = jl_array_data(julia_ptr, float);
-
-            for (size_t i = 0; i < size(); ++i)
-            {
-                p[0 + 3 * i] = viewA[i][0];
-                p[1 + 3 * i] = viewA[i][1];
-                p[2 + 3 * i] = viewA[i][2];
-            }
+            std::cout << "vector is Vec3\n";
+            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_ * 3, 0);
             return julia_ptr;
+            // auto viewA = view();
+            // jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 2);
+
+            // size_t dims[2] = {3, size()};
+
+            // jl_array_t* julia_ptr = jl_alloc_array_nd(array_type, dims, 2);
+
+            // float* p = jl_array_data(julia_ptr, float);
+
+            // for (size_t i = 0; i < size(); ++i)
+            // {
+            //     p[0 + 3 * i] = viewA[i][0];
+            //     p[1 + 3 * i] = viewA[i][1];
+            //     p[2 + 3 * i] = viewA[i][2];
+            // }
+            // return julia_ptr;
         }
         else
         {

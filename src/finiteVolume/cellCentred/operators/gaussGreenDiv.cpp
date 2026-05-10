@@ -279,80 +279,8 @@ void computeDivImp(
                 matIt->neighbourOffset(),
                 matIt->sparsityPattern()->rowOffs()
             );
-    const auto
-        [JUfaceFluxV,
-         JUweightsV,
-         JUowner,
-         JUneighbour,
-         JUsurfFaceCells,
-         JUdiagOffs,
-         JUownOffs,
-         JUneiOffs,
-         JUrowOffs] =
-            juliaPtrs(
-                faceFlux.internalVector(),
-                weights.internalVector(),
-                mesh.faceOwner(),
-                mesh.faceNeighbour(),
-                mesh.boundaryMesh().faceCells(),
-                matIt->diagOffset(),
-                matIt->ownerOffset(),
-                matIt->neighbourOffset(),
-                matIt->sparsityPattern()->rowOffs()
-            );
     auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
-
-    // auto jval = Vector<double>(ls.exec(), nInternalFaces * 2 + nCells);
-    // auto jvv = jval.view();
-    // auto JUvalues = jval.juliaPtr();
-    // jl_eval_string(R"(
-    //     function computeLocalGaussGreenDivCoefficients(
-    //         numInteriorFaces::Int32,
-    //         numCells::Int32,
-    //         faceFluxV::Vector{Float64},
-    //         weightsV::Vector{Float64},
-    //         owner::Vector{Int32},
-    //         neighbour::Vector{Int32},
-    //         diagOffs::Vector{UInt8},
-    //         ownOffs::Vector{UInt8},
-    //         neiOffs::Vector{UInt8},
-    //         rowOffs::Vector{Int32},
-    //         vals::Vector{Float64}
-    //     )
-    //         for facei in 1:numInteriorFaces
-    //             @inbounds own = owner[facei]
-    //             @inbounds nei = neighbour[facei]
-    //             # @inbounds valueUpper, valueLower = fused_pde(U[iOwner], U[iNeighbor],
-    //             faces.Sf[iFace], nu, 0.0, 0.0, 0.0) valueUpper = faceFluxV[facei] *
-    //             -weightsV[facei] valueLower = faceFluxV[facei] * (1 - weightsV[facei])
-
-    //             @inbounds rowNeiStart = rowOffs[nei]
-    //             @inbounds rowOwnStart = rowOffs[own]
-
-    //             @inbounds vals[rowOwnStart+diagOffs[own]] -= valueUpper
-    //             @inbounds vals[rowNeiStart+diagOffs[nei]] -= valueLower
-    //             @inbounds vals[rowNeiStart+neiOffs[facei]] += valueUpper
-    //             @inbounds vals[rowOwnStart+ownOffs[facei]] += valueLower
-    //         end
-    //     end
-    // )");
-    // jl_function_t* func = jl_get_function(jl_main_module,
-    // "computeLocalGaussGreenDivCoefficients"); size_t s = 11; jl_value_t* args[s]; args[0] =
-    // jl_box_int32(nInternalFaces); args[1] = jl_box_int32(nCells); args[2] =
-    // (jl_value_t*)JUfaceFluxV; args[3] = (jl_value_t*)JUweightsV; args[4] = (jl_value_t*)JUowner;
-    // args[5] = (jl_value_t*)JUneighbour;
-    // args[6] = (jl_value_t*)JUdiagOffs;
-    // args[7] = (jl_value_t*)JUownOffs;
-    // args[8] = (jl_value_t*)JUneiOffs;
-    // args[9] = (jl_value_t*)JUrowOffs;
-    // args[10] = (jl_value_t*)JUvalues;
-    // jl_call(func, args, s);
-    // jl_value_t* exc = jl_exception_occurred();
-    // if (exc)
-    // {
-    //     std::cerr << ": Julia exception: " << jl_typeof_str(exc) << std::endl;
-    // }
 
     parallelFor(
         exec,
@@ -370,9 +298,9 @@ void computeDivImp(
             // matrix.values[matIt.upperIdx(nei, facei)] += valueUpper * operatorScalingNei;
 
 
-            values[rowNeiStart + neiOffs[facei]] += valueUpper; // * operatorScalingNei;
+            values[rowNeiStart + neiOffs[facei]] += valueUpper * operatorScalingNei;
             Kokkos::atomic_sub(
-                &values[rowOwnStart + diagOffs[own]], valueUpper // * operatorScalingOwn
+                &values[rowOwnStart + diagOffs[own]], valueUpper * operatorScalingOwn
             );
 
             // add owner contribution lower
@@ -380,31 +308,23 @@ void computeDivImp(
             // matrix.values[matIt.lowerIdx(own, facei)] += valueLower * operatorScalingOwn;
 
 
-            values[rowOwnStart + ownOffs[facei]] += valueLower; // * operatorScalingOwn;
+            values[rowOwnStart + ownOffs[facei]] += valueLower * operatorScalingOwn;
 
             Kokkos::atomic_sub(
-                &values[rowNeiStart + diagOffs[nei]], valueLower // * operatorScalingNei
+                &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
             );
 
 
-            // if (rowOwnStart == 4 || rowNeiStart == 4)
-            // {
-            //     std::cout << "face 1: " << rowNeiStart << ", " << rowOwnStart << std::endl;
-            //     std::cout << "face 1: " << unsigned(diagOffs[nei]) << ", "
-            //               << unsigned(diagOffs[own]) << std::endl;
-            //     std::cout << "face 1: " << valueUpper << ", " << valueLower << std::endl;
-            //     std::cout << "face 1: " << faceFluxV[facei] << ", " << weightsV[facei] <<
-            //     std::endl;
-            // }
+            // if (facei < 4)
+            if (rowOwnStart + diagOffs[own] == 0 || rowNeiStart + diagOffs[nei] == 0)
+            {
+                std::cout << "###\n";
+                std::cout << "face " << facei << ": " << valueUpper << ", " << valueLower
+                          << std::endl;
+            }
         },
         "computeLocalGaussGreenDivCoefficients"
     );
-    return;
-    std::cout << "values[0]: " << values[0] << std::endl;
-    std::cout << "values[1]: " << values[1] << std::endl;
-    std::cout << "values[2]: " << values[2] << std::endl;
-    std::cout << "values[3]: " << values[3] << std::endl;
-    std::cout << "values[4]: " << values[4] << std::endl;
     auto [bweights, refGradient, value, valueFraction, refValue, deltaCoeffs] = views(
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
@@ -416,7 +336,6 @@ void computeDivImp(
 
     auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
-
     parallelFor(
         exec,
         {nInternalFaces, faceFluxV.size()},
@@ -441,6 +360,12 @@ void computeDivImp(
 
             Kokkos::atomic_sub(&rhs[own], valueRhs);
             bRhs[bcfacei] = valueRhs;
+            if (rowOwnStart + diagOffs[own] == 0)
+            {
+                std::cout << "bweight: " << bweights[bcfacei] << std::endl;
+                std::cout << "bface " << bcfacei << " valueMat: " << valueMat << std::endl;
+                std::cout << "bface " << bcfacei << " valueRHS: " << valueRhs << std::endl;
+            }
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );

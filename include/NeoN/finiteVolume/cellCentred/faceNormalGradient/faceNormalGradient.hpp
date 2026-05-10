@@ -36,7 +36,7 @@ public:
             (std::holds_alternative<NeoN::Dictionary>(inputs))
                 ? std::get<NeoN::Dictionary>(inputs).get<std::string>("faceNormalGradient")
                 : std::get<NeoN::TokenList>(inputs).next<std::string>();
-
+        std::cout << "key: " << key << std::endl;
         FaceNormalGradientFactory<ValueType>::keyExistsOrError(key);
         return FaceNormalGradientFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
     }
@@ -101,6 +101,7 @@ public:
 
     SurfaceField<ValueType> faceNormalGrad(const VolumeField<ValueType>& volVector) const
     {
+        std::cout << "SurfaceField::faceNormalGrad\n";
         std::string nameInterpolated = "interpolated_" + volVector.name;
         SurfaceField<ValueType> surfaceVector(
             exec_, nameInterpolated, mesh_, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh_)
