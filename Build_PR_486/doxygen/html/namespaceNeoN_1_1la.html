@@ -112,6 +112,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SolverStatsEntry.html">SolverStatsEntry</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A view struct to allow easy read/write on all executors.  <a href="structNeoN_1_1la_1_1SparsityView.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -124,9 +127,12 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab0b99cb5bc03a26ce7905a9a6be6e616" id="r_ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
-<tr class="memitem:ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#ab0b99cb5bc03a26ce7905a9a6be6e616">createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
-<tr class="separator:ab0b99cb5bc03a26ce7905a9a6be6e616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af11bbea45989e7220214bfab9789af5d" id="r_af11bbea45989e7220214bfab9789af5d"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
+<tr class="memitem:af11bbea45989e7220214bfab9789af5d"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CsrSparsityPattern.html">CsrSparsityPattern</a>&lt; IndexType &gt; &gt;, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#af11bbea45989e7220214bfab9789af5d">createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:af11bbea45989e7220214bfab9789af5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d88170ab6bbf900832a969435c79caa" id="r_a1d88170ab6bbf900832a969435c79caa"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
+<tr class="memitem:a1d88170ab6bbf900832a969435c79caa"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CooSparsityPattern.html">CooSparsityPattern</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a1d88170ab6bbf900832a969435c79caa">createBoundaryCooSparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &amp;faceToMatrixAddress)</td></tr>
+<tr class="separator:a1d88170ab6bbf900832a969435c79caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a83829a38dad931ef72287214b5d444" id="r_a2a83829a38dad931ef72287214b5d444"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:a2a83829a38dad931ef72287214b5d444"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a2a83829a38dad931ef72287214b5d444">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a2a83829a38dad931ef72287214b5d444"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,7 +188,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00243">243</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00288">288</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -200,7 +206,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00240">240</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00285">285</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -247,6 +253,36 @@ template&lt;typename MatrixType &gt; </div>
 
 </div>
 </div>
+<a id="a1d88170ab6bbf900832a969435c79caa" name="a1d88170ab6bbf900832a969435c79caa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d88170ab6bbf900832a969435c79caa">&#9670;&#160;</a></span>createBoundaryCooSparsityPattern()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CooSparsityPattern.html">CooSparsityPattern</a>&lt; IndexType &gt; &gt; NeoN::la::createBoundaryCooSparsityPattern </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>faceToMatrixAddress</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2a83829a38dad931ef72287214b5d444" name="a2a83829a38dad931ef72287214b5d444"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2a83829a38dad931ef72287214b5d444">&#9670;&#160;</a></span>createEmptyLinearSystem()</h2>
 
@@ -265,12 +301,12 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00231">231</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00179">179</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ab0b99cb5bc03a26ce7905a9a6be6e616" name="ab0b99cb5bc03a26ce7905a9a6be6e616"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0b99cb5bc03a26ce7905a9a6be6e616">&#9670;&#160;</a></span>createSparsityPatternFaceToMatrixAddress()</h2>
+<a id="af11bbea45989e7220214bfab9789af5d" name="af11bbea45989e7220214bfab9789af5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af11bbea45989e7220214bfab9789af5d">&#9670;&#160;</a></span>createSparsityPatternFaceToMatrixAddress()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,7 +314,7 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 template&lt;typename IndexType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt; NeoN::la::createSparsityPatternFaceToMatrixAddress </td>
+          <td class="memname">std::pair&lt; std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CsrSparsityPattern.html">CsrSparsityPattern</a>&lt; IndexType &gt; &gt;, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt; &gt; NeoN::la::createSparsityPatternFaceToMatrixAddress </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em></td><td>)</td>
@@ -307,7 +343,7 @@ template&lt;unsigned int I&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00279">279</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00324">324</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>

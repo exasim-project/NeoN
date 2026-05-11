@@ -1,0 +1,46 @@
+\doxysection{sparsity\+View.\+hpp}
+\hypertarget{sparsityView_8hpp_source}{}\label{sparsityView_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp}}
+\mbox{\hyperlink{sparsityView_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00009}00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00010}00010\ \{}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00019}00019\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ IndexType>}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00020}\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{00020}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{SparsityView}}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00022}\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a5c7e4102a1a1ffaab85ec36e6fec4075}{00022}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a5c7e4102a1a1ffaab85ec36e6fec4075}{SparsityView}}(\mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ colIdxsView,\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ rowOffsView)}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a1cb5b4b48a9ed148cf8b403dac414c0e}{colIdxs}}(colIdxsView),\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{rowOffs}}(rowOffsView)\ \{\};}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00032}00032\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00033}\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_aaa42e43ddbb911c0586d0cacab40b35e}{00033}}\ \ \ \ \ IndexType\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_aaa42e43ddbb911c0586d0cacab40b35e}{entry}}(\textcolor{keyword}{const}\ IndexType\ i,\ \textcolor{keyword}{const}\ IndexType\ j)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00034}00034\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ IndexType\ rowSize\ =\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{rowOffs}}[i\ +\ 1]\ -\/\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{rowOffs}}[i];}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::remove\_const\_t<IndexType>\ ic\ =\ 0;\ ic\ <\ rowSize;\ ++ic)}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ IndexType\ localCol\ =\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{rowOffs}}[i]\ +\ ic;}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a1cb5b4b48a9ed148cf8b403dac414c0e}{colIdxs}}[localCol]\ ==\ j)}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ localCol;}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a1cb5b4b48a9ed148cf8b403dac414c0e}{colIdxs}}[localCol]\ >\ j)\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ Kokkos::abort(\textcolor{stringliteral}{"{}Memory\ not\ allocated\ for\ CSR\ matrix\ component."{}});}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ compiler\ warning\ suppression.}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00047}00047\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00049}\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a1cb5b4b48a9ed148cf8b403dac414c0e}{00049}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a1cb5b4b48a9ed148cf8b403dac414c0e}{colIdxs}};}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00050}\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{00050}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}{rowOffs}};}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00051}00051\ \};}
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{sparsityView_8hpp_source_l00053}00053\ \}\ \textcolor{comment}{//\ namespace\ NeoN::la}}
+
+\end{DoxyCode}

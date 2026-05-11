@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structNeoN_1_1la_1_1SparsityView" kind="struct" language="C++" prot="public">
+    <compoundname>NeoN::la::SparsityView</compoundname>
+    <includes refid="sparsityView_8hpp" local="no">sparsityView.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename IndexType</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" prot="public" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
+        <definition>View&lt;const IndexType&gt; NeoN::la::SparsityView&lt; IndexType &gt;::colIdxs</definition>
+        <argsstring></argsstring>
+        <name>colIdxs</name>
+        <qualifiedname>NeoN::la::SparsityView::colIdxs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="49" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" prot="public" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
+        <definition>View&lt;const IndexType&gt; NeoN::la::SparsityView&lt; IndexType &gt;::rowOffs</definition>
+        <argsstring></argsstring>
+        <name>rowOffs</name>
+        <qualifiedname>NeoN::la::SparsityView::rowOffs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="50" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1SparsityView_1a5c7e4102a1a1ffaab85ec36e6fec4075" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::SparsityView&lt; IndexType &gt;::SparsityView</definition>
+        <argsstring>(View&lt; const IndexType &gt; colIdxsView, View&lt; const IndexType &gt; rowOffsView)</argsstring>
+        <name>SparsityView</name>
+        <qualifiedname>NeoN::la::SparsityView::SparsityView</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
+          <declname>colIdxsView</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const IndexType &gt;</type>
+          <declname>rowOffsView</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="22" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="22" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="structNeoN_1_1la_1_1SparsityView_1aaa42e43ddbb911c0586d0cacab40b35e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION IndexType</type>
+        <definition>KOKKOS_INLINE_FUNCTION IndexType NeoN::la::SparsityView&lt; IndexType &gt;::entry</definition>
+        <argsstring>(const IndexType i, const IndexType j) const</argsstring>
+        <name>entry</name>
+        <qualifiedname>NeoN::la::SparsityView::entry</qualifiedname>
+        <param>
+          <type>const IndexType</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>const IndexType</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>Retrieve a reference to the matrix element at position (i,j). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The row index. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column index. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Reference to the matrix element if it exists. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="33" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="33" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A view struct to allow easy read/write on all executors. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>IndexType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index type of the rows and columns. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>ideally this should be immutable </para>
+</xrefdescription></xrefsect></para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::la::SparsityView&lt; IndexType &gt;</label>
+        <link refid="structNeoN_1_1la_1_1SparsityView"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>colIdxs</edgelabel>
+          <edgelabel>rowOffs</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::View&lt; const IndexType &gt;</label>
+        <link refid="classNeoN_1_1View"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::span&lt; const IndexType &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="21" bodyend="51"/>
+    <listofallmembers>
+      <member refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" prot="public" virt="non-virtual"><scope>NeoN::la::SparsityView</scope><name>colIdxs</name></member>
+      <member refid="structNeoN_1_1la_1_1SparsityView_1aaa42e43ddbb911c0586d0cacab40b35e" prot="public" virt="non-virtual"><scope>NeoN::la::SparsityView</scope><name>entry</name></member>
+      <member refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" prot="public" virt="non-virtual"><scope>NeoN::la::SparsityView</scope><name>rowOffs</name></member>
+      <member refid="structNeoN_1_1la_1_1SparsityView_1a5c7e4102a1a1ffaab85ec36e6fec4075" prot="public" virt="non-virtual"><scope>NeoN::la::SparsityView</scope><name>SparsityView</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
