@@ -11,50 +11,10 @@
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/helpers/exceptions.hpp"
-// #ifdef USE_JULIA
-// #include <julia.h>
-// #endif
 
 namespace NeoN
 {
 
-// #ifdef USE_JULIA
-// template<typename ValueType>
-// jl_array_t* transposeToJulia(Vector<ValueType>& vect)
-// {
-//     if constexpr (std::is_same_v<ValueType, Vec3>)
-//     {
-//         auto viewA = vect.view();
-//         // Create 2D array of float64 type
-//         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 2);
-//         int dims[] = {viewA.size(), 3};
-//         jl_array_t* x = jl_alloc_array_nd(array_type, dims, 2);
-
-//         // Get array pointer
-//         double* p = jl_array_data(x, double);
-//         // Get number of dimensions
-//         int ndims = jl_array_ndims(x);
-//         // Get the size of the i-th dim
-//         size_t size0 = jl_array_dim(x, 0);
-//         size_t size1 = jl_array_dim(x, 1);
-
-//         // Fill array with data
-//         for (size_t i = 0; i < size1; i++)
-//         {
-//             for (size_t j = 0; j < size0; j++)
-//             {
-//                 p[j + size0 * i] = i + j;
-//             }
-//         }
-//         return x;
-//     }
-//     else
-//     {
-//         std::cout << "no transpose needed, calling juliaPtr!\n";
-//         return vect.juliaPtr();
-//     }
-// }
-// #endif
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a * b; }
