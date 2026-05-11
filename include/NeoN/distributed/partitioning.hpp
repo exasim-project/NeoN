@@ -41,8 +41,67 @@ FieldType partitionVolField(
     return {field.exec(), field.name + "Part", mesh, internalVector, bcs};
 }
 
-/** @brief helper function given a 1D uniform mesh and a rank it will return the part of the mesh
- owned by this rank */
+/** @brief Partition a SurfaceField of a 1D uniform mesh into the slice owned by
+ * `mpiEnviron.rank()`.
+ *
+ * For a 1D uniform mesh with R = mpiEnviron.sizeRank() ranks and localCells = mesh.nCells()
+ * cells per rank (localFaces = localCells - 1 internal faces per rank), this function extracts
+ * the contiguous slice [firstFace, firstFace + localFaces + 2) from the full surface field
+ * and patches in the two boundary face values (left/right) that the slice cannot inherit
+ * directly because they belong to a neighbouring rank or to the global domain boundary.
+ *
+ * Closed-form N-rank formulas (see .planning/phases/02-linear-system-correctness/
+ * 02-RESEARCH.md NRANK-01 section for derivation):
+ *
+ *   firstFace             = r * (localFaces + 1)              for all r
+ *
+ *   First rank (r == 0):
+ *     firstBoundaryFace   = R * (localFaces + 1) - 1          (global left domain boundary)
+ *     secondBoundaryFace  = localFaces                        (right proc-face)
+ *
+ *   Middle rank (0 < r < R - 1):
+ *     firstBoundaryFace   = r * (localFaces + 1) - 1          (left proc-face)
+ *     secondBoundaryFace  = r * (localFaces + 1) + localFaces (right proc-face)
+ *
+ *   Last rank (r == R - 1):
+ *     firstBoundaryFace   = R * (localFaces + 1)              (global right domain boundary)
+ *     secondBoundaryFace  = (R - 1) * (localFaces + 1) - 1    (left proc-face)
+ *
+ * Hand-verified oracles (see .planning/phases/02-linear-system-correctness/02-02-SUMMARY.md
+ * for the full R=2/3/4 derivation tables):
+ *
+ *   R=3 (automated test, partitioning.cpp:218-230) with internalVector = {1..11, 20, 30}:
+ *     Rank 0 -> {1, 2, 3, 20, 4}
+ *     Rank 1 -> {5, 6, 7,  4, 8}
+ *     Rank 2 -> {9,10,11, 30, 8}
+ *
+ *   R=2 (hand-verified) with internalVector = {1, 2, 3, 20, 30}, localCells=2:
+ *     Rank 0 -> {1, 20, 2}
+ *     Rank 1 -> {3, 30, 2}
+ *
+ *   R=4 (hand-verified) with internalVector = {1, 2, 3, 4, 5, 6, 7, 40, 50}, localCells=2:
+ *     Rank 0 -> {1, 40, 2}
+ *     Rank 1 -> {3,  2, 4}
+ *     Rank 2 -> {5,  4, 6}
+ *     Rank 3 -> {7, 50, 6}
+ *
+ * Sign-flip rule when `flip = true`:
+ *   First rank: signRight = -1.0
+ *   Last rank:  signRight = -1.0
+ *   Middle:     signLeft  = -1.0
+ *
+ * @tparam FieldType  A SurfaceField<T> template instantiation
+ * @tparam MeshType   An UnstructuredMesh template instantiation
+ * @tparam BcType     A boundary-condition list type
+ *
+ * @param field      Full unpartitioned surface field on the global mesh
+ * @param mesh       Local (per-rank) mesh slice produced by create1DUniformMeshPart
+ * @param bcs        Boundary conditions for the partitioned surface field
+ * @param mpiEnviron MPI environment providing rank() and sizeRank()
+ * @param flip       When true, flips the sign of one proc-face per rank (see "Sign-flip rule")
+ *
+ * @return A surface field containing this rank's slice with proc-face slots populated.
+ */
 template<typename FieldType, typename MeshType, typename BcType>
 FieldType partitionSurfaceField(
     FieldType field,
@@ -53,61 +112,56 @@ FieldType partitionSurfaceField(
 )
 {
     auto exec = mesh.exec();
-    localIdx localCells = mesh.nCells();         // 4
-    localIdx localFaces = mesh.nInternalFaces(); // 3
+    localIdx localCells = mesh.nCells();
+    localIdx localFaces = mesh.nInternalFaces();
     localIdx firstFace = 0;
     localIdx lastFace = localFaces;
 
-    //
     localIdx firstBoundaryFace = 0;
     localIdx secondBoundaryFace = 0;
 
     scalar signLeft = 1.0;
     scalar signRight = 1.0;
 
-    // FIXME this only works for 3 ranks
-    if (mpiEnviron.rank() == 0)
-    {
-        // first boundary face is the left boundary remaining local
-        firstBoundaryFace = 3 * localFaces + 2; // 11
-        secondBoundaryFace = localFaces;        // 3
+    // N-rank generic formulas (replaces the rank==0/1/2 if/else chain).
+    // Derivation and R=2/3/4 hand-verification: see
+    //   .planning/phases/02-linear-system-correctness/02-02-SUMMARY.md
+    //   .planning/phases/02-linear-system-correctness/02-RESEARCH.md (NRANK-01 section).
+    // 3-rank oracle (src/NeoN/test/distributed/partitioning.cpp:218-230) preserved.
+    const localIdx r = mpiEnviron.rank();
+    const localIdx R = mpiEnviron.sizeRank();
 
+    firstFace = r * (localFaces + 1);
+
+    if (r == 0)
+    {
+        // First rank: left boundary = global left domain boundary; right boundary = right
+        // proc-face.
+        firstBoundaryFace = R * (localFaces + 1) - 1;
+        secondBoundaryFace = localFaces;
         if (flip)
         {
-            // signLeft = -1.0;
             signRight = -1.0;
         }
     }
-    if (mpiEnviron.rank() == 1)
+    else if (r == R - 1)
     {
-        firstFace = localFaces + 1; // 4  last face rank 0
-
-        firstBoundaryFace = localFaces;                      // should be 3
-        secondBoundaryFace = firstBoundaryFace + localCells; // should 3 + 4
-
-        // new face has different direction compared to unpartitioned case
-        // signRight = -1.0;
+        // Last rank: left boundary = left proc-face; right boundary = global right domain boundary.
+        firstBoundaryFace = R * (localFaces + 1);
+        secondBoundaryFace = (R - 1) * (localFaces + 1) - 1;
+        if (flip)
+        {
+            signRight = -1.0;
+        }
+    }
+    else
+    {
+        // Middle rank: both boundaries are proc-faces.
+        firstBoundaryFace = r * (localFaces + 1) - 1;
+        secondBoundaryFace = r * (localFaces + 1) + localFaces;
         if (flip)
         {
             signLeft = -1.0;
-            // signRight = -1.0;
-        }
-    }
-    if (mpiEnviron.rank() == 2)
-    {
-        firstFace = localCells + localCells; // 8 last face rank 1
-
-        // first boundary face is the right boundary remaining local
-        // firstBoundaryFace = 2 * localFaces + 1;                 // 7
-        firstBoundaryFace = 3 * localFaces + 3;  // 11
-        secondBoundaryFace = 2 * localFaces + 1; // firstBoundaryFace + localCells + 1; // 12
-
-        // NOTE FIXME signRight is flipped since
-        // new face has different direction compared to unpartitioned case
-        if (flip)
-        {
-            // signLeft = -1.0;
-            signRight = -1.0;
         }
     }
 
