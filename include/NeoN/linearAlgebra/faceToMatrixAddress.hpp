@@ -124,8 +124,11 @@ public:
     /*@brief getter for neighbourOffset */
     const Array<uint8_t>& neighbourOffset() const;
 
-    // FIXME these are probably incorrect in distributed mode
     /*@brief getter for diagOffset */
+    // Correct in distributed mode: proc-boundary connections live in the non-local COO
+    // matrix, not in the local CSR. The local CSR therefore only contains internal-face
+    // and non-proc-boundary neighbours, so diagOffset correctly reflects the diagonal
+    // position within that local structure. Oracle (3 ranks, 4 cells/rank): {0,1,1,1}.
     const Array<uint8_t>& diagOffset() const;
 
     /*@brief getter for ownerOffset */

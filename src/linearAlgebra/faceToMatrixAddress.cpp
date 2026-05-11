@@ -166,7 +166,9 @@ void setProcBoundarySparsityPattern(
         "setSparsityPatternFaceToMatrixAddress::setBoundarySparsity"
     );
 
-    // FIXME needs communication to other side
+    // colIdxV is initialised from commPattern.recvIdx (global ghost cell IDs received from
+    // neighbouring ranks via MPI_Alltoallv in computeCommunicationPattern). No additional
+    // communication is needed here; the caller populates colIdxV before this function runs.
 }
 
 
@@ -310,7 +312,10 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     Vector<IndexType> procRowOffs(exec, nProcBoundaryFaces, 0);
-    // FIXME set everything int setProcBoundarySparsityPattern
+    // procColIdx holds global ghost cell IDs (from commPattern.recvIdx); rowOffs are
+    // populated by setProcBoundarySparsityPattern below. The colIdx values remain as
+    // global IDs — createGkoMtxDist casts them to int64 and maps to local non-local
+    // indices via imap.map_to_local.
     Vector<IndexType> procColIdx(exec, commPattern.recvIdx);
     setProcBoundarySparsityPattern(mesh, diagOffs, procRowOffs, procColIdx);
 

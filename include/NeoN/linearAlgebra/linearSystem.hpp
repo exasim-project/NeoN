@@ -373,12 +373,55 @@ removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
             Kokkos::atomic_add(
                 &matrix.values[rowOffs[celli] + diagOffs[celli]], nonLocalMatrix.values[facei]
             );
-            // FIXME add
-            // Kokkos::atomic_sub(&rhs[celli], bRhs[facei]);
+            // Non-local RHS subtraction lives in the two-arg overload below (Case 1 per
+            // 02-03-CASE-RESOLUTION.md). nonLocalMatrix.values[facei] is raw D_f; ghost
+            // values x_G must be threaded in separately to compute -D_f * x_G.
         },
         "addBoundaryContributions"
     );
 
+    return ls;
+}
+
+/** @brief Two-arg overload of removeBoundaryContributions for distributed (proc-boundary) systems.
+ *
+ * In addition to the single-arg behaviour (adds raw D_f back to local diagonal), also
+ * subtracts the FVM non-local RHS term -D_f * x_G for each proc face f with ghost cell G.
+ *
+ * Case 1 (per 02-03-CASE-RESOLUTION.md): nonLocalMatrix.values() contains raw D_f coefficients
+ * written by operator assembly. Ghost values x_G are supplied by the caller — typically the
+ * proc-face slice of the unknown SurfaceField's internalVector() after halo exchange.
+ *
+ * @param lsIn                Input linear system (unchanged)
+ * @param procFaceGhostValues Ghost cell values; size must equal nonLocalMatrix.values().size().
+ *                            In serial (size == 0) the parallelFor is a no-op.
+ */
+template<typename ValueType>
+inline la::LinearSystem<ValueType> removeBoundaryContributions(
+    const la::LinearSystem<ValueType>& lsIn, const Vector<ValueType>& procFaceGhostValues
+)
+{
+    NF_ASSERT(
+        lsIn.nonLocalMatrix().values().size() == procFaceGhostValues.size(),
+        "removeBoundaryContributions two-arg: ghost values size must match nonLocalMatrix.values "
+        "size"
+    );
+
+    auto ls = removeBoundaryContributions(lsIn);
+    auto lsView = ls.view();
+    auto& rhs = lsView.rhs;
+    auto nonLocalMatrix = ls.nonLocalMatrix().view();
+    auto ghostV = procFaceGhostValues.view();
+
+    parallelFor(
+        ls.exec(),
+        {0, nonLocalMatrix.values.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto celli = nonLocalMatrix.sparsity.rowOffs[facei];
+            Kokkos::atomic_sub(&rhs[celli], nonLocalMatrix.values[facei] * ghostV[facei]);
+        },
+        "removeBoundaryContributions::nonLocalRhs"
+    );
     return ls;
 }
 
