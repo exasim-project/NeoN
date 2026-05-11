@@ -112,18 +112,22 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" line="131" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" declline="131" declcolumn="17"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a2a83829a38dad931ef72287214b5d444" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1aa225acfa2621e5e29de5b705b1757afc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
           </param>
           <param>
-            <type>typename MatrixType</type>
+            <type>typename SystemMatrixType</type>
             <defval>CSRMatrix&lt;ValueType, localIdx&gt;</defval>
           </param>
+          <param>
+            <type>typename BoundaryMatrixType</type>
+            <defval>COOMatrix&lt;ValueType, localIdx&gt;</defval>
+          </param>
         </templateparamlist>
-        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, MatrixType &gt;</type>
-        <definition>LinearSystem&lt; ValueType, MatrixType &gt; NeoN::la::createEmptyLinearSystem</definition>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;</type>
+        <definition>LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; NeoN::la::createEmptyLinearSystem</definition>
         <argsstring>(const UnstructuredMesh &amp;mesh)</argsstring>
         <name>createEmptyLinearSystem</name>
         <qualifiedname>NeoN::la::createEmptyLinearSystem</qualifiedname>
@@ -137,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="179" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="179" bodyend="191"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="183" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="183" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1adf0e2e0fd0c0edb0caf3488bcc1ec63c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

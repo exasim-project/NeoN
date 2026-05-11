@@ -775,23 +775,28 @@
 <codeline lineno="175"><highlight class="normal"></highlight></codeline>
 <codeline lineno="176"><highlight class="normal"></highlight><highlight class="comment">/*@brief<sp/>helper<sp/>function<sp/>that<sp/>creates<sp/>a<sp/>zero<sp/>initialised<sp/>linear<sp/>system<sp/>based<sp/>on<sp/>a<sp/>given<sp/>mesh</highlight></codeline>
 <codeline lineno="177"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MatrixType<sp/>=<sp/>CSRMatrix&lt;ValueType,<sp/>localIdx&gt;&gt;</highlight></codeline>
-<codeline lineno="179" refid="namespaceNeoN_1_1la_1a2a83829a38dad931ef72287214b5d444" refkind="member"><highlight class="normal"><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem&lt;ValueType, MatrixType&gt;</ref><sp/><ref refid="namespaceNeoN_1_1la_1a2a83829a38dad931ef72287214b5d444" kindref="member">createEmptyLinearSystem</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
-<codeline lineno="180"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[csrSp,<sp/>ftma]<sp/>=<sp/>createSparsityPatternFaceToMatrixAddress&lt;localIdx&gt;(mesh);</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cooSp<sp/>=<sp/>createBoundaryCooSparsityPattern&lt;localIdx&gt;(mesh,<sp/>*ftma);</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MatrixType(<ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(csrSp-&gt;exec(),<sp/>csrSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;()),<sp/>csrSp,<sp/>ftma),</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(csrSp-&gt;exec(),<sp/>csrSp-&gt;rows(),<sp/>zero&lt;ValueType&gt;()),</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">COOMatrix&lt;ValueType, localIdx&gt;</ref>(</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(cooSp-&gt;exec(),<sp/>cooSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;()),<sp/>cooSp</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(cooSp-&gt;exec(),<sp/>cooSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;())</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="192"><highlight class="normal"></highlight></codeline>
-<codeline lineno="193"><highlight class="normal"></highlight></codeline>
-<codeline lineno="194"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType,</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SystemMatrixType<sp/>=<sp/>CSRMatrix&lt;ValueType,<sp/>localIdx&gt;,</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>BoundaryMatrixType<sp/>=<sp/>COOMatrix&lt;ValueType,<sp/>localIdx&gt;&gt;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal">LinearSystem&lt;ValueType,<sp/>SystemMatrixType,<sp/>BoundaryMatrixType&gt;</highlight></codeline>
+<codeline lineno="183" refid="namespaceNeoN_1_1la_1aa225acfa2621e5e29de5b705b1757afc" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1aa225acfa2621e5e29de5b705b1757afc" kindref="member">createEmptyLinearSystem</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
+<codeline lineno="184"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[csrSp,<sp/>ftma]<sp/>=<sp/>createSparsityPatternFaceToMatrixAddress&lt;localIdx&gt;(mesh);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cooSp<sp/>=<sp/>createBoundaryCooSparsityPattern&lt;localIdx&gt;(mesh,<sp/>*ftma);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SystemMatrixType(</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(csrSp-&gt;exec(),<sp/>csrSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;()),<sp/>csrSp,<sp/>ftma</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(csrSp-&gt;exec(),<sp/>csrSp-&gt;rows(),<sp/>zero&lt;ValueType&gt;()),</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>BoundaryMatrixType(</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(cooSp-&gt;exec(),<sp/>cooSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;()),<sp/>cooSp</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>(cooSp-&gt;exec(),<sp/>cooSp-&gt;nnz(),<sp/>zero&lt;ValueType&gt;())</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="197"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp"/>
   </compounddef>

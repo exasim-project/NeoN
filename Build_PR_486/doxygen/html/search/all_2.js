@@ -60,7 +60,7 @@ var searchData=
   ['createboundarycoosparsitypattern_57',['createBoundaryCooSparsityPattern',['../namespaceNeoN_1_1la.html#a1d88170ab6bbf900832a969435c79caa',1,'NeoN::la']]],
   ['createcalculatedbcs_58',['createCalculatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ab918b7425253d07393f1e18b71aa4e22',1,'NeoN::finiteVolume::cellCentred']]],
   ['createdefaultexecutor_59',['createDefaultExecutor',['../namespaceNeoN.html#a979e8785178e66d261937543c92278fb',1,'NeoN']]],
-  ['createemptylinearsystem_60',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#a2a83829a38dad931ef72287214b5d444',1,'NeoN::la']]],
+  ['createemptylinearsystem_60',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#aa225acfa2621e5e29de5b705b1757afc',1,'NeoN::la']]],
   ['createextrapolatedbcs_61',['createExtrapolatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac219f7675251df9d46327915c48c74e4',1,'NeoN::finiteVolume::cellCentred']]],
   ['createfluxcorrbcsfromu_62',['createFluxCorrBCsFromU',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a616a3a0d2d9285da79f5301efe88d399',1,'NeoN::finiteVolume::cellCentred']]],
   ['createfromexistingvector_63',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
