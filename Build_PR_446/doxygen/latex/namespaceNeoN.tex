@@ -18,6 +18,10 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1timeIntegration}{time\+Integration}}
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
+class \mbox{\hyperlink{classNeoN_1_1AllocatorContext}{Allocator\+Context}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}}
+\item 
 class \mbox{\hyperlink{classNeoN_1_1ArgList}{Arg\+List}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1Array}{Array}}
@@ -52,6 +56,8 @@ class \mbox{\hyperlink{classNeoN_1_1Field}{Field}}
 \begin{DoxyCompactList}\small\item\em Represents the domain fields for a computational domain. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}}
 \begin{DoxyCompactList}\small\item\em Executor for GPU offloading. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}
+\item 
 class \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+NException}}
 \begin{DoxyCompactList}\small\item\em Custom exception class for \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1Parameters}{Parameters}}
@@ -68,10 +74,18 @@ class \mbox{\hyperlink{classNeoN_1_1SegmentedVectorView}{Segmented\+Vector\+View
 \begin{DoxyCompactList}\small\item\em A class representing a segment of indices. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}
 \begin{DoxyCompactList}\small\item\em Reference executor for serial CPU execution. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}}
+\begin{DoxyCompactList}\small\item\em A class for the representation of a symmetric 3x3 tensor. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}}
+\begin{DoxyCompactList}\small\item\em A class for the representation of a 3x3 tensor. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Time}{Time}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1TokenList}{Token\+List}}
 \begin{DoxyCompactList}\small\item\em A class representing a list of tokens. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1UmpireAllocator}{Umpire\+Allocator}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1UmpirePoolAllocator}{Umpire\+Pool\+Allocator}}
+\item 
 class \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}
 \begin{DoxyCompactList}\small\item\em Represents an unstructured mesh in \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}
@@ -98,6 +112,8 @@ using \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 \item 
 using \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} = std\+::variant$<$ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}, \mbox{\hyperlink{classNeoN_1_1TokenList}{Token\+List}} $>$
 \item 
+using \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}} = \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}
+\item 
 using \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} = int32\+\_\+t
 \item 
 using \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} = int32\+\_\+t
@@ -119,6 +135,13 @@ using \mbox{\hyperlink{namespaceNeoN_a345d64e8263d03609fc24b88fed965be}{local\+I
 using \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} = \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$
 \item 
 using \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} = \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Memory\+Space}} \{ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{CPU}}
+, \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{GPU}}
+ \}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -154,6 +177,12 @@ void \mbox{\hyperlink{namespaceNeoN_ae6c3ff7eb69df45b568b04b852294339}{log\+Out\
 std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7}{operator$<$$<$}} (std\+::ostream \&os, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&in)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
+\item 
+\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{namespaceNeoN_a979e8785178e66d261937543c92278fb}{create\+Default\+Executor}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$ strategy=std\+::make\+\_\+unique$<$ \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}} $>$())
+\item 
+std\+::string \mbox{\hyperlink{namespaceNeoN_a50baac41379fe63de57061ff0e371bc2}{executor\+Name}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
+\item 
+\mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Memory\+Space}} \mbox{\hyperlink{namespaceNeoN_a0603524240432a339081d64d485ad587}{memory\+Space}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
 \item 
 std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{Logging\+::\+Base\+Logger}} $>$ \mbox{\hyperlink{namespaceNeoN_a37eb98c9ab0cc07fa01e5d1f4d271df4}{get\+Logger}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec)
 \item 
@@ -206,6 +235,46 @@ template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNe
 template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_aa4eeb8f2fe783ee706a28d1eb29df79e}{zero$<$ scalar $>$}} ()
 \item 
 template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ab6f8b1b1df698fca3b86f1da99a51e86}{inv$<$ scalar $>$}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} in)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a8eccef56c9667da6b3a753064270aef4}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s, const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&st)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a7a4b14c0afc215497dabb86fb076db25}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v)
+\begin{DoxyCompactList}\small\item\em Symmetric matrix-\/vector product S·v. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_abb3db8b5367dcb09075d22aca643a491}{mag}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\begin{DoxyCompactList}\small\item\em Frobenius norm. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ae802d24c1917f744e65365def8de9889}{mag\+Sqr}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\begin{DoxyCompactList}\small\item\em Frobenius norm squared. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a952ff71e45ff1b1d35c491ef700f03cf}{symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T) \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a6321a4a8d56ef340c538371b4ab37604}{two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T (= 2\texorpdfstring{$\ast$}{*}symm(T)) as a full tensor. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67}{dev\+Two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T -\/ (2/3)\texorpdfstring{$\ast$}{*}tr(T)\texorpdfstring{$\ast$}{*}I — used for viscous stress. \end{DoxyCompactList}\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_ad8d7c8733d83b2d0fb047069a233ca0d}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_ae1af248d731afe03b7a9ba6cd8d29314}{zero$<$ Symm\+Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_adf7dfbd9447cdce1bdbb99736094c904}{one$<$ Symm\+Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_af56d62c57a1bad47bc71e37683a1229e}{inv$<$ Symm\+Tensor $>$}} (\mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}})
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_adb1e2d9fa2b59aa439c94722a7e5d3d0}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a2414025e2597dee527100138954adb7b}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v)
+\begin{DoxyCompactList}\small\item\em Matrix-\/vector product T·v. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_ac5d091fc014440e8642f4557b3161dd4}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Row-\/vector times matrix v·T. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ada3de36ff0c568c4517d62d93a5e8017}{mag}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Frobenius norm. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a0fb5a5aa0e7d67d37d28197b0e419fa5}{mag\+Sqr}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Frobenius norm squared. \end{DoxyCompactList}\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_a5c0512c698fc1ae956ff732e5128c92b}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67}{zero$<$ Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8}{one$<$ Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f}{inv$<$ Tensor $>$}} (\mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}})
 \item 
 {\footnotesize template$<$typename T $>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION T \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{one}} ()
 \item 
@@ -265,8 +334,12 @@ requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...
 \begin{DoxyCompactList}\small\item\em Unpacks all views of the passed classes. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}{create\+Single\+Cell\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec)
 \begin{DoxyCompactList}\small\item\em creates a mesh containing only a single cell @warn currently this is only a 2D mesh \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a68aef096b241e8512e81ffb579a55030}{create1\+DUniform\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells)
-\begin{DoxyCompactList}\small\item\em A factory function for a 1D mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_adde77ef685cb6a1427f1ece8b9916576}{create1\+DUniform\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Lx=1.\+0)
+\begin{DoxyCompactList}\small\item\em A factory function for a 1D uniform mesh. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a568f38c23afb8b0e084b8052eda5845d}{create2\+DUniform\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} nx, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} ny, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Lx=1.\+0, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Ly=1.\+0)
+\begin{DoxyCompactList}\small\item\em A factory function for a 2D uniform mesh (Open\+FOAM-\/style hex slab) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a5d069752428b08d28515fc2308803769}{create3\+DUniform\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} nx, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} ny, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} nz, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Lx=1.\+0, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Ly=1.\+0, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Lz=1.\+0)
+\begin{DoxyCompactList}\small\item\em A factory function for a uniform 3D hex mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
@@ -275,6 +348,16 @@ constexpr \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scal
 
 
 \doxysubsection{Typedef Documentation}
+\Hypertarget{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}\label{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6} 
+\index{NeoN@{NeoN}!DefaultAllocator@{DefaultAllocator}}
+\index{DefaultAllocator@{DefaultAllocator}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{DefaultAllocator}{DefaultAllocator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Neo\+N\+::\+Default\+Allocator}} = typedef \mbox{\hyperlink{classNeoN_1_1KokkosAllocator}{Kokkos\+Allocator}}}
+
+
+
+Definition at line \mbox{\hyperlink{kokkos_8hpp_source_l00035}{35}} of file \mbox{\hyperlink{kokkos_8hpp_source}{kokkos.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_a957a55577aca9a487c3965676ad7dd12}\label{namespaceNeoN_a957a55577aca9a487c3965676ad7dd12} 
 \index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
 \index{DocumentValidator@{DocumentValidator}!NeoN@{NeoN}}
@@ -307,7 +390,7 @@ Definition at line \mbox{\hyperlink{document_8hpp_source_l00031}{31}} of file \m
 
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00019}{19}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a3d469b59cc4421a3428d23982c361682}\label{namespaceNeoN_a3d469b59cc4421a3428d23982c361682} 
 \index{NeoN@{NeoN}!globalIdx@{globalIdx}}
@@ -387,7 +470,7 @@ Definition at line \mbox{\hyperlink{label_8hpp_source_l00039}{39}} of file \mbox
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00017}{17}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}\label{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f} 
 \index{NeoN@{NeoN}!scalarVector@{scalarVector}}
@@ -431,6 +514,29 @@ Definition at line \mbox{\hyperlink{time_8hpp_source_l00017}{17}} of file \mbox{
 
 
 
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}\label{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5} 
+\index{NeoN@{NeoN}!MemorySpace@{MemorySpace}}
+\index{MemorySpace@{MemorySpace}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{MemorySpace}{MemorySpace}}
+{\footnotesize\ttfamily enum class \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Neo\+N\+::\+Memory\+Space}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CPU@{CPU}!NeoN@{NeoN}}\index{NeoN@{NeoN}!CPU@{CPU}}}\Hypertarget{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}\label{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d} 
+CPU&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPU@{GPU}!NeoN@{NeoN}}\index{NeoN@{NeoN}!GPU@{GPU}}}\Hypertarget{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}\label{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32} 
+GPU&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{allocator_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{allocator_8hpp_source}{allocator.\+hpp}}.
+
+
+
 \doxysubsection{Function Documentation}
 \Hypertarget{namespaceNeoN_a3d9148833016bbd426f887c34a25d527}\label{namespaceNeoN_a3d9148833016bbd426f887c34a25d527} 
 \index{NeoN@{NeoN}!add@{add}}
@@ -457,17 +563,47 @@ auto Neo\+N\+::copy\+To\+Hosts (\begin{DoxyParamCaption}\item[{Args \&...}]{cont
 
 Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a68aef096b241e8512e81ffb579a55030}\label{namespaceNeoN_a68aef096b241e8512e81ffb579a55030} 
+\Hypertarget{namespaceNeoN_adde77ef685cb6a1427f1ece8b9916576}\label{namespaceNeoN_adde77ef685cb6a1427f1ece8b9916576} 
 \index{NeoN@{NeoN}!create1DUniformMesh@{create1DUniformMesh}}
 \index{create1DUniformMesh@{create1DUniformMesh}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{create1DUniformMesh()}{create1DUniformMesh()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} Neo\+N\+::create1\+DUniform\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} Neo\+N\+::create1\+DUniform\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Lx = {\ttfamily 1.0} }\end{DoxyParamCaption})}
 
 
 
-A factory function for a 1D mesh. 
+A factory function for a 1D uniform mesh. 
 
-A 1D mesh in 3D space in which each cell has a left and a right face. The 1D mesh is aligned with the x coordinate of Cartesian coordinate system. \Hypertarget{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}\label{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4} 
+A 1D mesh in 3D space in which each cell has a left and a right boundary face. The 1D mesh is aligned with the x coordinate of Cartesian coordinate system. \Hypertarget{namespaceNeoN_a568f38c23afb8b0e084b8052eda5845d}\label{namespaceNeoN_a568f38c23afb8b0e084b8052eda5845d} 
+\index{NeoN@{NeoN}!create2DUniformMesh@{create2DUniformMesh}}
+\index{create2DUniformMesh@{create2DUniformMesh}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{create2DUniformMesh()}{create2DUniformMesh()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} Neo\+N\+::create2\+DUniform\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{nx,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{ny,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Lx = {\ttfamily 1.0},  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Ly = {\ttfamily 1.0} }\end{DoxyParamCaption})}
+
+
+
+A factory function for a 2D uniform mesh (Open\+FOAM-\/style hex slab) 
+
+Creates an nx × ny × 1 structured hex mesh on \mbox{[}0,Lx\mbox{]} × \mbox{[}0,Ly\mbox{]} × \mbox{[}0,1\mbox{]}. One cell thick in z, like Open\+FOAM 2D meshes. Four boundary patches\+: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly) \Hypertarget{namespaceNeoN_a5d069752428b08d28515fc2308803769}\label{namespaceNeoN_a5d069752428b08d28515fc2308803769} 
+\index{NeoN@{NeoN}!create3DUniformMesh@{create3DUniformMesh}}
+\index{create3DUniformMesh@{create3DUniformMesh}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{create3DUniformMesh()}{create3DUniformMesh()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} Neo\+N\+::create3\+DUniform\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{nx,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{ny,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{nz,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Lx = {\ttfamily 1.0},  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Ly = {\ttfamily 1.0},  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{Lz = {\ttfamily 1.0} }\end{DoxyParamCaption})}
+
+
+
+A factory function for a uniform 3D hex mesh. 
+
+Creates an nx × ny × nz structured hex mesh on \mbox{[}0,Lx\mbox{]} × \mbox{[}0,Ly\mbox{]} × \mbox{[}0,Lz\mbox{]}. Six boundary patches\+: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly), front (z=0), back (z=Lz). \Hypertarget{namespaceNeoN_a979e8785178e66d261937543c92278fb}\label{namespaceNeoN_a979e8785178e66d261937543c92278fb} 
+\index{NeoN@{NeoN}!createDefaultExecutor@{createDefaultExecutor}}
+\index{createDefaultExecutor@{createDefaultExecutor}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{createDefaultExecutor()}{createDefaultExecutor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} Neo\+N\+::create\+Default\+Executor (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}} $>$}]{strategy = {\ttfamily std\+:\+:make\+\_\+unique$<$\mbox{\hyperlink{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}{Default\+Allocator}}$>$()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}\label{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4} 
 \index{NeoN@{NeoN}!createSingleCellMesh@{createSingleCellMesh}}
 \index{createSingleCellMesh@{createSingleCellMesh}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{createSingleCellMesh()}{createSingleCellMesh()}}
@@ -482,6 +618,20 @@ a 2D mesh in 3D space with left, right, top, bottom boundary faces with the cent
 \index{demangle@{demangle}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{demangle()}{demangle()}}
 {\footnotesize\ttfamily std\+::string Neo\+N\+::demangle (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{mangled\+Name }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67}\label{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67} 
+\index{NeoN@{NeoN}!devTwoSymm@{devTwoSymm}}
+\index{devTwoSymm@{devTwoSymm}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{devTwoSymm()}{devTwoSymm()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} Neo\+N\+::dev\+Two\+Symm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+T + T\texorpdfstring{$^\wedge$}{\string^}T -\/ (2/3)\texorpdfstring{$\ast$}{*}tr(T)\texorpdfstring{$\ast$}{*}I — used for viscous stress. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00254}{254}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_aefc166c5e1455273c2baa753db91ecf5}\label{namespaceNeoN_aefc166c5e1455273c2baa753db91ecf5} 
 \index{NeoN@{NeoN}!equal@{equal}}
@@ -516,6 +666,16 @@ bool Neo\+N\+::equal (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $
 
 Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_a50baac41379fe63de57061ff0e371bc2}\label{namespaceNeoN_a50baac41379fe63de57061ff0e371bc2} 
+\index{NeoN@{NeoN}!executorName@{executorName}}
+\index{executorName@{executorName}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{executorName()}{executorName()}}
+{\footnotesize\ttfamily std\+::string Neo\+N\+::executor\+Name (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}\label{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb} 
 \index{NeoN@{NeoN}!fence@{fence}}
 \index{fence@{fence}!NeoN@{NeoN}}
@@ -524,7 +684,7 @@ Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00132}{1
 
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00022}{22}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a1d03ed0359a20ca2685179a9ed723478}\label{namespaceNeoN_a1d03ed0359a20ca2685179a9ed723478} 
 \index{NeoN@{NeoN}!fenceIfLogger@{fenceIfLogger}}
@@ -593,7 +753,7 @@ The resulting scalar vector
 
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}\label{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b} 
 \index{NeoN@{NeoN}!hasId@{hasId}}
@@ -641,7 +801,29 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00039}{39}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_af56d62c57a1bad47bc71e37683a1229e}\label{namespaceNeoN_af56d62c57a1bad47bc71e37683a1229e} 
+\index{NeoN@{NeoN}!inv$<$ SymmTensor $>$@{inv$<$ SymmTensor $>$}}
+\index{inv$<$ SymmTensor $>$@{inv$<$ SymmTensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{inv$<$ SymmTensor $>$()}{inv< SymmTensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a2e45ccd04c325d5db556b51e188f5d3a}{Neo\+N\+::inv}}$<$ \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}}}]{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00283}{283}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f}\label{namespaceNeoN_a43822b83d7c0753e0b19fc2ae8d0e85f} 
+\index{NeoN@{NeoN}!inv$<$ Tensor $>$@{inv$<$ Tensor $>$}}
+\index{inv$<$ Tensor $>$@{inv$<$ Tensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{inv$<$ Tensor $>$()}{inv< Tensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a2e45ccd04c325d5db556b51e188f5d3a}{Neo\+N\+::inv}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}}}]{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00244}{244}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a8325ae89cc7399600cd9f65a664a29d0}\label{namespaceNeoN_a8325ae89cc7399600cd9f65a664a29d0} 
 \index{NeoN@{NeoN}!inv$<$ Vec3 $>$@{inv$<$ Vec3 $>$}}
@@ -680,22 +862,78 @@ Definition at line \mbox{\hyperlink{demangle_8hpp_source_l00020}{20}} of file \m
 \Hypertarget{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}\label{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626} 
 \index{NeoN@{NeoN}!mag@{mag}}
 \index{mag@{mag}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&}]{s }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00022}{22}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_abb3db8b5367dcb09075d22aca643a491}\label{namespaceNeoN_abb3db8b5367dcb09075d22aca643a491} 
+\index{NeoN@{NeoN}!mag@{mag}}
+\index{mag@{mag}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&}]{s }\end{DoxyParamCaption})}
+
+
+
+Frobenius norm. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00204}{204}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_ada3de36ff0c568c4517d62d93a5e8017}\label{namespaceNeoN_ada3de36ff0c568c4517d62d93a5e8017} 
+\index{NeoN@{NeoN}!mag@{mag}}
+\index{mag@{mag}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+Frobenius norm. 
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00205}{205}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}\label{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd} 
 \index{NeoN@{NeoN}!mag@{mag}}
 \index{mag@{mag}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{mag()}{mag()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{vec }\end{DoxyParamCaption})}
 
 
 
 Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_ae802d24c1917f744e65365def8de9889}\label{namespaceNeoN_ae802d24c1917f744e65365def8de9889} 
+\index{NeoN@{NeoN}!magSqr@{magSqr}}
+\index{magSqr@{magSqr}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{magSqr()}{magSqr()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag\+Sqr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&}]{s }\end{DoxyParamCaption})}
+
+
+
+Frobenius norm squared. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00215}{215}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a0fb5a5aa0e7d67d37d28197b0e419fa5}\label{namespaceNeoN_a0fb5a5aa0e7d67d37d28197b0e419fa5} 
+\index{NeoN@{NeoN}!magSqr@{magSqr}}
+\index{magSqr@{magSqr}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{magSqr()}{magSqr()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::mag\+Sqr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+Frobenius norm squared. 
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00217}{217}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}\label{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b} 
 \index{NeoN@{NeoN}!map@{map}}
@@ -720,6 +958,16 @@ Map a field using a specific executor.
 
 
 Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{containerFreeFunctions_8hpp_source}{container\+Free\+Functions.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a0603524240432a339081d64d485ad587}\label{namespaceNeoN_a0603524240432a339081d64d485ad587} 
+\index{NeoN@{NeoN}!memorySpace@{memorySpace}}
+\index{memorySpace@{memorySpace}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{memorySpace()}{memorySpace()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Memory\+Space}} Neo\+N\+::memory\+Space (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c}\label{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c} 
 \index{NeoN@{NeoN}!mul@{mul}}
@@ -804,7 +1052,29 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_adf7dfbd9447cdce1bdbb99736094c904}\label{namespaceNeoN_adf7dfbd9447cdce1bdbb99736094c904} 
+\index{NeoN@{NeoN}!one$<$ SymmTensor $>$@{one$<$ SymmTensor $>$}}
+\index{one$<$ SymmTensor $>$@{one$<$ SymmTensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{one$<$ SymmTensor $>$()}{one< SymmTensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{Neo\+N\+::one}}$<$ \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00277}{277}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8}\label{namespaceNeoN_a0cf5592d412913dbac3c10e049492bc8} 
+\index{NeoN@{NeoN}!one$<$ Tensor $>$@{one$<$ Tensor $>$}}
+\index{one$<$ Tensor $>$@{one$<$ Tensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{one$<$ Tensor $>$()}{one< Tensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{Neo\+N\+::one}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00238}{238}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c}\label{namespaceNeoN_a4dd86f52f22c94a28c8af2fdd0349c7c} 
 \index{NeoN@{NeoN}!one$<$ Vec3 $>$@{one$<$ Vec3 $>$}}
@@ -839,12 +1109,40 @@ True if the executors not are equal, false otherwise.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a7a4b14c0afc215497dabb86fb076db25}\label{namespaceNeoN_a7a4b14c0afc215497dabb86fb076db25} 
+\index{NeoN@{NeoN}!operator\&@{operator\&}}
+\index{operator\&@{operator\&}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&}]{s,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{v }\end{DoxyParamCaption})}
+
+
+
+Symmetric matrix-\/vector product S·v. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00193}{193}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a2414025e2597dee527100138954adb7b}\label{namespaceNeoN_a2414025e2597dee527100138954adb7b} 
+\index{NeoN@{NeoN}!operator\&@{operator\&}}
+\index{operator\&@{operator\&}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{v }\end{DoxyParamCaption})}
+
+
+
+Matrix-\/vector product T·v. 
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}\label{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e} 
 \index{NeoN@{NeoN}!operator\&@{operator\&}}
 \index{operator\&@{operator\&}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{lhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
 
 
@@ -855,20 +1153,54 @@ inner product
 
 Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_ac5d091fc014440e8642f4557b3161dd4}\label{namespaceNeoN_ac5d091fc014440e8642f4557b3161dd4} 
+\index{NeoN@{NeoN}!operator\&@{operator\&}}
+\index{operator\&@{operator\&}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\& (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{v,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+Row-\/vector times matrix v·T. 
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00194}{194}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_a8482e9b18df5dd944627afdb72291479}\label{namespaceNeoN_a8482e9b18df5dd944627afdb72291479} 
 \index{NeoN@{NeoN}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
 \index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \&}]{sclr,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
 
 
 
 Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_a8eccef56c9667da6b3a753064270aef4}\label{namespaceNeoN_a8eccef56c9667da6b3a753064270aef4} 
+\index{NeoN@{NeoN}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{s,  }\item[{const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&}]{st }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00189}{189}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_adb1e2d9fa2b59aa439c94722a7e5d3d0}\label{namespaceNeoN_adb1e2d9fa2b59aa439c94722a7e5d3d0} 
+\index{NeoN@{NeoN}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{s,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00179}{179}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_ad34e9c8eef2169ff2803c54d3cbff6f1}\label{namespaceNeoN_ad34e9c8eef2169ff2803c54d3cbff6f1} 
 \index{NeoN@{NeoN}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
 \index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{lhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
 
 
@@ -934,13 +1266,25 @@ Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00173}{173}} of file \mbox
 \Hypertarget{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7}\label{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7} 
 \index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
 \index{operator$<$$<$@{operator$<$$<$}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{in }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_ad8d7c8733d83b2d0fb047069a233ca0d}\label{namespaceNeoN_ad8d7c8733d83b2d0fb047069a233ca0d} 
+\index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&}]{s }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_a5c0512c698fc1ae956ff732e5128c92b}\label{namespaceNeoN_a5c0512c698fc1ae956ff732e5128c92b} 
+\index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e}\label{namespaceNeoN_a77a13e9b0fbe3ff7af004f9f98287d2e} 
 \index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
 \index{operator$<$$<$@{operator$<$$<$}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily std\+::ostream \& Neo\+N\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{vec }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b}\label{namespaceNeoN_ac649c09e3045b009af8c9a60459e823b} 
@@ -965,7 +1309,7 @@ True if the executors are equal, false otherwise.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a4b98be76aa832e80150da000f7d3d35e}\label{namespaceNeoN_a4b98be76aa832e80150da000f7d3d35e} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
@@ -1188,7 +1532,7 @@ Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00105}{1
 
 
 
-Definition at line \mbox{\hyperlink{executor_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+Definition at line \mbox{\hyperlink{executor_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a037265804e35c82302cc863186ac1f29}\label{namespaceNeoN_a037265804e35c82302cc863186ac1f29} 
 \index{NeoN@{NeoN}!sub@{sub}}
@@ -1203,6 +1547,34 @@ void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_
 \doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_a952ff71e45ff1b1d35c491ef700f03cf}\label{namespaceNeoN_a952ff71e45ff1b1d35c491ef700f03cf} 
+\index{NeoN@{NeoN}!symm@{symm}}
+\index{symm@{symm}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{symm()}{symm()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} Neo\+N\+::symm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T) 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00223}{223}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a6321a4a8d56ef340c538371b4ab37604}\label{namespaceNeoN_a6321a4a8d56ef340c538371b4ab37604} 
+\index{NeoN@{NeoN}!twoSymm@{twoSymm}}
+\index{twoSymm@{twoSymm}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{twoSymm()}{twoSymm()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} Neo\+N\+::two\+Symm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&}]{t }\end{DoxyParamCaption})}
+
+
+
+T + T\texorpdfstring{$^\wedge$}{\string^}T (= 2\texorpdfstring{$\ast$}{*}symm(T)) as a full tensor. 
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00237}{237}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a1cdf9da8729a96756e0784e572829977}\label{namespaceNeoN_a1cdf9da8729a96756e0784e572829977} 
 \index{NeoN@{NeoN}!validateRegistration@{validateRegistration}}
@@ -1287,7 +1659,29 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_ae1af248d731afe03b7a9ba6cd8d29314}\label{namespaceNeoN_ae1af248d731afe03b7a9ba6cd8d29314} 
+\index{NeoN@{NeoN}!zero$<$ SymmTensor $>$@{zero$<$ SymmTensor $>$}}
+\index{zero$<$ SymmTensor $>$@{zero$<$ SymmTensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{zero$<$ SymmTensor $>$()}{zero< SymmTensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{Neo\+N\+::zero}}$<$ \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67}\label{namespaceNeoN_a4d8b495fdee58efcad75fd0bd81aad67} 
+\index{NeoN@{NeoN}!zero$<$ Tensor $>$@{zero$<$ Tensor $>$}}
+\index{zero$<$ Tensor $>$@{zero$<$ Tensor $>$}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{zero$<$ Tensor $>$()}{zero< Tensor >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{Neo\+N\+::zero}}$<$ \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00232}{232}} of file \mbox{\hyperlink{tensor_8hpp_source}{tensor.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412}\label{namespaceNeoN_a267bdffd9fa96bfbdd04d99a5102c412} 
 \index{NeoN@{NeoN}!zero$<$ Vec3 $>$@{zero$<$ Vec3 $>$}}
@@ -1311,5 +1705,5 @@ Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00189}{189}} of file \mbox
 
 
 
-Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00019}{19}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
+Definition at line \mbox{\hyperlink{scalar_8hpp_source_l00020}{20}} of file \mbox{\hyperlink{scalar_8hpp_source}{scalar.\+hpp}}.
 
