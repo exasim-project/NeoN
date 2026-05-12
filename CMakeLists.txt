@@ -58,6 +58,12 @@ option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 option(NeoN_WITH_MPI "Enable MPI" ON)
+option(
+  NeoN_MPI_HOST_STAGE
+  "Stage MPI halo exchanges through host memory instead of passing device pointers directly. \
+Enable for systems without GPU-aware (CUDA/ROCm-aware) MPI to verify correctness. \
+Production runs on GPU-aware MPI should leave this OFF."
+  OFF)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
