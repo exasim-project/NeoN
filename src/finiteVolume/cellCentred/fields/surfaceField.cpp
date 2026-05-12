@@ -51,25 +51,13 @@ void SurfaceField<ValueType>::correctBoundaryConditions()
         communicateBoundaryData(
             commPattern, procPatchOffset, targetRanks, this->field_.boundaryData().value()
         );
-
-        // MPI-02 fix: copy received ghost values from boundaryData().value() proc-tail
-        // into internalVector() proc-face slots so operators read updated values.
-        const auto nIntF = static_cast<localIdx>(this->mesh().nInternalFaces());
-        const auto nNonProcBnd = static_cast<localIdx>(bm.offset()[firstProcPatch]);
-        const auto nProcBnd = static_cast<localIdx>(bm.nProcBoundaryFaces());
-
-        auto intVecV = this->field_.internalVector().view();
-        const auto bndValV = this->field_.boundaryData().value().view();
-
-        parallelFor(
-            this->exec(),
-            {0, nProcBnd},
-            NEON_LAMBDA(const localIdx i) {
-                intVecV[nIntF + nNonProcBnd + i] = bndValV[nNonProcBnd + i];
-            },
-            "syncProcFaceInternalVector"
-        );
-        fence(this->exec());
+        // After exchange: boundaryData().value() proc-tail holds RECEIVED (ghost) values.
+        // internalVector() proc-face slots are intentionally left as LOCAL values so that
+        // operators reading faceFlux.internalVector() (computeDivProcBoundImpl,
+        // computeUpwindInterpolationWeights, surfaceIntegrate) see the local-sign-convention
+        // flux (positive ⇒ leaving the local cell). Ghost values are available via
+        // boundaryData().value() for operators that need them (computeLinearInterpolation,
+        // computeUpwindInterpolation).
     }
 }
 
