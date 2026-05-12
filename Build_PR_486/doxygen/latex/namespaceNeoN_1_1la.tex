@@ -41,7 +41,7 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \item 
 {\footnotesize template$<$typename Index\+Type $>$ }\\std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d}{create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
-{\footnotesize template$<$typename Index\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern}{Coo\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a1d88170ab6bbf900832a969435c79caa}{create\+Boundary\+Coo\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&face\+To\+Matrix\+Address)
+{\footnotesize template$<$typename Index\+Type , typename Sparsity\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}{create\+Boundary\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&face\+To\+Matrix\+Address)
 \item 
 {\footnotesize template$<$typename Value\+Type , typename System\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
@@ -108,12 +108,12 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00285}{285}} of file \mb
 {\footnotesize\ttfamily template$<$typename Matrix\+Type $>$ \\
 void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const Matrix\+Type \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_a1d88170ab6bbf900832a969435c79caa}\label{namespaceNeoN_1_1la_a1d88170ab6bbf900832a969435c79caa} 
-\index{NeoN::la@{NeoN::la}!createBoundaryCooSparsityPattern@{createBoundaryCooSparsityPattern}}
-\index{createBoundaryCooSparsityPattern@{createBoundaryCooSparsityPattern}!NeoN::la@{NeoN::la}}
-\doxysubsubsection{\texorpdfstring{createBoundaryCooSparsityPattern()}{createBoundaryCooSparsityPattern()}}
-{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
-std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern}{Coo\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$ Neo\+N\+::la\+::create\+Boundary\+Coo\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
+\Hypertarget{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}\label{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f} 
+\index{NeoN::la@{NeoN::la}!createBoundarySparsityPattern@{createBoundarySparsityPattern}}
+\index{createBoundarySparsityPattern@{createBoundarySparsityPattern}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{createBoundarySparsityPattern()}{createBoundarySparsityPattern()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type , typename Sparsity\+Type $>$ \\
+std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ Neo\+N\+::la\+::create\+Boundary\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc}\label{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc} 
 \index{NeoN::la@{NeoN::la}!createEmptyLinearSystem@{createEmptyLinearSystem}}

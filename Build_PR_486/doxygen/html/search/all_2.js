@@ -57,7 +57,7 @@ var searchData=
   ['create1duniformmesh_54',['create1DUniformMesh',['../namespaceNeoN.html#adde77ef685cb6a1427f1ece8b9916576',1,'NeoN']]],
   ['create2duniformmesh_55',['create2DUniformMesh',['../namespaceNeoN.html#a568f38c23afb8b0e084b8052eda5845d',1,'NeoN']]],
   ['create3duniformmesh_56',['create3DUniformMesh',['../namespaceNeoN.html#a5d069752428b08d28515fc2308803769',1,'NeoN']]],
-  ['createboundarycoosparsitypattern_57',['createBoundaryCooSparsityPattern',['../namespaceNeoN_1_1la.html#a1d88170ab6bbf900832a969435c79caa',1,'NeoN::la']]],
+  ['createboundarysparsitypattern_57',['createBoundarySparsityPattern',['../namespaceNeoN_1_1la.html#ab44de11212b71fe6791f72d0d23bec7f',1,'NeoN::la']]],
   ['createcalculatedbcs_58',['createCalculatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ab918b7425253d07393f1e18b71aa4e22',1,'NeoN::finiteVolume::cellCentred']]],
   ['createdefaultexecutor_59',['createDefaultExecutor',['../namespaceNeoN.html#a979e8785178e66d261937543c92278fb',1,'NeoN']]],
   ['createemptylinearsystem_60',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#aa225acfa2621e5e29de5b705b1757afc',1,'NeoN::la']]],

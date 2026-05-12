@@ -130,9 +130,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af11bbea45989e7220214bfab9789af5d" id="r_af11bbea45989e7220214bfab9789af5d"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
 <tr class="memitem:af11bbea45989e7220214bfab9789af5d"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CsrSparsityPattern.html">CsrSparsityPattern</a>&lt; IndexType &gt; &gt;, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#af11bbea45989e7220214bfab9789af5d">createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:af11bbea45989e7220214bfab9789af5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d88170ab6bbf900832a969435c79caa" id="r_a1d88170ab6bbf900832a969435c79caa"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
-<tr class="memitem:a1d88170ab6bbf900832a969435c79caa"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CooSparsityPattern.html">CooSparsityPattern</a>&lt; IndexType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a1d88170ab6bbf900832a969435c79caa">createBoundaryCooSparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &amp;faceToMatrixAddress)</td></tr>
-<tr class="separator:a1d88170ab6bbf900832a969435c79caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab44de11212b71fe6791f72d0d23bec7f" id="r_ab44de11212b71fe6791f72d0d23bec7f"><td class="memTemplParams" colspan="2">template&lt;typename IndexType , typename SparsityType &gt; </td></tr>
+<tr class="memitem:ab44de11212b71fe6791f72d0d23bec7f"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#ab44de11212b71fe6791f72d0d23bec7f">createBoundarySparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; IndexType &gt; &amp;faceToMatrixAddress)</td></tr>
+<tr class="separator:ab44de11212b71fe6791f72d0d23bec7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa225acfa2621e5e29de5b705b1757afc" id="r_aa225acfa2621e5e29de5b705b1757afc"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:aa225acfa2621e5e29de5b705b1757afc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa225acfa2621e5e29de5b705b1757afc">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:aa225acfa2621e5e29de5b705b1757afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,16 +253,16 @@ template&lt;typename MatrixType &gt; </div>
 
 </div>
 </div>
-<a id="a1d88170ab6bbf900832a969435c79caa" name="a1d88170ab6bbf900832a969435c79caa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d88170ab6bbf900832a969435c79caa">&#9670;&#160;</a></span>createBoundaryCooSparsityPattern()</h2>
+<a id="ab44de11212b71fe6791f72d0d23bec7f" name="ab44de11212b71fe6791f72d0d23bec7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab44de11212b71fe6791f72d0d23bec7f">&#9670;&#160;</a></span>createBoundarySparsityPattern()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename IndexType &gt; </div>
+template&lt;typename IndexType , typename SparsityType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1CooSparsityPattern.html">CooSparsityPattern</a>&lt; IndexType &gt; &gt; NeoN::la::createBoundaryCooSparsityPattern </td>
+          <td class="memname">std::shared_ptr&lt; const SparsityType &gt; NeoN::la::createBoundarySparsityPattern </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
