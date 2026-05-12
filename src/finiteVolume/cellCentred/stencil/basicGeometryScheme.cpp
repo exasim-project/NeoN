@@ -235,9 +235,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
     }
 }
 
-void BasicGeometryScheme::updateDeltaCoeffs(
-    [[maybe_unused]] const Executor& exec, [[maybe_unused]] SurfaceField<scalar>& deltaCoeffs
-)
+void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& deltaCoeffs)
 {
     const auto [owner, neighbour, surfFaceCells] =
         views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
@@ -273,23 +271,34 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
 
-    // FIXME proc-face deltaCoeffs should mirror updateNonOrthDeltaCoeffs and
-    // use the cell-to-cell distance across the cut (d_own + d_nei) instead of
-    // the local owner-to-face distance — without that the Laplacian assembled
-    // from these coefficients is asymmetric on graded meshes. As a minimum fix
-    // for the empty-patch indexing bug, use bm.cf() (compressed) so we read the
-    // right face here; the asymmetry concern is tracked separately.
+    // GEO-01 fix: proc-face deltaCoeffs uses the full cell-to-cell distance
+    // (d_own + d_nei) across the decomposition cut, mirroring
+    // updateNonOrthDeltaCoeffs. d_nei is obtained via MPI exchange of the
+    // owner's face-normal-projected distance from the neighbour rank.
+    // bm.cf()/sf()/magSf() are in compressed boundary-tail indexing matching
+    // bcfacei; mesh_.faceCentres()/faceAreas()/magFaceAreas() are sized over
+    // OpenFOAM's full face list (incl. empty patches) and would read the
+    // wrong face here.
+    if (mesh_.boundaryMesh().nProcBoundaryFaces() > 0)
     {
+        auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
+        auto dNeighbourBoundaryV = dNeighbourBoundary.view();
         const auto bcCf = mesh_.boundaryMesh().cf().view();
+        const auto bcSf = mesh_.boundaryMesh().sf().view();
+        const auto bcMagSf = mesh_.boundaryMesh().magSf().view();
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},
             NEON_LAMBDA(const localIdx facei) {
                 const auto bcfacei = facei - nInternalFaces;
-                auto own = surfFaceCells[bcfacei];
-                Vec3 cellToCellDist = bcCf[bcfacei] - cellCentre[own];
-
-                deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
+                const auto own = surfFaceCells[bcfacei];
+                const Vec3 cellToFace = bcCf[bcfacei] - cellCentre[own];
+                const Vec3 faceNormal = (1.0 / bcMagSf[bcfacei]) * bcSf[bcfacei];
+                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dNei = dNeighbourBoundaryV[bcfacei];
+                const scalar dCellToCell = dOwn + dNei;
+                deltaCoeff[facei] =
+                    (dCellToCell > ROOTVSMALL) ? scalar(1) / dCellToCell : scalar(0);
             },
             "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
         );
