@@ -3,6 +3,7 @@
   <compounddef id="initialization_8hpp" kind="file" language="C++">
     <compoundname>initialization.hpp</compoundname>
     <includes refid="logging_8hpp" local="yes">NeoN/core/logging.hpp</includes>
+    <includes refid="environment_8hpp" local="yes">NeoN/core/mpi/environment.hpp</includes>
     <includes local="no">Kokkos_Core.hpp</includes>
     <includes local="no">chrono</includes>
     <includes local="no">cpptrace/cpptrace.hpp</includes>
@@ -31,6 +32,8 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp</label>
         <link refid="initialization_8hpp"/>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -120,30 +123,70 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="logging_8hpp" kindref="compound">NeoN/core/logging.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cpptrace/cpptrace.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
-<codeline lineno="15"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" kindref="member">initialize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>argv[])</highlight></codeline>
-<codeline lineno="18"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv);</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>cpptrace::register_terminate_handler();</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/>mpiEnviron;</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnviron);</highlight></codeline>
-<codeline lineno="24"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
-<codeline lineno="27"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
-<codeline lineno="30"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="31"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="environment_8hpp" kindref="compound">NeoN/core/mpi/environment.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cpptrace/cpptrace.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="16"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" kindref="member">initialize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>argv[])</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/>mpiEnv;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Bind<sp/>each<sp/>MPI<sp/>rank<sp/>to<sp/>a<sp/>distinct<sp/>GPU<sp/>on<sp/>multi-GPU<sp/>nodes.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Without<sp/>explicit<sp/>binding<sp/>every<sp/>rank<sp/>defaults<sp/>to<sp/>device<sp/>0,<sp/>leaving<sp/>all</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>other<sp/>GPUs<sp/>idle<sp/>and<sp/>causing<sp/>CUDA/HIP<sp/>context<sp/>contention<sp/>on<sp/>GPU<sp/>0.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>use<sp/>a<sp/>shared-memory<sp/>sub-communicator<sp/>(MPI_COMM_TYPE_SHARED)<sp/>to<sp/>obtain</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>local<sp/>rank<sp/>within<sp/>the<sp/>node,<sp/>then<sp/>map:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>device_id<sp/>=<sp/>local_rank<sp/>%<sp/>num_devices</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Skipped<sp/>when:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>-<sp/>MPI<sp/>is<sp/>not<sp/>initialised<sp/>(serial<sp/>run<sp/>or<sp/>pre-MPI<sp/>test<sp/>harness),<sp/>OR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>-<sp/>only<sp/>one<sp/>device<sp/>is<sp/>visible<sp/>(single-GPU<sp/>node<sp/>or<sp/>CPU-only<sp/>build)<sp/>—</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>Kokkos::num_devices()<sp/>returns<sp/>0<sp/>for<sp/>CPU-only<sp/>backends.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>-<sp/>KOKKOS_DEVICE_ID<sp/>or<sp/>--kokkos-device-id<sp/>is<sp/>already<sp/>set<sp/>by<sp/>the<sp/>user,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>in<sp/>which<sp/>case<sp/>Kokkos::initialize(argc,<sp/>argv)<sp/>below<sp/>will<sp/>honour<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(NF_WITH_MPI_SUPPORT)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(mpiEnv.isInitialized()<sp/>&amp;&amp;<sp/>Kokkos::num_devices()<sp/>&gt;<sp/>1</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>std::getenv(</highlight><highlight class="stringliteral">&quot;KOKKOS_DEVICE_ID&quot;</highlight><highlight class="normal">)<sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_Comm<sp/>nodeComm;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_Comm_split_type(</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mpiEnv.comm(),</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_COMM_TYPE_SHARED,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mpiEnv.rank()),</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_INFO_NULL,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;nodeComm</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>localRank<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_Comm_rank(nodeComm,<sp/>&amp;localRank);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MPI_Comm_free(&amp;nodeComm);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::InitializationSettings<sp/>settings;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>settings.set_device_id(localRank<sp/>%<sp/>Kokkos::num_devices());</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::initialize(settings);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>cpptrace::register_terminate_handler();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnv);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp"/>
   </compounddef>
