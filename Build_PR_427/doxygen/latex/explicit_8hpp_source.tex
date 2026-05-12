@@ -13,7 +13,7 @@
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{spatialOperator_8hpp}{NeoN/dsl/spatialOperator.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{temporalOperator_8hpp}{NeoN/dsl/temporalOperator.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ddt_8hpp}{NeoN/dsl/ddt.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00013}00013\ \textcolor{comment}{//\ TODO:\ decouple\ from\ fvcc}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ddtOperator_8hpp}{NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp}}"{}}}
@@ -63,6 +63,12 @@
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00059}00059\ }
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00060}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{00060}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a6d2b8fb9b0cc13fd258e4343e58b058f}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<scalar>}}\&\ phi);}
 \DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00062}00062\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00062}00062\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00063}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a01589bd06f61d76b4f3de6b32ce39c90}{00063}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc::VolumeField<ValueType>}}\&\ coeff)}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00064}00064\ \{}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm}{fvcc::SourceTerm}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a9d71760e2dd451db2df354d0fd29cd7f}{dsl::Operator::Type::Explicit}},\ coeff));}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00066}00066\ \}}
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{explicit_8hpp_source_l00068}00068\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
