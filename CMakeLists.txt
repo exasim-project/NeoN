@@ -62,6 +62,10 @@ option(NeoN_GINKGO_HOST_STAGE
        "Stage Ginkgo distributed solver MPI through host memory instead of GPU-direct pointers. \
 Enable on systems where GPU-aware MPI is unavailable or suspect. OFF in production." OFF)
 
+option(NeoN_CUDA_AWARE_MPI
+       "Pass device pointers directly to MPI (GPU-direct). Requires CUDA-aware MPI runtime. \
+Enable on HPC systems with CUDA-aware MPI. OFF uses host-staging (safe for WSL2/OpenMPI)." OFF)
+
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_UB "Enable undefined behaviour sanitizer" OFF)
