@@ -264,7 +264,11 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
     auto nonLocalMtx = COOMatrix<scalar, localIdx> {nonLocalValues, nonLocalSparsity};
 
     const CommunicationPattern& commPattern = sys.commPattern();
+#if defined(NEON_GINKGO_HOST_STAGE)
+    bool forceHostBuffer = true;
+#else
     bool forceHostBuffer = false;
+#endif
     auto comm = gko::experimental::mpi::communicator(commPattern.env.comm(), forceHostBuffer);
     auto gkoMtx = createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern);
     auto solver = factory->generate(gkoMtx);
@@ -276,8 +280,11 @@ SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    // TODO make that selectable via dictionary
+#if defined(NEON_GINKGO_HOST_STAGE)
+    bool forceHostBuffer = true;
+#else
     bool forceHostBuffer = false;
+#endif
     const CommunicationPattern& commPattern = sys.commPattern();
     auto comm = gko::experimental::mpi::communicator(commPattern.env.comm(), forceHostBuffer);
     auto gkoMtx = createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.nonLocalMatrix(), commPattern);

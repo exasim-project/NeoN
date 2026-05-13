@@ -58,6 +58,9 @@ option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 option(NeoN_WITH_MPI "Enable MPI" ON)
+option(NeoN_GINKGO_HOST_STAGE
+       "Stage Ginkgo distributed solver MPI through host memory instead of GPU-direct pointers. \
+Enable on systems where GPU-aware MPI is unavailable or suspect. OFF in production." OFF)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
