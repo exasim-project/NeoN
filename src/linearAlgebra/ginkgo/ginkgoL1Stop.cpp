@@ -197,6 +197,8 @@ public:
                 {
                     auto alpha =
                         sqrt(1.0 / (prev_solve_iters * (1.0 - relaxationFactor_)) * prev_rel_cost);
+                    // host-side convergence criterion — std::min/max are safe here (not
+                    // device-compiled)
                     frequency = std::min(norm_eval_limit_, std::max(1, localIdx(1 / alpha)));
                 }
                 if (frequencyMode == "relative")
