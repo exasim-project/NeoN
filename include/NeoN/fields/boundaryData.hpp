@@ -293,6 +293,10 @@ void communicateBoundaryData(
     );
 
     auto exec = boundaryData.exec();
+    // On GPU, UCX may fill recvBuffer via a private CUDA stream that is not the
+    // Kokkos stream. fence() calls cudaDeviceSynchronize() which waits for ALL
+    // CUDA streams — ensuring the received data is visible before the unpack kernel.
+    fence(exec);
     auto outV = boundaryData.view();
     const auto inV = recvBuffer.view();
 
@@ -406,6 +410,9 @@ inline void communicateBoundaryData(
         mpiEnv.comm()
     );
 
+    // On GPU, UCX may fill recvBuffer via a private CUDA stream. fence() calls
+    // cudaDeviceSynchronize() to flush all CUDA streams before the unpack kernel.
+    fence(exec);
     const auto inV = recvBuffer.view();
     auto outV = boundaryData.view();
 
