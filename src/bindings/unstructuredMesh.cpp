@@ -197,6 +197,42 @@ void registerUnstructuredMesh(nb::module_& m)
         "Each cell has a left and right face. Useful for 1D simulations\n"
         "and testing finite volume schemes."
     );
+    m.def(
+        "create_2d_uniform_mesh",
+        &NeoN::create2DUniformMesh,
+        "exec"_a,
+        "nx"_a,
+        "ny"_a,
+        "Lx"_a = 1.0,
+        "Ly"_a = 1.0,
+        "Create a uniform 2D mesh on [0,Lx] x [0,Ly].\n\n"
+        "Args:\n"
+        "    exec: Executor for parallel operations\n"
+        "    nx: Number of cells in the x-direction\n"
+        "    ny: Number of cells in the y-direction\n"
+        "    Lx: Length in the x-direction (Default: 1.0)\n"
+        "    Ly: Length in the y-direction (Default: 1.0)"
+    );
+    m.def(
+        "create_3d_uniform_mesh",
+        &NeoN::create3DUniformMesh,
+        "exec"_a,
+        "nx"_a,
+        "ny"_a,
+        "nz"_a,
+        "Lx"_a = 1.0,
+        "Ly"_a = 1.0,
+        "Lz"_a = 1.0,
+        "Create a uniform 3D mesh on [0,Lx] x [0,Ly] x [0,Lz].\n\n"
+        "Args:\n"
+        "    exec: Executor for parallel operations\n"
+        "    nx: Number of cells in the x-direction\n"
+        "    ny: Number of cells in the y-direction\n"
+        "    nz: Number of cells in the z-direction\n"
+        "    Lx: Length in the x-direction (Default: 1.0)\n"
+        "    Ly: Length in the y-direction (Default: 1.0)\n"
+        "    Lz: Length in the z-direction (Default: 1.0)"
+    );
 }
 
 } // namespace NeoN::bindings
