@@ -105,9 +105,9 @@ if(DEFINED SKBUILD)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed DESTINATION neon)
 else()
   # Standalone installation
-  install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
-  install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+  install(TARGETS _neon LIBRARY DESTINATION ${Python_SITELIB}/neon)
+  install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py DESTINATION ${Python_SITELIB}/neon)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+
 endif()
