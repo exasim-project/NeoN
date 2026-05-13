@@ -137,7 +137,7 @@ Functions</h2></td></tr>
 <tr class="separator:a526ab6c1bb1faea9fac356aee0888256"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9" id="r_a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;lsIn)</td></tr>
-<tr class="memdesc:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes out = -(L+U) x  <br /></td></tr>
+<tr class="memdesc:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
 <tr class="separator:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bfb83b8f18cb760ed98f0633b440df0" id="r_a6bfb83b8f18cb760ed98f0633b440df0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">scaledInvDiagNegLUx</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;ls, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;<a class="el" href="structa.html">a</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;aBound, const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;rAU, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;out)</td></tr>
 <tr class="separator:a6bfb83b8f18cb760ed98f0633b440df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,6 +161,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a81ea5bf6450cb2402acf9f981d5583ab" id="r_a81ea5bf6450cb2402acf9f981d5583ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a81ea5bf6450cb2402acf9f981d5583ab">negLUx</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;<a class="el" href="structa.html">a</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;b, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;rAU, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;vol, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;out)</td></tr>
 <tr class="memdesc:a81ea5bf6450cb2402acf9f981d5583ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes out = -(L+U) x  <br /></td></tr>
 <tr class="separator:a81ea5bf6450cb2402acf9f981d5583ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6369807c83d198788433759422ed1fd4" id="r_a6369807c83d198788433759422ed1fd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a6369807c83d198788433759422ed1fd4">scaledInvDiagNegLUx</a> (const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;mtx, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;<a class="el" href="structa.html">a</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;b, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;vol, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;rAU, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;out)</td></tr>
+<tr class="memdesc:a6369807c83d198788433759422ed1fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes out = -(L+U) x  <br /></td></tr>
+<tr class="separator:a6369807c83d198788433759422ed1fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6d454dd6fb2e31259a6349219c08629" id="r_ad6d454dd6fb2e31259a6349219c08629"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#ad6d454dd6fb2e31259a6349219c08629">unpackColIdx</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;in, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;unpackedRowOffs, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;packedRowOffs)</td></tr>
 <tr class="separator:ad6d454dd6fb2e31259a6349219c08629"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfdc10cb52098688762e13b2d0af4493" id="r_adfdc10cb52098688762e13b2d0af4493"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#adfdc10cb52098688762e13b2d0af4493">unpackRowOffs</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;in)</td></tr>
@@ -355,7 +358,7 @@ template&lt;unsigned int I&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00287">287</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00286">286</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -468,17 +471,69 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>computes out = -(L+U) x </p>
-<p>a - momentum vector</p>
-<p>@notes - explicitly sets out values to zero @notes - assumes a boundary values to corrected</p>
-<p>for testing purposes this function removes boundary contributions previously added to the matrix diagonal </p>
+<p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00345">345</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00326">326</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a6369807c83d198788433759422ed1fd4" name="a6369807c83d198788433759422ed1fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6369807c83d198788433759422ed1fd4">&#9670;&#160;</a></span>scaledInvDiagNegLUx() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::la::scaledInvDiagNegLUx </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceNeoN_1_1la.html#ac6606b36cee6114533e0f5577be2be5b">CSRMatrix</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mtx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rAU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>computes out = -(L+U) x </p>
+<p>@notes explicitly sets out values to zero </p>
 
 </div>
 </div>
 <a id="a6bfb83b8f18cb760ed98f0633b440df0" name="a6bfb83b8f18cb760ed98f0633b440df0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6bfb83b8f18cb760ed98f0633b440df0">&#9670;&#160;</a></span>scaledInvDiagNegLUx()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bfb83b8f18cb760ed98f0633b440df0">&#9670;&#160;</a></span>scaledInvDiagNegLUx() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -535,7 +590,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00391">391</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00355">355</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
