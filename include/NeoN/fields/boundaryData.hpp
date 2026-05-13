@@ -279,30 +279,6 @@ void communicateBoundaryData(
     // on the GPU executor; without this fence MPI would send pre-kernel device data.
     fence(boundaryData.exec());
 
-#ifdef NEON_MPI_HOST_STAGE
-    // Diagnostic path: stage device→host before send, host→device after receive.
-    // Enables correctness checking on systems without GPU-aware (CUDA/ROCm-aware) MPI.
-    // Enable with CMake option -DNeoN_MPI_HOST_STAGE=ON.
-    // Production GPU runs should use the GPU-aware path below (default).
-    auto sendHost = boundaryData.copyToHost();
-    auto recvHost = Vector<ValueType>(NeoN::SerialExecutor {}, static_cast<localIdx>(totalRecv));
-    MPI_Alltoallv(
-        sendHost.data(),
-        commPattern.sendCounts.data(),
-        sdispls.data(),
-        mpi::getType<ValueType>(),
-        recvHost.data(),
-        recvCountsVec.data(),
-        rdispls.data(),
-        mpi::getType<ValueType>(),
-        mpiEnv.comm()
-    );
-    // MPI-03 fix: size recvBuffer to actual recv count, not full boundary size.
-    auto recvBuffer = recvHost.copyToExecutor(boundaryData.exec());
-#else
-    // GPU-aware MPI path (default): device pointers passed directly to MPI.
-    // Requires CUDA-aware / ROCm-aware / SYCL-aware MPI (e.g. OpenMPI built with
-    // --with-cuda, or MPICH with UCX + GPU support).
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), static_cast<localIdx>(totalRecv));
     MPI_Alltoallv(
         boundaryData.data(),
@@ -315,7 +291,6 @@ void communicateBoundaryData(
         mpi::getType<ValueType>(),
         mpiEnv.comm()
     );
-#endif
 
     auto exec = boundaryData.exec();
     auto outV = boundaryData.view();
@@ -418,28 +393,6 @@ inline void communicateBoundaryData(
     // reads sendBuffer. parallelFor is async on GPU.
     fence(exec);
 
-#ifdef NEON_MPI_HOST_STAGE
-    // Diagnostic staging path — see scalar overload for rationale.
-    auto sendHost = sendBuffer.copyToHost();
-    // MPI-03 fix: size to actual recv scalar count.
-    auto recvHost =
-        Vector<NeoN::scalar>(NeoN::SerialExecutor {}, static_cast<localIdx>(totalRecv3));
-    MPI_Alltoallv(
-        sendHost.data(),
-        sendCounts.data(),
-        sdispls.data(),
-        mpi::getType<scalar>(),
-        recvHost.data(),
-        recvCountsVec.data(),
-        rdispls.data(),
-        mpi::getType<scalar>(),
-        mpiEnv.comm()
-    );
-    auto recvBuffer = recvHost.copyToExecutor(exec);
-#else
-    // GPU-aware MPI path (default): device pointers passed directly.
-    // Requires CUDA-aware / ROCm-aware / SYCL-aware MPI.
-    // MPI-03 fix: size to actual recv scalar count.
     auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), static_cast<localIdx>(totalRecv3));
     MPI_Alltoallv(
         sendBuffer.data(),
@@ -452,7 +405,6 @@ inline void communicateBoundaryData(
         mpi::getType<scalar>(),
         mpiEnv.comm()
     );
-#endif
 
     const auto inV = recvBuffer.view();
     auto outV = boundaryData.view();

@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include <Kokkos_Core.hpp>                  // IWYU pragma: keep
+#include <Kokkos_MathematicalFunctions.hpp> // Kokkos::abs for device-safe scalar math
 
 #include "NeoN/core/primitives/traits.hpp"
 
@@ -20,7 +21,7 @@ typedef float scalar;
 constexpr scalar ROOTVSMALL = 1e-18;
 
 KOKKOS_INLINE_FUNCTION
-scalar mag(const scalar& s) { return std::abs(s); }
+scalar mag(const scalar& s) { return Kokkos::abs(s); }
 
 // traits for scalar
 template<>

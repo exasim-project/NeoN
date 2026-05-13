@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <algorithm>
 #include <tuple>
+
+#include <Kokkos_Core.hpp>
+#include <Kokkos_MathematicalFunctions.hpp>
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -113,8 +115,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
             const Vec3 cellToFace = bcCf[bfacei] - cellCentre[own];
             const Vec3 faceNormal = (1.0 / bcMagSf[bfacei]) * bcSf[bfacei];
             // Owner side: outward normal from own cell, distance is positive.
-            // Use std::abs defensively in case of unusual mesh orientations.
-            dExchangeV[bfacei] = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+            dExchangeV[bfacei] = Kokkos::abs(static_cast<scalar>(faceNormal & cellToFace));
         },
         "exchangeProcOwnerDistance::fillLocal"
     );
@@ -162,10 +163,10 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            scalar sfdOwn = std::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
-            scalar sfdNei = std::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
+            scalar sfdOwn = Kokkos::abs(sf[facei] & (cf[facei] - c[owner[facei]]));
+            scalar sfdNei = Kokkos::abs(sf[facei] & (c[neighbour[facei]] - cf[facei]));
 
-            if (std::abs(sfdOwn + sfdNei) > ROOTVSMALL)
+            if (Kokkos::abs(sfdOwn + sfdNei) > ROOTVSMALL)
             {
                 weightS[facei] = sfdNei / (sfdOwn + sfdNei);
             }
@@ -212,7 +213,6 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         auto dNeighbourBoundary = exchangeProcOwnerDistance(exec, mesh_);
         auto dNeighbourBoundaryV = dNeighbourBoundary.view();
         const auto procFaceCells = mesh_.boundaryMesh().faceCells().view();
-        // FIXME is std::abs available on GPU?
         parallelFor(
             exec,
             {nInternalFaces + nBoundaryFaces, totalFaces},
@@ -220,10 +220,10 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
                 const auto bcfacei = facei - nInternalFaces;
                 const auto own = procFaceCells[bcfacei];
                 const Vec3 cellToFace = bcCf[bcfacei] - c[own];
-                const scalar magSf = std::sqrt(bcSf[bcfacei] & bcSf[bcfacei]);
+                const scalar magSf = bcMagSf[bcfacei];
                 const Vec3 faceNormal =
                     (magSf > ROOTVSMALL ? scalar(1) / magSf : scalar(0)) * bcSf[bcfacei];
-                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dOwn = Kokkos::abs(static_cast<scalar>(faceNormal & cellToFace));
                 const scalar dNei = dNeighbourBoundaryV[bcfacei];
                 const scalar denom = dOwn + dNei;
                 const scalar w = (denom > ROOTVSMALL) ? (dNei / denom) : scalar(0.5);
@@ -294,7 +294,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<s
                 const auto own = surfFaceCells[bcfacei];
                 const Vec3 cellToFace = bcCf[bcfacei] - cellCentre[own];
                 const Vec3 faceNormal = (1.0 / bcMagSf[bcfacei]) * bcSf[bcfacei];
-                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dOwn = Kokkos::abs(static_cast<scalar>(faceNormal & cellToFace));
                 const scalar dNei = dNeighbourBoundaryV[bcfacei];
                 const scalar dCellToCell = dOwn + dNei;
                 deltaCoeff[facei] =
@@ -331,7 +331,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 cellToCellDist = cellCentre[neighbour[facei]] - cellCentre[owner[facei]];
             Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
             scalar orthoDist = faceNormal & cellToCellDist;
-            nonOrthDeltaCoeff[facei] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
+            nonOrthDeltaCoeff[facei] = 1.0 / Kokkos::max(orthoDist, 0.05 * mag(cellToCellDist));
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsInternal"
     );
@@ -344,7 +344,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 cellToCellDist = cf[facei] - cellCentre[own];
             Vec3 faceNormal = 1 / faceArea[facei] * faceAreaVec3[facei];
             scalar orthoDist = faceNormal & cellToCellDist;
-            nonOrthDeltaCoeff[facei] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
+            nonOrthDeltaCoeff[facei] = 1.0 / Kokkos::max(orthoDist, 0.05 * mag(cellToCellDist));
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
@@ -382,14 +382,14 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
                 const auto own = surfFaceCells[bcfacei];
                 const Vec3 cellToFace = bcCf[bcfacei] - cellCentre[own];
                 const Vec3 faceNormal = (1.0 / bcMagSf[bcfacei]) * bcSf[bcfacei];
-                const scalar dOwn = std::abs(static_cast<scalar>(faceNormal & cellToFace));
+                const scalar dOwn = Kokkos::abs(static_cast<scalar>(faceNormal & cellToFace));
                 const scalar dNei = dNeighbourBoundaryV[bcfacei];
                 const scalar dCellToCell = dOwn + dNei;
                 // Cell-to-cell vector approximation for the floor (avoid divide-by-zero
                 // / very small denominators in pathological cases).
                 const Vec3 approxCellToCell = cellToFace + faceNormal * dNei;
                 nonOrthDeltaCoeff[facei] =
-                    1.0 / std::max(dCellToCell, scalar(0.05) * mag(approxCellToCell));
+                    1.0 / Kokkos::max(dCellToCell, scalar(0.05) * mag(approxCellToCell));
             },
             "basicGeometricScheme::updateNonOrthDeltaCoeffsProcBoundary"
         );

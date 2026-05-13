@@ -174,7 +174,10 @@ Vec3 operator/(const Vec3& lhs, scalar rhs) { return {lhs[0] / rhs, lhs[1] / rhs
 
 
 KOKKOS_INLINE_FUNCTION
-scalar mag(const Vec3& vec) { return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }
+scalar mag(const Vec3& vec)
+{
+    return Kokkos::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+}
 
 std::ostream& operator<<(std::ostream& out, const Vec3& vec);
 
