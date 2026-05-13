@@ -279,6 +279,7 @@ void communicateBoundaryData(
     // on the GPU executor; without this fence MPI would send pre-kernel device data.
     fence(boundaryData.exec());
 
+#if defined(NEON_CUDA_AWARE_MPI)
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), static_cast<localIdx>(totalRecv));
     MPI_Alltoallv(
         boundaryData.data(),
@@ -291,6 +292,24 @@ void communicateBoundaryData(
         mpi::getType<ValueType>(),
         mpiEnv.comm()
     );
+#else
+    // Host-stage: D→H before MPI, H→D after (safe for non-CUDA-aware MPI / WSL2 OpenMPI)
+    auto sendHost = boundaryData.copyToHost(); // Vector<ValueType> on SerialExecutor
+    auto recvHost = Vector<ValueType>(SerialExecutor {}, static_cast<localIdx>(totalRecv));
+    MPI_Alltoallv(
+        sendHost.data(),
+        commPattern.sendCounts.data(),
+        sdispls.data(),
+        mpi::getType<ValueType>(),
+        recvHost.data(),
+        recvCountsVec.data(),
+        rdispls.data(),
+        mpi::getType<ValueType>(),
+        mpiEnv.comm()
+    );
+    // H→D copy back; Vector(exec, hostVec) calls deepCopyVisitor host→device
+    auto recvBuffer = Vector<ValueType>(boundaryData.exec(), recvHost);
+#endif
 
     auto exec = boundaryData.exec();
     // On GPU, UCX may fill recvBuffer via a private CUDA stream that is not the
@@ -397,6 +416,7 @@ inline void communicateBoundaryData(
     // reads sendBuffer. parallelFor is async on GPU.
     fence(exec);
 
+#if defined(NEON_CUDA_AWARE_MPI)
     auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), static_cast<localIdx>(totalRecv3));
     MPI_Alltoallv(
         sendBuffer.data(),
@@ -409,6 +429,26 @@ inline void communicateBoundaryData(
         mpi::getType<scalar>(),
         mpiEnv.comm()
     );
+#else
+    // Host-stage sendBuffer (the packed scalar array from parallelFor above).
+    // NOTE: stage sendBuffer NOT boundaryData — Vec3 overload packs into sendBuffer first.
+    // sendBuffer is already fenced at line 398; the D→H copy is safe.
+    auto sendHost = sendBuffer.copyToHost(); // Vector<NeoN::scalar> on SerialExecutor
+    auto recvHost = Vector<NeoN::scalar>(SerialExecutor {}, static_cast<localIdx>(totalRecv3));
+    MPI_Alltoallv(
+        sendHost.data(),
+        sendCounts.data(), // already 3x-multiplied — unchanged
+        sdispls.data(),
+        mpi::getType<scalar>(),
+        recvHost.data(),
+        recvCountsVec.data(),
+        rdispls.data(),
+        mpi::getType<scalar>(),
+        mpiEnv.comm()
+    );
+    // H→D copy back to device before unpack parallelFor reads recvBuffer
+    auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), recvHost);
+#endif
 
     // On GPU, UCX may fill recvBuffer via a private CUDA stream. fence() calls
     // cudaDeviceSynchronize() to flush all CUDA streams before the unpack kernel.
