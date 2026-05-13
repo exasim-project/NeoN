@@ -89,7 +89,7 @@ TEST_CASE("Distributed")
     auto pPart = partitionVolField(p, meshPart, volBCsPart, mpiEnviron);
     auto surfaceBCsII = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshPart);
     auto surfaceBCsPart = setProcessorBoundaryHelper(surfaceBCsII, mpiEnviron.rank());
-    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, false);
+    auto phiPart = partitionSurfaceField(phi, meshPart, surfaceBCsPart, mpiEnviron, true);
     auto gammaPart = partitionSurfaceField(gamma, meshPart, surfaceBCsPart, mpiEnviron, false);
 
     auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);

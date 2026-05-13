@@ -86,9 +86,9 @@ FieldType partitionVolField(
  *     Rank 3 -> {7, 50, 6}
  *
  * Sign-flip rule when `flip = true`:
- *   First rank: signRight = -1.0
- *   Last rank:  signRight = -1.0
- *   Middle:     signLeft  = -1.0
+ *   First rank: no flip — rank 0 is the global owner of its proc face (Sf_local = Sf_global)
+ *   Last rank:  signRight = -1.0  (left proc face stored at outV[localFaces+1])
+ *   Middle:     signLeft  = -1.0  (left proc face stored at outV[localFaces])
  *
  * @tparam FieldType  A SurfaceField<T> template instantiation
  * @tparam MeshType   An UnstructuredMesh template instantiation
@@ -136,13 +136,10 @@ FieldType partitionSurfaceField(
     if (r == 0)
     {
         // First rank: left boundary = global left domain boundary; right boundary = right
-        // proc-face.
+        // proc-face. Rank 0 is the global owner of its proc face (Sf_local = Sf_global),
+        // so no sign correction is needed regardless of the flip flag.
         firstBoundaryFace = R * (localFaces + 1) - 1;
         secondBoundaryFace = localFaces;
-        if (flip)
-        {
-            signRight = -1.0;
-        }
     }
     else if (r == R - 1)
     {
