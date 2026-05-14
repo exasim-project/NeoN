@@ -495,13 +495,6 @@ pass.  Each face contributes <span class="math notranslate nohighlight">\(+w F_f
 <span class="math notranslate nohighlight">\(-(1-w) F_f\)</span> to the neighbour diagonal, so the full sums converge to
 <span class="math notranslate nohighlight">\(+F_f\)</span> and <span class="math notranslate nohighlight">\(-F_f\)</span> respectively.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Matches OpenFOAM.</strong>  OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">gaussConvectionScheme</span></code> sets
-<code class="docutils literal notranslate"><span class="pre">lower[f]</span> <span class="pre">=</span> <span class="pre">-w</span> <span class="pre">F_f</span></code>, <code class="docutils literal notranslate"><span class="pre">upper[f]</span> <span class="pre">=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code>, then <code class="docutils literal notranslate"><span class="pre">negSumDiag()</span></code> gives
-<code class="docutils literal notranslate"><span class="pre">diag[own]</span> <span class="pre">+=</span> <span class="pre">w</span> <span class="pre">F_f</span></code> and <code class="docutils literal notranslate"><span class="pre">diag[nei]</span> <span class="pre">-=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code> — the <strong>same structure</strong>
-as NeoN.</p>
-</div>
 </section>
 <section id="physical-boundary">
 <h3>Physical boundary<a class="headerlink" href="#physical-boundary" title="Link to this heading">¶</a></h3>
