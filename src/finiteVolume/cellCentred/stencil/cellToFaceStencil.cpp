@@ -14,34 +14,32 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
 {
     const auto exec = mesh_.exec();
     const auto nCells = mesh_.nCells();
-    const auto [faceOwner, faceNeighbour, boundaryFaceCells] =
+    const auto [faceOwnV, faceNeiV, faceFaceCells] =
         views(mesh_.faceOwner(), mesh_.faceNeighbour(), mesh_.boundaryMesh().faceCells());
 
     const auto nInternalFaces = mesh_.nInternalFaces();
 
-    Vector<localIdx> nFacesPerCell(exec, nCells, 0);
-    View<localIdx> nFacesPerCellView = nFacesPerCell.view();
+    auto nFacesPerCell = Vector<localIdx>(exec, nCells, 0);
+    auto nFacesPerCellV = nFacesPerCell.view();
 
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]);
-            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceNeighbour[i])]);
+            Kokkos::atomic_inc(&nFacesPerCellV[faceOwnV[i]]);
+            Kokkos::atomic_inc(&nFacesPerCellV[faceNeiV[i]]);
         },
         "countFacesPerCellInternal"
     );
 
     parallelFor(
         exec,
-        {0, boundaryFaceCells.size()},
-        NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_inc(&nFacesPerCellView[boundaryFaceCells[i]]);
-        },
+        {0, faceFaceCells.size()},
+        NEON_LAMBDA(const localIdx i) { Kokkos::atomic_inc(&nFacesPerCellV[faceFaceCells[i]]); },
         "countFacesPerCellBoundary"
     );
 
-    SegmentedVector<localIdx, localIdx> stencil(nFacesPerCell); // guessed
+    auto stencil = SegmentedVector<localIdx, localIdx>(nFacesPerCell); // guessed
     auto [stencilValues, segment] = stencil.views();
 
     fill(nFacesPerCell, 0); // reset nFacesPerCell
@@ -50,31 +48,39 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            localIdx owner = faceOwner[facei];
-            localIdx neighbour = faceNeighbour[facei];
+            auto nei = faceNeiV[facei]; // neighbour cell idx
+            auto own = faceOwnV[facei]; // owning cell idx
 
-            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1);
-            localIdx segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellView[neighbour], 1);
-
-            auto startSegOwn = segment[owner];
-            auto startSegNei = segment[neighbour];
-            Kokkos::atomic_store(&stencilValues[startSegOwn + segIdxOwn], facei);
+            // obtain the old values and increment
+            localIdx segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellV[nei], 1);
+            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellV[own], 1);
+            auto startSegNei = segment[nei];
+            auto startSegOwn = segment[own];
             Kokkos::atomic_store(&stencilValues[startSegNei + segIdxNei], facei);
+            Kokkos::atomic_store(&stencilValues[startSegOwn + segIdxOwn], facei);
         },
         "computeStencilInternal"
     );
 
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + boundaryFaceCells.size()},
+        {nInternalFaces, nInternalFaces + faceFaceCells.size()},
         NEON_LAMBDA(const localIdx facei) {
-            localIdx owner = boundaryFaceCells[facei - nInternalFaces];
-            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellView[owner], 1);
-            localIdx startSegOwn = segment[owner];
+            auto owner = faceFaceCells[facei - nInternalFaces];
+            // obtain the old values and increment
+            localIdx segIdxOwn = Kokkos::atomic_fetch_add(&nFacesPerCellV[owner], 1);
+            auto startSegOwn = segment[owner];
             Kokkos::atomic_store(&stencilValues[startSegOwn + segIdxOwn], facei);
         },
         "computeStencilBound"
     );
+
+    // sort face ids in stencil to be in face order
+    // parallelFor(
+    //     exec,
+    //     {0, segment.size()},
+    //     NEON_LAMBDA(const localIdx celli) { auto nCells = nFacesPerCellV[celli]; }
+    // );
 
     return stencil;
 }
