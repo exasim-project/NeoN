@@ -10,25 +10,27 @@ Finite-volume discretisation produces a sparse linear system :math:`A \mathbf{x}
 where each row corresponds to a mesh cell and each non-zero off-diagonal entry corresponds to a
 face shared by two cells.  NeoN assembles this system in three parts:
 
-- **Local CSR matrix** — all cell-to-cell connections within the current MPI rank.
-- **Physical-boundary COO matrix** — contributions from Dirichlet/Neumann boundaries.
-- **Processor-boundary COO matrix** — contributions from faces shared with neighbouring MPI ranks.
+- **Local system matrix** — all cell-to-cell connections within the current MPI rank.
+- **Physical-boundary matrix** — contributions from Dirichlet/Neumann boundaries.
+- **Processor-boundary matrix** — contributions from faces shared with neighbouring MPI ranks.
 
 The central object that links mesh topology to matrix storage is
 ``FaceToMatrixAddress`` (``include/NeoN/linearAlgebra/faceToMatrixAddress.hpp``).
 It stores three compact offset arrays (``diagOffset``, ``ownerOffset``, ``neighbourOffset``)
-that map every mesh face to a position inside the flat ``values`` array of the CSR matrix.
+that map every mesh face to a position inside the flat ``values`` array of the corresponding matrix.
 
 Further details:
 
 * `FaceToMatrixAddress <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1FaceToMatrixAddress.html>`_
 * `LinearSystem <https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1LinearSystem.html>`_
 
+Currently, only two matrix formats are supported: CSR and COO. These are hardcoded, with the system matrix stored in CSR format and the boundary matrix stored in COO format.
+
 CSR Format
 ----------
 
-The local matrix is stored in **Compressed Sparse Row (CSR)** format via
-``SparsityPattern`` (``include/NeoN/linearAlgebra/sparsityPattern.hpp``):
+The local system matrix is stored in **Compressed Sparse Row (CSR)** format via
+``CsrSparsityPattern`` (``include/NeoN/linearAlgebra/csrSparsityPattern.hpp``):
 
 .. code-block:: cpp
 
@@ -47,10 +49,11 @@ Iterating over row ``i``:
         // values[k]  is A[i, colIdxs[k]]
     }
 
-Row Layout: Lower | Diagonal | Upper
+Row Layout and Face Addressing Arrays
 -------------------------------------
 
-Within every row the non-zero entries are stored in the order:
+Within every row of a matrix A the non-zero values are stored in row-major order.
+This leads to entries being sorted as lower | diag | upper in a row as shown below:
 
 .. code-block:: text
 
@@ -60,11 +63,10 @@ Within every row the non-zero entries are stored in the order:
 ``diagOffset[i]`` equals the count of lower-triangular entries in row ``i``, which is also
 the number of internal faces for which cell ``i`` is the *neighbour* (i.e. has a larger
 index than the owner).
-
-Face Addressing Arrays
-----------------------
-
-``FaceToMatrixAddress`` stores three ``uint8_t`` arrays:
+Additionally, the FaceToMatrixAddress class stores ``ownerOffset[i]`` and ``neighbourOffset[i]``, which map from a given face ID to the offset of a lower or upper matrix element, respectively.
+Note that both ``ownerOffset[i]`` and ``neighbourOffset[i]`` might map to lower and upper elements.
+These face addressing arrays are stored as ``uint8_t`` arraysr
+The following table gives as summary 
 
 .. list-table::
    :header-rows: 1
@@ -85,43 +87,14 @@ Face Addressing Arrays
      - Offset within the *neighbour* cell's row for the column pointing at the *owner* cell.
        Gives the **lower**-triangular entry :math:`A[\text{nei},\text{own}]`.
 
-Why ``ownerOffset`` → upper triangular
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By construction, NeoN guarantees ``owner[f] < neighbour[f]`` for every internal face ``f``.
-This means that in the owner's row (row index = ``own``), the column that points to the
-neighbour has column index ``nei > own`` — which is the **upper triangle**.
-Conversely, in the neighbour's row (row index = ``nei``), the column pointing back to the
-owner has column index ``own < nei`` — which is the **lower triangle**.
-
-This invariant is what makes ``ownerOffset`` the upper-triangular offset and
-``neighbourOffset`` the lower-triangular offset.
-
-Helper functions (``faceToMatrixAddress.hpp``) convert offsets to flat ``values`` indices:
-
-.. code-block:: cpp
-
-    // Flat index of diagonal for cell i:
-    //   diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
-    localIdx diagIdx(localIdx celli) const;
-
-    // Flat index of A[own, nei]  (upper triangular):
-    //   upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
-    //   own < nei by construction → column index nei > row index own
-    localIdx upperIdx(localIdx own, localIdx faceIdx) const;
-
-    // Flat index of A[nei, own]  (lower triangular):
-    //   lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
-    //   nei > own by construction → column index own < row index nei
-    localIdx lowerIdx(localIdx nei, localIdx faceIdx) const;
-
-8-Cell 2-Rank Example
+Mesh - Matrix Example
 ----------------------
 
 Mesh Topology
 ^^^^^^^^^^^^^
 
-Consider a 1-D mesh with **4 cells on rank 0** (C0–C3) and **4 cells on rank 1** (C4–C7):
+Consider the following 1-D mesh partitioned into 2 parts with 4 cells (Ci) on each rank 0
 
 .. figure:: matrix_cell_connectivity.png
    :alt: 8-cell 2-rank mesh connectivity

@@ -283,24 +283,25 @@
 where each row corresponds to a mesh cell and each non-zero off-diagonal entry corresponds to a
 face shared by two cells.  NeoN assembles this system in three parts:</p>
 <ul class="simple">
-<li><p><strong>Local CSR matrix</strong> — all cell-to-cell connections within the current MPI rank.</p></li>
-<li><p><strong>Physical-boundary COO matrix</strong> — contributions from Dirichlet/Neumann boundaries.</p></li>
-<li><p><strong>Processor-boundary COO matrix</strong> — contributions from faces shared with neighbouring MPI ranks.</p></li>
+<li><p><strong>Local system matrix</strong> — all cell-to-cell connections within the current MPI rank.</p></li>
+<li><p><strong>Physical-boundary matrix</strong> — contributions from Dirichlet/Neumann boundaries.</p></li>
+<li><p><strong>Processor-boundary matrix</strong> — contributions from faces shared with neighbouring MPI ranks.</p></li>
 </ul>
 <p>The central object that links mesh topology to matrix storage is
 <code class="docutils literal notranslate"><span class="pre">FaceToMatrixAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/faceToMatrixAddress.hpp</span></code>).
 It stores three compact offset arrays (<code class="docutils literal notranslate"><span class="pre">diagOffset</span></code>, <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>, <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>)
-that map every mesh face to a position inside the flat <code class="docutils literal notranslate"><span class="pre">values</span></code> array of the CSR matrix.</p>
+that map every mesh face to a position inside the flat <code class="docutils literal notranslate"><span class="pre">values</span></code> array of the corresponding matrix.</p>
 <p>Further details:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a></p></li>
 <li><p><a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a></p></li>
 </ul>
+<p>Currently, only two matrix formats are supported: CSR and COO. These are hardcoded, with the system matrix stored in CSR format and the boundary matrix stored in COO format.</p>
 </section>
 <section id="csr-format">
 <h2>CSR Format<a class="headerlink" href="#csr-format" title="Link to this heading">¶</a></h2>
-<p>The local matrix is stored in <strong>Compressed Sparse Row (CSR)</strong> format via
-<code class="docutils literal notranslate"><span class="pre">SparsityPattern</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/sparsityPattern.hpp</span></code>):</p>
+<p>The local system matrix is stored in <strong>Compressed Sparse Row (CSR)</strong> format via
+<code class="docutils literal notranslate"><span class="pre">CsrSparsityPattern</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/csrSparsityPattern.hpp</span></code>):</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rowOffs_</span><span class="p">;</span><span class="w">   </span><span class="c1">// size nCells + 1</span>
 <span class="n">Vector</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">colIdxs_</span><span class="p">;</span><span class="w">   </span><span class="c1">// size nnz (number of non-zeros)</span>
 <span class="c1">// values stored separately in Matrix::values_</span>
@@ -316,20 +317,21 @@ Iterating over row <code class="docutils literal notranslate"><span class="pre">
 </pre></div>
 </div>
 </section>
-<section id="row-layout-lower-diagonal-upper">
-<h2>Row Layout: Lower | Diagonal | Upper<a class="headerlink" href="#row-layout-lower-diagonal-upper" title="Link to this heading">¶</a></h2>
-<p>Within every row the non-zero entries are stored in the order:</p>
+<section id="row-layout-and-face-addressing-arrays">
+<h2>Row Layout and Face Addressing Arrays<a class="headerlink" href="#row-layout-and-face-addressing-arrays" title="Link to this heading">¶</a></h2>
+<p>Within every row of a matrix A the non-zero values are stored in row-major order.
+This leads to entries being sorted as lower | diag | upper in a row as shown below:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Row i: [ A[i,j0] ... A[i,j_{k-1}] | A[i,i] | A[i,j_{k+1}] ... A[i,j_{m}] ]
        |&lt;----- lower (j &lt; i) -----&gt;|&lt;-diag-&gt;|&lt;----- upper (j &gt; i) --------&gt;|
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">diagOffset[i]</span></code> equals the count of lower-triangular entries in row <code class="docutils literal notranslate"><span class="pre">i</span></code>, which is also
 the number of internal faces for which cell <code class="docutils literal notranslate"><span class="pre">i</span></code> is the <em>neighbour</em> (i.e. has a larger
-index than the owner).</p>
-</section>
-<section id="face-addressing-arrays">
-<h2>Face Addressing Arrays<a class="headerlink" href="#face-addressing-arrays" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">FaceToMatrixAddress</span></code> stores three <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> arrays:</p>
+index than the owner).
+Additionally, the FaceToMatrixAddress class stores <code class="docutils literal notranslate"><span class="pre">ownerOffset[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">neighbourOffset[i]</span></code>, which map from a given face ID to the offset of a lower or upper matrix element, respectively.
+Note that both <code class="docutils literal notranslate"><span class="pre">ownerOffset[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">neighbourOffset[i]</span></code> might map to lower and upper elements.
+These face addressing arrays are stored as <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> arraysr
+The following table gives as summary</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -361,38 +363,12 @@ Gives the <strong>lower</strong>-triangular entry <span class="math notranslate 
 </tbody>
 </table>
 </div>
-<section id="why-owneroffset-upper-triangular">
-<h3>Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular<a class="headerlink" href="#why-owneroffset-upper-triangular" title="Link to this heading">¶</a></h3>
-<p>By construction, NeoN guarantees <code class="docutils literal notranslate"><span class="pre">owner[f]</span> <span class="pre">&lt;</span> <span class="pre">neighbour[f]</span></code> for every internal face <code class="docutils literal notranslate"><span class="pre">f</span></code>.
-This means that in the owner’s row (row index = <code class="docutils literal notranslate"><span class="pre">own</span></code>), the column that points to the
-neighbour has column index <code class="docutils literal notranslate"><span class="pre">nei</span> <span class="pre">&gt;</span> <span class="pre">own</span></code> — which is the <strong>upper triangle</strong>.
-Conversely, in the neighbour’s row (row index = <code class="docutils literal notranslate"><span class="pre">nei</span></code>), the column pointing back to the
-owner has column index <code class="docutils literal notranslate"><span class="pre">own</span> <span class="pre">&lt;</span> <span class="pre">nei</span></code> — which is the <strong>lower triangle</strong>.</p>
-<p>This invariant is what makes <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> the upper-triangular offset and
-<code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code> the lower-triangular offset.</p>
-<p>Helper functions (<code class="docutils literal notranslate"><span class="pre">faceToMatrixAddress.hpp</span></code>) convert offsets to flat <code class="docutils literal notranslate"><span class="pre">values</span></code> indices:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Flat index of diagonal for cell i:</span>
-<span class="c1">//   diagIdx(celli) = rowOffs[celli] + diagOffset[celli]</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">diagIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">celli</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="c1">// Flat index of A[own, nei]  (upper triangular):</span>
-<span class="c1">//   upperIdx(own, f) = rowOffs[own] + ownerOffset[f]</span>
-<span class="c1">//   own &lt; nei by construction → column index nei &gt; row index own</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">upperIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">own</span><span class="p">,</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">faceIdx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="c1">// Flat index of A[nei, own]  (lower triangular):</span>
-<span class="c1">//   lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]</span>
-<span class="c1">//   nei &gt; own by construction → column index own &lt; row index nei</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">lowerIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">nei</span><span class="p">,</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">faceIdx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-</pre></div>
-</div>
 </section>
-</section>
-<section id="cell-2-rank-example">
-<h2>8-Cell 2-Rank Example<a class="headerlink" href="#cell-2-rank-example" title="Link to this heading">¶</a></h2>
+<section id="mesh-matrix-example">
+<h2>Mesh - Matrix Example<a class="headerlink" href="#mesh-matrix-example" title="Link to this heading">¶</a></h2>
 <section id="mesh-topology">
 <h3>Mesh Topology<a class="headerlink" href="#mesh-topology" title="Link to this heading">¶</a></h3>
-<p>Consider a 1-D mesh with <strong>4 cells on rank 0</strong> (C0–C3) and <strong>4 cells on rank 1</strong> (C4–C7):</p>
+<p>Consider the following 1-D mesh partitioned into 2 parts with 4 cells (Ci) on each rank 0</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/matrix_cell_connectivity.png"><img alt="8-cell 2-rank mesh connectivity" src="../_images/matrix_cell_connectivity.png" style="width: 95%;" /></a>
 <figcaption>
@@ -836,12 +812,8 @@ resolves <code class="docutils literal notranslate"><span class="pre">rowOffs[ce
 <li><a class="reference internal" href="#">Matrix Addressing</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#csr-format">CSR Format</a></li>
-<li><a class="reference internal" href="#row-layout-lower-diagonal-upper">Row Layout: Lower | Diagonal | Upper</a></li>
-<li><a class="reference internal" href="#face-addressing-arrays">Face Addressing Arrays</a><ul>
-<li><a class="reference internal" href="#why-owneroffset-upper-triangular">Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cell-2-rank-example">8-Cell 2-Rank Example</a><ul>
+<li><a class="reference internal" href="#row-layout-and-face-addressing-arrays">Row Layout and Face Addressing Arrays</a></li>
+<li><a class="reference internal" href="#mesh-matrix-example">Mesh - Matrix Example</a><ul>
 <li><a class="reference internal" href="#mesh-topology">Mesh Topology</a></li>
 <li><a class="reference internal" href="#csr-non-zero-pattern">CSR Non-zero Pattern</a></li>
 <li><a class="reference internal" href="#construction-walkthrough">Construction Walkthrough</a></li>
