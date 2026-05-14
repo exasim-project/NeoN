@@ -116,26 +116,33 @@
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00112}00112\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00113}00113\ \};}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00114}00114\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00115}00115\ \textcolor{comment}{/*\ @brief\ Creates\ the\ CSR\ sparsity\ pattern\ and\ FaceToMatrixAddress\ from\ a\ mesh.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00115}00115\ \textcolor{comment}{/*\ @brief\ Creates\ the\ sparsity\ pattern\ and\ corresponding\ FaceToMatrixAddress\ from\ a\ mesh.}}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00116}00116\ \textcolor{comment}{\ *}}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00117}00117\ \textcolor{comment}{\ *\ The\ two\ are\ returned\ together\ because\ FaceToMatrixAddress\ borrows\ the\ row-\/offsets}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00118}00118\ \textcolor{comment}{\ *\ view\ from\ the\ CsrSparsityPattern.\ The\ boundary\ COO\ sparsity\ is\ created\ separately}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00119}00119\ \textcolor{comment}{\ *\ via\ createBoundaryCooSparsityPattern.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00120}00120\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00121}00121\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ IndexType>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00122}00122\ std::pair<}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00123}00123\ \ \ \ \ std::shared\_ptr<const\ CsrSparsityPattern<IndexType>>,}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00124}00124\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<IndexType>>>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00125}\mbox{\hyperlink{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d}{00125}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d}{createSparsityPatternFaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00126}00126\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00127}00127\ \textcolor{comment}{/*\ @brief\ Creates\ the\ boundary\ COO\ sparsity\ pattern\ from\ a\ mesh\ and\ an\ existing}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00128}00128\ \textcolor{comment}{\ *\ FaceToMatrixAddress\ (which\ provides\ the\ diagonal\ offsets\ needed\ to\ compute\ it).}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00129}00129\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00130}00130\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ IndexType,\ \textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00131}\mbox{\hyperlink{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}{00131}}\ std::shared\_ptr<const\ SparsityType>\ \mbox{\hyperlink{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}{createBoundarySparsityPattern}}(}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<IndexType>}}\&\ faceToMatrixAddress}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00133}00133\ );}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00134}00134\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00135}00135\ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00118}00118\ \textcolor{comment}{\ *\ view\ from\ the\ sparsity\ pattern.\ The\ boundary\ sparsity\ is\ created\ separately}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00119}00119\ \textcolor{comment}{\ *\ via\ createBoundarySparsityPattern.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00120}00120\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00121}00121\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00122}00122\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CsrSparsityPattern<localIdx>\ or\ CooSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00123}00123\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00124}00124\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00125}00125\ std::pair<}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00126}00126\ \ \ \ \ std::shared\_ptr<const\ SparsityType>,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00127}00127\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>>>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00128}\mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{00128}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{createSparsityPatternFaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00130}00130\ \textcolor{comment}{/*\ @brief\ Creates\ the\ boundary\ sparsity\ pattern\ from\ a\ mesh\ and\ an\ existing}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00131}00131\ \textcolor{comment}{\ *\ FaceToMatrixAddress\ (which\ provides\ the\ diagonal\ offsets\ needed\ to\ compute\ it).}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00132}00132\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00133}00133\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00134}00134\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CooSparsityPattern<localIdx>\ or\ CsrSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00135}00135\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00136}00136\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00137}\mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{00137}}\ std::shared\_ptr<const\ SparsityType>\ \mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{createBoundarySparsityPattern}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00138}00138\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00139}00139\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>}}\&\ faceToMatrixAddress}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00140}00140\ );}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00142}00142\ \}}
 
 \end{DoxyCode}

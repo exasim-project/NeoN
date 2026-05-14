@@ -708,27 +708,34 @@
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="113"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Creates<sp/>the<sp/>CSR<sp/>sparsity<sp/>pattern<sp/>and<sp/>FaceToMatrixAddress<sp/>from<sp/>a<sp/>mesh.</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Creates<sp/>the<sp/>sparsity<sp/>pattern<sp/>and<sp/>corresponding<sp/>FaceToMatrixAddress<sp/>from<sp/>a<sp/>mesh.</highlight></codeline>
 <codeline lineno="116"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="117"><highlight class="comment"><sp/>*<sp/>The<sp/>two<sp/>are<sp/>returned<sp/>together<sp/>because<sp/>FaceToMatrixAddress<sp/>borrows<sp/>the<sp/>row-offsets</highlight></codeline>
-<codeline lineno="118"><highlight class="comment"><sp/>*<sp/>view<sp/>from<sp/>the<sp/>CsrSparsityPattern.<sp/>The<sp/>boundary<sp/>COO<sp/>sparsity<sp/>is<sp/>created<sp/>separately</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>via<sp/>createBoundaryCooSparsityPattern.</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType&gt;</highlight></codeline>
-<codeline lineno="122"><highlight class="normal">std::pair&lt;</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>CsrSparsityPattern&lt;IndexType&gt;&gt;,</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>FaceToMatrixAddress&lt;IndexType&gt;&gt;&gt;</highlight></codeline>
-<codeline lineno="125" refid="namespaceNeoN_1_1la_1af11bbea45989e7220214bfab9789af5d" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1af11bbea45989e7220214bfab9789af5d" kindref="member">createSparsityPatternFaceToMatrixAddress</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"></highlight></codeline>
-<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Creates<sp/>the<sp/>boundary<sp/>COO<sp/>sparsity<sp/>pattern<sp/>from<sp/>a<sp/>mesh<sp/>and<sp/>an<sp/>existing</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/>*<sp/>FaceToMatrixAddress<sp/>(which<sp/>provides<sp/>the<sp/>diagonal<sp/>offsets<sp/>needed<sp/>to<sp/>compute<sp/>it).</highlight></codeline>
-<codeline lineno="129"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SparsityType&gt;</highlight></codeline>
-<codeline lineno="131" refid="namespaceNeoN_1_1la_1ab44de11212b71fe6791f72d0d23bec7f" refkind="member"><highlight class="normal">std::shared_ptr&lt;const<sp/>SparsityType&gt;<sp/><ref refid="namespaceNeoN_1_1la_1ab44de11212b71fe6791f72d0d23bec7f" kindref="member">createBoundarySparsityPattern</ref>(</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;IndexType&gt;</ref>&amp;<sp/>faceToMatrixAddress</highlight></codeline>
-<codeline lineno="133"><highlight class="normal">);</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/>*<sp/>view<sp/>from<sp/>the<sp/>sparsity<sp/>pattern.<sp/>The<sp/>boundary<sp/>sparsity<sp/>is<sp/>created<sp/>separately</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>via<sp/>createBoundarySparsityPattern.</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/>*<sp/>@tparam<sp/>SparsityType<sp/>-<sp/>The<sp/>full<sp/>sparsity<sp/>pattern<sp/>type<sp/>to<sp/>create,<sp/>e.g.</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CsrSparsityPattern&lt;localIdx&gt;<sp/>or<sp/>CooSparsityPattern&lt;localIdx&gt;</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SparsityType&gt;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal">std::pair&lt;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>SparsityType&gt;,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>FaceToMatrixAddress&lt;typename<sp/>SparsityType::SparsityIndexType&gt;&gt;&gt;</highlight></codeline>
+<codeline lineno="128" refid="namespaceNeoN_1_1la_1abacf6cb7c21dbcdd8eebce04e61998a1" refkind="member"><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1abacf6cb7c21dbcdd8eebce04e61998a1" kindref="member">createSparsityPatternFaceToMatrixAddress</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Creates<sp/>the<sp/>boundary<sp/>sparsity<sp/>pattern<sp/>from<sp/>a<sp/>mesh<sp/>and<sp/>an<sp/>existing</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/>*<sp/>FaceToMatrixAddress<sp/>(which<sp/>provides<sp/>the<sp/>diagonal<sp/>offsets<sp/>needed<sp/>to<sp/>compute<sp/>it).</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>*<sp/>@tparam<sp/>SparsityType<sp/>-<sp/>The<sp/>full<sp/>sparsity<sp/>pattern<sp/>type<sp/>to<sp/>create,<sp/>e.g.</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CooSparsityPattern&lt;localIdx&gt;<sp/>or<sp/>CsrSparsityPattern&lt;localIdx&gt;</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SparsityType&gt;</highlight></codeline>
+<codeline lineno="137" refid="namespaceNeoN_1_1la_1a46ab66a775543d3b01c752bed81d4115" refkind="member"><highlight class="normal">std::shared_ptr&lt;const<sp/>SparsityType&gt;<sp/><ref refid="namespaceNeoN_1_1la_1a46ab66a775543d3b01c752bed81d4115" kindref="member">createBoundarySparsityPattern</ref>(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress&lt;typename SparsityType::SparsityIndexType&gt;</ref>&amp;<sp/>faceToMatrixAddress</highlight></codeline>
+<codeline lineno="140"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp"/>
   </compounddef>

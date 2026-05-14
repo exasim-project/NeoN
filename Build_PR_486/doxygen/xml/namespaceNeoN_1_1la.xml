@@ -62,14 +62,38 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1af11bbea45989e7220214bfab9789af5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ad872f9940c0380f621ad7c02b4e7815f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename IndexType</type>
           </param>
         </templateparamlist>
-        <type>std::pair&lt; std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1CsrSparsityPattern" kindref="compound">CsrSparsityPattern</ref>&lt; IndexType &gt; &gt;, std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>&lt; IndexType &gt; &gt; &gt;</type>
-        <definition>std::pair&lt; std::shared_ptr&lt; const CsrSparsityPattern&lt; IndexType &gt; &gt;, std::shared_ptr&lt; const FaceToMatrixAddress&lt; IndexType &gt; &gt; &gt; NeoN::la::createSparsityPatternFaceToMatrixAddress</definition>
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt;</type>
+        <definition>const Vector&lt; IndexType &gt; NeoN::la::rowsToRowOffs</definition>
+        <argsstring>(Vector&lt; IndexType &gt; &amp;rows)</argsstring>
+        <name>rowsToRowOffs</name>
+        <qualifiedname>NeoN::la::rowsToRowOffs</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; IndexType &gt; &amp;</type>
+          <declname>rows</declname>
+        </param>
+        <briefdescription>
+<para>given a set off row idx this function converts to rowOffsets </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/csrSparsityPattern.hpp" line="96" column="15" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/csrSparsityPattern.hpp" declline="96" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1abacf6cb7c21dbcdd8eebce04e61998a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; std::shared_ptr&lt; const SparsityType &gt;, std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>&lt; typename SparsityType::SparsityIndexType &gt; &gt; &gt;</type>
+        <definition>std::pair&lt; std::shared_ptr&lt; const SparsityType &gt;, std::shared_ptr&lt; const FaceToMatrixAddress&lt; typename SparsityType::SparsityIndexType &gt; &gt; &gt; NeoN::la::createSparsityPatternFaceToMatrixAddress</definition>
         <argsstring>(const UnstructuredMesh &amp;mesh)</argsstring>
         <name>createSparsityPatternFaceToMatrixAddress</name>
         <qualifiedname>NeoN::la::createSparsityPatternFaceToMatrixAddress</qualifiedname>
@@ -83,20 +107,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" line="125" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" declline="125" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" line="128" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" declline="128" declcolumn="1"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1ab44de11212b71fe6791f72d0d23bec7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a46ab66a775543d3b01c752bed81d4115" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
-          <param>
-            <type>typename IndexType</type>
-          </param>
           <param>
             <type>typename SparsityType</type>
           </param>
         </templateparamlist>
         <type>std::shared_ptr&lt; const SparsityType &gt;</type>
         <definition>std::shared_ptr&lt; const SparsityType &gt; NeoN::la::createBoundarySparsityPattern</definition>
-        <argsstring>(const UnstructuredMesh &amp;mesh, const FaceToMatrixAddress&lt; IndexType &gt; &amp;faceToMatrixAddress)</argsstring>
+        <argsstring>(const UnstructuredMesh &amp;mesh, const FaceToMatrixAddress&lt; typename SparsityType::SparsityIndexType &gt; &amp;faceToMatrixAddress)</argsstring>
         <name>createBoundarySparsityPattern</name>
         <qualifiedname>NeoN::la::createBoundarySparsityPattern</qualifiedname>
         <param>
@@ -104,7 +125,7 @@
           <declname>mesh</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>&lt; IndexType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>&lt; typename SparsityType::SparsityIndexType &gt; &amp;</type>
           <declname>faceToMatrixAddress</declname>
         </param>
         <briefdescription>
@@ -113,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" line="131" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" declline="131" declcolumn="17"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" line="137" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp" declline="137" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1aa225acfa2621e5e29de5b705b1757afc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -144,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="183" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="183" bodyend="198"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="184" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="184" bodyend="199"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a5a0ad3d154c390bb75b1e2581b775fd9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -168,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="204" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="204" bodyend="230"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" line="205" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp" bodystart="205" bodyend="231"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1adf0e2e0fd0c0edb0caf3488bcc1ec63c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

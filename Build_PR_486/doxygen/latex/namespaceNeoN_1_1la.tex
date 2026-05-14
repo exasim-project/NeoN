@@ -39,9 +39,11 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Index\+Type $>$ }\\std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d}{create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+{\footnotesize template$<$typename Index\+Type $>$ }\\const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f}{rows\+To\+Row\+Offs}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&rows)
+\begin{DoxyCompactList}\small\item\em given a set off row idx this function converts to row\+Offsets \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Sparsity\+Type $>$ }\\std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
-{\footnotesize template$<$typename Index\+Type , typename Sparsity\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}{create\+Boundary\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&face\+To\+Matrix\+Address)
+{\footnotesize template$<$typename Sparsity\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{create\+Boundary\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&face\+To\+Matrix\+Address)
 \item 
 {\footnotesize template$<$typename Value\+Type , typename System\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
@@ -110,12 +112,12 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00285}{285}} of file \mb
 {\footnotesize\ttfamily template$<$typename Matrix\+Type $>$ \\
 void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const Matrix\+Type \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f}\label{namespaceNeoN_1_1la_ab44de11212b71fe6791f72d0d23bec7f} 
+\Hypertarget{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}\label{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115} 
 \index{NeoN::la@{NeoN::la}!createBoundarySparsityPattern@{createBoundarySparsityPattern}}
 \index{createBoundarySparsityPattern@{createBoundarySparsityPattern}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{createBoundarySparsityPattern()}{createBoundarySparsityPattern()}}
-{\footnotesize\ttfamily template$<$typename Index\+Type , typename Sparsity\+Type $>$ \\
-std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ Neo\+N\+::la\+::create\+Boundary\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ \&}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Sparsity\+Type $>$ \\
+std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ Neo\+N\+::la\+::create\+Boundary\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc}\label{namespaceNeoN_1_1la_aa225acfa2621e5e29de5b705b1757afc} 
 \index{NeoN::la@{NeoN::la}!createEmptyLinearSystem@{createEmptyLinearSystem}}
@@ -126,14 +128,14 @@ std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ Neo\+N\+::la\+::create\+Bound
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00184}{184}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d}\label{namespaceNeoN_1_1la_af11bbea45989e7220214bfab9789af5d} 
+\Hypertarget{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}\label{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1} 
 \index{NeoN::la@{NeoN::la}!createSparsityPatternFaceToMatrixAddress@{createSparsityPatternFaceToMatrixAddress}}
 \index{createSparsityPatternFaceToMatrixAddress@{createSparsityPatternFaceToMatrixAddress}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{createSparsityPatternFaceToMatrixAddress()}{createSparsityPatternFaceToMatrixAddress()}}
-{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
-std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ Index\+Type $>$ $>$ $>$ Neo\+N\+::la\+::create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily template$<$typename Sparsity\+Type $>$ \\
+std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ Neo\+N\+::la\+::create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1la_a52a50e55f8c3581196746319dd5275f6}\label{namespaceNeoN_1_1la_a52a50e55f8c3581196746319dd5275f6} 
 \index{NeoN::la@{NeoN::la}!getComponent@{getComponent}}
@@ -175,7 +177,18 @@ for testing purposes, this function reverses boundary contributions previously a
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00204}{204}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00205}{205}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f}\label{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f} 
+\index{NeoN::la@{NeoN::la}!rowsToRowOffs@{rowsToRowOffs}}
+\index{rowsToRowOffs@{rowsToRowOffs}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{rowsToRowOffs()}{rowsToRowOffs()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ Neo\+N\+::la\+::rows\+To\+Row\+Offs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{rows }\end{DoxyParamCaption})}
+
+
+
+given a set off row idx this function converts to row\+Offsets 
 
 \Hypertarget{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4}\label{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4} 
 \index{NeoN::la@{NeoN::la}!scaledInvDiagNegLUx@{scaledInvDiagNegLUx}}

@@ -36,7 +36,7 @@ var searchData=
   ['create1duniformmesh_33',['create1DUniformMesh',['../namespaceNeoN.html#a07b7707df15bdcd2cc2549ea39646bb8',1,'NeoN']]],
   ['create2duniformmesh_34',['create2DUniformMesh',['../namespaceNeoN.html#ab3d0166f2ee72eafc82fc6e11b087ec6',1,'NeoN']]],
   ['create3duniformmesh_35',['create3DUniformMesh',['../namespaceNeoN.html#ab85f99ab3c2c8b4b14316c1334db1e8e',1,'NeoN']]],
-  ['createboundarysparsitypattern_36',['createBoundarySparsityPattern',['../namespaceNeoN_1_1la.html#ab44de11212b71fe6791f72d0d23bec7f',1,'NeoN::la']]],
+  ['createboundarysparsitypattern_36',['createBoundarySparsityPattern',['../namespaceNeoN_1_1la.html#a46ab66a775543d3b01c752bed81d4115',1,'NeoN::la']]],
   ['createcalculatedbcs_37',['createCalculatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ab918b7425253d07393f1e18b71aa4e22',1,'NeoN::finiteVolume::cellCentred']]],
   ['createdefaultexecutor_38',['createDefaultExecutor',['../namespaceNeoN.html#a979e8785178e66d261937543c92278fb',1,'NeoN']]],
   ['createemptylinearsystem_39',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#aa225acfa2621e5e29de5b705b1757afc',1,'NeoN::la']]],
@@ -44,7 +44,7 @@ var searchData=
   ['createfluxcorrbcsfromu_41',['createFluxCorrBCsFromU',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a616a3a0d2d9285da79f5301efe88d399',1,'NeoN::finiteVolume::cellCentred']]],
   ['createkokkosview_42',['createkokkosview',['../classNeoN_1_1CPUExecutor.html#a5232ea309a5b0c1bc39b12fb1a791093',1,'NeoN::CPUExecutor::createKokkosView()'],['../classNeoN_1_1GPUExecutor.html#ab8e118a7aaf1d73ab37111449bd99a4e',1,'NeoN::GPUExecutor::createKokkosView()'],['../classNeoN_1_1SerialExecutor.html#aa80fc6ac2a2a9afe4e016a193f6491c4',1,'NeoN::SerialExecutor::createKokkosView()']]],
   ['createsinglecellmesh_43',['createSingleCellMesh',['../namespaceNeoN.html#a8e4ff733c9dc00a516d09fbdacb127f4',1,'NeoN']]],
-  ['createsparsitypatternfacetomatrixaddress_44',['createSparsityPatternFaceToMatrixAddress',['../namespaceNeoN_1_1la.html#af11bbea45989e7220214bfab9789af5d',1,'NeoN::la']]],
+  ['createsparsitypatternfacetomatrixaddress_44',['createSparsityPatternFaceToMatrixAddress',['../namespaceNeoN_1_1la.html#abacf6cb7c21dbcdd8eebce04e61998a1',1,'NeoN::la']]],
   ['csrsparsitypattern_45',['csrsparsitypattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html#a10c1cf4ecea5f45478311373d22e4f7f',1,'NeoN::la::CsrSparsityPattern::CsrSparsityPattern(const CsrSparsityPattern &amp;sp)'],['../classNeoN_1_1la_1_1CsrSparsityPattern.html#af2def25686dc88a794c716c53c1b7ae4',1,'NeoN::la::CsrSparsityPattern::CsrSparsityPattern(Vector&lt; IndexType &gt; &amp;&amp;colIdx, Vector&lt; IndexType &gt; &amp;&amp;rowOffs)']]],
   ['currenttime_46',['currenttime',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#a32bf6ed80ce09f47f5d4e4b03fdaf3e9',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::currentTime() const'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1OldTimeDocument.html#ad9c36776f49d830e57592a81b04fd0f6',1,'NeoN::finiteVolume::cellCentred::OldTimeDocument::currentTime()']]]
 ];
