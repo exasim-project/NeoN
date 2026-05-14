@@ -403,9 +403,11 @@ SolverStats GinkgoSolver::solveDist(
 ) const
 {
     // NEON_GINKGO_HOST_SOLVE: route the Ginkgo solve through ReferenceExecutor
-    // for diagnosis of v2.0 multi-GPU divergence. Keeps NeoN on its native
-    // (GPU) executor for everything except the solve.
-    if (hostSolveFallbackEnabled() && !std::holds_alternative<SerialExecutor>(x.exec()))
+    // ONLY when NeoN's executor is GPUExecutor. For SerialExecutor and
+    // CPUExecutor runs the native Ginkgo host path is correct and fast --
+    // intercepting them would make a CPU-vs-GPU comparison meaningless
+    // (both sides would end up on ReferenceExecutor).
+    if (hostSolveFallbackEnabled() && std::holds_alternative<GPUExecutor>(x.exec()))
     {
         return solveDistHostFallback(config_, sys, x);
     }
@@ -426,7 +428,10 @@ SolverStats GinkgoSolver::solveDist(
     const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
-    if (hostSolveFallbackEnabled() && !std::holds_alternative<SerialExecutor>(x.exec()))
+    // Gate Vec3 fallback on GPUExecutor only (see scalar overload above for
+    // rationale: a CPU run must take the native Ginkgo host path so that
+    // CPU-vs-GPU comparisons are meaningful).
+    if (hostSolveFallbackEnabled() && std::holds_alternative<GPUExecutor>(x.exec()))
     {
         return solveDistHostFallback(config_, sys, x);
     }
