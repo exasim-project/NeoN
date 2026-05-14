@@ -29,7 +29,7 @@ void computeLinearInterpolation(
     // half to carry the same value the kernel writes into internalVector
     // at boundary face indices.
     auto dstBnd = dst.boundaryData().value().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS, bcFaceCells] = views(
+    const auto [srcS, weightS, ownerS, neighS, bcFaceCells, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
@@ -78,7 +78,7 @@ void computeLinearInterpolation(
             if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
             {
                 auto bcfacei = facei - nInternalFaces;
-                auto own = faceCellS[bcfacei];
+                auto own = bcFaceCells[bcfacei];
                 dstS[facei] = (1 - weightS[facei]) * srcS[own] + weightS[facei] * boundS[bcfacei];
                 dstBnd[bcfacei] = dstS[facei];
             }

@@ -316,7 +316,11 @@ template<
 LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
 createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
-    return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
+    auto [faceToMatrixAddr, commPattern] =
+        createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    return LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>(
+        faceToMatrixAddr, commPattern
+    );
 }
 
 /** @brief for testing purposes, this function reverses boundary contributions previously applied to
