@@ -4,6 +4,8 @@
 
 #if NF_WITH_GINKGO
 
+#include <cstdlib>
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
@@ -276,10 +278,138 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
     setComponent<I>(xcopy, x);
 }
 
+/* @brief Runtime check for the host-fallback env var.
+ *
+ * Env: NEON_GINKGO_HOST_SOLVE=1 forces the distributed Ginkgo solve to run
+ * on gko::ReferenceExecutor regardless of the NeoN executor. The rest of
+ * NeoN keeps running on the original (GPU) executor; only the Ginkgo
+ * solve step trips through host memory:
+ *   1. LinearSystem and x are copied device -> host
+ *   2. A new Ginkgo solver factory is built on ReferenceExecutor (re-parsed
+ *      from the same JSON config so the solver/precond match the device case)
+ *   3. solve_impl_dist runs on host
+ *   4. x is copied back host -> device
+ *
+ * This isolates whether the v2.0 GPU distributed bug is in Ginkgo's
+ * distributed CUDA apply / halo gather / Coo apply2 (all of which are
+ * bypassed by ReferenceExecutor) or upstream of Ginkgo. Performance cost:
+ * one device<->host round-trip per solve, plus the entire solve on CPU.
+ * Default OFF -- production builds untouched.
+ */
+inline bool hostSolveFallbackEnabled()
+{
+    static const bool enabled = std::getenv("NEON_GINKGO_HOST_SOLVE") != nullptr;
+    return enabled;
+}
+
+/* Scalar variant of the host-fallback distributed solve. */
+static SolverStats solveDistHostFallback(
+    const gko::config::pnode& config,
+    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys,
+    Vector<scalar>& x
+)
+{
+    auto hostExec = gko::ReferenceExecutor::create();
+    auto hostSys = sys.copyToHost();
+    auto xHost = x.copyToHost();
+
+    // On host we always want host buffers; the commPattern.env.comm() is the
+    // same MPI communicator the caller used.
+    const bool forceHostBuffer = true;
+    auto comm =
+        gko::experimental::mpi::communicator(hostSys.commPattern().env.comm(), forceHostBuffer);
+
+    auto gkoMtx = createGkoMtxDist(
+        hostExec, comm, hostSys.matrix(), hostSys.nonLocalMatrix(), hostSys.commPattern()
+    );
+
+    auto hostFactory =
+        gko::config::parse(
+            config, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
+        )
+            .on(hostExec);
+    auto hostSolver = hostFactory->generate(gkoMtx);
+
+    auto stat =
+        solve_impl_dist(hostExec, comm, hostSys.rhs(), xHost, gkoMtx, std::move(hostSolver));
+
+    // Write the solved xHost back into x's device storage.
+    x = Vector<scalar>(x.exec(), xHost);
+
+    return SolverStats {{stat}};
+}
+
+/* One component of the Vec3 host-fallback solve. Mirrors solveComponentDist
+ * but builds its own host-side factory and runs on ReferenceExecutor. */
+template<unsigned int I>
+static void solveComponentDistHost(
+    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& hostSys,
+    Vector<Vec3>& xHost,
+    std::shared_ptr<gko::Executor> hostExec,
+    const gko::config::pnode& config,
+    SolverStats& stats
+)
+{
+    auto rhs = getComponent<I>(hostSys.rhs());
+    auto xcopy = getComponent<I>(xHost);
+    auto values = getComponent<I>(hostSys.matrix().values());
+    auto sparsity = hostSys.matrix().sparsity();
+    auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+
+    auto nonLocalValues = getComponent<I>(hostSys.nonLocalMatrix().values());
+    auto nonLocalSparsity = hostSys.nonLocalMatrix().sparsity();
+    auto nonLocalMtx = COOMatrix<scalar, localIdx> {nonLocalValues, nonLocalSparsity};
+
+    const bool forceHostBuffer = true;
+    auto comm =
+        gko::experimental::mpi::communicator(hostSys.commPattern().env.comm(), forceHostBuffer);
+    auto gkoMtx = createGkoMtxDist(hostExec, comm, mtx, nonLocalMtx, hostSys.commPattern());
+
+    auto hostFactory =
+        gko::config::parse(
+            config, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
+        )
+            .on(hostExec);
+    auto hostSolver = hostFactory->generate(gkoMtx);
+
+    stats.entries.push_back(
+        solve_impl_dist(hostExec, comm, rhs, xcopy, gkoMtx, std::move(hostSolver))
+    );
+    setComponent<I>(xcopy, xHost);
+}
+
+/* Vec3 variant of the host-fallback distributed solve. */
+static SolverStats solveDistHostFallback(
+    const gko::config::pnode& config,
+    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys,
+    Vector<Vec3>& x
+)
+{
+    auto hostExec = gko::ReferenceExecutor::create();
+    auto hostSys = sys.copyToHost();
+    auto xHost = x.copyToHost();
+
+    auto stats = SolverStats {};
+    solveComponentDistHost<0>(hostSys, xHost, hostExec, config, stats);
+    solveComponentDistHost<1>(hostSys, xHost, hostExec, config, stats);
+    solveComponentDistHost<2>(hostSys, xHost, hostExec, config, stats);
+
+    x = Vector<Vec3>(x.exec(), xHost);
+    return stats;
+}
+
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
+    // NEON_GINKGO_HOST_SOLVE: route the Ginkgo solve through ReferenceExecutor
+    // for diagnosis of v2.0 multi-GPU divergence. Keeps NeoN on its native
+    // (GPU) executor for everything except the solve.
+    if (hostSolveFallbackEnabled() && !std::holds_alternative<SerialExecutor>(x.exec()))
+    {
+        return solveDistHostFallback(config_, sys, x);
+    }
+
 #if defined(NEON_GINKGO_HOST_STAGE)
     bool forceHostBuffer = true;
 #else
@@ -296,6 +426,11 @@ SolverStats GinkgoSolver::solveDist(
     const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
+    if (hostSolveFallbackEnabled() && !std::holds_alternative<SerialExecutor>(x.exec()))
+    {
+        return solveDistHostFallback(config_, sys, x);
+    }
+
     auto stats = SolverStats {};
     solveComponentDist<0>(sys, x, gkoExec_, factory_, stats);
     solveComponentDist<1>(sys, x, gkoExec_, factory_, stats);
