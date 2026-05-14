@@ -409,122 +409,126 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00317" data-start="{" data-end="}">
 <div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a526ab6c1bb1faea9fac356aee0888256">  317</a></span><a class="code hl_function" href="namespaceNeoN_1_1la.html#a526ab6c1bb1faea9fac356aee0888256">createEmptyLinearSystem</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a>&amp; mesh)</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>{</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keywordflow">return</span> {createSparsityPatternFaceToMatrixAddress&lt;NeoN::localIdx&gt;(mesh)};</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>}</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">auto</span> [faceToMatrixAddr, commPattern] =</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        createSparsityPatternFaceToMatrixAddress&lt;NeoN::localIdx&gt;(mesh);</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem&lt;ValueType, InnerMatrixType, BoundaryMatrixType&gt;</a>(</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        faceToMatrixAddr, commPattern</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    );</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>}</div>
 </div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span><span class="keyword">inline</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a></div>
-<div class="foldopen" id="foldopen00326" data-start="{" data-end="}">
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">  326</a></span><a class="code hl_function" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">removeBoundaryContributions</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>&amp; lsIn)</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>{</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keyword">auto</span> ls = <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>(lsIn);</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="keyword">const</span> <span class="keyword">auto</span> matIt = ls.faceToMatrixAddress();</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keyword">auto</span> lsView = ls.view();</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keyword">auto</span>&amp; matrix = lsView.matrix;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keyword">auto</span>&amp; rhs = lsView.rhs;</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keyword">auto</span>&amp; bMatrix = lsView.boundaryMatrix;</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="keyword">auto</span>&amp; bRhs = lsView.boundaryRhs;</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keyword">auto</span>&amp; mtx = ls.matrix();</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [diagOffs, rowOffs] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(matIt-&gt;diagOffset(), mtx.rowOffs());</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="comment">// Boundary matrix</span></div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        ls.exec(),</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        {0, bMatrix.values.size()},</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> facei) {</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            <span class="keyword">const</span> <span class="keyword">auto</span> celli = bMatrix.sparsity.rowOffs[facei]; <span class="comment">// cell index stored in rowOffs</span></div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            Kokkos::atomic_add(</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                &amp;matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            );</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            Kokkos::atomic_add(&amp;rhs[celli], bRhs[facei]);</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        },</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        <span class="stringliteral">&quot;removeBoundaryContributions&quot;</span></div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    );</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    <span class="keywordflow">return</span> ls;</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>}</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span><span class="keyword">inline</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a></div>
+<div class="foldopen" id="foldopen00330" data-start="{" data-end="}">
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">  330</a></span><a class="code hl_function" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">removeBoundaryContributions</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>&amp; lsIn)</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>{</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keyword">auto</span> ls = <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>(lsIn);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keyword">const</span> <span class="keyword">auto</span> matIt = ls.faceToMatrixAddress();</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="keyword">auto</span> lsView = ls.view();</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keyword">auto</span>&amp; matrix = lsView.matrix;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="keyword">auto</span>&amp; rhs = lsView.rhs;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keyword">auto</span>&amp; bMatrix = lsView.boundaryMatrix;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keyword">auto</span>&amp; bRhs = lsView.boundaryRhs;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keyword">auto</span>&amp; mtx = ls.matrix();</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [diagOffs, rowOffs] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(matIt-&gt;diagOffset(), mtx.rowOffs());</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <span class="comment">// Boundary matrix</span></div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        ls.exec(),</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        {0, bMatrix.values.size()},</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> facei) {</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            <span class="keyword">const</span> <span class="keyword">auto</span> celli = bMatrix.sparsity.rowOffs[facei]; <span class="comment">// cell index stored in rowOffs</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            Kokkos::atomic_add(</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                &amp;matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>            );</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            Kokkos::atomic_add(&amp;rhs[celli], bRhs[facei]);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        },</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        <span class="stringliteral">&quot;removeBoundaryContributions&quot;</span></div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    );</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span> </div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordflow">return</span> ls;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>}</div>
 </div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
-<div class="foldopen" id="foldopen00355" data-start="{" data-end="}">
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">  355</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">scaledInvDiagNegLUx</a>(</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;Vec3&gt;</a>&amp; ls, <span class="comment">// In,</span></div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; <a class="code hl_struct" href="structa.html">a</a>,</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; aBound,</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a>&amp; mesh,</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; rAU,</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; out</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>)</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>{</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="comment">// auto ls = removeBoundaryContributions(lsIn);</span></div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <span class="keyword">auto</span>&amp; mtx = ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#add7588bf29d737738bb403a48c24f3d9">matrix</a>();</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    <span class="keyword">auto</span>&amp; vol = mesh.<a class="code hl_function" href="classNeoN_1_1UnstructuredMesh.html#a2bfdd3e60fd2916c0e35beebe83d6ee7">cellVolumes</a>();</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keyword">auto</span>&amp; bMesh = mesh.<a class="code hl_function" href="classNeoN_1_1UnstructuredMesh.html#ae46f5b369b8f80fee5d36ef8b18fd301">boundaryMesh</a>();</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(mtx.nRows() == <a class="code hl_struct" href="structa.html">a</a>.size(), <span class="stringliteral">&quot;Dimension mismatch&quot;</span>);</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(mtx.nRows() == out.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>(), <span class="stringliteral">&quot;Dimension mismatch&quot;</span>);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, aBoundV, bV] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        mtx.sparsity()-&gt;rowOffs(),</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#add7588bf29d737738bb403a48c24f3d9">matrix</a>().sparsity()-&gt;colIdxs(),</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        mtx.values(),</div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>        rAU,</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        vol,</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <a class="code hl_struct" href="structa.html">a</a>,</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        aBound,</div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a7d30416cd365b6f17a2fd04da37ddbfd">rhs</a>()</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    );</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [nonLocalMtx, nonLocalRows] =</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a147c6330c5e9237d0aefb23d4d249f20">nonLocalMatrix</a>().values(), ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a147c6330c5e9237d0aefb23d4d249f20">nonLocalMatrix</a>().rowOffs());</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    <span class="keyword">auto</span> outV = out.<a class="code hl_function" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a>();</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span> </div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <span class="keyword">auto</span> procFacesStart = bMesh.nBoundaryFaces();</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    <span class="comment">// localIdx curNonLocalRow = 0;</span></div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>        mtx.exec(),</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        {0, mtx.nRows()},</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> rowi) {</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>            <span class="comment">// local mtx first</span></div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>            outV[rowi] = <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>();</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = rowOffsV[rowi]; i &lt; rowOffsV[rowi + 1]; i++)</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>            {</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>                <span class="keyword">auto</span> colI = colIdxV[i];</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                <span class="keywordflow">if</span> (rowi == colI)</div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>                {</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>                    rAUV[rowi] = volV[rowi] / matrixV[i][0];</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>                }</div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
+<div class="foldopen" id="foldopen00359" data-start="{" data-end="}">
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">  359</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">scaledInvDiagNegLUx</a>(</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;Vec3&gt;</a>&amp; ls, <span class="comment">// In,</span></div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; <a class="code hl_struct" href="structa.html">a</a>,</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; aBound,</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a>&amp; mesh,</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; rAU,</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;Vec3&gt;</a>&amp; out</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>)</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>{</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="comment">// auto ls = removeBoundaryContributions(lsIn);</span></div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="keyword">auto</span>&amp; mtx = ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#add7588bf29d737738bb403a48c24f3d9">matrix</a>();</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    <span class="keyword">auto</span>&amp; vol = mesh.<a class="code hl_function" href="classNeoN_1_1UnstructuredMesh.html#a2bfdd3e60fd2916c0e35beebe83d6ee7">cellVolumes</a>();</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    <span class="keyword">auto</span>&amp; bMesh = mesh.<a class="code hl_function" href="classNeoN_1_1UnstructuredMesh.html#ae46f5b369b8f80fee5d36ef8b18fd301">boundaryMesh</a>();</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(mtx.nRows() == <a class="code hl_struct" href="structa.html">a</a>.size(), <span class="stringliteral">&quot;Dimension mismatch&quot;</span>);</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(mtx.nRows() == out.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>(), <span class="stringliteral">&quot;Dimension mismatch&quot;</span>);</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, aBoundV, bV] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        mtx.sparsity()-&gt;rowOffs(),</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#add7588bf29d737738bb403a48c24f3d9">matrix</a>().sparsity()-&gt;colIdxs(),</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        mtx.values(),</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        rAU,</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        vol,</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        <a class="code hl_struct" href="structa.html">a</a>,</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        aBound,</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a7d30416cd365b6f17a2fd04da37ddbfd">rhs</a>()</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    );</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <span class="keyword">const</span> <span class="keyword">auto</span> [nonLocalMtx, nonLocalRows] =</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a147c6330c5e9237d0aefb23d4d249f20">nonLocalMatrix</a>().values(), ls.<a class="code hl_function" href="classNeoN_1_1la_1_1LinearSystem.html#a147c6330c5e9237d0aefb23d4d249f20">nonLocalMatrix</a>().rowOffs());</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    <span class="keyword">auto</span> outV = out.<a class="code hl_function" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a>();</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    <span class="keyword">auto</span> procFacesStart = bMesh.nBoundaryFaces();</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span> </div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    <span class="comment">// localIdx curNonLocalRow = 0;</span></div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        mtx.exec(),</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        {0, mtx.nRows()},</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> rowi) {</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>            <span class="comment">// local mtx first</span></div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>            outV[rowi] = <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>();</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = rowOffsV[rowi]; i &lt; rowOffsV[rowi + 1]; i++)</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>            {</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>                <span class="keyword">auto</span> colI = colIdxV[i];</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>                <span class="keywordflow">if</span> (rowi == colI)</div>
 <div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>                {</div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>                    outV[rowi] -= matrixV[i] * aV[colI];</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>                    rAUV[rowi] = volV[rowi] / matrixV[i][0];</div>
 <div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>                }</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>            }</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span> </div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>            <span class="comment">// check</span></div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>            <span class="comment">// FIXME this scans everytime all boundary values</span></div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>            <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> curNonLocalRow = 0;</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>            <span class="keyword">auto</span> nonLocalVal = <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>();</div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; nonLocalRows.size(); i++)</div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>            {</div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>                <span class="keywordflow">if</span> (nonLocalRows[i] == rowi)</div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>                {</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>                    nonLocalVal = nonLocalMtx[i];</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>                    curNonLocalRow = i;</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>                    <span class="comment">// FIXME is the sign correct?</span></div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>                    <span class="comment">// curNonLocalRow = 0;</span></div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>                    <span class="comment">// break;</span></div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>                }</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>            }</div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span> </div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>            outV[rowi] += bV[rowi];</div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>            outV[rowi] *= rAUV[rowi] / volV[rowi];</div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>        }</div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    );</div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>}</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                {</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                    outV[rowi] -= matrixV[i] * aV[colI];</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>                }</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>            }</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>            <span class="comment">// check</span></div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>            <span class="comment">// FIXME this scans everytime all boundary values</span></div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>            <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> curNonLocalRow = 0;</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>            <span class="keyword">auto</span> nonLocalVal = <a class="code hl_function" href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">zero&lt;Vec3&gt;</a>();</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; nonLocalRows.size(); i++)</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>            {</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>                <span class="keywordflow">if</span> (nonLocalRows[i] == rowi)</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>                {</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>                    nonLocalVal = nonLocalMtx[i];</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>                    curNonLocalRow = i;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>                    <span class="comment">// FIXME is the sign correct?</span></div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>                    <span class="comment">// curNonLocalRow = 0;</span></div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>                    <span class="comment">// break;</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>                }</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>            }</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span> </div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>            outV[rowi] += bV[rowi];</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>            outV[rowi] *= rAUV[rowi] / volV[rowi];</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>        }</div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>    );</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>}</div>
 </div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span> </div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>} <span class="comment">// namespace NeoN::la</span></div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span> </div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>} <span class="comment">// namespace NeoN::la</span></div>
 <div class="ttc" id="aclassNeoN_1_1Dictionary_html"><div class="ttname"><a href="classNeoN_1_1Dictionary.html">NeoN::Dictionary</a></div><div class="ttdoc">A class representing a dictionary that stores key-value pairs.</div><div class="ttdef"><b>Definition</b> <a href="dictionary_8hpp_source.html#l00036">dictionary.hpp:37</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UnstructuredMesh_html"><div class="ttname"><a href="classNeoN_1_1UnstructuredMesh.html">NeoN::UnstructuredMesh</a></div><div class="ttdoc">Represents an unstructured mesh in NeoN.</div><div class="ttdef"><b>Definition</b> <a href="unstructuredMesh_8hpp_source.html#l00031">unstructuredMesh.hpp:32</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1UnstructuredMesh_html_a2bfdd3e60fd2916c0e35beebe83d6ee7"><div class="ttname"><a href="classNeoN_1_1UnstructuredMesh.html#a2bfdd3e60fd2916c0e35beebe83d6ee7">NeoN::UnstructuredMesh::cellVolumes</a></div><div class="ttdeci">const scalarVector &amp; cellVolumes() const</div><div class="ttdoc">Get the field of cell volumes in the mesh.</div></div>
@@ -568,8 +572,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="amatrix_8hpp_html"><div class="ttname"><a href="matrix_8hpp.html">matrix.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html"><div class="ttname"><a href="namespaceNeoN_1_1la.html">NeoN::la</a></div><div class="ttdef"><b>Definition</b> <a href="diagonalSolver_8hpp_source.html#l00013">diagonalSolver.hpp:14</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a526ab6c1bb1faea9fac356aee0888256"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a526ab6c1bb1faea9fac356aee0888256">NeoN::la::createEmptyLinearSystem</a></div><div class="ttdeci">LinearSystem&lt; ValueType, InnerMatrixType, BoundaryMatrixType &gt; createEmptyLinearSystem(const UnstructuredMesh &amp;mesh)</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00317">linearSystem.hpp:317</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1la_html_a5a0ad3d154c390bb75b1e2581b775fd9"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a></div><div class="ttdeci">la::LinearSystem&lt; ValueType &gt; removeBoundaryContributions(const la::LinearSystem&lt; ValueType &gt; &amp;lsIn)</div><div class="ttdoc">for testing purposes, this function reverses boundary contributions previously applied to the matrix ...</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00326">linearSystem.hpp:326</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1la_html_a6bfb83b8f18cb760ed98f0633b440df0"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">NeoN::la::scaledInvDiagNegLUx</a></div><div class="ttdeci">void scaledInvDiagNegLUx(const la::LinearSystem&lt; Vec3 &gt; &amp;ls, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;aBound, const UnstructuredMesh &amp;mesh, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00355">linearSystem.hpp:355</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1la_html_a5a0ad3d154c390bb75b1e2581b775fd9"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a></div><div class="ttdeci">la::LinearSystem&lt; ValueType &gt; removeBoundaryContributions(const la::LinearSystem&lt; ValueType &gt; &amp;lsIn)</div><div class="ttdoc">for testing purposes, this function reverses boundary contributions previously applied to the matrix ...</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00330">linearSystem.hpp:330</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1la_html_a6bfb83b8f18cb760ed98f0633b440df0"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a6bfb83b8f18cb760ed98f0633b440df0">NeoN::la::scaledInvDiagNegLUx</a></div><div class="ttdeci">void scaledInvDiagNegLUx(const la::LinearSystem&lt; Vec3 &gt; &amp;ls, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;aBound, const UnstructuredMesh &amp;mesh, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00359">linearSystem.hpp:359</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_aecb0a76e49610af8c37e2c020d9bb342"><div class="ttname"><a href="namespaceNeoN_1_1la.html#aecb0a76e49610af8c37e2c020d9bb342">NeoN::la::computeRowToDiagonalMap</a></div><div class="ttdeci">Vector&lt; localIdx &gt; computeRowToDiagonalMap(const Vector&lt; localIdx &gt; &amp;rows, std::shared_ptr&lt; const FaceToMatrixAddress&lt;&gt; &gt; matIt)</div><div class="ttdoc">given a set of rows this function computes the corresponding value offsets</div><div class="ttdef"><b>Definition</b> <a href="faceToMatrixAddress_8hpp_source.html#l00179">faceToMatrixAddress.hpp:179</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a126d8c73d03797fa02ed0ba390452363"><div class="ttname"><a href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">NeoN::parallelFor</a></div><div class="ttdeci">void parallelFor(const ExecutorType &amp;, std::pair&lt; localIdx, localIdx &gt; range, Kernel kernel, std::string name)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00062">parallelAlgorithms.hpp:62</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a267bdffd9fa96bfbdd04d99a5102c412"><div class="ttname"><a href="namespaceNeoN.html#a267bdffd9fa96bfbdd04d99a5102c412">NeoN::zero&lt; Vec3 &gt;</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION Vec3 zero&lt; Vec3 &gt;()</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00189">vec3.hpp:189</a></div></div>
