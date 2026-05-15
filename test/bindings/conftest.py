@@ -34,9 +34,6 @@ def pytest_configure(config):
 
 def get_available_executors():
     """Get list of executors available at build time."""
-    if not NEON_AVAILABLE:
-        return []
-
     executors = []
     if neon.__has_serial__:
         executors.append(("serial", neon.SerialExecutor))
