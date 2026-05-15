@@ -29,6 +29,9 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerLinearAlgebra(m);
     NeoN::bindings::registerDSL(m);
 
+    // IO bindings
+    NeoN::bindings::registerIO(m);
+
     // Database bindings
     NeoN::bindings::registerDocument(m);
     NeoN::bindings::registerCollection(m);

@@ -27,7 +27,7 @@ TEMPLATE_TEST_CASE("linear", "", NeoN::scalar, NeoN::Vec3)
     auto linear = SurfaceInterpolation<TestType>(exec, mesh, input);
     std::vector<fvcc::VolumeBoundary<TestType>> vbcs {};
     std::vector<fvcc::SurfaceBoundary<TestType>> sbcs {};
-    for (auto patchi : I<NeoN::localIdx> {0, 1})
+    for (NeoN::localIdx patchi = 0; patchi < mesh.nBoundaries(); ++patchi)
     {
         Dictionary dict;
         dict.insert("type", std::string("fixedValue"));

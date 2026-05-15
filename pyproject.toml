@@ -11,14 +11,12 @@ authors = [
 description = "Python bindings for the NeoN CFD framework"
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Programming Language :: C++",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -26,6 +24,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.19.0",
+
 ]
 
 [project.optional-dependencies]
@@ -38,6 +37,10 @@ dev = [
 ]
 test = [
     "pytest>=6.0",
+]
+visualization = [
+    "pyvista>=0.46.5",
+    "vtk>=9.6.0",
 ]
 all = [
     "neon_pde[dev,test]",

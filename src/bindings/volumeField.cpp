@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/pair.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/fields/boundaryData.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -23,6 +25,38 @@ namespace NeoN::bindings
 void registerVolumeField(nb::module_& m)
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;
+
+    using ScalarBD = NeoN::BoundaryData<NeoN::scalar>;
+    nb::class_<ScalarBD>(m, "ScalarBoundaryData", "Boundary data for scalar VolumeFields")
+        .def(
+            "value",
+            static_cast<NeoN::Vector<NeoN::scalar>& (ScalarBD::*)()>(&ScalarBD::value),
+            nb::rv_policy::reference_internal,
+            "Get mutable boundary value vector (all patches concatenated)"
+        )
+        .def(
+            "range",
+            &ScalarBD::range,
+            "patch_id"_a,
+            "Return (start, end) index pair for the given boundary patch"
+        )
+        .def("n_boundaries", &ScalarBD::nBoundaries, "Number of boundary patches");
+
+    using VectorBD = NeoN::BoundaryData<NeoN::Vec3>;
+    nb::class_<VectorBD>(m, "VectorBoundaryData", "Boundary data for Vec3 VolumeFields")
+        .def(
+            "value",
+            static_cast<NeoN::Vector<NeoN::Vec3>& (VectorBD::*)()>(&VectorBD::value),
+            nb::rv_policy::reference_internal,
+            "Get mutable boundary value vector (all patches concatenated)"
+        )
+        .def(
+            "range",
+            &VectorBD::range,
+            "patch_id"_a,
+            "Return (start, end) index pair for the given boundary patch"
+        )
+        .def("n_boundaries", &VectorBD::nBoundaries, "Number of boundary patches");
 
     nb::class_<fvcc::VolumeBoundary<NeoN::scalar>>(
         m, "ScalarVolumeBoundary", "Volume boundary for scalar fields"
@@ -128,6 +162,14 @@ void registerVolumeField(nb::module_& m)
             &fvcc::VolumeField<NeoN::scalar>::correctBoundaryConditions,
             "Apply boundary conditions"
         )
+        .def(
+            "boundary_data",
+            static_cast<NeoN::BoundaryData<NeoN::scalar>& (fvcc::VolumeField<NeoN::scalar>::*)()>(
+                &fvcc::VolumeField<NeoN::scalar>::boundaryData
+            ),
+            nb::rv_policy::reference_internal,
+            "Get mutable boundary data"
+        )
         .def("has_database", &fvcc::VolumeField<NeoN::scalar>::hasDatabase)
         .def_rw("name", &fvcc::VolumeField<NeoN::scalar>::name)
         .def(
@@ -212,6 +254,14 @@ void registerVolumeField(nb::module_& m)
         .def("size", &fvcc::VolumeField<NeoN::Vec3>::size)
         .def(
             "correct_boundary_conditions", &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
+        )
+        .def(
+            "boundary_data",
+            static_cast<NeoN::BoundaryData<NeoN::Vec3>& (fvcc::VolumeField<NeoN::Vec3>::*)()>(
+                &fvcc::VolumeField<NeoN::Vec3>::boundaryData
+            ),
+            nb::rv_policy::reference_internal,
+            "Get mutable boundary data"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::Vec3>::hasDatabase)
         .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name)

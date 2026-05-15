@@ -24,16 +24,24 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
 
     // compute corresponding uniform faceFlux
-    // TODO this should be handled outside of the unit test
+    // Only x-direction faces have non-zero flux for a uniform x-directed flow
     fvcc::SurfaceField<scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
-    fill(faceFlux.internalVector(), 1.0);
+    fill(faceFlux.internalVector(), 0.0);
     auto boundFaceFlux = faceFlux.internalVector().view();
-    // face on the left side has different orientation
+    auto nI = mesh.nInternalFaces();
+    // Internal x-faces: flux = 1.0
     parallelFor(
-        exec,
-        {mesh.nCells() - 1, mesh.nCells()},
-        NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
+        exec, {0, nI}, NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = 1.0; }
     );
+    // xmin boundary face: flux = -1.0 (outward normal points in -x)
+    parallelFor(
+        exec, {nI, nI + 1}, NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
+    );
+    // xmax boundary face: flux = 1.0
+    parallelFor(
+        exec, {nI + 1, nI + 2}, NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = 1.0; }
+    );
+    // y/z boundary faces remain 0.0
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
     fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
