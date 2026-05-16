@@ -119,6 +119,21 @@ jobs:
 
       - name: Install NeoN
         run:  |
-          sudo cmake --install build/${{matrix.preset}}
-          sudo ls -la /usr/local/bin
-          sudo ls -la /usr/local/lib
+          cmake --install build/${{matrix.preset}} --prefix $PWD/install
+          ls -la install/bin
+          ls -la install/lib
+          ./install/bin/neon_test_vector
+
+      - name: Verify installed libs resolve all dependencies
+        run: |
+          fail=0
+          for f in install/lib/lib*.so*; do
+            [ -L "$f" ] && continue
+            missing=$(ldd "$f" 2>/dev/null | grep 'not found' || true)
+            if [ -n "$missing" ]; then
+              echo "FAIL $f has unresolved deps:"
+              echo "$missing"
+              fail=1
+            fi
+          done
+          exit $fail
