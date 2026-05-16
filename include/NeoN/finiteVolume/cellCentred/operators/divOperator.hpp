@@ -154,8 +154,11 @@ public:
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
+            const auto& divSchemes = dict.subDict("divSchemes");
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
-            auto tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = divSchemes.contains(schemeName)
+                            ? divSchemes.get<NeoN::TokenList>(schemeName)
+                            : divSchemes.get<NeoN::TokenList>("default");
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

@@ -137,6 +137,10 @@ void DdtOperator<ValueType>::read(const Input& input)
     {
         schemeName = ddtSchemes.get<std::string>(fieldKey);
     }
+    else if (ddtSchemes.contains("default"))
+    {
+        schemeName = ddtSchemes.get<std::string>("default");
+    }
 
     // TODO (later: steadyState, CrankNicolson, etc.)
     if (schemeName == "BDF1")
@@ -151,7 +155,7 @@ void DdtOperator<ValueType>::read(const Input& input)
         return;
     }
 
-    NF_ERROR_EXIT(std::format(
+    NF_THROW(std::format(
         "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2.",
         schemeName,
         this->field_.name

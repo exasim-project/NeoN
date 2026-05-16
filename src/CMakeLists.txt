@@ -54,6 +54,7 @@ target_sources(
           "finiteVolume/cellCentred/operators/gaussGreenGradVec3.cpp"
           "finiteVolume/cellCentred/operators/tensorOps.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDivTensor.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"

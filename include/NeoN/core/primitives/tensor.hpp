@@ -225,6 +225,16 @@ Tensor skew(const Tensor& t)
     return (t - tT) * 0.5;
 }
 
+/** @brief Deviatoric part (2/3 variant): dev2(T) = T - (2/3)*tr(T)*I */
+KOKKOS_INLINE_FUNCTION
+Tensor dev2(const Tensor& t)
+{
+    scalar tr23 = (2.0 / 3.0) * (t.xx() + t.yy() + t.zz());
+    return Tensor(
+        t.xx() - tr23, t.xy(), t.xz(), t.yx(), t.yy() - tr23, t.yz(), t.zx(), t.zy(), t.zz() - tr23
+    );
+}
+
 std::ostream& operator<<(std::ostream& out, const Tensor& t);
 
 
@@ -254,8 +264,9 @@ KOKKOS_INLINE_FUNCTION Tensor inv<Tensor>(Tensor in)
 
 } // namespace NeoN
 
-// Cross-type functions requiring SymmTensor definition
+// Cross-type functions requiring SymmTensor and Vec3 definitions
 #include "NeoN/core/primitives/symmTensor.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 
 namespace NeoN
 {
@@ -281,6 +292,46 @@ SymmTensor twoSymm(const Tensor& t)
     return SymmTensor(
         2.0 * t.xx(), t.xy() + t.yx(), t.xz() + t.zx(), 2.0 * t.yy(), t.yz() + t.zy(), 2.0 * t.zz()
     );
+}
+
+/** @brief Inner product v · T → Vec3 (row contraction: result_i = Σ_j v_j * T_ji) */
+KOKKOS_INLINE_FUNCTION
+Vec3 inner(const Vec3& v, const Tensor& t)
+{
+    return Vec3(
+        v[0] * t.xx() + v[1] * t.yx() + v[2] * t.zx(),
+        v[0] * t.xy() + v[1] * t.yy() + v[2] * t.zy(),
+        v[0] * t.xz() + v[1] * t.yz() + v[2] * t.zz()
+    );
+}
+
+/** @brief Trace of a tensor: tr(T) = T_xx + T_yy + T_zz */
+KOKKOS_INLINE_FUNCTION
+scalar tr(const Tensor& t) { return t.xx() + t.yy() + t.zz(); }
+
+/** @brief devTwoSymm(T) = dev(twoSymm(T)) — deviatoric of twice the symmetric part.
+ *  twoSymm(T) = T + T^T, tr(twoSymm) = 2*tr(T)
+ *  dev(S) = S - (1/3)*tr(S)*I → dev(twoSymm(T)) = twoSymm(T) - (2/3)*tr(T)*I */
+KOKKOS_INLINE_FUNCTION
+SymmTensor devTwoSymm(const Tensor& t)
+{
+    scalar tr23 = (2.0 / 3.0) * (t.xx() + t.yy() + t.zz());
+    return SymmTensor(
+        2.0 * t.xx() - tr23,
+        t.xy() + t.yx(),
+        t.xz() + t.zx(),
+        2.0 * t.yy() - tr23,
+        t.yz() + t.zy(),
+        2.0 * t.zz() - tr23
+    );
+}
+
+/** @brief Double inner product T:S → scalar (Frobenius: Σ_ij T_ij * S_ij) */
+KOKKOS_INLINE_FUNCTION
+scalar doubleInner(const Tensor& t, const SymmTensor& s)
+{
+    return t.xx() * s.xx() + t.xy() * s.xy() + t.xz() * s.xz() + t.yx() * s.xy() + t.yy() * s.yy()
+         + t.yz() * s.yz() + t.zx() * s.xz() + t.zy() * s.yz() + t.zz() * s.zz();
 }
 
 } // namespace NeoN

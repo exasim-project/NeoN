@@ -99,6 +99,7 @@ void computeUpwindInterpolationWeights(
 
 NF_DECLARE_COMPUTE_IMP_UPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT(Vec3);
+NF_DECLARE_COMPUTE_IMP_UPW_INT(Tensor);
 
 #define NF_DECLARE_COMPUTE_IMP_UPW_INT_W(TYPENAME)                                                 \
     template void computeUpwindInterpolationWeights<                                               \
@@ -106,5 +107,6 @@ NF_DECLARE_COMPUTE_IMP_UPW_INT(Vec3);
 
 NF_DECLARE_COMPUTE_IMP_UPW_INT_W(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT_W(Vec3);
+NF_DECLARE_COMPUTE_IMP_UPW_INT_W(Tensor);
 
 } // namespace NeoN

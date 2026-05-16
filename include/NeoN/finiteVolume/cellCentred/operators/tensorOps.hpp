@@ -37,13 +37,40 @@ VolumeField<scalar> inner(const VolumeField<Vec3>& v1, const VolumeField<Vec3>& 
 /** @brief Element-wise max of field and scalar */
 VolumeField<scalar> max(const VolumeField<scalar>& f, scalar val);
 
+/** @brief Element-wise max of two fields */
+VolumeField<scalar> max(const VolumeField<scalar>& f1, const VolumeField<scalar>& f2);
+
 /** @brief Element-wise min of field and scalar */
 VolumeField<scalar> min(const VolumeField<scalar>& f, scalar val);
+
+/** @brief Element-wise min of two fields */
+VolumeField<scalar> min(const VolumeField<scalar>& f1, const VolumeField<scalar>& f2);
 
 /** @brief Bound field below: f = max(f, lower) — modifies in-place */
 void bound(VolumeField<scalar>& f, scalar lower);
 
 /** @brief Element-wise power: f^exponent */
 VolumeField<scalar> pow(const VolumeField<scalar>& f, scalar exponent);
+
+/** @brief Element-wise scalar * tensor field multiplication */
+VolumeField<Tensor> mul(const VolumeField<scalar>& s, const VolumeField<Tensor>& T);
+
+/** @brief Deviatoric part (2/3 variant) of a tensor field: T - (2/3)*tr(T)*I */
+VolumeField<Tensor> dev2(const VolumeField<Tensor>& T);
+
+/** @brief Deviatoric part (2/3 variant) of a symmetric tensor field */
+VolumeField<SymmTensor> dev2(const VolumeField<SymmTensor>& S);
+
+/** @brief Transpose of a tensor field */
+VolumeField<Tensor> transpose(const VolumeField<Tensor>& T);
+
+/** @brief Trace of a tensor field: tr(T) → scalar */
+VolumeField<scalar> tr(const VolumeField<Tensor>& T);
+
+/** @brief devTwoSymm(T) = dev(twoSymm(T)) — deviatoric of twice the symmetric part */
+VolumeField<SymmTensor> devTwoSymm(const VolumeField<Tensor>& T);
+
+/** @brief Double inner product T:S → scalar (Frobenius inner product) */
+VolumeField<scalar> doubleInner(const VolumeField<Tensor>& T, const VolumeField<SymmTensor>& S);
 
 } // namespace NeoN::finiteVolume::cellCentred

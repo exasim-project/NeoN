@@ -98,15 +98,19 @@ template class fvcc::volumeBoundary::Symmetry<SymmTensor>;
 
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;
+template class fvcc::SurfaceBoundaryFactory<Tensor>;
 
 template class fvcc::surfaceBoundary::FixedValue<scalar>;
 template class fvcc::surfaceBoundary::FixedValue<Vec3>;
+template class fvcc::surfaceBoundary::FixedValue<Tensor>;
 
 template class fvcc::surfaceBoundary::Calculated<scalar>;
 template class fvcc::surfaceBoundary::Calculated<Vec3>;
+template class fvcc::surfaceBoundary::Calculated<Tensor>;
 
 template class fvcc::surfaceBoundary::Empty<scalar>;
 template class fvcc::surfaceBoundary::Empty<Vec3>;
+template class fvcc::surfaceBoundary::Empty<Tensor>;
 
 template class fvcc::surfaceBoundary::Symmetry<scalar>;
 template class fvcc::surfaceBoundary::Symmetry<Vec3>;

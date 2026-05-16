@@ -4,6 +4,7 @@
 
 #include <nanobind/nanobind.h>
 
+#include "NeoN/core/error.hpp"
 #include "bindings.hpp"
 
 namespace nb = nanobind;
@@ -11,6 +12,12 @@ namespace nb = nanobind;
 NB_MODULE(_neon, m)
 {
     m.doc() = "NeoN Python bindings";
+
+    // Register NeoNException so C++ NF_THROW produces a catchable Python exception
+    static nb::exception<NeoN::NeoNException> neonError(m, "NeoNError", PyExc_RuntimeError);
+
+    // Test helper to verify error handling from Python
+    m.def("test_nf_error_exit", []() { NF_THROW("test error from NF_THROW"); });
 
     // Register all bindings from separate files
     NeoN::bindings::registerExecutors(m);

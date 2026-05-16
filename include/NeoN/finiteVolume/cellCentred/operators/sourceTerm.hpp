@@ -27,7 +27,8 @@ public:
     SourceTerm(
         dsl::Operator::Type termType,
         const VolumeField<scalar>& coefficients,
-        const VolumeField<ValueType>& field
+        const VolumeField<ValueType>& field,
+        bool susp = false
     );
 
     ~SourceTerm();
@@ -38,11 +39,12 @@ public:
 
     void read(const Input&) {}
 
-    std::string getName() const { return "sourceTerm"; }
+    std::string getName() const { return susp_ ? "suSpTerm" : "sourceTerm"; }
 
 private:
 
     const VolumeField<scalar>& coefficients_;
+    bool susp_;
 };
 
 

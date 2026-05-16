@@ -16,10 +16,11 @@ template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType,
     const VolumeField<scalar>& coefficients,
-    const VolumeField<ValueType>& field
+    const VolumeField<ValueType>& field,
+    bool susp
 )
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
-      coefficients_(coefficients) {};
+      coefficients_(coefficients), susp_(susp) {};
 
 template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
@@ -47,15 +48,44 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) c
     auto values = ls.matrix().values().view();
     auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 
-    NeoN::parallelFor(
-        ls.exec(),
-        {0, coeff.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            localIdx idx = rowOffs[celli] + diagOffs[celli];
-            values[idx] += operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
-        },
-        "sourceTerm::implicitOperation"
-    );
+    if (!susp_)
+    {
+        // Standard implicit source: add coeff*V to diagonal
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                localIdx idx = rowOffs[celli] + diagOffs[celli];
+                values[idx] +=
+                    operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
+            },
+            "sourceTerm::implicitOperation"
+        );
+    }
+    else
+    {
+        // SuSp mode: positive coeff → diagonal, negative coeff → source (rhs)
+        auto fieldView = this->field_.internalVector().view();
+        auto rhs = ls.rhs().view();
+
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto c = operatorScaling[celli] * coeff[celli];
+                if (c > 0)
+                {
+                    localIdx idx = rowOffs[celli] + diagOffs[celli];
+                    values[idx] += c * vol[celli] * one<ValueType>();
+                }
+                else
+                {
+                    rhs[celli] -= c * vol[celli] * fieldView[celli];
+                }
+            },
+            "sourceTerm::suSpOperation"
+        );
+    }
 }
 
 

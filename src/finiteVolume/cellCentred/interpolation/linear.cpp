@@ -53,6 +53,7 @@ void computeLinearInterpolation(
 
 NF_DECLARE_COMPUTE_IMP_LIN_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LIN_INT(Vec3);
+NF_DECLARE_COMPUTE_IMP_LIN_INT(Tensor);
 
 // template class Linear<scalar>;
 // template class Linear<Vec3>;

@@ -158,10 +158,26 @@ VolumeField<scalar> max(const VolumeField<scalar>& f, scalar val)
     parallelFor(
         f.exec(),
         {0, f.size()},
-        NEON_LAMBDA(const localIdx i) {
-            outView[i] = inView[i] > val ? inView[i] : val;
-        },
+        NEON_LAMBDA(const localIdx i) { outView[i] = inView[i] > val ? inView[i] : val; },
         "maxField"
+    );
+    return result;
+}
+
+VolumeField<scalar> max(const VolumeField<scalar>& f1, const VolumeField<scalar>& f2)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<scalar>>(f1.mesh());
+    VolumeField<scalar> result(f1.exec(), "max", f1.mesh(), bcs);
+
+    auto view1 = f1.internalVector().view();
+    auto view2 = f2.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        f1.exec(),
+        {0, f1.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = view1[i] > view2[i] ? view1[i] : view2[i]; },
+        "maxFieldField"
     );
     return result;
 }
@@ -177,10 +193,26 @@ VolumeField<scalar> min(const VolumeField<scalar>& f, scalar val)
     parallelFor(
         f.exec(),
         {0, f.size()},
-        NEON_LAMBDA(const localIdx i) {
-            outView[i] = inView[i] < val ? inView[i] : val;
-        },
+        NEON_LAMBDA(const localIdx i) { outView[i] = inView[i] < val ? inView[i] : val; },
         "minField"
+    );
+    return result;
+}
+
+VolumeField<scalar> min(const VolumeField<scalar>& f1, const VolumeField<scalar>& f2)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<scalar>>(f1.mesh());
+    VolumeField<scalar> result(f1.exec(), "min", f1.mesh(), bcs);
+
+    auto view1 = f1.internalVector().view();
+    auto view2 = f2.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        f1.exec(),
+        {0, f1.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = view1[i] < view2[i] ? view1[i] : view2[i]; },
+        "minFieldField"
     );
     return result;
 }
@@ -215,6 +247,126 @@ VolumeField<scalar> pow(const VolumeField<scalar>& f, scalar exponent)
         {0, f.size()},
         NEON_LAMBDA(const localIdx i) { outView[i] = std::pow(inView[i], exponent); },
         "powField"
+    );
+    return result;
+}
+
+VolumeField<Tensor> mul(const VolumeField<scalar>& s, const VolumeField<Tensor>& T)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<Tensor>>(T.mesh());
+    VolumeField<Tensor> result(T.exec(), "mul", T.mesh(), bcs);
+
+    auto sView = s.internalVector().view();
+    auto tView = T.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = sView[i] * tView[i]; },
+        "mulScalarTensorField"
+    );
+    return result;
+}
+
+VolumeField<Tensor> dev2(const VolumeField<Tensor>& T)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<Tensor>>(T.mesh());
+    VolumeField<Tensor> result(T.exec(), "dev2", T.mesh(), bcs);
+
+    auto inView = T.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::dev2(inView[i]); },
+        "dev2TensorField"
+    );
+    return result;
+}
+
+VolumeField<SymmTensor> dev2(const VolumeField<SymmTensor>& S)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<SymmTensor>>(S.mesh());
+    VolumeField<SymmTensor> result(S.exec(), "dev2", S.mesh(), bcs);
+
+    auto inView = S.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        S.exec(),
+        {0, S.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::dev2(inView[i]); },
+        "dev2SymmTensorField"
+    );
+    return result;
+}
+
+VolumeField<Tensor> transpose(const VolumeField<Tensor>& T)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<Tensor>>(T.mesh());
+    VolumeField<Tensor> result(T.exec(), "transpose", T.mesh(), bcs);
+
+    auto inView = T.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::T(inView[i]); },
+        "transposeTensorField"
+    );
+    return result;
+}
+
+VolumeField<scalar> tr(const VolumeField<Tensor>& T)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<scalar>>(T.mesh());
+    VolumeField<scalar> result(T.exec(), "tr", T.mesh(), bcs);
+
+    auto inView = T.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::tr(inView[i]); },
+        "trField"
+    );
+    return result;
+}
+
+VolumeField<SymmTensor> devTwoSymm(const VolumeField<Tensor>& T)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<SymmTensor>>(T.mesh());
+    VolumeField<SymmTensor> result(T.exec(), "devTwoSymm", T.mesh(), bcs);
+
+    auto inView = T.internalVector().view();
+    auto outView = result.internalVector().view();
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::devTwoSymm(inView[i]); },
+        "devTwoSymmField"
+    );
+    return result;
+}
+
+VolumeField<scalar> doubleInner(const VolumeField<Tensor>& T, const VolumeField<SymmTensor>& S)
+{
+    auto bcs = createCalculatedBCs<VolumeBoundary<scalar>>(T.mesh());
+    VolumeField<scalar> result(T.exec(), "doubleInner", T.mesh(), bcs);
+
+    auto [tView, sView, outView] =
+        views(T.internalVector(), S.internalVector(), result.internalVector());
+
+    parallelFor(
+        T.exec(),
+        {0, T.size()},
+        NEON_LAMBDA(const localIdx i) { outView[i] = NeoN::doubleInner(tView[i], sView[i]); },
+        "doubleInnerField"
     );
     return result;
 }

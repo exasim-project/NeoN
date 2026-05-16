@@ -177,8 +177,11 @@ public:
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
+            const auto& gradSchemes = dict.subDict("gradSchemes");
             std::string schemeName = "grad(" + this->getVector().name + ")";
-            auto tokens = dict.subDict("gradSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = gradSchemes.contains(schemeName)
+                            ? gradSchemes.get<NeoN::TokenList>(schemeName)
+                            : gradSchemes.get<NeoN::TokenList>("default");
             gradOperatorStrategy_ =
                 GradOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

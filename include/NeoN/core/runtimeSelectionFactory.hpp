@@ -398,7 +398,7 @@ private:
             {
                 msg += " - " + it.first + "\n";
             }
-            NF_ERROR_EXIT(msg);
+            NF_THROW(msg);
         }
     }
 

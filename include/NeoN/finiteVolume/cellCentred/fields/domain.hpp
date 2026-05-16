@@ -68,7 +68,7 @@ public:
     {
         if (mesh.nCells() != internalVector.size())
         {
-            NF_ERROR_EXIT("Inconsistent size of mesh and internal field detected");
+            NF_THROW("Inconsistent size of mesh and internal field detected");
         }
     }
 

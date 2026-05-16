@@ -194,6 +194,14 @@ SymmTensor dev(const SymmTensor& s)
     return SymmTensor(s.xx() - tr, s.xy(), s.xz(), s.yy() - tr, s.yz(), s.zz() - tr);
 }
 
+/** @brief Deviatoric part (2/3 variant): dev2(S) = S - (2/3)*tr(S)*I */
+KOKKOS_INLINE_FUNCTION
+SymmTensor dev2(const SymmTensor& s)
+{
+    scalar tr23 = (2.0 / 3.0) * (s.xx() + s.yy() + s.zz());
+    return SymmTensor(s.xx() - tr23, s.xy(), s.xz(), s.yy() - tr23, s.yz(), s.zz() - tr23);
+}
+
 std::ostream& operator<<(std::ostream& out, const SymmTensor& s);
 
 

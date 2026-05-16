@@ -115,7 +115,7 @@ la::SolverStats solve(
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)
     {
-        NF_ERROR_EXIT("No temporal or implicit terms to solve.");
+        NF_THROW("No temporal or implicit terms to solve.");
     }
     exp.read(fvSchemes);
     auto integrator = timeIntegration::TimeIntegration<VectorType>(

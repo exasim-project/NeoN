@@ -22,7 +22,10 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGradVec3.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivTensor.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 
 namespace nb = nanobind;
 using namespace nb::literals;
@@ -159,8 +162,31 @@ void registerDSL(nb::module_& m)
     imp_m.def("div", &dsl::imp::div<Vec3>);
     imp_m.def("laplacian", &dsl::imp::laplacian<scalar>);
     imp_m.def("laplacian", &dsl::imp::laplacian<Vec3>);
-    imp_m.def("source", &dsl::imp::source<scalar>);
-    imp_m.def("source", &dsl::imp::source<Vec3>);
+    imp_m.def(
+        "source",
+        [](fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<scalar>& phi, bool susp)
+        {
+            return dsl::SpatialOperator<scalar>(
+                fvcc::SourceTerm<scalar>(dsl::Operator::Type::Implicit, coeff, phi, susp)
+            );
+        },
+        "coeff"_a,
+        "phi"_a,
+        "susp"_a = false,
+        "Implicit source term. susp=True enables SuSp mode (positive→diagonal, negative→source)"
+    );
+    imp_m.def(
+        "source",
+        [](fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<Vec3>& phi, bool susp)
+        {
+            return dsl::SpatialOperator<Vec3>(
+                fvcc::SourceTerm<Vec3>(dsl::Operator::Type::Implicit, coeff, phi, susp)
+            );
+        },
+        "coeff"_a,
+        "phi"_a,
+        "susp"_a = false
+    );
 
     // Explicit factories
     exp_m.def("ddt", &dsl::exp::ddt<scalar>);
@@ -171,6 +197,62 @@ void registerDSL(nb::module_& m)
         { return dsl::exp::div(flux, phi); }
     );
     exp_m.def("div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); });
+
+    // Direct flux divergence evaluation: div(phi) → VolumeField<scalar>
+    // Computes (1/V) * sum(phi_f) per cell — Gauss divergence theorem on face flux.
+    exp_m.def(
+        "div_flux",
+        [](const ScalarSurfField& flux)
+        {
+            const auto& mesh = flux.mesh();
+            auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
+            fvcc::VolumeField<NeoN::scalar> result(flux.exec(), "divFlux", mesh, bcs);
+
+            const auto owner = mesh.faceOwner().view();
+            const auto neighbour = mesh.faceNeighbour().view();
+            const auto phiView = flux.internalVector().view();
+            const auto vol = mesh.cellVolumes().view();
+            auto outView = result.internalVector().view();
+            const auto nInternalFaces = mesh.nInternalFaces();
+            const auto nCells = mesh.nCells();
+
+            // Zero out
+            NeoN::fill(result.internalVector(), 0.0);
+
+            // Internal faces: owner gets +phi, neighbour gets -phi
+            NeoN::parallelFor(
+                flux.exec(),
+                {0, nInternalFaces},
+                NEON_LAMBDA(const NeoN::localIdx facei) {
+                    Kokkos::atomic_add(&outView[owner[facei]], phiView[facei]);
+                    Kokkos::atomic_add(&outView[neighbour[facei]], -phiView[facei]);
+                },
+                "divFlux_internal"
+            );
+
+            // Boundary faces: owner gets +phi
+            NeoN::parallelFor(
+                flux.exec(),
+                {nInternalFaces, static_cast<NeoN::localIdx>(flux.internalVector().size())},
+                NEON_LAMBDA(const NeoN::localIdx facei) {
+                    Kokkos::atomic_add(&outView[owner[facei]], phiView[facei]);
+                },
+                "divFlux_boundary"
+            );
+
+            // Divide by cell volume
+            NeoN::parallelFor(
+                flux.exec(),
+                {0, nCells},
+                NEON_LAMBDA(const NeoN::localIdx celli) { outView[celli] /= vol[celli]; },
+                "divFlux_normalize"
+            );
+
+            return result;
+        },
+        "flux"_a,
+        "Compute divergence of face flux: (1/V)*sum(phi_f) per cell"
+    );
     exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def(
@@ -184,6 +266,44 @@ void registerDSL(nb::module_& m)
         "Gradient of a Vec3 field (returns Tensor)"
     );
     exp_m.def("source", &dsl::exp::source<scalar>);
+    exp_m.def("source", &dsl::exp::source<Vec3>);
+
+    // Direct gradient evaluation — returns VolumeField (not lazy SpatialOperator).
+    // Uses GaussGreen gradient with linear interpolation.
+    exp_m.def(
+        "grad_field",
+        [](const ScalarVolField& phi)
+        {
+            fvcc::GaussGreenGrad gradOp(phi.exec(), phi.mesh());
+            return gradOp.grad(phi, dsl::Coeff(1.0));
+        },
+        "phi"_a,
+        "Compute gradient of scalar field, returning VolumeField<Vec3>"
+    );
+
+    exp_m.def(
+        "grad_field",
+        [](const VectorVolField& phi)
+        {
+            fvcc::GaussGreenGradVec3 gradOp(phi.exec(), phi.mesh());
+            return gradOp.grad(phi, dsl::Coeff(1.0));
+        },
+        "phi"_a,
+        "Compute gradient of vector field, returning VolumeField<Tensor>"
+    );
+
+    using TensorVolField = NeoN::finiteVolume::cellCentred::VolumeField<Tensor>;
+
+    exp_m.def(
+        "div_tensor",
+        [](const TensorVolField& T)
+        {
+            fvcc::GaussGreenDivTensor divOp(T.exec(), T.mesh());
+            return divOp.div(T, dsl::Coeff(1.0));
+        },
+        "T"_a,
+        "Gauss divergence of a tensor field: (1/V) * sum(Sf & Tf)"
+    );
 
     // solve
     m.def(

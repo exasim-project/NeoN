@@ -171,8 +171,11 @@ public:
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
+            const auto& laplacianSchemes = dict.subDict("laplacianSchemes");
             std::string schemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
-            auto tokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(schemeName);
+            auto tokens = laplacianSchemes.contains(schemeName)
+                            ? laplacianSchemes.get<NeoN::TokenList>(schemeName)
+                            : laplacianSchemes.get<NeoN::TokenList>("default");
             laplacianOperatorStrategy_ =
                 LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
         }

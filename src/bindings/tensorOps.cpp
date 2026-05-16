@@ -85,12 +85,30 @@ void registerTensorOps(nb::module_& m)
     );
 
     m.def(
+        "field_max",
+        [](const fvcc::VolumeField<NeoN::scalar>& f1, const fvcc::VolumeField<NeoN::scalar>& f2)
+        { return fvcc::max(f1, f2); },
+        "f1"_a,
+        "f2"_a,
+        "Element-wise max of two fields"
+    );
+
+    m.def(
         "field_min",
         [](const fvcc::VolumeField<NeoN::scalar>& f, NeoN::scalar val)
         { return fvcc::min(f, val); },
         "f"_a,
         "val"_a,
         "Element-wise min of field and scalar"
+    );
+
+    m.def(
+        "field_min",
+        [](const fvcc::VolumeField<NeoN::scalar>& f1, const fvcc::VolumeField<NeoN::scalar>& f2)
+        { return fvcc::min(f1, f2); },
+        "f1"_a,
+        "f2"_a,
+        "Element-wise min of two fields"
     );
 
     m.def(
@@ -110,6 +128,58 @@ void registerTensorOps(nb::module_& m)
         "Element-wise power: f^exp"
     );
 
+    m.def(
+        "dev2",
+        [](const fvcc::VolumeField<NeoN::Tensor>& T) { return fvcc::dev2(T); },
+        "T"_a,
+        "Deviatoric part (2/3 variant) of a tensor field: T - (2/3)*tr(T)*I"
+    );
+
+    m.def(
+        "dev2",
+        [](const fvcc::VolumeField<NeoN::SymmTensor>& S) { return fvcc::dev2(S); },
+        "S"_a,
+        "Deviatoric part (2/3 variant) of a symmetric tensor field"
+    );
+
+    m.def(
+        "transpose",
+        [](const fvcc::VolumeField<NeoN::Tensor>& T) { return fvcc::transpose(T); },
+        "T"_a,
+        "Transpose of a tensor field"
+    );
+
+    m.def(
+        "scalar_tensor_mul",
+        [](const fvcc::VolumeField<NeoN::scalar>& s, const fvcc::VolumeField<NeoN::Tensor>& T)
+        { return fvcc::mul(s, T); },
+        "s"_a,
+        "T"_a,
+        "Element-wise scalar * tensor field multiplication"
+    );
+
+    m.def(
+        "tr",
+        [](const fvcc::VolumeField<NeoN::Tensor>& T) { return fvcc::tr(T); },
+        "T"_a,
+        "Trace of a tensor field: tr(T) = T_xx + T_yy + T_zz"
+    );
+
+    m.def(
+        "devTwoSymm",
+        [](const fvcc::VolumeField<NeoN::Tensor>& T) { return fvcc::devTwoSymm(T); },
+        "T"_a,
+        "devTwoSymm(T) = dev(twoSymm(T)) — deviatoric of twice the symmetric part"
+    );
+
+    m.def(
+        "doubleInner",
+        [](const fvcc::VolumeField<NeoN::Tensor>& T, const fvcc::VolumeField<NeoN::SymmTensor>& S)
+        { return fvcc::doubleInner(T, S); },
+        "T"_a,
+        "S"_a,
+        "Double inner product T:S (Frobenius inner product) — returns scalar field"
+    );
 }
 
 } // namespace NeoN::bindings

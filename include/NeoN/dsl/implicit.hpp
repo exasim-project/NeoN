@@ -35,6 +35,7 @@ source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
     return SpatialOperator<ValueType>(fvcc::SourceTerm(dsl::Operator::Type::Implicit, coeff, phi));
 }
 
+
 template<typename ValueType>
 SpatialOperator<ValueType>
 div(fvcc::SurfaceField<scalar>& faceFlux, fvcc::VolumeField<ValueType>& phi)

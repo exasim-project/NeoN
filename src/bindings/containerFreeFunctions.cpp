@@ -11,6 +11,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "bindings.hpp"
 
 namespace nb = nanobind;
@@ -91,6 +92,26 @@ void registerContainerFreeFunctions(nb::module_& m)
         "start"_a,
         "end"_a,
         "Fill a range of a LabelVector with a uniform label value"
+    );
+
+    // fill for TensorVector
+    m.def(
+        "fill",
+        [](NeoN::Vector<NeoN::Tensor>& cont, const NeoN::Tensor& value)
+        { NeoN::fill(cont, value); },
+        "container"_a,
+        "value"_a,
+        "Fill a TensorVector with a uniform Tensor value"
+    );
+
+    // fill for SymmTensorVector
+    m.def(
+        "fill",
+        [](NeoN::Vector<NeoN::SymmTensor>& cont, const NeoN::SymmTensor& value)
+        { NeoN::fill(cont, value); },
+        "container"_a,
+        "value"_a,
+        "Fill a SymmTensorVector with a uniform SymmTensor value"
     );
 
     // equal functions for ScalarVector

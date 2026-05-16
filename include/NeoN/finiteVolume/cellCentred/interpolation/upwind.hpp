@@ -115,5 +115,6 @@ namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::Upwind<scalar>;
 template class fvcc::Upwind<Vec3>;
+template class fvcc::Upwind<Tensor>;
 
 }
