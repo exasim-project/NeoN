@@ -347,7 +347,7 @@ diffusion out of one cell equals diffusion into the other.
      - leaves neighbour → negative
      - ``atomic_sub(&values[diagOffs[nei]], flux)``
 
-The assembled matrix is symmetric and negative semi-definite for
+The assembled matrix is symmetric and positive definite for
 positive :math:`\gamma` and consistent ``operatorScaling``, representing
 :math:`-\nabla \cdot (\gamma \nabla \varphi)`.
 
