@@ -33,116 +33,134 @@
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00029}00029\ \{}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00030}00030\ }
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ off}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ NOTE\ The\ following\ data\ member\ store\ a\ simple\ mapping\ from\ face\ ids\ to\ offsets\ in\ the}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ corresponding\ rows.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//\ I.e.\ Assume\ the\ following\ row\ \ [\ .\ a\_18\ .\ a\_20\ d\ a\_18\ .\ a\_20\ .\ ]}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ where\ a\_i\ corresponds\ to\ a\ value\ on\ a\ face\ i}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ this\ yields:}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{comment}{//\ ownerOffset[18]\ =\ 0}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{comment}{//\ ownerOffset[20]\ =\ 1}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ and}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{comment}{//\ neighbourOffset[18]\ =\ 4}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ neighbourOffset[20]\ =\ 5}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ on}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00043}00043\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ ownerOffset\_;\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00044}00044\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00045}00045\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ neighbourOffset\_;\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00046}00046\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00047}00047\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ diagOffset\_;\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00048}00048\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ corresponding\ views}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00050}00050\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ ownerOffsetV\_;}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00051}00051\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ neighbourOffsetV\_;}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00053}00053\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ diagOffsetV\_;}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ NOTE\ The\ following\ data\ members\ store\ a\ simple\ mapping\ from\ face\ ids\ to\ offsets\ within}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ the\ corresponding\ row\ of\ the\ CSR\ values\ array.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ For\ an\ internal\ face\ f\ with\ owner\ P\ and\ neighbour\ N\ (P\ <\ N\ by\ construction):}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ \ \ ownerOffset[f]\ \ \ \ \ \ =\ offset\ within\ row\ P\ for\ column\ N\ \ →\ A[P,\ N]\ \ (upper\ triangular)}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{comment}{//\ \ \ neighbourOffset[f]\ \ =\ offset\ within\ row\ N\ for\ column\ P\ \ →\ A[N,\ P]\ \ (lower\ triangular)}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ Example\ row\ layout\ for\ a\ cell\ with\ two\ lower\ entries\ and\ one\ upper\ entry:}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{comment}{//\ \ \ Row\ P:\ [\ A[P,j0]\ \ A[P,j1]\ |\ A[P,P]\ |\ A[P,N]\ ]}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ lower\ (j<P)\ \ \ \ \ \ \ \ \ diag\ \ \ \ \ \ upper\ (N>P)}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{//\ \ \ ownerOffset[f]\ \ \ \ \ =\ 3\ \ \ (position\ of\ A[P,N]\ within\ row\ P)}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{comment}{//\ \ \ neighbourOffset[f]\ =\ 0\ \ \ (position\ of\ A[N,P]\ within\ row\ N)}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ on}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00045}00045\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ ownerOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00048}00048\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ neighbourOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00051}00051\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ diagOffset\_;\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ corresponding\ views}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ ownerOffsetV\_;}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ row\ offsets\ borrowed\ from\ the\ owning\ Matrix's\ sparsity\ pattern}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00057}00057\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ rowOffsV\_;}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00059}00059\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{comment}{/*\ @brief\ constructor}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00062}00062\ \textcolor{comment}{\ \ \ \ \ *}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00063}00063\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ownerOffset\ \ \ \ \ face-\/to-\/lower-\/offset\ mapping}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00064}00064\ \textcolor{comment}{\ \ \ \ \ *\ @param\ neighbourOffset\ face-\/to-\/upper-\/offset\ mapping}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00065}00065\ \textcolor{comment}{\ \ \ \ \ *\ @param\ diagOffset\ \ \ \ \ \ cell-\/to-\/diagonal-\/offset\ mapping}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00066}00066\ \textcolor{comment}{\ \ \ \ \ *\ @param\ rowOffsView\ \ \ \ \ view\ of\ row\ offsets\ from\ the\ owning\ Matrix's\ CsrSparsityPattern}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00067}00067\ \textcolor{comment}{\ \ \ \ \ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a7ebc0ca62eb3f506ffe7fb6bc1c96144}{00068}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a7ebc0ca62eb3f506ffe7fb6bc1c96144}{FaceToMatrixAddress}}(}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{ownerOffset}},}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{neighbourOffset}},}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{diagOffset}},}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ rowOffsView}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00073}00073\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{comment}{/*\ @brief\ copy\ constructor\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_af6fc1dee670bf77602ae551327b70841}{00076}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_af6fc1dee670bf77602ae551327b70841}{FaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress}}\&\ mi);}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00077}00077\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{00079}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{ownerOffset}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00080}00080\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{00082}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{neighbourOffset}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00083}00083\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{00085}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{diagOffset}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00086}00086\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9e06b6dc4bcd66865978a71ad5e5b9c1}{00088}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9e06b6dc4bcd66865978a71ad5e5b9c1}{ownerOffset}}();}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00089}00089\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00091}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9158bd6c235ce5957d8acb652176bb3d}{00091}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9158bd6c235ce5957d8acb652176bb3d}{neighbourOffset}}();}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a72862f12409e122f38b1dd0e703bdd55}{00094}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a72862f12409e122f38b1dd0e703bdd55}{diagOffset}}();}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{comment}{/*\ @brief\ given\ a\ cell\ ID,\ the\ function\ returns\ index\ of\ the\ diagonal\ element\ \ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a624aa26b24cb7c4f0450afeecf0d2944}{00097}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a624aa26b24cb7c4f0450afeecf0d2944}{diagIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00098}00098\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[celli]\ +\ diagOffsetV\_[celli];}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00100}00100\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00101}00101\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{/*\ @brief\ given\ a\ cell\ ID\ and\ a\ face\ ID,\ returns\ index\ of\ the\ element\ in\ the\ upper\ triangular\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a647ada9cb64c6689394d2b6e0bd9e0ae}{00103}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a647ada9cb64c6689394d2b6e0bd9e0ae}{upperIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ faceIdx)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00104}00104\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[celli]\ +\ neighbourOffsetV\_[faceIdx];}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00106}00106\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{comment}{/*\ @brief\ given\ a\ cell\ ID\ and\ a\ face\ ID,\ returns\ index\ of\ the\ element\ in\ the\ lower\ triangular\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a254a0db0297a0dc4fd764d33309411db}{00109}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a254a0db0297a0dc4fd764d33309411db}{lowerIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ faceIdx)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00110}00110\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[celli]\ +\ ownerOffsetV\_[faceIdx];}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00112}00112\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00113}00113\ \};}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00114}00114\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00115}00115\ \textcolor{comment}{/*\ @brief\ Creates\ the\ sparsity\ pattern\ and\ corresponding\ FaceToMatrixAddress\ from\ a\ mesh.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00116}00116\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00117}00117\ \textcolor{comment}{\ *\ The\ two\ are\ returned\ together\ because\ FaceToMatrixAddress\ borrows\ the\ row-\/offsets}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00118}00118\ \textcolor{comment}{\ *\ view\ from\ the\ sparsity\ pattern.\ The\ boundary\ sparsity\ is\ created\ separately}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00119}00119\ \textcolor{comment}{\ *\ via\ createBoundarySparsityPattern.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00120}00120\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00121}00121\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00122}00122\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CsrSparsityPattern<localIdx>\ or\ CooSparsityPattern<localIdx>}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00123}00123\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00124}00124\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00125}00125\ std::pair<}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00126}00126\ \ \ \ \ std::shared\_ptr<const\ SparsityType>,}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00127}00127\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>>>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00128}\mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{00128}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{createSparsityPatternFaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00130}00130\ \textcolor{comment}{/*\ @brief\ Creates\ the\ boundary\ sparsity\ pattern\ from\ a\ mesh\ and\ an\ existing}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00131}00131\ \textcolor{comment}{\ *\ FaceToMatrixAddress\ (which\ provides\ the\ diagonal\ offsets\ needed\ to\ compute\ it).}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00132}00132\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00133}00133\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00134}00134\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CooSparsityPattern<localIdx>\ or\ CsrSparsityPattern<localIdx>}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00135}00135\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00136}00136\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00137}\mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{00137}}\ std::shared\_ptr<const\ SparsityType>\ \mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{createBoundarySparsityPattern}}(}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00138}00138\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00139}00139\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>}}\&\ faceToMatrixAddress}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00140}00140\ );}
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00141}00141\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00142}00142\ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00056}00056\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ neighbourOffsetV\_;}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00058}00058\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<uint8\_t>}}\ diagOffsetV\_;}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{comment}{//\ row\ offsets\ borrowed\ from\ the\ owning\ Matrix's\ sparsity\ pattern}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00061}00061\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ rowOffsV\_;}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00063}00063\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{comment}{/*\ @brief\ constructor}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00066}00066\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00067}00067\ \textcolor{comment}{\ \ \ \ \ *\ @param\ ownerOffset\ \ \ \ \ face-\/to-\/lower-\/offset\ mapping}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00068}00068\ \textcolor{comment}{\ \ \ \ \ *\ @param\ neighbourOffset\ face-\/to-\/upper-\/offset\ mapping}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00069}00069\ \textcolor{comment}{\ \ \ \ \ *\ @param\ diagOffset\ \ \ \ \ \ cell-\/to-\/diagonal-\/offset\ mapping}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00070}00070\ \textcolor{comment}{\ \ \ \ \ *\ @param\ rowOffsView\ \ \ \ \ view\ of\ row\ offsets\ from\ the\ owning\ Matrix's\ CsrSparsityPattern}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00071}00071\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a7ebc0ca62eb3f506ffe7fb6bc1c96144}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a7ebc0ca62eb3f506ffe7fb6bc1c96144}{FaceToMatrixAddress}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{ownerOffset}},}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{neighbourOffset}},}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{diagOffset}},}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ IndexType>}}\ rowOffsView}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00077}00077\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{comment}{/*\ @brief\ copy\ constructor\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_af6fc1dee670bf77602ae551327b70841}{00080}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_af6fc1dee670bf77602ae551327b70841}{FaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress}}\&\ mi);}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{00083}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab70dc4ffec78ea4a49d696a250eb31c2}{ownerOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00086}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{00086}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa74377e61e00d74a8c07e471c83e1f62}{neighbourOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00089}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{00089}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a8e47d177565285c1eba0a43eca001e8a}{diagOffset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ ownerOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00092}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9e06b6dc4bcd66865978a71ad5e5b9c1}{00092}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9e06b6dc4bcd66865978a71ad5e5b9c1}{ownerOffset}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ neighbourOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9158bd6c235ce5957d8acb652176bb3d}{00095}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a9158bd6c235ce5957d8acb652176bb3d}{neighbourOffset}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{comment}{/*@brief\ getter\ for\ diagOffset\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00098}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a72862f12409e122f38b1dd0e703bdd55}{00098}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Array}{Array<uint8\_t>}}\&\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a72862f12409e122f38b1dd0e703bdd55}{diagOffset}}();}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ TODO\ check\ performance}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Returns\ the\ flat\ values-\/array\ index\ of\ the\ diagonal\ entry\ for\ cell\ celli.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00102}00102\ \textcolor{comment}{\ \ \ \ \ *\ \ diagIdx(celli)\ =\ rowOffs[celli]\ +\ diagOffset[celli]}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00103}00103\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00104}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a624aa26b24cb7c4f0450afeecf0d2944}{00104}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a624aa26b24cb7c4f0450afeecf0d2944}{diagIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00105}00105\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[celli]\ +\ diagOffsetV\_[celli];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00107}00107\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Returns\ the\ flat\ values-\/array\ index\ of\ the\ upper-\/triangular\ entry\ A[own,\ nei].}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00110}00110\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00111}00111\ \textcolor{comment}{\ \ \ \ \ *\ \ By\ construction\ own\ <\ nei\ for\ every\ internal\ face,\ so\ the\ column\ index\ nei\ is\ greater}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00112}00112\ \textcolor{comment}{\ \ \ \ \ *\ \ than\ the\ row\ index\ own\ —\ this\ entry\ lies\ in\ the\ upper\ triangle.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00113}00113\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00114}00114\ \textcolor{comment}{\ \ \ \ \ *\ \ upperIdx(own,\ f)\ =\ rowOffs[own]\ +\ ownerOffset[f]}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00115}00115\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00116}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aecb267fb469a2e065685aa42b30b4d84}{00116}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aecb267fb469a2e065685aa42b30b4d84}{upperIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ own,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ faceIdx)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00117}00117\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[own]\ +\ ownerOffsetV\_[faceIdx];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00119}00119\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Returns\ the\ flat\ values-\/array\ index\ of\ the\ lower-\/triangular\ entry\ A[nei,\ own].}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00122}00122\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00123}00123\ \textcolor{comment}{\ \ \ \ \ *\ \ By\ construction\ nei\ >\ own\ for\ every\ internal\ face,\ so\ the\ column\ index\ own\ is\ less}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00124}00124\ \textcolor{comment}{\ \ \ \ \ *\ \ than\ the\ row\ index\ nei\ —\ this\ entry\ lies\ in\ the\ lower\ triangle.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00125}00125\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00126}00126\ \textcolor{comment}{\ \ \ \ \ *\ \ lowerIdx(nei,\ f)\ =\ rowOffs[nei]\ +\ neighbourOffset[f]}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00127}00127\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00128}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ae76a1e8b3d044a93782c3813f8ddcf87}{00128}}\ \ \ \ \ KOKKOS\_INLINE\_FUNCTION\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ae76a1e8b3d044a93782c3813f8ddcf87}{lowerIdx}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nei,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ faceIdx)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00129}00129\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rowOffsV\_[nei]\ +\ neighbourOffsetV\_[faceIdx];}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00131}00131\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00132}00132\ \};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00134}00134\ \textcolor{comment}{/*\ @brief\ Creates\ the\ sparsity\ pattern\ and\ corresponding\ FaceToMatrixAddress\ from\ a\ mesh.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00135}00135\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00136}00136\ \textcolor{comment}{\ *\ The\ two\ are\ returned\ together\ because\ FaceToMatrixAddress\ borrows\ the\ row-\/offsets}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00137}00137\ \textcolor{comment}{\ *\ view\ from\ the\ sparsity\ pattern.\ The\ boundary\ sparsity\ is\ created\ separately}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00138}00138\ \textcolor{comment}{\ *\ via\ createBoundarySparsityPattern.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00139}00139\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00140}00140\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00141}00141\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CsrSparsityPattern<localIdx>\ or\ CooSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00142}00142\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00143}00143\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00144}00144\ std::pair<}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00145}00145\ \ \ \ \ std::shared\_ptr<const\ SparsityType>,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00146}00146\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>>>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00147}\mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{00147}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_abacf6cb7c21dbcdd8eebce04e61998a1}{createSparsityPatternFaceToMatrixAddress}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00149}00149\ \textcolor{comment}{/*\ @brief\ Creates\ the\ boundary\ sparsity\ pattern\ from\ a\ mesh\ and\ an\ existing}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00150}00150\ \textcolor{comment}{\ *\ FaceToMatrixAddress\ (which\ provides\ the\ diagonal\ offsets\ needed\ to\ compute\ it).}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00151}00151\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00152}00152\ \textcolor{comment}{\ *\ @tparam\ SparsityType\ -\/\ The\ full\ sparsity\ pattern\ type\ to\ create,\ e.g.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00153}00153\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ CooSparsityPattern<localIdx>\ or\ CsrSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00154}00154\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00155}00155\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00156}\mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{00156}}\ std::shared\_ptr<const\ SparsityType>\ \mbox{\hyperlink{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}{createBoundarySparsityPattern}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00158}00158\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress<typename\ SparsityType::SparsityIndexType>}}\&\ faceToMatrixAddress}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00159}00159\ );}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00161}00161\ \}}
 
 \end{DoxyCode}
