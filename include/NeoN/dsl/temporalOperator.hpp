@@ -91,7 +91,9 @@ public:
     Operator::Type getType() const { return model_->getType(); }
 
     std::string getName() const { return model_->getName(); }
-    std::string juliaOP() { return model_->getName(); }
+    std::string juliaOP() { return model_->juliaOP(); }
+
+    std::string juliaOP() const { return model_->juliaOP(); }
 
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 
@@ -124,6 +126,10 @@ private:
 
         /* returns the name of the operator */
         virtual std::string getName() const = 0;
+
+        virtual std::string juliaOP() = 0;
+
+        virtual std::string juliaOP() const = 0;
 
         /* returns the fundamental type of an operator, ie explicit, implicit, temporal */
         virtual Operator::Type getType() const = 0;
@@ -181,6 +187,9 @@ private:
 
         /* returns the fundamental type of an operator, ie explicit, implicit, temporal */
         Operator::Type getType() const override { return concreteOp_.getType(); }
+
+        std::string juliaOP() { return concreteOp_.juliaOP(); }
+        std::string juliaOP() const { return concreteOp_.juliaOP(); }
 
         /* @brief Get the executor */
         const Executor& exec() const override { return concreteOp_.exec(); }

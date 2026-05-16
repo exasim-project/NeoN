@@ -308,18 +308,6 @@ public:
     std::string juliaOP() { return juliaEvalString_; }
     std::string juliaOP() const { return juliaEvalString_; }
 
-    // std::optional<NeoN::finiteVolume::cellCentred::FaceNormalGradient<ValueType>>
-    // deltaCoeffs() const
-    // {
-    //     auto l = std::string("LaplacianOperator");
-    //     for (auto& op : spatialOperators_)
-    //     {
-    //         if (op.getName() == l)
-    //         {
-    //             return op.faceNormalGradient().deltaCoeffs();
-    //         }
-    //     }
-    // }
 
 private:
 
