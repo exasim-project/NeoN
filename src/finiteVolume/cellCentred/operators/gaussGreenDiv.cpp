@@ -150,11 +150,12 @@ void computeDivBoundImp(
 
     auto faceFluxV = faceFlux.internalVector().view();
 
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
     const auto [ownV, deltaCoeffs] =
         views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().deltaCoeffs());
 
     const auto matIt = ls.faceToMatrixAddress();
-    auto const rowOffs = ls.matrix().sparsity()->rowOffs().view();
     auto const diagOffs = matIt->diagOffset().view();
 
     auto values = ls.matrix().values().view();
@@ -188,15 +189,11 @@ void computeDivBoundImp(
             auto flux =
                 faceFluxV[facei] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
 
-            // Upper triangular - owner offsets
-            auto ownRowStart = rowOffs[ownRow];
-            auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
-
             // since upper triangular value is "outside" of system matrix
             // it is stored separately in bMatrix
             bValues[bfi] += flux;
             // diagonal contribution
-            Kokkos::atomic_sub(&values[ownDiagOffs], flux);
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux);
 
             // Explicit RHS contribution from the mixed BC:
             //   φ_f = refValFrac * refValue               (Dirichlet part)
